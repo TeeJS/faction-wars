@@ -63,5 +63,13 @@ custom_minimum_size = Vector2(0, 180)
 layout_mode = 2
 tooltip_text = "Choose game to join."
 
+[node name="Status" type="Label" parent="CenterContainer/Console"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.55, 0.6, 0.65, 1)
+theme_override_font_sizes/font_size = 12
+text = "Connecting to the relay..."
+autowrap_mode = 3
+
 [node name="BottomBar" parent="." instance=ExtResource("2_bar")]
 unique_name_in_owner = true
