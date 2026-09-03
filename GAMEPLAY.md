@@ -1,4 +1,4 @@
-<!-- last synced from sol-conflict-revolution commit 6da9451 -->
+<!-- last synced from sol-conflict-revolution commit a9067b1 -->
 # Gameplay rules, from the manual
 
 How *Star Wars: Rebellion* actually works, read from the scanned page images in
@@ -15,10 +15,10 @@ varies 0–2 across the book, so a bare page number is always ambiguous — see
 > table at the bottom lists them. Everything here is quoted or paraphrased from a
 > page actually looked at; nothing is inferred from the OCR text.
 >
-> **Not covered:** Chapter 4 (Tactical) and Chapter 5 (Head-to-Head), PDF
-> p136–p167. Those pages were never rasterised into `manual/pages/`, which stops
-> at p135. What the strategic chapters say *about* tactical play is recorded in
-> §§1, 11, 13 and 14.
+> **Not covered:** Chapter 4 (Tactical), PDF p136–p153. Chapter 5 (Head-to-Head),
+> PDF p152–p163, is digested at the end of this file (2026-09-03); `manual/pages/`
+> now runs to PDF p167. What the strategic chapters say *about* tactical play is
+> recorded where it appears.
 
 **Sections marked ★** carry a rule that appears nowhere else in the manual, or
 that contradicts what the code currently does. If you read nothing else, read
@@ -4436,3 +4436,81 @@ them. To pick them up later, re-run the PyMuPDF render at 150 dpi over pages
 136–167 and continue the same pattern. What is known about tactical from the
 strategic chapters is collected in §§1, 11, 13 and 14 — the holocube, the admiral
 role, command-rank effects, the Death Star run, and Simulate Results.
+
+---
+
+## Chapter 5 — Head-to-Head Games *(manual p156–p167 / PDF p152–p163; the offset is +4 in this chapter)*
+
+Read 2026-09-03 for the multiplayer plan (schmitz-wars `docs/multiplayer-plan.md`).
+Figures 5.1–5.11. Quotes are the manual's words.
+
+**Scope.** "Star Wars Rebellion allows **two players** to compete head-to-head over
+a Local Area Network (LAN), via modem, direct serial connection (using a null
+modem cable), or over the Internet." DirectPlay (DirectX 5.0) underneath.
+
+**Entry.** "In the Shuttle Cockpit, click on the small panel at the lower left
+that depicts a Rebel soldier and an Imperial stormtrooper facing off (Fig. 5.1).
+This will take you to the Multiplayer Configuration screen (Fig. 5.2)."
+
+**Multiplayer Configuration screen (Fig 5.2).** A list of service providers —
+IPX, TCP/IP, Modem, Direct Serial "for DirectPlay" — "the provider that is
+currently selected appears in red"; then "**Setup Game** to host a game, or
+**Connect to Game** to join an existing game. The currently selected option will
+be depressed and the text will appear dark." Right arrow proceeds, left arrow
+goes back, **X** cancels to the Shuttle Cockpit.
+
+**Host Game screen (Fig 5.3).** "In the **Player Name** box, type a name or
+nickname for yourself. If you do not specify a name, it will default to your
+Windows 95 user's name." "In the **Game Name** box, type in what you would like
+to name your game. If you do not specify a name, it will default to your
+computer's name." Right arrow → Multiplayer Options.
+
+**Joining (Figs 5.6–5.8).** TCP/IP: "Enter the computer name or IP address of
+the session host, or leave blank to search." "NOTE: If you are playing on a
+TCP/IP LAN, leave the box blank and click OK. DirectPlay will search for TCP/IP
+configured hosts over your local network." **Join Game screen**: Player Name;
+"Select the game you wish to join. Unless you are playing on a LAN where others
+may be playing, there will only be one game name listed." Right arrow →
+Multiplayer Options.
+
+**Multiplayer Options screen (Fig 5.9) — host only.** "1 Choose which side you
+want to play... Click the red symbol for the Rebel Alliance or the green symbol
+for the Galactic Empire. 2 Choose a galaxy size. The choices are standard, large,
+and huge" (100 / 150 / 200 systems). "3 Choose **Standard Game** or **HQ Only
+Victory**." Standard: "Rebel Win Conditions: Capture Coruscant and capture
+Emperor Palpatine and Darth Vader. Imperial Win Conditions: Destroy the Rebel
+headquarters and capture President Mon Mothma and Luke Skywalker." HQ only:
+"Capture Coruscant" / "Destroy the Rebel headquarters." "4 Use the Compose Chat
+Message window (Fig. 5.11) to exchange messages back and forth with your opponent.
+To chat, click your mouse in the space to the right of **Chat>**, then type your
+message. Press **Enter** to send it." "5 When finished, click on the checkmark
+button at the bottom of the screen to start the game." Also a **Load Game**
+button: "will only be available if you have saved a game from a previous session
+with your current opponent. If you are loading a saved game, it will use the
+game size and difficulty settings from your previous game."
+
+> ★ No difficulty choice on this screen. Head-to-head uses the **Multiplayer**
+> column of the rule tables (`Difficulty.Multiplayer`, `side_lottery.json` "mp").
+
+**Multiplayer Game Features (p162–p163).**
+- **Messages (Chat)**: "the ability to send messages or taunts to your opponent
+  while in the Galactic Information Display. These chat messages are processed
+  through SD-7 or R2-D2's messaging system." "Click the **Chat Messages** tab to
+  display any incoming chat messages. Double-click a message to view it. Click
+  the button on the bottom right-hand side of the window to send a message" →
+  **Compose Chat Message** window (Fig 5.11): type, **Send message**, **Cancel**,
+  close, return to Display Message Index.
+- **Game Speed**: "can be adjusted by either player during head-to-head play.
+  However, the game plays at the **slowest speed set on either computer**. The
+  available speeds are: Pause, Very Slow, Slow, Medium, and Fast."
+- **Pausing**: "bring up the Game Options Screen. Your opponent will receive a
+  **Waiting for Opponent** message, until you return to the game. Alternately,
+  you can choose to pause on the Game Speed menu until you are ready to play.
+  Then just click on the checkbox to resume play."
+- **Saving**: "follow the same procedure as you would to save a single player
+  game... In multiplayer games, **only the host player can save** the game. Star
+  Wars Rebellion will create a saved game on **both computers in the same saved
+  game slots**."
+
+**p164–p167** are the Internet Gaming Zone, WINIPCFG and PING instructions for
+Windows 95 — historical, no game rules.
