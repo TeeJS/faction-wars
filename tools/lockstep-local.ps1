@@ -8,6 +8,7 @@ param(
     [switch]$Relay,          # M3 gate A: through a relay started here for the duration of the test
     [int]$Rejoin = 0,        # M5 gate: the Empire client quits on this day and rejoins the room
     [int]$Load = 0,          # M5 gate: BOTH quit on this day, the relay is restarted, both rejoin (Load)
+    [string]$RelayUrl = '',   # Gate B: an existing relay (wss://wars.schmitzplex.com/ws); none is started here
     [int]$RelayPort = 8787,
     [string]$Godot = 'D:\Downloads\Godot_v4.7.1-stable_mono_win64\Godot_v4.7.1-stable_mono_win64_console.exe'
 )
@@ -16,6 +17,7 @@ $box = Join-Path $env:TEMP ("lockstep-" + [guid]::NewGuid().ToString().Substring
 New-Item -ItemType Directory -Force $box | Out-Null
 $relayProc = $null
 if ($Load -gt 0) { $Relay = $true }
+if ($RelayUrl -ne '') { $Relay = $true }
 function Start-Relay([string]$tag) {
     $env:PORT = "$RelayPort"; $env:DATA_DIR = "$box\relay-data"
     $p = Start-Process -FilePath 'bun' -ArgumentList @('run', (Join-Path $repo 'relay\server.ts')) -RedirectStandardOutput "$box\relay$tag.stdout.txt" -RedirectStandardError "$box\relay$tag.stderr.txt" -PassThru -NoNewWindow
@@ -27,8 +29,8 @@ function Start-Client([string]$side, [string[]]$extra, [string]$tag) {
         "--side=$side", "--mailbox=$box", "--days=$Days", "--seed=$Seed", "--replay-log=$box\$side.hashes.log") + $extra
     return Start-Process -FilePath $Godot -ArgumentList $args -RedirectStandardOutput "$box\$side$tag.stdout.txt" -RedirectStandardError "$box\$side$tag.stderr.txt" -PassThru -NoNewWindow
 }
-if ($Relay) { $relayProc = Start-Relay "" }
-$relayArg = @("--relay=ws://127.0.0.1:$RelayPort/ws")
+if ($Relay -and $RelayUrl -eq '') { $relayProc = Start-Relay "" }
+$relayArg = @($(if ($RelayUrl -ne '') { "--relay=$RelayUrl" } else { "--relay=ws://127.0.0.1:$RelayPort/ws" }))
 $procs = @()
 foreach ($side in @('alliance', 'empire')) {
     $extra = @()
@@ -67,6 +69,6 @@ $b = @{}; Get-Content "$box\empire.hashes.log" | Select-Object -Skip 1 | ForEach
 $shared = $a.Keys | Where-Object { $b.ContainsKey($_) } | Sort-Object
 $n = $shared.Count; $same = 0; $first = -1
 foreach ($d in $shared) { if ($a[$d] -eq $b[$d]) { $same++ } elseif ($first -lt 0) { $first = $d } }
-$gate = if ($Load -gt 0) { "M5 (load day $Load, relay restarted)" } elseif ($Rejoin -gt 0) { "M5 (rejoin day $Rejoin)" } elseif ($Relay) { "M3-A (relay)" } else { "M2" }
+$gate = if ($RelayUrl -ne '') { "M3-B (live relay $RelayUrl)" } elseif ($Load -gt 0) { "M5 (load day $Load, relay restarted)" } elseif ($Rejoin -gt 0) { "M5 (rejoin day $Rejoin)" } elseif ($Relay) { "M3-A (relay)" } else { "M2" }
 Write-Host ("{4} GATE: {0} of {1} day hashes identical{2}  (mailbox: {3})" -f $same, $n, $(if ($first -ge 0) { " - first difference on day $first" } else { "" }), $box, $gate)
 if ($relayProc) { try { $relayProc.Kill() } catch {} ; Write-Host ("relay log lines: {0}" -f ((Get-ChildItem "$box\relay-data\rooms" -Recurse -Filter log.jsonl | Get-Content | Measure-Object -Line).Lines)) }

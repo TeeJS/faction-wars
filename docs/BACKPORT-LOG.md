@@ -88,7 +88,7 @@ Hashes:    unchanged. Gates: two processes over a mailbox, 200 of 200 day hashes
 Kind:      plumbing (no rule effect)
 Files:     `relay/server.ts`, `relay/test.ts`, `relay/docker-compose.yml`, `relay/README.md`, `src/net/websocket_transport.gd`, `src/net/relay_client.gd`, `tests/lockstep_client.gd` (--relay), `tools/lockstep-local.ps1` (-Relay)
 Source:    not needed for single player.
-Hashes:    unchanged. Gate A: the lockstep gate through a locally running relay, 200 of 200 day hashes identical; the relay's own test, 12 of 12.
+Hashes:    unchanged. Gate A: the lockstep gate through a locally running relay, 200 of 200 day hashes identical; the relay's own test, 16 of 16. Gate B (2026-09-03): the same through the live container on Unraid, 200 of 200. The relay ships as `ghcr.io/teejs/wars-relay` (relay/Dockerfile, .github/workflows/relay-image.yml, relay/unraid/my-wars-relay.xml).
 
 
 ## 11. Reconnect from the relay's log (M5, engine side)     port (M5)

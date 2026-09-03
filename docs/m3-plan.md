@@ -1,6 +1,6 @@
 # M3 — the relay (plan, for review before building)
 
-**Status:** Gate A PASSED 2026-09-03 (relay test 12/12; lockstep through a local relay 200/200). Gate B waits on TeeJ's deployment (section 5). Originally: plan, not started. Reviewers: Doof (protocol, service),
+**Status:** Gate A PASSED 2026-09-03 (relay test 16/16; lockstep through a local relay 200/200). **Gate B PASSED 2026-09-03**: the relay deployed on Unraid as the GHCR image (`relay/unraid/my-wars-relay.xml`), NPM Plus host `wars.schmitzplex.com` with Websockets Support; two headless clients through the live container (`tools/lockstep-local.ps1 -Days 200 -Seed 12345 -RelayUrl ws://192.168.1.25:8787/ws`) hold 200 of 200. The wss:// leg (NPM Plus TLS termination + upgrade) is covered by curl and the browser: Godot's mbedtls will not initialise in headless script mode on the workstation (`tests/tls_probe.gd`, both binaries, even with verification off), so the harness cannot speak wss; the two-browser play-through is the end-to-end wss check. Originally: plan, not started. Reviewers: Doof (protocol, service),
 C3PO (nothing visual here; the screens that use it are M4).
 
 **Gate (hard):** the M2 lockstep gate passes with the mailbox replaced by the
