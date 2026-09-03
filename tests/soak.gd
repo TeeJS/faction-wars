@@ -31,7 +31,16 @@ func _init() -> void:
 		quit(2)
 		return
 
-	print("\n=== SOAK: %d days as %s ===" % [days, GameSettings.PlayerFaction.Id if GameSettings.PlayerFaction != null else ""])
+	# Head-to-head: both sides human. The local side stays --faction; the sim
+	# must not care which (docs/m0-audit.md).
+	var humans := _arg("--humans=", "")
+	if humans == "both":
+		GameSettings.HumanFactions = FactionRegistry.Playable.duplicate()
+	elif not humans.is_empty():
+		GameSettings.HumanFactions = [FactionRegistry.ById(humans)]
+
+	print("
+=== SOAK: %d days as %s (humans: %s) ===" % [days, GameSettings.PlayerFaction.Id if GameSettings.PlayerFaction != null else "", ", ".join(Lq.select(GameSettings.HumanFactions, func(f: Faction) -> String: return f.Id))])
 
 	# Nobody plays the player's side in a headless run, so the AI takes both.
 	AiManager.DriveAllFactions = true
