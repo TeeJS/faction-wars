@@ -487,8 +487,8 @@ func OnAgentMenu(id: int) -> void:
 	match id:
 		3: OpenGalaxyOverview()
 		4: OpenObjectives()
-		5: AgentDroid.SetManageGarrisons(us, not AgentDroid.ManagingGarrisons(us))
-		6: AgentDroid.SetManageProduction(us, not AgentDroid.ManagingProduction(us))
+		5: CommandBus.issue("droid", { "manage": "garrisons", "on": not AgentDroid.ManagingGarrisons(us) })
+		6: CommandBus.issue("droid", { "manage": "production", "on": not AgentDroid.ManagingProduction(us) })
 
 
 ## THE BATTLE ALERT (manual p124, Fig 4.1). Raised from the repaint poll rather
@@ -605,7 +605,7 @@ func ExecuteCharacterMove(characters: Array, destination: Planet, requireConfirm
 	var days: int = OrderManager.CharacterTravelDays(characters, currentPlanet, destination)
 
 	var issue := func() -> void:
-		var r: Result = OrderManager.MoveCharacters(characters, destination)
+		var r: Result = CommandBus.issue("move_characters", { "characters": EntityIndex.names_of(characters), "destination": destination.Name })
 		if r.ok:
 			RefreshAfterMove(currentPlanet, destination)
 		elif not r.error.is_empty():
@@ -630,13 +630,12 @@ func ExecuteUnitMove(units: Array, destination: Planet, _requireConfirmation: bo
 		var leaving: Planet = currentPlanet
 		var odds: int = BlockadeManager.WithdrawPercent(leaving)
 		ConfirmEvacuation(odds, func() -> void:
-			var survivors: Array = OrderManager.RunBlockade(units, leaving, Prng.Session)
-			if not survivors.is_empty() and OrderManager.MoveUnits(survivors, destination).ok:
-				RefreshAfterMove(leaving, destination)
-			EventBus.BroadcastChanged())
+			var r: Result = CommandBus.issue("run_blockade", { "units": EntityIndex.ids_of_units(units), "from": leaving.Name, "destination": destination.Name })
+			if r.ok:
+				RefreshAfterMove(leaving, destination))
 		return
 
-	var r: Result = OrderManager.MoveUnits(units, destination)
+	var r: Result = CommandBus.issue("move_units", { "units": EntityIndex.ids_of_units(units), "destination": destination.Name })
 	if r.ok:
 		RefreshAfterMove(currentPlanet, destination)
 	elif not r.error.is_empty():
@@ -678,7 +677,7 @@ func ExecuteFleetMove(fleets: Array, destination: Planet, _requireConfirmation: 
 		return
 	# requireConfirmation is accepted and ignored, exactly as in the source:
 	# Confirmed Move for fleets is not built yet.
-	var r: Result = OrderManager.MoveFleets(fleets, destination)
+	var r: Result = CommandBus.issue("move_fleets", { "fleets": EntityIndex.names_of(fleets), "destination": destination.Name })
 	if r.ok:
 		RefreshAfterMove(currentPlanet, destination)
 	elif not r.error.is_empty():
