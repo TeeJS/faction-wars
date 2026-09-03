@@ -30,7 +30,8 @@ settings -> Change visibility), or Unraid cannot pull it without a login.
    `/boot/config/plugins/dockerMan/templates-user/my-wars-relay.xml`.
 2. Unraid -> Docker -> Add Container -> Template **wars-relay**. Defaults:
    the image above, bridge network, host port 8787, `/mnt/user/appdata/wars-relay/data`
-   for the rooms. Apply. New builds arrive with Unraid's "check for updates".
+   for the rooms. Apply, then toggle **Autostart** (no Docker restart policy: Unraid
+   handles startup). New builds arrive with Unraid's "check for updates".
 3. NPM Plus -> Proxy Hosts -> Add: domain `wars.schmitzplex.com`, scheme http,
    forward host `192.168.1.25`, port `8787`, **Websockets Support on**, SSL as
    for the other hosts. No Authelia on this host: the game code is the

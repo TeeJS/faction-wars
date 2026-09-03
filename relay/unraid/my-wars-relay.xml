@@ -12,7 +12,7 @@
   <WebUI>http://[IP]:[PORT:8787]/</WebUI>
   <TemplateURL>https://raw.githubusercontent.com/TeeJS/schmitz-wars/main/relay/unraid/my-wars-relay.xml</TemplateURL>
   <Icon>https://raw.githubusercontent.com/oven-sh/bun/main/packages/bun-vscode/example/bun.png</Icon>
-  <ExtraParams>--restart=unless-stopped</ExtraParams>
+  <ExtraParams/>
   <PostArgs/>
   <Shell>sh</Shell>
   <Config Name="Relay port" Target="8787" Default="8787" Mode="tcp" Description="The relay's HTTP + WebSocket port. NPM Plus forwards wars.schmitzplex.com here." Type="Port" Display="always" Required="true" Mask="false">8787</Config>
