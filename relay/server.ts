@@ -153,7 +153,10 @@ export function startRelay(opts: { port?: number; dataDir?: string; staticDir?: 
         const target = resolve(root, "." + path);
         if (target !== root && !target.startsWith(root + sep)) return new Response("not found", { status: 404 });
         const file = Bun.file(target);
-        return file.size > 0 ? new Response(file) : new Response("not found", { status: 404 });
+        // no-cache: the browser revalidates on every plain reload, so a new
+        // image's files arrive without a forced refresh (the game canvas eats
+        // Ctrl+F5 - TeeJ, room #100).
+        return file.size > 0 ? new Response(file, { headers: { "Cache-Control": "no-cache" } }) : new Response("not found", { status: 404 });
       }
       return new Response("schmitz-wars relay", { status: 200 });
     },
