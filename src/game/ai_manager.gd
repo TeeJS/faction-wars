@@ -43,7 +43,7 @@ static func ProcessDay(galaxy: Array, day: int, rng: Prng) -> void:
 	if galaxy == null:
 		return
 	for f in FactionRegistry.Playable:
-		if not DriveAllFactions and f == GameSettings.PlayerFaction:
+		if not DriveAllFactions and GameSettings.IsHuman(f):
 			continue
 		if not AgentDroid.ManagingProduction(f):
 			AgentDroid.SetManageProduction(f, true)

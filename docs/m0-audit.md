@@ -83,14 +83,23 @@ GameSettings.PlayerFaction                     # kept as an alias of LocalFactio
 3. Messages addressed to a faction; the 27 gates rewritten; UI filters by local faction - commit; parity check (message COUNT changes only if a second human exists, so SP hashes hold).
 4. Per-faction fog, in the source first, then the port; fixtures regenerated; parity re-proven; the three-way local-faction soak added to `tests/` as the M0 gate.
 
+## Answers found after posting
+
+- **Question 1 is answered by the manual.** Tactical chapter, "After the Battle"
+  (manual p152): "Battle continues until one side destroys all of the opposing
+  capital ships and fighters, **or until one side withdraws**." And "Withdraw
+  from Battle" (p151) is each side's own option, refused only by tractor beams,
+  speed or a gravity well. So with two humans: each answers for its own fleet;
+  a Retreat by either side withdraws that side (subject to the existing gravity
+  well refusal) and the battle ends; otherwise it is simulated. Not invented.
+- **Question 2 stays open.** TheArchitect2018's `seed.js` reads the table through
+  `game_resources.side_param(session, id, 0|1)`; the 0/1 is the SIDE column, and
+  the helper that turns `session` into a row is not published. Inconclusive.
+
 ## Open questions for TeeJ
 
-1. **Two humans in one battle, answers differ.** Not in Chapter 5. I will read
-   "Battle Options" (manual p151) first; if it is silent, the choice is yours:
-   (a) any Retreat wins - the retreating side withdraws, the other holds the
-   orbit; (b) both must agree to simulate, otherwise the battle is simulated
-   anyway. I recommend (a) because it matches what Retreat means in single
-   player.
+1. ~~Two humans in one battle~~ - answered by manual p152 (above): a Retreat by
+   either side withdraws that side and ends the battle.
 2. **The day-zero table rows are keyed by the human's side.** `side_lottery.json`
    entries 30/31 ("Core Sector Owned Systems") have an "mp" column, but it still
    sits under a "human faction" row, and the two rows differ (human Alliance:
@@ -98,5 +107,5 @@ GameSettings.PlayerFaction                     # kept as an alias of LocalFactio
    The manual says nothing. The original's behaviour would settle it (the seed
    routine in TheArchitect2018's `seed.js` reads a `session` side; I will check
    which). If that is inconclusive, the least-invented choice is the HOST's side
-   (the host configures the game on the Multiplayer Options screen). Your call
-   once I report what seed.js says.
+   (the host configures the game on the Multiplayer Options screen). seed.js
+   turned out not to say (above). **Proposed: the host's side.** Your call.

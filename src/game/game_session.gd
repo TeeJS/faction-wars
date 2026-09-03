@@ -27,6 +27,10 @@ static func reset_game_state() -> void:
 	Economy.Reset()
 	ForceManager.Reset()
 	Fleet.ResetSerials()
+	Unit.ResetSerials()
+	Facility.ResetSerials()
+	Mission.ResetSerials()
+	GameMessage.ResetSerials()
 	RepairManager.Reset()
 	IntelManager.Reset()
 	ResearchManager.Reset()
@@ -68,6 +72,7 @@ static func new_game(player_faction_id: String, difficulty: int, size: int, seed
 	reset_game_state()
 	FactionRegistry.EnsureLoaded()
 	GameSettings.PlayerFaction = FactionRegistry.ById(player_faction_id)
+	GameSettings.HumanFactions = [GameSettings.PlayerFaction]
 	GameSettings.SelectedDifficulty = difficulty
 	GameSettings.SelectedSize = size
 	_seed(seed)

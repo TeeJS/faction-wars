@@ -22,6 +22,7 @@ static func Load(path: String) -> bool:
 	GameSettings.SelectedSize = JsonUtil.enum_or(data, "galaxySize", Enums.GalaxySize, Enums.GalaxySize.Large)
 	GameSettings.HQOnlyVictory = bool(data.get("hqOnlyVictory", false))
 	GameSettings.PlayerFaction = FactionRegistry.ById(data.get("playerFaction"))
+	GameSettings.HumanFactions = [GameSettings.PlayerFaction] if GameSettings.PlayerFaction != null else []
 
 	_planets_by_name.clear()
 	var galaxy: Array[Sector] = []
