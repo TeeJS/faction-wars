@@ -94,7 +94,7 @@ func Setup(battle: FleetBattleManager.BattleReport) -> void:
 
 
 func OnSimulate() -> void:
-	FleetBattleManager.SimulateResults(_battle, StrategicTickManager.Today)
+	CommandBus.issue("battle_answer", { "where": _battle.Where.Name, "ours": _battle.Ours.Name, "theirs": _battle.Theirs.Name, "answer": "simulate" })
 	queue_free()
 
 
@@ -113,7 +113,7 @@ func OnTakeCommand() -> void:
 
 
 func OnRetreat() -> void:
-	var r: Result = FleetBattleManager.Retreat(_battle, StrategicTickManager.Today, GameSettings.LocalFaction())
+	var r: Result = CommandBus.issue("battle_answer", { "where": _battle.Where.Name, "ours": _battle.Ours.Name, "theirs": _battle.Theirs.Name, "answer": "retreat" })
 	if r.ok:
 		queue_free()
 		return
