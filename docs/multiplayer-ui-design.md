@@ -1,8 +1,9 @@
 # Multiplayer screens - design from the manual's figures (M4 + the M5 screens)
 
-**Status:** DRAFT 2026-09-03 by Lord Vader, from the figures themselves (manual
-p156-p163 = PDF p152-p159, re-read for this document). For Doof's review before
-anything is built. CLAUDE.md rule 0 applies: every element a figure names is a
+**Status:** REVIEWED 2026-09-03. Drafted by Lord Vader from the figures themselves
+(manual p156-p163 = PDF p152-p159, re-read for this document); reviewed by Doof
+(room AM-XVTDFFDA4FY59ZFQZP64YEYU63 #6): no figure element dropped; seven doc
+corrections applied below; A-D answered in section 14. Build follows section 14 F. CLAUDE.md rule 0 applies: every element a figure names is a
 requirement; deviations are listed, not silently made.
 
 Sources: manual Figs 5.1-5.11 (PDF p152-p159); `GAMEPLAY.md` chapter 5 digest;
@@ -30,6 +31,17 @@ Menu.tscn (Shuttle Cockpit)
                                                       ├ Game Speed menu - effective = slowest of the two (p163)
                                                       └ Game Options screen ⇒ opponent sees Waiting for Opponent (p163)
 ```
+
+**`MpSetup.reset()` on every exit path** (Doof's review): the static outlives the
+screens, so stale state is the classic session bug. Reset is called by: Cancel on
+each of the four screens (5.2, 5.3, 5.6, 5.8, 5.9), Previous from Multiplayer
+Options (the seat is given up), Leave Game in section 11, Exit to Menu / Exit to
+Desktop on the Game Options screen, and game end in `GameManager`. A relay
+connection still open is closed by the same call.
+
+`GameManager`'s clock: `if MpSetup.session != null: session.try_tick()` **else**
+the single-player path (`AdvanceDay` + `CommandBus.day_done`) - the else branch
+is explicit, so single player is untouched.
 
 The four Cockpit-side screens are full-screen `Control` scenes like `Menu.tscn`,
 not `DraggableWindow`s: the manual shows them as the Cockpit's own console
@@ -97,7 +109,7 @@ Options as host. Go back → Configuration. Cancel → Cockpit.
 |---|---|---|
 | 1 | Title bar "Locate Session" with X | A modal `Window`/dialog titled **Locate Session**, X closes = Cancel. |
 | 2 | Text "Enter the computer name or IP address of the session host, or leave blank to search." | **Open question A** (below): keep the manual's sentence, or say what the box really takes on the web. Proposed: "Enter the game code of the session host, or leave blank to search." |
-| 3 | One text box (callout "Enter IP address") | `LineEdit`, 6 characters upper-cased as typed (the relay's code alphabet). |
+| 3 | One text box (callout "Enter IP address") | `LineEdit`, placeholder `XXXXXX`, 6 characters upper-cased as typed (the relay's code alphabet). |
 | 4 | **OK** (callout "Proceed"), **Cancel** | OK: blank → `RelayClient.list()` and open Join Game with the list; a code → Join Game with that one game listed (from `join` on Proceed). Cancel → Configuration. |
 
 **Deviation (recorded in the plan):** a typed value is a game code, not an IP.
@@ -110,7 +122,7 @@ The relay lists only `open` games (`relay/server.ts` `listing`); a private game
 | # | Figure element | Design |
 |---|---|---|
 | 1 | "What would you like your player name to be?" + box (callout "Enter a name") | As Host Game #1. |
-| 2 | "Select a game to connect to from the following list." + list (callout "Choose game to join"; example "End of the Empire") | Label verbatim + `ItemList` of the relay's rooms: game name, host name in a second column. "Unless you are playing on a LAN where others may be playing, there will only be one game name listed" - the list is what the relay holds, however many. Re-polled every 2 s while the screen is open. |
+| 2 | "Select a game to connect to from the following list." + list (callout "Choose game to join"; example "End of the Empire") | Label verbatim + `ItemList` of the relay's rooms by game name. "Unless you are playing on a LAN where others may be playing, there will only be one game name listed" - the list is what the relay holds, however many. Re-polled every 2 s while the screen is open. **Deviation (addition):** the host's player name is shown after the game name, "The End of the Empire (Han Solo)" - the figure lists game names only. |
 | 3 | Bottom bar: **Proceed**, **Previous**, **Cancel** | `MpBottomBar`, all three. Proceed disabled until a game is selected. |
 
 Proceed: `RelayClient.join(code)` → on `joined` → Multiplayer Options as guest;
@@ -133,6 +145,9 @@ Layout in the figure, top to bottom, and the callouts:
 
 **No difficulty control** (GAMEPLAY.md ★ note): head-to-head uses the
 Multiplayer column; nothing to choose.
+
+**Deviation (no artwork):** #1's red and green **symbols** are labelled buttons
+tinted red and green; the port has no artwork anywhere.
 
 **Wire.** Every host edit → `RelayClient.set_settings({side, size, hq_only})`;
 the guest receives `settings` and repaints. Start: `RelayClient.start()`; both
@@ -180,23 +195,21 @@ window it comes from:
 | # | Figure element | Design |
 |---|---|---|
 | 1 | Title **"Compose Chat Message"** | `WindowTitle`. |
-| 2 | Picture area (a figure at a console) | Empty panel; no artwork (as everywhere). |
+| 2 | Picture area (a figure at a console) | Empty panel. **Deviation (no artwork).** |
 | 3 | Text line at the bottom (callout "Type your message here"; example "I have you now.") | A `LineEdit`, placeholder **"Type your message here."**, focused on open; Enter = Send. |
-| 4 | **Send message** (checkmark, bottom right of the text area) | Button "Send message": `CommandBus.issue("chat", {text})`, then the window closes. The command's applier posts the message to the opponent's Chat Messages (`command_applier.gd:144-153`). **The sender also gets a copy** in their own Chat Messages tab titled "Message To The <side>" so the exchange reads as a thread. |
+| 4 | **Send message** (checkmark, bottom right of the text area) | Button "Send message": `CommandBus.issue("chat", {text})`, then the window closes. The command's applier posts the message to the opponent's Chat Messages (`command_applier.gd:144-153`). **No copy for the sender** (question C, settled): the tab shows "incoming chat messages" (p163) and nothing else. |
 | 5 | **Cancel** (X, under Send) | Closes without sending. |
 | 6 | **Close button** (top right of the window) | The window's close, same as Cancel. |
 | 7 | **Return to Display Message Index** (right column, first button) | Button: closes this window and opens (or restores) the Message Index on the Chat Messages tab (`UIManager.OnMessageIndexClicked("Chat")`). |
 
-**Open question C:** #4's sender-side copy is not in the figure or text. Without
-it the sender's tab shows only incoming lines; the manual says "display any
-incoming chat messages" (p163), which reads as incoming only. Proposed: **no
-copy** - match the text - unless Doof or TeeJ wants the thread view.
+**Question C (settled, Doof agreed):** no sender-side copy - "incoming" is the
+manual's word, and a copy would be an invented message type.
 
 ## 10. Game Speed - "the slowest speed set on either computer" (p163)
 
 | Manual | Today (code) | Design |
 |---|---|---|
-| Either player adjusts; game runs at the slower; five settings Pause / Very Slow / Slow / Medium / Fast | The GID bar's speed menu, five radio items (`game_manager.gd:138-155`); `set_speed`/`pause`/`resume` commands exist but the clock ignores them (`command_applier.gd:155-158`) | Choosing a speed issues `set_speed` (the local menu item checks as chosen) and `LockstepSession.set_speed`; the timer runs at `effective_speed()` = min(mine, theirs). The readout shows **"Slow"** when equal and **"Slow (opponent: Medium)"** when the opponent's is what governs, so a player knows why the game is slower than they set. |
+| Either player adjusts; game runs at the slower; five settings Pause / Very Slow / Slow / Medium / Fast | The GID bar's speed menu, five radio items (`game_manager.gd:138-155`); `set_speed`/`pause`/`resume` commands exist but the clock ignores them (`command_applier.gd:155-158`) | Choosing a speed issues `set_speed` (the local menu item checks as chosen) and `LockstepSession.set_speed`; the timer runs at `effective_speed()` = min(mine, theirs). The readout shows **"Slow"** when equal and **"Slow (opponent: Medium)"** when the opponent's is what governs, so a player knows why the game is slower than they set. **Addition (not a figure element):** the "(opponent: ...)" suffix; the manual only states the rule. |
 | Pause on the Game Speed menu; "click on the checkbox to resume play" | Pause is modal with a **Resume** button (`_pauseBox`, `game_manager.gd:157-167`) | Pause issues `pause`; the pauser sees today's box; Resume issues `resume`. The **opponent sees Waiting for Opponent** (section 11) while the other side is paused - a paused opponent is one who is not playing, and the manual's "slowest speed" with Pause as a speed says the same. |
 
 ## 11. Waiting for Opponent (p163)
@@ -206,9 +219,9 @@ Opponent message, until you return to the game."
 
 | Element | Design |
 |---|---|
-| Trigger | The other side's Game Options screen is open (`UIManager.OnMenuButtonClicked`, `ui_manager.gd:196`, issues `pause` on open and `resume` on close), or the other side chose Pause, or the other side's connection dropped (`LockstepSession.State.WaitingOpponent` for longer than 3 s). |
+| Trigger | The other side's Game Options screen is open (`UIManager.OnMenuButtonClicked`, `ui_manager.gd:196`, issues `pause` on open and `resume` on close) - the manual's case. **Additions (not in the manual):** the other side chose Pause on the Game Speed menu, and the other side's connection dropped (`LockstepSession.State.WaitingOpponent` for longer than 3 s); the same message serves all three, since in each the opponent is not playing. |
 | The message | A modal, exclusive panel, title **"Waiting for Opponent"**, text "Waiting for opponent..." - and for a dropped connection, a second line "Connection to your opponent was lost; waiting for them to rejoin." |
-| Controls | **Open question D.** The manual gives none: the message clears "when you return to the game". A dropped opponent may never return. Proposed: no button for the first 60 s; then a **Leave Game** button appears (returns to the Cockpit; the game stays on the relay as a save both can Load later). |
+| Controls | **Question D (settled, Doof agreed):** the manual gives none - the message clears "when you return to the game". No button for the first 60 s; then a **Leave Game** button appears. Leave asks first: "Leave this game? It will be available to reload from either player." - Yes returns to the Cockpit (`MpSetup.reset()`); the game stays on the relay as a save both can Load later. |
 
 ## 12. Saving (p163-p164) - the host's Game Options screen
 
@@ -244,7 +257,8 @@ the save). It is not part of the multiplayer plan; flagging it, not building it.
 | 5.6 | title "Locate Session"; instruction text; one box; OK; Cancel; blank = search |
 | 5.8 | player-name caption + box; "Select a game..." caption + list; Proceed; Previous; Cancel |
 | 5.9 | side caption + two symbols (red/green); size caption + three; Standard Game / HQ Only Victory; Load; Chat> + entry, Enter sends; chat + settings view; checkmark Start (host); Previous; Cancel |
-| Load | list of shared saves; settings restored and greyed; Cancel |
+| Load | list of shared saves ("Day N"); settings restored and greyed; Cancel |
+| exits | `MpSetup.reset()` on every Cancel, Previous-from-Options, Leave Game, Exit to Menu/Desktop, game end |
 | 5.10 | tab "Chat Messages"; incoming row wording; double-click opens; Compose button bottom right; Delete selected; Select all |
 | 5.11 | title; "Type your message here"; Send message; Cancel; Close button; Return to Display Message Index |
 | p163 speed | five settings; slowest governs; readout shows the governing side |
@@ -255,9 +269,9 @@ the save). It is not part of the multiplayer plan; flagging it, not building it.
 
 | | Question | Proposed |
 |---|---|---|
-| A | Locate Session wording: keep "computer name or IP address" verbatim, or say "game code"? | "game code" - the manual's words would be a lie on the web; recorded deviation. |
-| B | What "day" the Load list shows | the last day both sides hashed - the day the game resumes at. |
-| C | Sender's own copy of a chat message in their Chat Messages tab | no - "incoming" is the manual's word. |
-| D | A way out of Waiting for Opponent when the opponent never returns | Leave Game after 60 s; the game remains a loadable save. |
+| A | Locate Session wording: keep "computer name or IP address" verbatim, or say "game code"? | **Settled (Doof #6):** "game code", placeholder XXXXXX - the manual's words would be a lie on the web; recorded deviation. |
+| B | What "day" the Load list shows | **Settled:** the last day both sides hashed - the day the game resumes at - shown as "Day 42", like the in-game date. |
+| C | Sender's own copy of a chat message in their Chat Messages tab | **Settled:** no - "incoming" is the manual's word. |
+| D | A way out of Waiting for Opponent when the opponent never returns | **Settled:** Leave Game after 60 s, behind a one-sentence confirmation; the game remains a loadable save. |
 | E | Single-player Save/Load (not in the port; not in the MP plan) | flag to TeeJ; not built here. |
 | F | Build order | 5.2 → 5.3 → 5.6/5.8 → 5.9 → hook GameManager to the session (this is the first playable head-to-head) → 5.10/5.11 → speed/pause/waiting → Save/Load. |
