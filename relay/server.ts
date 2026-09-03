@@ -8,7 +8,7 @@
 //   bun run relay/test.ts              (two fake clients through a relay on a random port)
 
 import { mkdirSync, existsSync, readdirSync, readFileSync, appendFileSync, writeFileSync, statSync } from "node:fs";
-import { join } from "node:path";
+import { join, resolve, sep } from "node:path";
 
 const LIMITS = {
   lineBytes: 64 * 1024,   // one JSON line
@@ -123,7 +123,11 @@ export function startRelay(opts: { port?: number; dataDir?: string; staticDir?: 
       if (url.pathname === "/rooms") return Response.json({ rooms: listing() });
       if (staticDir) {
         const path = url.pathname === "/" ? "/index.html" : url.pathname;
-        const file = Bun.file(join(staticDir, path));
+        // Stay inside STATIC_DIR whatever the path says (review note, Qwen).
+        const root = resolve(staticDir);
+        const target = resolve(root, "." + path);
+        if (target !== root && !target.startsWith(root + sep)) return new Response("not found", { status: 404 });
+        const file = Bun.file(target);
         return file.size > 0 ? new Response(file) : new Response("not found", { status: 404 });
       }
       return new Response("schmitz-wars relay", { status: 200 });
