@@ -1,6 +1,6 @@
 # M3 — the relay (plan, for review before building)
 
-**Status:** plan, 2026-09-03. Not started. Reviewers: Doof (protocol, service),
+**Status:** Gate A PASSED 2026-09-03 (relay test 12/12; lockstep through a local relay 200/200). Gate B waits on TeeJ's deployment (section 5). Originally: plan, not started. Reviewers: Doof (protocol, service),
 C3PO (nothing visual here; the screens that use it are M4).
 
 **Gate (hard):** the M2 lockstep gate passes with the mailbox replaced by the

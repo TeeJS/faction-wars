@@ -84,3 +84,9 @@ Files:     `src/net/transport.gd`, `mailbox_transport.gd`, `lockstep_session.gd`
 Source:    not needed for single player. The one rule-shaped choice: within a day's batch, Retreat answers apply before everything else, so "until one side withdraws" (manual p152) holds on both clients whichever side answered first.
 Hashes:    unchanged. Gates: two processes over a mailbox, 200 of 200 day hashes identical; a forced corruption on one side is detected on the next day's hash, the honest side identifies the opponent, the drifted side rebuilds from the shared log and both continue.
 
+## 10. The relay and the WebSocket transport (M3)     port (M3)
+Kind:      plumbing (no rule effect)
+Files:     `relay/server.ts`, `relay/test.ts`, `relay/docker-compose.yml`, `relay/README.md`, `src/net/websocket_transport.gd`, `src/net/relay_client.gd`, `tests/lockstep_client.gd` (--relay), `tools/lockstep-local.ps1` (-Relay)
+Source:    not needed for single player.
+Hashes:    unchanged. Gate A: the lockstep gate through a locally running relay, 200 of 200 day hashes identical; the relay's own test, 12 of 12.
+
