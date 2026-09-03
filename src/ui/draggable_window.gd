@@ -341,7 +341,13 @@ func OpenCreateMission(team: Array, origin: Planet, target: Planet, picked: Vari
 		# Everyone cannot be a decoy - somebody has to do the job.
 		if decoys.size() == team.size():
 			decoys.clear()
-		MissionManager.Launch(legal[picker.selected], team, origin, target, decoys, victim, thing)
+		var args := { "type": legal[picker.selected], "team": EntityIndex.ids_of_units(team), "origin": origin.Name,
+			"target": target.Name, "decoys": EntityIndex.ids_of_units(decoys), "victim": victim.Name if victim != null else "" }
+		if thing is Facility:
+			args["facility"] = thing.Serial
+		elif thing is Unit:
+			args["unit"] = thing.Serial
+		CommandBus.issue("launch_mission", args)
 		dialog.queue_free())
 	dialog.canceled.connect(dialog.queue_free)
 
@@ -522,7 +528,7 @@ func OnCharacterMenuAction(actionId: int, characters: Array, uiManager: UIManage
 						if fleet == null:
 							print("[Move] That is not a place a character can go.")
 							return
-						var r: Result = OrderManager.BoardFleet(characters, fleet)
+						var r: Result = CommandBus.issue("board_fleet", { "characters": EntityIndex.names_of(characters), "fleet": fleet.Name })
 						if not r.ok:
 							print("[Move] %s" % r.error))
 
@@ -548,7 +554,7 @@ func OnCharacterMenuAction(actionId: int, characters: Array, uiManager: UIManage
 				_:   rank = Enums.Rank.None
 
 			for c in characters:
-				var r: Result = c.TryTakeCommand(rank)
+				var r: Result = CommandBus.issue("take_command", { "character": c.Name, "rank": rank })
 				if r.ok:
 					print(("[Command] %s has been relieved of command." % c.Name) if rank == Enums.Rank.None
 						else ("[Command] %s %s now commands %s." % [JsonUtil.enum_name(Enums.Rank, rank), c.Name, c.Commanding.Name if c.Commanding != null else ""]))
@@ -567,12 +573,9 @@ func OnCharacterMenuAction(actionId: int, characters: Array, uiManager: UIManage
 			var who: String = leaving[0].Name if leaving.size() == 1 else "%d characters" % leaving.size()
 
 			ConfirmRetire(who, 0, func() -> void:
+				CommandBus.issue("retire", { "characters": EntityIndex.names_of(leaving) })
 				for c in leaving:
-					c.Commanding = null
-					GameState.ActiveRoster.erase(c)
 					SelectedCharacters.erase(c)
-					print("[Personnel] %s has been retired." % c.Name)
-				EventBus.BroadcastChanged()
 				Refresh())
 
 		_:
