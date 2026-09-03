@@ -17,6 +17,7 @@ var settings: Dictionary = {}
 var started: bool = false
 var rooms: Array = []
 var saves: Array = []           # the started games this player is in (Load, M5)
+var looked_up: Dictionary = {}   # the reply to lookup(): {code, found, name, host, ...}
 var lines_on_relay: int = 0
 var last_error: String = ""
 var lobby_chat: Array = []       # [player, text] pairs, in order
@@ -49,6 +50,12 @@ func list_saves() -> void:
 	transport.send({ "t": "saves", "player": player })
 
 
+## A typed game code (Locate Session, manual p159) finds its game whether or
+## not it is listed as open.
+func lookup(game_code: String) -> void:
+	transport.send({ "t": "lookup", "code": game_code.to_upper() })
+
+
 func join(game_code: String) -> void:
 	transport.send({ "t": "join", "code": game_code.to_upper(), "player": player })
 
@@ -79,6 +86,8 @@ func poll() -> void:
 				rooms = msg.get("rooms", [])
 			"saves":
 				saves = msg.get("saves", [])
+			"room_info":
+				looked_up = msg
 			"joined":
 				code = str(msg.get("code", ""))
 				name = str(msg.get("name", name))

@@ -156,6 +156,12 @@ export function startRelay(opts: { port?: number; dataDir?: string; staticDir?: 
           }
           case "list": send(ws, { t: "rooms", rooms: listing() }); return;
           case "saves": send(ws, { t: "saves", saves: saves(String(msg.player ?? "")) }); return;
+          case "lookup": {   // a typed game code finds its game, listed or not (manual p159: the host's address)
+            const r = rooms.get(String(msg.code ?? "").toUpperCase());
+            if (!r) { send(ws, { t: "room_info", code: String(msg.code ?? "").toUpperCase(), found: false }); return; }
+            send(ws, { t: "room_info", code: r.code, found: true, name: r.name, host: r.host.player, created: r.created, settings: r.settings, started: r.started, full: !!(r.guest && r.guest.ws) });
+            return;
+          }
           case "join": {
             const r = rooms.get(String(msg.code ?? "").toUpperCase());
             if (!r) { send(ws, { t: "error", error: "no such game" }); return; }

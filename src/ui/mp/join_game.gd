@@ -40,8 +40,16 @@ func _ready() -> void:
 	list.item_selected.connect(func(_i: int) -> void: _refresh_proceed())
 	list.item_activated.connect(func(_i: int) -> void: _proceed())
 	_lobby = MpSetup.new_lobby()
-	_lobby.list()
+	_ask_relay()
 	_refresh_proceed()
+
+
+## Blank code: the relay's open games. A typed code: that one game, listed or not.
+func _ask_relay() -> void:
+	if MpSetup.join_code.is_empty():
+		_lobby.list()
+	else:
+		_lobby.lookup(MpSetup.join_code)
 
 
 func _process(delta: float) -> void:
@@ -68,15 +76,23 @@ func _process(delta: float) -> void:
 	# Rebuild the list only when the SET of rooms changes (by code): the relay's
 	# reply every 2 s arrives as new objects, and rebuilding on every reply
 	# flickered and could swallow a click on the rebuild frame.
-	if _codes_of(_lobby.rooms) != _codes_of(_rooms):
-		_rooms = _lobby.rooms.duplicate()
+	var offered: Array = _lobby.rooms
+	if not MpSetup.join_code.is_empty():
+		var info: Dictionary = _lobby.looked_up
+		offered = [info] if bool(info.get("found", false)) else []
+		if not info.is_empty() and not bool(info.get("found", false)):
+			_last_relay = "no game has the code %s" % MpSetup.join_code
+		elif bool(info.get("full", false)):
+			_last_relay = "game %s is full" % MpSetup.join_code
+	if _codes_of(offered) != _codes_of(_rooms):
+		_rooms = offered.duplicate()
 		_fill()
 	if _lobby.transport.received > 0 and _listed_at < 0.0:
 		_listed_at = _clock
 	_since_refresh += delta
 	if _since_refresh >= RefreshSeconds:
 		_since_refresh = 0.0
-		_lobby.list()
+		_ask_relay()
 		_listed_at = _clock
 	if not _lobby.transport.last_error.is_empty() and _lobby.transport.received == 0 and not _unreachable_shown:
 		_unreachable_shown = true
@@ -113,9 +129,6 @@ func _fill() -> void:
 	list.clear()
 	var shown: Array = []
 	for r in _rooms:
-		# A typed code narrows the list to that one game.
-		if not MpSetup.join_code.is_empty() and str(r.get("code", "")) != MpSetup.join_code:
-			continue
 		shown.append(r)
 		# Addition, recorded: the host's name after the game name.
 		list.add_item("%s (%s)" % [str(r.get("name", "")), str(r.get("host", ""))])

@@ -65,6 +65,13 @@ guest.send({ t: "list" });
 const list2 = await guest.next();
 check(list2.rooms.length === 0, "a started game is no longer listed");
 
+guest.send({ t: "lookup", code: room.code.toLowerCase() });
+const info = await guest.next();
+check(info.t === "room_info" && info.found === true && info.name === "The End of the Empire" && info.host === "Han" && info.started === true, "a typed code finds its game even when it is not listed");
+guest.send({ t: "lookup", code: "ZZZZZZ" });
+const none = await guest.next();
+check(none.t === "room_info" && none.found === false, "an unknown code is reported as not found");
+
 host.ws.close(); await new Promise((r) => setTimeout(r, 50));
 const left = await guest.next();
 check(left.t === "left" && left.side === "host", "the guest is told when the host drops");
