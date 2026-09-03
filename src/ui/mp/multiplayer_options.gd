@@ -218,7 +218,8 @@ func _process(_delta: float) -> void:
 static func _lock(b: Button) -> void:
 	b.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	b.focus_mode = Control.FOCUS_NONE
-	b.tooltip_text = "The host's choice."
+	# The tooltip stays: the win conditions on the victory buttons are the
+	# manual's words (p162) and the guest is entitled to read them.
 
 
 # --- the host's choices ---
