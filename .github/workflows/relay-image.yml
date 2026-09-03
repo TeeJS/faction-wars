@@ -39,6 +39,9 @@ jobs:
       - name: Export the web game (the Web preset in export_presets.cfg)
         run: |
           set -e
+          # The build stamp the game shows (BuildInfo): utc date + short commit.
+          echo "$(date -u +%Y-%m-%d) ${GITHUB_SHA::7}" > version.txt
+          cat version.txt
           ./godot --headless --path . --import || true
           mkdir -p build/web
           ./godot --headless --path . --export-release Web build/web/index.html

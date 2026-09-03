@@ -346,9 +346,14 @@ func _MpWatch(session: LockstepSession) -> void:
 	if waiting:
 		if _waitBox == null:
 			_BuildWaitBox()
-		var text := "Waiting for opponent..."
+		# TeeJ (room #106): say WHY - a deliberate departure from the manual's
+		# single "Waiting for Opponent" message.
+		var text := "Opponent paused." if session.remote_speed == 0 else "Waiting for opponent..."
 		if session.opponent_gone:
 			text += "\nConnection to your opponent was lost; waiting for them to rejoin."
+			if MpSetup.lobby != null and not MpSetup.lobby.code.is_empty():
+				# TeeJ (room #110): the code is what a dropped player needs to come back.
+				text += "\nGame code: %s - give it to your opponent to rejoin (same player name)." % MpSetup.lobby.code
 		_waitBox.dialog_text = text
 		if not _waitBox.visible:
 			print("[GameManager] Waiting for Opponent (day %d)" % StrategicTickManager.Today)

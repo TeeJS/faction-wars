@@ -53,6 +53,8 @@ func _menu() -> void:
 	var b: Button = m.get_node_or_null("%BtnMultiplayer")
 	_check(b != null and b.text == "Multiplayer", "Fig 5.1: the Cockpit has the Multiplayer control")
 	_check(b != null and b.anchor_top == 1.0 and b.offset_left < 100.0, "Fig 5.1: it sits at the lower left")
+	var ver: Label = m.get_node_or_null("BuildVersion")
+	_check(ver != null and ver.text == BuildInfo.version() and ver.anchor_left == 1.0, "addition: the build version bottom right of the Cockpit (%s)" % BuildInfo.version())
 	await _close(m)
 
 

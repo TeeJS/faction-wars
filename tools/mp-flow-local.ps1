@@ -7,6 +7,7 @@ param(
     [int]$Days = 30,
     [switch]$Load,
     [string]$SpeedRule = '',   # 'average' runs the pair under TeeJ's average rule
+    [int]$RejoinCode = 0,      # the guest drops on this day and comes back by code through the screens
     [int]$RelayPort = 8790,
     [string]$Godot = 'D:\Downloads\Godot_v4.7.1-stable_mono_win64\Godot_v4.7.1-stable_mono_win64_console.exe'
 )
@@ -40,6 +41,26 @@ function Run-Pair([string]$tag, [string[]]$extra) {
     return ("{0} of {1} day hashes identical{2}" -f $same, $n, $(if ($first -ge 0) { " - first difference on day $first" } else { "" }))
 }
 
+if ($RejoinCode -gt 0) {
+    # The host plays through; the guest drops on day D and comes back by code.
+    $hostArgs = @('--headless', '--path', $repo, '-s', 'tests/mp_flow.gd', '--', "--role=host", "--relay=ws://127.0.0.1:$RelayPort/ws", "--box=$box", "--days=$Days", "--replay-log=$box\host.hashes.log")
+    $h = Start-Process -FilePath $Godot -ArgumentList $hostArgs -RedirectStandardOutput "$box\host.stdout.txt" -RedirectStandardError "$box\host.stderr.txt" -PassThru -NoNewWindow
+    $g1Args = @('--headless', '--path', $repo, '-s', 'tests/mp_flow.gd', '--', "--role=guest", "--relay=ws://127.0.0.1:$RelayPort/ws", "--box=$box", "--days=$Days", "--replay-log=$box\guest.first.hashes.log", "--quit-at=$RejoinCode")
+    $g = Start-Process -FilePath $Godot -ArgumentList $g1Args -RedirectStandardOutput "$box\guest.first.stdout.txt" -RedirectStandardError "$box\guest.first.stderr.txt" -PassThru -NoNewWindow
+    $g.WaitForExit(600000) | Out-Null
+    $g2Args = @('--headless', '--path', $repo, '-s', 'tests/mp_flow.gd', '--', "--role=guest", "--relay=ws://127.0.0.1:$RelayPort/ws", "--box=$box", "--days=$Days", "--replay-log=$box\guest.hashes.log", "--rejoin-code")
+    $g2 = Start-Process -FilePath $Godot -ArgumentList $g2Args -RedirectStandardOutput "$box\guest.stdout.txt" -RedirectStandardError "$box\guest.stderr.txt" -PassThru -NoNewWindow
+    foreach ($p in @($h, $g2)) { if (-not $p.WaitForExit(900000)) { $p.Kill(); Write-Host "TIMEOUT" } }
+    foreach ($f in @('host', 'guest.first', 'guest')) { Select-String -Path "$box\$f.stdout.txt" -Pattern '\[mp_flow\]|\[GameManager\] head|\[Lockstep\] rebuilt' | ForEach-Object { Write-Host "  $($_.Line)" } }
+    $a = @{}; Get-Content "$box\host.hashes.log" | Select-Object -Skip 1 | ForEach-Object { $d, $hh = $_ -split ',', 2; $a[[int]$d] = $hh }
+    $b = @{}; Get-Content "$box\guest.hashes.log" | Select-Object -Skip 1 | ForEach-Object { $d, $hh = $_ -split ',', 2; $b[[int]$d] = $hh }
+    $shared = $a.Keys | Where-Object { $b.ContainsKey($_) } | Sort-Object
+    $n = $shared.Count; $same = 0
+    foreach ($d in $shared) { if ($a[$d] -eq $b[$d]) { $same++ } }
+    Write-Host ("M5 (rejoin by code through the screens, guest dropped day $RejoinCode) GATE: {0} of {1} day hashes identical  (box: {2})" -f $same, $n, $box)
+    try { $relay.Kill() } catch {}
+    exit
+}
 $g1 = Run-Pair "" $(if ($SpeedRule -ne '') { @("--speed-rule=$SpeedRule") } else { @() })
 Write-Host ("M4 (screens -> lockstep) GATE: {0}  (box: {1})" -f $g1, $box)
 if ($Load) {

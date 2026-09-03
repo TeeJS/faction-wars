@@ -31,6 +31,9 @@ var _load_for: String = ""      # the opponent the shared-saves check was made f
 var _loading: bool = false
 var _load_client: RelayClient = null
 var _left: bool = false
+## Joined a game that had already started (a rejoin by code, TeeJ room #110):
+## the relay's whole log is pulled and the game rebuilt, as Load does.
+var _rejoining: bool = false
 
 
 func _ready() -> void:
@@ -161,11 +164,28 @@ func _ready() -> void:
 	_refresh_start()
 	entry.grab_focus()
 
+	if _lobby.started and _lobby.lines_on_relay > 0:
+		_rejoining = true
+		_say(MpSetup.player_name, "This game is under way - rejoining as %s..." % _lobby.side)
+		_lobby.fetch_log(0)
+
 
 func _process(_delta: float) -> void:
 	if _lobby == null:
 		return
 	_lobby.poll()
+	if _rejoining:
+		if not _lobby.last_error.is_empty():
+			show_error(_lobby.last_error.capitalize() + ".")
+			_lobby.last_error = ""
+			_rejoining = false
+		elif _lobby.caught_up:
+			MpSetup.load_lines = _lobby.replayed_lines + _lobby.take_held()
+			MpSetup.hosting = _lobby.side == "host"
+			MpSetup.apply_settings(_lobby.settings, _lobby.side)
+			_rejoining = false
+			go(MainScene)
+		return
 	# Chat lines from the other side.
 	while _chat_seen < _lobby.lobby_chat.size():
 		var pair: Array = _lobby.lobby_chat[_chat_seen]

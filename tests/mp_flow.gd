@@ -16,6 +16,8 @@ var _box: String
 var _days: int
 var _load: bool
 var _speed_rule: String = ""
+var _quit_at: int = 0
+var _rejoin_code: bool = false
 var _log: FileAccess
 
 
@@ -26,6 +28,8 @@ func _init() -> void:
 	_days = int(_arg("--days=", "30"))
 	_load = OS.get_cmdline_user_args().has("--load")
 	_speed_rule = _arg("--speed-rule=", "")
+	_quit_at = int(_arg("--quit-at=", "0"))
+	_rejoin_code = OS.get_cmdline_user_args().has("--rejoin-code")
 	var log_path := _arg("--replay-log=", "")
 	_log = FileAccess.open(log_path, FileAccess.WRITE) if not log_path.is_empty() else null
 	FactionRegistry.EnsureLoaded()
@@ -34,6 +38,8 @@ func _init() -> void:
 	MpSetup.game_name = "The End of the Empire"
 	if _role == "host":
 		await _host()
+	elif _rejoin_code:
+		await _guest_rejoin_by_code()
 	else:
 		await _guest()
 	await _play()
@@ -131,6 +137,23 @@ func _guest() -> void:
 	if not await _until(func() -> bool: return current_scene is GameManager, "the host to start", 180.0): return
 
 
+## The dropped guest comes back the way a player would: types the code into
+## Locate Session, picks the game on Join Game, and Multiplayer Options
+## rebuilds the game from the relay's log.
+func _guest_rejoin_by_code() -> void:
+	var code := FileAccess.get_file_as_string("%s/room.code" % _box).strip_edges()
+	MpSetup.join_code = code
+	MpSetup.hosting = false
+	change_scene_to_file(JoinGameScene)
+	if not await _until(_scene_named("JoinGame"), "the Join Game screen"): return
+	(current_scene.get_node("%PlayerName") as LineEdit).text = MpSetup.player_name
+	if not await _until(_proceed_enabled, "the started game to be found by code", 30.0): return
+	_bar().proceed.emit()
+	if not await _until(_scene_named("MultiplayerOptions"), "the Multiplayer Options screen"): return
+	print("[mp_flow] guest rejoining room %s by code" % MpSetup.lobby.code)
+	if not await _until(func() -> bool: return current_scene is GameManager, "the rebuilt game", 120.0): return
+
+
 # --- both: play N days at Fast, log the hashes ---
 
 func _play() -> void:
@@ -148,9 +171,13 @@ func _play() -> void:
 	var saw_waiting := false
 	var saw_opponent_speed := false
 	var saw_average := false
+	var saw_paused_text := false
 	var slowed := false
 	var restored := false
-	while StrategicTickManager.Today < start + _days:
+	# A rejoiner stops where the host stops (day 1 + days); a loaded pair starts
+	# together and plays --days more.
+	var target: int = (1 + _days) if _rejoin_code else (start + _days)
+	while StrategicTickManager.Today < target:
 		var d := StrategicTickManager.Today - start
 		# The host chats on day 3, opens the Game Options screen on day 6 for
 		# 4 s (the guest must see Waiting for Opponent), and the guest sets
@@ -175,10 +202,19 @@ func _play() -> void:
 			gm.SetSpeed(4)
 		if gm._waitBox != null and gm._waitBox.visible:
 			saw_waiting = true
+			if gm._waitBox.dialog_text.begins_with("Opponent paused."):
+				saw_paused_text = true
 		if gm._speedReadout.text.contains("set by opponent"):
 			saw_opponent_speed = true
 		if gm._speedReadout.text == "Medium (averaged with opponent)":
 			saw_average = true
+		if _quit_at > 0 and StrategicTickManager.Today == _quit_at:
+			print("[mp_flow] %s drops on day %d (simulated close)" % [_role, _quit_at])
+			if _log != null:
+				_log.close()
+			MpSetup.lobby.transport.close()
+			quit(0)
+			return
 		if Time.get_ticks_msec() > deadline:
 			await _fail("the game stalled on day %d" % StrategicTickManager.Today)
 			return
@@ -199,7 +235,7 @@ func _play() -> void:
 			chat = true
 	print("[mp_flow] %s done: day %d, session %s" % [_role, StrategicTickManager.Today, LockstepSession.State.keys()[MpSetup.session.state]])
 	if _role == "guest":
-		print("[mp_flow] guest checks: waiting box seen=%s, chat from the Alliance received=%s" % [str(saw_waiting), str(chat)])
+		print("[mp_flow] guest checks: waiting box seen=%s (paused text=%s), chat from the Alliance received=%s" % [str(saw_waiting), str(saw_paused_text), str(chat)])
 	else:
 		if _speed_rule == "average":
 			print("[mp_flow] host checks: rule=%s, 'Medium (averaged with opponent)' shown=%s" % [GameSettings.SpeedRule, str(saw_average)])

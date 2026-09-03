@@ -53,6 +53,15 @@ func _ready() -> void:
 		btnEmpire.pressed.connect(func() -> void: StartGame(second))
 
 	btnExit.pressed.connect(func() -> void: get_tree().quit())
+	# The build version, bottom right of the Cockpit (TeeJ, room #106).
+	var ver := BuildInfo.label()
+	add_child(ver)
+	ver.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+	ver.offset_left = -240.0
+	ver.offset_top = -30.0
+	ver.offset_right = -10.0
+	ver.offset_bottom = -10.0
+	ver.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	# A browser tab has no desktop to exit to (TeeJ, room #97).
 	btnExit.visible = not OS.has_feature("web")
 

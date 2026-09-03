@@ -83,7 +83,7 @@ func _process(delta: float) -> void:
 		if not info.is_empty() and not bool(info.get("found", false)):
 			_last_relay = "no game has the code %s" % MpSetup.join_code
 		elif bool(info.get("full", false)):
-			_last_relay = "game %s is full" % MpSetup.join_code
+			_last_relay = "game %s is full - a player rejoining must use the same player name" % MpSetup.join_code
 	if _codes_of(offered) != _codes_of(_rooms):
 		_rooms = offered.duplicate()
 		_fill()

@@ -56,8 +56,14 @@ func _ready() -> void:
 	var menuButton: Button = get_node_or_null("../MenuButton")
 	if menuButton == null:
 		menuButton = get_node_or_null("%MenuButton")
+	if menuButton == null:
+		menuButton = get_node_or_null("HBoxContainer/MenuButton")
 	if menuButton != null:
 		menuButton.pressed.connect(OnMenuButtonClicked)
+		# The build version, right of the Menu button (TeeJ, room #106).
+		var ver := BuildInfo.label()
+		menuButton.get_parent().add_child(ver)
+		menuButton.get_parent().move_child(ver, menuButton.get_index() + 1)
 	# Loop through the CommsList to wire the HUD buttons dynamically.
 	var commsList: VBoxContainer = get_node_or_null("CommsPanel/Margin/CommsList")
 	if commsList != null:
