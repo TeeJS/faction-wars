@@ -150,7 +150,7 @@ static func Resolve(fleet: Fleet, target: Planet, rng: Prng, day: int) -> Assaul
 
 		var previous: Faction = target.ControllingFaction
 		target.ControllingFaction = attacker
-		target.IsExplored = true
+		target.SetExplored(attacker, true)
 		MilitaryCatalog.OnControlChanged(target, previous)
 		print("[Assault] %s taken by %s after %d rounds (%d regiments hold it)." % [target.Name, attacker.DisplayName, report.Steps, report.AttackersRemaining])
 

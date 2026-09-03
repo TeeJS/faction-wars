@@ -105,7 +105,7 @@ static func Capture(viewer: Faction, planet: Planet, day: int, categories: Array
 			snap.Groups.append(g)
 		_known[_key(viewer, planet, section)] = snap
 	# Anything at all charts the system.
-	planet.IsExplored = true
+	planet.SetExplored(viewer, true)
 
 
 ## A system you hold reports itself, always and accurately. Everything else is

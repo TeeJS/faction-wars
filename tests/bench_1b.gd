@@ -109,7 +109,7 @@ func _launch_missions() -> void:
 			var from: Planet = c.Attached
 			if used_worlds.has(from.Name):
 				continue
-			var candidates := Lq.where(GameState.AllPlanets(), func(p): return p.IsExplored and p.ControllingFaction != f and p != from)
+			var candidates := Lq.where(GameState.AllPlanets(), func(p): return p.ExploredBy(f) and p.ControllingFaction != f and p != from)
 			if candidates.is_empty():
 				continue
 			var target: Planet = Lq.order_by(candidates, func(p): return [from.DeploymentDaysTo(p), p.Name])[0]

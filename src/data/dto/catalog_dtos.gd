@@ -118,7 +118,14 @@ class SideRuleData:
 	var EntryId: int
 	var Name: String
 	var GroupId: int
+	## Easy / Medium / Hard per player side (manual p067: the three campaigns).
 	var By_Faction: Dictionary = {}
+	## The two pairs the binary carries beyond the three difficulties. The manual
+	## has no fourth difficulty; open-rebellion's dumper labels slots 3-4 dev and
+	## slots 17-18 multiplayer, the same reading the rules parser chose for
+	## GNPRTB. Unsettled at the source (docs/m0-audit.md question 2).
+	var Dev: Dictionary = {}
+	var Mp: Dictionary = {}
 
 	static func from_dict(d: Dictionary) -> SideRuleData:
 		var o := SideRuleData.new()
@@ -134,6 +141,8 @@ class SideRuleData:
 					for diff in inner.keys():
 						by_diff[str(diff)] = JsonUtil.str_int_dict(inner, str(diff))
 				o.By_Faction[str(faction_id)] = by_diff
+		o.Dev = JsonUtil.str_int_dict(d, "dev")
+		o.Mp = JsonUtil.str_int_dict(d, "mp")
 		return o
 
 

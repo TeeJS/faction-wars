@@ -1,7 +1,7 @@
 # M0 audit — what in the simulation depends on "the player"
 
-**Status:** findings and proposed changes, 2026-09-03. Nothing edited yet; posted
-for review (C3PO, Doof) and for TeeJ's answers to the two questions at the end.
+**Status:** DONE 2026-09-03 - all four steps landed, gate passed (bottom of this file).
+Kept as the record of what was found and why each change was made.
 Gate for M0: a 200-day soak with the local faction set to Alliance, then Empire,
 then neither, prints identical day hashes all three ways, and the single-player
 503/503 parity still holds.
@@ -92,20 +92,43 @@ GameSettings.PlayerFaction                     # kept as an alias of LocalFactio
   speed or a gravity well. So with two humans: each answers for its own fleet;
   a Retreat by either side withdraws that side (subject to the existing gravity
   well refusal) and the battle ends; otherwise it is simulated. Not invented.
-- **Question 2 stays open.** TheArchitect2018's `seed.js` reads the table through
-  `game_resources.side_param(session, id, 0|1)`; the 0/1 is the SIDE column, and
-  the helper that turns `session` into a row is not published. Inconclusive.
+- **Question 2, run through `research-game-rules` (2026-09-03).** Sources, in
+  the skill's order: (1) GData: SDPRTB is 16 slots = two player-side blocks x
+  four columns x two sides; three columns are Easy/Medium/Hard; the fourth is
+  labelled "mp" per player side by `parse_side_lottery.py`, `dev` (slots 3-4)
+  and `multiplayer` (slots 17-18) by open-rebellion's dumper, "Alliance-mp /
+  Empire-mp (???)" by the Deep-Dive editor; `parse_rules.py` records that its
+  own dev/mp reading of the same shape in GNPRTB "is a choice, not a finding".
+  (2) TEXTSTRA/ENCYTEXT: no difficulty labels at all (the Shuttle Cockpit uses
+  artwork). (3) Manual p067: "choose between Easy, Medium, or Hard campaigns"
+  - THREE, so the fourth column is not a difficulty and the head-to-head
+  screen offers none. (4) Community decompilation: the SDPRTB reader
+  `FUN_00583f50` only allocates; its consumer is not published; `seed.js`
+  reads through an unpublished helper. (5) Measurement: needs two machines on
+  the original. **Verdict: the fourth column's meaning is Unknown at the
+  source.** For lockstep the port needs ONE pair on both clients, and the
+  least-invented choice is the reading two published sources share
+  (open-rebellion's dumper and this repo's own GNPRTB convention): slots 17-18
+  are the single multiplayer pair; no player-side row. Recorded as entry 6 of
+  `docs/BACKPORT-LOG.md`. Entry 30's pair is 10/10 - symmetric, which is what a
+  head-to-head start should be. `GameSettings.HostFaction` exists for the lobby
+  but the tables no longer depend on it.
 
 ## Open questions for TeeJ
 
 1. ~~Two humans in one battle~~ - answered by manual p152 (above): a Retreat by
    either side withdraws that side and ends the battle.
-2. **The day-zero table rows are keyed by the human's side.** `side_lottery.json`
-   entries 30/31 ("Core Sector Owned Systems") have an "mp" column, but it still
-   sits under a "human faction" row, and the two rows differ (human Alliance:
-   20/25; human Empire: 10/10 for entry 30). In head-to-head there are two humans.
-   The manual says nothing. The original's behaviour would settle it (the seed
-   routine in TheArchitect2018's `seed.js` reads a `session` side; I will check
-   which). If that is inconclusive, the least-invented choice is the HOST's side
-   (the host configures the game on the Multiplayer Options screen). seed.js
-   turned out not to say (above). **Proposed: the host's side.** Your call.
+2. ~~The day-zero table rows~~ - resolved by research (above): head-to-head reads the
+   single multiplayer pair (slots 17-18); nothing depends on whose row.
+
+## M0 gate - PASSED 2026-09-03
+
+```
+tests/soak.gd -- --days=200 --seed=12345 --humans=both --difficulty=Multiplayer --faction=alliance --replay-log=a.log
+tests/soak.gd -- --days=200 --seed=12345 --humans=both --difficulty=Multiplayer --faction=empire   --replay-log=b.log
+```
+
+Both logs identical, 201 of 201 day hashes, 24 battles each. Single player
+still differs by side, as it must (the AI side differs). The seed-12345
+single-player baseline was regenerated from the port (BACKPORT-LOG 5-7) and the
+self-regression check passes 101 of 101.

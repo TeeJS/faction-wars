@@ -107,7 +107,10 @@ static func _planet(pd: Dictionary, deferred: Array) -> Planet:
 	p.BaseEnergy = int(pd.get("BaseEnergy", 0))
 	p.BaseRawMaterials = int(pd.get("BaseRawMaterials", 0))
 	p.ControllingFaction = _faction(pd.get("ControllingFaction"))
-	p.IsExplored = bool(pd.get("IsExplored", false))
+	# The C# snapshot carries ONE chart - the human's. The other side's chart is
+	# not in the file, so a snapshot start is a hydration check, not a parity path.
+	for h in GameSettings.HumanFactions:
+		p.SetExplored(h, bool(pd.get("IsExplored", false)))
 	p.IsInUprising = bool(pd.get("IsInUprising", false))
 	p.IsNearUprising = bool(pd.get("IsNearUprising", false))
 

@@ -16,12 +16,39 @@ class Casualties:
 
 class BattleReport:
 	var Where: Planet
+	## CANONICAL SIDES. Ours is the fleet of the faction that comes first in the
+	## pack's order, Theirs the other - never "the local human's", because the
+	## tactical simulation is order-sensitive and both clients of a head-to-head
+	## game must run it the same way round (docs/m0-audit.md section 3). The
+	## names are the C#'s; the windows use Mine/Enemy/Lost with a viewer.
 	var Ours: Fleet
 	var Theirs: Fleet
 	var OurStrength: int
 	var TheirStrength: int
-	var WeLost: bool
+	var WeLost: bool       # Ours lost
+	var TheirsLost: bool   # Theirs lost
 	var DrawBothLost: bool
+
+	func Mine(viewer: Faction) -> Fleet:
+		return Theirs if (Theirs != null and Theirs.Faction == viewer) else Ours
+
+	func Enemy(viewer: Faction) -> Fleet:
+		return Ours if (Theirs != null and Theirs.Faction == viewer) else Theirs
+
+	func Lost(viewer: Faction) -> bool:
+		return TheirsLost if (Theirs != null and Theirs.Faction == viewer) else WeLost
+
+	func MyStrength(viewer: Faction) -> int:
+		return TheirStrength if (Theirs != null and Theirs.Faction == viewer) else OurStrength
+
+	func EnemyStrength(viewer: Faction) -> int:
+		return OurStrength if (Theirs != null and Theirs.Faction == viewer) else TheirStrength
+
+	func MyLosses(viewer: Faction) -> Casualties:
+		return TheirLosses if (Theirs != null and Theirs.Faction == viewer) else OurLosses
+
+	func EnemyLosses(viewer: Faction) -> Casualties:
+		return OurLosses if (Theirs != null and Theirs.Faction == viewer) else TheirLosses
 	var LoserWithdrew: bool
 	var HeldByGravityWell: bool
 	var Destroyed: Array = []
@@ -123,19 +150,17 @@ static func ProcessDay(galaxy: Array, day: int, _rng: Prng) -> void:
 
 
 static func Engage(where: Planet, a: Fleet, b: Fleet, day: int) -> void:
-	var ours: Fleet = null
-	if a.Faction == GameSettings.PlayerFaction:
-		ours = a
-	elif b.Faction == GameSettings.PlayerFaction:
-		ours = b
+	# Pack order decides side 0, on every client alike.
+	var first_a: bool = FactionRegistry.OrderOf(a.Faction) <= FactionRegistry.OrderOf(b.Faction)
 	var report := BattleReport.new()
 	report.Where = where
-	report.Ours = ours if ours != null else a
-	report.Theirs = b if ours == null else (b if ours == a else a)
+	report.Ours = a if first_a else b
+	report.Theirs = b if first_a else a
 	report.OurStrength = StrengthOf(report.Ours)
 	report.TheirStrength = StrengthOf(report.Theirs)
 
-	if ours == null:
+	# No human in it: resolved on the spot. A human side waits for its answer.
+	if not GameSettings.IsHuman(a.Faction) and not GameSettings.IsHuman(b.Faction):
 		Simulate(report, day)
 		return
 
@@ -152,18 +177,23 @@ static func SimulateResults(r: BattleReport, day: int) -> void:
 	EventBus.BroadcastChanged()
 
 
-static func Retreat(r: BattleReport, day: int) -> Result:
-	var can := CanWithdraw(r.Ours, r.Theirs, r.Where)
+## "Battle continues ... or until one side withdraws" (manual p152): the side
+## that answers Retreat is the one that withdraws, subject to CanWithdraw.
+static func Retreat(r: BattleReport, day: int, side: Faction = null) -> Result:
+	var viewer: Faction = side if side != null else GameSettings.LocalFaction()
+	var mine: Fleet = r.Mine(viewer)
+	var enemy: Fleet = r.Enemy(viewer)
+	var can := CanWithdraw(mine, enemy, r.Where)
 	if not can.ok:
 		return can
 	_awaiting_orders.erase(r)
-	Withdraw(r.Ours, r.Where)
-	print("[Battle] %s withdrew from %s." % [r.Ours.Name, r.Where.Name])
-	var msg := GameMessage.new("%s has withdrawn" % r.Ours.Name,
-		"%s broke off at %s and fell back to the nearest system we hold." % [r.Ours.Name, r.Where.Name],
+	Withdraw(mine, r.Where)
+	print("[Battle] %s withdrew from %s." % [mine.Name, r.Where.Name])
+	var msg := GameMessage.new("%s has withdrawn" % mine.Name,
+		"%s broke off at %s and fell back to the nearest system we hold." % [mine.Name, r.Where.Name],
 		Enums.MessageCategory.Missions, day, r.Where)
 	msg.Type = Enums.MessageType.TacticalAfterActionReport
-	EventBus.BroadcastMessage(msg)
+	EventBus.Tell(mine.Faction, msg)
 	EventBus.BroadcastChanged()
 	return Result.success()
 
@@ -172,6 +202,7 @@ static func Conclude(r: BattleReport, sim: TacticalBattle, day: int) -> void:
 	_awaiting_orders.erase(r)
 	if sim != null and sim.LoserIndex >= 0:
 		r.WeLost = sim.LoserIndex == 0
+		r.TheirsLost = sim.LoserIndex == 1
 		r.DrawBothLost = false
 	Simulate(r, day)
 	EventBus.BroadcastChanged()
@@ -191,6 +222,7 @@ static func Simulate(r: BattleReport, day: int) -> void:
 	var ours_loses := sim.LoserIndex == 0 or sim.LoserIndex == -1
 	var theirs_loses := sim.LoserIndex == 1 or sim.LoserIndex == -1
 	r.WeLost = ours_loses
+	r.TheirsLost = theirs_loses
 	r.DrawBothLost = sim.LoserIndex == -1
 
 	Tally(sim.Sides[0], r.OurLosses, r.Ours)

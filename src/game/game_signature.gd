@@ -19,7 +19,8 @@ static func ForPlanet(p: Planet) -> String:
 	sb.append(":")
 	sb.append(p.ControllingFaction.Id if p.ControllingFaction != null else "-")
 	sb.append(":")
-	sb.append("1" if p.IsExplored else "0")
+	for f in FactionRegistry.Playable:   # one chart bit per side, in pack order
+		sb.append("1" if p.ExploredBy(f) else "0")
 	sb.append("1" if p.IsInUprising else "0")
 	sb.append(":")
 

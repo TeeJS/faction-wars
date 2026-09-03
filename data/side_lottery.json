@@ -5,10 +5,6 @@
         "GroupId": 2560,
         "by_faction": {
             "alliance": {
-                "mp": {
-                    "alliance": 50,
-                    "empire": 50
-                },
                 "easy": {
                     "alliance": 50,
                     "empire": 50
@@ -34,12 +30,16 @@
                 "hard": {
                     "alliance": 50,
                     "empire": 50
-                },
-                "mp": {
-                    "alliance": 50,
-                    "empire": 50
                 }
             }
+        },
+        "dev": {
+            "alliance": 50,
+            "empire": 50
+        },
+        "mp": {
+            "alliance": 50,
+            "empire": 50
         }
     },
     {
@@ -48,10 +48,6 @@
         "GroupId": 2561,
         "by_faction": {
             "alliance": {
-                "mp": {
-                    "alliance": 5,
-                    "empire": 5
-                },
                 "easy": {
                     "alliance": 5,
                     "empire": 5
@@ -77,12 +73,16 @@
                 "hard": {
                     "alliance": 5,
                     "empire": 5
-                },
-                "mp": {
-                    "alliance": 5,
-                    "empire": 5
                 }
             }
+        },
+        "dev": {
+            "alliance": 5,
+            "empire": 5
+        },
+        "mp": {
+            "alliance": 5,
+            "empire": 5
         }
     },
     {
@@ -91,10 +91,6 @@
         "GroupId": 2562,
         "by_faction": {
             "alliance": {
-                "mp": {
-                    "alliance": 0,
-                    "empire": 0
-                },
                 "easy": {
                     "alliance": 0,
                     "empire": 0
@@ -120,12 +116,16 @@
                 "hard": {
                     "alliance": 0,
                     "empire": 0
-                },
-                "mp": {
-                    "alliance": 0,
-                    "empire": 0
                 }
             }
+        },
+        "dev": {
+            "alliance": 0,
+            "empire": 0
+        },
+        "mp": {
+            "alliance": 0,
+            "empire": 0
         }
     },
     {
@@ -134,10 +134,6 @@
         "GroupId": 5120,
         "by_faction": {
             "alliance": {
-                "mp": {
-                    "alliance": 1,
-                    "empire": 1
-                },
                 "easy": {
                     "alliance": 1,
                     "empire": 1
@@ -163,12 +159,16 @@
                 "hard": {
                     "alliance": 1,
                     "empire": 1
-                },
-                "mp": {
-                    "alliance": 1,
-                    "empire": 1
                 }
             }
+        },
+        "dev": {
+            "alliance": 1,
+            "empire": 1
+        },
+        "mp": {
+            "alliance": 1,
+            "empire": 1
         }
     },
     {
@@ -177,10 +177,6 @@
         "GroupId": 5121,
         "by_faction": {
             "alliance": {
-                "mp": {
-                    "alliance": 2,
-                    "empire": 2
-                },
                 "easy": {
                     "alliance": 2,
                     "empire": 2
@@ -206,12 +202,16 @@
                 "hard": {
                     "alliance": 2,
                     "empire": 2
-                },
-                "mp": {
-                    "alliance": 2,
-                    "empire": 2
                 }
             }
+        },
+        "dev": {
+            "alliance": 2,
+            "empire": 2
+        },
+        "mp": {
+            "alliance": 2,
+            "empire": 2
         }
     },
     {
@@ -220,10 +220,6 @@
         "GroupId": 5122,
         "by_faction": {
             "alliance": {
-                "mp": {
-                    "alliance": 4,
-                    "empire": 4
-                },
                 "easy": {
                     "alliance": 4,
                     "empire": 4
@@ -249,12 +245,16 @@
                 "hard": {
                     "alliance": 4,
                     "empire": 4
-                },
-                "mp": {
-                    "alliance": 4,
-                    "empire": 4
                 }
             }
+        },
+        "dev": {
+            "alliance": 4,
+            "empire": 4
+        },
+        "mp": {
+            "alliance": 4,
+            "empire": 4
         }
     },
     {
@@ -263,10 +263,6 @@
         "GroupId": 5128,
         "by_faction": {
             "alliance": {
-                "mp": {
-                    "alliance": -2,
-                    "empire": -1
-                },
                 "easy": {
                     "alliance": -2,
                     "empire": -1
@@ -292,12 +288,16 @@
                 "hard": {
                     "alliance": -2,
                     "empire": -1
-                },
-                "mp": {
-                    "alliance": -2,
-                    "empire": -1
                 }
             }
+        },
+        "dev": {
+            "alliance": -2,
+            "empire": -1
+        },
+        "mp": {
+            "alliance": -2,
+            "empire": -1
         }
     },
     {
@@ -306,10 +306,6 @@
         "GroupId": 5129,
         "by_faction": {
             "alliance": {
-                "mp": {
-                    "alliance": 101,
-                    "empire": 101
-                },
                 "easy": {
                     "alliance": 101,
                     "empire": 101
@@ -335,12 +331,16 @@
                 "hard": {
                     "alliance": 101,
                     "empire": 101
-                },
-                "mp": {
-                    "alliance": 101,
-                    "empire": 101
                 }
             }
+        },
+        "dev": {
+            "alliance": 101,
+            "empire": 101
+        },
+        "mp": {
+            "alliance": 101,
+            "empire": 101
         }
     },
     {
@@ -349,10 +349,6 @@
         "GroupId": 5130,
         "by_faction": {
             "alliance": {
-                "mp": {
-                    "alliance": -4,
-                    "empire": -3
-                },
                 "easy": {
                     "alliance": -4,
                     "empire": -3
@@ -378,12 +374,16 @@
                 "hard": {
                     "alliance": -4,
                     "empire": -3
-                },
-                "mp": {
-                    "alliance": -4,
-                    "empire": -3
                 }
             }
+        },
+        "dev": {
+            "alliance": -4,
+            "empire": -3
+        },
+        "mp": {
+            "alliance": -4,
+            "empire": -3
         }
     },
     {
@@ -392,10 +392,6 @@
         "GroupId": 5131,
         "by_faction": {
             "alliance": {
-                "mp": {
-                    "alliance": 101,
-                    "empire": 101
-                },
                 "easy": {
                     "alliance": 101,
                     "empire": 101
@@ -421,12 +417,16 @@
                 "hard": {
                     "alliance": 101,
                     "empire": 101
-                },
-                "mp": {
-                    "alliance": 101,
-                    "empire": 101
                 }
             }
+        },
+        "dev": {
+            "alliance": 101,
+            "empire": 101
+        },
+        "mp": {
+            "alliance": 101,
+            "empire": 101
         }
     },
     {
@@ -435,10 +435,6 @@
         "GroupId": 5136,
         "by_faction": {
             "alliance": {
-                "mp": {
-                    "alliance": 101,
-                    "empire": 101
-                },
                 "easy": {
                     "alliance": 101,
                     "empire": 101
@@ -464,12 +460,16 @@
                 "hard": {
                     "alliance": 101,
                     "empire": 101
-                },
-                "mp": {
-                    "alliance": 101,
-                    "empire": 101
                 }
             }
+        },
+        "dev": {
+            "alliance": 101,
+            "empire": 101
+        },
+        "mp": {
+            "alliance": 101,
+            "empire": 101
         }
     },
     {
@@ -478,10 +478,6 @@
         "GroupId": 5137,
         "by_faction": {
             "alliance": {
-                "mp": {
-                    "alliance": 20,
-                    "empire": 20
-                },
                 "easy": {
                     "alliance": 20,
                     "empire": 20
@@ -507,12 +503,16 @@
                 "hard": {
                     "alliance": 20,
                     "empire": 20
-                },
-                "mp": {
-                    "alliance": 20,
-                    "empire": 20
                 }
             }
+        },
+        "dev": {
+            "alliance": 20,
+            "empire": 20
+        },
+        "mp": {
+            "alliance": 20,
+            "empire": 20
         }
     },
     {
@@ -521,10 +521,6 @@
         "GroupId": 5138,
         "by_faction": {
             "alliance": {
-                "mp": {
-                    "alliance": 100,
-                    "empire": 100
-                },
                 "easy": {
                     "alliance": 100,
                     "empire": 100
@@ -550,12 +546,16 @@
                 "hard": {
                     "alliance": 100,
                     "empire": 100
-                },
-                "mp": {
-                    "alliance": 100,
-                    "empire": 100
                 }
             }
+        },
+        "dev": {
+            "alliance": 100,
+            "empire": 100
+        },
+        "mp": {
+            "alliance": 100,
+            "empire": 100
         }
     },
     {
@@ -564,10 +564,6 @@
         "GroupId": 5139,
         "by_faction": {
             "alliance": {
-                "mp": {
-                    "alliance": 400,
-                    "empire": 400
-                },
                 "easy": {
                     "alliance": 400,
                     "empire": 200
@@ -593,12 +589,16 @@
                 "hard": {
                     "alliance": 100,
                     "empire": 400
-                },
-                "mp": {
-                    "alliance": 400,
-                    "empire": 400
                 }
             }
+        },
+        "dev": {
+            "alliance": 400,
+            "empire": 400
+        },
+        "mp": {
+            "alliance": 400,
+            "empire": 400
         }
     },
     {
@@ -607,10 +607,6 @@
         "GroupId": 5140,
         "by_faction": {
             "alliance": {
-                "mp": {
-                    "alliance": 0,
-                    "empire": 0
-                },
                 "easy": {
                     "alliance": 0,
                     "empire": 0
@@ -636,12 +632,16 @@
                 "hard": {
                     "alliance": 0,
                     "empire": 0
-                },
-                "mp": {
-                    "alliance": 0,
-                    "empire": 0
                 }
             }
+        },
+        "dev": {
+            "alliance": 0,
+            "empire": 0
+        },
+        "mp": {
+            "alliance": 0,
+            "empire": 0
         }
     },
     {
@@ -650,10 +650,6 @@
         "GroupId": 5141,
         "by_faction": {
             "alliance": {
-                "mp": {
-                    "alliance": 100,
-                    "empire": 100
-                },
                 "easy": {
                     "alliance": 100,
                     "empire": 100
@@ -679,12 +675,16 @@
                 "hard": {
                     "alliance": 100,
                     "empire": 100
-                },
-                "mp": {
-                    "alliance": 100,
-                    "empire": 100
                 }
             }
+        },
+        "dev": {
+            "alliance": 100,
+            "empire": 100
+        },
+        "mp": {
+            "alliance": 100,
+            "empire": 100
         }
     },
     {
@@ -693,10 +693,6 @@
         "GroupId": 5152,
         "by_faction": {
             "alliance": {
-                "mp": {
-                    "alliance": 1,
-                    "empire": 1
-                },
                 "easy": {
                     "alliance": 1,
                     "empire": 1
@@ -722,12 +718,16 @@
                 "hard": {
                     "alliance": 1,
                     "empire": 1
-                },
-                "mp": {
-                    "alliance": 1,
-                    "empire": 1
                 }
             }
+        },
+        "dev": {
+            "alliance": 1,
+            "empire": 1
+        },
+        "mp": {
+            "alliance": 1,
+            "empire": 1
         }
     },
     {
@@ -736,10 +736,6 @@
         "GroupId": 5153,
         "by_faction": {
             "alliance": {
-                "mp": {
-                    "alliance": 100,
-                    "empire": 100
-                },
                 "easy": {
                     "alliance": 100,
                     "empire": 100
@@ -765,12 +761,16 @@
                 "hard": {
                     "alliance": 100,
                     "empire": 100
-                },
-                "mp": {
-                    "alliance": 100,
-                    "empire": 100
                 }
             }
+        },
+        "dev": {
+            "alliance": 100,
+            "empire": 100
+        },
+        "mp": {
+            "alliance": 100,
+            "empire": 100
         }
     },
     {
@@ -779,10 +779,6 @@
         "GroupId": 5154,
         "by_faction": {
             "alliance": {
-                "mp": {
-                    "alliance": 10,
-                    "empire": 5
-                },
                 "easy": {
                     "alliance": 10,
                     "empire": 5
@@ -808,12 +804,16 @@
                 "hard": {
                     "alliance": 10,
                     "empire": 5
-                },
-                "mp": {
-                    "alliance": 10,
-                    "empire": 5
                 }
             }
+        },
+        "dev": {
+            "alliance": 10,
+            "empire": 5
+        },
+        "mp": {
+            "alliance": 10,
+            "empire": 5
         }
     },
     {
@@ -822,10 +822,6 @@
         "GroupId": 5155,
         "by_faction": {
             "alliance": {
-                "mp": {
-                    "alliance": 100,
-                    "empire": 90
-                },
                 "easy": {
                     "alliance": 100,
                     "empire": 90
@@ -851,12 +847,16 @@
                 "hard": {
                     "alliance": 100,
                     "empire": 90
-                },
-                "mp": {
-                    "alliance": 100,
-                    "empire": 90
                 }
             }
+        },
+        "dev": {
+            "alliance": 100,
+            "empire": 90
+        },
+        "mp": {
+            "alliance": 100,
+            "empire": 90
         }
     },
     {
@@ -865,10 +865,6 @@
         "GroupId": 5168,
         "by_faction": {
             "alliance": {
-                "mp": {
-                    "alliance": 33,
-                    "empire": 33
-                },
                 "easy": {
                     "alliance": 33,
                     "empire": 33
@@ -894,12 +890,16 @@
                 "hard": {
                     "alliance": 38,
                     "empire": 25
-                },
-                "mp": {
-                    "alliance": 28,
-                    "empire": 28
                 }
             }
+        },
+        "dev": {
+            "alliance": 33,
+            "empire": 33
+        },
+        "mp": {
+            "alliance": 28,
+            "empire": 28
         }
     },
     {
@@ -908,10 +908,6 @@
         "GroupId": 5169,
         "by_faction": {
             "alliance": {
-                "mp": {
-                    "alliance": 25,
-                    "empire": 25
-                },
                 "easy": {
                     "alliance": 25,
                     "empire": 25
@@ -937,12 +933,16 @@
                 "hard": {
                     "alliance": 30,
                     "empire": 20
-                },
-                "mp": {
-                    "alliance": 20,
-                    "empire": 20
                 }
             }
+        },
+        "dev": {
+            "alliance": 25,
+            "empire": 25
+        },
+        "mp": {
+            "alliance": 20,
+            "empire": 20
         }
     },
     {
@@ -951,10 +951,6 @@
         "GroupId": 5170,
         "by_faction": {
             "alliance": {
-                "mp": {
-                    "alliance": 20,
-                    "empire": 20
-                },
                 "easy": {
                     "alliance": 20,
                     "empire": 20
@@ -980,12 +976,16 @@
                 "hard": {
                     "alliance": 25,
                     "empire": 15
-                },
-                "mp": {
-                    "alliance": 15,
-                    "empire": 15
                 }
             }
+        },
+        "dev": {
+            "alliance": 20,
+            "empire": 20
+        },
+        "mp": {
+            "alliance": 15,
+            "empire": 15
         }
     },
     {
@@ -994,10 +994,6 @@
         "GroupId": 5184,
         "by_faction": {
             "alliance": {
-                "mp": {
-                    "alliance": 0,
-                    "empire": 0
-                },
                 "easy": {
                     "alliance": 0,
                     "empire": 0
@@ -1023,12 +1019,16 @@
                 "hard": {
                     "alliance": 0,
                     "empire": 0
-                },
-                "mp": {
-                    "alliance": 0,
-                    "empire": 0
                 }
             }
+        },
+        "dev": {
+            "alliance": 0,
+            "empire": 0
+        },
+        "mp": {
+            "alliance": 0,
+            "empire": 0
         }
     },
     {
@@ -1037,10 +1037,6 @@
         "GroupId": 5185,
         "by_faction": {
             "alliance": {
-                "mp": {
-                    "alliance": 101,
-                    "empire": 101
-                },
                 "easy": {
                     "alliance": 101,
                     "empire": 101
@@ -1066,12 +1062,16 @@
                 "hard": {
                     "alliance": 101,
                     "empire": 101
-                },
-                "mp": {
-                    "alliance": 101,
-                    "empire": 101
                 }
             }
+        },
+        "dev": {
+            "alliance": 101,
+            "empire": 101
+        },
+        "mp": {
+            "alliance": 101,
+            "empire": 101
         }
     },
     {
@@ -1080,10 +1080,6 @@
         "GroupId": 5186,
         "by_faction": {
             "alliance": {
-                "mp": {
-                    "alliance": 10,
-                    "empire": 10
-                },
                 "easy": {
                     "alliance": 10,
                     "empire": 10
@@ -1109,12 +1105,16 @@
                 "hard": {
                     "alliance": 10,
                     "empire": 10
-                },
-                "mp": {
-                    "alliance": 10,
-                    "empire": 10
                 }
             }
+        },
+        "dev": {
+            "alliance": 10,
+            "empire": 10
+        },
+        "mp": {
+            "alliance": 10,
+            "empire": 10
         }
     },
     {
@@ -1123,10 +1123,6 @@
         "GroupId": 5187,
         "by_faction": {
             "alliance": {
-                "mp": {
-                    "alliance": 101,
-                    "empire": 101
-                },
                 "easy": {
                     "alliance": 101,
                     "empire": 101
@@ -1152,12 +1148,16 @@
                 "hard": {
                     "alliance": 101,
                     "empire": 101
-                },
-                "mp": {
-                    "alliance": 101,
-                    "empire": 101
                 }
             }
+        },
+        "dev": {
+            "alliance": 101,
+            "empire": 101
+        },
+        "mp": {
+            "alliance": 101,
+            "empire": 101
         }
     },
     {
@@ -1166,10 +1166,6 @@
         "GroupId": 5188,
         "by_faction": {
             "alliance": {
-                "mp": {
-                    "alliance": 0,
-                    "empire": 0
-                },
                 "easy": {
                     "alliance": 0,
                     "empire": 0
@@ -1195,12 +1191,16 @@
                 "hard": {
                     "alliance": 0,
                     "empire": 0
-                },
-                "mp": {
-                    "alliance": 0,
-                    "empire": 0
                 }
             }
+        },
+        "dev": {
+            "alliance": 0,
+            "empire": 0
+        },
+        "mp": {
+            "alliance": 0,
+            "empire": 0
         }
     },
     {
@@ -1209,10 +1209,6 @@
         "GroupId": 5189,
         "by_faction": {
             "alliance": {
-                "mp": {
-                    "alliance": 101,
-                    "empire": 101
-                },
                 "easy": {
                     "alliance": 101,
                     "empire": 101
@@ -1238,12 +1234,16 @@
                 "hard": {
                     "alliance": 101,
                     "empire": 101
-                },
-                "mp": {
-                    "alliance": 101,
-                    "empire": 101
                 }
             }
+        },
+        "dev": {
+            "alliance": 101,
+            "empire": 101
+        },
+        "mp": {
+            "alliance": 101,
+            "empire": 101
         }
     },
     {
@@ -1252,10 +1252,6 @@
         "GroupId": 7680,
         "by_faction": {
             "alliance": {
-                "mp": {
-                    "alliance": 20,
-                    "empire": 25
-                },
                 "easy": {
                     "alliance": 10,
                     "empire": 10
@@ -1281,12 +1277,16 @@
                 "hard": {
                     "alliance": 40,
                     "empire": 10
-                },
-                "mp": {
-                    "alliance": 10,
-                    "empire": 10
                 }
             }
+        },
+        "dev": {
+            "alliance": 20,
+            "empire": 25
+        },
+        "mp": {
+            "alliance": 10,
+            "empire": 10
         }
     },
     {
@@ -1295,10 +1295,6 @@
         "GroupId": 7681,
         "by_faction": {
             "alliance": {
-                "mp": {
-                    "alliance": 0,
-                    "empire": 10
-                },
                 "easy": {
                     "alliance": 0,
                     "empire": 4
@@ -1324,12 +1320,16 @@
                 "hard": {
                     "alliance": 0,
                     "empire": 5
-                },
-                "mp": {
-                    "alliance": 0,
-                    "empire": 4
                 }
             }
+        },
+        "dev": {
+            "alliance": 0,
+            "empire": 10
+        },
+        "mp": {
+            "alliance": 0,
+            "empire": 4
         }
     },
     {
@@ -1338,10 +1338,6 @@
         "GroupId": 7682,
         "by_faction": {
             "alliance": {
-                "mp": {
-                    "alliance": 60,
-                    "empire": 60
-                },
                 "easy": {
                     "alliance": 60,
                     "empire": 60
@@ -1367,12 +1363,16 @@
                 "hard": {
                     "alliance": 60,
                     "empire": 60
-                },
-                "mp": {
-                    "alliance": 60,
-                    "empire": 60
                 }
             }
+        },
+        "dev": {
+            "alliance": 60,
+            "empire": 60
+        },
+        "mp": {
+            "alliance": 60,
+            "empire": 60
         }
     },
     {
@@ -1381,10 +1381,6 @@
         "GroupId": 7683,
         "by_faction": {
             "alliance": {
-                "mp": {
-                    "alliance": 30,
-                    "empire": 30
-                },
                 "easy": {
                     "alliance": 30,
                     "empire": 30
@@ -1410,12 +1406,16 @@
                 "hard": {
                     "alliance": 30,
                     "empire": 30
-                },
-                "mp": {
-                    "alliance": 30,
-                    "empire": 30
                 }
             }
+        },
+        "dev": {
+            "alliance": 30,
+            "empire": 30
+        },
+        "mp": {
+            "alliance": 30,
+            "empire": 30
         }
     },
     {
@@ -1424,10 +1424,6 @@
         "GroupId": 7684,
         "by_faction": {
             "alliance": {
-                "mp": {
-                    "alliance": 20,
-                    "empire": 20
-                },
                 "easy": {
                     "alliance": 20,
                     "empire": 20
@@ -1453,12 +1449,16 @@
                 "hard": {
                     "alliance": 20,
                     "empire": 20
-                },
-                "mp": {
-                    "alliance": 20,
-                    "empire": 20
                 }
             }
+        },
+        "dev": {
+            "alliance": 20,
+            "empire": 20
+        },
+        "mp": {
+            "alliance": 20,
+            "empire": 20
         }
     },
     {
@@ -1467,10 +1467,6 @@
         "GroupId": 7685,
         "by_faction": {
             "alliance": {
-                "mp": {
-                    "alliance": 30,
-                    "empire": 30
-                },
                 "easy": {
                     "alliance": 30,
                     "empire": 30
@@ -1496,12 +1492,16 @@
                 "hard": {
                     "alliance": 30,
                     "empire": 30
-                },
-                "mp": {
-                    "alliance": 30,
-                    "empire": 30
                 }
             }
+        },
+        "dev": {
+            "alliance": 30,
+            "empire": 30
+        },
+        "mp": {
+            "alliance": 30,
+            "empire": 30
         }
     }
 ]

@@ -29,7 +29,7 @@ static func InitializeGalaxyState(galaxy: Array, human_faction: Faction, difficu
 				continue
 			sp.ControllingFaction = faction
 			sp.SetSupportFor(faction, start.Support)
-			sp.IsExplored = start.Explored
+			sp.SetExploredForAll(start.Explored)   # the pack's charted start, the same one flag used to mean for everyone
 			sp.StartsInhabited = true
 			sp.IsInhabited = true
 
@@ -54,7 +54,9 @@ static func InitializeGalaxyState(galaxy: Array, human_faction: Faction, difficu
 		seat.SetSupportFor(faction, 100)
 		seat.StartsInhabited = true
 		seat.IsInhabited = true
-		seat.IsExplored = not faction.HasHiddenHq() or GameSettings.PlayerFaction == faction
+		# A side always knows its own seat; a HIDDEN seat is unknown to the others.
+		for other in FactionRegistry.Playable:
+			seat.SetExplored(other, other == faction or not faction.HasHiddenHq())
 		hq_of[faction] = seat
 
 	# --- HABITATION SEEDING ---
@@ -117,7 +119,7 @@ static func InitializeGalaxyState(galaxy: Array, human_faction: Faction, difficu
 				var contested := FactionRegistry.Playable
 				if contested.size() > 0:
 					p.SetSupportFor(contested[rng.NextMax(contested.size())], support)
-				p.IsExplored = is_core
+				p.SetExploredForAll(is_core)
 				continue
 
 			if strong_slot:
@@ -126,7 +128,9 @@ static func InitializeGalaxyState(galaxy: Array, human_faction: Faction, difficu
 				weak[claimant] -= 1
 
 			p.ControllingFaction = claimant
-			p.IsExplored = is_core or claimant == human_faction
+			# Core worlds are charted for everyone; a rim claim only for its claimant.
+			for other in FactionRegistry.Playable:
+				p.SetExplored(other, is_core or claimant == other)
 
 			var support_base := SideLotteryManager.GetProbability(SideLotteryManager.StrongSupportBase if strong_slot else SideLotteryManager.WeakSupportBase, human_faction, difficulty, claimant)
 			var support_var := SideLotteryManager.GetProbability(SideLotteryManager.StrongSupportVar if strong_slot else SideLotteryManager.WeakSupportVar, human_faction, difficulty, claimant)
@@ -232,13 +236,13 @@ static func InitializeGalaxyState(galaxy: Array, human_faction: Faction, difficu
 	# --- 6. DAY ZERO STATISTICAL REPORT ---
 	var total := all_planets.size()
 	var inhabited := Lq.count(all_planets, func(p): return p.IsInhabited)
-	var explored_count := Lq.count(all_planets, func(p): return p.IsExplored)
+	var explored_count := Lq.count(all_planets, func(p): return p.ExploredBy(human_faction))
 
 	# THE OPENING SNAPSHOT: Reconnaissance's categories for every charted world
 	# a side does not hold.
 	for f in FactionRegistry.Playable:
 		for p in all_planets:
-			if p.IsExplored and p.ControllingFaction != f:
+			if p.ExploredBy(f) and p.ControllingFaction != f:
 				IntelManager.Capture(f, p, 1, IntelManager.ReconnaissanceCategories)
 
 	print("[INTEL] Playing as: %s" % str(GameSettings.PlayerFaction))
@@ -246,8 +250,8 @@ static func InitializeGalaxyState(galaxy: Array, human_faction: Faction, difficu
 		if not f.HasHiddenHq():
 			continue
 		var seat: Planet = hq_of.get(f)
-		var visible := Lq.where(all_planets, func(p): return p.ControllingFaction == f and p.IsExplored)
-		print("[INTEL] %s HQ: %s | visible to player=%s" % [f.Id, seat.Name if seat != null else "none", str(seat.IsExplored) if seat != null else ""])
+		var visible := Lq.where(all_planets, func(p): return p.ControllingFaction == f and p.ExploredBy(human_faction))
+		print("[INTEL] %s HQ: %s | visible to player=%s" % [f.Id, seat.Name if seat != null else "none", str(seat.ExploredBy(human_faction)) if seat != null else ""])
 		print("[INTEL] %s worlds visible to player: %d -> %s" % [f.Id, visible.size(), Lq.join(Lq.select(visible, func(p): return p.Name))])
 
 	var own := Lq.where(all_planets, func(p): return p.ControllingFaction == GameSettings.PlayerFaction)

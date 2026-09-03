@@ -65,11 +65,12 @@ func Setup(report: FleetBattleManager.BattleReport) -> void:
 	Side(side, "Summary", func() -> void:
 		_page = 0
 		Redraw())
-	Side(side, "%s Forces" % (_r.Ours.Faction.DisplayName if _r.Ours.Faction != null else "Our"), func() -> void:
+	var local: Faction = GameSettings.LocalFaction()
+	Side(side, "%s Forces" % (_r.Mine(local).Faction.DisplayName if _r.Mine(local).Faction != null else "Our"), func() -> void:
 		_page = 1
 		_tab = 0
 		Redraw())
-	Side(side, "%s Forces" % (_r.Theirs.Faction.DisplayName if _r.Theirs.Faction != null else "Enemy"), func() -> void:
+	Side(side, "%s Forces" % (_r.Enemy(local).Faction.DisplayName if _r.Enemy(local).Faction != null else "Enemy"), func() -> void:
 		_page = 2
 		_tab = 0
 		Redraw())
@@ -105,20 +106,25 @@ func Redraw() -> void:
 		return
 
 	var ours: bool = _page == 1
-	Forces(_r.OurLosses if ours else _r.TheirLosses, _r.Ours if ours else _r.Theirs)
+	var v: Faction = GameSettings.LocalFaction()
+	Forces(_r.MyLosses(v) if ours else _r.EnemyLosses(v), _r.Mine(v) if ours else _r.Enemy(v))
 
 
 ## The composed outcome, clause by clause, in the original's own words.
 func Summary() -> void:
-	var us: String = _r.Ours.Faction.DisplayName if _r.Ours.Faction != null else "Our"
-	var them: String = _r.Theirs.Faction.DisplayName if _r.Theirs.Faction != null else "Enemy"
+	var viewer: Faction = GameSettings.LocalFaction()
+	var mine: Fleet = _r.Mine(viewer)
+	var enemy: Fleet = _r.Enemy(viewer)
+	var us: String = mine.Faction.DisplayName if mine.Faction != null else "Our"
+	var them: String = enemy.Faction.DisplayName if enemy.Faction != null else "Enemy"
+	var we_lost: bool = _r.Lost(viewer)
 
 	var lines: Array[String] = []
 
 	if _r.DrawBothLost:
 		lines.append("The battle at %s is indecisive." % _r.Where.Name)
 		lines.append("There has been no victor.")
-	elif _r.WeLost:
+	elif we_lost:
 		lines.append("The %s fleet is defeated." % us)
 		lines.append("The %s fleet is victorious." % them)
 	else:
@@ -129,7 +135,7 @@ func Summary() -> void:
 	var holder: Faction = BlockadeManager.BlockaderOf(_r.Where)
 	if holder != null:
 		lines.append("%s is now under blockade by %s forces." % [_r.Where.Name, holder.DisplayName])
-	elif not _r.WeLost:
+	elif not we_lost:
 		lines.append("%s has been cleared of %s forces." % [_r.Where.Name, them])
 
 	# The force-disposition clause.
@@ -150,8 +156,8 @@ func Summary() -> void:
 
 	_body.add_child(HSeparator.new())
 
-	Row("%s strength" % us, str(_r.OurStrength))
-	Row("%s strength" % them, str(_r.TheirStrength))
+	Row("%s strength" % us, str(_r.MyStrength(viewer)))
+	Row("%s strength" % them, str(_r.EnemyStrength(viewer)))
 
 
 ## Fig 4.18 - four tabs, two columns. The headings change for people.

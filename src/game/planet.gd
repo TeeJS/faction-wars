@@ -11,7 +11,38 @@ var SectorId: int
 var BaseEnergy: int
 var BaseRawMaterials: int
 var ControllingFaction: Faction   # set to the pack's neutral at generation
-var IsExplored: bool = false
+## EXPLORATION IS PER FACTION (docs/m0-audit.md section 2). "Known to the
+## player" was one flag, and the AI read it - so the AI saw through the human's
+## fog. Each side now has its own chart. The simulation asks ExploredBy(f);
+## IsExplored remains for the UI and means "known to the side this client plays".
+var _explored_by: Dictionary = {}   # faction id -> true
+
+
+func ExploredBy(f: Faction) -> bool:
+	return f != null and _explored_by.has(f.Id)
+
+
+func SetExplored(f: Faction, on: bool) -> void:
+	if f == null:
+		return
+	if on:
+		_explored_by[f.Id] = true
+	else:
+		_explored_by.erase(f.Id)
+
+
+## Every playable side at once - core worlds and the pack's charted starts.
+func SetExploredForAll(on: bool) -> void:
+	for f in FactionRegistry.Playable:
+		SetExplored(f, on)
+
+
+## The local side's chart, for the windows and the map. Not for the simulation.
+var IsExplored: bool:
+	get:
+		return ExploredBy(GameSettings.LocalFaction())
+	set(value):
+		SetExplored(GameSettings.LocalFaction(), value)
 
 var Garrison: Array[Unit] = []
 var FighterSquadrons: Array[Unit] = []

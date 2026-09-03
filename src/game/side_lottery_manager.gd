@@ -29,14 +29,19 @@ static func GetProbability(entry_id: int, perspective: Faction, diff: int, for_s
 	if not _rules.has(entry_id):
 		return 0
 	var rule: CatalogDtos.SideRuleData = _rules[entry_id]
-	if perspective == null or for_side == null:
+	if for_side == null:
+		return 0
+	# Head-to-head reads the one multiplayer pair - no player-side row, so both
+	# clients read the same number whichever side is local (M0 gate).
+	if diff == Enums.Difficulty.Multiplayer:
+		return rule.Mp.get(for_side.Id, 0)
+	if perspective == null:
 		return 0
 	if not rule.By_Faction.has(perspective.Id):
 		return 0
 	var by_difficulty: Dictionary = rule.By_Faction[perspective.Id]
 	var key: String
 	match diff:
-		Enums.Difficulty.Multiplayer: key = "mp"
 		Enums.Difficulty.Easy:        key = "easy"
 		Enums.Difficulty.Hard:        key = "hard"
 		_:                            key = "medium"

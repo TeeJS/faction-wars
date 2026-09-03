@@ -70,7 +70,7 @@ static func AverageSupport(f: Faction, galaxy: Array) -> int:
 	var count := 0
 	for s in galaxy:
 		for p in s.Planets:
-			if not p.IsExplored:
+			if not p.ExploredBy(f):   # each side's galaxy-wide support is over ITS chart
 				continue
 			total += p.SupportFor(f)
 			count += 1

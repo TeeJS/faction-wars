@@ -113,7 +113,7 @@ func OnTakeCommand() -> void:
 
 
 func OnRetreat() -> void:
-	var r: Result = FleetBattleManager.Retreat(_battle, StrategicTickManager.Today)
+	var r: Result = FleetBattleManager.Retreat(_battle, StrategicTickManager.Today, GameSettings.LocalFaction())
 	if r.ok:
 		queue_free()
 		return
@@ -138,7 +138,7 @@ func BattleSummary() -> void:
 	Row("%s" % _battle.Theirs.Name, "strength %d" % _battle.TheirStrength)
 	_body.add_child(HSeparator.new())
 
-	if FleetBattleManager.EnemyHoldsThemHere(_battle.Theirs):
+	if FleetBattleManager.EnemyHoldsThemHere(_battle.Enemy(GameSettings.LocalFaction())):
 		var warn := Label.new()
 		warn.text = "A gravity well projector is holding us here.\n" \
 			+ "We cannot withdraw from this battle."

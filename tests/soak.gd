@@ -7,6 +7,8 @@ extends SceneTree
 ##   Godot_console.exe --headless --path . -s tests/soak.gd -- --days=100 --seed=12345 \
 ##       [--snapshot=res://tests/fixtures/snapshot-seed12345.json]   (else a fresh day zero)
 ##       [--faction=alliance] [--difficulty=Medium] [--size=Large]
+##       [--humans=alliance|empire|both] [--host=alliance|empire]
+##       (the M0 gate: --humans=both --difficulty=Multiplayer, once with each --faction)
 ##       [--replay-log=path] [--replay-text=path] [--expect=path]
 
 
@@ -23,7 +25,17 @@ func _init() -> void:
 		var faction := _arg("--faction=", "alliance")
 		var difficulty: int = JsonUtil.enum_or({ "d": _arg("--difficulty=", "Medium") }, "d", Enums.Difficulty, Enums.Difficulty.Medium)
 		var size: int = JsonUtil.enum_or({ "s": _arg("--size=", "Large") }, "s", Enums.GalaxySize, Enums.GalaxySize.Large)
-		engine = GameSession.new_game(faction, difficulty, size, seed)
+		# Head-to-head: --humans=both (or one side) and --host=<side>. Generation
+		# depends on them, so they are inputs to new_game (docs/m0-audit.md).
+		var humans_arg := _arg("--humans=", "")
+		var humans: Array = []
+		if humans_arg == "both":
+			FactionRegistry.EnsureLoaded()
+			for f in FactionRegistry.Playable:
+				humans.append(f.Id)
+		elif not humans_arg.is_empty():
+			humans = [humans_arg]
+		engine = GameSession.new_game(faction, difficulty, size, seed, humans, _arg("--host=", ""))
 	else:
 		engine = GameSession.start_from_snapshot(snapshot, seed)
 	if engine == null:
@@ -31,16 +43,7 @@ func _init() -> void:
 		quit(2)
 		return
 
-	# Head-to-head: both sides human. The local side stays --faction; the sim
-	# must not care which (docs/m0-audit.md).
-	var humans := _arg("--humans=", "")
-	if humans == "both":
-		GameSettings.HumanFactions = FactionRegistry.Playable.duplicate()
-	elif not humans.is_empty():
-		GameSettings.HumanFactions = [FactionRegistry.ById(humans)]
-
-	print("
-=== SOAK: %d days as %s (humans: %s) ===" % [days, GameSettings.PlayerFaction.Id if GameSettings.PlayerFaction != null else "", ", ".join(Lq.select(GameSettings.HumanFactions, func(f: Faction) -> String: return f.Id))])
+	print("\n=== SOAK: %d days as %s (humans: %s) ===" % [days, GameSettings.PlayerFaction.Id if GameSettings.PlayerFaction != null else "", ", ".join(Lq.select(GameSettings.HumanFactions, func(f: Faction) -> String: return f.Id))])
 
 	# Nobody plays the player's side in a headless run, so the AI takes both.
 	AiManager.DriveAllFactions = true
@@ -98,7 +101,7 @@ func _init() -> void:
 	print("\n=== SOAK COMPLETE: day %d (%d ms, %.2f ms/day) ===" % [day, elapsed, float(elapsed) / max(1, days)])
 	for f in FactionRegistry.Playable:
 		var worlds := Lq.count(GameState.AllPlanets(), func(p): return p.ControllingFaction == f)
-		var charted := Lq.count(GameState.AllPlanets(), func(p): return p.IsExplored)
+		var charted := Lq.count(GameState.AllPlanets(), func(p): return p.ExploredBy(f))
 		print("  %-10s worlds %3d   charted %3d" % [f.Id, worlds, charted])
 
 	if not expected.is_empty():

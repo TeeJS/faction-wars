@@ -63,7 +63,7 @@ static func Evaluate(galaxy: Array, us: Faction) -> GalaxyView:
 	view.Us = us
 	for s in galaxy:
 		for p in s.Planets:
-			if not p.IsExplored:
+			if not p.ExploredBy(us):
 				view.Unexplored.append(p)
 				continue
 			if not p.IsInhabited:

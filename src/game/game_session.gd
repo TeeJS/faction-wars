@@ -68,11 +68,18 @@ static func load_roster() -> Array[Character]:
 
 
 ## A fresh game: GameManager._Ready's order. Returns the tick manager.
-static func new_game(player_faction_id: String, difficulty: int, size: int, seed: int) -> StrategicTickManager:
+## humans: the human sides (default: the local one); host: the host's side in a
+## head-to-head game (default: none). Both must be identical on both clients.
+static func new_game(player_faction_id: String, difficulty: int, size: int, seed: int, humans: Array = [], host_id: String = "") -> StrategicTickManager:
 	reset_game_state()
 	FactionRegistry.EnsureLoaded()
 	GameSettings.PlayerFaction = FactionRegistry.ById(player_faction_id)
-	GameSettings.HumanFactions = [GameSettings.PlayerFaction]
+	GameSettings.HumanFactions = []
+	for h in humans:
+		GameSettings.HumanFactions.append(FactionRegistry.ById(h))
+	if GameSettings.HumanFactions.is_empty():
+		GameSettings.HumanFactions = [GameSettings.PlayerFaction]
+	GameSettings.HostFaction = FactionRegistry.ById(host_id) if not host_id.is_empty() else null
 	GameSettings.SelectedDifficulty = difficulty
 	GameSettings.SelectedSize = size
 	_seed(seed)
@@ -82,7 +89,7 @@ static func new_game(player_faction_id: String, difficulty: int, size: int, seed
 	var galaxy := GalaxyFactory.LoadGalaxy("%s/sectors_data.json" % DATA, "%s/planets_data.json" % DATA, size)
 	var roster := load_roster()
 	GameState.ActiveRoster = roster
-	DayZeroGenerator.InitializeGalaxyState(galaxy, GameSettings.PlayerFaction, difficulty, roster)
+	DayZeroGenerator.InitializeGalaxyState(galaxy, GameSettings.SeedingFaction(), difficulty, roster)
 	GameState.ActiveGalaxy = galaxy
 	return StrategicTickManager.new(galaxy)
 

@@ -191,7 +191,7 @@ static func LeakExtraSystems(m: Mission, rng: Prng) -> String:
 	var count := RuleManager.Roll(floor_id, spread_id, rng, m.Faction)
 	if count <= 0:
 		return ""
-	var dark := Lq.where(GameState.AllPlanets(), func(p): return not p.IsExplored and p != m.Target)
+	var dark := Lq.where(GameState.AllPlanets(), func(p): return not p.ExploredBy(m.Faction) and p != m.Target)
 	if dark.is_empty():
 		return ""
 	var found := []
@@ -200,7 +200,7 @@ static func LeakExtraSystems(m: Mission, rng: Prng) -> String:
 		var pick := rng.NextMax(dark.size())
 		var world: Planet = dark[pick]
 		dark.remove_at(pick)
-		world.IsExplored = true
+		world.SetExplored(m.Faction, true)
 		found.append(world.Name)
 		i += 1
 	print("[Mission] Espionage at %s also leaked %d system(s)%s: %s" % [m.Target.Name, found.size(), " - a capital, so more of them" if capital else "", Lq.join(found)])
@@ -321,7 +321,7 @@ static func Report(m: Mission, day: int, title: String, body: String, asks_to_co
 static func CanTarget(type: int, actor: Faction, target: Planet) -> Result:
 	if target == null:
 		return Result.fail("No target.")
-	if not target.IsExplored and type != Enums.MissionType.Reconnaissance:
+	if not target.ExploredBy(actor) and type != Enums.MissionType.Reconnaissance:
 		return Result.fail("%s is unexplored - only Reconnaissance can go there." % target.Name)
 
 	match type:
