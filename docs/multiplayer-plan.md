@@ -162,6 +162,8 @@ estimates, not commitments.
 
 8. **Game speed rule (TeeJ, room AM-LFGGG3LVQSSJGXSP7P7JE9Q745 #75, 2026-09-03):** a host-chosen setting on Multiplayer Options, *Slowest wins* (the manual's p163 rule, default) or *Average* (floor of the mean; adjacent settings give the slower; an unbalanced pair rounds down; Pause on either side pauses both). BACKPORT-LOG #14.
 
+9. **Delivery shape (TeeJ, room AM-LFGGG3LVQSSJGXSP7P7JE9Q745 #177, 2026-09-03):** stay with **A**, one image holding relay + exported game (`ghcr.io/teejs/wars-relay`), while changes are frequent: one artifact per commit, one 'apply update', the on-screen version equals the image. Pivot to **B** later, when changes are rare and games long: a relay-only image, the CI publishing the web build as a release asset, and the container serving `/web` from `/mnt/user/appdata/wars-relay/web` when that folder exists (else its baked copy) - so the pivot needs the folder, not a new template. The four pros and cons of each are in the room at #176.
+
 ## 6. Hosting the static build - pros and cons (for decision 6)
 
 Facts that drive the choice: the build is `index.wasm` 39.5 MB (9.6 MB gzip,
