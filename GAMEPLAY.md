@@ -1,4 +1,4 @@
-<!-- last synced from sol-conflict-revolution commit 11c1b36 -->
+<!-- last synced from sol-conflict-revolution commit 6da9451 -->
 # Gameplay rules, from the manual
 
 How *Star Wars: Rebellion* actually works, read from the scanned page images in
@@ -3579,6 +3579,15 @@ Ten systems per sector at every size, matching Chapter 1.
 That is the whole definition. Easy is the default. It also tells us the intended
 day-zero baseline: **four loyal systems per side** at Easy — everything else in
 the galaxy is neutral or unexplored.
+
+> ★ The exact rule is the original's table, not the round number: SDPRTB.DAT
+> entries 30/31 give each side a **percentage of populated core worlds** per
+> human side and difficulty (data/side_lottery.json), Coruscant consumes one
+> Empire strong slot, and Yavin plus the hidden Alliance HQ are **rim** worlds
+> outside the buckets (TheArchitect2018, initial_game_seeding_logic/seed.js).
+> On a Standard galaxy at Easy that is **5 Alliance v 4 Empire**. Until
+> 2026-09-03 the code also charged Yavin and the HQ to the Alliance's core
+> bucket and started it two worlds short (3 v 4); fixed in DayZeroGenerator.
 
 **Headquarters Only Victory** — the third difficulty lever:
 
