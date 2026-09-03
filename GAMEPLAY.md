@@ -1,4 +1,4 @@
-<!-- last synced from sol-conflict-revolution commit a9067b1 -->
+<!-- last synced from sol-conflict-revolution commit 10cdb80 -->
 # Gameplay rules, from the manual
 
 How *Star Wars: Rebellion* actually works, read from the scanned page images in
@@ -18,7 +18,7 @@ varies 0–2 across the book, so a bare page number is always ambiguous — see
 > **Not covered:** Chapter 4 (Tactical), PDF p136–p153. Chapter 5 (Head-to-Head),
 > PDF p152–p163, is digested at the end of this file (2026-09-03); `manual/pages/`
 > now runs to PDF p167. What the strategic chapters say *about* tactical play is
-> recorded where it appears.
+> recorded in §§1, 11, 13 and 14.
 
 **Sections marked ★** carry a rule that appears nowhere else in the manual, or
 that contradicts what the code currently does. If you read nothing else, read
