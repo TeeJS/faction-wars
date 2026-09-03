@@ -14,6 +14,8 @@ func _init() -> void:
 	var seed := int(_arg("--seed=", "12345"))
 	var log_path := _arg("--replay-log=", "")
 	var corrupt_day := int(_arg("--corrupt=", "0"))
+	var quit_at := int(_arg("--quit-at=", "0"))
+	var rejoin := OS.get_cmdline_user_args().has("--rejoin")
 	if box.is_empty():
 		push_error("--mailbox required")
 		quit(2)
@@ -38,7 +40,9 @@ func _init() -> void:
 	else:
 		var lobby := RelayClient.new(relay_url, side)
 		var code_file := "%s/room.code" % box
-		if side == "alliance":
+		if rejoin:
+			lobby.join(FileAccess.get_file_as_string(code_file).strip_edges())
+		elif side == "alliance":
 			lobby.create("lockstep gate", { "seed": seed }, true)
 			while lobby.code.is_empty():
 				lobby.poll()
@@ -60,13 +64,28 @@ func _init() -> void:
 		print("[lockstep] %s in room %s as %s" % [side, lobby.code, lobby.side])
 		transport = lobby.transport
 		held = lobby.take_held()
+		if rejoin:
+			lobby.fetch_log(0)
+			while not lobby.caught_up:
+				lobby.poll()
+				OS.delay_msec(10)
+			print("[lockstep] %s fetched %d log lines from the relay" % [side, lobby.replayed_lines.size()])
+			held = lobby.replayed_lines + held
 	var session := LockstepSession.new(transport, us, them)
 	session.engine = engine
 	CommandBus.Immediate = false
 	CommandBus.Session = session
 	CommandLog.Open("%s/%s.session.jsonl" % [box, side], CommandLog.Header())
-	session.absorb(held)
-	session.start()
+	if rejoin:
+		var resumed := session.rebuild_from_log(held, CommandLog.Header())
+		if resumed < 0:
+			push_error("[lockstep] rebuild failed")
+			quit(6)
+			return
+		engine = session.engine
+	else:
+		session.absorb(held)
+		session.start()
 
 	var log := FileAccess.open(log_path, FileAccess.WRITE) if not log_path.is_empty() else null
 	if log != null:
@@ -75,7 +94,7 @@ func _init() -> void:
 	var issued := 0
 	var waited_ms := 0
 	var t0 := Time.get_ticks_msec()
-	for i in days:
+	while StrategicTickManager.Today <= days:
 		var day := StrategicTickManager.Today
 
 		# A battle we are in waits for OUR answer before the day may go on; it is
@@ -86,6 +105,13 @@ func _init() -> void:
 				issued += 1
 
 		issued += _orders(day, us, them)
+
+		if quit_at > 0 and day == quit_at:
+			print("[lockstep] %s quits on day %d (simulated drop)" % [side, day])
+			CommandLog.Close()
+			transport.close()
+			quit(0)
+			return
 
 		if corrupt_day > 0 and day == corrupt_day:
 			# The forced desync: one side quietly changes a support value.

@@ -90,3 +90,9 @@ Files:     `relay/server.ts`, `relay/test.ts`, `relay/docker-compose.yml`, `rela
 Source:    not needed for single player.
 Hashes:    unchanged. Gate A: the lockstep gate through a locally running relay, 200 of 200 day hashes identical; the relay's own test, 12 of 12.
 
+
+## 11. Reconnect from the relay's log (M5, engine side)     port (M5)
+Kind:      plumbing (no rule effect)
+Files:     `src/net/lockstep_session.gd` (`rebuild_from_log`; end/hash/speed lines carry `side`; own lines in a `since` replay are ignored), `src/net/relay_client.gd` (`fetch_log`, `replayed_lines`, `caught_up`), `tests/lockstep_client.gd` (`--quit-at=`, `--rejoin`; runs to day Days+1 from wherever it starts), `tools/lockstep-local.ps1` (`-Rejoin`; hashes compared by day)
+Source:    not needed for single player. A client that drops rejoins the room by name, asks the relay for the whole log, rebuilds the world with the Replayer to the last day both sides hashed, re-arms that day's batches, ends and hashes from the log, and continues in lockstep. The waiting side does nothing but wait.
+Hashes:    unchanged. Gate: the Empire client quits on day 30 and rejoins; both reach day 201 with 171 of 171 shared day hashes identical. Save/Load (host-only, the same slot on both) is this mechanism behind C3PO's Multiplayer Options screen.

@@ -71,7 +71,7 @@ func issue(c: Command) -> void:
 
 func set_speed(level: int) -> void:
 	my_speed = level
-	transport.send({ "t": "speed", "level": level })
+	transport.send({ "t": "speed", "side": local.Id, "level": level })
 
 
 ## "the game plays at the slowest speed set on either computer" (manual p163).
@@ -92,6 +92,10 @@ func absorb(lines: Array) -> void:
 
 
 func _handle(msg: Dictionary) -> void:
+	# A `since` replay carries my own lines as well as theirs; mine are not news.
+	var author := str(msg.get("side", msg.get("faction", "")))
+	if not author.is_empty() and author == local.Id:
+		return
 	match str(msg.get("t", "")):
 		"hello":
 			remote_hello = msg
@@ -157,7 +161,7 @@ func try_tick(_unused: StrategicTickManager = null) -> bool:
 	var d := day()
 	if not _my_end_sent.has(d):
 		_my_end_sent[d] = true
-		transport.send({ "t": "end", "day": d, "n": _batch[d].size() if _batch.has(d) else 0 })
+		transport.send({ "t": "end", "side": local.Id, "day": d, "n": _batch[d].size() if _batch.has(d) else 0 })
 	if not remote_ready(d):
 		state = State.WaitingOpponent
 		return false
@@ -172,9 +176,82 @@ func try_tick(_unused: StrategicTickManager = null) -> bool:
 	var h := GameSignature.ReplayHash(GameState.ActiveGalaxy)
 	_my_hash[now] = h
 	CommandLog.DayDone(now, h)
-	transport.send({ "t": "hash", "day": now, "hash": h })
+	transport.send({ "t": "hash", "side": local.Id, "day": now, "hash": h })
 	_check(now)
 	return true
+
+
+## RECONNECT (docs/multiplayer-plan.md M5): given the relay's whole log for the
+## room - both sides' lines, in order - rebuild the world to the last day both
+## sides hashed, and re-arm this day's batches, ends and hashes from the log so
+## the clock continues exactly where it stopped. Returns the day resumed at,
+## or -1 when the log is unusable.
+func rebuild_from_log(lines: Array, header: Dictionary) -> int:
+	var cmds: Array = []
+	var my_end: Dictionary = {}
+	var their_end: Dictionary = {}
+	var my_hashes: Dictionary = {}
+	var their_hashes: Dictionary = {}
+	for msg in lines:
+		var t := str(msg.get("t", ""))
+		var author := str(msg.get("side", msg.get("faction", "")))
+		match t:
+			"cmd":
+				var c := Command.new()
+				c.Day = int(msg.get("day", 0))
+				c.Seq = int(msg.get("seq", 0))
+				c.Faction = str(msg.get("faction", ""))
+				c.Kind = str(msg.get("kind", ""))
+				c.Args = msg.get("args", {})
+				cmds.append(c)
+			"end":
+				(my_end if author == local.Id else their_end)[int(msg.get("day", 0))] = int(msg.get("n", 0))
+			"hash":
+				(my_hashes if author == local.Id else their_hashes)[int(msg.get("day", 0))] = str(msg.get("hash", ""))
+			"speed":
+				if author == local.Id:
+					my_speed = int(msg.get("level", 2))
+				else:
+					remote_speed = int(msg.get("level", 2))
+	# The last day BOTH sides reached: the highest day with a hash from each.
+	var resume_day := 1
+	for d in my_hashes.keys():
+		if their_hashes.has(d) and int(d) > resume_day:
+			resume_day = int(d)
+	engine = Replayer.replay_entries(header, cmds, resume_day)
+	if engine == null:
+		return -1
+	# Re-arm the session from the log.
+	_batch.clear()
+	_remote_batch.clear()
+	_seq = 0
+	for c in cmds:
+		if c.Faction == local.Id:
+			_seq = maxi(_seq, c.Seq)
+		if c.Day < resume_day:
+			continue
+		var into: Dictionary = _batch if c.Faction == local.Id else _remote_batch
+		if not into.has(c.Day):
+			into[c.Day] = []
+		into[c.Day].append(c)
+	_my_end_sent.clear()
+	for d in my_end.keys():
+		if int(d) >= resume_day:
+			_my_end_sent[int(d)] = true
+	_remote_end.clear()
+	for d in their_end.keys():
+		if int(d) >= resume_day:
+			_remote_end[int(d)] = their_end[d]
+	_my_hash.clear()
+	_remote_hash.clear()
+	_my_hash[resume_day] = my_hashes.get(resume_day, "")
+	_remote_hash[resume_day] = their_hashes.get(resume_day, "")
+	state = State.Running
+	desync_day = -1
+	# Everything in the log is now in CommandLog.Entries via the replayer's copy;
+	# the file, if any, was reopened by it.
+	print("[Lockstep] rebuilt from the relay log: %d commands, resumed at day %d (my end sent: %s)" % [cmds.size(), resume_day, str(_my_end_sent.has(resume_day))])
+	return resume_day
 
 
 ## Resync after a desync: rebuild from the log and compare with the opponent's
@@ -201,5 +278,5 @@ func resync() -> bool:
 		_my_hash[target] = h
 		state = State.Running
 		desync_day = -1
-		transport.send({ "t": "hash", "day": target, "hash": h })   # so the other side clears too
+		transport.send({ "t": "hash", "side": local.Id, "day": target, "hash": h })   # so the other side clears too
 	return ok

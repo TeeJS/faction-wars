@@ -18,6 +18,10 @@ var lines_on_relay: int = 0
 var last_error: String = ""
 var lobby_chat: Array = []       # [player, text] pairs, in order
 var _held: Array = []            # game lines received before the session exists
+## A `since` replay in progress: lines arrive, then `caught_up`.
+var catching_up: bool = false
+var caught_up: bool = false
+var replayed_lines: Array = []
 
 
 func _init(relay_url: String, player_name: String) -> void:
@@ -85,12 +89,25 @@ func poll() -> void:
 			"left":
 				pass
 			"caught_up":
-				pass
+				catching_up = false
+				caught_up = true
 			"error":
 				last_error = str(msg.get("error", ""))
 				push_warning("[Relay] %s" % last_error)
 			_:
-				_held.append(msg)
+				if catching_up:
+					replayed_lines.append(msg)
+				else:
+					_held.append(msg)
+
+
+## Ask the relay for the room's whole log (a rejoin). Lines land in
+## replayed_lines; caught_up flips when the relay is done.
+func fetch_log(since: int = 0) -> void:
+	catching_up = true
+	caught_up = false
+	replayed_lines = []
+	transport.send({ "t": "since", "n": since })
 
 
 ## Game lines that arrived before the session took the transport over.
