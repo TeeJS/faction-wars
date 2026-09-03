@@ -65,6 +65,11 @@ func _ready() -> void:
 	# A browser tab has no desktop to exit to (TeeJ, room #97).
 	btnExit.visible = not OS.has_feature("web")
 
+	# Visible check boxes (TeeJ, room #152): the default theme's unchecked box
+	# is a faint outline on this dark Cockpit; draw our own for both.
+	for chk in [get_node("%ChkHQOnly"), get_node("%ChkFeedback")]:
+		_visible_checkbox(chk)
+
 	# THE MULTIPLAYER PANEL (manual p156, Fig 5.1): "the small panel at the lower
 	# left that depicts a Rebel soldier and an Imperial stormtrooper facing off".
 	# No artwork - a labelled button at the lower left, like every other control.
@@ -122,3 +127,27 @@ func StartGame(chosenFaction: Faction) -> void:
 
 	# Launch the Main scene
 	get_tree().change_scene_to_file("res://Main.tscn")
+
+
+## A light square (off) and the same square with a tick (on), drawn at start,
+## so a check box's state is obvious on the dark Cockpit.
+static func _visible_checkbox(chk: CheckBox) -> void:
+	chk.add_theme_icon_override("unchecked", _box_icon(false))
+	chk.add_theme_icon_override("checked", _box_icon(true))
+	chk.add_theme_icon_override("unchecked_disabled", _box_icon(false))
+	chk.add_theme_icon_override("checked_disabled", _box_icon(true))
+
+
+static func _box_icon(ticked: bool) -> ImageTexture:
+	var n := 18
+	var img := Image.create(n, n, false, Image.FORMAT_RGBA8)
+	img.fill(Color(0, 0, 0, 0))
+	var edge := Color(0.85, 0.88, 0.92)
+	for i in n:
+		for j in n:
+			var border := i < 2 or j < 2 or i >= n - 2 or j >= n - 2
+			if border:
+				img.set_pixel(i, j, edge)
+			elif ticked and i >= 4 and i < n - 4 and j >= 4 and j < n - 4:
+				img.set_pixel(i, j, Color(0.3, 0.85, 0.45))
+	return ImageTexture.create_from_image(img)
