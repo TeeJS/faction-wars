@@ -123,7 +123,7 @@ func _options(host: bool) -> void:
 	lobby.host_name = "Han"
 	lobby.name = MpSetup.game_name
 	if not host:
-		lobby.settings = { "side": "empire", "size": 2, "hq_only": true }
+		lobby.settings = { "side": "empire", "size": 2, "hq_only": true, "speed_rule": "average" }
 	MpSetup.lobby = lobby
 	var s := await _open("res://src/ui/mp/MultiplayerOptions.tscn")
 	_check(_label(s, "SideRow/SideCaption") == "Which side do you want to play?", "Fig 5.9 (%s): side caption" % who)
@@ -134,6 +134,8 @@ func _options(host: bool) -> void:
 	_check(sizes.size() == 3 and (sizes[0] as Button).text == "Standard" and (sizes[2] as Button).text == "Huge", "Fig 5.9 (%s): standard, large, huge" % who)
 	_check((s.get_node("%BtnStandardGame") as Button).text == "Standard Game" and (s.get_node("%BtnHQOnlyVictory") as Button).text == "HQ Only Victory", "Fig 5.9 (%s): Standard Game / HQ Only Victory" % who)
 	_check((s.get_node("%BtnStandardGame") as Button).tooltip_text.begins_with("Rebel Win Conditions: Capture Coruscant and capture Emperor Palpatine and Darth Vader."), "p162 (%s): the win conditions verbatim" % who)
+	var rules := (s.get_node("%SpeedRuleHBox") as HBoxContainer).get_children()
+	_check(rules.size() == 2 and (rules[0] as Button).text == "Slowest wins" and (rules[1] as Button).text == "Average" and (rules[0] as Button).button_pressed == host, "speed rule (%s): Slowest wins / Average, Slowest the default for the host" % who)
 	_check((s.get_node("%BtnLoadGame") as Button).text == "Load Game" and (s.get_node("%BtnLoadGame") as Button).disabled, "Fig 5.9 (%s): Load Game, unavailable without a shared save" % who)
 	_check(_label(s, "ChatRow/ChatLabel") == "Chat>" and s.get_node("%ChatEntry") != null, "Fig 5.9 (%s): Chat> and the space to its right" % who)
 	var log: RichTextLabel = s.get_node("%ChatLog")
@@ -149,6 +151,7 @@ func _options(host: bool) -> void:
 		_check((sides[1] as Button).disabled and (sides[1] as Button).button_pressed, "Fig 5.9 (guest): sees the host's side, cannot change it")
 		_check((sizes[2] as Button).button_pressed and (s.get_node("%BtnHQOnlyVictory") as Button).button_pressed, "Fig 5.9 (guest): sees Huge and HQ Only Victory")
 		_check(text.contains("Huge galaxy size selected.") and text.contains("HQ Only victory selected."), "Fig 5.9 (guest): the host's choices are in the view")
+		_check(text.contains("Average speed rule selected.") and (rules[1] as Button).button_pressed and (rules[1] as Button).disabled, "speed rule (guest): sees Average, cannot change it")
 	await _close(s)
 	MpSetup.reset()
 

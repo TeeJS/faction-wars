@@ -76,9 +76,20 @@ func set_speed(level: int) -> void:
 	transport.send({ "t": "speed", "side": local.Id, "level": level })
 
 
-## "the game plays at the slowest speed set on either computer" (manual p163).
+## "the game plays at the slowest speed set on either computer" (manual p163) -
+## or, under TeeJ's "average" rule (GameSettings.SpeedRule), the floor of the
+## two settings' mean. Pause (0) on either side is a pause under both rules.
 func effective_speed() -> int:
-	return mini(my_speed, remote_speed)
+	return combine_speeds(my_speed, remote_speed, GameSettings.SpeedRule)
+
+
+static func combine_speeds(a: int, b: int, rule: String) -> int:
+	if a <= 0 or b <= 0:
+		return 0
+	if rule == "average":
+		@warning_ignore("integer_division")
+		return (a + b) / 2
+	return mini(a, b)
 
 
 ## Drain the wire.

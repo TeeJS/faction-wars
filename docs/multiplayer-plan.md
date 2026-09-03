@@ -160,6 +160,8 @@ estimates, not commitments.
 
 ---
 
+8. **Game speed rule (TeeJ, room AM-LFGGG3LVQSSJGXSP7P7JE9Q745 #75, 2026-09-03):** a host-chosen setting on Multiplayer Options, *Slowest wins* (the manual's p163 rule, default) or *Average* (floor of the mean; adjacent settings give the slower; an unbalanced pair rounds down; Pause on either side pauses both). BACKPORT-LOG #14.
+
 ## 6. Hosting the static build - pros and cons (for decision 6)
 
 Facts that drive the choice: the build is `index.wasm` 39.5 MB (9.6 MB gzip,

@@ -24,6 +24,8 @@ var _victory_group: ButtonGroup
 var _side_buttons: Array = []
 var _size_buttons: Array = []
 var _victory_buttons: Array = []
+var _speed_group: ButtonGroup
+var _speed_buttons: Array = []
 var _saves: Array = []
 var _load_for: String = ""      # the opponent the shared-saves check was made for
 var _loading: bool = false
@@ -76,6 +78,23 @@ func _ready() -> void:
 		size_box.add_child(b)
 		_size_buttons.append(b)
 
+	# TeeJ's addition (room #75): how the two speed settings combine in play.
+	# "Slowest wins" is the manual's rule (p163); "Average" is floor of the mean.
+	_speed_group = ButtonGroup.new()
+	var speed_box: HBoxContainer = get_node("%SpeedRuleHBox")
+	for pair in [["slowest", "Slowest wins", "The game runs at the slower of the two players' speed settings (the original's rule)."], ["average", "Average", "The game runs at the average of the two settings, rounded down: Slow and Fast give Medium; adjacent settings give the slower one."]]:
+		var b := Button.new()
+		b.text = pair[1]
+		b.custom_minimum_size = Vector2(160, 44)
+		b.toggle_mode = true
+		b.button_group = _speed_group
+		b.tooltip_text = pair[2]
+		b.set_meta("id", pair[0])
+		var rule: String = pair[0]
+		b.pressed.connect(func() -> void: _host_change("speed_rule", rule))
+		speed_box.add_child(b)
+		_speed_buttons.append(b)
+
 	# 3 Standard Game / HQ Only Victory.
 	_victory_group = ButtonGroup.new()
 	var std: Button = get_node("%BtnStandardGame")
@@ -115,7 +134,7 @@ func _ready() -> void:
 	bar().cancel.connect(cancel_to_cockpit)
 
 	if _host:
-		_settings = { "side": FactionRegistry.Playable[0].Id, "size": int(Enums.GalaxySize.Large), "hq_only": false }
+		_settings = { "side": FactionRegistry.Playable[0].Id, "size": int(Enums.GalaxySize.Large), "hq_only": false, "speed_rule": "slowest" }
 		_lobby.set_settings(_settings)
 		_reflect()
 		_say(MpSetup.player_name, "Game \"%s\" created. Code %s." % [MpSetup.game_name, _lobby.code])
@@ -127,7 +146,7 @@ func _ready() -> void:
 		_reflect()
 		_say(MpSetup.player_name, "Joined \"%s\" hosted by %s." % [_lobby.name, _lobby.host_name])
 		_echo_all()
-		for b in _side_buttons + _size_buttons + _victory_buttons:
+		for b in _side_buttons + _size_buttons + _victory_buttons + _speed_buttons:
 			b.disabled = true
 		load_btn.tooltip_text = "Only the host loads a saved game."
 	_refresh_start()
@@ -210,6 +229,8 @@ func _reflect() -> void:
 		b.button_pressed = int(b.get_meta("id")) == int(_settings.get("size", 1))
 	_victory_buttons[0].button_pressed = not bool(_settings.get("hq_only", false))
 	_victory_buttons[1].button_pressed = bool(_settings.get("hq_only", false))
+	for b in _speed_buttons:
+		b.button_pressed = str(b.get_meta("id")) == str(_settings.get("speed_rule", "slowest"))
 
 
 ## The figure's wording: "Standard game victory selected." "Small galaxy size
@@ -223,19 +244,21 @@ func _echo(key: String) -> void:
 			_say(host_name, "%s galaxy size selected." % SizeNames[clampi(int(_settings.get("size", 1)), 0, 2)])
 		"hq_only":
 			_say(host_name, "%s selected." % ("HQ Only victory" if bool(_settings.get("hq_only", false)) else "Standard game victory"))
+		"speed_rule":
+			_say(host_name, "%s speed rule selected." % ("Average" if str(_settings.get("speed_rule", "slowest")) == "average" else "Slowest"))
 		"load":
 			_say(host_name, "Loaded \"%s\", Day %d." % [str(_settings.get("load_name", "")), int(_settings.get("load_day", 0))])
 
 
 func _echo_all() -> void:
-	for k in ["side", "size", "hq_only"]:
+	for k in ["side", "size", "hq_only", "speed_rule"]:
 		_echo(k)
 	if not str(_settings.get("load", "")).is_empty():
 		_echo("load")
 
 
 func _echo_diff() -> void:
-	for k in ["side", "size", "hq_only", "load"]:
+	for k in ["side", "size", "hq_only", "speed_rule", "load"]:
 		if _settings.get(k) != _seen_settings.get(k):
 			_echo(k)
 
@@ -312,13 +335,14 @@ func _open_load_list() -> void:
 		_settings["side"] = str(saved.get("side", _settings.get("side")))
 		_settings["size"] = int(saved.get("size", _settings.get("size")))
 		_settings["hq_only"] = bool(saved.get("hq_only", _settings.get("hq_only")))
+		_settings["speed_rule"] = str(saved.get("speed_rule", "slowest"))
 		_settings["seed"] = int(saved.get("seed", 0))
 		_settings["load"] = str(s.get("code", ""))
 		_settings["load_name"] = str(s.get("name", ""))
 		_settings["load_day"] = int(s.get("day", 0))
 		_lobby.set_settings(_settings)
 		_reflect()
-		for b in _side_buttons + _size_buttons + _victory_buttons:
+		for b in _side_buttons + _size_buttons + _victory_buttons + _speed_buttons:
 			b.disabled = true
 		_echo("load")
 		dlg.queue_free())

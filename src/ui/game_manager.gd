@@ -268,14 +268,17 @@ func SetSpeed(level: int) -> void:
 ## Game Options screen is up.
 func _ApplyClock() -> void:
 	var session: LockstepSession = MpSetup.session
-	var effective: int = _speed if session == null else mini(_speed, session.remote_speed)
+	var effective: int = _speed if session == null else session.effective_speed()
 	_appliedEffective = effective
 
 	# THE CURRENT SETTING, ON THE FACE OF THE CONTROL (user-reported behaviour
-	# of the original). Addition for head-to-head: when the opponent's slower
-	# setting governs, the face says so.
-	if session != null and session.remote_speed < _speed:
-		_speedReadout.text = "%s (set by opponent)" % SpeedNames[effective]
+	# of the original). Addition for head-to-head: when the opponent's setting
+	# changes the speed the game actually runs at, the face says so.
+	if session != null and effective != _speed and _speed != 0:
+		if GameSettings.SpeedRule == "average":
+			_speedReadout.text = "%s (averaged with opponent)" % SpeedNames[effective]
+		else:
+			_speedReadout.text = "%s (set by opponent)" % SpeedNames[effective]
 	else:
 		_speedReadout.text = SpeedNames[_speed]
 
@@ -313,7 +316,7 @@ func MenuOpened(open: bool) -> void:
 ## dropped; after a minute a Leave Game button appears, behind a confirmation.
 func _MpWatch(session: LockstepSession) -> void:
 	# The opponent's speed changed: the slower of the two governs.
-	if mini(_speed, session.remote_speed) != _appliedEffective:
+	if session.effective_speed() != _appliedEffective:
 		_ApplyClock()
 
 	# A desync: rebuild from the shared log (M2). Whoever drifted is repaired;

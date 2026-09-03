@@ -70,6 +70,21 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 12
 
+[node name="SpeedRow" type="HBoxContainer" parent="CenterContainer/Console"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="SpeedCaption" type="Label" parent="CenterContainer/Console/SpeedRow"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.7, 0.8, 1)
+text = "Game speed rule"
+
+[node name="SpeedRuleHBox" type="HBoxContainer" parent="CenterContainer/Console/SpeedRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+
 [node name="VictoryRow" type="HBoxContainer" parent="CenterContainer/Console"]
 layout_mode = 2
 theme_override_constants/separation = 12

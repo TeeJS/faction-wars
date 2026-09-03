@@ -15,6 +15,7 @@ var _role: String
 var _box: String
 var _days: int
 var _load: bool
+var _speed_rule: String = ""
 var _log: FileAccess
 
 
@@ -24,6 +25,7 @@ func _init() -> void:
 	_box = _arg("--box=", "")
 	_days = int(_arg("--days=", "30"))
 	_load = OS.get_cmdline_user_args().has("--load")
+	_speed_rule = _arg("--speed-rule=", "")
 	var log_path := _arg("--replay-log=", "")
 	_log = FileAccess.open(log_path, FileAccess.WRITE) if not log_path.is_empty() else null
 	FactionRegistry.EnsureLoaded()
@@ -81,6 +83,12 @@ func _host() -> void:
 	f.close()
 	# Start is enabled once the guest is seated.
 	if not await _until(_proceed_enabled, "the opponent to join", 120.0): return
+	if _speed_rule == "average":
+		for b in (current_scene.get_node("%SpeedRuleHBox") as HBoxContainer).get_children():
+			if (b as Button).text == "Average":
+				(b as Button).button_pressed = true
+				(b as Button).pressed.emit()
+		await process_frame
 	if _load:
 		var load_btn: Button = current_scene.get_node("%BtnLoadGame")
 		if not await _until(func() -> bool: return not load_btn.disabled, "Load Game to become available", 20.0): return
@@ -139,6 +147,7 @@ func _play() -> void:
 	var menu_opened_at := -1
 	var saw_waiting := false
 	var saw_opponent_speed := false
+	var saw_average := false
 	var slowed := false
 	var restored := false
 	while StrategicTickManager.Today < start + _days:
@@ -168,6 +177,8 @@ func _play() -> void:
 			saw_waiting = true
 		if gm._speedReadout.text.contains("set by opponent"):
 			saw_opponent_speed = true
+		if gm._speedReadout.text == "Medium (averaged with opponent)":
+			saw_average = true
 		if Time.get_ticks_msec() > deadline:
 			await _fail("the game stalled on day %d" % StrategicTickManager.Today)
 			return
@@ -190,7 +201,10 @@ func _play() -> void:
 	if _role == "guest":
 		print("[mp_flow] guest checks: waiting box seen=%s, chat from the Alliance received=%s" % [str(saw_waiting), str(chat)])
 	else:
-		print("[mp_flow] host checks: opponent's slower speed shown=%s" % str(saw_opponent_speed))
+		if _speed_rule == "average":
+			print("[mp_flow] host checks: rule=%s, 'Medium (averaged with opponent)' shown=%s" % [GameSettings.SpeedRule, str(saw_average)])
+		else:
+			print("[mp_flow] host checks: opponent's slower speed shown=%s" % str(saw_opponent_speed))
 	# A closed browser: nothing tidy - the relay keeps the game.
 	quit(0)
 

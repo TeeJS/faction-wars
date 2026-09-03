@@ -6,6 +6,7 @@
 param(
     [int]$Days = 30,
     [switch]$Load,
+    [string]$SpeedRule = '',   # 'average' runs the pair under TeeJ's average rule
     [int]$RelayPort = 8790,
     [string]$Godot = 'D:\Downloads\Godot_v4.7.1-stable_mono_win64\Godot_v4.7.1-stable_mono_win64_console.exe'
 )
@@ -39,7 +40,7 @@ function Run-Pair([string]$tag, [string[]]$extra) {
     return ("{0} of {1} day hashes identical{2}" -f $same, $n, $(if ($first -ge 0) { " - first difference on day $first" } else { "" }))
 }
 
-$g1 = Run-Pair "" @()
+$g1 = Run-Pair "" $(if ($SpeedRule -ne '') { @("--speed-rule=$SpeedRule") } else { @() })
 Write-Host ("M4 (screens -> lockstep) GATE: {0}  (box: {1})" -f $g1, $box)
 if ($Load) {
     Remove-Item "$box\room.code" -Force

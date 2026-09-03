@@ -41,6 +41,7 @@ static func reset() -> void:
 	CommandBus.Immediate = true
 	GameSettings.HumanFactions = []
 	GameSettings.HostFaction = null
+	GameSettings.SpeedRule = "slowest"
 
 
 ## The relay to talk to. In the browser: the page's own origin (hosting option
@@ -117,6 +118,7 @@ static func apply_settings(settings: Dictionary, my_seat: String) -> void:
 	GameSettings.SelectedDifficulty = Enums.Difficulty.Multiplayer
 	GameSettings.SelectedSize = int(settings.get("size", Enums.GalaxySize.Large)) as Enums.GalaxySize
 	GameSettings.HQOnlyVictory = bool(settings.get("hq_only", false))
+	GameSettings.SpeedRule = str(settings.get("speed_rule", "slowest"))
 	GameSettings.Seed = int(settings.get("seed", 0))
 
 

@@ -36,6 +36,12 @@ static func SeedingFaction() -> Faction:
 	return PlayerFaction
 static var SelectedSize: Enums.GalaxySize = Enums.GalaxySize.Large
 static var HQOnlyVictory: bool = false
+## Head-to-head only (TeeJ, room AM-LFGGG3LVQSSJGXSP7P7JE9Q745 #75): how the two
+## players' speed settings combine. "slowest" is the manual's rule (p163);
+## "average" is TeeJ's addition: floor((a + b) / 2), so adjacent settings give
+## the slower one and an unbalanced pair rounds down. Pause on either side
+## pauses both under either rule.
+static var SpeedRule: String = "slowest"
 
 ## The session's PRNG seed - see Prng. Printed at start; --seed=N replays.
 static var Seed: int = 0
