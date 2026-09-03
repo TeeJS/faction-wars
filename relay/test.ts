@@ -123,6 +123,10 @@ const oneJson: any = await (await fetch(`${fbBase}/feedback/${fbReply.id}.json`)
 check(oneJson.message === "cannot target the shield", "GET /feedback/<id>.json returns the report");
 const escape = await fetch(`${fbBase}/feedback/..%2Fserver.json`);
 check(escape.status === 404, "a report id cannot reach outside feedback/");
+const completed: any = await (await fetch(`${fbBase}/feedback/${fbReply.id}/complete`, { method: "POST" })).json();
+const open: any = await (await fetch(`${fbBase}/feedback`)).json();
+const all: any = await (await fetch(`${fbBase}/feedback?all=1`)).json();
+check(completed.ok === true && completed.moved === 2 && open.count === 0 && all.count === 1 && all.feedback[0].completed === true, "a completed report moves to feedback/completed/ and leaves the open listing");
 
 console.log(failures === 0 ? "[relay test] PASS" : `[relay test] ${failures} FAILED`);
 relay2.stop();

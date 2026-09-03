@@ -7,7 +7,7 @@
 //   bun run relay/server.ts            (PORT, DATA_DIR, STATIC_DIR from the environment)
 //   bun run relay/test.ts              (two fake clients through a relay on a random port)
 
-import { mkdirSync, existsSync, readdirSync, readFileSync, appendFileSync, writeFileSync, statSync } from "node:fs";
+import { mkdirSync, existsSync, readdirSync, readFileSync, appendFileSync, writeFileSync, statSync, renameSync } from "node:fs";
 import { join, resolve, sep } from "node:path";
 
 const LIMITS = {
@@ -155,14 +155,29 @@ export function startRelay(opts: { port?: number; dataDir?: string; staticDir?: 
         return new Response(Bun.file(p), { headers: { "Content-Type": one[2] === "json" ? "application/json" : "application/x-ndjson", "Cache-Control": "no-cache" } });
       }
       if (url.pathname.startsWith("/feedback/") && req.method === "GET") return new Response("not found", { status: 404 });
+      // Step 7 of docs/FEEDBACK-PROCESS.md: a report declared fixed moves to
+      // feedback/completed/ (both files); the listing then hides it.
+      const done = /^\/feedback\/([A-Za-z0-9_-]{1,80})\/complete$/.exec(url.pathname);
+      if (done && req.method === "POST") {
+        const completedDir = join(feedbackDir, "completed");
+        mkdirSync(completedDir, { recursive: true });
+        let moved = 0;
+        for (const ext of ["json", "jsonl"]) {
+          const from = join(feedbackDir, `${done[1]}.${ext}`);
+          if (existsSync(from)) { renameSync(from, join(completedDir, `${done[1]}.${ext}`)); moved++; }
+        }
+        return moved > 0 ? Response.json({ ok: true, id: done[1], moved }) : new Response("not found", { status: 404 });
+      }
       // The reports, newest first, without their logs (TeeJ, room #155).
       if (url.pathname === "/feedback" && req.method === "GET") {
         const items: any[] = [];
-        for (const f of readdirSync(feedbackDir)) {
+        const dirs = [feedbackDir];
+        if (url.searchParams.get("all") === "1" && existsSync(join(feedbackDir, "completed"))) dirs.push(join(feedbackDir, "completed"));
+        for (const dir of dirs) for (const f of readdirSync(dir)) {
           if (!f.endsWith(".json")) continue;
           try {
-            const r = JSON.parse(readFileSync(join(feedbackDir, f), "utf8"));
-            items.push({ id: f.slice(0, -5), player: r.player, game: r.game, day: r.day, seed: r.seed, received_at: r.received_at, message: String(r.message ?? "").slice(0, 2000), log_lines: r.log_lines ?? 0, client: r.client ?? {} });
+            const r = JSON.parse(readFileSync(join(dir, f), "utf8"));
+            items.push({ id: f.slice(0, -5), player: r.player, game: r.game, day: r.day, seed: r.seed, received_at: r.received_at, message: String(r.message ?? "").slice(0, 2000), log_lines: r.log_lines ?? 0, client: r.client ?? {}, completed: dir !== feedbackDir });
           } catch { /* a broken file is skipped */ }
         }
         items.sort((a, b) => String(b.received_at ?? "").localeCompare(String(a.received_at ?? "")));
