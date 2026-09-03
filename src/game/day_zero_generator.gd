@@ -85,7 +85,10 @@ static func InitializeGalaxyState(galaxy: Array, human_faction: Faction, difficu
 	var strong: Dictionary = {}
 	var weak: Dictionary = {}
 	for f in FactionRegistry.Playable:
-		var already := Lq.count(all_planets, func(pl): return pl.ControllingFaction == f)
+		# A pre-placed CORE world comes off its side's strong bucket; a rim seat
+		# (Yavin, the hidden HQ) costs nothing - the original decrements only for
+		# Coruscant (TheArchitect2018 seed.js: "_empire_strong -= 1").
+		var already := Lq.count(all_planets, func(pl): return pl.ControllingFaction == f and is_core_world.call(pl))
 		strong[f] = max(0, bucket.call(SideLotteryManager.CoreBucketStrong, f) - already)
 		weak[f] = max(0, bucket.call(SideLotteryManager.CoreBucketWeak, f))
 
