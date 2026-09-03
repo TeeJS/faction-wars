@@ -1,0 +1,100 @@
+class_name RelayClient
+extends RefCounted
+## The lobby half of the relay protocol (docs/m3-plan.md section 2): create,
+## list, join, settings, start - then hand the LockstepSession the same
+## transport once `started` arrives. Game lines (hello/cmd/end/hash/speed) that
+## arrive before the handoff are kept for the session.
+
+var transport: WebSocketTransport
+var code: String = ""
+var side: String = ""            # "host" | "guest"
+var player: String = ""
+var host_name: String = ""
+var guest_name: String = ""
+var settings: Dictionary = {}
+var started: bool = false
+var rooms: Array = []
+var lines_on_relay: int = 0
+var last_error: String = ""
+var lobby_chat: Array = []       # [player, text] pairs, in order
+var _held: Array = []            # game lines received before the session exists
+
+
+func _init(relay_url: String, player_name: String) -> void:
+	transport = WebSocketTransport.new(relay_url)
+	player = player_name
+
+
+# --- the lobby verbs ---
+
+func create(game_name: String, game_settings: Dictionary, open: bool = true) -> void:
+	transport.send({ "t": "create", "name": game_name, "player": player, "settings": game_settings, "open": open })
+
+
+func list() -> void:
+	transport.send({ "t": "list" })
+
+
+func join(game_code: String) -> void:
+	transport.send({ "t": "join", "code": game_code.to_upper(), "player": player })
+
+
+func set_settings(game_settings: Dictionary) -> void:
+	settings = game_settings
+	transport.send({ "t": "settings", "settings": game_settings })
+
+
+func start() -> void:
+	transport.send({ "t": "start" })
+
+
+func chat(text: String) -> void:
+	transport.send({ "t": "lobby_chat", "player": player, "text": text })
+
+
+## Drain the wire; lobby lines are absorbed, game lines are held for the session.
+func poll() -> void:
+	for msg in transport.poll():
+		transport.received += 1
+		match str(msg.get("t", "")):
+			"room":
+				code = str(msg.get("code", ""))
+				side = "host"
+				host_name = player
+			"rooms":
+				rooms = msg.get("rooms", [])
+			"joined":
+				code = str(msg.get("code", ""))
+				side = str(msg.get("side", "guest"))
+				host_name = str(msg.get("host", ""))
+				guest_name = str(msg.get("guest", "")) if msg.get("guest") != null else ""
+				settings = msg.get("settings", {})
+				started = bool(msg.get("started", false))
+				lines_on_relay = int(msg.get("lines", 0))
+			"guest":
+				guest_name = str(msg.get("player", ""))
+			"host":
+				host_name = str(msg.get("player", ""))
+			"settings":
+				settings = msg.get("settings", {})
+			"started":
+				settings = msg.get("settings", settings)
+				started = true
+			"lobby_chat":
+				lobby_chat.append([str(msg.get("player", "")), str(msg.get("text", ""))])
+			"left":
+				pass
+			"caught_up":
+				pass
+			"error":
+				last_error = str(msg.get("error", ""))
+				push_warning("[Relay] %s" % last_error)
+			_:
+				_held.append(msg)
+
+
+## Game lines that arrived before the session took the transport over.
+func take_held() -> Array:
+	var h := _held
+	_held = []
+	return h

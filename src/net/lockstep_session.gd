@@ -85,6 +85,12 @@ func pump() -> void:
 		_handle(msg)
 
 
+## Game lines the lobby received before this session existed (RelayClient.take_held).
+func absorb(lines: Array) -> void:
+	for msg in lines:
+		_handle(msg)
+
+
 func _handle(msg: Dictionary) -> void:
 	match str(msg.get("t", "")):
 		"hello":

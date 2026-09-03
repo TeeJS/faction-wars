@@ -5,15 +5,24 @@ param(
     [int]$Days = 200,
     [int]$Seed = 12345,
     [int]$Corrupt = 0,
+    [switch]$Relay,          # M3 gate A: through a relay started here for the duration of the test
+    [int]$RelayPort = 8787,
     [string]$Godot = 'D:\Downloads\Godot_v4.7.1-stable_mono_win64\Godot_v4.7.1-stable_mono_win64_console.exe'
 )
 $repo = Split-Path -Parent $PSScriptRoot
 $box = Join-Path $env:TEMP ("lockstep-" + [guid]::NewGuid().ToString().Substring(0, 8))
 New-Item -ItemType Directory -Force $box | Out-Null
+$relayProc = $null
+if ($Relay) {
+    $env:PORT = "$RelayPort"; $env:DATA_DIR = "$box\relay-data"
+    $relayProc = Start-Process -FilePath 'bun' -ArgumentList @('run', (Join-Path $repo 'relay\server.ts')) -RedirectStandardOutput "$box\relay.stdout.txt" -RedirectStandardError "$box\relay.stderr.txt" -PassThru -NoNewWindow
+    Start-Sleep -Seconds 2
+}
 $procs = @()
 foreach ($side in @('alliance', 'empire')) {
     $args = @('--headless', '--path', $repo, '-s', 'tests/lockstep_client.gd', '--',
         "--side=$side", "--mailbox=$box", "--days=$Days", "--seed=$Seed", "--replay-log=$box\$side.hashes.log")
+    if ($Relay) { $args += "--relay=ws://127.0.0.1:$RelayPort/ws" }
     if ($Corrupt -gt 0 -and $side -eq 'empire') { $args += "--corrupt=$Corrupt" }
     $procs += Start-Process -FilePath $Godot -ArgumentList $args -RedirectStandardOutput "$box\$side.stdout.txt" -RedirectStandardError "$box\$side.stderr.txt" -PassThru -NoNewWindow
 }
@@ -30,4 +39,5 @@ $b = Get-Content "$box\empire.hashes.log" | Select-Object -Skip 1
 $n = [Math]::Min($a.Count, $b.Count)
 $same = 0; $first = -1
 for ($i = 0; $i -lt $n; $i++) { if ($a[$i] -eq $b[$i]) { $same++ } elseif ($first -lt 0) { $first = $i } }
-Write-Host ("M2 GATE: {0} of {1} day hashes identical{2}  (mailbox: {3})" -f $same, $n, $(if ($first -ge 0) { " - first difference at line $first" } else { "" }), $box)
+Write-Host ("{4} GATE: {0} of {1} day hashes identical{2}  (mailbox: {3})" -f $same, $n, $(if ($first -ge 0) { " - first difference at line $first" } else { "" }), $box, $(if ($Relay) { "M3-A (relay)" } else { "M2" }))
+if ($relayProc) { try { $relayProc.Kill() } catch {} ; Write-Host ("relay log lines: {0}" -f ((Get-ChildItem "$box\relay-data\rooms" -Recurse -Filter log.jsonl | Get-Content | Measure-Object -Line).Lines)) }

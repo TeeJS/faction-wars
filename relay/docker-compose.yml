@@ -1,0 +1,26 @@
+# The schmitz-wars relay on the Unraid box (docs/m3-plan.md section 5).
+#   docker compose up -d
+# Then an NPM Plus proxy host: wars.schmitzplex.com -> http://wars-relay:8787,
+# Websockets Support ON, SSL like the others, no Authelia on this host.
+services:
+  wars-relay:
+    image: oven/bun:1
+    container_name: wars-relay
+    working_dir: /app
+    command: ["bun", "run", "server.ts"]
+    volumes:
+      - ./server.ts:/app/server.ts:ro
+      - ./data:/data
+      - ./web:/web:ro          # the exported build/web files, served at / on the same origin
+    environment:
+      PORT: "8787"
+      DATA_DIR: /data
+      STATIC_DIR: /web
+    expose:
+      - "8787"
+    restart: unless-stopped
+    networks:
+      - proxy                  # the network NPM Plus is on
+networks:
+  proxy:
+    external: true

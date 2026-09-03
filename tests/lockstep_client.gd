@@ -27,12 +27,45 @@ func _init() -> void:
 	var us: Faction = GameSettings.PlayerFaction
 	var them: Faction = Lq.first_or_null(FactionRegistry.Playable, func(f: Faction) -> bool: return f != us)
 
-	var transport := MailboxTransport.new(box, side, them.Id)
+	# The wire: the mailbox (M2), or the relay (M3, --relay=ws://host:port/ws).
+	# Through the relay the Alliance client hosts and writes the room code to
+	# the mailbox directory; the Empire client waits for it and joins.
+	var transport: Transport
+	var relay_url := _arg("--relay=", "")
+	var held: Array = []
+	if relay_url.is_empty():
+		transport = MailboxTransport.new(box, side, them.Id)
+	else:
+		var lobby := RelayClient.new(relay_url, side)
+		var code_file := "%s/room.code" % box
+		if side == "alliance":
+			lobby.create("lockstep gate", { "seed": seed }, true)
+			while lobby.code.is_empty():
+				lobby.poll()
+				OS.delay_msec(10)
+			var f := FileAccess.open(code_file, FileAccess.WRITE)
+			f.store_string(lobby.code)
+			f.close()
+			while lobby.guest_name.is_empty():
+				lobby.poll()
+				OS.delay_msec(10)
+			lobby.start()
+		else:
+			while not FileAccess.file_exists(code_file):
+				OS.delay_msec(20)
+			lobby.join(FileAccess.get_file_as_string(code_file).strip_edges())
+		while not lobby.started:
+			lobby.poll()
+			OS.delay_msec(10)
+		print("[lockstep] %s in room %s as %s" % [side, lobby.code, lobby.side])
+		transport = lobby.transport
+		held = lobby.take_held()
 	var session := LockstepSession.new(transport, us, them)
 	session.engine = engine
 	CommandBus.Immediate = false
 	CommandBus.Session = session
 	CommandLog.Open("%s/%s.session.jsonl" % [box, side], CommandLog.Header())
+	session.absorb(held)
 	session.start()
 
 	var log := FileAccess.open(log_path, FileAccess.WRITE) if not log_path.is_empty() else null
