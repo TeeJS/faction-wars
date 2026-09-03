@@ -17,17 +17,25 @@ WebSocket at `/ws`.
 
 ## Deploy (Unraid + NGINX Proxy Manager Plus)
 
-1. Copy this folder to `/mnt/user/appdata/wars-relay/` and put the exported
-   `build/web/*` files in `wars-relay/web/`.
-2. `docker compose up -d` in that folder. The compose file joins the `proxy`
-   network NPM Plus uses; change the network name if yours differs.
-3. NPM Plus → Proxy Hosts → Add: domain `wars.schmitzplex.com`, scheme http,
-   forward host `wars-relay`, port `8787`, **Websockets Support on**, SSL as
+Unraid runs containers from templates, not compose. `unraid/my-wars-relay.xml`
+is the template.
+
+1. Copy to the box: `relay/server.ts` -> `/mnt/user/appdata/wars-relay/server.ts`,
+   the exported `build/web/*` -> `/mnt/user/appdata/wars-relay/web/`, and the
+   template -> `/boot/config/plugins/dockerMan/templates-user/my-wars-relay.xml`.
+2. Unraid -> Docker -> Add Container -> Template: **wars-relay**. The defaults
+   are the paths above, bridge network, host port 8787. Apply.
+3. NPM Plus -> Proxy Hosts -> Add: domain `wars.schmitzplex.com`, scheme http,
+   forward host `192.168.1.25`, port `8787`, **Websockets Support on**, SSL as
    for the other hosts. No Authelia on this host: the game code is the
    credential, and the WebSocket upgrade would not follow Authelia's redirect.
-4. DNS: `wars` like the other `*.schmitzplex.com` names.
-5. `curl https://wars.schmitzplex.com/healthz` → `ok`; the game at
+   (If NPM Plus is on a custom Docker network, the container can join it
+   instead and be forwarded as `wars-relay:8787`.)
+4. DNS: `wars` like the other `*.schmitzplex.com` names (done 2026-09-03).
+5. `curl https://wars.schmitzplex.com/healthz` -> `ok`; the game at
    `https://wars.schmitzplex.com/`.
+
+`docker-compose.yml` is kept for a non-Unraid host.
 
 ## Limits
 
