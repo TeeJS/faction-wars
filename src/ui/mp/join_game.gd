@@ -97,6 +97,8 @@ func _status() -> void:
 		parts.append("transport: %s" % t.last_error)
 	if t.received > 0:
 		parts.append("%d game(s) listed, %d message(s) received" % [_rooms.size(), t.received])
+	var picked := (get_node("%Games") as ItemList).get_selected_items()
+	parts.append("selected: %s" % (str(_shown[picked[0]].get("code", "?")) if picked.size() > 0 and picked[0] < _shown.size() else "none"))
 	if _joining:
 		parts.append("joining...")
 	if not _last_relay.is_empty():
