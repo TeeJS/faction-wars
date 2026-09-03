@@ -626,7 +626,7 @@ func OnUnitMenuAction(actionId: int, units: Array, uiManager: UIManager) -> void
 						if fleet == null:
 							print("[Move] That is not somewhere a unit can be sent.")
 							return
-						var r: Result = OrderManager.LoadAboard(units, fleet)
+						var r: Result = CommandBus.issue("load_aboard", { "units": EntityIndex.ids_of_units(units), "fleet": fleet.Name })
 						if r.value == 0 and not r.error.is_empty():
 							print("[Move] %s" % r.error))
 
@@ -669,7 +669,7 @@ func OnUnitMenuAction(actionId: int, units: Array, uiManager: UIManager) -> void
 					# ScrapUnit was never even called on it.
 					var orbit: Planet = OrderManager.SystemOf(u.Attached)
 					if orbit != null:
-						orbit.ScrapUnit(u)
+						CommandBus.issue("scrap_unit", { "unit": u.Serial })
 					SelectedTroops.erase(u)
 					SelectedSpecForces.erase(u)
 					SelectedFighters.erase(u)
