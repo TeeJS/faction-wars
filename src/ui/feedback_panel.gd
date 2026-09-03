@@ -17,26 +17,32 @@ var _http: HTTPRequest
 var _pending: Dictionary = {}
 var _title: Button
 var _body: VBoxContainer
-static var _folded: bool = false
+static var _folded: bool = true
+
+const ColumnTop := -367.0        # 4 px under the comms panel's bottom edge
 
 
-## Folded: only the header strip shows, at the bottom of the column.
+## Folded: a plain 'Feedback' button in the column's style; open: the note box
+## hangs from the same top edge.
 func set_folded(folded: bool) -> void:
 	_folded = folded
 	_body.visible = not folded
-	_title.text = "Feedback  ▸" if folded else "Feedback  ▾"
-	offset_top = -110.0 if folded else -270.0
+	_title.text = "Feedback" if folded else "Feedback  ▴"
+	_title.flat = not folded
+	_title.alignment = HORIZONTAL_ALIGNMENT_CENTER if folded else HORIZONTAL_ALIGNMENT_LEFT
+	offset_top = ColumnTop
+	offset_bottom = ColumnTop + (40.0 if folded else 200.0)
 
 
 func _ready() -> void:
 	name = "FeedbackPanel"
+	# Directly under the grey message-category panel in the left column, the
+	# same width as that panel, and collapsed to a plain 'Feedback' button until
+	# clicked (TeeJ, room #164). The comms panel is anchored to the bottom edge
+	# and ends 371 px above it (Main.tscn), so this is anchored the same way.
 	set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
-	# Above the two bottom bars (the message-category row and the toolbar),
-	# which are ~70 px tall (TeeJ, room #147: the box was hidden behind them).
 	offset_left = 4.0
-	offset_right = 304.0
-	offset_top = -270.0
-	offset_bottom = -80.0
+	offset_right = 147.0
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	var margin := MarginContainer.new()
 	for side in ["left", "top", "right", "bottom"]:
@@ -48,9 +54,8 @@ func _ready() -> void:
 	# The header folds the box to a one-line strip and back (TeeJ, room #157:
 	# a tidy corner). Remembered for the session.
 	_title = Button.new()
-	_title.text = "Feedback  ▾"
-	_title.flat = true
-	_title.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	_title.text = "Feedback"
+	_title.custom_minimum_size = Vector2(0, 28)
 	_title.add_theme_font_size_override("font_size", 12)
 	_title.add_theme_color_override("font_color", Color(0.6, 0.7, 0.8))
 	_title.tooltip_text = "Fold or open the feedback box."
@@ -62,7 +67,7 @@ func _ready() -> void:
 	box.add_child(_body)
 	_text = TextEdit.new()
 	_text.placeholder_text = "What went wrong, or what you expected. Sent with the day, seed and this game's log."
-	_text.custom_minimum_size = Vector2(0, 90)
+	_text.custom_minimum_size = Vector2(0, 80)
 	_text.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_text.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
 	_text.add_theme_font_size_override("font_size", 12)
