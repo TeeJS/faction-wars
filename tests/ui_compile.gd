@@ -9,7 +9,7 @@ extends SceneTree
 func _init() -> void:
 	var failed: Array[String] = []
 	var n := 0
-	for path in _scripts("res://src/ui"):
+	for path in _scripts("res://src/ui") + _scripts("res://src/command"):
 		n += 1
 		var s: Variant = load(path)
 		if s == null or not (s is GDScript) or not s.can_instantiate():

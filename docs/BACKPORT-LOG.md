@@ -71,3 +71,9 @@ Files:     `src/game/fleet_battle_manager.gd` (`Engage`: Ours = the fleet of the
 Source:    `TacticalBattle` is order-sensitive (side 0 vs side 1 - seed 12345 day 12 at Denab resolved "both broken" one way round and "Empire beaten" the other), and `Engage` put the human's fleet at side 0, so a battle's outcome depended on which side the human played. Orient by pack order; the windows and `Retreat` take the viewer. Any human side in the battle now raises the alert (was: the human side only), and the retreating side is the one that answered - manual p152, "until one side withdraws".
 Hashes:    changed for an Empire-side single player (the Alliance-side seed-12345 baseline is unaffected in orientation but was regenerated with #5)
 Sources:   manual p151-p152 (Withdraw from Battle; "until one side withdraws"); the day-12 divergence log in docs/m0-audit.md
+
+## 8. The command layer (M1 step 1): Command, CommandLog, EntityIndex, CommandApplier, CommandBus     port (M1)
+Kind:      plumbing (no rule effect)
+Files:     `src/command/*.gd`, `src/game/game_session.gd` (bus reset), `tests/command_apply.gd`, `tests/replay.gd`, `tests/ui_compile.gd`
+Source:    not needed for single player. Shape if ever wanted: one command per UI mutation entry point, args by entity id (names for planets/sectors/characters/fleets, the M0 serials for units/facilities/missions/messages), a JSON-lines log with a header that rebuilds the game and the day hash after every tick, an applier that calls the same backend verb the UI called. Gate: a recorded 100-day scripted session replays to 100/100 identical hashes.
+Hashes:    unchanged (the UI still calls the backend directly until M1 step 2)

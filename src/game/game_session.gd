@@ -46,6 +46,7 @@ static func reset_game_state() -> void:
 	VictoryManager.Reset()
 	FleetBattleManager.Reset()
 	GameState.Reset()
+	CommandBus.Reset()
 	StrategicTickManager.Today = 1
 
 
