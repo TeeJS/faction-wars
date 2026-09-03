@@ -1,0 +1,262 @@
+[gd_scene format=3 uid="uid://charstat123"]
+
+[ext_resource type="Script" path="res://src/ui/character_status_window.gd" id="1_char"]
+
+[node name="CharacterStatusWindow" type="PanelContainer"]
+custom_minimum_size = Vector2(450, 350)
+offset_right = 450.0
+offset_bottom = 350.0
+script = ExtResource("1_char")
+
+[node name="MainVBox" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="TitleBar" type="ColorRect" parent="MainVBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+color = Color(0.18, 0.22, 0.28, 1)
+
+[node name="HBox" type="HBoxContainer" parent="MainVBox/TitleBar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleBarLabel" type="Label" parent="MainVBox/TitleBar/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 12
+text = " Character Status"
+vertical_alignment = 1
+
+[node name="MinimizeButton" type="Button" parent="MainVBox/TitleBar/HBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(24, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "_"
+
+[node name="CloseButton" type="Button" parent="MainVBox/TitleBar/HBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(24, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "X"
+
+[node name="ContentArea" type="MarginContainer" parent="MainVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="Background" type="ColorRect" parent="MainVBox/ContentArea"]
+layout_mode = 2
+color = Color(0.121569, 0.160784, 0.215686, 1)
+
+[node name="Padding" type="MarginContainer" parent="MainVBox/ContentArea"]
+layout_mode = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="SplitVBox" type="VBoxContainer" parent="MainVBox/ContentArea/Padding"]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="TopSection" type="HBoxContainer" parent="MainVBox/ContentArea/Padding/SplitVBox"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="PortraitRect" type="ColorRect" parent="MainVBox/ContentArea/Padding/SplitVBox/TopSection"]
+custom_minimum_size = Vector2(100, 120)
+layout_mode = 2
+color = Color(0.08, 0.1, 0.14, 1)
+
+[node name="PortraitLabel" type="Label" parent="MainVBox/ContentArea/Padding/SplitVBox/TopSection/PortraitRect"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.4, 0.4, 0.4, 1)
+theme_override_font_sizes/font_size = 10
+text = "Portrait"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BasicInfoGrid" type="GridContainer" parent="MainVBox/ContentArea/Padding/SplitVBox/TopSection"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 15
+theme_override_constants/v_separation = 10
+columns = 2
+
+[node name="LblCommanding" type="Label" parent="MainVBox/ContentArea/Padding/SplitVBox/TopSection/BasicInfoGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.7, 0.8, 1)
+theme_override_font_sizes/font_size = 12
+text = "Commanding:"
+
+[node name="ValCommanding" type="Label" parent="MainVBox/ContentArea/Padding/SplitVBox/TopSection/BasicInfoGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 12
+text = "None"
+
+[node name="LblAttached" type="Label" parent="MainVBox/ContentArea/Padding/SplitVBox/TopSection/BasicInfoGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.7, 0.8, 1)
+theme_override_font_sizes/font_size = 12
+text = "Attached:"
+
+[node name="ValAttached" type="Label" parent="MainVBox/ContentArea/Padding/SplitVBox/TopSection/BasicInfoGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 12
+text = "Yavin"
+
+[node name="LblStatus" type="Label" parent="MainVBox/ContentArea/Padding/SplitVBox/TopSection/BasicInfoGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.7, 0.8, 1)
+theme_override_font_sizes/font_size = 12
+text = "Status:"
+
+[node name="ValStatus" type="Label" parent="MainVBox/ContentArea/Padding/SplitVBox/TopSection/BasicInfoGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 12
+text = "Awaiting Orders"
+
+[node name="LblForce" type="Label" parent="MainVBox/ContentArea/Padding/SplitVBox/TopSection/BasicInfoGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.7, 0.8, 1)
+theme_override_font_sizes/font_size = 12
+text = "Force Ranking:"
+
+[node name="ValForce" type="Label" parent="MainVBox/ContentArea/Padding/SplitVBox/TopSection/BasicInfoGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 12
+text = "None"
+
+[node name="HSeparator" type="HSeparator" parent="MainVBox/ContentArea/Padding/SplitVBox"]
+layout_mode = 2
+
+[node name="BottomSection" type="HBoxContainer" parent="MainVBox/ContentArea/Padding/SplitVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 30
+
+[node name="RatingsGrid" type="GridContainer" parent="MainVBox/ContentArea/Padding/SplitVBox/BottomSection"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.8
+theme_override_constants/h_separation = 15
+theme_override_constants/v_separation = 10
+columns = 2
+
+[node name="LblDip" type="Label" parent="MainVBox/ContentArea/Padding/SplitVBox/BottomSection/RatingsGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.7, 0.8, 1)
+theme_override_font_sizes/font_size = 12
+text = "Diplomacy Rating:"
+
+[node name="ValDip" type="Label" parent="MainVBox/ContentArea/Padding/SplitVBox/BottomSection/RatingsGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 12
+text = "0"
+horizontal_alignment = 2
+
+[node name="LblEsp" type="Label" parent="MainVBox/ContentArea/Padding/SplitVBox/BottomSection/RatingsGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.7, 0.8, 1)
+theme_override_font_sizes/font_size = 12
+text = "Espionage Rating:"
+
+[node name="ValEsp" type="Label" parent="MainVBox/ContentArea/Padding/SplitVBox/BottomSection/RatingsGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 12
+text = "0"
+horizontal_alignment = 2
+
+[node name="LblCom" type="Label" parent="MainVBox/ContentArea/Padding/SplitVBox/BottomSection/RatingsGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.7, 0.8, 1)
+theme_override_font_sizes/font_size = 12
+text = "Combat Rating:"
+
+[node name="ValCom" type="Label" parent="MainVBox/ContentArea/Padding/SplitVBox/BottomSection/RatingsGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 12
+text = "0"
+horizontal_alignment = 2
+
+[node name="LblLdr" type="Label" parent="MainVBox/ContentArea/Padding/SplitVBox/BottomSection/RatingsGrid"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.7, 0.8, 1)
+theme_override_font_sizes/font_size = 12
+text = "Leadership Rating:"
+
+[node name="ValLdr" type="Label" parent="MainVBox/ContentArea/Padding/SplitVBox/BottomSection/RatingsGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 12
+text = "0"
+horizontal_alignment = 2
+
+[node name="TraitsVBox" type="VBoxContainer" parent="MainVBox/ContentArea/Padding/SplitVBox/BottomSection"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 15
+
+[node name="RnDSection" type="VBoxContainer" parent="MainVBox/ContentArea/Padding/SplitVBox/BottomSection/TraitsVBox"]
+layout_mode = 2
+
+[node name="LblRnD" type="Label" parent="MainVBox/ContentArea/Padding/SplitVBox/BottomSection/TraitsVBox/RnDSection"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.7, 0.8, 1)
+theme_override_font_sizes/font_size = 12
+text = "R&D Capabilities:"
+
+[node name="ValRnD" type="Label" parent="MainVBox/ContentArea/Padding/SplitVBox/BottomSection/TraitsVBox/RnDSection"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "None"
+autowrap_mode = 2
+
+[node name="CommandSection" type="VBoxContainer" parent="MainVBox/ContentArea/Padding/SplitVBox/BottomSection/TraitsVBox"]
+layout_mode = 2
+
+[node name="LblCommands" type="Label" parent="MainVBox/ContentArea/Padding/SplitVBox/BottomSection/TraitsVBox/CommandSection"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.7, 0.8, 1)
+theme_override_font_sizes/font_size = 12
+text = "Possible Command Ranks:"
+
+[node name="ValCommands" type="Label" parent="MainVBox/ContentArea/Padding/SplitVBox/BottomSection/TraitsVBox/CommandSection"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "None"
+autowrap_mode = 2

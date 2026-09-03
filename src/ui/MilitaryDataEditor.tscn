@@ -1,0 +1,63 @@
+[gd_scene format=3 uid="uid://b0gfwsqxue7gp"]
+
+[ext_resource type="Script" path="res://src/ui/military_data_editor.gd" id="1_aii3u"]
+
+[node name="MilitaryDataEditor" type="Control" unique_id=1839686006]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_aii3u")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=772572194]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=886486621]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="TopBar" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=876005222]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="FilterInput" type="LineEdit" parent="MarginContainer/VBoxContainer/TopBar" unique_id=1528239521]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=1179649057]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="TreeContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer" unique_id=1532798059]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="Tree" type="Tree" parent="MarginContainer/VBoxContainer/HBoxContainer/TreeContainer" unique_id=1569461006]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="DetailsPanel" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer" unique_id=2128123218]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+custom_minimum_size = Vector2(0, 400)
+
+[node name="BottomBar" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=123556755]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="StatusLabel" type="Label" parent="MarginContainer/VBoxContainer/BottomBar" unique_id=514688610]
+layout_mode = 2
+
+[node name="SaveButton" type="Button" parent="MarginContainer/VBoxContainer/BottomBar" unique_id=1555014875]
+layout_mode = 2
+text = "Save Changes"
+
+[node name="BackButton" type="Button" parent="MarginContainer/VBoxContainer/BottomBar" unique_id=1325385477]
+layout_mode = 2
+text = "Back to Menu"

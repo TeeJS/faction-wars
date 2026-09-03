@@ -1,0 +1,122 @@
+[gd_scene format=3 uid="uid://unitstat123"]
+
+[ext_resource type="Script" path="res://src/ui/unit_status_window.gd" id="1_unit"]
+
+[node name="UnitStatusWindow" type="PanelContainer"]
+custom_minimum_size = Vector2(400, 250)
+offset_right = 400.0
+offset_bottom = 250.0
+script = ExtResource("1_unit")
+
+[node name="MainVBox" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="TitleBar" type="ColorRect" parent="MainVBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+color = Color(0.18, 0.22, 0.28, 1)
+
+[node name="HBox" type="HBoxContainer" parent="MainVBox/TitleBar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="TitleBarLabel" type="Label" parent="MainVBox/TitleBar/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 12
+text = " Unit Status"
+vertical_alignment = 1
+
+[node name="MinimizeButton" type="Button" parent="MainVBox/TitleBar/HBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(24, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "_"
+
+[node name="CloseButton" type="Button" parent="MainVBox/TitleBar/HBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(24, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "X"
+
+[node name="ContentArea" type="MarginContainer" parent="MainVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="Background" type="ColorRect" parent="MainVBox/ContentArea"]
+layout_mode = 2
+color = Color(0.12, 0.16, 0.21, 1)
+
+[node name="SplitHBox" type="HBoxContainer" parent="MainVBox/ContentArea"]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="LeftPanel" type="MarginContainer" parent="MainVBox/ContentArea/SplitHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.5
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MainVBox/ContentArea/SplitHBox/LeftPanel"]
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="StatsGrid" type="GridContainer" parent="MainVBox/ContentArea/SplitHBox/LeftPanel/ScrollContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 20
+theme_override_constants/v_separation = 8
+columns = 2
+
+[node name="RightPanel" type="VBoxContainer" parent="MainVBox/ContentArea/SplitHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="PortraitRect" type="ColorRect" parent="MainVBox/ContentArea/SplitHBox/RightPanel"]
+custom_minimum_size = Vector2(100, 80)
+layout_mode = 2
+color = Color(0.08, 0.1, 0.14, 1)
+
+[node name="PortraitLabel" type="Label" parent="MainVBox/ContentArea/SplitHBox/RightPanel/PortraitRect"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.4, 0.4, 0.4, 1)
+theme_override_font_sizes/font_size = 10
+text = "[ 3D Model ]"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="NameRect" type="ColorRect" parent="MainVBox/ContentArea/SplitHBox/RightPanel"]
+custom_minimum_size = Vector2(100, 40)
+layout_mode = 2
+color = Color(0.08, 0.1, 0.14, 1)
+
+[node name="UnitNameLabel" type="Label" parent="MainVBox/ContentArea/SplitHBox/RightPanel/NameRect"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 12
+text = "Unit Name"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2

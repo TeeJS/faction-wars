@@ -1,0 +1,231 @@
+[gd_scene format=3 uid="uid://defstat123"]
+
+[ext_resource type="Script" path="res://src/ui/defense_facility_status_window.gd" id="1_defstat"]
+
+[node name="DefenseFacilityStatusWindow" type="PanelContainer" unique_id=567763942]
+custom_minimum_size = Vector2(450, 350)
+offset_right = 450.0
+offset_bottom = 350.0
+script = ExtResource("1_defstat")
+
+[node name="MainVBox" type="VBoxContainer" parent="." unique_id=2128054438]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="TitleBar" type="ColorRect" parent="MainVBox" unique_id=526642893]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+color = Color(0.18, 0.22, 0.28, 1)
+
+[node name="HBox" type="HBoxContainer" parent="MainVBox/TitleBar" unique_id=1033306956]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleBarLabel" type="Label" parent="MainVBox/TitleBar/HBox" unique_id=994444705]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 12
+text = " Defense Facility Status"
+vertical_alignment = 1
+
+[node name="MinimizeButton" type="Button" parent="MainVBox/TitleBar/HBox" unique_id=461555214]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(24, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "_"
+
+[node name="CloseButton" type="Button" parent="MainVBox/TitleBar/HBox" unique_id=796801722]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(24, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "X"
+
+[node name="ContentArea" type="MarginContainer" parent="MainVBox" unique_id=482591549]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="Background" type="ColorRect" parent="MainVBox/ContentArea" unique_id=464392252]
+layout_mode = 2
+color = Color(0.121569, 0.160784, 0.215686, 1)
+
+[node name="Padding" type="MarginContainer" parent="MainVBox/ContentArea" unique_id=2009834101]
+layout_mode = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="SplitVBox" type="VBoxContainer" parent="MainVBox/ContentArea/Padding" unique_id=966579490]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="TopSection" type="HBoxContainer" parent="MainVBox/ContentArea/Padding/SplitVBox" unique_id=1347779773]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="IconRect" type="ColorRect" parent="MainVBox/ContentArea/Padding/SplitVBox/TopSection" unique_id=1364381021]
+custom_minimum_size = Vector2(100, 120)
+layout_mode = 2
+color = Color(0.08, 0.1, 0.14, 1)
+
+[node name="IconLabel" type="Label" parent="MainVBox/ContentArea/Padding/SplitVBox/TopSection/IconRect" unique_id=1588744731]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.4, 0.4, 0.4, 1)
+theme_override_font_sizes/font_size = 10
+text = "🛡️"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BasicInfoGrid" type="GridContainer" parent="MainVBox/ContentArea/Padding/SplitVBox/TopSection" unique_id=1575306654]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 15
+theme_override_constants/v_separation = 10
+columns = 2
+
+[node name="LblLocation" type="Label" parent="MainVBox/ContentArea/Padding/SplitVBox/TopSection/BasicInfoGrid" unique_id=1423743867]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.7, 0.8, 1)
+theme_override_font_sizes/font_size = 12
+text = "Location:"
+
+[node name="ValLocation" type="Label" parent="MainVBox/ContentArea/Padding/SplitVBox/TopSection/BasicInfoGrid" unique_id=1981438953]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 12
+text = "Yavin 4"
+
+[node name="LblStatus" type="Label" parent="MainVBox/ContentArea/Padding/SplitVBox/TopSection/BasicInfoGrid" unique_id=528392614]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.7, 0.8, 1)
+theme_override_font_sizes/font_size = 12
+text = "Status:"
+
+[node name="ValStatus" type="Label" parent="MainVBox/ContentArea/Padding/SplitVBox/TopSection/BasicInfoGrid" unique_id=1604748274]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 12
+text = "Operational"
+
+[node name="LblMaintenance" type="Label" parent="MainVBox/ContentArea/Padding/SplitVBox/TopSection/BasicInfoGrid" unique_id=40774835]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.7, 0.8, 1)
+theme_override_font_sizes/font_size = 12
+text = "Maintenance Cost:"
+
+[node name="ValMaintenanceCost" type="Label" parent="MainVBox/ContentArea/Padding/SplitVBox/TopSection/BasicInfoGrid" unique_id=1815771897]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 12
+text = "100 Cr/turn"
+
+[node name="LblTier" type="Label" parent="MainVBox/ContentArea/Padding/SplitVBox/TopSection/BasicInfoGrid" unique_id=431563756]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.7, 0.8, 1)
+theme_override_font_sizes/font_size = 12
+text = "Tier:"
+
+[node name="ValTier" type="Label" parent="MainVBox/ContentArea/Padding/SplitVBox/TopSection/BasicInfoGrid" unique_id=1505263766]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 12
+text = "2"
+
+[node name="HSeparator" type="HSeparator" parent="MainVBox/ContentArea/Padding/SplitVBox" unique_id=2132728719]
+layout_mode = 2
+
+[node name="BottomSection" type="HBoxContainer" parent="MainVBox/ContentArea/Padding/SplitVBox" unique_id=1362373789]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 30
+
+[node name="StatsGrid" type="GridContainer" parent="MainVBox/ContentArea/Padding/SplitVBox/BottomSection" unique_id=527529890]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.8
+theme_override_constants/h_separation = 15
+theme_override_constants/v_separation = 10
+columns = 2
+
+[node name="LblWeaponRating" type="Label" parent="MainVBox/ContentArea/Padding/SplitVBox/BottomSection/StatsGrid" unique_id=1853489676]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.7, 0.8, 1)
+theme_override_font_sizes/font_size = 12
+text = "Weapons Rating:"
+
+[node name="ValWeaponRating" type="Label" parent="MainVBox/ContentArea/Padding/SplitVBox/BottomSection/StatsGrid" unique_id=1233393893]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 12
+text = "85"
+
+[node name="LblShieldStrength" type="Label" parent="MainVBox/ContentArea/Padding/SplitVBox/BottomSection/StatsGrid" unique_id=956470644]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.7, 0.8, 1)
+theme_override_font_sizes/font_size = 12
+text = "Shield Strength:"
+
+[node name="ValShieldStrength" type="Label" parent="MainVBox/ContentArea/Padding/SplitVBox/BottomSection/StatsGrid" unique_id=1519747338]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 12
+text = "5000 HP"
+
+[node name="LblBombardment" type="Label" parent="MainVBox/ContentArea/Padding/SplitVBox/BottomSection/StatsGrid" unique_id=1373035573]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.7, 0.8, 1)
+theme_override_font_sizes/font_size = 12
+text = "Bombardment Defense:"
+
+[node name="ValBombardmentDefense" type="Label" parent="MainVBox/ContentArea/Padding/SplitVBox/BottomSection/StatsGrid" unique_id=1512875817]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 12
+text = "★★★"
+
+[node name="TypeVBox" type="VBoxContainer" parent="MainVBox/ContentArea/Padding/SplitVBox/BottomSection" unique_id=450238116]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 15
+
+[node name="TypeSection" type="VBoxContainer" parent="MainVBox/ContentArea/Padding/SplitVBox/BottomSection/TypeVBox" unique_id=1673477324]
+layout_mode = 2
+
+[node name="LblType" type="Label" parent="MainVBox/ContentArea/Padding/SplitVBox/BottomSection/TypeVBox/TypeSection" unique_id=777251363]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.7, 0.8, 1)
+theme_override_font_sizes/font_size = 12
+text = "Facility Type:"
+
+[node name="ValType" type="Label" parent="MainVBox/ContentArea/Padding/SplitVBox/BottomSection/TypeVBox/TypeSection" unique_id=817409969]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Turbolaser Battery"
+autowrap_mode = 2

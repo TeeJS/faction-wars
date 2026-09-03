@@ -1,0 +1,141 @@
+[gd_scene format=3 uid="uid://bgk7atv6c1qqm"]
+
+[ext_resource type="Script" path="res://src/ui/mission_window.gd" id="1_mission"]
+
+[node name="MissionWindow" type="PanelContainer" unique_id=636758106]
+custom_minimum_size = Vector2(350, 260)
+offset_right = 350.0
+offset_bottom = 260.0
+script = ExtResource("1_mission")
+
+[node name="MainVBox" type="VBoxContainer" parent="." unique_id=908309006]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="TitleBar" type="ColorRect" parent="MainVBox" unique_id=1981129482]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+color = Color(0.18039216, 0.21960784, 0.2784314, 1)
+
+[node name="HBox" type="HBoxContainer" parent="MainVBox/TitleBar" unique_id=899242567]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleBarLabel" type="Label" parent="MainVBox/TitleBar/HBox" unique_id=209244115]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 12
+text = " Mission at Target"
+vertical_alignment = 1
+
+[node name="MinimizeButton" type="Button" parent="MainVBox/TitleBar/HBox" unique_id=919492380]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(24, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "_"
+
+[node name="CloseButton" type="Button" parent="MainVBox/TitleBar/HBox" unique_id=1450683689]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(24, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "X"
+
+[node name="ContentArea" type="MarginContainer" parent="MainVBox" unique_id=1376772910]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="ColorRect" type="ColorRect" parent="MainVBox/ContentArea" unique_id=1059698747]
+layout_mode = 2
+color = Color(0.121569, 0.160784, 0.215686, 1)
+
+[node name="SplitView" type="HBoxContainer" parent="MainVBox/ContentArea" unique_id=1778897207]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="LeftPanel" type="VBoxContainer" parent="MainVBox/ContentArea/SplitView" unique_id=588562129]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+
+[node name="ActiveMissionLabel" type="Label" parent="MainVBox/ContentArea/SplitView/LeftPanel" unique_id=1748951688]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "No Active Missions"
+horizontal_alignment = 1
+
+[node name="MissionIconRect" type="ColorRect" parent="MainVBox/ContentArea/SplitView/LeftPanel" unique_id=2143976219]
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+size_flags_horizontal = 4
+color = Color(0.2, 0.2, 0.2, 1)
+
+[node name="RightPanel" type="VBoxContainer" parent="MainVBox/ContentArea/SplitView" unique_id=1398735198]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 5
+
+[node name="TargetLabel" type="Label" parent="MainVBox/ContentArea/SplitView/RightPanel" unique_id=881515419]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Target:"
+horizontal_alignment = 1
+
+[node name="PlanetIconRect" type="ColorRect" parent="MainVBox/ContentArea/SplitView/RightPanel" unique_id=268520114]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 4
+color = Color(0.3, 0.4, 0.5, 1)
+
+[node name="PlanetName" type="Label" parent="MainVBox/ContentArea/SplitView/RightPanel" unique_id=805417386]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Planet Name"
+horizontal_alignment = 1
+
+[node name="MissionTabs" type="TabContainer" parent="MainVBox/ContentArea/SplitView/RightPanel" unique_id=249158679]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 10
+current_tab = 0
+
+[node name="Operatives" type="MarginContainer" parent="MainVBox/ContentArea/SplitView/RightPanel/MissionTabs" unique_id=1892944953]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+metadata/_tab_index = 0
+
+[node name="OperativeLabel" type="Label" parent="MainVBox/ContentArea/SplitView/RightPanel/MissionTabs/Operatives" unique_id=141312108]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "No personnel assigned."
+horizontal_alignment = 1
+
+[node name="Decoys" type="MarginContainer" parent="MainVBox/ContentArea/SplitView/RightPanel/MissionTabs" unique_id=829266887]
+visible = false
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+metadata/_tab_index = 1
+
+[node name="DecoyLabel" type="Label" parent="MainVBox/ContentArea/SplitView/RightPanel/MissionTabs/Decoys" unique_id=787090356]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "No decoys assigned."
+horizontal_alignment = 1

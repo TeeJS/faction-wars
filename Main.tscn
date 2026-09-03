@@ -1,43 +1,307 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://b2snkopk5igwb"]
 
-[ext_resource type="Script" path="res://Main.gd" id="1_main"]
+[ext_resource type="Script" path="res://src/ui/game_manager.gd" id="1_gm"]
+[ext_resource type="Texture2D" uid="uid://et4glgnfv6pb" path="res://data/galaxyShaded.bmp" id="2_c2ibq"]
+[ext_resource type="Script" path="res://src/ui/galaxy_map.gd" id="2_map"]
+[ext_resource type="Script" path="res://src/ui/ui_manager.gd" id="3_ui"]
+[ext_resource type="PackedScene" uid="uid://co3lfm7s0kqaq" path="res://src/ui/SectorWindow.tscn" id="4_sec"]
+[ext_resource type="PackedScene" uid="uid://ctw4da2liskx8" path="res://src/ui/PlanetWindow.tscn" id="5_plan"]
+[ext_resource type="PackedScene" uid="uid://saxgspbh4plt" path="res://src/ui/DefenseWindow.tscn" id="6_3dxm6"]
+[ext_resource type="PackedScene" uid="uid://fl33tw1nd0w" path="res://src/ui/FleetWindow.tscn" id="7_lgr22"]
+[ext_resource type="PackedScene" uid="uid://eco1w2i3n4d5" path="res://src/ui/EconomyWindow.tscn" id="8_trn2v"]
+[ext_resource type="PackedScene" uid="uid://bgk7atv6c1qqm" path="res://src/ui/MissionWindow.tscn" id="9_03owx"]
+[ext_resource type="PackedScene" uid="uid://crrr7ou7gwnol" path="res://src/ui/InGameMenuWindow.tscn" id="10_wkp8b"]
+[ext_resource type="PackedScene" uid="uid://msqwnd0w123" path="res://src/ui/MessageWindow.tscn" id="11_20pc6"]
+[ext_resource type="PackedScene" uid="uid://charstat123" path="res://src/ui/CharacterStatusWindow.tscn" id="12_5vvyt"]
+[ext_resource type="PackedScene" path="res://src/ui/PersonnelFinder.tscn" id="13_c6i3y"]
+[ext_resource type="PackedScene" uid="uid://bmraws2u11u5g" path="res://src/ui/PlanetFinder.tscn" id="15_j4qnp"]
+[ext_resource type="PackedScene" uid="uid://cdvym55l2ueic" path="res://src/ui/TransitConfirmWindow.tscn" id="16_fpfj3"]
+[ext_resource type="PackedScene" uid="uid://unitstat123" path="res://src/ui/UnitStatusWindow.tscn" id="17_sc1dx"]
+[ext_resource type="PackedScene" uid="uid://defstat123" path="res://src/ui/DefenseFacilityStatusWindow.tscn" id="18_kjvhd"]
 
-[node name="Main" type="Control"]
+[node name="MainUI" type="Control" unique_id=1535575744]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_right = -3.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_main")
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_gm")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="TextureRect" type="TextureRect" parent="." unique_id=873423187]
+show_behind_parent = true
+z_index = -10
+z_as_relative = false
+layout_mode = 0
+offset_left = 150.0
+offset_top = 99.0
+offset_right = 1220.6666
+offset_bottom = 902.0
+texture = ExtResource("2_c2ibq")
+
+[node name="Background" type="ColorRect" parent="." unique_id=1230449942]
+visible = false
 layout_mode = 1
-anchors_preset = 15
+anchors_preset = -1
+anchor_right = 1.003
+anchor_bottom = 1.003
+offset_right = -0.4560547
+offset_bottom = -2.5499878
+grow_horizontal = 2
+grow_vertical = 2
+offset_transform_enabled = true
+color = Color(0, 0, 0, 0.7529412)
+
+[node name="GalaxyMap" type="Node2D" parent="." unique_id=10578291]
+unique_name_in_owner = true
+position = Vector2(155, -11)
+script = ExtResource("2_map")
+
+[node name="UIManager" type="CanvasLayer" parent="." unique_id=13202509]
+script = ExtResource("3_ui")
+SectorWindowTemplate = ExtResource("4_sec")
+PlanetWindowTemplate = ExtResource("5_plan")
+DefenseWindowTemplate = ExtResource("6_3dxm6")
+FleetWindowTemplate = ExtResource("7_lgr22")
+EconomyWindowTemplate = ExtResource("8_trn2v")
+MissionWindowTemplate = ExtResource("9_03owx")
+InGameMenuWindowTemplate = ExtResource("10_wkp8b")
+MessageWindowTemplate = ExtResource("11_20pc6")
+CharacterStatusWindowTemplate = ExtResource("12_5vvyt")
+PersonnelFinderTemplate = ExtResource("13_c6i3y")
+PlanetFinderTemplate = ExtResource("15_j4qnp")
+TransitConfirmWindowTemplate = ExtResource("16_fpfj3")
+UnitStatusWindowTemplate = ExtResource("17_sc1dx")
+DefenseFacilityStatusWindowTemplate = ExtResource("18_kjvhd")
+
+[node name="TaskbarPanel" type="PanelContainer" parent="UIManager" unique_id=1475556947]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 0)
+anchors_preset = 11
+anchor_left = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-grow_horizontal = 2
+offset_left = -150.0
+grow_horizontal = 0
 grow_vertical = 2
-color = Color(0.015, 0.025, 0.06, 1)
 
-[node name="Margin" type="MarginContainer" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/margin_left = 48
-theme_override_constants/margin_top = 48
-theme_override_constants/margin_right = 48
-theme_override_constants/margin_bottom = 48
+[node name="Margin" type="MarginContainer" parent="UIManager/TaskbarPanel" unique_id=1851602311]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
 
-[node name="Output" type="Label" parent="Margin"]
+[node name="TaskbarList" type="VBoxContainer" parent="UIManager/TaskbarPanel/Margin" unique_id=1630753542]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.65, 0.9, 1, 1)
-theme_override_font_sizes/font_size = 22
-text = "Loading the day-zero snapshot…"
+theme_override_constants/separation = 8
+
+[node name="CommsPanel" type="PanelContainer" parent="UIManager" unique_id=229851597]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(75, 0)
+anchors_preset = -1
+anchor_top = -0.006
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 104.1
+offset_right = 147.0
+offset_bottom = -371.0
+grow_vertical = 2
+
+[node name="Margin" type="MarginContainer" parent="UIManager/CommsPanel" unique_id=727933679]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="CommsList" type="VBoxContainer" parent="UIManager/CommsPanel/Margin" unique_id=628877872]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Loyalty" type="Button" parent="UIManager/CommsPanel/Margin/CommsList" unique_id=269188085]
+layout_mode = 2
+text = "Loyalty"
+
+[node name="Fleets" type="Button" parent="UIManager/CommsPanel/Margin/CommsList" unique_id=925464555]
+layout_mode = 2
+text = "Fleets"
+
+[node name="Missions" type="Button" parent="UIManager/CommsPanel/Margin/CommsList" unique_id=1162973791]
+layout_mode = 2
+text = "Mission"
+
+[node name="Resources" type="Button" parent="UIManager/CommsPanel/Margin/CommsList" unique_id=1791774467]
+layout_mode = 2
+text = "Resources"
+
+[node name="Manufacturing" type="Button" parent="UIManager/CommsPanel/Margin/CommsList" unique_id=71552761]
+layout_mode = 2
+text = "Manufacturing"
+
+[node name="Defense" type="Button" parent="UIManager/CommsPanel/Margin/CommsList" unique_id=1920813103]
+layout_mode = 2
+text = "Defense"
+
+[node name="Conflict" type="Button" parent="UIManager/CommsPanel/Margin/CommsList" unique_id=1868180615]
+layout_mode = 2
+text = "Conflict"
+
+[node name="Chat" type="Button" parent="UIManager/CommsPanel/Margin/CommsList" unique_id=19406580]
+layout_mode = 2
+text = "Chat"
+
+[node name="Advice" type="Button" parent="UIManager/CommsPanel/Margin/CommsList" unique_id=386335262]
+layout_mode = 2
+text = "Advice"
+
+[node name="TimeControls" type="PanelContainer" parent="UIManager" unique_id=1614803411]
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 140.0
+offset_bottom = 62.0
+
+[node name="Margin" type="MarginContainer" parent="UIManager/TimeControls" unique_id=1258355066]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="VBox" type="VBoxContainer" parent="UIManager/TimeControls/Margin" unique_id=2027695068]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="DayLabel" type="Label" parent="UIManager/TimeControls/Margin/VBox" unique_id=941032901]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Day: 1"
 horizontal_alignment = 1
-vertical_alignment = 1
-autowrap_mode = 2
+
+[node name="SpeedReadout" type="Label" parent="UIManager/TimeControls/Margin/VBox" unique_id=1416161909]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Slow"
+horizontal_alignment = 1
+
+[node name="Resources" type="HBoxContainer" parent="UIManager" unique_id=1891365836]
+offset_left = 200.0
+offset_right = 1002.0
+offset_bottom = 40.0
+alignment = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="UIManager/Resources" unique_id=303832954]
+layout_mode = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 4
+
+[node name="AvailMines" type="Label" parent="UIManager/Resources/MarginContainer" unique_id=657227514]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Mines: 0"
+
+[node name="MarginContainer2" type="MarginContainer" parent="UIManager/Resources" unique_id=82445601]
+layout_mode = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 4
+
+[node name="AvailRefineries" type="Label" parent="UIManager/Resources/MarginContainer2" unique_id=1355088385]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Refineries: 0"
+
+[node name="MarginContainer3" type="MarginContainer" parent="UIManager/Resources" unique_id=735845969]
+layout_mode = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 4
+
+[node name="AvailMaintenence" type="Label" parent="UIManager/Resources/MarginContainer3" unique_id=174400824]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Maintenence: 0"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UIManager" unique_id=236534568]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = -34.0
+offset_right = -151.0
+offset_bottom = -3.0
+grow_horizontal = 2
+grow_vertical = 0
+offset_transform_enabled = true
+
+[node name="MenuButton" type="Button" parent="UIManager/HBoxContainer" unique_id=347159958]
+layout_mode = 2
+text = "Menu"
+
+[node name="Control2" type="Control" parent="UIManager/HBoxContainer" unique_id=1640989935]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PlanetInfo" type="Button" parent="UIManager/HBoxContainer" unique_id=838270983]
+layout_mode = 2
+text = "Planet Info."
+
+[node name="ShipInfo" type="Button" parent="UIManager/HBoxContainer" unique_id=446048230]
+layout_mode = 2
+text = "Ship Info."
+
+[node name="TroopInfo" type="Button" parent="UIManager/HBoxContainer" unique_id=1194457671]
+layout_mode = 2
+text = "Troop Info."
+
+[node name="CharInfo" type="Button" parent="UIManager/HBoxContainer" unique_id=1706451177]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Char. Info."
+
+[node name="Encyclopedia" type="Button" parent="UIManager/HBoxContainer" unique_id=335909726]
+layout_mode = 2
+text = "Encyclopedia"
+
+[node name="Control" type="Control" parent="UIManager/HBoxContainer" unique_id=383898367]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="GalaxyMapLayers" type="MenuButton" parent="UIManager/HBoxContainer" unique_id=455248367]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Galaxy Map Layers"
+item_count = 6
+popup/item_0/text = "Popular Support"
+popup/item_0/checkable = 1
+popup/item_0/checked = true
+popup/item_0/id = 0
+popup/item_1/text = "Idle Personnel"
+popup/item_1/checkable = 1
+popup/item_1/id = 1
+popup/item_2/text = "Idle Construction Yards"
+popup/item_2/checkable = 1
+popup/item_2/id = 2
+popup/item_3/text = "Idle Troop Training Facilities"
+popup/item_3/checkable = 1
+popup/item_3/id = 3
+popup/item_4/text = "Idle Shipyards"
+popup/item_4/checkable = 1
+popup/item_4/id = 4
+popup/item_5/text = "Fleets"
+popup/item_5/checkable = 1
+popup/item_5/id = 5
+
+[connection signal="pressed" from="UIManager/HBoxContainer/MenuButton" to="UIManager" method="OnMenuButtonClicked"]

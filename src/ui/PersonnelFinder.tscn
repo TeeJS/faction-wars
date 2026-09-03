@@ -1,0 +1,126 @@
+[gd_scene format=3 uid="uid://persfinder123"]
+
+[ext_resource type="Script" path="res://src/ui/personnel_finder.gd" id="1_pers"]
+
+[node name="PersonnelFinder" type="PanelContainer"]
+custom_minimum_size = Vector2(450, 350)
+offset_right = 450.0
+offset_bottom = 350.0
+script = ExtResource("1_pers")
+
+[node name="MainVBox" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="TitleBar" type="ColorRect" parent="MainVBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+color = Color(0.18, 0.22, 0.28, 1)
+
+[node name="HBox" type="HBoxContainer" parent="MainVBox/TitleBar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleBarLabel" type="Label" parent="MainVBox/TitleBar/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 12
+text = " Personnel Finder"
+vertical_alignment = 1
+
+[node name="MinimizeButton" type="Button" parent="MainVBox/TitleBar/HBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(24, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "_"
+
+[node name="CloseButton" type="Button" parent="MainVBox/TitleBar/HBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(24, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "X"
+
+[node name="ContentArea" type="MarginContainer" parent="MainVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="Background" type="ColorRect" parent="MainVBox/ContentArea"]
+layout_mode = 2
+color = Color(0.12, 0.16, 0.21, 1)
+
+[node name="Padding" type="MarginContainer" parent="MainVBox/ContentArea"]
+layout_mode = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="VBox" type="VBoxContainer" parent="MainVBox/ContentArea/Padding"]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="SearchHBox" type="HBoxContainer" parent="MainVBox/ContentArea/Padding/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="SearchLabel" type="Label" parent="MainVBox/ContentArea/Padding/VBox/SearchHBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Name"
+
+[node name="SearchBar" type="LineEdit" parent="MainVBox/ContentArea/Padding/VBox/SearchHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Search roster..."
+clear_button_enabled = true
+
+[node name="FactionTabs" type="TabContainer" parent="MainVBox/ContentArea/Padding/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Alliance" type="MarginContainer" parent="MainVBox/ContentArea/Padding/VBox/FactionTabs"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="Scroll" type="ScrollContainer" parent="MainVBox/ContentArea/Padding/VBox/FactionTabs/Alliance"]
+layout_mode = 2
+
+[node name="AllianceList" type="VBoxContainer" parent="MainVBox/ContentArea/Padding/VBox/FactionTabs/Alliance/Scroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Empire" type="MarginContainer" parent="MainVBox/ContentArea/Padding/VBox/FactionTabs"]
+visible = false
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="Scroll" type="ScrollContainer" parent="MainVBox/ContentArea/Padding/VBox/FactionTabs/Empire"]
+layout_mode = 2
+
+[node name="EmpireList" type="VBoxContainer" parent="MainVBox/ContentArea/Padding/VBox/FactionTabs/Empire/Scroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3

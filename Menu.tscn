@@ -1,0 +1,161 @@
+[gd_scene format=3 uid="uid://oa1t7v4dhhuu"]
+
+[ext_resource type="Script" path="res://src/ui/menu.gd" id="1_menu"]
+
+[node name="MainMenu" type="Control" unique_id=2129404716]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_menu")
+
+[node name="Background" type="ColorRect" parent="." unique_id=1930448286]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.08, 0.1, 0.14, 1)
+
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=386546597]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MenuVBox" type="VBoxContainer" parent="CenterContainer" unique_id=415231543]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Title" type="Label" parent="CenterContainer/MenuVBox" unique_id=401559762]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "New Game"
+horizontal_alignment = 1
+
+[node name="DifficultyLabel" type="Label" parent="CenterContainer/MenuVBox" unique_id=860603256]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.7, 0.8, 1)
+text = "Select Difficulty"
+horizontal_alignment = 1
+
+[node name="DifficultyHBox" type="HBoxContainer" parent="CenterContainer/MenuVBox" unique_id=1114240123]
+layout_mode = 2
+theme_override_constants/separation = 15
+alignment = 1
+
+[node name="BtnEasy" type="Button" parent="CenterContainer/MenuVBox/DifficultyHBox" unique_id=399960613]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 40)
+layout_mode = 2
+text = "Easy"
+
+[node name="BtnMedium" type="Button" parent="CenterContainer/MenuVBox/DifficultyHBox" unique_id=2046206700]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 40)
+layout_mode = 2
+text = "Medium"
+
+[node name="BtnHard" type="Button" parent="CenterContainer/MenuVBox/DifficultyHBox" unique_id=2062345157]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 40)
+layout_mode = 2
+text = "Hard"
+
+[node name="SizeLabel" type="Label" parent="CenterContainer/MenuVBox" unique_id=1688381950]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.7, 0.8, 1)
+text = "Galaxy Size"
+horizontal_alignment = 1
+
+[node name="SizeHBox" type="HBoxContainer" parent="CenterContainer/MenuVBox" unique_id=632010196]
+layout_mode = 2
+theme_override_constants/separation = 15
+alignment = 1
+
+[node name="BtnSmall" type="Button" parent="CenterContainer/MenuVBox/SizeHBox" unique_id=2113512086]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 40)
+layout_mode = 2
+text = "Small"
+
+[node name="BtnMediumSize" type="Button" parent="CenterContainer/MenuVBox/SizeHBox" unique_id=2036229168]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 40)
+layout_mode = 2
+text = "Medium"
+
+[node name="BtnLarge" type="Button" parent="CenterContainer/MenuVBox/SizeHBox" unique_id=1428839924]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 40)
+layout_mode = 2
+text = "Large"
+
+[node name="OptionsLabel" type="Label" parent="CenterContainer/MenuVBox" unique_id=1189573739]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.7, 0.8, 1)
+text = "Game Options"
+horizontal_alignment = 1
+
+[node name="ChkHQOnly" type="CheckBox" parent="CenterContainer/MenuVBox" unique_id=1921888368]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Headquarters Only Victory"
+
+[node name="Spacer" type="Control" parent="CenterContainer/MenuVBox" unique_id=799977504]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+
+[node name="FactionLabel" type="Label" parent="CenterContainer/MenuVBox" unique_id=798245864]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.7, 0.8, 1)
+text = "Select Faction to Begin"
+horizontal_alignment = 1
+
+[node name="FactionHBox" type="HBoxContainer" parent="CenterContainer/MenuVBox" unique_id=102499786]
+layout_mode = 2
+theme_override_constants/separation = 15
+alignment = 1
+
+[node name="BtnAlliance" type="Button" parent="CenterContainer/MenuVBox/FactionHBox" unique_id=1216147678]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(160, 40)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.3, 0.3, 1)
+text = "Alliance"
+
+[node name="BtnEmpire" type="Button" parent="CenterContainer/MenuVBox/FactionHBox" unique_id=1150145220]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(160, 40)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.8, 0.3, 1)
+text = "Empire"
+
+[node name="Spacer2" type="Control" parent="CenterContainer/MenuVBox" unique_id=620991752]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+
+[node name="BtnExit" type="Button" parent="CenterContainer/MenuVBox" unique_id=1050411374]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 40)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Exit to Desktop"
+
+[node name="Spacer3" type="Control" parent="CenterContainer/MenuVBox" unique_id=1551736081]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CenterContainer/MenuVBox" unique_id=153635522]
+layout_mode = 2
+
+[node name="BtnMilitaryDataEditor" type="Button" parent="CenterContainer/MenuVBox/HBoxContainer" unique_id=835017435]
+unique_name_in_owner = true
+layout_mode = 2
+text = "View Military Data"

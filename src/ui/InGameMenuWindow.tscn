@@ -1,0 +1,86 @@
+[gd_scene format=3 uid="uid://crrr7ou7gwnol"]
+
+[ext_resource type="Script" path="res://src/ui/in_game_menu_window.gd" id="1_ingame"]
+
+[node name="InGameMenuWindow" type="PanelContainer" unique_id=1214918231]
+custom_minimum_size = Vector2(220, 160)
+offset_right = 220.0
+offset_bottom = 160.0
+script = ExtResource("1_ingame")
+
+[node name="MainVBox" type="VBoxContainer" parent="." unique_id=859651384]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="TitleBar" type="ColorRect" parent="MainVBox" unique_id=456371141]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+color = Color(0.18, 0.22, 0.28, 1)
+
+[node name="HBox" type="HBoxContainer" parent="MainVBox/TitleBar" unique_id=462439328]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleBarLabel" type="Label" parent="MainVBox/TitleBar/HBox" unique_id=476088134]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 12
+text = " Game Menu"
+vertical_alignment = 1
+
+[node name="MinimizeButton" type="Button" parent="MainVBox/TitleBar/HBox" unique_id=842842246]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(24, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "_"
+
+[node name="CloseButton" type="Button" parent="MainVBox/TitleBar/HBox" unique_id=596979288]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(24, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "X"
+
+[node name="ContentArea" type="MarginContainer" parent="MainVBox" unique_id=1758691702]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="ColorRect" type="ColorRect" parent="MainVBox/ContentArea" unique_id=1684210546]
+layout_mode = 2
+color = Color(0.121569, 0.160784, 0.215686, 1)
+
+[node name="MenuButtonsVBox" type="VBoxContainer" parent="MainVBox/ContentArea" unique_id=925253612]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="BtnResume" type="Button" parent="MainVBox/ContentArea/MenuButtonsVBox" unique_id=1926850703]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+text = "Resume Game"
+
+[node name="BtnExitToMenu" type="Button" parent="MainVBox/ContentArea/MenuButtonsVBox" unique_id=1440777006]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+text = "Exit to Main Menu"
+
+[node name="BtnExitToDesktop" type="Button" parent="MainVBox/ContentArea/MenuButtonsVBox" unique_id=468996330]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+text = "Exit to Desktop"

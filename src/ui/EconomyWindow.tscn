@@ -1,0 +1,286 @@
+[gd_scene format=3 uid="uid://eco1w2i3n4d5"]
+
+[ext_resource type="Script" path="res://src/ui/economy_window.gd" id="1_ecowin"]
+
+[node name="EconomyWindow" type="PanelContainer" unique_id=18695123]
+custom_minimum_size = Vector2(600, 350)
+offset_right = 400.0
+offset_bottom = 350.0
+script = ExtResource("1_ecowin")
+
+[node name="MainVBox" type="VBoxContainer" parent="." unique_id=1887662605]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="TitleBar" type="ColorRect" parent="MainVBox" unique_id=1063103565]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+color = Color(0.18, 0.22, 0.28, 1)
+
+[node name="HBox" type="HBoxContainer" parent="MainVBox/TitleBar" unique_id=2083518324]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleBarLabel" type="Label" parent="MainVBox/TitleBar/HBox" unique_id=535740499]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 12
+text = " Planet Economy"
+vertical_alignment = 1
+
+[node name="MinimizeButton" type="Button" parent="MainVBox/TitleBar/HBox" unique_id=318376070]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(24, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "_"
+
+[node name="CloseButton" type="Button" parent="MainVBox/TitleBar/HBox" unique_id=1968030452]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(24, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "X"
+
+[node name="ContentArea" type="MarginContainer" parent="MainVBox" unique_id=574321331]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="ColorRect" type="ColorRect" parent="MainVBox/ContentArea" unique_id=1264384922]
+layout_mode = 2
+color = Color(0.121569, 0.160784, 0.215686, 1)
+
+[node name="EconomyTabs" type="TabContainer" parent="MainVBox/ContentArea" unique_id=1577334684]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+current_tab = 0
+
+[node name="Manufacturing" type="VBoxContainer" parent="MainVBox/ContentArea/EconomyTabs" unique_id=1172976735]
+layout_mode = 2
+theme_override_constants/separation = 8
+metadata/_tab_index = 0
+
+[node name="ShipQueue" type="VBoxContainer" parent="MainVBox/ContentArea/EconomyTabs/Manufacturing" unique_id=2099440238]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 0
+
+[node name="Header" type="ColorRect" parent="MainVBox/ContentArea/EconomyTabs/Manufacturing/ShipQueue" unique_id=575878688]
+custom_minimum_size = Vector2(0, 18)
+layout_mode = 2
+color = Color(0.2, 0.6, 0.2, 1)
+
+[node name="Label" type="Label" parent="MainVBox/ContentArea/EconomyTabs/Manufacturing/ShipQueue/Header" unique_id=1481083025]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 12
+text = "Ship Construction"
+vertical_alignment = 1
+
+[node name="Body" type="HBoxContainer" parent="MainVBox/ContentArea/EconomyTabs/Manufacturing/ShipQueue" unique_id=964280706]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 5
+
+[node name="ShipCapLabel" type="Label" parent="MainVBox/ContentArea/EconomyTabs/Manufacturing/ShipQueue/Body" unique_id=1395639607]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "0:0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="VBox" type="VBoxContainer" parent="MainVBox/ContentArea/EconomyTabs/Manufacturing/ShipQueue/Body" unique_id=1016777170]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ShipQueueLabel" type="Label" parent="MainVBox/ContentArea/EconomyTabs/Manufacturing/ShipQueue/Body/VBox" unique_id=300961172]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 12
+text = "No Ships are being built"
+vertical_alignment = 1
+
+[node name="ShipDestLabel" type="Label" parent="MainVBox/ContentArea/EconomyTabs/Manufacturing/ShipQueue/Body/VBox" unique_id=217271250]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.7, 1, 1)
+theme_override_font_sizes/font_size = 10
+text = "Destination: Local"
+vertical_alignment = 2
+
+[node name="TroopQueue" type="VBoxContainer" parent="MainVBox/ContentArea/EconomyTabs/Manufacturing" unique_id=364643631]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 0
+
+[node name="Header" type="ColorRect" parent="MainVBox/ContentArea/EconomyTabs/Manufacturing/TroopQueue" unique_id=111532431]
+custom_minimum_size = Vector2(0, 18)
+layout_mode = 2
+color = Color(0.2, 0.6, 0.2, 1)
+
+[node name="Label" type="Label" parent="MainVBox/ContentArea/EconomyTabs/Manufacturing/TroopQueue/Header" unique_id=234675881]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 12
+text = "Troops in Training"
+vertical_alignment = 1
+
+[node name="Body" type="HBoxContainer" parent="MainVBox/ContentArea/EconomyTabs/Manufacturing/TroopQueue" unique_id=1106390858]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 5
+
+[node name="TroopCapLabel" type="Label" parent="MainVBox/ContentArea/EconomyTabs/Manufacturing/TroopQueue/Body" unique_id=1146811447]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "0:0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="VBox" type="VBoxContainer" parent="MainVBox/ContentArea/EconomyTabs/Manufacturing/TroopQueue/Body" unique_id=1376276982]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TroopQueueLabel" type="Label" parent="MainVBox/ContentArea/EconomyTabs/Manufacturing/TroopQueue/Body/VBox" unique_id=1324899279]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 12
+text = "No Troops in training"
+vertical_alignment = 1
+
+[node name="TroopDestLabel" type="Label" parent="MainVBox/ContentArea/EconomyTabs/Manufacturing/TroopQueue/Body/VBox" unique_id=328542411]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.7, 1, 1)
+theme_override_font_sizes/font_size = 10
+text = "Destination: Local"
+vertical_alignment = 2
+
+[node name="FacQueue" type="VBoxContainer" parent="MainVBox/ContentArea/EconomyTabs/Manufacturing" unique_id=1895083328]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 0
+
+[node name="Header" type="ColorRect" parent="MainVBox/ContentArea/EconomyTabs/Manufacturing/FacQueue" unique_id=196798665]
+custom_minimum_size = Vector2(0, 18)
+layout_mode = 2
+color = Color(0.2, 0.6, 0.2, 1)
+
+[node name="Label" type="Label" parent="MainVBox/ContentArea/EconomyTabs/Manufacturing/FacQueue/Header" unique_id=767582869]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 12
+text = "Facilities Under Construction"
+vertical_alignment = 1
+
+[node name="Body" type="HBoxContainer" parent="MainVBox/ContentArea/EconomyTabs/Manufacturing/FacQueue" unique_id=952300192]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 5
+
+[node name="FacCapLabel" type="Label" parent="MainVBox/ContentArea/EconomyTabs/Manufacturing/FacQueue/Body" unique_id=448432538]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "0:0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="VBox" type="VBoxContainer" parent="MainVBox/ContentArea/EconomyTabs/Manufacturing/FacQueue/Body" unique_id=1654151254]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="FacQueueLabel" type="Label" parent="MainVBox/ContentArea/EconomyTabs/Manufacturing/FacQueue/Body/VBox" unique_id=430431627]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 12
+text = "No Facilities are being built"
+vertical_alignment = 1
+
+[node name="FacDestLabel" type="Label" parent="MainVBox/ContentArea/EconomyTabs/Manufacturing/FacQueue/Body/VBox" unique_id=1617709626]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.7, 1, 1)
+theme_override_font_sizes/font_size = 10
+text = "Destination: Local"
+vertical_alignment = 2
+
+[node name="Shipyards" type="VBoxContainer" parent="MainVBox/ContentArea/EconomyTabs" unique_id=1762095640]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="Label" type="Label" parent="MainVBox/ContentArea/EconomyTabs/Shipyards" unique_id=1349134121]
+layout_mode = 2
+text = "Manage Shipyards"
+
+[node name="Training Facilities" type="VBoxContainer" parent="MainVBox/ContentArea/EconomyTabs" unique_id=200160589]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 2
+
+[node name="Label" type="Label" parent="MainVBox/ContentArea/EconomyTabs/Training Facilities" unique_id=603979307]
+layout_mode = 2
+text = "Manage Training Centers"
+
+[node name="Construction Yards" type="VBoxContainer" parent="MainVBox/ContentArea/EconomyTabs" unique_id=1040855694]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 3
+
+[node name="Label" type="Label" parent="MainVBox/ContentArea/EconomyTabs/Construction Yards" unique_id=2011295917]
+layout_mode = 2
+text = "Manage Const. Yards"
+
+[node name="Refineries" type="VBoxContainer" parent="MainVBox/ContentArea/EconomyTabs" unique_id=354476202]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 4
+
+[node name="Label" type="Label" parent="MainVBox/ContentArea/EconomyTabs/Refineries" unique_id=2096986280]
+layout_mode = 2
+text = "Manage Refineries"
+
+[node name="Mines" type="VBoxContainer" parent="MainVBox/ContentArea/EconomyTabs" unique_id=2142561553]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 5
+
+[node name="Label" type="Label" parent="MainVBox/ContentArea/EconomyTabs/Mines" unique_id=1717835491]
+layout_mode = 2
+text = "Manage Mining Operations"

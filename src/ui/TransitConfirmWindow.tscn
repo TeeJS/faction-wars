@@ -1,0 +1,95 @@
+[gd_scene format=3 uid="uid://cdvym55l2ueic"]
+
+[ext_resource type="Script" path="res://src/ui/transit_confirm_window.gd" id="1_tcw"]
+
+[node name="TransitConfirmWindow" type="PanelContainer" unique_id=347694459]
+custom_minimum_size = Vector2(300, 100)
+offset_right = 300.0
+offset_bottom = 100.0
+script = ExtResource("1_tcw")
+
+[node name="MainVBox" type="VBoxContainer" parent="." unique_id=607618373]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="TitleBar" type="ColorRect" parent="MainVBox" unique_id=1092720883]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+color = Color(0.18, 0.22, 0.28, 1)
+
+[node name="HBox" type="HBoxContainer" parent="MainVBox/TitleBar" unique_id=1541320875]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleBarLabel" type="Label" parent="MainVBox/TitleBar/HBox" unique_id=1919181334]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 12
+text = " Confirm Transit"
+vertical_alignment = 1
+
+[node name="MinimizeButton" type="Button" parent="MainVBox/TitleBar/HBox" unique_id=333195155]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(24, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "_"
+
+[node name="CloseButton" type="Button" parent="MainVBox/TitleBar/HBox" unique_id=620592831]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(24, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "X"
+
+[node name="ContentArea" type="MarginContainer" parent="MainVBox" unique_id=1545233501]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="Background" type="ColorRect" parent="MainVBox/ContentArea" unique_id=3705986]
+layout_mode = 2
+color = Color(0.05, 0.05, 0.08, 1)
+
+[node name="HBox" type="HBoxContainer" parent="MainVBox/ContentArea" unique_id=2119213381]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="MarginContainer" type="MarginContainer" parent="MainVBox/ContentArea/HBox" unique_id=1140464834]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+
+[node name="MessageLabel" type="Label" parent="MainVBox/ContentArea/HBox/MarginContainer" unique_id=938011449]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 1
+theme_override_font_sizes/font_size = 14
+text = "Transit time in days
+Character Name: XX"
+
+[node name="ButtonVBox" type="VBoxContainer" parent="MainVBox/ContentArea/HBox" unique_id=1041244309]
+layout_mode = 2
+alignment = 1
+
+[node name="ConfirmButton" type="Button" parent="MainVBox/ContentArea/HBox/ButtonVBox" unique_id=1067488932]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 30)
+layout_mode = 2
+text = "Y"
+
+[node name="CancelButton" type="Button" parent="MainVBox/ContentArea/HBox/ButtonVBox" unique_id=1639930215]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 30)
+layout_mode = 2
+text = "N"
