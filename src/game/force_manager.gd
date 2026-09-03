@@ -59,14 +59,14 @@ static func ConcludeDagobah(luke: Character, day: int, completed: bool) -> void:
 	print("[Force] %s has returned from Dagobah after %d day(s) (%s, +%d%%): Force %d -> %d (%s)." % [
 		luke.Name, served, "completed" if completed else "interrupted", percent, before, luke.JediLevel, rank_name])
 
-	if luke.Faction != GameSettings.PlayerFaction:
+	if not GameSettings.IsHuman(luke.Faction):
 		return
 	var body: String
 	if completed:
 		body = "%s's training under Yoda is complete. He stands at %s, and is now strong enough in the Force to sense it in others." % [luke.Name, rank_name]
 	else:
 		body = "%s's training under Yoda was cut short after %d day(s). He stands at %s - what he had time to learn, and no more." % [luke.Name, served, rank_name]
-	EventBus.BroadcastMessage(GameMessage.new("%s has returned" % luke.Name,
+	EventBus.Tell(luke.Faction, GameMessage.new("%s has returned" % luke.Name,
 		body + "\n\nHe has returned to %s." % (_return_to.Name if _return_to != null else "our forces"),
 		Enums.MessageCategory.Missions, day, _return_to if _return_to is Planet else null, luke))
 
@@ -109,9 +109,9 @@ static func ProcessDagobah(day: int) -> void:
 
 	print("[Force] %s has left for Dagobah, returning day %d." % [luke.Name, _returns_on])
 
-	if luke.Faction != GameSettings.PlayerFaction:
+	if not GameSettings.IsHuman(luke.Faction):
 		return
-	EventBus.BroadcastMessage(GameMessage.new("%s has gone" % luke.Name,
+	EventBus.Tell(luke.Faction, GameMessage.new("%s has gone" % luke.Name,
 		"%s has left for the Dagobah system, alone and without orders, to seek training under a Jedi Master.\n\nHe cannot be located or given orders until he returns." % luke.Name,
 		Enums.MessageCategory.Missions, day, _return_to if _return_to is Planet else null, luke))
 
@@ -134,9 +134,9 @@ static func LeiaLearnsFromLuke(roster: Array, day: int) -> void:
 	var rank_name := JsonUtil.enum_name(Enums.ForceRanking, leia.ForceRank())
 	print("[Force] %s has told %s what she is (%s, level %d)." % [luke.Name, leia.Name, rank_name, leia.JediLevel])
 
-	if leia.Faction != GameSettings.PlayerFaction:
+	if not GameSettings.IsHuman(leia.Faction):
 		return
-	EventBus.BroadcastMessage(GameMessage.new("%s knows her heritage" % leia.Name,
+	EventBus.Tell(leia.Faction, GameMessage.new("%s knows her heritage" % leia.Name,
 		"%s has told %s the truth about their parentage.\n\nThe Force has been in her all along, and she stands at %s. Her abilities can be developed further with a Jedi Training mission led by a Jedi Master." % [luke.Name, leia.Name, rank_name],
 		Enums.MessageCategory.Missions, day, leia.Attached if leia.Attached is Planet else null, leia))
 
@@ -173,8 +173,8 @@ static func ProcessDay(day: int) -> void:
 			var rank_name := JsonUtil.enum_name(Enums.ForceRanking, latent.ForceRank())
 			print("[Force] %s has sensed the Force in %s (%s, level %d)." % [seer.Name, latent.Name, rank_name, latent.JediLevel])
 
-			if latent.Faction != GameSettings.PlayerFaction:
+			if not GameSettings.IsHuman(latent.Faction):
 				continue
-			EventBus.BroadcastMessage(GameMessage.new("%s: %s is strong in the Force" % [seer.Name, latent.Name],
+			EventBus.Tell(latent.Faction, GameMessage.new("%s: %s is strong in the Force" % [seer.Name, latent.Name],
 				"%s has been unaware of it until now. They stand at %s.\n\nTheir abilities can be developed further with a Jedi Training mission led by a Jedi Master." % [latent.Name, rank_name],
 				Enums.MessageCategory.Missions, day, latent.Attached if latent.Attached is Planet else null, latent))

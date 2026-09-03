@@ -193,7 +193,7 @@ static func MessagesFor(categoryFilter: String) -> Array:
 	var all: bool = categoryFilter.nocasecmp_to(AllTab) == 0
 
 	return Lq.order_by(
-		Lq.where(EventBus.MessageLog, func(m: GameMessage) -> bool:
+		Lq.where(EventBus.VisibleMessages(), func(m: GameMessage) -> bool:
 			return (m.Category != Enums.MessageCategory.Advice) if all \
 				else JsonUtil.enum_name(Enums.MessageCategory, m.Category).nocasecmp_to(categoryFilter) == 0),
 		func(m: GameMessage) -> int: return m.DayReceived,

@@ -76,11 +76,12 @@ static func ProcessDay(galaxy: Array, day: int) -> void:
 			continue
 		Winner = f
 		print("[Victory] %s has met every victory condition on day %d." % [f.DisplayName, day])
-		var ours: bool = f == GameSettings.PlayerFaction
-		EventBus.BroadcastMessage(GameMessage.new("Victory" if ours else "Defeat",
-			("Every victory condition has been met. The %s has won.\n\n%s" % [f.DisplayName, Summary(f, galaxy)]) if ours
-			else ("The %s has met every victory condition. We have lost.\n\n%s" % [f.DisplayName, Summary(f, galaxy)]),
-			Enums.MessageCategory.Missions, day))
+		for h in GameSettings.HumanFactions:
+			var ours: bool = f == h
+			EventBus.Tell(h, GameMessage.new("Victory" if ours else "Defeat",
+				("Every victory condition has been met. The %s has won.\n\n%s" % [f.DisplayName, Summary(f, galaxy)]) if ours
+				else ("The %s has met every victory condition. We have lost.\n\n%s" % [f.DisplayName, Summary(f, galaxy)]),
+				Enums.MessageCategory.Missions, day))
 		EventBus.BroadcastChanged()
 		return
 

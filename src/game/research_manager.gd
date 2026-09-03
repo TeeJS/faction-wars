@@ -85,13 +85,13 @@ static func Award(f: Faction, track: int, points: int, day: int, quiet: bool) ->
 		if before.has(found):
 			continue
 		print("[R&D] %s has developed %s." % [f.DisplayName, found])
-		if f != GameSettings.PlayerFaction:
+		if not GameSettings.IsHuman(f):
 			continue
 		var msg := GameMessage.new("New technology: %s" % found,
 			"Our researchers have completed work on the %s. It is available to build immediately." % found,
 			Enums.MessageCategory.Manufacturing, day)
 		msg.Type = Enums.MessageType.ResearchReport
-		EventBus.BroadcastMessage(msg)
+		EventBus.Tell(f, msg)
 
 
 ## Everything this side has reached on a track, by name.

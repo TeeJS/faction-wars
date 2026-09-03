@@ -97,7 +97,7 @@ static func ResolveEncounter(a: Character, b: Character, p: Array, day: int, rng
 		a.Name, b.Name, a.Attached.Name if a.Attached != null else "", "REVEALED" if first else "already known",
 		("injured %d" % a.Injury) if hurt else "unharmed", gain, a.JediLevel, rank_name])
 
-	if a.Faction != GameSettings.PlayerFaction:
+	if not GameSettings.IsHuman(a.Faction):
 		return
 	var body := ""
 	body += ("%s has met %s face to face, and has learned the truth of their own parentage.\n\n" % [a.Name, b.Name]) if first \
@@ -106,7 +106,7 @@ static func ResolveEncounter(a: Character, b: Character, p: Array, day: int, rng
 		body += "%s was badly hurt in the encounter and cannot be sent on missions or hold a command until they have recovered.\n\n" % a.Name
 	if gain > 0:
 		body += "Standing against one so strong has taught them something all the same: %s is now %s." % [a.Name, rank_name]
-	EventBus.BroadcastMessage(GameMessage.new(
+	EventBus.Tell(a.Faction, GameMessage.new(
 		("%s has learned the truth" % a.Name) if first else ("%s has faced %s" % [a.Name, b.Name]),
 		body.strip_edges(false, true), Enums.MessageCategory.Missions, day, a.Attached if a.Attached is Planet else null, a))
 
@@ -142,9 +142,9 @@ static func ProcessBountyHunters(day: int, rng: Prng) -> void:
 	print("[Story] Bounty hunters moved on %s (combat %d -> %d%% to evade): %s." % [han.Name, han.CombatRating, evade, "he got away" if escaped else "TAKEN"])
 
 	if escaped:
-		if han.Faction != GameSettings.PlayerFaction:
+		if not GameSettings.IsHuman(han.Faction):
 			return
-		EventBus.BroadcastMessage(GameMessage.new("Bounty hunters tried for %s" % han.Name,
+		EventBus.Tell(han.Faction, GameMessage.new("Bounty hunters tried for %s" % han.Name,
 			"%s was set upon by bounty hunters at %s and fought his way clear." % [han.Name, han.Attached.Name if han.Attached != null else "his post"],
 			Enums.MessageCategory.Missions, day, han.Attached if han.Attached is Planet else null, han))
 		return
@@ -187,9 +187,9 @@ static func TakeToPalace(han: Character, day: int, rng: Prng) -> void:
 	var names := Lq.join(Lq.select(party, func(c): return c.Name))
 	print("[Story] %s has been taken to Jabba's palace. Rescue party: %s." % [han.Name, "nobody available" if party.is_empty() else names])
 
-	if han.Faction != GameSettings.PlayerFaction:
+	if not GameSettings.IsHuman(han.Faction):
 		return
-	EventBus.BroadcastMessage(GameMessage.new("%s has been taken" % han.Name,
+	EventBus.Tell(han.Faction, GameMessage.new("%s has been taken" % han.Name,
 		"Bounty hunters have seized %s and carried him to Jabba's palace.\n\n%s" % [han.Name,
 			("%s %s gone after him without waiting for orders. None of them can be located or given orders until this is settled." % [names, "has" if party.size() == 1 else "have"]) if not party.is_empty()
 			else "There is nobody free to go after him."],
@@ -230,9 +230,9 @@ static func FreeFromPalace(han: Character, rescuer: Character, day: int) -> void
 	han.BountyAttack = false
 	var home_name: String = home.Name if home != null else "our forces"
 	print("[Story] %s got %s out of Jabba's palace; all returned to %s." % [rescuer.Name, han.Name, home_name])
-	if han.Faction != GameSettings.PlayerFaction:
+	if not GameSettings.IsHuman(han.Faction):
 		return
-	EventBus.BroadcastMessage(GameMessage.new("%s is free" % han.Name,
+	EventBus.Tell(han.Faction, GameMessage.new("%s is free" % han.Name,
 		"%s has got %s out of Jabba's palace.\n\n%s %s back at %s and awaiting orders." % [
 			rescuer.Name, han.Name, Lq.join(Lq.select(party, func(c): return c.Name)), "is" if party.size() == 1 else "are", home_name],
 		Enums.MessageCategory.Missions, day, home if home is Planet else null, han))
@@ -311,14 +311,15 @@ static func FinalBattleWon(luke: Character, vader: Character, emperor: Character
 		captive.DaysToDestination = 0
 		captive.Attached = home
 
-	if luke.Faction != GameSettings.PlayerFaction:
-		EventBus.BroadcastMessage(GameMessage.new("Our leaders have been taken",
+	if GameSettings.IsHuman(vader.Faction):
+		EventBus.Tell(vader.Faction, GameMessage.new("Our leaders have been taken",
 			"%s and %s confronted %s and were overcome. Both are now prisoners of the %s." % [vader.Name, emperor.Name, luke.Name, luke.Faction.DisplayName],
 			Enums.MessageCategory.Missions, day, home if home is Planet else null))
 		EventBus.BroadcastChanged()
+	if not GameSettings.IsHuman(luke.Faction):
 		return
 
-	EventBus.BroadcastMessage(GameMessage.new("%s has prevailed" % luke.Name,
+	EventBus.Tell(luke.Faction, GameMessage.new("%s has prevailed" % luke.Name,
 		"%s brought %s before %s, and it was the two of them who did not walk away.\n\n%s is free, and both %s and %s are our prisoners at %s." % [
 			vader.Name, luke.Name, emperor.Name, luke.Name, vader.Name, emperor.Name, home.Name if home != null else "our headquarters"],
 		Enums.MessageCategory.Missions, day, home if home is Planet else null, luke))
@@ -329,8 +330,8 @@ static func FinalBattleLost(luke: Character, day: int, rng: Prng) -> void:
 	luke.CanEscape = false
 	MissionManager.Injure(luke, rng, RuleId.FinalBattleLossInjuryBase, RuleId.FinalBattleLossInjurySpread)
 	print("[Story] %s lost the final confrontation: injured %d, and can no longer attempt escape." % [luke.Name, luke.Injury])
-	if luke.Faction != GameSettings.PlayerFaction:
+	if not GameSettings.IsHuman(luke.Faction):
 		return
-	EventBus.BroadcastMessage(GameMessage.new("%s has been broken" % luke.Name,
+	EventBus.Tell(luke.Faction, GameMessage.new("%s has been broken" % luke.Name,
 		"%s was brought before the Emperor and was not strong enough.\n\nHe remains a prisoner, badly hurt, and will not get himself out. Only a Rescue mission or the retaking of the system holding him will free him now." % luke.Name,
 		Enums.MessageCategory.Missions, day, luke.Attached if luke.Attached is Planet else null, luke))

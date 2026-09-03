@@ -58,9 +58,9 @@ static func TryEscape(prisoner: Character, galaxy: Array, day: int, rng: Prng) -
 	if prisoner.IsKnownJedi:
 		prisoner.JediLevel += RuleManager.Get(RuleId.OrdinaryMissionForceReward, prisoner.Faction)
 
-	if prisoner.Faction != GameSettings.PlayerFaction:
+	if not GameSettings.IsHuman(prisoner.Faction):
 		return
-	EventBus.BroadcastMessage(GameMessage.new("%s has escaped" % prisoner.Name,
+	EventBus.Tell(prisoner.Faction, GameMessage.new("%s has escaped" % prisoner.Name,
 		"%s has got out of enemy hands and reached %s." % [prisoner.Name, home.Name if home != null else "our forces"],
 		Enums.MessageCategory.Missions, day, home if home is Planet else null, prisoner))
 

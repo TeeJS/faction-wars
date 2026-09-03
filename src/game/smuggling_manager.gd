@@ -43,13 +43,13 @@ static func ProcessDay(galaxy: Array, day: int, _rng: Prng) -> void:
 			var before: int = p.SupportFor(holder)
 			p.ShiftSupport(holder, shift)
 			print("[Smuggling] %s: support for %s %d -> %d (under %d%%)." % [p.Name, holder.Id, before, p.SupportFor(holder), RuleManager.Get(RuleId.SmugglingSupportThreshold, holder)])
-			if holder != GameSettings.PlayerFaction:
+			if not GameSettings.IsHuman(holder):
 				continue
 			var msg := GameMessage.new("Smuggling on %s" % p.Name,
 				"%s does not strongly support us, and smugglers are working the mines and refineries there. Support has fallen to %d%%.\n\nA Diplomacy mission would raise it out of their reach." % [p.Name, p.SupportFor(holder)],
 				Enums.MessageCategory.Missions, day, p)
 			msg.Type = Enums.MessageType.Smuggling
-			EventBus.BroadcastMessage(msg)
+			EventBus.Tell(holder, msg)
 
 
 static func Delay(f: Faction) -> int:

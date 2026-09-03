@@ -47,6 +47,26 @@ static func BroadcastMessage(message: GameMessage) -> void:
 		cb.call(message)
 
 
+## A MESSAGE FOR ONE SIDE. The simulation addresses every side-specific message
+## to the human faction it concerns (docs/m0-audit.md section 1), so both
+## clients of a head-to-head game hold the same log and each shows its own.
+## In single player there is one human, and this is BroadcastMessage.
+static func Tell(audience: Faction, message: GameMessage) -> void:
+	message.For = audience
+	BroadcastMessage(message)
+
+
+## Is this message for the side this client plays? Unaddressed messages are
+## for everybody.
+static func Visible(message: GameMessage) -> bool:
+	return message.For == null or message.For == GameSettings.LocalFaction()
+
+
+## The log as this client sees it.
+static func VisibleMessages() -> Array:
+	return Lq.where(MessageLog, func(m: GameMessage) -> bool: return Visible(m))
+
+
 ## "Messages are eventually deleted whether or not you read them, except for
 ## agent advice messages" (manual p079). Automatic expiry is not modelled; this
 ## is the player clearing one by hand.
@@ -61,7 +81,7 @@ static func DeleteMessage(message: GameMessage) -> void:
 static func UnreadCount(category: int) -> int:
 	var n := 0
 	for m in MessageLog:
-		if not m.IsRead and (category == Enums.MessageCategory.All or m.Category == category):
+		if Visible(m) and not m.IsRead and (category == Enums.MessageCategory.All or m.Category == category):
 			n += 1
 	return n
 
@@ -69,7 +89,7 @@ static func UnreadCount(category: int) -> int:
 static func UnreadTotal() -> int:
 	var n := 0
 	for m in MessageLog:
-		if not m.IsRead:
+		if Visible(m) and not m.IsRead:
 			n += 1
 	return n
 

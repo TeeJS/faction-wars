@@ -116,7 +116,8 @@ static func ProcessDay(galaxy: Array, day: int, _rng: Prng) -> void:
 ## The original's own strings: "Fleet Initiates Blockade of |" / "| has initiated a blockade of |".
 static func Begun(p: Planet, blockader: Faction, day: int) -> void:
 	print("[Blockade] %s is blockading %s (units get out at %d%%)." % [blockader.DisplayName, p.Name, WithdrawPercent(p)])
-	if p.ControllingFaction != GameSettings.PlayerFaction and blockader != GameSettings.PlayerFaction:
+	var audiences: Array = Lq.where([p.ControllingFaction, blockader], func(f: Faction) -> bool: return GameSettings.IsHuman(f))
+	if audiences.is_empty():
 		return
 	var fleet: Fleet = Lq.first_or_null(p.FleetsInOrbit(), func(f): return f.Faction == blockader)
 	var ion := Lq.any(p.Facilities, func(f): return f.Type == Enums.FacilityType.IonCannon)
@@ -126,16 +127,17 @@ static func Begun(p: Planet, blockader: Faction, day: int) -> void:
 			"\n\nThe ion cannon on the system is letting units through unharmed." if ion else ""],
 		Enums.MessageCategory.Missions, day, p)
 	msg.Type = Enums.MessageType.Blockade
-	EventBus.BroadcastMessage(msg)
+	for k in audiences.size():
+		EventBus.Tell(audiences[k], msg if k == 0 else msg.Copy())
 
 
 static func Broke(p: Planet, day: int) -> void:
 	_next_drift.erase(p.Name)
 	print("[Blockade] The blockade of %s has been broken." % p.Name)
-	if p.ControllingFaction != GameSettings.PlayerFaction:
+	if not GameSettings.IsHuman(p.ControllingFaction):
 		return
 	var msg := GameMessage.new("Blockade of %s broken" % p.Name,
 		"The blockade of %s has been lifted. Production may resume." % p.Name,
 		Enums.MessageCategory.Missions, day, p)
 	msg.Type = Enums.MessageType.Blockade
-	EventBus.BroadcastMessage(msg)
+	EventBus.Tell(p.ControllingFaction, msg)

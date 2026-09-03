@@ -122,6 +122,8 @@ func RefreshCommsHighlights() -> void:
 
 
 func ShowHudNotification(msg: GameMessage) -> void:
+	if not EventBus.Visible(msg):
+		return   # the other side's message, in a head-to-head game
 	var ticker: Label = get_node_or_null("%HudTicker")
 	if ticker != null:
 		ticker.text = "INCOMING TRANSMISSION: %s" % msg.Title

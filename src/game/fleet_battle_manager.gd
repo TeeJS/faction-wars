@@ -210,7 +210,8 @@ static func Simulate(r: BattleReport, day: int) -> void:
 
 	print("[Battle] %s: %s %d vs %s %d -> %s%s" % [r.Where.Name, r.Ours.Name, s0, r.Theirs.Name, s1, r.Summary, " (gravity well - no withdrawal)" if r.HeldByGravityWell else ""])
 
-	if r.Ours.Faction != GameSettings.PlayerFaction and r.Theirs.Faction != GameSettings.PlayerFaction:
+	var audiences: Array = Lq.where([r.Ours.Faction, r.Theirs.Faction], func(f: Faction) -> bool: return GameSettings.IsHuman(f))
+	if audiences.is_empty():
 		return
 
 	_unreported.append(r)
@@ -224,7 +225,8 @@ static func Simulate(r: BattleReport, day: int) -> void:
 			+ (("\n\nDestroyed: %s" % Lq.join(r.Destroyed)) if not r.Destroyed.is_empty() else "\n\nNo casualties."),
 		Enums.MessageCategory.Missions, day, r.Where)
 	msg.Type = Enums.MessageType.TacticalAfterActionReport
-	EventBus.BroadcastMessage(msg)
+	for k in audiences.size():
+		EventBus.Tell(audiences[k], msg if k == 0 else msg.Copy())
 
 
 static func Tally(side: TacticalBattle.TacticalSide, into: Casualties, fleet: Fleet) -> void:

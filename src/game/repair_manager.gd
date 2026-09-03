@@ -101,7 +101,7 @@ static func RepairSystem(d: ShipDamage, points: int) -> bool:
 static func Announce(u: Unit, fleet: Fleet, where: Planet, day: int) -> void:
 	var at: String = fleet.Name if fleet != null else (where.Name if where != null else "our forces")
 	print("[Repair] %s attached to %s is fully operational again." % [u.Name, at])
-	if u.Faction != GameSettings.PlayerFaction:
+	if not GameSettings.IsHuman(u.Faction):
 		return
 	var squadron := u.Type == Enums.UnitType.Fighter
 	var msg := GameMessage.new("Squadron at Full Strength" if squadron else "Capital Ship Repaired",
@@ -109,4 +109,4 @@ static func Announce(u: Unit, fleet: Fleet, where: Planet, day: int) -> void:
 		else ("%s attached to %s has repaired all battle damage and is fully operational." % [u.Name, at]),
 		Enums.MessageCategory.Missions, day, where)
 	msg.Type = Enums.MessageType.Repair
-	EventBus.BroadcastMessage(msg)
+	EventBus.Tell(u.Faction, msg)

@@ -285,9 +285,9 @@ static func AwardForceForSuccess(m: Mission, day: int) -> void:
 		if c.ForceRank() == before:
 			continue
 		print("[Force] %s has advanced to %s (level %d)." % [c.Name, JsonUtil.enum_name(Enums.ForceRanking, c.ForceRank()), c.JediLevel])
-		if m.Faction != GameSettings.PlayerFaction:
+		if not GameSettings.IsHuman(m.Faction):
 			continue
-		EventBus.BroadcastMessage(GameMessage.new(
+		EventBus.Tell(m.Faction, GameMessage.new(
 			"%s is now a %s" % [c.Name, Pretty(c.ForceRank())],
 			"%s's command of the Force has deepened through service. They stand at %s." % [c.Name, Pretty(c.ForceRank())],
 			Enums.MessageCategory.Missions, day, m.Target, c))
@@ -301,7 +301,7 @@ static func DisplayNameOf(u: Unit) -> Variant:
 
 
 static func Report(m: Mission, day: int, title: String, body: String, asks_to_continue: bool = false) -> void:
-	if m.Faction != GameSettings.PlayerFaction:
+	if not GameSettings.IsHuman(m.Faction):
 		return
 	var leader := Leader(m)
 	var who: Variant = DisplayNameOf(leader)
@@ -313,7 +313,7 @@ static func Report(m: Mission, day: int, title: String, body: String, asks_to_co
 		Enums.MessageCategory.Missions, day, m.Target, character)
 	msg.PendingMission = m if asks_to_continue else null
 	msg.Type = Enums.MessageType.MissionReport   # ALWAYS MissionReport, NEVER MissionFailed (see source)
-	EventBus.BroadcastMessage(msg)
+	EventBus.Tell(m.Faction, msg)
 
 
 ## Eligibility is the intersection of what the unit can do and what the target

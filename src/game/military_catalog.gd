@@ -177,10 +177,10 @@ static func _disband_ground_fighters(lost: Planet, former_holder: Faction) -> vo
 		u.Attached = null
 		u.Status = Enums.Status.Dead
 	print("[%s] %d of %s's ground fighter squadrons were lost with the world." % [lost.Name, doomed.size(), former_holder.DisplayName])
-	if former_holder != GameSettings.PlayerFaction:
+	if not GameSettings.IsHuman(former_holder):
 		return
 	var names := Lq.join(Lq.select(doomed, func(u): return u.Name))
-	EventBus.BroadcastMessage(GameMessage.new(
+	EventBus.Tell(former_holder, GameMessage.new(
 		"Squadrons lost with %s" % lost.Name,
 		"%s is no longer ours. %s %s on the ground there and %s lost." % [
 			lost.Name, names, "was" if doomed.size() == 1 else "were", "is" if doomed.size() == 1 else "are"],
@@ -214,9 +214,9 @@ static func _withdraw_personnel(lost: Planet, former_holder: Faction) -> void:
 
 	print("[%s] %d of %s's personnel withdrew to %s when the world was lost." % [lost.Name, leaving.size(), former_holder.DisplayName, refuge.Name])
 
-	if former_holder == GameSettings.PlayerFaction:
+	if GameSettings.IsHuman(former_holder):
 		var names := Lq.join(Lq.select(leaving, func(u): return u.Name))
-		EventBus.BroadcastMessage(GameMessage.new(
+		EventBus.Tell(former_holder, GameMessage.new(
 			"Personnel withdrawn from %s" % lost.Name,
 			"%s is no longer ours. %s %s fallen back to %s." % [lost.Name, names, "has" if leaving.size() == 1 else "have", refuge.Name],
 			Enums.MessageCategory.Defense, StrategicTickManager.Today, refuge))

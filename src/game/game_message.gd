@@ -48,6 +48,14 @@ func _init(title: String = "", body: String = "", category: int = Enums.MessageC
 	AssociatedCharacter = character
 
 
+## The same message for a second audience - its own serial, its own read flag.
+func Copy() -> GameMessage:
+	var c := GameMessage.new(Title, Body, Category, DayReceived, AssociatedLocation, AssociatedCharacter)
+	c.Type = Type
+	c.PendingMission = PendingMission
+	return c
+
+
 func AwaitsDecision() -> bool:
 	return PendingMission != null and not PendingMission.Finished
 

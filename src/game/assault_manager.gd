@@ -177,7 +177,7 @@ static func Announce(r: AssaultReport, _fleet: Fleet, attacker: Faction, defende
 		("%s has fallen. %d regiments hold it." % [r.Target.Name, r.AttackersRemaining]) if r.Captured
 		else ("The assault was thrown back. %d defending regiments remain." % r.DefendersRemaining)]
 	for side in [attacker, defender]:
-		if side == null or side != GameSettings.PlayerFaction:
+		if side == null or not GameSettings.IsHuman(side):
 			continue
 		var ours: bool = side == attacker
 		var title: String
@@ -185,4 +185,4 @@ static func Announce(r: AssaultReport, _fleet: Fleet, attacker: Faction, defende
 			title = ("%s captured" % r.Target.Name) if ours else ("%s lost" % r.Target.Name)
 		else:
 			title = ("Assault on %s failed" % r.Target.Name) if ours else ("%s held" % r.Target.Name)
-		EventBus.BroadcastMessage(GameMessage.new(title, body, Enums.MessageCategory.Conflict, day, r.Target))
+		EventBus.Tell(side, GameMessage.new(title, body, Enums.MessageCategory.Conflict, day, r.Target))

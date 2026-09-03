@@ -58,7 +58,7 @@ static func Deliver(listener: Faction, target: Planet, day: int, rng: Prng) -> v
 	if cats.is_empty():
 		return
 	IntelManager.Capture(listener, target, day, cats)
-	if listener != GameSettings.PlayerFaction:
+	if not GameSettings.IsHuman(listener):
 		return
 	var lines := 0
 	for s in IntelManager.AllSections:
@@ -72,7 +72,7 @@ static func Deliver(listener: Faction, target: Planet, day: int, rng: Prng) -> v
 			"\n\nThe system is in revolt, which is why we are hearing from it." if target.IsInUprising else ""],
 		Enums.MessageCategory.Missions, day, target)
 	msg.Type = Enums.MessageType.InformantReport
-	EventBus.BroadcastMessage(msg)
+	EventBus.Tell(listener, msg)
 
 
 ## The decoded jump table (0x50E18C).

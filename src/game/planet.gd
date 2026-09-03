@@ -509,7 +509,7 @@ func ConsiderUprising(need: int, have: int) -> void:
 
 	print("[%s] UPRISING - rolled %d, %d regiments against a requirement of %d. Runs to day %d." % [Name, roll, have, need, _uprising_ends])
 
-	if ControllingFaction != GameSettings.PlayerFaction:
+	if not GameSettings.IsHuman(ControllingFaction):
 		return
 
 	# The original's own strings (TEXTSTRA 0x021a66) and the shipped droid advice.
@@ -517,7 +517,7 @@ func ConsiderUprising(need: int, have: int) -> void:
 		"An uprising has begun on %s. Production there has stopped, and the garrison requirement has doubled to %d regiments while it lasts.\n\nUprisings can be subdued by placing twice the normal garrison on the system, or by sending a character to perform a 'Subdue Uprising' mission at that location." % [Name, GarrisonRequirement()],
 		Enums.MessageCategory.Defense, StrategicTickManager.Today, self)
 	msg.Type = Enums.MessageType.Uprising
-	EventBus.BroadcastMessage(msg)
+	EventBus.Tell(ControllingFaction, msg)
 
 
 ## THE ORIGINAL'S OWN MESSAGE, word for word (TEXTSTRA 0x00f3f6). Raised once per
@@ -527,13 +527,13 @@ func WarnGarrison(need: int, have: int) -> void:
 		return
 	IsNearUprising = true
 	print("[%s] NEAR UPRISING - %d of %d regiments. First unrest check on day %d." % [Name, have, need, _next_uprising_incident])
-	if ControllingFaction != GameSettings.PlayerFaction:
+	if not GameSettings.IsHuman(ControllingFaction):
 		return
 	var msg := GameMessage.new("Near Uprising",
 		"Unrest has pushed %s close to uprising.\n\nIt holds %d trooper regiment(s) against a garrison requirement of %d. Move troops there, or train more, before the populace rises." % [Name, have, need],
 		Enums.MessageCategory.Defense, StrategicTickManager.Today, self)
 	msg.Type = Enums.MessageType.GarrisonWarning
-	EventBus.BroadcastMessage(msg)
+	EventBus.Tell(ControllingFaction, msg)
 
 
 ## Troops first, then facilities (never the headquarters), then the people
@@ -738,13 +738,13 @@ static func Deliver(job: ConstructionTask, destination: Planet) -> void:
 
 
 static func ReportDelivery(where: Planet, what: String, category: int) -> void:
-	if where.ControllingFaction != GameSettings.PlayerFaction:
+	if not GameSettings.IsHuman(where.ControllingFaction):
 		return
 	var msg := GameMessage.new("%s ready at %s" % [what, where.Name],
 		"Construction of %s is complete and it has been deployed on %s." % [what, where.Name],
 		category, StrategicTickManager.Today, where)
 	msg.Type = Enums.MessageType.UnitDeployment
-	EventBus.BroadcastMessage(msg)
+	EventBus.Tell(where.ControllingFaction, msg)
 
 
 # --- Popular support --- a percentage PER PLAYABLE FACTION, summing to 100.
