@@ -74,6 +74,14 @@ see it.
 **Deviation:** no artwork; a labelled button, as every other Cockpit control in
 the port already is.
 
+**Addition, requested by TeeJ (room AM-LFGGG3LVQSSJGXSP7P7JE9Q745 #80):** a
+**Provide feedback** checkbox under Game Options on the Cockpit, remembered in
+`user://`. When ticked, any game this client starts shows a feedback box at the
+bottom of the left column (note, Submit, result line); a note goes to the
+relay's `POST /feedback` with the day, seed, settings, client facts and this
+client's session log, or is kept under `user://feedback/` when the relay is
+unreachable. BACKPORT-LOG #15. Not from the manual.
+
 ## 2. Multiplayer Configuration screen (Fig 5.2, p157)
 
 Every element the figure shows, top to bottom:
