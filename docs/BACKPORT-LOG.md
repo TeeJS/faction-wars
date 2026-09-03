@@ -77,3 +77,10 @@ Kind:      plumbing (no rule effect)
 Files:     `src/command/*.gd`, `src/game/game_session.gd` (bus reset), `tests/command_apply.gd`, `tests/replay.gd`, `tests/ui_compile.gd`
 Source:    not needed for single player. Shape if ever wanted: one command per UI mutation entry point, args by entity id (names for planets/sectors/characters/fleets, the M0 serials for units/facilities/missions/messages), a JSON-lines log with a header that rebuilds the game and the day hash after every tick, an applier that calls the same backend verb the UI called. Gate: a recorded 100-day scripted session replays to 100/100 identical hashes.
 Hashes:    unchanged. M1 step 2 (commits 30acf59..c3d9a23) switched every UI call site to `CommandBus.issue`; GameManager opens the session log and hashes every tick.
+
+## 9. Lockstep between two clients (M2): Transport, MailboxTransport, LockstepSession, Replayer     port (M2)
+Kind:      plumbing (no rule effect)
+Files:     `src/net/transport.gd`, `mailbox_transport.gd`, `lockstep_session.gd`, `src/command/replayer.gd`, `command_bus.gd` (Session hook; retreat answers sort first), `command_log.gd` (Reopen), `tests/lockstep_client.gd`, `tools/lockstep-local.ps1`
+Source:    not needed for single player. The one rule-shaped choice: within a day's batch, Retreat answers apply before everything else, so "until one side withdraws" (manual p152) holds on both clients whichever side answered first.
+Hashes:    unchanged. Gates: two processes over a mailbox, 200 of 200 day hashes identical; a forced corruption on one side is detected on the next day's hash, the honest side identifies the opponent, the drifted side rebuilds from the shared log and both continue.
+

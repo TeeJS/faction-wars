@@ -1,6 +1,6 @@
 # M2 — lockstep, locally (plan, for review before building)
 
-**Status:** plan, 2026-09-03. Not started. Reviewers: Doof (protocol, ordering),
+**Status:** DONE 2026-09-03 - steps 1-3 landed and gated (`tools/lockstep-local.ps1`); step 4, the UI pieces, is C3PO's design and follows M3. Originally: plan, not started. Reviewers: Doof (protocol, ordering),
 C3PO (the clock and the "Waiting for Opponent" surface, which is UI).
 
 **Gate (hard):** two headless clients, one Alliance and one Empire, each issuing

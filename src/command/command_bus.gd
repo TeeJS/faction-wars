@@ -9,12 +9,16 @@ static var Immediate: bool = true
 static var _seq: Dictionary = {}       # faction id -> next Seq
 ## M2: commands waiting for their tick, by day.
 static var Pending: Dictionary = {}    # day -> Array[Command]
+## M2: the lockstep session, when this client is in a head-to-head game. It
+## owns the day a command belongs to and the wire.
+static var Session: LockstepSession = null
 
 
 static func Reset() -> void:
 	Immediate = true
 	_seq.clear()
 	Pending.clear()
+	Session = null
 	CommandLog.Reset()
 
 
@@ -22,6 +26,9 @@ static func Reset() -> void:
 ## applied immediately; a queued command returns success (it is accepted).
 static func issue(kind: String, args: Dictionary) -> Result:
 	var c := Command.make(kind, args)
+	if Session != null:
+		Session.issue(c)   # assigns Day, Seq and Faction; logs; sends
+		return Result.success()
 	c.Day = StrategicTickManager.Today
 	c.Faction = GameSettings.PlayerFaction.Id if GameSettings.PlayerFaction != null else ""
 	c.Seq = int(_seq.get(c.Faction, 0)) + 1
@@ -35,9 +42,12 @@ static func issue(kind: String, args: Dictionary) -> Result:
 	return Result.success()
 
 
-## Apply everything queued for a day, in faction order then Seq (M2 / replay).
+## Apply everything queued for a day: retreat answers first ("until one side
+## withdraws", manual p152), then faction order, then Seq (M2 / replay).
 static func apply_day(day: int, commands: Array) -> void:
-	var ordered: Array = Lq.order_by(commands, func(c: Command) -> Array: return Command.sort_key(c))
+	var ordered: Array = Lq.order_by(commands, func(c: Command) -> Array:
+		var retreat: int = 0 if (c.Kind == "battle_answer" and str(c.Args.get("answer", "")) == "retreat") else 1
+		return [retreat] + Command.sort_key(c))
 	for c in ordered:
 		var r: Result = CommandApplier.apply(c)
 		if not r.ok:

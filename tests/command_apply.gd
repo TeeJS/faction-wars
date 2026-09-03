@@ -78,15 +78,17 @@ func _init() -> void:
 				issue.call("delete_messages", { "messages": [vis[0].Serial] })
 
 		engine.AdvanceDay()
+		# The day hash is the state right after the tick - the same moment the
+		# game's clock and the lockstep clock record it.
+		CommandBus.day_done()
 
 		# A battle the player is in waits for an answer: answer through the bus.
+		# It is logged under the new day, first in Seq, as the alert makes it.
 		var guard := 20
 		while FleetBattleManager.HasPendingBattle() and guard > 0:
 			guard -= 1
 			var r: FleetBattleManager.BattleReport = FleetBattleManager.AwaitingOrders()[0]
 			issue.call("battle_answer", { "where": r.Where.Name, "ours": r.Ours.Name, "theirs": r.Theirs.Name, "answer": "simulate" })
-
-		CommandBus.day_done()
 		if VictoryManager.IsOver():
 			break
 

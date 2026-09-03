@@ -18,46 +18,34 @@ func _init() -> void:
 		quit(2)
 		return
 
-	var engine := GameSession.new_game(str(header.get("local", "alliance")), int(header.get("difficulty", 2)),
-		int(header.get("size", 1)), int(header.get("seed", 0)), header.get("humans", []), str(header.get("host", "")))
-	GameSettings.HQOnlyVictory = bool(header.get("hq_only", false))
-	# Replaying: nothing is issued live, everything comes from the log.
-	CommandBus.Immediate = false
-
+	var last_day: int = 0
+	for d in hashes.keys():
+		last_day = maxi(last_day, int(d))
+	# Rebuild and replay through the shared Replayer, checking the hash after
+	# every tick against the one the log recorded.
+	var matched := 0
+	var first_bad := -1
 	var by_day: Dictionary = {}
 	for c in commands:
 		if not by_day.has(c.Day):
 			by_day[c.Day] = []
 		by_day[c.Day].append(c)
-
-	var last_day: int = 0
-	for d in hashes.keys():
-		last_day = maxi(last_day, int(d))
-
-	var matched := 0
-	var first_bad := -1
+	var engine := Replayer.replay_entries(header, [], 1)
 	var applied := 0
-	# The recorder's order on a day D: answer the battles the tick into D
-	# raised (logged under D), record D's hash, then D's orders, then the tick
-	# into D+1. Same order here, so the hash is compared at the same moment.
-	while StrategicTickManager.Today <= last_day:
+	while true:
 		var day := StrategicTickManager.Today
-		var todays: Array = by_day.get(day, [])
-		var answers: Array = Lq.where(todays, func(c: Command) -> bool: return c.Kind == "battle_answer")
-		var orders: Array = Lq.where(todays, func(c: Command) -> bool: return c.Kind != "battle_answer")
-		CommandBus.apply_day(day, answers)
-		applied += answers.size()
+		# The day hash is the state right after the tick into `day`.
 		if hashes.has(day):
 			if hashes[day] == GameSignature.ReplayHash(GameState.ActiveGalaxy):
 				matched += 1
 			elif first_bad < 0:
 				first_bad = day
-		if day == last_day or VictoryManager.IsOver():
+		if day >= last_day or VictoryManager.IsOver():
 			break
-		CommandBus.apply_day(day, orders)
-		applied += orders.size()
+		var todays: Array = by_day.get(day, [])
+		CommandBus.apply_day(day, todays)
+		applied += todays.size()
 		engine.AdvanceDay()
-
 	print("[replay] %d commands replayed; hashes matching the log: %d of %d (first divergence day %s)" % [applied, matched, hashes.size(), str(first_bad) if first_bad > 0 else "none"])
 	quit(0 if first_bad < 0 and matched == hashes.size() else 1)
 

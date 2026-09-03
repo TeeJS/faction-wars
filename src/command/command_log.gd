@@ -30,6 +30,24 @@ static func Open(path: String, header: Dictionary) -> bool:
 	return true
 
 
+## Reopen an existing log for appending (a resync rebuilt the game but the
+## file and its history stay).
+static func Reopen(path: String) -> void:
+	Close()
+	if path.is_empty():
+		return
+	_file = FileAccess.open(path, FileAccess.READ_WRITE)
+	if _file == null:
+		push_error("[CommandLog] cannot reopen %s" % path)
+		return
+	_file.seek_end()
+	_path = path
+
+
+static func Path() -> String:
+	return _path
+
+
 static func Close() -> void:
 	if _file != null:
 		_file.close()
