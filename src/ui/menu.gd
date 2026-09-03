@@ -54,6 +54,13 @@ func _ready() -> void:
 
 	btnExit.pressed.connect(func() -> void: get_tree().quit())
 
+	# THE MULTIPLAYER PANEL (manual p156, Fig 5.1): "the small panel at the lower
+	# left that depicts a Rebel soldier and an Imperial stormtrooper facing off".
+	# No artwork - a labelled button at the lower left, like every other control.
+	MpSetup.reset()
+	(get_node("%BtnMultiplayer") as Button).pressed.connect(func() -> void:
+		get_tree().change_scene_to_file("res://src/ui/mp/MultiplayerConfiguration.tscn"))
+
 	# EDITOR ONLY. The Military Data Editor writes military_units.json back to
 	# disk, and an exported build's data lives inside the read-only .pck.
 	if OS.has_feature("editor"):

@@ -1,0 +1,82 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/ui/mp/multiplayer_configuration.gd" id="1_cfg"]
+[ext_resource type="PackedScene" path="res://src/ui/mp/MpBottomBar.tscn" id="2_bar"]
+
+[node name="MultiplayerConfiguration" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_cfg")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.08, 0.1, 0.14, 1)
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Console" type="VBoxContainer" parent="CenterContainer"]
+custom_minimum_size = Vector2(620, 0)
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Title" type="Label" parent="CenterContainer/Console"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Multiplayer Configuration"
+horizontal_alignment = 1
+
+[node name="ProviderCaption" type="Label" parent="CenterContainer/Console"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.7, 0.8, 1)
+text = "Please select a service provider for the type of connection you want to use from the list below."
+autowrap_mode = 3
+
+[node name="Providers" type="ItemList" parent="CenterContainer/Console"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 110)
+layout_mode = 2
+tooltip_text = "The service provider. The one selected appears in red."
+
+[node name="HowCaption" type="Label" parent="CenterContainer/Console"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.7, 0.8, 1)
+text = "How do you want to play?"
+
+[node name="HowHBox" type="HBoxContainer" parent="CenterContainer/Console"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="BtnConnectToGame" type="Button" parent="CenterContainer/Console/HowHBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 44)
+layout_mode = 2
+tooltip_text = "Join a game somebody else is hosting."
+toggle_mode = true
+text = "Connect To Game"
+
+[node name="BtnSetupGame" type="Button" parent="CenterContainer/Console/HowHBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 44)
+layout_mode = 2
+tooltip_text = "Host a game for an opponent to join."
+toggle_mode = true
+text = "Setup Game"
+
+[node name="BottomBar" parent="." instance=ExtResource("2_bar")]
+unique_name_in_owner = true

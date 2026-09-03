@@ -7,6 +7,8 @@ extends RefCounted
 
 var transport: WebSocketTransport
 var code: String = ""
+var name: String = ""            # the game's name
+var opponent_left: bool = false  # the relay said the other seat dropped
 var side: String = ""            # "host" | "guest"
 var player: String = ""
 var host_name: String = ""
@@ -33,6 +35,7 @@ func _init(relay_url: String, player_name: String) -> void:
 # --- the lobby verbs ---
 
 func create(game_name: String, game_settings: Dictionary, open: bool = true) -> void:
+	name = game_name
 	transport.send({ "t": "create", "name": game_name, "player": player, "settings": game_settings, "open": open })
 
 
@@ -78,6 +81,7 @@ func poll() -> void:
 				saves = msg.get("saves", [])
 			"joined":
 				code = str(msg.get("code", ""))
+				name = str(msg.get("name", name))
 				side = str(msg.get("side", "guest"))
 				host_name = str(msg.get("host", ""))
 				guest_name = str(msg.get("guest", "")) if msg.get("guest") != null else ""
@@ -86,8 +90,10 @@ func poll() -> void:
 				lines_on_relay = int(msg.get("lines", 0))
 			"guest":
 				guest_name = str(msg.get("player", ""))
+				opponent_left = false
 			"host":
 				host_name = str(msg.get("player", ""))
+				opponent_left = false
 			"settings":
 				settings = msg.get("settings", {})
 			"started":
@@ -96,7 +102,7 @@ func poll() -> void:
 			"lobby_chat":
 				lobby_chat.append([str(msg.get("player", "")), str(msg.get("text", ""))])
 			"left":
-				pass
+				opponent_left = true
 			"caught_up":
 				catching_up = false
 				caught_up = true

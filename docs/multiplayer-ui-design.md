@@ -1,6 +1,6 @@
 # Multiplayer screens - design from the manual's figures (M4 + the M5 screens)
 
-**Status:** REVIEWED 2026-09-03. Drafted by Lord Vader from the figures themselves
+**Status:** BUILT sections 1-7 (2026-09-03, `src/ui/mp/*`, `src/net/mp_setup.gd`, GameManager hook; gates `tests/mp_screens.gd` 48/48 and `tools/mp-flow-local.ps1 -Load` 19/19 + 19/19); sections 8-12 pending. REVIEWED 2026-09-03. Drafted by Lord Vader from the figures themselves
 (manual p156-p163 = PDF p152-p159, re-read for this document); reviewed by Doof
 (room AM-XVTDFFDA4FY59ZFQZP64YEYU63 #6): no figure element dropped; seven doc
 corrections applied below; A-D answered in section 14. Build follows section 14 F. CLAUDE.md rule 0 applies: every element a figure names is a
@@ -251,14 +251,14 @@ the save). It is not part of the multiplayer plan; flagging it, not building it.
 
 | Figure | Elements to tick off when built |
 |---|---|
-| 5.1 | Multiplayer control, lower left of the Cockpit |
-| 5.2 | provider caption; list with the selected entry in red; "How do you want to play?"; Connect To Game; Setup Game; depressed/dark selection; Proceed; Cancel |
-| 5.3 | player-name caption + box; game-name caption + box; Proceed; Go back; Cancel |
-| 5.6 | title "Locate Session"; instruction text; one box; OK; Cancel; blank = search |
-| 5.8 | player-name caption + box; "Select a game..." caption + list; Proceed; Previous; Cancel |
-| 5.9 | side caption + two symbols (red/green); size caption + three; Standard Game / HQ Only Victory; Load; Chat> + entry, Enter sends; chat + settings view; checkmark Start (host); Previous; Cancel |
-| Load | list of shared saves ("Day N"); settings restored and greyed; Cancel |
-| exits | `MpSetup.reset()` on every Cancel, Previous-from-Options, Leave Game, Exit to Menu/Desktop, game end |
+| 5.1 ✓ | Multiplayer control, lower left of the Cockpit |
+| 5.2 ✓ | provider caption; list with the selected entry in red; "How do you want to play?"; Connect To Game; Setup Game; depressed/dark selection; Proceed; Cancel |
+| 5.3 ✓ | player-name caption + box; game-name caption + box; Proceed; Go back; Cancel |
+| 5.6 ✓ | title "Locate Session"; instruction text; one box; OK; Cancel; blank = search |
+| 5.8 ✓ | player-name caption + box; "Select a game..." caption + list; Proceed; Previous; Cancel |
+| 5.9 ✓ | side caption + two symbols (red/green); size caption + three; Standard Game / HQ Only Victory; Load; Chat> + entry, Enter sends; chat + settings view; checkmark Start (host); Previous; Cancel |
+| Load ✓ | list of shared saves ("Day N"); settings restored and greyed; Cancel |
+| exits ✓ | `MpSetup.reset()` on every Cancel, Previous-from-Options, Leave Game, Exit to Menu/Desktop, game end |
 | 5.10 | tab "Chat Messages"; incoming row wording; double-click opens; Compose button bottom right; Delete selected; Select all |
 | 5.11 | title; "Type your message here"; Send message; Cancel; Close button; Return to Display Message Index |
 | p163 speed | five settings; slowest governs; readout shows the governing side |

@@ -85,12 +85,27 @@ export function startRelay(opts: { port?: number; dataDir?: string; staticDir?: 
   // The saves of one player: every started game they are in, newest first.
   // "Load" on the Multiplayer Options (manual p161) offers the games both
   // players are in; the client intersects two of these.
+  // The day a save resumes at: the last day BOTH sides sent a hash for
+  // (LockstepSession.rebuild_from_log resumes there). Protocol, not game.
+  const dayOf = (r: Room): number => {
+    const sides = new Map<number, Set<string>>();
+    for (const l of readLog(r, 0)) {
+      let m: any; try { m = JSON.parse(l); } catch { continue; }
+      if (m?.t !== "hash") continue;
+      const d = Number(m.day ?? 0);
+      if (!sides.has(d)) sides.set(d, new Set());
+      sides.get(d)!.add(String(m.side ?? ""));
+    }
+    let best = 0;
+    for (const [d, s] of sides) if (s.size >= 2 && d > best) best = d;
+    return best;
+  };
   const saves = (player: string) => Array.from(rooms.values())
     .filter((r) => r.started && (r.host.player === player || r.guest?.player === player))
     .map((r) => {
       const p = join(roomDir(r.code), "log.jsonl");
       const updated = existsSync(p) ? statSync(p).mtimeMs : r.created;
-      return { code: r.code, name: r.name, host: r.host.player, guest: r.guest?.player ?? null, created: r.created, updated, lines: r.lines, settings: r.settings };
+      return { code: r.code, name: r.name, host: r.host.player, guest: r.guest?.player ?? null, created: r.created, updated, lines: r.lines, day: dayOf(r), settings: r.settings };
     })
     .sort((a, b) => b.updated - a.updated);
   const send = (ws: any, obj: unknown) => { try { ws?.send(JSON.stringify(obj)); } catch { /* gone */ } };

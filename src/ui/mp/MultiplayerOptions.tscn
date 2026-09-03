@@ -1,0 +1,125 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/ui/mp/multiplayer_options.gd" id="1_opt"]
+[ext_resource type="PackedScene" path="res://src/ui/mp/MpBottomBar.tscn" id="2_bar"]
+
+[node name="MultiplayerOptions" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_opt")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.08, 0.1, 0.14, 1)
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Console" type="VBoxContainer" parent="CenterContainer"]
+custom_minimum_size = Vector2(720, 0)
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="CenterContainer/Console"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Multiplayer Options"
+horizontal_alignment = 1
+
+[node name="SideRow" type="HBoxContainer" parent="CenterContainer/Console"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="SideCaption" type="Label" parent="CenterContainer/Console/SideRow"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.7, 0.8, 1)
+text = "Which side do you want to play?"
+
+[node name="SideHBox" type="HBoxContainer" parent="CenterContainer/Console/SideRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="SizeRow" type="HBoxContainer" parent="CenterContainer/Console"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="SizeCaption" type="Label" parent="CenterContainer/Console/SizeRow"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.7, 0.8, 1)
+text = "What size galaxy would you like?"
+
+[node name="SizeHBox" type="HBoxContainer" parent="CenterContainer/Console/SizeRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="VictoryRow" type="HBoxContainer" parent="CenterContainer/Console"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="BtnStandardGame" type="Button" parent="CenterContainer/Console/VictoryRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 44)
+layout_mode = 2
+toggle_mode = true
+text = "Standard Game"
+
+[node name="BtnHQOnlyVictory" type="Button" parent="CenterContainer/Console/VictoryRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 44)
+layout_mode = 2
+toggle_mode = true
+text = "HQ Only Victory"
+
+[node name="Spacer" type="Control" parent="CenterContainer/Console/VictoryRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="BtnLoadGame" type="Button" parent="CenterContainer/Console/VictoryRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(160, 44)
+layout_mode = 2
+text = "Load Game"
+
+[node name="ChatRow" type="HBoxContainer" parent="CenterContainer/Console"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ChatLabel" type="Label" parent="CenterContainer/Console/ChatRow"]
+layout_mode = 2
+text = "Chat>"
+
+[node name="ChatEntry" type="LineEdit" parent="CenterContainer/Console/ChatRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "Type a message to your opponent and press Enter to send it."
+placeholder_text = "Type your message, then press Enter to send it."
+max_length = 200
+
+[node name="ChatLog" type="RichTextLabel" parent="CenterContainer/Console"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 220)
+layout_mode = 2
+tooltip_text = "Chat messages and the game settings."
+scroll_following = true
+
+[node name="BottomBar" parent="." instance=ExtResource("2_bar")]
+unique_name_in_owner = true

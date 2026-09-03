@@ -47,6 +47,12 @@ var _availMaintenence: Label
 
 var _lastDay: int = 0
 
+# HEAD-TO-HEAD (docs/multiplayer-ui-design.md section 0). When MpSetup holds a
+# started room, the clock does not advance the day itself: the timer marks the
+# day as due and _process advances it through the LockstepSession as soon as
+# the opponent's orders for it are complete.
+var _mpDayDue: bool = false
+
 
 func _ready() -> void:
 	print("Booting up Rebellion Engine...")
@@ -72,12 +78,22 @@ func _ready() -> void:
 	# printed so any game can be replayed.
 	var seedArg: String = _ParseStringArg("--seed=")
 	var seed: int = int(seedArg) if seedArg.is_valid_int() else int(Time.get_unix_time_from_system() * 1000000.0)
+	var mp: bool = MpSetup.active()
+	var humans: Array = []
+	if mp:
+		# The host chose the seed at Start; it came with the room's settings.
+		seed = GameSettings.Seed
+		for f in GameSettings.HumanFactions:
+			humans.append(f.Id)
 
 	# The catalogs, the resets, the galaxy, the roster and day zero, in the
 	# source's order - GameSession.new_game is GameManager._Ready's load path.
 	_strategicEngine = GameSession.new_game(GameSettings.PlayerFaction.Id,
-		GameSettings.SelectedDifficulty, GameSettings.SelectedSize, seed)
+		GameSettings.SelectedDifficulty, GameSettings.SelectedSize, seed, humans,
+		GameSettings.HostFaction.Id if mp and GameSettings.HostFaction != null else "")
 	print("[Prng] seed=%d" % seed)
+	if mp:
+		_StartLockstep()   # may rebuild the world (Load Game) - the map comes after
 	var authenticGalaxy: Array[Sector] = GameState.ActiveGalaxy
 
 	_galaxyMap.InitializeMap(authenticGalaxy, _uiManager)
@@ -87,12 +103,16 @@ func _ready() -> void:
 	# chooses the file, else user://last-session.jsonl. tests/replay.gd rebuilds
 	# the game from it.
 	var record: String = _ParseStringArg("--record=")
-	CommandLog.Open(record if not record.is_empty() else "user://last-session.jsonl", CommandLog.Header())
+	if not mp:
+		CommandLog.Open(record if not record.is_empty() else "user://last-session.jsonl", CommandLog.Header())
 
 	_tickTimer = Timer.new()
 	add_child(_tickTimer)
-	_tickTimer.timeout.connect(_strategicEngine.AdvanceDay)
-	_tickTimer.timeout.connect(CommandBus.day_done)
+	if mp:
+		_tickTimer.timeout.connect(func() -> void: _mpDayDue = true)
+	else:
+		_tickTimer.timeout.connect(_strategicEngine.AdvanceDay)
+		_tickTimer.timeout.connect(CommandBus.day_done)
 
 	EventBus.OnDayAdvanced.append(UpdateDayDisplay)
 	# Everything on the bar changes mid-day - see RefreshStatusBar.
@@ -126,6 +146,42 @@ func _ready() -> void:
 func _exit_tree() -> void:
 	EventBus.OnDayAdvanced.erase(UpdateDayDisplay)
 	EventBus.OnStateChanged.erase(RefreshStatusBar)
+
+
+## The head-to-head session: the same transport the lobby used, the log under
+## the room's code, and either a fresh start (hello) or a rebuild from the
+## saved game's log (Load Game, docs/multiplayer-ui-design.md section 7).
+func _StartLockstep() -> void:
+	var lobby: RelayClient = MpSetup.lobby
+	var us: Faction = GameSettings.PlayerFaction
+	var them: Faction = MpSetup.other_faction(us)
+	CommandLog.Open("user://mp-%s.jsonl" % lobby.code, CommandLog.Header())
+	var session := LockstepSession.new(lobby.transport, us, them)
+	session.engine = _strategicEngine
+	CommandBus.Immediate = false
+	CommandBus.Session = session
+	if not MpSetup.load_lines.is_empty():
+		var resumed: int = session.rebuild_from_log(MpSetup.load_lines, CommandLog.Header())
+		MpSetup.load_lines = []
+		if resumed < 0:
+			push_error("[GameManager] the saved game's log could not be rebuilt")
+		_strategicEngine = session.engine
+	else:
+		session.absorb(lobby.take_held())
+		session.start()
+	MpSetup.session = session
+	print("[GameManager] head-to-head: %s vs %s, room %s, day %d" % [us.Id, them.Id, lobby.code, StrategicTickManager.Today])
+
+
+func _process(_delta: float) -> void:
+	var session: LockstepSession = MpSetup.session
+	if session == null:
+		return
+	if _mpDayDue:
+		if session.try_tick():
+			_mpDayDue = false
+	else:
+		session.pump()
 
 
 static func _ParseStringArg(prefix: String) -> String:

@@ -14,5 +14,9 @@ func _ready() -> void:
 
 	btnResume.pressed.connect(func() -> void: queue_free())
 	btnX.pressed.connect(func() -> void: queue_free())
-	btnExitToMenu.pressed.connect(func() -> void: get_tree().change_scene_to_file("res://Menu.tscn"))
-	btnExitToDesktop.pressed.connect(func() -> void: get_tree().quit())
+	btnExitToMenu.pressed.connect(func() -> void:
+		MpSetup.reset()
+		get_tree().change_scene_to_file("res://Menu.tscn"))
+	btnExitToDesktop.pressed.connect(func() -> void:
+		MpSetup.reset()
+		get_tree().quit())

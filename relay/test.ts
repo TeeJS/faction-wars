@@ -76,7 +76,7 @@ check(back.t === "joined" && back.side === "host" && back.lines === 2, "the host
 
 host2.send({ t: "saves", player: "Han" });
 const sv = await host2.next();
-check(sv.t === "saves" && sv.saves.length === 1 && sv.saves[0].code === room.code && sv.saves[0].guest === "Luke" && sv.saves[0].lines === 2, "a started game is a save for the players in it");
+check(sv.t === "saves" && sv.saves.length === 1 && sv.saves[0].code === room.code && sv.saves[0].guest === "Luke" && sv.saves[0].lines === 2 && sv.saves[0].day === 0, "a started game is a save for the players in it, with the day both sides reached");
 host2.send({ t: "saves", player: "Lando" });
 const sv2 = await host2.next();
 check(sv2.saves.length === 0, "a player not in the game has no save of it");

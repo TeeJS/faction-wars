@@ -1,0 +1,91 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/ui/mp/locate_session.gd" id="1_loc"]
+
+[node name="LocateSession" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_loc")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.08, 0.1, 0.14, 1)
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Dialog" type="PanelContainer" parent="CenterContainer"]
+custom_minimum_size = Vector2(520, 0)
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="CenterContainer/Dialog"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TitleBar" type="HBoxContainer" parent="CenterContainer/Dialog/VBox"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="CenterContainer/Dialog/VBox/TitleBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+text = "Locate Session"
+
+[node name="BtnClose" type="Button" parent="CenterContainer/Dialog/VBox/TitleBar"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Close (cancel)."
+text = "✕"
+
+[node name="Body" type="HBoxContainer" parent="CenterContainer/Dialog/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Left" type="VBoxContainer" parent="CenterContainer/Dialog/VBox/Body"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
+
+[node name="Instruction" type="Label" parent="CenterContainer/Dialog/VBox/Body/Left"]
+layout_mode = 2
+text = "Enter the game code of the session host, or leave blank to search."
+autowrap_mode = 3
+
+[node name="CodeBox" type="LineEdit" parent="CenterContainer/Dialog/VBox/Body/Left"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Enter the game code the host gave you, or leave blank to list the games waiting on the relay."
+placeholder_text = "XXXXXX"
+max_length = 6
+
+[node name="Right" type="VBoxContainer" parent="CenterContainer/Dialog/VBox/Body"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="BtnOK" type="Button" parent="CenterContainer/Dialog/VBox/Body/Right"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(110, 36)
+layout_mode = 2
+tooltip_text = "Proceed to the Join Game screen."
+text = "OK"
+
+[node name="BtnCancel" type="Button" parent="CenterContainer/Dialog/VBox/Body/Right"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(110, 36)
+layout_mode = 2
+tooltip_text = "Cancel."
+text = "Cancel"
