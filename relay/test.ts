@@ -101,7 +101,20 @@ check(back3.t === "joined" && back3.side === "guest" && back3.started === true &
 ws3.send(JSON.stringify({ t: "since", n: 0 }));
 const r1 = await next3(); const r2 = await next3(); const r3 = await next3();
 check(r1.t === "cmd" && r2.t === "hash" && r3.t === "caught_up", "and the log replays from disk");
-relay2.stop();
+// Tester feedback: POST /feedback writes the report and its log; junk is refused.
+const fbBase = `http://127.0.0.1:${relay2.port}`;
+const fb = await fetch(`${fbBase}/feedback`, { method: "POST", headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ player: "Han Solo", game: "ABC123", day: 12, message: "cannot target the shield", log: "{\"t\":\"header\"}\n{\"t\":\"cmd\"}\n" }) });
+const fbReply: any = await fb.json();
+check(fb.status === 200 && fbReply.ok === true && /Han_Solo$/.test(fbReply.id), "feedback is accepted and named after the player");
+const { readFileSync: rf, existsSync: ex } = await import("node:fs");
+const fbJson = JSON.parse(rf(join(dataDir, "feedback", fbReply.id + ".json"), "utf8"));
+check(fbJson.message === "cannot target the shield" && fbJson.day === 12 && fbJson.log_lines === 2 && ex(join(dataDir, "feedback", fbReply.id + ".jsonl")), "the report and its session log are written under feedback/");
+const bad = await fetch(`${fbBase}/feedback`, { method: "POST", body: "{" });
+check(bad.status === 400, "junk feedback is refused");
+const empty = await fetch(`${fbBase}/feedback`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message: "   " }) });
+check(empty.status === 400, "an empty note is refused");
 
 console.log(failures === 0 ? "[relay test] PASS" : `[relay test] ${failures} FAILED`);
+relay2.stop();
 process.exit(failures === 0 ? 0 : 1);

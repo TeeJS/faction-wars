@@ -80,6 +80,9 @@ func _ready() -> void:
 
 	# THE HIGHLIGHT IS DERIVED, NOT TOGGLED: read off the unread count.
 	EventBus.OnStateChanged.append(RefreshCommsHighlights)
+	# The tester's feedback box, bottom of the left column (TeeJ, room #80).
+	if GameSettings.ProvideFeedback:
+		add_child(FeedbackPanel.new())
 	var mapLayersBtn: MenuButton = get_node_or_null("%GalaxyMapLayers")
 	if mapLayersBtn != null:
 		var popup: PopupMenu = mapLayersBtn.get_popup()

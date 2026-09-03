@@ -85,6 +85,16 @@ static func DayDone(day: int, hash: String) -> void:
 
 
 ## Read a log back: [header, commands, hashes].
+## The whole session so far as the file's own JSON lines (header, commands,
+## day hashes), for a feedback report. Flushes the open file first.
+static func Snapshot() -> String:
+	if _file != null:
+		_file.flush()
+	if _path.is_empty() or not FileAccess.file_exists(_path):
+		return ""
+	return FileAccess.get_file_as_string(_path)
+
+
 static func Read(path: String) -> Array:
 	var header: Dictionary = {}
 	var commands: Array = []

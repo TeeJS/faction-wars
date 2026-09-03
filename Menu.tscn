@@ -108,6 +108,13 @@ layout_mode = 2
 size_flags_horizontal = 4
 text = "Headquarters Only Victory"
 
+[node name="ChkFeedback" type="CheckBox" parent="CenterContainer/MenuVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+tooltip_text = "Show a feedback box in the game. A note you submit goes to the server with the day, seed and this game's log, so it can be replayed."
+text = "Provide feedback"
+
 [node name="Spacer" type="Control" parent="CenterContainer/MenuVBox" unique_id=799977504]
 custom_minimum_size = Vector2(0, 10)
 layout_mode = 2

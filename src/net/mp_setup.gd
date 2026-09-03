@@ -83,12 +83,14 @@ static func load_names() -> void:
 		game_name = str(cfg.get_value("names", "game", "")) if remembered else ""
 	if game_name.is_empty():
 		game_name = "%s's game" % player_name
+	GameSettings.ProvideFeedback = bool(cfg.get_value("options", "provide_feedback", false)) if remembered else false
 
 
 static func remember_names() -> void:
 	var cfg := ConfigFile.new()
 	cfg.set_value("names", "player", player_name)
 	cfg.set_value("names", "game", game_name)
+	cfg.set_value("options", "provide_feedback", GameSettings.ProvideFeedback)
 	cfg.save(NamesFile)
 
 

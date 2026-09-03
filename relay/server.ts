@@ -14,6 +14,8 @@ const LIMITS = {
   lineBytes: 64 * 1024,   // one JSON line
   clientsPerRoom: 2,      // a host and a guest - "two players" (manual p156)
   rooms: 100,             // more than a household needs
+  feedbackBytes: 4 * 1024 * 1024,   // one report with its session log
+  feedbackBytes: 4 * 1024 * 1024,   // one report with its session log
   codeLength: 6,
 };
 
@@ -40,6 +42,8 @@ export function startRelay(opts: { port?: number; dataDir?: string; staticDir?: 
   const staticDir = opts.staticDir ?? process.env.STATIC_DIR ?? "";
   const roomsDir = join(dataDir, "rooms");
   mkdirSync(roomsDir, { recursive: true });
+  const feedbackDir = join(dataDir, "feedback");
+  mkdirSync(feedbackDir, { recursive: true });
 
   const rooms = new Map<string, Room>();
 
@@ -113,8 +117,29 @@ export function startRelay(opts: { port?: number; dataDir?: string; staticDir?: 
 
   const server = Bun.serve<Data>({
     port,
-    fetch(req, server) {
+    async fetch(req, server) {
       const url = new URL(req.url);
+      // Tester feedback (room AM-LFGGG3LVQSSJGXSP7P7JE9Q745 #80): a note plus the
+      // facts that reproduce it - day, seed, settings, client, the session log.
+      // Written as feedback/<utc time>-<player>.json (+ .jsonl for the log).
+      if (url.pathname === "/feedback" && req.method === "POST") {
+        const declared = Number(req.headers.get("content-length") ?? 0);
+        if (declared > LIMITS.feedbackBytes) return new Response("too large", { status: 413 });
+        const text = await req.text();
+        if (text.length > LIMITS.feedbackBytes) return new Response("too large", { status: 413 });
+        let report: any;
+        try { report = JSON.parse(text); } catch { return new Response("not json", { status: 400 }); }
+        if (!report || typeof report.message !== "string" || report.message.trim() === "") return new Response("no message", { status: 400 });
+        const who = String(report.player ?? "player").replace(/[^A-Za-z0-9_-]/g, "_").slice(0, 32) || "player";
+        const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+        const id = `${stamp}-${who}`;
+        const { log, ...meta } = report;
+        meta.received_at = new Date().toISOString();
+        meta.log_lines = typeof log === "string" ? log.split("\n").filter((l: string) => l.length > 0).length : 0;
+        writeFileSync(join(feedbackDir, `${id}.json`), JSON.stringify(meta, null, 2));
+        if (typeof log === "string" && log.length > 0) writeFileSync(join(feedbackDir, `${id}.jsonl`), log);
+        return Response.json({ ok: true, id });
+      }
       if (url.pathname === "/ws" || req.headers.get("upgrade")?.toLowerCase() === "websocket") {
         if (server.upgrade(req, { data: { room: null, side: null } })) return undefined as any;
         return new Response("websocket only", { status: 426 });
