@@ -172,6 +172,7 @@ func _play() -> void:
 	var saw_opponent_speed := false
 	var saw_average := false
 	var saw_paused_text := false
+	var chat_arrival := ""
 	var slowed := false
 	var restored := false
 	# A rejoiner stops where the host stops (day 1 + days); a loaded pair starts
@@ -183,7 +184,8 @@ func _play() -> void:
 		# 4 s (the guest must see Waiting for Opponent), and the guest sets
 		# Medium on day 10 for 2 days (the host's face must say so).
 		if _role == "host" and d == 3 and last != StrategicTickManager.Today:
-			CommandBus.issue("chat", { "text": "I have you now." })
+			CommandBus.issue("chat", { "text": "I have you now. day=%d t=%d" % [StrategicTickManager.Today, int(Time.get_unix_time_from_system() * 1000.0)] })
+			print("[mp_flow] host chat issued on day %d, phase %d, at %d" % [StrategicTickManager.Today, MpSetup.session.phase, int(Time.get_unix_time_from_system() * 1000.0)])
 		if _role == "host" and d == 6 and menu_opened_at < 0:
 			ui.OnMenuButtonClicked()
 			print("[mp_flow] host opens the Game Options screen")
@@ -200,6 +202,13 @@ func _play() -> void:
 		if _role == "guest" and d == 12 and slowed and not restored:
 			restored = true
 			gm.SetSpeed(4)
+		if _role == "guest" and chat_arrival.is_empty():
+			for m in EventBus.VisibleMessages():
+				if m.Category == Enums.MessageCategory.Chat and m.Body.begins_with("I have you now. day="):
+					var sent := int(m.Body.get_slice("t=", 1))
+					var issued_day := int(m.Body.get_slice("day=", 1).get_slice(" ", 0))
+					chat_arrival = "arrived on day %d (issued day %d) after %d ms, at phase %d - %s" % [StrategicTickManager.Today, issued_day, int(Time.get_unix_time_from_system() * 1000.0) - sent, MpSetup.session.phase, "SAME DAY" if StrategicTickManager.Today == issued_day else "A DAY LATE"]
+					print("[mp_flow] guest: chat %s" % chat_arrival)
 		if gm._waitBox != null and gm._waitBox.visible:
 			saw_waiting = true
 			if gm._waitBox.dialog_text.begins_with("Opponent paused."):
@@ -235,7 +244,7 @@ func _play() -> void:
 			chat = true
 	print("[mp_flow] %s done: day %d, session %s" % [_role, StrategicTickManager.Today, LockstepSession.State.keys()[MpSetup.session.state]])
 	if _role == "guest":
-		print("[mp_flow] guest checks: waiting box seen=%s (paused text=%s), chat from the Alliance received=%s" % [str(saw_waiting), str(saw_paused_text), str(chat)])
+		print("[mp_flow] guest checks: waiting box seen=%s (paused text=%s), chat from the Alliance received=%s; chat %s" % [str(saw_waiting), str(saw_paused_text), str(chat), chat_arrival])
 	else:
 		if _speed_rule == "average":
 			print("[mp_flow] host checks: rule=%s, 'Medium (averaged with opponent)' shown=%s" % [GameSettings.SpeedRule, str(saw_average)])

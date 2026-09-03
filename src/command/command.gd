@@ -6,6 +6,9 @@ extends RefCounted
 ## clients and on a replay.
 
 var Day: int = 0
+## The lockstep phase the order was ended in (0 in single player and in logs
+## from before phases); orders of a day apply phase by phase, in this order.
+var Phase: int = 0
 var Seq: int = 0
 var Faction: String = ""
 var Kind: String = ""
@@ -20,7 +23,7 @@ static func make(kind: String, args: Dictionary) -> Command:
 
 
 func to_json() -> String:
-	return JSON.stringify({ "day": Day, "seq": Seq, "faction": Faction, "kind": Kind, "args": Args })
+	return JSON.stringify({ "day": Day, "phase": Phase, "seq": Seq, "faction": Faction, "kind": Kind, "args": Args })
 
 
 static func from_json(line: String) -> Command:
@@ -29,6 +32,7 @@ static func from_json(line: String) -> Command:
 		return null
 	var c := Command.new()
 	c.Day = int(d.get("day", 0))
+	c.Phase = int(d.get("phase", 0))
 	c.Seq = int(d.get("seq", 0))
 	c.Faction = str(d.get("faction", ""))
 	c.Kind = str(d.get("kind", ""))

@@ -51,7 +51,9 @@ var _lastDay: int = 0
 # started room, the clock does not advance the day itself: the timer marks the
 # day as due and _process advances it through the LockstepSession as soon as
 # the opponent's orders for it are complete.
-var _mpDayDue: bool = false
+var _mpDayDue: bool = false          # the host's day clock fired: the next phase end carries advance
+var _phaseTimer: Timer               # ends the open phase every PhaseSeconds
+const PhaseSeconds := 0.3            # room #99/#118: orders apply within a phase plus one round trip
 var _menuOpen: bool = false          # the Game Options screen is up: the opponent waits
 var _appliedEffective: int = -1
 var _stallSince: int = -1            # ms; the opponent's end-of-day is overdue
@@ -119,6 +121,11 @@ func _ready() -> void:
 	add_child(_tickTimer)
 	if mp:
 		_tickTimer.timeout.connect(func() -> void: _mpDayDue = true)
+		_phaseTimer = Timer.new()
+		_phaseTimer.wait_time = PhaseSeconds
+		_phaseTimer.autostart = true
+		add_child(_phaseTimer)
+		_phaseTimer.timeout.connect(_EndPhase)
 	else:
 		_tickTimer.timeout.connect(_strategicEngine.AdvanceDay)
 		_tickTimer.timeout.connect(CommandBus.day_done)
@@ -165,7 +172,7 @@ func _StartLockstep() -> void:
 	var us: Faction = GameSettings.PlayerFaction
 	var them: Faction = MpSetup.other_faction(us)
 	CommandLog.Open("user://mp-%s.jsonl" % lobby.code, CommandLog.Header())
-	var session := LockstepSession.new(lobby.transport, us, them)
+	var session := LockstepSession.new(lobby.transport, us, them, MpSetup.hosting)
 	session.engine = _strategicEngine
 	CommandBus.Immediate = false
 	CommandBus.Session = session
@@ -183,14 +190,27 @@ func _StartLockstep() -> void:
 	print("[GameManager] head-to-head: %s vs %s, room %s, day %d" % [us.Id, them.Id, lobby.code, StrategicTickManager.Today])
 
 
+## Every PhaseSeconds: close my open phase. The host's end carries advance when
+## its day clock has fired since the last one, and only then does the day tick.
+func _EndPhase() -> void:
+	var session: LockstepSession = MpSetup.session
+	if session == null or session.state == LockstepSession.State.Desync:
+		return
+	if session.end_phase(_mpDayDue and MpSetup.hosting):
+		if MpSetup.hosting and _mpDayDue:
+			_mpDayDue = false
+
+
 func _process(_delta: float) -> void:
 	var session: LockstepSession = MpSetup.session
 	if session == null:
 		return
-	if _mpDayDue:
-		if session.try_tick():
-			_mpDayDue = false
-	else:
+	var completed := 0
+	while session.try_phase():
+		completed += 1
+		if completed > 50:
+			break
+	if completed == 0:
 		session.pump()
 	_MpWatch(session)
 
@@ -332,13 +352,10 @@ func _MpWatch(session: LockstepSession) -> void:
 		print("[GameManager] desync on day %d: %s" % [StrategicTickManager.Today, "repaired from the log" if ok else "waiting for the opponent to repair"])
 
 	var now := Time.get_ticks_msec()
-	if _mpDayDue and session.state == LockstepSession.State.WaitingOpponent:
-		if _stallSince < 0:
-			_stallSince = now
-	else:
-		_stallSince = -1
+	# The opponent is overdue when my end for the open phase has been out for
+	# longer than a phase plus a generous round trip.
 	var waiting: bool = session.remote_speed == 0 or session.opponent_gone \
-		or (_stallSince >= 0 and now - _stallSince > WaitingAfterMs)
+		or session.overdue_ms() > WaitingAfterMs
 	# My own pause box has the screen; the manual's message is for the other side.
 	if _speed == 0 or _menuOpen:
 		waiting = false

@@ -1,6 +1,6 @@
 # M2 — lockstep, locally (plan, for review before building)
 
-**Status:** DONE 2026-09-03 - steps 1-3 landed and gated (`tools/lockstep-local.ps1`); step 4, the UI pieces, is C3PO's design and follows M3. Originally: plan, not started. Reviewers: Doof (protocol, ordering),
+**Revised 2026-09-03 (phases, BACKPORT-LOG #18):** the lockstep unit is a PHASE (~300 ms), not the day; both apply each phase's merged batch in the canonical order as soon as both ends are in, and the day ticks at the phase whose end line from the host carries advance:true. Day hashes, desync detection, resync, rejoin and load are unchanged in meaning. **Status:** DONE 2026-09-03 - steps 1-3 landed and gated (`tools/lockstep-local.ps1`); step 4, the UI pieces, is C3PO's design and follows M3. Originally: plan, not started. Reviewers: Doof (protocol, ordering),
 C3PO (the clock and the "Waiting for Opponent" surface, which is UI).
 
 **Gate (hard):** two headless clients, one Alliance and one Empire, each issuing

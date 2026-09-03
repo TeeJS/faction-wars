@@ -71,7 +71,8 @@ func _init() -> void:
 				OS.delay_msec(10)
 			print("[lockstep] %s fetched %d log lines from the relay" % [side, lobby.replayed_lines.size()])
 			held = lobby.replayed_lines + held
-	var session := LockstepSession.new(transport, us, them)
+	# The alliance client is the host: its end lines carry the day advance.
+	var session := LockstepSession.new(transport, us, them, side == "alliance")
 	session.engine = engine
 	CommandBus.Immediate = false
 	CommandBus.Session = session

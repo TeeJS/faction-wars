@@ -42,16 +42,24 @@ static func issue(kind: String, args: Dictionary) -> Result:
 	return Result.success()
 
 
-## Apply everything queued for a day: retreat answers first ("until one side
-## withdraws", manual p152), then faction order, then Seq (M2 / replay).
-static func apply_day(day: int, commands: Array) -> void:
+## THE one canonical order (live phases and replays alike): by phase, then
+## retreat answers first ("until one side withdraws", manual p152), then
+## faction order, then Seq. A live phase batch has one phase; a replayed day
+## has all of that day's phases, and sorting by phase first reproduces the
+## live application phase by phase.
+static func apply_batch(label: String, commands: Array) -> void:
 	var ordered: Array = Lq.order_by(commands, func(c: Command) -> Array:
 		var retreat: int = 0 if (c.Kind == "battle_answer" and str(c.Args.get("answer", "")) == "retreat") else 1
-		return [retreat] + Command.sort_key(c))
+		return [c.Phase, retreat] + Command.sort_key(c))
 	for c in ordered:
 		var r: Result = CommandApplier.apply(c)
 		if not r.ok:
-			print("[Command] day %d %s %s refused: %s" % [day, c.Faction, c.Kind, r.error])
+			print("[Command] %s %s %s refused: %s" % [label, c.Faction, c.Kind, r.error])
+
+
+## Apply everything of a day (replay / the M1 single-player queue).
+static func apply_day(day: int, commands: Array) -> void:
+	apply_batch("day %d" % day, commands)
 
 
 ## The tick calls this after each AdvanceDay so the log carries the day hash.
