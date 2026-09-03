@@ -16,13 +16,13 @@ static func LoadRules(json_path: String) -> void:
 		_rules[rule.EntryId] = rule
 	print("Successfully loaded %d standard RTS rules." % _rules.size())
 
-	if GameSettings.PlayerFaction == null:
+	if GameSettings.LocalFaction() == null:
 		return   # Main.tscn run directly
-	var sample := GetRule(RuleId.SpaceTravelBase, GameSettings.PlayerFaction, GameSettings.SelectedDifficulty)
+	var sample := GetRule(RuleId.SpaceTravelBase, GameSettings.LocalFaction(), GameSettings.SelectedDifficulty)
 	if sample <= 0:
 		push_error("ERROR: rules loaded but per-faction values are empty - entry 1 (Space Travel Time: Base) read as 0. Check the JSON key casing against GameRuleData.")
 	else:
-		print("  rule sanity: entry 1 = %d for %s/%s." % [sample, GameSettings.PlayerFaction.Id, JsonUtil.enum_name(Enums.Difficulty, GameSettings.SelectedDifficulty)])
+		print("  rule sanity: entry 1 = %d for %s/%s." % [sample, GameSettings.LocalFaction().Id, JsonUtil.enum_name(Enums.Difficulty, GameSettings.SelectedDifficulty)])
 
 
 ## The accessor. Difficulty picks the column; Multiplayer is the shared one.

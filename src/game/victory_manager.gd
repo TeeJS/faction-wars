@@ -94,12 +94,13 @@ static func Summary(f: Faction, galaxy: Array) -> String:
 
 
 ## THE OBJECTIVES WINDOW'S CONTENT (manual p136-p137): [[label, met], ...]
-static func StatusFor(f: Faction, galaxy: Array) -> Array:
+static func StatusFor(f: Faction, galaxy: Array, viewer: Faction = null) -> Array:
 	var rows := []
 	var opponent: Faction = Lq.first_or_null(FactionRegistry.Playable, func(o): return o != f)
 	if f == null or opponent == null:
 		return rows
-	var viewer_owns := f == GameSettings.PlayerFaction
+	# Presentation: the wording is for whoever is looking (the local side by default).
+	var viewer_owns: bool = f == (viewer if viewer != null else GameSettings.LocalFaction())
 
 	var hq := HeadquartersConditionMet(f, opponent, galaxy)
 	if opponent.HasHiddenHq():
