@@ -14,6 +14,7 @@ var guest_name: String = ""
 var settings: Dictionary = {}
 var started: bool = false
 var rooms: Array = []
+var saves: Array = []           # the started games this player is in (Load, M5)
 var lines_on_relay: int = 0
 var last_error: String = ""
 var lobby_chat: Array = []       # [player, text] pairs, in order
@@ -37,6 +38,12 @@ func create(game_name: String, game_settings: Dictionary, open: bool = true) -> 
 
 func list() -> void:
 	transport.send({ "t": "list" })
+
+
+## The started games this player is in, newest first: the Load list once
+## intersected with the other player's ("a save with the same two names").
+func list_saves() -> void:
+	transport.send({ "t": "saves", "player": player })
 
 
 func join(game_code: String) -> void:
@@ -67,6 +74,8 @@ func poll() -> void:
 				host_name = player
 			"rooms":
 				rooms = msg.get("rooms", [])
+			"saves":
+				saves = msg.get("saves", [])
 			"joined":
 				code = str(msg.get("code", ""))
 				side = str(msg.get("side", "guest"))

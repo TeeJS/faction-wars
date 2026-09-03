@@ -29,6 +29,7 @@ plus the hash exchange is the integrity check (docs/multiplayer-plan.md §3).
 | `{"t":"start"}` | host starts (the checkmark, manual p162); both get `{"t":"started"}` |
 | any other line | forwarded verbatim to the other side and appended to the room log (the M2 protocol: hello/cmd/end/hash/speed, and lobby `chat`) |
 | `{"t":"since","n":N}` | send me the room log from line N (reconnect, M5) |
+| `{"t":"saves","player":P}` | the started games P is in, newest first: `{t:"saves", saves:[{code,name,host,guest,created,updated,lines,settings}]}` (Load, M5) |
 
 | GET | Meaning |
 |---|---|

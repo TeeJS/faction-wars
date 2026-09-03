@@ -94,17 +94,21 @@ func _init() -> void:
 	var issued := 0
 	var waited_ms := 0
 	var t0 := Time.get_ticks_msec()
+	# After a rejoin the resume day's orders are already in the log (the drop
+	# came after they were sent); a player would not repeat them either.
+	var skip_orders := rejoin
 	while StrategicTickManager.Today <= days:
 		var day := StrategicTickManager.Today
 
 		# A battle we are in waits for OUR answer before the day may go on; it is
 		# the first thing issued on the day, as the modal alert makes it.
-		for r in FleetBattleManager.AwaitingOrders():
-			if r.Ours.Faction == us or r.Theirs.Faction == us:
-				CommandBus.issue("battle_answer", { "where": r.Where.Name, "ours": r.Ours.Name, "theirs": r.Theirs.Name, "answer": "simulate" })
-				issued += 1
-
-		issued += _orders(day, us, them)
+		if not skip_orders:
+			for r in FleetBattleManager.AwaitingOrders():
+				if r.Ours.Faction == us or r.Theirs.Faction == us:
+					CommandBus.issue("battle_answer", { "where": r.Where.Name, "ours": r.Ours.Name, "theirs": r.Theirs.Name, "answer": "simulate" })
+					issued += 1
+			issued += _orders(day, us, them)
+		skip_orders = false
 
 		if quit_at > 0 and day == quit_at:
 			print("[lockstep] %s quits on day %d (simulated drop)" % [side, day])

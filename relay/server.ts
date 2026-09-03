@@ -7,7 +7,7 @@
 //   bun run relay/server.ts            (PORT, DATA_DIR, STATIC_DIR from the environment)
 //   bun run relay/test.ts              (two fake clients through a relay on a random port)
 
-import { mkdirSync, existsSync, readdirSync, readFileSync, appendFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, existsSync, readdirSync, readFileSync, appendFileSync, writeFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 const LIMITS = {
@@ -82,6 +82,17 @@ export function startRelay(opts: { port?: number; dataDir?: string; staticDir?: 
   const listing = () => Array.from(rooms.values())
     .filter((r) => r.open && !r.started && !r.guest)
     .map((r) => ({ code: r.code, name: r.name, host: r.host.player, created: r.created, settings: r.settings }));
+  // The saves of one player: every started game they are in, newest first.
+  // "Load" on the Multiplayer Options (manual p161) offers the games both
+  // players are in; the client intersects two of these.
+  const saves = (player: string) => Array.from(rooms.values())
+    .filter((r) => r.started && (r.host.player === player || r.guest?.player === player))
+    .map((r) => {
+      const p = join(roomDir(r.code), "log.jsonl");
+      const updated = existsSync(p) ? statSync(p).mtimeMs : r.created;
+      return { code: r.code, name: r.name, host: r.host.player, guest: r.guest?.player ?? null, created: r.created, updated, lines: r.lines, settings: r.settings };
+    })
+    .sort((a, b) => b.updated - a.updated);
   const send = (ws: any, obj: unknown) => { try { ws?.send(JSON.stringify(obj)); } catch { /* gone */ } };
   const other = (r: Room, side: Side): Peer | null => (side === "host" ? r.guest : r.host);
 
@@ -125,6 +136,7 @@ export function startRelay(opts: { port?: number; dataDir?: string; staticDir?: 
             return;
           }
           case "list": send(ws, { t: "rooms", rooms: listing() }); return;
+          case "saves": send(ws, { t: "saves", saves: saves(String(msg.player ?? "")) }); return;
           case "join": {
             const r = rooms.get(String(msg.code ?? "").toUpperCase());
             if (!r) { send(ws, { t: "error", error: "no such game" }); return; }

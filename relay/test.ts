@@ -74,6 +74,27 @@ host2.send({ t: "join", code: room.code, player: "Han" });
 const back = await host2.next();
 check(back.t === "joined" && back.side === "host" && back.lines === 2, "the host rejoins by name and takes its seat back with the log count");
 
+host2.send({ t: "saves", player: "Han" });
+const sv = await host2.next();
+check(sv.t === "saves" && sv.saves.length === 1 && sv.saves[0].code === room.code && sv.saves[0].guest === "Luke" && sv.saves[0].lines === 2, "a started game is a save for the players in it");
+host2.send({ t: "saves", player: "Lando" });
+const sv2 = await host2.next();
+check(sv2.saves.length === 0, "a player not in the game has no save of it");
+
+// The relay restarted: the room and its log come back from disk.
+relay.stop(); await new Promise((r) => setTimeout(r, 50));
+const relay2 = startRelay({ port: 0, dataDir });
+const url2 = `ws://127.0.0.1:${relay2.port}/ws`;
+const ws3 = new WebSocket(url2); const inbox3: any[] = [];
+await new Promise<void>((res) => { ws3.onopen = () => res(); });
+const next3 = () => new Promise<any>((res) => { const m = inbox3.shift(); if (m) res(m); else ws3.onmessage = (e) => res(JSON.parse(String(e.data))); });
+ws3.send(JSON.stringify({ t: "join", code: room.code, player: "Luke" }));
+const back3 = await next3();
+check(back3.t === "joined" && back3.side === "guest" && back3.started === true && back3.lines === 2, "after a relay restart the guest rejoins the game from disk with the log count");
+ws3.send(JSON.stringify({ t: "since", n: 0 }));
+const r1 = await next3(); const r2 = await next3(); const r3 = await next3();
+check(r1.t === "cmd" && r2.t === "hash" && r3.t === "caught_up", "and the log replays from disk");
+relay2.stop();
+
 console.log(failures === 0 ? "[relay test] PASS" : `[relay test] ${failures} FAILED`);
-relay.stop();
 process.exit(failures === 0 ? 0 : 1);
