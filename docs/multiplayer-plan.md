@@ -1,7 +1,7 @@
 # Multiplayer over the web — plan
 
-**Status:** PLAN ONLY, 2026-09-03. Nothing implemented. Awaiting TeeJ's sign-off
-on the charter and the two stated v1 limitations. Author: Lord Vader. For review:
+**Status:** PLAN, 2026-09-03. Nothing implemented. TeeJ answered every decision
+(room #89, #90; recorded in §5 and §6); awaiting the explicit go for M0. Author: Lord Vader. For review:
 C3PO (screens vs manual Ch5), Doof (architecture).
 
 Sources read for this plan: manual Chapter 5 "Head-to-Head Games", manual
@@ -146,33 +146,36 @@ estimates, not commitments.
 
 ---
 
-## 5. Limitations to approve before building (say yes or no to each)
+## 5. Decisions (TeeJ, room #89 and #90, 2026-09-03)
 
-1. **No Take Command in head-to-head v1.** The tactical display steps the battle
-   on the viewer's frame clock, which cannot be kept in lockstep without a
-   second, faster lockstep inside the day. The Battle Alert in MP offers
-   **Simulate Results** and **Retreat** (both deterministic commands, decided by
-   the fleet's owner); Take Command is shown disabled with that reason, the way
-   the source already handles unbuilt items. The manual does not exclude tactical
-   battles from head-to-head, so this is a real gap and stays flagged in
-   HANDOFF. A later step can add the inner lockstep.
-2. **No AI in head-to-head v1.** Both sides are human; if a player disconnects
-   the clock waits (manual: "Waiting for Opponent"). An AI stand-in for an absent
-   player is not in the manual and is not planned.
-3. **Provider list has one entry.** IPX, modem and serial are impossible in a
-   browser; the screen keeps its shape with one honest entry.
-4. **Default names.** No Windows user name or computer name in a browser;
-   defaults are the last-used names or "Player" / "Game".
+| # | Question | Decision |
+|---|---|---|
+| 1 | Take Command in head-to-head | **Deferred to v2.** "I know this is possible in the original but let's save it for v2 - implement auto/retreat at this time." v1 Battle Alert offers Simulate Results and Retreat; Take Command shown disabled with the reason. Stays flagged in HANDOFF as a v2 item. |
+| 2 | AI stand-in for a disconnected player | **No, not at this time.** The clock waits ("Waiting for Opponent"). |
+| 3 | Provider list with one honest entry | **Yes.** |
+| 4 | Default player / game names | **Yes.** |
+| 5 | Relay hostname | **`wars.schmitzplex.com` for dev**, "assuming we can change it later" - it can: the hostname lives in one client setting and one NPM Plus host entry. |
+| 6 | Where the static build is hosted | Pros and cons requested - see §6. |
+| 7 | Single player also goes through the command log from M1 | **Yes.** |
 
 ---
 
-## 6. Open questions for TeeJ
+## 6. Hosting the static build - pros and cons (for decision 6)
 
-- Relay hostname and whether it sits behind Authelia (a game code is the only
-  credential the manual implies; an Authelia login before the game list is easy
-  to add if you want the relay private).
-- Where the static web build should be hosted (the same NPM Plus host, GitHub
-  Pages, or the Unraid box).
-- Whether the single-player game should ALSO go through the command log from
-  M1 on (recommended: it is what makes save/load and bug reports possible, and
-  it costs nothing at 10 ms/day).
+Facts that drive the choice: the build is `index.wasm` 39.5 MB (9.6 MB gzip,
+7.5 MB brotli) plus a 1.2 MB pack and a few small files; a browser caches it
+after the first load, so per-player traffic is one download per version. The
+schmitz-wars repo on GitHub is already **public**, so nothing in the pack is
+more exposed by any option below. The relay runs on Unraid in every option.
+
+| Option | Pros | Cons |
+|---|---|---|
+| **A. Unraid, same origin as the relay** - one container serves the static build and the WebSocket relay at `wars.schmitzplex.com` behind NPM Plus | One hostname, one NPM Plus entry, TLS already there; **same origin** so no cross-origin allowances; Authelia can gate it if you ever want the game private; brotli/gzip on by nginx; the files are static, so moving them elsewhere later is a copy. | First load per player rides your home upload (7.5-10 MB, then cached); the game is up only while Unraid is; one more container to run (or the relay serves the files itself, which is ~20 lines). |
+| **B. GitHub Pages** from the schmitz-wars repo, published by an Actions workflow that runs the export | Free CDN, no home bandwidth, a public link anyone can open; limits (1 GB site, 100 GB/month soft) are far above need. | Public to everyone, no Authelia; the build must be produced in CI (the export templates are a 1.2 GB download per run unless cached) or committed as a 40 MB binary per version; cross-origin to the relay, so the relay must allow the Pages origin; two places to keep in step. |
+| **C. Cloudflare R2 public bucket + custom domain** (Cloudflare Pages is ruled out: its per-file limit is 25 MiB and the wasm is 39.5 MB) | CDN and Cloudflare Access for auth; no home bandwidth for the files. | A third platform and an upload step per version; still cross-origin to the relay; the most moving parts for two players. |
+
+**Recommendation: A for dev and v1.** Same origin, one host entry, nothing new
+to learn, and the relay has to be on Unraid anyway. If a public audience ever
+appears, B is a workflow file away because the build is static.
+
+Remaining open question: none. **M0 starts on TeeJ's go.**
