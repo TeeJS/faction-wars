@@ -148,10 +148,10 @@ func _options(host: bool) -> void:
 		_check(not (sides[0] as Button).disabled and (sides[0] as Button).button_pressed, "Fig 5.9 (host): the host edits; Alliance preselected")
 		_check((sizes[1] as Button).button_pressed and (s.get_node("%BtnStandardGame") as Button).button_pressed, "Fig 5.9 (host): Large and Standard Game preselected")
 	else:
-		_check((sides[1] as Button).disabled and (sides[1] as Button).button_pressed, "Fig 5.9 (guest): sees the host's side, cannot change it")
+		_check(not (sides[1] as Button).disabled and (sides[1] as Button).mouse_filter == Control.MOUSE_FILTER_IGNORE and (sides[1] as Button).button_pressed, "Fig 5.9 (guest): sees the host's side pressed, cannot change it")
 		_check((sizes[2] as Button).button_pressed and (s.get_node("%BtnHQOnlyVictory") as Button).button_pressed, "Fig 5.9 (guest): sees Huge and HQ Only Victory")
 		_check(text.contains("Huge galaxy size selected.") and text.contains("HQ Only victory selected."), "Fig 5.9 (guest): the host's choices are in the view")
-		_check(text.contains("Average speed rule selected.") and (rules[1] as Button).button_pressed and (rules[1] as Button).disabled, "speed rule (guest): sees Average, cannot change it")
+		_check(text.contains("Average speed rule selected.") and (rules[1] as Button).button_pressed and (rules[1] as Button).mouse_filter == Control.MOUSE_FILTER_IGNORE, "speed rule (guest): sees Average pressed, cannot change it")
 	await _close(s)
 	MpSetup.reset()
 

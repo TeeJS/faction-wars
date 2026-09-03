@@ -146,8 +146,12 @@ func _ready() -> void:
 		_reflect()
 		_say(MpSetup.player_name, "Joined \"%s\" hosted by %s." % [_lobby.name, _lobby.host_name])
 		_echo_all()
+		# The guest sees the host's choices but cannot change them. Not
+		# `disabled`: Godot's disabled style hides the pressed look, so the
+		# selection was invisible (TeeJ, room #93). Ignore the mouse instead.
 		for b in _side_buttons + _size_buttons + _victory_buttons + _speed_buttons:
-			b.disabled = true
+			_lock(b)
+		load_btn.disabled = true
 		load_btn.tooltip_text = "Only the host loads a saved game."
 	_refresh_start()
 	entry.grab_focus()
@@ -208,6 +212,13 @@ func _process(_delta: float) -> void:
 			_begin_load(str(_settings.get("load", "")))
 	if _loading:
 		_poll_load()
+
+
+## A choice the guest may see but not touch: drawn as on the host's screen.
+static func _lock(b: Button) -> void:
+	b.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	b.focus_mode = Control.FOCUS_NONE
+	b.tooltip_text = "The host's choice."
 
 
 # --- the host's choices ---
