@@ -147,8 +147,7 @@ func BuildIndexBar() -> void:
 	_deleteSelectedBtn.pressed.connect(func() -> void:
 		if _picked.size() == 0:
 			return
-		for m in _picked.duplicate():
-			EventBus.DeleteMessage(m)
+		CommandBus.issue("delete_messages", { "messages": EntityIndex.ids_of_messages(_picked) })
 		_picked.clear()
 		_selectedMessage = null
 		RefreshCurrentTab())
@@ -304,7 +303,7 @@ func BuildActionRow() -> void:
 	_abortBtn = Button.new()
 	_abortBtn.text = "Abort Mission"
 	_abortBtn.pressed.connect(func() -> void:
-		MissionManager.Abort(_selectedMessage.PendingMission)
+		CommandBus.issue("abort_mission", { "mission": _selectedMessage.PendingMission.Serial })
 		_selectedMessage.PendingMission = null
 		RefreshCurrentTab())
 
@@ -312,7 +311,7 @@ func BuildActionRow() -> void:
 	_deleteBtn.text = "Delete"
 	_deleteBtn.pressed.connect(func() -> void:
 		if _selectedMessage != null:
-			EventBus.DeleteMessage(_selectedMessage)
+			CommandBus.issue("delete_messages", { "messages": [_selectedMessage.Serial] })
 		_selectedMessage = null
 		RefreshCurrentTab())
 

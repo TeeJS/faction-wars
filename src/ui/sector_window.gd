@@ -356,7 +356,7 @@ static func AttachMissionMenu(icon: Button, planet: Planet, uiManager: UIManager
 			if id == 0:
 				uiManager.OnMissionClicked(planet)
 			elif id >= 100 and id - 100 < mine.size():
-				MissionManager.Abort(mine[id - 100]))
+				CommandBus.issue("abort_mission", { "mission": mine[id - 100].Serial }))
 		icon.accept_event())
 
 

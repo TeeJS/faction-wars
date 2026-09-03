@@ -116,7 +116,7 @@ func BuildAbortRows(anchor: Label, missions: Array) -> void:
 		else:
 			var captured: Mission = m
 			abort.pressed.connect(func() -> void:
-				MissionManager.Abort(captured)
+				CommandBus.issue("abort_mission", { "mission": captured.Serial })
 				Populate(_planet))
 
 		row.add_child(abort)
