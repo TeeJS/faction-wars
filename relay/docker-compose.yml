@@ -4,18 +4,10 @@
 # Websockets Support ON, SSL like the others, no Authelia on this host.
 services:
   wars-relay:
-    image: oven/bun:1
+    image: ghcr.io/teejs/wars-relay:latest
     container_name: wars-relay
-    working_dir: /app
-    command: ["bun", "run", "server.ts"]
     volumes:
-      - ./server.ts:/app/server.ts:ro
       - ./data:/data
-      - ./web:/web:ro          # the exported build/web files, served at / on the same origin
-    environment:
-      PORT: "8787"
-      DATA_DIR: /data
-      STATIC_DIR: /web
     expose:
       - "8787"
     restart: unless-stopped

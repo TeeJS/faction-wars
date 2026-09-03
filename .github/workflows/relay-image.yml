@@ -1,0 +1,67 @@
+# Builds the relay image with the exported web game inside and publishes it to
+# GHCR as ghcr.io/<owner>/wars-relay:latest (and :<sha>) on every push to main.
+# The Unraid template (relay/unraid/my-wars-relay.xml) pulls :latest.
+name: relay image
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  GODOT_VERSION: "4.7.1"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Godot ${{ env.GODOT_VERSION }} and the web export templates
+        run: |
+          set -e
+          base="https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}-stable"
+          curl -sSL -o godot.zip "$base/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          unzip -q godot.zip
+          mv "Godot_v${GODOT_VERSION}-stable_linux.x86_64" godot
+          chmod +x godot
+          curl -sSL -o templates.tpz "$base/Godot_v${GODOT_VERSION}-stable_export_templates.tpz"
+          dest="$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.stable"
+          mkdir -p "$dest"
+          unzip -q templates.tpz -d tpl
+          mv tpl/templates/* "$dest/"
+          ./godot --version
+
+      - name: Export the web game (the Web preset in export_presets.cfg)
+        run: |
+          set -e
+          ./godot --headless --path . --import || true
+          mkdir -p build/web
+          ./godot --headless --path . --export-release Web build/web/index.html
+          ls -la build/web
+          test -s build/web/index.wasm && test -s build/web/index.pck && test -s build/web/index.html
+
+      - name: Image name (lower-case owner)
+        run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/wars-relay" >> "$GITHUB_ENV"
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: relay/Dockerfile
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:latest
+            ${{ env.IMAGE }}:${{ github.sha }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.description=The schmitz-wars relay with the web game baked in

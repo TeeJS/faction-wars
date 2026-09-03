@@ -1,25 +1,23 @@
 <?xml version="1.0"?>
 <Container version="2">
   <Name>wars-relay</Name>
-  <Repository>oven/bun:1</Repository>
-  <Registry>https://hub.docker.com/r/oven/bun</Registry>
+  <Repository>ghcr.io/teejs/wars-relay:latest</Repository>
+  <Registry>https://github.com/TeeJS/schmitz-wars/pkgs/container/wars-relay</Registry>
   <Network>bridge</Network>
   <Privileged>false</Privileged>
   <Support>https://github.com/TeeJS/schmitz-wars</Support>
   <Project>https://github.com/TeeJS/schmitz-wars</Project>
-  <Overview>The schmitz-wars relay: rooms, an append-only log per game, forwarding between the two players, and the exported web game served on the same origin. Never runs the simulation. Put server.ts and the exported build/web files under /mnt/user/appdata/wars-relay/ (see relay/README.md). NPM Plus proxy host: wars.schmitzplex.com -> http://[unraid ip]:8787, Websockets Support ON, no Authelia.</Overview>
+  <Overview>The schmitz-wars relay with the web game baked in: rooms, an append-only log per game (the saved games), forwarding between the two players, and the exported game served on the same origin. Built by GitHub Actions from the repo on every push to main. Only /data is mounted. NPM Plus proxy host: wars.schmitzplex.com -> http://[unraid ip]:8787, Websockets Support ON, no Authelia.</Overview>
   <Category>GameServers: Network:Other</Category>
-  <WebUI>http://[IP]:[PORT:8787]/healthz</WebUI>
+  <WebUI>http://[IP]:[PORT:8787]/</WebUI>
   <TemplateURL>https://raw.githubusercontent.com/TeeJS/schmitz-wars/main/relay/unraid/my-wars-relay.xml</TemplateURL>
   <Icon>https://raw.githubusercontent.com/oven-sh/bun/main/packages/bun-vscode/example/bun.png</Icon>
   <ExtraParams>--restart=unless-stopped</ExtraParams>
-  <PostArgs>bun run /app/server.ts</PostArgs>
+  <PostArgs/>
   <Shell>sh</Shell>
   <Config Name="Relay port" Target="8787" Default="8787" Mode="tcp" Description="The relay's HTTP + WebSocket port. NPM Plus forwards wars.schmitzplex.com here." Type="Port" Display="always" Required="true" Mask="false">8787</Config>
-  <Config Name="server.ts" Target="/app/server.ts" Default="/mnt/user/appdata/wars-relay/server.ts" Mode="ro" Description="The relay source (relay/server.ts from the repo). One file, no dependencies." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/wars-relay/server.ts</Config>
-  <Config Name="Data (rooms and logs)" Target="/data" Default="/mnt/user/appdata/wars-relay/data" Mode="rw" Description="Every room's meta.json and log.jsonl. This IS the saved games." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/wars-relay/data</Config>
-  <Config Name="Web game" Target="/web" Default="/mnt/user/appdata/wars-relay/web" Mode="ro" Description="The exported build/web files (index.html, index.wasm, index.pck, ...), served at / on the same origin as the relay." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/wars-relay/web</Config>
+  <Config Name="Data (rooms and logs)" Target="/data" Default="/mnt/user/appdata/wars-relay/data" Mode="rw" Description="Every room's meta.json and log.jsonl. This IS the saved games. Back it up like any appdata." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/wars-relay/data</Config>
   <Config Name="PORT" Target="PORT" Default="8787" Mode="" Description="Port the relay listens on inside the container. Keep in step with the port mapping." Type="Variable" Display="advanced" Required="true" Mask="false">8787</Config>
   <Config Name="DATA_DIR" Target="DATA_DIR" Default="/data" Mode="" Description="Where the relay writes rooms/ (the Data path above)." Type="Variable" Display="advanced" Required="true" Mask="false">/data</Config>
-  <Config Name="STATIC_DIR" Target="STATIC_DIR" Default="/web" Mode="" Description="Where the web game is served from (the Web game path above). Empty = do not serve files." Type="Variable" Display="advanced" Required="false" Mask="false">/web</Config>
+  <Config Name="STATIC_DIR" Target="STATIC_DIR" Default="/web" Mode="" Description="Where the web game inside the image is served from. Empty = relay only, no game files." Type="Variable" Display="advanced" Required="false" Mask="false">/web</Config>
 </Container>
