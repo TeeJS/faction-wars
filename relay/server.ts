@@ -146,6 +146,19 @@ export function startRelay(opts: { port?: number; dataDir?: string; staticDir?: 
         return new Response("websocket only", { status: 426 });
       }
       if (url.pathname === "/healthz") return new Response("ok");
+      // The reports, newest first, without their logs (TeeJ, room #155).
+      if (url.pathname === "/feedback" && req.method === "GET") {
+        const items: any[] = [];
+        for (const f of readdirSync(feedbackDir)) {
+          if (!f.endsWith(".json")) continue;
+          try {
+            const r = JSON.parse(readFileSync(join(feedbackDir, f), "utf8"));
+            items.push({ id: f.slice(0, -5), player: r.player, game: r.game, day: r.day, seed: r.seed, received_at: r.received_at, message: String(r.message ?? "").slice(0, 2000), log_lines: r.log_lines ?? 0, client: r.client ?? {} });
+          } catch { /* a broken file is skipped */ }
+        }
+        items.sort((a, b) => String(b.received_at ?? "").localeCompare(String(a.received_at ?? "")));
+        return Response.json({ count: items.length, feedback: items });
+      }
       if (url.pathname === "/rooms") return Response.json({ rooms: listing() });
       if (staticDir) {
         const path = url.pathname === "/" ? "/index.html" : url.pathname;

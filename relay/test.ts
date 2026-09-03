@@ -114,6 +114,8 @@ const bad = await fetch(`${fbBase}/feedback`, { method: "POST", body: "{" });
 check(bad.status === 400, "junk feedback is refused");
 const empty = await fetch(`${fbBase}/feedback`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message: "   " }) });
 check(empty.status === 400, "an empty note is refused");
+const listing: any = await (await fetch(`${fbBase}/feedback`)).json();
+check(listing.count === 1 && listing.feedback[0].id === fbReply.id && listing.feedback[0].message === "cannot target the shield" && listing.feedback[0].log_lines === 2 && !("log" in listing.feedback[0]), "GET /feedback lists the reports without their logs");
 
 console.log(failures === 0 ? "[relay test] PASS" : `[relay test] ${failures} FAILED`);
 relay2.stop();
