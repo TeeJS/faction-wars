@@ -138,6 +138,7 @@ func _options(host: bool) -> void:
 	_check(rules.size() == 2 and (rules[0] as Button).text == "Slowest wins" and (rules[1] as Button).text == "Average" and (rules[0] as Button).button_pressed == host, "speed rule (%s): Slowest wins / Average, Slowest the default for the host" % who)
 	_check((s.get_node("%BtnLoadGame") as Button).text == "Load Game" and (s.get_node("%BtnLoadGame") as Button).disabled, "Fig 5.9 (%s): Load Game, unavailable without a shared save" % who)
 	_check(_label(s, "ChatRow/ChatLabel") == "Chat>" and s.get_node("%ChatEntry") != null, "Fig 5.9 (%s): Chat> and the space to its right" % who)
+	_check((s.get_node("%CodeValue") as Label).text == "TEST01" and (s.get_node("%BtnCopyCode") as Button).text == "Copy", "addition (%s): the game code with a Copy button" % who)
 	var log: RichTextLabel = s.get_node("%ChatLog")
 	var text := log.get_parsed_text()
 	_check(text.contains("galaxy size selected.") and text.contains("victory selected.") and text.contains("Host has chosen the"), "Fig 5.9 (%s): the settings are echoed into the chat view" % who)

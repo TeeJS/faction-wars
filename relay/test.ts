@@ -29,7 +29,7 @@ await host.opened; await guest.opened;
 
 host.send({ t: "create", name: "The End of the Empire", player: "Han", settings: { size: 1, hq_only: false } });
 const room = await host.next();
-check(room.t === "room" && typeof room.code === "string" && room.code.length === 6, "host creates a room and gets a 6-character code");
+check(room.t === "room" && typeof room.code === "string" && /^[ACDEFGHJKLMNPQRTUVWXY34679]{6}$/.test(room.code), "host creates a room and gets a 6-character code without look-alike characters");
 
 guest.send({ t: "list" });
 const list = await guest.next();

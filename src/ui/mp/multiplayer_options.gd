@@ -126,6 +126,11 @@ func _ready() -> void:
 		_lobby.chat(text)
 		_say(MpSetup.player_name, text))
 
+	# The game code, with a Copy button (TeeJ, room #103): a browser player
+	# cannot select text on the canvas, so the code goes to the clipboard.
+	(get_node("%CodeValue") as Label).text = _lobby.code if not _lobby.code.is_empty() else "------"
+	(get_node("%BtnCopyCode") as Button).pressed.connect(_copy_code)
+
 	# 5 The checkmark starts the game - host only.
 	bar().set_proceed("Start Game")
 	bar().set_previous(true, "Previous")
@@ -220,6 +225,16 @@ static func _lock(b: Button) -> void:
 	b.focus_mode = Control.FOCUS_NONE
 	# The tooltip stays: the win conditions on the victory buttons are the
 	# manual's words (p162) and the guest is entitled to read them.
+
+
+func _copy_code() -> void:
+	var code := _lobby.code
+	if code.is_empty():
+		return
+	DisplayServer.clipboard_set(code)
+	if OS.has_feature("web"):
+		JavaScriptBridge.eval("navigator.clipboard && navigator.clipboard.writeText(%s)" % JSON.stringify(code), true)
+	_say(MpSetup.player_name, "Copied the game code %s." % code)
 
 
 # --- the host's choices ---

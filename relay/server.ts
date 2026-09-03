@@ -34,7 +34,8 @@ type Room = {
 };
 type Data = { room: Room | null; side: Side | null };
 
-const ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no 0/O/1/I
+// No look-alikes: 0/O, 1/I, S/5, Z/2, B/8 are all out (TeeJ, room #103).
+const ALPHABET = "ACDEFGHJKLMNPQRTUVWXY34679";
 
 export function startRelay(opts: { port?: number; dataDir?: string; staticDir?: string } = {}) {
   const port = opts.port ?? Number(process.env.PORT ?? 8787);

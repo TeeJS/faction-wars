@@ -113,6 +113,29 @@ custom_minimum_size = Vector2(160, 44)
 layout_mode = 2
 text = "Load Game"
 
+[node name="CodeRow" type="HBoxContainer" parent="CenterContainer/Console"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="CodeLabel" type="Label" parent="CenterContainer/Console/CodeRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.7, 0.8, 1)
+text = "Game code:"
+
+[node name="CodeValue" type="Label" parent="CenterContainer/Console/CodeRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "------"
+
+[node name="BtnCopyCode" type="Button" parent="CenterContainer/Console/CodeRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(90, 32)
+layout_mode = 2
+tooltip_text = "Put the game code on the clipboard to send to your opponent."
+text = "Copy"
+
 [node name="ChatRow" type="HBoxContainer" parent="CenterContainer/Console"]
 layout_mode = 2
 theme_override_constants/separation = 8
