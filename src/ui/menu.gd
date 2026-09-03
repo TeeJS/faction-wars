@@ -53,6 +53,8 @@ func _ready() -> void:
 		btnEmpire.pressed.connect(func() -> void: StartGame(second))
 
 	btnExit.pressed.connect(func() -> void: get_tree().quit())
+	# A browser tab has no desktop to exit to (TeeJ, room #97).
+	btnExit.visible = not OS.has_feature("web")
 
 	# THE MULTIPLAYER PANEL (manual p156, Fig 5.1): "the small panel at the lower
 	# left that depicts a Rebel soldier and an Imperial stormtrooper facing off".

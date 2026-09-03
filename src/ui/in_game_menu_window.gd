@@ -42,6 +42,8 @@ func _ready() -> void:
 	btnExitToDesktop.pressed.connect(func() -> void:
 		MpSetup.reset()
 		get_tree().quit())
+	# A browser tab has no desktop to exit to (TeeJ, room #97).
+	btnExitToDesktop.visible = not OS.has_feature("web")
 
 
 ## "Star Wars Rebellion will create a saved game on both computers in the same
