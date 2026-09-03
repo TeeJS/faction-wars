@@ -82,9 +82,17 @@ func _ready() -> void:
 
 	_galaxyMap.InitializeMap(authenticGalaxy, _uiManager)
 
+	# THE SESSION LOG (docs/m1-plan.md). Every order goes through the CommandBus
+	# and into this file, with the day hash after every tick; --record=path
+	# chooses the file, else user://last-session.jsonl. tests/replay.gd rebuilds
+	# the game from it.
+	var record: String = _ParseStringArg("--record=")
+	CommandLog.Open(record if not record.is_empty() else "user://last-session.jsonl", CommandLog.Header())
+
 	_tickTimer = Timer.new()
 	add_child(_tickTimer)
 	_tickTimer.timeout.connect(_strategicEngine.AdvanceDay)
+	_tickTimer.timeout.connect(CommandBus.day_done)
 
 	EventBus.OnDayAdvanced.append(UpdateDayDisplay)
 	# Everything on the bar changes mid-day - see RefreshStatusBar.
