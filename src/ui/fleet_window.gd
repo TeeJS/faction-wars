@@ -428,7 +428,7 @@ func PopulateUnitTab(tab: MarginContainer, units: Array, emptyText: String, sele
 					var refund: int = rowShip.ConstructionCost * Planet.ScrapRefundPercent / 100
 					ConfirmScrapShip(rowShip, refund, func() -> void:
 						if _associatedPlanet != null:
-							_associatedPlanet.ScrapUnit(rowShip)
+							CommandBus.issue("scrap_unit", { "unit": rowShip.Serial })
 						Populate(_associatedPlanet, _uiManager))
 		popup.id_pressed.connect(onShipMenu)
 
@@ -495,8 +495,7 @@ func BuildFleetContextMenu(fleet: Fleet, uiManager: UIManager) -> PopupMenu:
 				11: mode = BombardmentManager.BombardmentMode.CivilianFacilities
 				13: mode = BombardmentManager.BombardmentMode.DestroySystem
 				_:  mode = BombardmentManager.BombardmentMode.General
-			BombardmentManager.Bombard(fleet, _associatedPlanet, mode,
-									   Prng.Session, StrategicTickManager.Today)
+			CommandBus.issue("bombard", { "fleet": fleet.Name, "planet": _associatedPlanet.Name, "mode": mode })
 			Populate(_associatedPlanet, _uiManager))
 
 		# LIVE. "If you are in orbit above an enemy or neutral system, have
@@ -539,7 +538,7 @@ func BuildFleetContextMenu(fleet: Fleet, uiManager: UIManager) -> PopupMenu:
 				ConfirmScrapShip(null, refund, func() -> void:
 					for s in ships:
 						if _associatedPlanet != null:
-							_associatedPlanet.ScrapUnit(s)
+							CommandBus.issue("scrap_unit", { "unit": s.Serial })
 					Populate(_associatedPlanet, _uiManager),
 					"%s (%d ship%s)" % [fleet.Name, ships.size(), "" if ships.size() == 1 else "s"])
 	popup.id_pressed.connect(onFleetMenu)
@@ -606,8 +605,7 @@ func OnFleetMenuAction(actionId: int, fleets: Array, uiManager: UIManager) -> vo
 				if not r.ok:
 					print("[Assault] %s" % r.error)
 					continue
-				AssaultManager.Resolve(fleet, _associatedPlanet,
-									   Prng.Session, StrategicTickManager.Today)
+				CommandBus.issue("assault", { "fleet": fleet.Name, "planet": _associatedPlanet.Name })
 			Populate(_associatedPlanet, uiManager)
 
 		3:
@@ -673,7 +671,7 @@ func AddFleetButton(fleet: Fleet, list: VBoxContainer, uiManager: UIManager) -> 
 			if boarding.is_empty():
 				return
 
-			var r: Result = OrderManager.BoardFleet(boarding, fleet)
+			var r: Result = CommandBus.issue("board_fleet", { "characters": EntityIndex.names_of(boarding), "fleet": fleet.Name })
 			if r.ok:
 				Populate(_associatedPlanet, _uiManager)
 			else:
@@ -690,7 +688,7 @@ func AddFleetButton(fleet: Fleet, list: VBoxContainer, uiManager: UIManager) -> 
 		if cargo.is_empty():
 			return
 
-		var load: Result = OrderManager.LoadAboard(cargo, fleet)
+		var load: Result = CommandBus.issue("load_aboard", { "units": EntityIndex.ids_of_units(cargo), "fleet": fleet.Name })
 		var n: int = load.value
 		if n > 0:
 			Populate(_associatedPlanet, _uiManager)
