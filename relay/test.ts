@@ -116,6 +116,13 @@ const empty = await fetch(`${fbBase}/feedback`, { method: "POST", headers: { "Co
 check(empty.status === 400, "an empty note is refused");
 const listing: any = await (await fetch(`${fbBase}/feedback`)).json();
 check(listing.count === 1 && listing.feedback[0].id === fbReply.id && listing.feedback[0].message === "cannot target the shield" && listing.feedback[0].log_lines === 2 && !("log" in listing.feedback[0]), "GET /feedback lists the reports without their logs");
+const oneLog = await fetch(`${fbBase}/feedback/${fbReply.id}.jsonl`);
+const oneLogText = await oneLog.text();
+check(oneLog.status === 200 && oneLogText.split("\n").filter((l) => l).length === 2, "GET /feedback/<id>.jsonl returns the report's session log");
+const oneJson: any = await (await fetch(`${fbBase}/feedback/${fbReply.id}.json`)).json();
+check(oneJson.message === "cannot target the shield", "GET /feedback/<id>.json returns the report");
+const escape = await fetch(`${fbBase}/feedback/..%2Fserver.json`);
+check(escape.status === 404, "a report id cannot reach outside feedback/");
 
 console.log(failures === 0 ? "[relay test] PASS" : `[relay test] ${failures} FAILED`);
 relay2.stop();

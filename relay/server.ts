@@ -146,6 +146,15 @@ export function startRelay(opts: { port?: number; dataDir?: string; staticDir?: 
         return new Response("websocket only", { status: 426 });
       }
       if (url.pathname === "/healthz") return new Response("ok");
+      // One report's files by id: /feedback/<id>.json (the report) or .jsonl (its
+      // session log), so a report can be replayed from anywhere (TeeJ, room #185).
+      const one = /^\/feedback\/([A-Za-z0-9_-]{1,80})\.(json|jsonl)$/.exec(url.pathname);
+      if (one && req.method === "GET") {
+        const p = join(feedbackDir, `${one[1]}.${one[2]}`);
+        if (!existsSync(p)) return new Response("not found", { status: 404 });
+        return new Response(Bun.file(p), { headers: { "Content-Type": one[2] === "json" ? "application/json" : "application/x-ndjson", "Cache-Control": "no-cache" } });
+      }
+      if (url.pathname.startsWith("/feedback/") && req.method === "GET") return new Response("not found", { status: 404 });
       // The reports, newest first, without their logs (TeeJ, room #155).
       if (url.pathname === "/feedback" && req.method === "GET") {
         const items: any[] = [];
