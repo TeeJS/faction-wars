@@ -9,7 +9,7 @@ every fix that comes from a report on his review of a plan.
 | 2 | TeeJ | opens a feedback-processing session. |
 | 3 | Claude | reads the listing (`GET /feedback`), pulls the log (`GET /feedback/<id>.jsonl`), replays it (`tests/replay.gd`) to the day the tester saw, and **suggests a plan** for a fix. No code is touched. |
 | 4 | TeeJ | reviews the plan: **approves**, **revises**, or **rejects**. |
-| 5 | Claude | rejected: work on that suggestion stops. Revised: the plan is revised and resubmitted (back to 4). Approved: the fix is implemented, gated, and pushed. |
+| 5 | Claude | rejected: work on that suggestion stops and the report is closed - its files move to the `completed` folder as in step 7 (TeeJ, #190). Revised: the plan is revised and resubmitted (back to 4). Approved: the fix is implemented, gated, and pushed. |
 | 6 | TeeJ | tests the fix and declares it **fixed** or **still broken**. |
 | 7 | Claude | fixed: the report's files move to the `completed` folder (`POST /feedback/<id>/complete` moves `<id>.json` and `<id>.jsonl` into `feedback/completed/`; the listing then hides it, `GET /feedback?all=1` shows everything). Still broken: a new plan, back to 4. |
 
