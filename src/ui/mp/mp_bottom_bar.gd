@@ -10,6 +10,13 @@ signal cancel
 
 
 func _ready() -> void:
+	# Anchored to the bottom edge in code: an instanced scene's root does not
+	# keep the anchor layout mode written in its own .tscn once it has a parent.
+	set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
+	offset_left = 40.0
+	offset_right = -40.0
+	offset_top = -70.0
+	offset_bottom = -20.0
 	(get_node("%BtnPrevious") as Button).pressed.connect(func() -> void: previous.emit())
 	(get_node("%BtnProceed") as Button).pressed.connect(func() -> void: proceed.emit())
 	(get_node("%BtnCancel") as Button).pressed.connect(func() -> void: cancel.emit())
@@ -18,7 +25,7 @@ func _ready() -> void:
 func set_previous(shown: bool, label: String = "Previous") -> void:
 	var b: Button = get_node("%BtnPrevious")
 	b.visible = shown
-	b.text = "◄  %s" % label
+	b.text = "<  %s" % label
 
 
 func set_proceed(label: String) -> void:

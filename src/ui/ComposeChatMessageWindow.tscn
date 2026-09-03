@@ -107,14 +107,14 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(150, 32)
 layout_mode = 2
 tooltip_text = "Send message."
-text = "✓  Send message"
+text = "Send message"
 
 [node name="BtnCancel" type="Button" parent="MainVBox/ContentArea/Split/Left/SendRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(110, 32)
 layout_mode = 2
 tooltip_text = "Cancel."
-text = "✕  Cancel"
+text = "Cancel"
 
 [node name="Right" type="VBoxContainer" parent="MainVBox/ContentArea/Split"]
 layout_mode = 2

@@ -108,7 +108,7 @@ func _ready() -> void:
 		_say(MpSetup.player_name, text))
 
 	# 5 The checkmark starts the game - host only.
-	bar().set_proceed("✓  Start Game")
+	bar().set_proceed("Start Game")
 	bar().set_previous(true, "Previous")
 	bar().proceed.connect(_start)
 	bar().previous.connect(_previous)

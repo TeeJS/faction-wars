@@ -49,7 +49,7 @@ text = "Locate Session"
 unique_name_in_owner = true
 layout_mode = 2
 tooltip_text = "Close (cancel)."
-text = "✕"
+text = "X"
 
 [node name="Body" type="HBoxContainer" parent="CenterContainer/Dialog/VBox"]
 layout_mode = 2

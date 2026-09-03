@@ -141,7 +141,7 @@ func _options(host: bool) -> void:
 	_check(text.contains("galaxy size selected.") and text.contains("victory selected.") and text.contains("Host has chosen the"), "Fig 5.9 (%s): the settings are echoed into the chat view" % who)
 	var bar: MpBottomBar = s.get_node("%BottomBar")
 	var proceed: Button = bar.get_node("%BtnProceed")
-	_check(proceed.text.begins_with("✓") and proceed.disabled, "Fig 5.9 (%s): the checkmark starts, and waits" % who)
+	_check(proceed.text == "Start Game" and proceed.disabled, "Fig 5.9 (%s): the checkmark starts, and waits" % who)
 	if host:
 		_check(not (sides[0] as Button).disabled and (sides[0] as Button).button_pressed, "Fig 5.9 (host): the host edits; Alliance preselected")
 		_check((sizes[1] as Button).button_pressed and (s.get_node("%BtnStandardGame") as Button).button_pressed, "Fig 5.9 (host): Large and Standard Game preselected")
