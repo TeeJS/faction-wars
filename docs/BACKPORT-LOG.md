@@ -76,4 +76,4 @@ Sources:   manual p151-p152 (Withdraw from Battle; "until one side withdraws"); 
 Kind:      plumbing (no rule effect)
 Files:     `src/command/*.gd`, `src/game/game_session.gd` (bus reset), `tests/command_apply.gd`, `tests/replay.gd`, `tests/ui_compile.gd`
 Source:    not needed for single player. Shape if ever wanted: one command per UI mutation entry point, args by entity id (names for planets/sectors/characters/fleets, the M0 serials for units/facilities/missions/messages), a JSON-lines log with a header that rebuilds the game and the day hash after every tick, an applier that calls the same backend verb the UI called. Gate: a recorded 100-day scripted session replays to 100/100 identical hashes.
-Hashes:    unchanged (the UI still calls the backend directly until M1 step 2)
+Hashes:    unchanged. M1 step 2 (commits 30acf59..c3d9a23) switched every UI call site to `CommandBus.issue`; GameManager opens the session log and hashes every tick.
