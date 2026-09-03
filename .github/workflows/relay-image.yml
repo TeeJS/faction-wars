@@ -60,8 +60,12 @@ jobs:
         with:
           context: .
           file: relay/Dockerfile
-          push: true
+          # unraid-image-publishing skill: a single-platform buildx push emits a
+          # bare OCI manifest, which Unraid's update check cannot read; force the
+          # Docker v2 media type and drop the attestation manifests.
+          outputs: type=image,push=true,oci-mediatypes=false
           provenance: false
+          sbom: false
           tags: |
             ${{ env.IMAGE }}:latest
             ${{ env.IMAGE }}:${{ github.sha }}
