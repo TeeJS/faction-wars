@@ -20,10 +20,12 @@ var _pending: Dictionary = {}
 func _ready() -> void:
 	name = "FeedbackPanel"
 	set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
+	# Above the two bottom bars (the message-category row and the toolbar),
+	# which are ~70 px tall (TeeJ, room #147: the box was hidden behind them).
 	offset_left = 4.0
 	offset_right = 304.0
-	offset_top = -190.0
-	offset_bottom = -10.0
+	offset_top = -270.0
+	offset_bottom = -80.0
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	var margin := MarginContainer.new()
 	for side in ["left", "top", "right", "bottom"]:
