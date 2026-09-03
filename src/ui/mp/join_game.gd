@@ -8,8 +8,18 @@ const RefreshSeconds := 2.0
 
 var _lobby: RelayClient
 var _rooms: Array = []
+var _shown: Array = []   # the rooms in the list, after the code filter
 var _joining: bool = false
 var _since_refresh: float = 0.0
+var _unreachable_shown: bool = false
+
+
+func _codes_of(rooms: Array) -> Array:
+	var out: Array = []
+	for r in rooms:
+		if r is Dictionary:
+			out.append(str(r.get("code", "")))
+	return out
 
 
 func _ready() -> void:
@@ -42,14 +52,18 @@ func _process(delta: float) -> void:
 			show_error(_lobby.last_error.capitalize() + ".")
 			_lobby.last_error = ""
 		return
-	if _lobby.rooms != _rooms:
+	# Rebuild the list only when the SET of rooms changes (by code): the relay's
+	# reply every 2 s arrives as new objects, and rebuilding on every reply
+	# flickered and could swallow a click on the rebuild frame.
+	if _codes_of(_lobby.rooms) != _codes_of(_rooms):
 		_rooms = _lobby.rooms.duplicate()
 		_fill()
 	_since_refresh += delta
 	if _since_refresh >= RefreshSeconds:
 		_since_refresh = 0.0
 		_lobby.list()
-	if not _lobby.transport.last_error.is_empty() and _lobby.transport.received == 0:
+	if not _lobby.transport.last_error.is_empty() and _lobby.transport.received == 0 and not _unreachable_shown:
+		_unreachable_shown = true
 		(get_node("%Games") as ItemList).clear()
 		(get_node("%Games") as ItemList).add_item("Could not reach the relay at %s." % _lobby.transport.url)
 		_refresh_proceed()
@@ -58,7 +72,7 @@ func _process(delta: float) -> void:
 func _fill() -> void:
 	var list: ItemList = get_node("%Games")
 	var picked := list.get_selected_items()
-	var picked_code := str(_rooms[picked[0]].get("code", "")) if picked.size() > 0 and picked[0] < _rooms.size() else ""
+	var picked_code := str(_shown[picked[0]].get("code", "")) if picked.size() > 0 and picked[0] < _shown.size() else ""
 	list.clear()
 	var shown: Array = []
 	for r in _rooms:
@@ -68,7 +82,7 @@ func _fill() -> void:
 		shown.append(r)
 		# Addition, recorded: the host's name after the game name.
 		list.add_item("%s (%s)" % [str(r.get("name", "")), str(r.get("host", ""))])
-	_rooms = shown
+	_shown = shown
 	if shown.is_empty():
 		if MpSetup.join_code.is_empty():
 			list.add_item("No games are waiting on the relay.")
@@ -85,7 +99,7 @@ func _fill() -> void:
 
 func _refresh_proceed() -> void:
 	var list: ItemList = get_node("%Games")
-	var ok := list.get_selected_items().size() > 0 and not _rooms.is_empty()
+	var ok := list.get_selected_items().size() > 0 and not _shown.is_empty()
 	bar().set_proceed_enabled(ok and not _joining, "" if ok else "Select a game to join.")
 
 
@@ -94,12 +108,12 @@ func _proceed() -> void:
 		return
 	var list: ItemList = get_node("%Games")
 	var picked := list.get_selected_items()
-	if picked.is_empty() or picked[0] >= _rooms.size():
+	if picked.is_empty() or picked[0] >= _shown.size():
 		return
 	var player := (get_node("%PlayerName") as LineEdit).text.strip_edges()
 	MpSetup.player_name = player if not player.is_empty() else "Player"
 	MpSetup.remember_names()
 	_lobby.player = MpSetup.player_name
-	_lobby.join(str(_rooms[picked[0]].get("code", "")))
+	_lobby.join(str(_shown[picked[0]].get("code", "")))
 	_joining = true
 	bar().set_proceed_enabled(false, "Joining...")
