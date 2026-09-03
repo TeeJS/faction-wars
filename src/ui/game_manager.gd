@@ -52,6 +52,15 @@ var _lastDay: int = 0
 # day as due and _process advances it through the LockstepSession as soon as
 # the opponent's orders for it are complete.
 var _mpDayDue: bool = false
+var _menuOpen: bool = false          # the Game Options screen is up: the opponent waits
+var _appliedEffective: int = -1
+var _stallSince: int = -1            # ms; the opponent's end-of-day is overdue
+var _waitingSince: int = -1          # ms; the Waiting for Opponent box is up
+var _waitBox: AcceptDialog
+var _leaveBtn: Button
+var _resyncing: bool = false
+const WaitingAfterMs := 3000         # an overdue opponent becomes "waiting" after this
+const LeaveAfterMs := 60000          # Leave Game appears after this (design question D)
 
 
 func _ready() -> void:
@@ -170,6 +179,7 @@ func _StartLockstep() -> void:
 		session.absorb(lobby.take_held())
 		session.start()
 	MpSetup.session = session
+	_speed = session.my_speed if session.my_speed != 0 else DefaultSpeed
 	print("[GameManager] head-to-head: %s vs %s, room %s, day %d" % [us.Id, them.Id, lobby.code, StrategicTickManager.Today])
 
 
@@ -182,6 +192,7 @@ func _process(_delta: float) -> void:
 			_mpDayDue = false
 	else:
 		session.pump()
+	_MpWatch(session)
 
 
 static func _ParseStringArg(prefix: String) -> String:
@@ -243,20 +254,134 @@ func SetSpeed(level: int) -> void:
 	for i in SpeedNames.size():
 		_speedMenu.set_item_checked(_speedMenu.get_item_index(i), i == level)
 
-	# THE CURRENT SETTING, ON THE FACE OF THE CONTROL (user-reported behaviour
-	# of the original).
-	_speedReadout.text = SpeedNames[level]
+	# Head-to-head: my setting goes to the opponent; the clock runs at the
+	# slower of the two (manual p163).
+	var session: LockstepSession = MpSetup.session
+	if session != null:
+		session.set_speed(0 if _menuOpen else level)
+	_ApplyClock()
 
-	if level == 0:
+
+## The clock as it should run now: my setting alone in single player; in a
+## head-to-head game the slowest of the two settings ("the game plays at the
+## slowest speed set on either computer", manual p163), and stopped while my
+## Game Options screen is up.
+func _ApplyClock() -> void:
+	var session: LockstepSession = MpSetup.session
+	var effective: int = _speed if session == null else mini(_speed, session.remote_speed)
+	_appliedEffective = effective
+
+	# THE CURRENT SETTING, ON THE FACE OF THE CONTROL (user-reported behaviour
+	# of the original). Addition for head-to-head: when the opponent's slower
+	# setting governs, the face says so.
+	if session != null and session.remote_speed < _speed:
+		_speedReadout.text = "%s (set by opponent)" % SpeedNames[effective]
+	else:
+		_speedReadout.text = SpeedNames[_speed]
+
+	if _speed == 0:
 		_tickTimer.stop()
 		if not _pauseBox.visible:
 			_pauseBox.popup_centered()
 		return
-
-	_tickTimer.wait_time = SpeedSeconds[level]
-	_tickTimer.start()
 	if _pauseBox.visible:
 		_pauseBox.hide()
+	if effective == 0 or _menuOpen:
+		# The opponent paused, or I am in the Game Options screen: no clock.
+		_tickTimer.stop()
+		return
+	# Idempotent: re-choosing the running setting must not restart the day.
+	if _tickTimer.is_stopped() or _tickTimer.wait_time != SpeedSeconds[effective]:
+		_tickTimer.wait_time = SpeedSeconds[effective]
+		_tickTimer.start()
+
+
+## The Game Options screen is up (open = true) or was closed. Manual p163:
+## "Your opponent will receive a Waiting for Opponent message, until you
+## return to the game."
+func MenuOpened(open: bool) -> void:
+	_menuOpen = open
+	print("[GameManager] Game Options screen %s on day %d" % ["opened" if open else "closed", StrategicTickManager.Today])
+	var session: LockstepSession = MpSetup.session
+	if session != null:
+		session.set_speed(0 if open else _speed)
+	_ApplyClock()
+
+
+## Waiting for Opponent (manual p163; docs/multiplayer-ui-design.md section 11):
+## up while the opponent is in their Game Options screen, chose Pause, or
+## dropped; after a minute a Leave Game button appears, behind a confirmation.
+func _MpWatch(session: LockstepSession) -> void:
+	# The opponent's speed changed: the slower of the two governs.
+	if mini(_speed, session.remote_speed) != _appliedEffective:
+		_ApplyClock()
+
+	# A desync: rebuild from the shared log (M2). Whoever drifted is repaired;
+	# the faithful side keeps waiting for the other to repair.
+	if session.state == LockstepSession.State.Desync and not _resyncing:
+		_resyncing = true
+		var ok: bool = session.resync()
+		_resyncing = false
+		if ok:
+			_strategicEngine = session.engine
+			_galaxyMap.InitializeMap(GameState.ActiveGalaxy, _uiManager)
+			_uiManager.RefreshNow()
+		print("[GameManager] desync on day %d: %s" % [StrategicTickManager.Today, "repaired from the log" if ok else "waiting for the opponent to repair"])
+
+	var now := Time.get_ticks_msec()
+	if _mpDayDue and session.state == LockstepSession.State.WaitingOpponent:
+		if _stallSince < 0:
+			_stallSince = now
+	else:
+		_stallSince = -1
+	var waiting: bool = session.remote_speed == 0 or session.opponent_gone \
+		or (_stallSince >= 0 and now - _stallSince > WaitingAfterMs)
+	# My own pause box has the screen; the manual's message is for the other side.
+	if _speed == 0 or _menuOpen:
+		waiting = false
+
+	if waiting:
+		if _waitBox == null:
+			_BuildWaitBox()
+		var text := "Waiting for opponent..."
+		if session.opponent_gone:
+			text += "\nConnection to your opponent was lost; waiting for them to rejoin."
+		_waitBox.dialog_text = text
+		if not _waitBox.visible:
+			print("[GameManager] Waiting for Opponent (day %d)" % StrategicTickManager.Today)
+			_waitingSince = now
+			_leaveBtn.visible = false
+			_waitBox.popup_centered()
+		elif not _leaveBtn.visible and now - _waitingSince > LeaveAfterMs:
+			_leaveBtn.visible = true
+	elif _waitBox != null and _waitBox.visible:
+		print("[GameManager] opponent is back (day %d)" % StrategicTickManager.Today)
+		_waitBox.hide()
+		_waitingSince = -1
+
+
+func _BuildWaitBox() -> void:
+	_waitBox = AcceptDialog.new()
+	_waitBox.title = "Waiting for Opponent"
+	_waitBox.exclusive = true
+	_waitBox.unresizable = true
+	_waitBox.get_ok_button().hide()
+	_leaveBtn = _waitBox.add_button("Leave Game", true, "leave")
+	_leaveBtn.visible = false
+	_waitBox.custom_action.connect(func(action: StringName) -> void:
+		if action != &"leave":
+			return
+		var confirm := ConfirmationDialog.new()
+		confirm.title = "Leave Game"
+		confirm.dialog_text = "Leave this game? It will be available to reload from either player."
+		confirm.ok_button_text = "Leave"
+		add_child(confirm)
+		confirm.confirmed.connect(func() -> void:
+			MpSetup.reset()
+			get_tree().change_scene_to_file("res://Menu.tscn"))
+		confirm.canceled.connect(func() -> void: confirm.queue_free())
+		confirm.popup_centered())
+	add_child(_waitBox)
 
 
 ## THE MANUAL'S KEYBOARD TABLE: Alt+P Pause; Alt++/Alt+- speed up / down

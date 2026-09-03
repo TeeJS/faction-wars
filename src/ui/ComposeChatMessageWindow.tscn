@@ -1,0 +1,128 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/ui/compose_chat_message_window.gd" id="1_compose"]
+
+[node name="ComposeChatMessageWindow" type="PanelContainer"]
+custom_minimum_size = Vector2(560, 320)
+offset_right = 560.0
+offset_bottom = 320.0
+script = ExtResource("1_compose")
+
+[node name="MainVBox" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="TitleBar" type="ColorRect" parent="MainVBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+color = Color(0.18, 0.22, 0.28, 1)
+
+[node name="HBox" type="HBoxContainer" parent="MainVBox/TitleBar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleBarLabel" type="Label" parent="MainVBox/TitleBar/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 12
+text = " Compose Chat Message"
+vertical_alignment = 1
+
+[node name="MinimizeButton" type="Button" parent="MainVBox/TitleBar/HBox"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(24, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "_"
+
+[node name="CloseButton" type="Button" parent="MainVBox/TitleBar/HBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(24, 0)
+layout_mode = 2
+tooltip_text = "Close button."
+theme_override_font_sizes/font_size = 10
+text = "X"
+
+[node name="ContentArea" type="MarginContainer" parent="MainVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="ColorRect" type="ColorRect" parent="MainVBox/ContentArea"]
+layout_mode = 2
+color = Color(0.121569, 0.160784, 0.215686, 1)
+
+[node name="Split" type="HBoxContainer" parent="MainVBox/ContentArea"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Left" type="VBoxContainer" parent="MainVBox/ContentArea/Split"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="Picture" type="ColorRect" parent="MainVBox/ContentArea/Split/Left"]
+custom_minimum_size = Vector2(0, 170)
+layout_mode = 2
+size_flags_vertical = 3
+color = Color(0.06, 0.08, 0.11, 1)
+
+[node name="PictureLabel" type="Label" parent="MainVBox/ContentArea/Split/Left/Picture"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.4, 0.45, 0.5, 1)
+text = "[ Picture ]"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MessageEntry" type="LineEdit" parent="MainVBox/ContentArea/Split/Left"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Type your message here."
+placeholder_text = "Type your message here."
+max_length = 200
+
+[node name="SendRow" type="HBoxContainer" parent="MainVBox/ContentArea/Split/Left"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 2
+
+[node name="BtnSend" type="Button" parent="MainVBox/ContentArea/Split/Left/SendRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 32)
+layout_mode = 2
+tooltip_text = "Send message."
+text = "✓  Send message"
+
+[node name="BtnCancel" type="Button" parent="MainVBox/ContentArea/Split/Left/SendRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(110, 32)
+layout_mode = 2
+tooltip_text = "Cancel."
+text = "✕  Cancel"
+
+[node name="Right" type="VBoxContainer" parent="MainVBox/ContentArea/Split"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="BtnReturn" type="Button" parent="MainVBox/ContentArea/Split/Right"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 48)
+layout_mode = 2
+tooltip_text = "Return to Display Message Index."
+text = "Return to Display\nMessage Index"

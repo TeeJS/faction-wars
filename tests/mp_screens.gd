@@ -20,6 +20,8 @@ func _init() -> void:
 	await _join()
 	await _options(true)
 	await _options(false)
+	await _compose()
+	await _chat_tab()
 	print("[mp_screens] %d checks, %d failed" % [_checks, _fails])
 	quit(1 if _fails > 0 else 0)
 
@@ -149,6 +151,47 @@ func _options(host: bool) -> void:
 		_check(text.contains("Huge galaxy size selected.") and text.contains("HQ Only victory selected."), "Fig 5.9 (guest): the host's choices are in the view")
 	await _close(s)
 	MpSetup.reset()
+
+
+func _compose() -> void:
+	var w := await _open("res://src/ui/ComposeChatMessageWindow.tscn")
+	_check((w.get_node("%TitleBarLabel") as Label).text.strip_edges() == "Compose Chat Message", "Fig 5.11: title")
+	_check((w.get_node("%MessageEntry") as LineEdit).placeholder_text == "Type your message here.", "Fig 5.11: 'Type your message here'")
+	_check((w.get_node("%BtnSend") as Button).text.ends_with("Send message"), "Fig 5.11: Send message")
+	_check((w.get_node("%BtnCancel") as Button).text.ends_with("Cancel"), "Fig 5.11: Cancel")
+	_check((w.get_node("%BtnReturn") as Button).text.replace("\n", " ") == "Return to Display Message Index", "Fig 5.11: Return to Display Message Index")
+	_check((w.get_node("%CloseButton") as Button).visible, "Fig 5.11: Close button")
+	await _close(w)
+
+
+func _chat_tab() -> void:
+	GameSettings.HumanFactions = [FactionRegistry.Playable[0], FactionRegistry.Playable[1]]
+	var w := await _open("res://src/ui/MessageWindow.tscn")
+	# The window re-parents its tab column in _ready, which drops the unique-name owner.
+	var tabs: TabContainer = w.find_child("MessageTabs", true, false)
+	var title := ""
+	for i in tabs.get_child_count():
+		if tabs.get_child(i).name == "Chat":
+			title = tabs.get_tab_title(i)
+	_check(title == "Chat Messages", "Fig 5.10: the tab is 'Chat Messages'")
+	var compose: Button = null
+	for row in (w.find_child("DetailView", true, false) as VBoxContainer).get_children():
+		for c in row.get_children():
+			if c is Button and (c as Button).text == "Compose Chat Message":
+				compose = c
+	_check(compose != null, "Fig 5.10: Compose chat message, bottom of the right-hand column")
+	var last := (w.find_child("DetailView", true, false) as VBoxContainer).get_child((w.find_child("DetailView", true, false) as VBoxContainer).get_child_count() - 1)
+	_check(compose != null and compose.get_parent() == last, "Fig 5.10: it is the last thing in the column")
+	await _close(w)
+	GameSettings.HumanFactions = []
+	var w2 := await _open("res://src/ui/MessageWindow.tscn")
+	var any := false
+	for row in (w2.find_child("DetailView", true, false) as VBoxContainer).get_children():
+		for c in row.get_children():
+			if c is Button and (c as Button).text == "Compose Chat Message":
+				any = true
+	_check(not any, "single player: no Compose button")
+	await _close(w2)
 
 
 func _label(s: Node, path: String) -> String:

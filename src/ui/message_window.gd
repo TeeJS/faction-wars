@@ -57,6 +57,7 @@ func _ready() -> void:
 
 	BuildAllTab()
 	BuildIndexBar()
+	BuildComposeButton()
 
 	# Two tabs whose display differs from the node/enum name that keys the
 	# filtering: the shipped alerts-menu word is the singular "Mission"
@@ -69,6 +70,9 @@ func _ready() -> void:
 			_tabContainer.set_tab_title(i, "Mission")
 		elif tab == AllTab:
 			_tabContainer.set_tab_title(i, "All Messages")
+		elif tab == "Chat":
+			# "Click the Chat Messages tab" (manual p163, Fig 5.10).
+			_tabContainer.set_tab_title(i, "Chat Messages")
 
 	# Listen for when the player manually clicks a different tab inside the window
 	_tabContainer.tab_changed.connect(OnTabManuallyChanged)
@@ -279,11 +283,46 @@ func RefreshCategory(categoryFilter: String) -> void:
 			else:
 				_picked.erase(capturedMsg)
 			ShowDetail(capturedMsg, msgBtn))
+		# "Double-click a message to view it" (manual p163): the manual's gesture
+		# opens the message and leaves the row picked; a single click still works.
+		msgBtn.gui_input.connect(func(event: InputEvent) -> void:
+			if event is InputEventMouseButton and event.double_click and event.button_index == MOUSE_BUTTON_LEFT:
+				if not _picked.has(capturedMsg):
+					_picked.append(capturedMsg)
+				msgBtn.set_pressed_no_signal(true)
+				ShowDetail(capturedMsg, msgBtn)
+				msgBtn.accept_event())
 
 		activeList.add_child(msgBtn)
 
 	# Automatically select and display the newest transmission in the list
 	ShowDetail(filteredMessages[0], null)
+
+
+# "Click the button on the bottom right-hand side of the window to send a
+# message to your opponent" (manual p163, Fig 5.10: the last button of the
+# right-hand column). Head-to-head only - there is nobody to chat with in a
+# single-player game.
+var _composeBtn: Button
+
+
+func BuildComposeButton() -> void:
+	if GameSettings.HumanFactions.size() < 2:
+		return
+	var detail: VBoxContainer = get_node_or_null("%DetailView")
+	if detail == null:
+		return
+	var row := HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_END
+	_composeBtn = Button.new()
+	_composeBtn.text = "Compose Chat Message"
+	_composeBtn.tooltip_text = "Compose chat message - send a message to your opponent."
+	_composeBtn.custom_minimum_size = Vector2(0, 30)
+	_composeBtn.pressed.connect(func() -> void:
+		if _uiManager != null:
+			_uiManager.OpenComposeChatMessage())
+	row.add_child(_composeBtn)
+	detail.add_child(row)
 
 
 # The original's mission report carries a tick and a cross - "Do you wish

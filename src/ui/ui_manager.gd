@@ -140,6 +140,17 @@ func ShowHudNotification(msg: GameMessage) -> void:
 			categoryBtn.modulate = Color(1.5, 1.5, 0.5)
 
 
+## Compose Chat Message (manual p163, Fig 5.11). Loaded by path: the window
+## did not exist when Main.tscn's template slots were assigned.
+const ComposeChatMessageWindowScene := "res://src/ui/ComposeChatMessageWindow.tscn"
+
+
+func OpenComposeChatMessage() -> void:
+	OpenWindow("Compose Chat Message", load(ComposeChatMessageWindowScene),
+		func(window) -> void: window.Setup(self),
+		Vector2(120, 120))
+
+
 func OnMessageIndexClicked(category: String = "All") -> void:
 	OpenWindow("Communications", MessageWindowTemplate,
 		func(window) -> void: window.OpenToCategory(category),

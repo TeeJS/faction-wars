@@ -135,7 +135,39 @@ func _play() -> void:
 	gm.SetSpeed(4)   # Fast
 	var last := -1
 	var deadline := Time.get_ticks_msec() + 600000
+	var ui: UIManager = gm.get_node("UIManager")
+	var menu_opened_at := -1
+	var saw_waiting := false
+	var saw_opponent_speed := false
+	var slowed := false
+	var restored := false
 	while StrategicTickManager.Today < start + _days:
+		var d := StrategicTickManager.Today - start
+		# The host chats on day 3, opens the Game Options screen on day 6 for
+		# 4 s (the guest must see Waiting for Opponent), and the guest sets
+		# Medium on day 10 for 2 days (the host's face must say so).
+		if _role == "host" and d == 3 and last != StrategicTickManager.Today:
+			CommandBus.issue("chat", { "text": "I have you now." })
+		if _role == "host" and d == 6 and menu_opened_at < 0:
+			ui.OnMenuButtonClicked()
+			print("[mp_flow] host opens the Game Options screen")
+			menu_opened_at = Time.get_ticks_msec()
+		if menu_opened_at > 0 and Time.get_ticks_msec() - menu_opened_at > 4000:
+			menu_opened_at = 0
+			for w in ui.get_children():
+				if w is DraggableWindow and w.scene_file_path.ends_with("InGameMenuWindow.tscn"):
+					print("[mp_flow] host closes the Game Options screen")
+					(w as DraggableWindow).CloseWindow()
+		if _role == "guest" and d == 10 and not slowed:
+			slowed = true
+			gm.SetSpeed(3)
+		if _role == "guest" and d == 12 and slowed and not restored:
+			restored = true
+			gm.SetSpeed(4)
+		if gm._waitBox != null and gm._waitBox.visible:
+			saw_waiting = true
+		if gm._speedReadout.text.contains("set by opponent"):
+			saw_opponent_speed = true
 		if Time.get_ticks_msec() > deadline:
 			await _fail("the game stalled on day %d" % StrategicTickManager.Today)
 			return
@@ -150,7 +182,15 @@ func _play() -> void:
 		await process_frame
 	if _log != null:
 		_log.close()
+	var chat := false
+	for m in EventBus.VisibleMessages():
+		if m.Category == Enums.MessageCategory.Chat and m.Title == "Message From The Alliance":
+			chat = true
 	print("[mp_flow] %s done: day %d, session %s" % [_role, StrategicTickManager.Today, LockstepSession.State.keys()[MpSetup.session.state]])
+	if _role == "guest":
+		print("[mp_flow] guest checks: waiting box seen=%s, chat from the Alliance received=%s" % [str(saw_waiting), str(chat)])
+	else:
+		print("[mp_flow] host checks: opponent's slower speed shown=%s" % str(saw_opponent_speed))
 	# A closed browser: nothing tidy - the relay keeps the game.
 	quit(0)
 

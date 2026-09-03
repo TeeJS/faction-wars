@@ -28,6 +28,8 @@ var _seq: int = 0
 var my_speed: int = 2
 var remote_speed: int = 2
 var remote_hello: Dictionary = {}
+## The relay said the opponent's seat dropped (`left`) and has not been retaken.
+var opponent_gone: bool = false
 var hello_mismatch: String = ""
 ## After a resync: did our replay reproduce our own hash (true = the opponent diverged)?
 var last_resync_faithful: bool = false
@@ -127,6 +129,10 @@ func _handle(msg: Dictionary) -> void:
 			_check(d)
 		"speed":
 			remote_speed = int(msg.get("level", 2))
+		"left":
+			opponent_gone = true
+		"guest", "host":
+			opponent_gone = false
 
 
 func _check(d: int) -> void:

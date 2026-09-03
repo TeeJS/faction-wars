@@ -1,6 +1,6 @@
 # Multiplayer screens - design from the manual's figures (M4 + the M5 screens)
 
-**Status:** BUILT sections 1-7 (2026-09-03, `src/ui/mp/*`, `src/net/mp_setup.gd`, GameManager hook; gates `tests/mp_screens.gd` 48/48 and `tools/mp-flow-local.ps1 -Load` 19/19 + 19/19); sections 8-12 pending. REVIEWED 2026-09-03. Drafted by Lord Vader from the figures themselves
+**Status:** BUILT, all sections (2026-09-03; gates `tests/mp_screens.gd` 58/58 and `tools/mp-flow-local.ps1 -Days 16 -Load` 15/15 + 15/15, which also exercises chat, the Game Options pause and a slower opponent). REVIEWED 2026-09-03. Drafted by Lord Vader from the figures themselves
 (manual p156-p163 = PDF p152-p159, re-read for this document); reviewed by Doof
 (room AM-XVTDFFDA4FY59ZFQZP64YEYU63 #6): no figure element dropped; seven doc
 corrections applied below; A-D answered in section 14. Build follows section 14 F. CLAUDE.md rule 0 applies: every element a figure names is a
@@ -209,7 +209,7 @@ manual's word, and a copy would be an invented message type.
 
 | Manual | Today (code) | Design |
 |---|---|---|
-| Either player adjusts; game runs at the slower; five settings Pause / Very Slow / Slow / Medium / Fast | The GID bar's speed menu, five radio items (`game_manager.gd:138-155`); `set_speed`/`pause`/`resume` commands exist but the clock ignores them (`command_applier.gd:155-158`) | Choosing a speed issues `set_speed` (the local menu item checks as chosen) and `LockstepSession.set_speed`; the timer runs at `effective_speed()` = min(mine, theirs). The readout shows **"Slow"** when equal and **"Slow (opponent: Medium)"** when the opponent's is what governs, so a player knows why the game is slower than they set. **Addition (not a figure element):** the "(opponent: ...)" suffix; the manual only states the rule. |
+| Either player adjusts; game runs at the slower; five settings Pause / Very Slow / Slow / Medium / Fast | The GID bar's speed menu, five radio items (`game_manager.gd:138-155`); `set_speed`/`pause`/`resume` commands exist but the clock ignores them (`command_applier.gd:155-158`) | Choosing a speed issues `set_speed` (the local menu item checks as chosen) and `LockstepSession.set_speed`; the timer runs at `effective_speed()` = min(mine, theirs). The readout shows my setting, and **"Slow (set by opponent)"** when the opponent's slower setting is what governs, so a player knows why the game is slower than they set. **Addition (not a figure element):** the "(set by opponent)" suffix; the manual only states the rule. Speed and pause travel as the M2 protocol's `speed` line rather than as commands, so a rebuilt game resumes at the speeds the log last recorded. |
 | Pause on the Game Speed menu; "click on the checkbox to resume play" | Pause is modal with a **Resume** button (`_pauseBox`, `game_manager.gd:157-167`) | Pause issues `pause`; the pauser sees today's box; Resume issues `resume`. The **opponent sees Waiting for Opponent** (section 11) while the other side is paused - a paused opponent is one who is not playing, and the manual's "slowest speed" with Pause as a speed says the same. |
 
 ## 11. Waiting for Opponent (p163)
@@ -259,11 +259,11 @@ the save). It is not part of the multiplayer plan; flagging it, not building it.
 | 5.9 ✓ | side caption + two symbols (red/green); size caption + three; Standard Game / HQ Only Victory; Load; Chat> + entry, Enter sends; chat + settings view; checkmark Start (host); Previous; Cancel |
 | Load ✓ | list of shared saves ("Day N"); settings restored and greyed; Cancel |
 | exits ✓ | `MpSetup.reset()` on every Cancel, Previous-from-Options, Leave Game, Exit to Menu/Desktop, game end |
-| 5.10 | tab "Chat Messages"; incoming row wording; double-click opens; Compose button bottom right; Delete selected; Select all |
-| 5.11 | title; "Type your message here"; Send message; Cancel; Close button; Return to Display Message Index |
-| p163 speed | five settings; slowest governs; readout shows the governing side |
-| p163 pause | Game Options open ⇒ opponent's Waiting for Opponent; Pause on the menu ⇒ same; checkbox/Resume resumes |
-| p163 save | host-only Save Game on the Game Options screen; confirmation names the game and day |
+| 5.10 ✓ | tab "Chat Messages"; incoming row wording; double-click opens; Compose button bottom right; Delete selected; Select all |
+| 5.11 ✓ | title; "Type your message here"; Send message; Cancel; Close button; Return to Display Message Index |
+| p163 speed ✓ | five settings; slowest governs; readout shows the governing side |
+| p163 pause ✓ | Game Options open ⇒ opponent's Waiting for Opponent; Pause on the menu ⇒ same; checkbox/Resume resumes |
+| p163 save ✓ | host-only Save Game on the Game Options screen; confirmation names the game and day |
 
 ## 14. Open questions (for Doof, then TeeJ)
 

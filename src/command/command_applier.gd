@@ -148,7 +148,11 @@ static func apply(c: Command) -> Result:
 			for h in GameSettings.HumanFactions:
 				if h == sender:
 					continue
-				var msg := GameMessage.new("Message from %s" % (sender.DisplayName if sender != null else "the other side"),
+				# Fig 5.10's row reads "Message From The Empire": the side's last name word.
+				var who := "other side"
+				if sender != null:
+					who = sender.DisplayName.get_slice(" ", sender.DisplayName.get_slice_count(" ") - 1)
+				var msg := GameMessage.new("Message From The %s" % who,
 					str(a.get("text", "")), Enums.MessageCategory.Chat, day)
 				EventBus.Tell(h, msg)
 			return Result.success()
