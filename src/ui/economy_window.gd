@@ -236,7 +236,7 @@ func AttachQueueMenu(labelPath: String, planet: Planet, producer: int, queue: Ar
 		match id:
 			0: OpenBuildChooser(planet, producer)
 			1:
-				planet.CancelCurrentBuild(producer)
+				CommandBus.issue("cancel_build", { "planet": planet.Name, "producer": producer })
 				Populate(planet)
 			2: OpenDestinationChooser(planet)
 	menu.id_pressed.connect(onId)
@@ -453,7 +453,7 @@ func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, ty
 				4:
 					OpenDestinationChooser(planet)
 				6:
-					planet.CancelCurrentBuild(rowFac.Type)
+					CommandBus.issue("cancel_build", { "planet": planet.Name, "producer": rowFac.Type })
 					Populate(planet)
 				1:
 					# Windows are children of the UIManager, so it is the
@@ -465,7 +465,7 @@ func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, ty
 					var r: int = FacilityCatalog.ConstructionCost(rowFac.Type, rowFac.Tier) * Planet.ScrapRefundPercent / 100
 					var mt: int = FacilityCatalog.MaintenanceCost(rowFac.Type, rowFac.Tier)
 					var onScrap := func() -> void:
-						planet.ScrapFacility(rowFac)
+						CommandBus.issue("scrap_facility", { "facility": rowFac.Serial })
 						_selected.erase(rowFac)
 					ConfirmScrap(planet, rowFac.Name(), r, mt, onScrap)
 		menu.id_pressed.connect(onMenuId)
@@ -555,7 +555,7 @@ func OpenBuildChooser(planet: Planet, producer: int) -> void:
 			var why: Result = planet.CanQueueFacility(rType, r.Tier, target)
 			blocked.append(why.error)
 			place.append(func(n: int) -> Result:
-				return planet.TryQueueMany(rType, r.Tier, target, n))
+				return CommandBus.issue("queue_facility", { "planet": planet.Name, "type": rType, "tier": r.Tier, "destination": target.Name if target != null else "", "count": n }))
 	else:
 		var rate: int = planet.BestProducerRateForUi(producer)
 		for rule in MilitaryCatalog.BuildableAt(producer, owner):
@@ -567,7 +567,7 @@ func OpenBuildChooser(planet: Planet, producer: int) -> void:
 			var why: Result = planet.CanQueueUnit(r, target)
 			blocked.append(why.error)
 			place.append(func(n: int) -> Result:
-				return planet.TryQueueManyUnits(r, target, n))
+				return CommandBus.issue("queue_units", { "planet": planet.Name, "rule": r.Name, "destination": target.Name if target != null else "", "count": n }))
 
 	if names.size() == 0:
 		return
