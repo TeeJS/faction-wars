@@ -25,6 +25,10 @@ var _everPainted: bool = false
 
 
 func _ready() -> void:
+	# As in the C#: the two buttons are required lookups first (a scene without
+	# them is malformed and says so), then fetched again optionally for wiring.
+	var closeBtn: Button = get_node("%CloseButton")
+	var minBtn: Button = get_node("%MinimizeButton")
 	var titleBar: Control = get_node("%TitleBar")
 
 	var closeButton: Button = get_node_or_null("%CloseButton")

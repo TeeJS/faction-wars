@@ -103,6 +103,22 @@ When a window needs a backend member you cannot find under `src/game/`, grep
 for the C# name first (`grep -rn "func Foo\|var Foo" src/game`). If it is
 genuinely absent, say so in your report — do not invent it and do not stub it.
 
+## Recorded deviations (C3PO review #64)
+
+- `UIManager._exit_tree` also erases `ShowHudNotification` from
+  `EventBus.OnMessageReceived`; the C# left that subscription behind (a leak).
+  Kept deliberately.
+- `GameSignature.For(x)` overloads are `ForPlanet` / `ForSector` /
+  `ForCharacter` / `ForMessages` in the port.
+- `MissionWindow.Label(m)` is `LabelText(m)` (same reason as `GidMode.LabelText`).
+- `Mission.Arrived`, `ConstructionTask.PercentComplete/DisplayName`,
+  `GameMessage.AwaitsDecision`, `Planet.Troopers/TrooperRegiments` are functions.
+- MilitaryDataEditor: the C# save path writes only the 23 fields its own
+  `MilitaryUnit` model carries and drops the other 32 keys of
+  `military_units.json` (research order/cost, arcs, ranges, SpecForce
+  ratings). Reproduced faithfully; **do not use Save until that is fixed at the
+  source.**
+
 ## Gate per window
 
 1. `tests/ui_compile.gd` loads every `src/ui/*.gd`: zero failures.

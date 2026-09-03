@@ -260,10 +260,12 @@ func RestoreWindow(window: DraggableWindow) -> void:
 
 
 ## Checks if the window exists (visible or minimized) and pops it to the front.
-func CheckAndRestoreExistingWindow(windowName: String, setupAction: Callable) -> bool:
+## C#: `existingWindow is T` - the port checks the instance came from the same
+## scene, which is what the generic type constraint amounted to.
+func CheckAndRestoreExistingWindow(windowName: String, setupAction: Callable, template: PackedScene = null) -> bool:
 	if _openWindows.has(windowName):
 		var existingWindow: DraggableWindow = _openWindows[windowName]
-		if is_instance_valid(existingWindow):
+		if is_instance_valid(existingWindow) and (template == null or existingWindow.scene_file_path == template.resource_path):
 			RestoreWindow(existingWindow)
 			if setupAction.is_valid():
 				setupAction.call(existingWindow)
@@ -307,7 +309,7 @@ func OpenWindow(windowName: String, template: PackedScene, setupAction: Callable
 	if template == null:
 		push_error("CRITICAL ERROR: Tried to open %s, but the PackedScene template is null! Did you assign it in the Godot Inspector?" % windowName)
 		return
-	if CheckAndRestoreExistingWindow(windowName, setupAction):
+	if CheckAndRestoreExistingWindow(windowName, setupAction, template):
 		return
 
 	# Instantiate and Add

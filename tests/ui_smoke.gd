@@ -20,6 +20,7 @@ const ALL := [
 
 var _ui: UIManager
 var _engine: StrategicTickManager
+var _main: Node = null
 
 
 func _init() -> void:
@@ -27,15 +28,14 @@ func _init() -> void:
 	var wanted: Array = [only] if not only.is_empty() else ALL
 	var use_main := OS.get_cmdline_user_args().has("--main")
 
-	_engine = GameSession.new_game("alliance", Enums.Difficulty.Medium, Enums.GalaxySize.Large, 12345)
-	AiManager.DriveAllFactions = true
-
 	if use_main:
-		var main: Node = load("res://Main.tscn").instantiate()
-		root.add_child(main)
-		_ui = main.get_node("UIManager")
-		_engine = main._strategicEngine
+		# Main.tscn's GameManager starts the game itself (pass --seed=12345 on
+		# the command line for the fixture galaxy); its _ready runs once the
+		# tree is up, so the engine and UIManager are picked up in _run.
+		_main = load("res://Main.tscn").instantiate()
+		root.add_child(_main)
 	else:
+		_engine = GameSession.new_game("alliance", Enums.Difficulty.Medium, Enums.GalaxySize.Large, 12345)
 		_ui = UIManager.new()
 		_ui.name = "UIManager"
 		var panel := PanelContainer.new()
@@ -55,6 +55,12 @@ func _init() -> void:
 
 
 func _run(wanted: Array) -> void:
+	# The bare UIManager has no viewport until the tree has run a frame.
+	await process_frame
+	if _main != null:
+		_ui = _main.get_node("UIManager")
+		_engine = _main._strategicEngine
+	AiManager.DriveAllFactions = true
 	var galaxy: Array = GameState.ActiveGalaxy
 	var us: Faction = GameSettings.PlayerFaction
 	var owned: Planet = Lq.first_or_null(GameState.AllPlanets(), func(p: Planet) -> bool: return p.ControllingFaction == us and not p.OrbitingFleets.is_empty())
