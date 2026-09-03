@@ -15,6 +15,17 @@ var _submit: Button
 var _status: Label
 var _http: HTTPRequest
 var _pending: Dictionary = {}
+var _title: Button
+var _body: VBoxContainer
+static var _folded: bool = false
+
+
+## Folded: only the header strip shows, at the bottom of the column.
+func set_folded(folded: bool) -> void:
+	_folded = folded
+	_body.visible = not folded
+	_title.text = "Feedback  ▸" if folded else "Feedback  ▾"
+	offset_top = -110.0 if folded else -270.0
 
 
 func _ready() -> void:
@@ -34,18 +45,28 @@ func _ready() -> void:
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 4)
 	margin.add_child(box)
-	var title := Label.new()
-	title.text = "Feedback"
-	title.add_theme_font_size_override("font_size", 12)
-	title.add_theme_color_override("font_color", Color(0.6, 0.7, 0.8))
-	box.add_child(title)
+	# The header folds the box to a one-line strip and back (TeeJ, room #157:
+	# a tidy corner). Remembered for the session.
+	_title = Button.new()
+	_title.text = "Feedback  ▾"
+	_title.flat = true
+	_title.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	_title.add_theme_font_size_override("font_size", 12)
+	_title.add_theme_color_override("font_color", Color(0.6, 0.7, 0.8))
+	_title.tooltip_text = "Fold or open the feedback box."
+	_title.pressed.connect(func() -> void: set_folded(not _folded))
+	box.add_child(_title)
+	_body = VBoxContainer.new()
+	_body.add_theme_constant_override("separation", 4)
+	_body.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	box.add_child(_body)
 	_text = TextEdit.new()
 	_text.placeholder_text = "What went wrong, or what you expected. Sent with the day, seed and this game's log."
 	_text.custom_minimum_size = Vector2(0, 90)
 	_text.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_text.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
 	_text.add_theme_font_size_override("font_size", 12)
-	box.add_child(_text)
+	_body.add_child(_text)
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 6)
 	_status = Label.new()
@@ -59,7 +80,8 @@ func _ready() -> void:
 	_submit.tooltip_text = "Send this note and the game's log to the server."
 	_submit.pressed.connect(submit)
 	row.add_child(_submit)
-	box.add_child(row)
+	_body.add_child(row)
+	set_folded(_folded)
 	_http = HTTPRequest.new()
 	_http.timeout = 20.0
 	_http.request_completed.connect(_on_completed)

@@ -12,8 +12,9 @@ bun run relay/server.ts              # PORT (8787), DATA_DIR (./data), STATIC_DI
 bun run relay/test.ts                # two fake clients on a random port
 ```
 
-`GET /healthz` → `ok`. `GET /rooms` → the open games. Everything else is the
-WebSocket at `/ws`.
+`GET /healthz` → `ok`. `GET /rooms` → the open games. `POST /feedback` takes a
+tester's report (the game's feedback box); `GET /feedback` lists the reports,
+newest first, without their logs. Everything else is the WebSocket at `/ws`.
 
 ## The image
 
