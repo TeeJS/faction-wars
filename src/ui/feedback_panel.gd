@@ -30,8 +30,9 @@ func set_folded(folded: bool) -> void:
 	_title.text = "Feedback" if folded else "Feedback  ▴"
 	_title.flat = not folded
 	_title.alignment = HORIZONTAL_ALIGNMENT_CENTER if folded else HORIZONTAL_ALIGNMENT_LEFT
+	# Open, it fills the column down to just above the two bottom rows (TeeJ, room #182).
 	offset_top = ColumnTop
-	offset_bottom = ColumnTop + (40.0 if folded else 200.0)
+	offset_bottom = ColumnTop + 40.0 if folded else -80.0
 
 
 func _ready() -> void:
