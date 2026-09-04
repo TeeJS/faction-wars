@@ -69,8 +69,21 @@ func _init() -> void:
 		types.append(int(r.get_meta("defence_type")))
 	for t in [Enums.FacilityType.PlanetaryShield, Enums.FacilityType.TurbolaserBattery, Enums.FacilityType.IonCannon]:
 		_check(t in types, "a row names the %s" % Facility.NameOf(t))
+	# The Create Mission window's own picker (Sabotage chosen on a system,
+	# TeeJ room #210): everything sighted there, each resolving to a legal target.
+	var cands: Array = DraggableWindow.SabotageCandidates(us, them)
+	_check(cands.size() >= 3, "%d sabotage candidates on %s (want >= 3)" % [cands.size(), them.Name])
+	var resolved_defences := 0
+	for c in cands:
+		var obj: Variant = (c.get("resolve") as Callable).call()
+		_check(obj != null and MissionManager.CanSabotage(us, obj, them).ok, "candidate '%s' resolves to a legal target" % str(c.get("label")))
+		if obj is Facility and IntelManager.IsDefensive(obj):
+			resolved_defences += 1
+	_check(resolved_defences == 3, "the three defences are among the candidates (%d)" % resolved_defences)
 	# Before any sighting the tab says so and offers nothing.
 	IntelManager.Reset()
+	var blind_cands: Array = DraggableWindow.SabotageCandidates(us, them)
+	_check(Lq.where(blind_cands, func(c: Dictionary) -> bool: return (c.get("resolve") as Callable).call() is Facility).is_empty(), "unseen facilities are not offered")
 	w.PopulateOrbitalDefenses(tabs, them)
 	await process_frame
 	var blind: Array = []

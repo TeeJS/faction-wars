@@ -218,11 +218,16 @@ func OpenCreateMission(team: Array, origin: Planet, target: Planet, picked: Vari
 		var needsThing: bool = MissionManager.NeedsObjectTarget(t)
 		if needsPerson != (victim != null):
 			continue
-		if needsThing != (thing != null):
+		if needsThing and thing == null and victim == null:
+			# Sabotage stays on the list for a SYSTEM target; the object is
+			# picked inside the window (TeeJ: feedback report 2026-09-03T23-56-45,
+			# room #198/#210 - "sabotage should always be an option").
+			pass
+		elif needsThing != (thing != null):
 			continue
 		if needsPerson and not MissionManager.CanTargetPerson(t, actor, victim).ok:
 			continue
-		if needsThing and not MissionManager.CanSabotage(actor, thing, target).ok:
+		if needsThing and thing != null and not MissionManager.CanSabotage(actor, thing, target).ok:
 			continue
 		legal.append(t)
 
@@ -287,6 +292,30 @@ func OpenCreateMission(team: Array, origin: Planet, target: Planet, picked: Vari
 	picker.selected = 0
 	box.add_child(picker)
 
+	# Sabotage chosen on a system: pick the object here, from what is KNOWN
+	# to stand there (TeeJ, room #210). Nothing known = "No suitable targets
+	# exist." and OK stays grey.
+	var bySystem: bool = thing == null and victim == null and legal.has(Enums.MissionType.Sabotage)
+	var candidates: Array = SabotageCandidates(actor, target) if bySystem else []
+	var targetRow := VBoxContainer.new()
+	var targetPicker := OptionButton.new()
+	var noneLabel := Label.new()
+	if bySystem:
+		var targetCaption := Label.new()
+		targetCaption.text = "Target:"
+		targetRow.add_child(targetCaption)
+		for i in candidates.size():
+			targetPicker.add_item(str(candidates[i].get("label", "?")), i)
+		targetPicker.selected = 0 if not candidates.is_empty() else -1
+		targetPicker.visible = not candidates.is_empty()
+		targetRow.add_child(targetPicker)
+		noneLabel.text = "No suitable targets exist."
+		noneLabel.add_theme_color_override("font_color", Color.LIGHT_GRAY)
+		noneLabel.visible = candidates.is_empty()
+		targetRow.add_child(noneLabel)
+		targetRow.visible = false
+		box.add_child(targetRow)
+
 	# The Decoy tab (manual p102, fig 3.48).
 	var decoyBoxes: Array[CheckBox] = []
 	if team.size() > 1:
@@ -331,7 +360,14 @@ func OpenCreateMission(team: Array, origin: Planet, target: Planet, picked: Vari
 	pad.add_child(box)
 	dialog.add_child(pad)
 
-	var contentHeight: int = 210 + ((mini(team.size() * 26, 120) + 44) if team.size() > 1 else 0)
+	var contentHeight: int = 210 + ((mini(team.size() * 26, 120) + 44) if team.size() > 1 else 0) + (70 if bySystem else 0)
+
+	var refreshTarget := func() -> void:
+		var sab: bool = bySystem and legal[picker.selected] == Enums.MissionType.Sabotage
+		targetRow.visible = sab
+		dialog.get_ok_button().disabled = sab and candidates.is_empty()
+	picker.item_selected.connect(func(_i: int) -> void: refreshTarget.call())
+	refreshTarget.call()
 
 	dialog.confirmed.connect(func() -> void:
 		var decoys: Array = []
@@ -343,10 +379,23 @@ func OpenCreateMission(team: Array, origin: Planet, target: Planet, picked: Vari
 			decoys.clear()
 		var args := { "type": legal[picker.selected], "team": EntityIndex.ids_of_units(team), "origin": origin.Name,
 			"target": target.Name, "decoys": EntityIndex.ids_of_units(decoys), "victim": victim.Name if victim != null else "" }
-		if thing is Facility:
-			args["facility"] = thing.Serial
-		elif thing is Unit:
-			args["unit"] = thing.Serial
+		var object: Variant = thing
+		if bySystem and legal[picker.selected] == Enums.MissionType.Sabotage:
+			if targetPicker.selected < 0 or targetPicker.selected >= candidates.size():
+				dialog.queue_free()
+				return
+			var resolve: Callable = candidates[targetPicker.selected].get("resolve", Callable())
+			object = resolve.call() if resolve.is_valid() else null
+			if object == null:
+				# The approved "small leak" (economy_window.StaleFacilityTab): the
+				# sighting was stale and nothing stands there any more.
+				print("[Mission] Nothing answers at that position - the intelligence may be stale.")
+				dialog.queue_free()
+				return
+		if object is Facility:
+			args["facility"] = object.Serial
+		elif object is Unit:
+			args["unit"] = object.Serial
 		CommandBus.issue("launch_mission", args)
 		dialog.queue_free())
 	dialog.canceled.connect(dialog.queue_free)
@@ -356,6 +405,69 @@ func OpenCreateMission(team: Array, origin: Planet, target: Planet, picked: Vari
 
 	add_child(dialog)
 	dialog.popup_centered(Vector2i(ContentWidth + 24, contentHeight))
+
+
+## Everything the player KNOWS can be sabotaged on `planet` (manual p108:
+## facility, capital ship, fighter squadron, trooper regiment, SpecForce), as
+## {label, resolve}: facilities and ground units from the intelligence
+## snapshot (re-resolved to the nth object of that kind standing there when
+## the mission is launched - the approved "small leak"), ships from the fleets
+## in orbit, which the map already shows. A system of ours yields nothing: its
+## facilities are ours, and CanSabotage refuses them.
+static func SabotageCandidates(actor: Faction, planet: Planet) -> Array:
+	var out: Array = []
+	if actor == null or planet == null:
+		return out
+	var world: Planet = planet
+	for section in [Enums.IntelSection.ProductionFacilities, Enums.IntelSection.DefensiveFacilities]:
+		var view: IntelManager.IntelView = IntelManager.View(actor, planet, section)
+		if not view.Known or view.Live:
+			continue
+		var counted: Dictionary = {}
+		for l in view.Lines:
+			var line := str(l)
+			var type := _facility_type_of(line)
+			if type < 0:
+				continue
+			var nth: int = int(counted.get(type, 0))
+			counted[type] = nth + 1
+			out.append({ "label": "%s (sighted day %d)" % [line, view.Day], "resolve": func() -> Variant:
+				var ofType: Array = Lq.where(world.Facilities, func(f: Facility) -> bool: return f.Type == type)
+				return ofType[nth] if nth < ofType.size() else null })
+	var unitSections := {
+		Enums.IntelSection.Troopers: func() -> Array: return world.Troopers(),
+		Enums.IntelSection.Fighters: func() -> Array: return Array(world.FighterSquadrons),
+		Enums.IntelSection.SpecForces: func() -> Array: return world.SpecForces(),
+	}
+	for section in unitSections:
+		var view: IntelManager.IntelView = IntelManager.View(actor, planet, section)
+		if not view.Known or view.Live:
+			continue
+		var standing: Callable = unitSections[section]
+		var counted: Dictionary = {}
+		for l in view.Lines:
+			var line := str(l)
+			var nth: int = int(counted.get(line, 0))
+			counted[line] = nth + 1
+			out.append({ "label": "%s (sighted day %d)" % [line, view.Day], "resolve": func() -> Variant:
+				var same: Array = Lq.where(standing.call(), func(u: Unit) -> bool:
+					return u.Name == line and u.Faction != actor and u.Status != Enums.Status.Enroute)
+				return same[nth] if nth < same.size() else null })
+	for f in planet.OrbitingFleets:
+		for ship in f.Ships:
+			if ship.Faction == actor or not MissionManager.CanSabotage(actor, ship, planet).ok:
+				continue
+			var s: Unit = ship
+			out.append({ "label": "%s (%s)" % [s.Name, f.Name], "resolve": func() -> Variant: return s })
+	return out
+
+
+static func _facility_type_of(line: String) -> int:
+	for t in Enums.FacilityType.values():
+		var name: String = Facility.NameOf(t)
+		if line == name or line == "Advanced %s" % name:
+			return t
+	return -1
 
 
 func CreateEmptyLabel(list: VBoxContainer, text: String, color: Color) -> void:
