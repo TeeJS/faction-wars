@@ -76,9 +76,41 @@ func _init() -> void:
 	var blind: Array = []
 	_collect_rows(tabs.get_node("Orbital Defenses"), blind)
 	_check(blind.is_empty(), "unseen defences offer no rows")
+	# THE BUG TeeJ hit (report screenshot, room #232): a Facility target showed
+	# "Target: Taanab" (the planet) because Facility.Name is a METHOD, read as a
+	# field. The Create Mission window must name the actual object.
+	var agent := Character.new()
+	agent.Name = "Kyle Katarn"
+	agent.Faction = us
+	var shield: Facility = null
+	for f in defences:
+		if f.Type == Enums.FacilityType.PlanetaryShield:
+			shield = f
+			break
+	_check(shield != null, "a Planetary Shield to target")
+	if shield != null:
+		w.OpenCreateMission([agent], ours, them, shield)
+		await process_frame
+		var label_text := _find_target_label(w)
+		_check(label_text.contains(shield.Name()), "Create Mission names the facility: '%s' contains '%s'" % [label_text, shield.Name()])
+		_check(not label_text.strip_edges().ends_with(them.Name), "the target is the shield, not the bare planet '%s'" % them.Name)
 	root.remove_child(w)
 	w.free()
 	_finish()
+
+
+## The "Target:" label anywhere under the node (the Create Mission dialog is a
+## child of the window), or "" if none.
+func _find_target_label(node: Node) -> String:
+	if node == null:
+		return ""
+	if node is Label and (node as Label).text.begins_with("Target:"):
+		return (node as Label).text
+	for c in node.get_children():
+		var found := _find_target_label(c)
+		if not found.is_empty():
+			return found
+	return ""
 
 
 func _collect_rows(node: Node, out: Array) -> void:

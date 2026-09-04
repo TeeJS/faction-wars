@@ -264,7 +264,7 @@ func OpenCreateMission(team: Array, origin: Planet, target: Planet, picked: Vari
 	if victim != null:
 		objectName = victim.Name
 	elif thing is Facility:
-		objectName = thing.Name
+		objectName = (thing as Facility).Name()   # Facility.Name is a METHOD, not a field
 	elif thing is Unit:
 		objectName = thing.Name
 	var targetLabel := Label.new()
