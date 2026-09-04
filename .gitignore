@@ -7,3 +7,8 @@
 # Web export output
 build/
 version.txt
+
+# Manual scans / PDF are copyrighted - never commit them.
+# Keep only the ILLUSTRATIONS.md digest that belongs in the repo.
+manual/*
+!manual/ILLUSTRATIONS.md
