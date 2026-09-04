@@ -171,6 +171,72 @@ describing correct behaviour is a bug report, not a specification to go build.
 - **Single-source** — name it, and say what would corroborate it.
 - **Unknown** — say so, say what would settle it, and stop.
 
+That scale is for claims about **the game**. Claims about **the code** get rule 5a.
+
+## 5a. Claims about the code
+
+Rule 3 says label game vs code. This says how much you must have read before
+you are allowed to write the code half down.
+
+### A NEGATIVE CLAIM REQUIRES READING THE FILE, NOT GREPPING IT
+
+*"X does not exist." "X is never called." "X is unused." "The AI has no Y."*
+
+Positive claims are self-checking — you cite the thing you found. **Negative
+claims are not.** A grep that returns nothing is not evidence of absence; it is
+evidence about your search term.
+
+Before writing any negative claim about code:
+
+1. **Read the file's header comment.** This repo's files say what they do in the
+   first five lines. More than one wrong claim here was contradicted by a header
+   ten lines above the function being read.
+2. **Read the whole function**, not the lines around the match.
+3. **Grep at least two different terms**, including the domain word and the
+   likely identifier.
+4. **Check whether another path does the job.** A thing absent from one manager
+   is often present in the one that calls it.
+
+### Verify in a different step from finding
+
+**Do not write a finding down in the same step you found it.** Find, then verify,
+then write. The gap between those is where every error below got in.
+
+This costs one extra tool call and it is the cheapest rule in this file.
+
+### Mark how deep you read
+
+Every code claim carries one of these, the way game claims carry a confidence:
+
+| | |
+|---|---|
+| **read-in-full** | the whole function and its file header |
+| **spot-checked** | the matched lines and their immediate context |
+| **inferred** | from structure or naming, not read |
+
+**A negative claim may only be `read-in-full`.** If it is not, do not write it.
+
+### Nobody is in a hurry
+
+There is no deadline in this repo. If several agents are working, **do not pace
+off each other** — another agent filing a document is not a signal that you are
+behind. Publishing a finding to a room does not make it true, and agreement from
+other agents is not verification.
+
+### How this rule was earned
+
+Three wrong claims in one session, all negative, all from greps:
+
+| Claimed | Actually |
+|---|---|
+| *"There is no two, no three, no count of any kind on that page"* | The numbers were there. The read had been truncated by `head`, and the grep used "round" where the guide says "bombardments" |
+| *"Strategic auto-resolve ignores shields, unlike tactical"* | `fleet_battle_manager` **runs the tactical engine**. Its header says so on line 4. The function read was a UI display figure, not the resolver |
+| *"The AI never calls `CanAssault()`"* | It calls it at `ai_manager.gd:224` |
+
+The second propagated into two framework documents and to the user before it was
+caught. The cost of retracting a published claim is far higher than the cost of
+one more read.
+
 ## 6. Never kill the running game
 
 Build with `dotnet build` and stop. **Never** `Stop-Process` the game or relaunch
