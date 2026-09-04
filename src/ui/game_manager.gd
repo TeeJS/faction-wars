@@ -58,6 +58,7 @@ var _menuOpen: bool = false          # the Game Options screen is up: the oppone
 var _appliedEffective: int = -1
 var _stallSince: int = -1            # ms; the opponent's end-of-day is overdue
 var _waitingSince: int = -1          # ms; the Waiting for Opponent box is up
+var _wasWaiting: bool = false        # true while a wait is in progress; keeps _waitingSince from resetting when the box is closed and re-shown
 var _waitBox: AcceptDialog
 var _leaveBtn: Button
 var _resyncing: bool = false
@@ -372,17 +373,23 @@ func _MpWatch(session: LockstepSession) -> void:
 				# TeeJ (room #110): the code is what a dropped player needs to come back.
 				text += "\nGame code: %s - give it to your opponent to rejoin (same player name)." % MpSetup.lobby.code
 		_waitBox.dialog_text = text
+		# Timestamp the wait ONCE, on the false->true transition - not every time
+		# the box is re-shown. Closing the box (X) and having it re-pop next tick
+		# must not restart the Leave-Game clock (TeeJ, room, 2026-09-03).
+		if not _wasWaiting:
+			_wasWaiting = true
+			_waitingSince = now
 		if not _waitBox.visible:
 			print("[GameManager] Waiting for Opponent (day %d)" % StrategicTickManager.Today)
-			_waitingSince = now
-			_leaveBtn.visible = false
 			_waitBox.popup_centered()
-		elif not _leaveBtn.visible and now - _waitingSince > LeaveAfterMs:
-			_leaveBtn.visible = true
+		# Leave Game appears IMMEDIATELY on a real disconnect (the seat is empty,
+		# no reason to wait), and after LeaveAfterMs on a mere pause.
+		_leaveBtn.visible = session.opponent_gone or (now - _waitingSince > LeaveAfterMs)
 	elif _waitBox != null and _waitBox.visible:
 		print("[GameManager] opponent is back (day %d)" % StrategicTickManager.Today)
 		_waitBox.hide()
 		_waitingSince = -1
+		_wasWaiting = false
 
 
 func _BuildWaitBox() -> void:

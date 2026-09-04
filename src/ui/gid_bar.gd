@@ -26,7 +26,15 @@ func Setup(map: GalaxyMap) -> void:
 	_activeLabel.text = ""
 	_activeLabel.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_activeLabel.add_theme_font_size_override("font_size", 22)
-	_activeLabel.add_theme_color_override("font_color", Color(0.45, 1.0, 0.45))
+	# The active-mode label ("Popular Support", etc.) takes the player's faction
+	# color - red for the Rebellion, green for the Empire, and whatever a future
+	# faction pack defines. One source of truth: PlayerFaction.FactionColor.
+	# (Was hardcoded Color(0.45,1.0,0.45) green, which showed Empire green to a
+	# Rebel player - TeeJ, room, 2026-09-03.)
+	var labelColor := Color(0.45, 1.0, 0.45)
+	if GameSettings.PlayerFaction != null:
+		labelColor = GameSettings.PlayerFaction.FactionColor
+	_activeLabel.add_theme_color_override("font_color", labelColor)
 	_activeLabel.anchor_left = 0.5
 	_activeLabel.anchor_right = 0.5
 	_activeLabel.anchor_top = 0.0
