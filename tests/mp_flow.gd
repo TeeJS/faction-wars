@@ -9,7 +9,7 @@ extends SceneTree
 ##       --role=host|guest --relay=ws://127.0.0.1:8787/ws --box=D:/tmp/box --days=30 --replay-log=h.log [--load]
 
 const HostGameScene := "res://src/ui/mp/HostGame.tscn"
-const JoinGameScene := "res://src/ui/mp/JoinGame.tscn"
+const LocateSessionScene := "res://src/ui/mp/LocateSession.tscn"
 
 var _role: String
 var _box: String
@@ -125,33 +125,32 @@ func _guest() -> void:
 	var code_file := "%s/room.code" % _box
 	if not await _until(func() -> bool: return FileAccess.file_exists(code_file), "the host's room code", 60.0): return
 	await process_frame
-	MpSetup.join_code = FileAccess.get_file_as_string(code_file).strip_edges()
-	MpSetup.hosting = false
-	change_scene_to_file(JoinGameScene)
-	if not await _until(_scene_named("JoinGame"), "the Join Game screen"): return
-	(current_scene.get_node("%PlayerName") as LineEdit).text = MpSetup.player_name
-	if not await _until(_proceed_enabled, "the game to be listed", 30.0): return
-	_bar().proceed.emit()
-	if not await _until(_scene_named("MultiplayerOptions"), "the Multiplayer Options screen"): return
+	await _locate_and_join(FileAccess.get_file_as_string(code_file).strip_edges(), "the game to be found by code")
 	print("[mp_flow] guest in room %s" % MpSetup.lobby.code)
 	if not await _until(func() -> bool: return current_scene is GameManager, "the host to start", 180.0): return
 
 
 ## The dropped guest comes back the way a player would: types the code into
-## Locate Session, picks the game on Join Game, and Multiplayer Options
-## rebuilds the game from the relay's log.
+## Locate Session, and Multiplayer Options rebuilds the game from the relay's log.
 func _guest_rejoin_by_code() -> void:
-	var code := FileAccess.get_file_as_string("%s/room.code" % _box).strip_edges()
-	MpSetup.join_code = code
-	MpSetup.hosting = false
-	change_scene_to_file(JoinGameScene)
-	if not await _until(_scene_named("JoinGame"), "the Join Game screen"): return
-	(current_scene.get_node("%PlayerName") as LineEdit).text = MpSetup.player_name
-	if not await _until(_proceed_enabled, "the started game to be found by code", 30.0): return
-	_bar().proceed.emit()
-	if not await _until(_scene_named("MultiplayerOptions"), "the Multiplayer Options screen"): return
+	await _locate_and_join(FileAccess.get_file_as_string("%s/room.code" % _box).strip_edges(), "the started game to be found by code")
 	print("[mp_flow] guest rejoining room %s by code" % MpSetup.lobby.code)
 	if not await _until(func() -> bool: return current_scene is GameManager, "the rebuilt game", 120.0): return
+
+
+## Locate Session (Fig 5.6) as the player uses it since TeeJ #197: name, code, OK.
+func _locate_and_join(code: String, what: String) -> void:
+	MpSetup.join_code = ""
+	MpSetup.hosting = false
+	change_scene_to_file(LocateSessionScene)
+	if not await _until(_scene_named("LocateSession"), "the Locate Session screen"): return
+	(current_scene.get_node("%PlayerName") as LineEdit).text = MpSetup.player_name
+	var box: LineEdit = current_scene.get_node("%CodeBox")
+	box.text = code
+	box.text_changed.emit(code)
+	await process_frame
+	(current_scene.get_node("%BtnOK") as Button).pressed.emit()
+	if not await _until(_scene_named("MultiplayerOptions"), what, 30.0): return
 
 
 # --- both: play N days at Fast, log the hashes ---

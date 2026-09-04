@@ -390,46 +390,101 @@ func PopulateOrbitalDefenses(tabs: TabContainer, planet: Planet) -> void:
 	var list := VBoxContainer.new()
 	container.add_child(list)
 
-	if not ShowLive(list, planet, Enums.IntelSection.DefensiveFacilities,
-			"No orbital batteries or planetary shields seen."):
+	# ROWS, NOT LABELS - because these are SABOTAGE TARGETS. A shield, battery
+	# or ion cannon is a facility, and "a sabotage mission destroys a facility"
+	# (Encyclopedia; manual p108); the gesture is "select a particular facility
+	# to sabotage" (p040). An enemy system's defences are only ever seen here
+	# as an intelligence snapshot, and the snapshot was drawn as plain labels,
+	# so a system defended only by shields had nothing the crosshair could
+	# land on (TeeJ, feedback 2026-09-03T23-56-45, room #198). Same shape as
+	# the Manufacturing window's StaleFacilityTab, same approved "small leak".
+	var view: IntelManager.IntelView = IntelManager.View(GameSettings.PlayerFaction, planet, Enums.IntelSection.DefensiveFacilities)
+	if not view.Known:
+		var none := Label.new()
+		none.text = "Sensors detect no data."
+		none.add_theme_color_override("font_color", Color.GRAY)
+		list.add_child(none)
 		return
 
-	# Query all defense facilities
-	var defenses: Array = Lq.where(planet.Facilities,
-		func(f: Facility) -> bool: return f.Type == Enums.FacilityType.PlanetaryShield \
-			or f.Type == Enums.FacilityType.TurbolaserBattery \
-			or f.Type == Enums.FacilityType.IonCannon)
-
-	if defenses.size() == 0:
-		var empty := Label.new()
-		empty.text = "No orbital batteries or planetary shields detected."
-		empty.add_theme_font_size_override("font_size", 12)
-		empty.add_theme_color_override("font_color", Color.GRAY)
-		list.add_child(empty)
+	if view.Live:
+		var defenses: Array = Lq.where(planet.Facilities, IntelManager.IsDefensive)
+		if defenses.size() == 0:
+			_empty_defences(list, "No orbital batteries or planetary shields detected.")
+			return
+		for def in defenses:
+			_defence_row(list, def.Name() + " (Tier %d)" % def.Tier, def.Type,
+				"[DAMAGED]" if def.IsDamaged else ("[Active Shielding]" if def.Type == Enums.FacilityType.PlanetaryShield else "[Weapon Armed]"),
+				Color.RED if def.IsDamaged else Color.CYAN,
+				func() -> Facility: return def)
 		return
 
-	# Create a button for each facility
-	for def in defenses:
-		var row := HBoxContainer.new()
+	if view.Lines.size() == 0:
+		_empty_defences(list, "No orbital batteries or planetary shields seen.")
+		return
 
-		# Status text: "[Active Shielding]", "[Weapon Armed]", or "[DAMAGED]"
-		var activeText: String = "[Active Shielding]" if def.Type == Enums.FacilityType.PlanetaryShield else "[Weapon Armed]"
-		var status: String = "[DAMAGED]" if def.IsDamaged else activeText
-		var statusColor: Color = Color.RED if def.IsDamaged else Color.CYAN
+	# The snapshot: one row per line, re-resolving the nth defence of that
+	# type standing there NOW when the crosshair lands on it.
+	var world: Planet = planet
+	var counted: Dictionary = {}
+	for line in view.Lines:
+		var type := _defence_type_of(str(line))
+		if type < 0:
+			_defence_row(list, str(line), -1, "", Color.LIGHT_GRAY, Callable())
+			continue
+		var nth: int = int(counted.get(type, 0))
+		counted[type] = nth + 1
+		_defence_row(list, str(line), type, "(day %d)" % view.Day, Color.LIGHT_GRAY, func() -> Facility:
+			var ofType: Array = Lq.where(world.Facilities, func(f: Facility) -> bool: return f.Type == type)
+			return ofType[nth] if nth < ofType.size() else null)
 
-		var nameLbl := Label.new()
-		nameLbl.text = "%s (Tier %d)" % [def.Name(), def.Tier]
-		nameLbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		nameLbl.add_theme_font_size_override("font_size", 12)
 
+static func _defence_type_of(line: String) -> int:
+	for t in [Enums.FacilityType.PlanetaryShield, Enums.FacilityType.TurbolaserBattery, Enums.FacilityType.IonCannon]:
+		var name: String = Facility.NameOf(t)
+		if line == name or line == "Advanced %s" % name:
+			return t
+	return -1
+
+
+static func _empty_defences(list: VBoxContainer, text: String) -> void:
+	var empty := Label.new()
+	empty.text = text
+	empty.add_theme_font_size_override("font_size", 12)
+	empty.add_theme_color_override("font_color", Color.GRAY)
+	list.add_child(empty)
+
+
+## One defence row: a flat button the mission crosshair can land on, with its
+## status beside it. `resolve` returns the facility to target when clicked
+## (null when the sighting is stale and nothing stands there any more).
+func _defence_row(list: VBoxContainer, text: String, type: int, status: String, statusColor: Color, resolve: Callable) -> void:
+	var row := HBoxContainer.new()
+	var rowBtn := Button.new()
+	rowBtn.text = text
+	rowBtn.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	rowBtn.flat = true
+	rowBtn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	rowBtn.add_theme_font_size_override("font_size", 12)
+	rowBtn.set_meta("defence_type", type)
+	if resolve.is_valid():
+		rowBtn.tooltip_text = "With the mission crosshair up, click to make this the Sabotage target."
+		rowBtn.pressed.connect(func() -> void:
+			# CROSSHAIRS UP: this click names the sabotage target (manual p040).
+			if _uiManager == null or not _uiManager.IsTargetingObject():
+				return
+			var current: Facility = resolve.call()
+			if current == null:
+				print("[Mission] Nothing answers at that position - the intelligence may be stale.")
+				return
+			_uiManager.ResolveObjectTarget(current))
+	row.add_child(rowBtn)
+	if not status.is_empty():
 		var statusLbl := Label.new()
 		statusLbl.text = status
 		statusLbl.add_theme_font_size_override("font_size", 11)
 		statusLbl.add_theme_color_override("font_color", statusColor)
-
-		row.add_child(nameLbl)
 		row.add_child(statusLbl)
-		list.add_child(row)
+	list.add_child(row)
 
 
 # Units ORDERED but not yet standing here: still being built, or built and

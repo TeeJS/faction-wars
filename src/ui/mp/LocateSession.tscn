@@ -29,7 +29,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Dialog" type="PanelContainer" parent="CenterContainer"]
-custom_minimum_size = Vector2(520, 0)
+custom_minimum_size = Vector2(560, 0)
 layout_mode = 2
 
 [node name="VBox" type="VBoxContainer" parent="CenterContainer/Dialog"]
@@ -58,19 +58,37 @@ theme_override_constants/separation = 16
 [node name="Left" type="VBoxContainer" parent="CenterContainer/Dialog/VBox/Body"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 12
+theme_override_constants/separation = 10
+
+[node name="PlayerCaption" type="Label" parent="CenterContainer/Dialog/VBox/Body/Left"]
+layout_mode = 2
+text = "What would you like your player name to be?"
+autowrap_mode = 3
+
+[node name="PlayerName" type="LineEdit" parent="CenterContainer/Dialog/VBox/Body/Left"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Your name. Rejoining a game? Use the name you played under."
+placeholder_text = "Enter your name here."
 
 [node name="Instruction" type="Label" parent="CenterContainer/Dialog/VBox/Body/Left"]
 layout_mode = 2
-text = "Enter the game code of the session host, or leave blank to search."
+text = "Enter the game code of the session host."
 autowrap_mode = 3
 
 [node name="CodeBox" type="LineEdit" parent="CenterContainer/Dialog/VBox/Body/Left"]
 unique_name_in_owner = true
 layout_mode = 2
-tooltip_text = "Enter the game code the host gave you, or leave blank to list the games waiting on the relay."
+tooltip_text = "The six-character game code the host gave you."
 placeholder_text = "XXXXXX"
 max_length = 6
+
+[node name="Status" type="Label" parent="CenterContainer/Dialog/VBox/Body/Left"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.7, 0.8, 1)
+theme_override_font_sizes/font_size = 12
+autowrap_mode = 3
 
 [node name="Right" type="VBoxContainer" parent="CenterContainer/Dialog/VBox/Body"]
 layout_mode = 2
@@ -80,7 +98,7 @@ theme_override_constants/separation = 8
 unique_name_in_owner = true
 custom_minimum_size = Vector2(110, 36)
 layout_mode = 2
-tooltip_text = "Proceed to the Join Game screen."
+tooltip_text = "Join the game with this code."
 text = "OK"
 
 [node name="BtnCancel" type="Button" parent="CenterContainer/Dialog/VBox/Body/Right"]

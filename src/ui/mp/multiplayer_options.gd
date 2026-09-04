@@ -338,9 +338,9 @@ func _start() -> void:
 
 
 func _previous() -> void:
-	# The seat is given up: back to Host Game or Join Game with a fresh lobby.
+	# The seat is given up: back to Host Game or Locate Session with a fresh lobby.
 	MpSetup.reset()
-	go(HostGameScene if _host else JoinGameScene)
+	go(HostGameScene if _host else LocateSessionScene)
 
 
 # --- Load Game (p162): the saves both players are in ---

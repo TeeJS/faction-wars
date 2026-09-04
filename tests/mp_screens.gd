@@ -17,7 +17,6 @@ func _init() -> void:
 	await _configuration()
 	await _host_game()
 	await _locate()
-	await _join()
 	await _options(true)
 	await _options(false)
 	await _compose()
@@ -60,22 +59,16 @@ func _menu() -> void:
 
 func _configuration() -> void:
 	var s := await _open("res://src/ui/mp/MultiplayerConfiguration.tscn")
-	_check(_label(s, "ProviderCaption") == "Please select a service provider for the type of connection you want to use from the list below.", "Fig 5.2: provider caption verbatim")
-	var providers: ItemList = s.get_node("%Providers")
-	_check(providers.item_count == 1 and providers.get_item_text(0) == "Internet Connection" and providers.is_selected(0), "Fig 5.2: one honest provider, selected")
-	_check(providers.get_item_custom_fg_color(0).r > 0.9, "Fig 5.2: the selected provider appears in red")
+	_check(s.get_node_or_null("%Providers") == null, "TeeJ #197: no service-provider list (one connection)")
 	_check(_label(s, "HowCaption") == "How do you want to play?", "Fig 5.2: 'How do you want to play?'")
 	var connect_btn: Button = s.get_node("%BtnConnectToGame")
 	var setup_btn: Button = s.get_node("%BtnSetupGame")
 	_check(connect_btn.text == "Connect To Game" and setup_btn.text == "Setup Game", "Fig 5.2: Connect To Game / Setup Game")
+	_check(not connect_btn.toggle_mode and not setup_btn.toggle_mode, "TeeJ #197: the two buttons act at once, no toggle")
 	var bar: MpBottomBar = s.get_node("%BottomBar")
 	var proceed: Button = bar.get_node("%BtnProceed")
 	var prev: Button = bar.get_node("%BtnPrevious")
-	_check(proceed.disabled and not prev.visible, "Fig 5.2: Proceed waits for a choice; no Previous on the first screen")
-	setup_btn.button_pressed = true
-	await process_frame
-	_check(not proceed.disabled, "Fig 5.2: Setup Game enables Proceed")
-	_check(setup_btn.get_theme_color("font_color").r < 0.3, "Fig 5.2: the selected option's text appears dark")
+	_check(not proceed.visible and not prev.visible, "TeeJ #197: no Proceed, no Previous on the first screen")
 	_check((bar.get_node("%BtnCancel") as Button).visible, "Fig 5.2: Cancel")
 	await _close(s)
 
@@ -92,24 +85,20 @@ func _host_game() -> void:
 
 
 func _locate() -> void:
+	MpSetup.reset()
 	var s := await _open("res://src/ui/mp/LocateSession.tscn")
 	_check(s.get_node("%CodeBox") != null and (s.get_node("%CodeBox") as LineEdit).placeholder_text == "XXXXXX", "Fig 5.6: one box, code placeholder")
 	_check(s.get_node("%BtnOK") != null and s.get_node("%BtnCancel") != null and s.get_node("%BtnClose") != null, "Fig 5.6: OK, Cancel, X")
+	_check((s.get_node("CenterContainer/Dialog/VBox/Body/Left/PlayerCaption") as Label).text == "What would you like your player name to be?", "Fig 5.8's player-name box, moved here (TeeJ #197)")
+	_check(not (s.get_node("%PlayerName") as LineEdit).text.is_empty(), "the player name has a default")
+	var ok: Button = s.get_node("%BtnOK")
+	_check(ok.disabled, "TeeJ #197: OK waits for a six-character code")
 	var box: LineEdit = s.get_node("%CodeBox")
 	box.text = "ab12cd"
 	box.text_changed.emit(box.text)
 	_check(box.text == "AB12CD", "Fig 5.6: the code is upper-cased as typed")
-	await _close(s)
-
-
-func _join() -> void:
-	MpSetup.player_name = "Luke"
-	var s := await _open("res://src/ui/mp/JoinGame.tscn")
-	_check(_label(s, "PlayerCaption") == "What would you like your player name to be?", "Fig 5.8: player name caption")
-	_check(_label(s, "ListCaption") == "Select a game to connect to from the following list.", "Fig 5.8: list caption verbatim")
-	var bar: MpBottomBar = s.get_node("%BottomBar")
-	_check((bar.get_node("%BtnProceed") as Button).disabled, "Fig 5.8: Proceed waits for a selection")
-	_check((bar.get_node("%BtnPrevious") as Button).visible, "Fig 5.8: Previous")
+	_check(not ok.disabled, "TeeJ #197: six characters enable OK")
+	_check(s.get_node_or_null("%Status") != null, "the relay's answer has a line to land on")
 	await _close(s)
 	MpSetup.reset()
 

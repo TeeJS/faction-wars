@@ -260,10 +260,10 @@ the save). It is not part of the multiplayer plan; flagging it, not building it.
 | Figure | Elements to tick off when built |
 |---|---|
 | 5.1 ✓ | Multiplayer control, lower left of the Cockpit |
-| 5.2 ✓ | provider caption; list with the selected entry in red; "How do you want to play?"; Connect To Game; Setup Game; depressed/dark selection; Proceed; Cancel |
+| 5.2 ✓ | "How do you want to play?"; Connect To Game; Setup Game; Cancel. **Deviation (TeeJ, room #197 item 2):** the provider list, the depressed selection and Proceed are gone - one connection exists, so clicking a button goes straight on |
 | 5.3 ✓ | player-name caption + box; game-name caption + box; Proceed; Go back; Cancel |
-| 5.6 ✓ | title "Locate Session"; instruction text; one box; OK; Cancel; blank = search |
-| 5.8 ✓ | player-name caption + box; "Select a game..." caption + list; Proceed; Previous; Cancel |
+| 5.6 ✓ | title "Locate Session"; instruction text; one box; OK; Cancel. **Deviation (TeeJ, room #197 item 4 / #68):** the code is required (OK waits for six characters) and OK looks it up and joins straight into Multiplayer Options; Fig 5.8's player-name box moved here; "blank = search" went with the list |
+| 5.8 ✗ | **Removed (TeeJ, room #197 item 4 / #68):** the code entered on Locate Session already names the game, so the list was a second pick of the same thing |
 | 5.9 ✓ | side caption + two symbols (red/green); size caption + three; Standard Game / HQ Only Victory; Load; Chat> + entry, Enter sends; chat + settings view; checkmark Start (host); Previous; Cancel |
 | Load ✓ | list of shared saves ("Day N"); settings restored and greyed; Cancel |
 | exits ✓ | `MpSetup.reset()` on every Cancel, Previous-from-Options, Leave Game, Exit to Menu/Desktop, game end |

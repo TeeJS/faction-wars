@@ -8,7 +8,6 @@ const CockpitScene := "res://Menu.tscn"
 const ConfigurationScene := "res://src/ui/mp/MultiplayerConfiguration.tscn"
 const HostGameScene := "res://src/ui/mp/HostGame.tscn"
 const LocateSessionScene := "res://src/ui/mp/LocateSession.tscn"
-const JoinGameScene := "res://src/ui/mp/JoinGame.tscn"
 const OptionsScene := "res://src/ui/mp/MultiplayerOptions.tscn"
 const MainScene := "res://Main.tscn"
 

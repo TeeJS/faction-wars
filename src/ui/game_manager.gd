@@ -387,7 +387,7 @@ func _MpWatch(session: LockstepSession) -> void:
 
 func _BuildWaitBox() -> void:
 	_waitBox = AcceptDialog.new()
-	_waitBox.title = "Waiting for Opponent"
+	_waitBox.title = "Waiting"   # "Waiting for Opponent" was cut off (TeeJ, room #197)
 	_waitBox.exclusive = true
 	_waitBox.unresizable = true
 	_waitBox.get_ok_button().hide()
