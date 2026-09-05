@@ -227,7 +227,9 @@ func Populate(planet: Planet, uiManager: UIManager) -> void:
 			# they arrive - or until a mission of theirs is detected.
 			var charactersOnPlanet: Array = Lq.where(
 				Lq.where(GameState.ActiveRoster, func(c: Character) -> bool: return c.Faction != GameSettings.PlayerFaction),
-				func(c: Character) -> bool: return c.Attached == planet and c.Status != Enums.Status.Enroute)
+				func(c: Character) -> bool: return c.Attached == planet
+						and c.Status != Enums.Status.Enroute
+						and c.Status != Enums.Status.OnMission)
 
 			# "PERSONNEL: characters AND SPECIAL FORCES on the system"
 			# (manual p126, fig 3.73). This tab listed characters only, so a
