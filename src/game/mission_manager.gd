@@ -347,6 +347,21 @@ static func Report(m: Mission, day: int, title: String, body: String, asks_to_co
 	EventBus.Tell(m.Faction, msg)
 
 
+## Tell the defending faction that an enemy mission resolved against their world.
+## Fog-blind: never names the attacker (character = null). Only human defenders
+## are notified; AI-on-AI produces no message. Mission category, so foil and
+## success land where the manual puts foil news ("news of enemy missions your
+## forces have foiled", manual p079).
+static func _tell_defender(planet: Planet, day: int, title: String, body: String) -> void:
+	if planet == null or planet.ControllingFaction == null:
+		return
+	if not GameSettings.IsHuman(planet.ControllingFaction):
+		return
+	var msg := GameMessage.new(title, body, Enums.MessageCategory.Missions, day, planet, null)
+	msg.Type = Enums.MessageType.MissionReport
+	EventBus.Tell(planet.ControllingFaction, msg)
+
+
 ## Eligibility is the intersection of what the unit can do and what the target
 ## accepts (manual p102, p106-p111).
 static func CanTarget(type: int, actor: Faction, target: Planet) -> Result:
@@ -826,6 +841,8 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 		var fate := SeizeFoiledTeam(m, rng)
 		Report(m, day, "%s mission foiled" % m.DisplayName(),
 			"%s was detected by defenders at %s. The mission was foiled.\n\n%s" % [m.FoiledBy.Name if m.FoiledBy != null else "My team", m.Target.Name, fate])
+		_tell_defender(m.Target, day, "Enemy Mission Foiled",
+			"Our forces foiled an enemy mission at %s." % m.Target.Name)
 		m.Finished = true
 		return
 
@@ -1024,6 +1041,8 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 			else:
 				print("[Mission] Sabotage at %s destroyed %s." % [m.Target.Name, what])
 				Report(m, day, "%s destroyed" % what, "My team has destroyed %s at %s." % [what, m.Target.Name])
+				_tell_defender(m.Target, day, "%s destroyed" % what,
+					"%s at %s was destroyed by enemy sabotage." % [what, m.Target.Name])
 				m.Finished = true
 
 		Enums.MissionType.DeathStarSabotage:
