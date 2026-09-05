@@ -98,6 +98,23 @@ For each issue:
   **one** actionable set at a time, and never offer a choice you haven't done the
   homework to frame.
 
+## Session handoff (at room close)
+
+When the room closes, the chair produces a **handoff artifact** for TeeJ and
+delivers it as a downloadable file. It is a **brief table grouped by PR**, one
+row per PR merged in the session, with:
+
+| column | contents |
+|---|---|
+| **PR** | number + title |
+| **What changed** | one line - the fix/feature that landed |
+| **Suggested test** | the post-merge play-check TeeJ should run after updating his container, or "none" if not user-visible |
+
+Keep it short - it is a scan-and-go summary, not a report. Its job is to tell
+TeeJ exactly what landed and what to validate once he pulls the changes. Include
+only merged PRs; note any issue that was researched/planned but not yet landed in
+a one-line "still open" list beneath the table.
+
 ## The repo tells you the rest
 
 `CLAUDE.md` (project rules) and the global CLAUDE.md load automatically here -
