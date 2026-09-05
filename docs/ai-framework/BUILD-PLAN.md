@@ -133,4 +133,7 @@ The one **All-tier** self-protection rule is RULE-05-23 (Alliance moves characte
 - **2026-09-05** — Plan approved 3/3. Baseline `ui_compile.gd` = 52 scripts, 0 failed. M0 started.
 - **2026-09-05** — M0 committed (1cd91bb): scaffold + contracts, gate green.
 - **2026-09-05** — M1 built (AIContext.Build, fog-legal). C3PO CLEAR (#35), R2D2 VERIFY GREEN (#39), flags M1-F1/M1-F2 logged.
-- **2026-09-05** — M2 built (action selection + 5 policies). Test `ai_missions.gd` 12/0: Empire launches Abduction (vs Mon Mothma) + Sabotage (2-char team). Awaiting review.
+- **2026-09-05** — M2 built (action selection + 5 policies). Test `ai_missions.gd` 12/0: Empire launches Abduction (vs Mon Mothma) + Sabotage (2-char team). C3PO CLEAR (#40), R2D2 VERIFY GREEN (#42).
+- **2026-09-05** — M3 built (objectives/bottleneck layer, 7 states, RULE-10-12 Hard-only). Test `ai_objectives.gd` 10/0. C3PO CLEAR (#46), R2D2 VERIFY GREEN (#45).
+- **2026-09-05** — M4 built (Reactions/EventBus, AR-4 reprioritise-not-spend; RULE-09-04 reactive HQ relocation). Test `ai_reactions.gd` 8/0. C3PO CLEAR (#48), R2D2 VERIFY GREEN (#49).
+- **2026-09-05** — M2+M3+M4 committed together (entangled via scorer objective_fit + urgency).

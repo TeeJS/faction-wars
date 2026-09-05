@@ -23,6 +23,13 @@ var kind: String = ""             ## short tag for logs, e.g. "mission:Abduction
 var action: Callable              ## executes it; returns truthy on success
 var justification: String = ""    ## why, in words, so a decision can be explained
 
+## Which per-day budget bucket this spends and how much. Buckets are OURS
+## capability throttles (per-tier, AITiers): "missions", "ships", "moves"
+## (fleet movement AND assault share "moves" so difficulty has grip on combat —
+## the P2 fix; OURS, flagged in BUILD-PLAN).
+var budget_key: String = "missions"
+var budget_cost: int = 1
+
 ## Score terms, all fixed-point ints (see SCALE). Priced on different objects:
 var objective_fit: int = 0        ## how much this advances the current bottleneck
 var expected_value: int = 0       ## p_success x objective_gain — priced on the TARGET
