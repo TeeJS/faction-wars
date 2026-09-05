@@ -428,11 +428,27 @@ static func Injure(c: Character, rng: Prng, base_id: int = RuleId.FallbackInjury
 	c.DaysResting = 0
 	c.Commanding = null
 	if c.IsMajor:
+		_notify_injured(c)
 		return false
 	if rng.NextRange(1, 101) > InjuryProvesFatalPercent:
+		_notify_injured(c)
 		return false
 	Kill(c)
 	return true
+
+
+## Tell the owner one of their characters was wounded - the notification that pairs
+## with the recovery message (strategic_tick_manager). Addressed to the owning
+## faction, never broadcast (personnel status is that side's business).
+static func _notify_injured(c: Character) -> void:
+	if c == null or c.Faction == null:
+		return
+	var msg := GameMessage.new("%s has been injured" % c.Name,
+		"%s has been wounded and cannot take missions or command until they recover." % c.Name,
+		Enums.MessageCategory.Missions, StrategicTickManager.Today,
+		c.Attached if c.Attached is Planet else null, c)
+	msg.Type = Enums.MessageType.CharacterHealth
+	EventBus.Tell(c.Faction, msg)
 
 
 ## Dead (manual p096). They keep their roster slot and leave the map.
@@ -876,6 +892,17 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 				m.Target.ControllingFaction = m.Faction
 				print("[Mission] %s has joined the %s." % [m.Target.Name, m.Faction.DisplayName])
 				MilitaryCatalog.OnControlChanged(m.Target, before)
+				# The system joining is a Loyalty event the game reports (manual: C-3PO
+				# "Good news, a system has joined"). Addressed to the new owner; it is
+				# also the fog-legal SystemControl signal the AI infers a diplomat from.
+				# The system joining is a Loyalty event the game reports (manual: C-3PO
+				# "Good news, a system has joined"). Addressed to the new owner; it is
+				# also the fog-legal SystemControl signal the AI infers a diplomat from.
+				var joined := GameMessage.new("%s has joined the %s" % [m.Target.Name, m.Faction.DisplayName],
+					"%s is now loyal to us and under our control." % m.Target.Name,
+					Enums.MessageCategory.Loyalty, day, m.Target, null)
+				joined.Type = Enums.MessageType.SystemControl
+				EventBus.Tell(m.Faction, joined)
 			Report(m, day, "Diplomacy succeeding at %s" % m.Target.Name,
 				"Support for the %s on %s has risen to %d%%.%s" % [m.Faction.DisplayName, m.Target.Name, now,
 					" The system is now wholly with us and the mission is complete." if now >= 100 else "\n\nDo you wish the mission to continue?"],
