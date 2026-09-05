@@ -396,7 +396,7 @@ static func RunBlockade(units: Array, from: Planet, rng: Prng) -> Array:
 			"The following units were lost running an enemy blockade of %s:\n\n  %s" % [from.Name, "\n  ".join(lost)],
 			Enums.MessageCategory.Missions, StrategicTickManager.Today, from)
 		msg.Type = Enums.MessageType.EvacuationLosses
-		EventBus.BroadcastMessage(msg)
+		EventBus.Tell(units[0].Faction, msg)   # own-side only, not broadcast
 	return survivors
 
 
