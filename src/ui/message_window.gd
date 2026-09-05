@@ -225,6 +225,11 @@ func OnTabManuallyChanged(tabIndex: int) -> void:
 
 
 func RefreshCategory(categoryFilter: String) -> void:
+	# Remember what the player was reading, so a repaint (a new message arriving,
+	# a state change) does not yank the detail pane back to the newest transmission.
+	# Reported from play: manually selected messages kept losing focus.
+	var prior: GameMessage = _selectedMessage
+
 	# Reset the detail pane and Go To button
 	_detailSubject.text = "Select a message..."
 	_detailBody.text = "Awaiting selection."
@@ -295,8 +300,12 @@ func RefreshCategory(categoryFilter: String) -> void:
 
 		activeList.add_child(msgBtn)
 
-	# Automatically select and display the newest transmission in the list
-	ShowDetail(filteredMessages[0], null)
+	# Keep the player's manually-selected message in focus across a repaint; only
+	# fall back to the newest transmission when nothing was selected or the prior
+	# selection is no longer in this list. (The prior is already read, so no button
+	# needs re-greying and ShowDetail will not re-broadcast.)
+	var toShow: GameMessage = prior if (prior != null and filteredMessages.has(prior)) else filteredMessages[0]
+	ShowDetail(toShow, null)
 
 
 # "Click the button on the bottom right-hand side of the window to send a
