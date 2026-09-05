@@ -60,7 +60,13 @@ For each issue:
    from any agent blocks the change. TeeJ does not sign off per edit.
 
 5. **Implement** in small chunks. Workers implement in their own sandboxes and
-   **post the diff + test results** - they cannot push.
+   **post the diff + test results** - they cannot push. **Before writing any
+   Godot / GDScript engine call you have not confirmed from the existing repo
+   code, verify it against the Godot docs via the `context` MCP** (`gdscript@latest`,
+   `godot@latest`) - method signatures, `FileAccess` / `SceneTree` / `Node`
+   lifecycle, signal names - and note that you did. The repo's own code stays the
+   reference for this codebase's conventions; `context` is for engine API you are
+   unsure of.
 
 6. **Test = the plan's AUTOMATED criteria**, plus agent verification of the diff.
    It does **not** mean TeeJ playtesting. TeeJ cannot test anything until it is
