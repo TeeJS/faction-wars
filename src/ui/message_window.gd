@@ -422,9 +422,12 @@ func ShowDetail(message: GameMessage, clickedButton: Button) -> void:
 
 
 func OnGotoClicked() -> void:
-	if _selectedMessage != null and _selectedMessage.AssociatedLocation != null and _uiManager != null:
-		print("Jumping to %s Defenses from comms log." % _selectedMessage.AssociatedLocation.Name)
-		# _uiManager.OnDefenseClicked(_selectedMessage.AssociatedLocation)
+	if _selectedMessage == null or _uiManager == null:
+		return
+	var planet: Planet = _selectedMessage.AssociatedLocation as Planet
+	if planet == null:
+		return
+	_uiManager.OnDefenseClicked(planet)
 
 
 # --- Daily Simulation Refresh ---
