@@ -39,6 +39,13 @@ func Populate(planet: Planet) -> void:
 			child.queue_free()
 
 		for facility in planet.Facilities:
+			# The player's own MOVABLE headquarters carries the Fig 3.82 menu
+			# {Move, Confirmed Move, Encyclopedia, Status}; every other facility is
+			# a plain label. Only the Alliance's hidden HQ is Movable (pack-driven).
+			if facility.Type == Enums.FacilityType.Headquarters and holder == player \
+					and player.Hq != null and player.Hq.Movable:
+				_AddHqMenuRow(_facility, facility, planet)
+				continue
 			var facLabel := Label.new()
 			facLabel.text = "%s" % facility.Name()
 			facLabel.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -47,3 +54,44 @@ func Populate(planet: Planet) -> void:
 	else:
 		_status.text = "Unexplored Planet"
 		_resources.text = ""
+
+
+## The Alliance HQ's Fig 3.82 menu {Move, Confirmed Move, Encyclopedia, Status}
+## (GAMEPLAY.md:2996-2998). Move / Confirmed Move raise the map crosshair to pick the
+## destination system (manual p090); OrderManager.MoveHeadquarters re-validates it
+## (own world, not blockaded). Right-click opens the menu, matching the port's other
+## entity menus. Encyclopedia/Status are stubs, as they are for every facility today.
+func _AddHqMenuRow(list: VBoxContainer, facility: Facility, planet: Planet) -> void:
+	var btn := Button.new()
+	btn.text = facility.Name()
+	btn.alignment = HORIZONTAL_ALIGNMENT_CENTER
+	btn.add_theme_font_size_override("font_size", 10)
+	var popup := PopupMenu.new()
+	popup.add_item("Move", 0)
+	popup.add_item("Confirmed Move", 1)
+	popup.add_item("Encyclopedia", 4)
+	popup.add_item("Status", 5)
+	btn.add_child(popup)
+	btn.gui_input.connect(func(event: InputEvent) -> void:
+		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
+			popup.position = Vector2i(int(event.global_position.x), int(event.global_position.y))
+			popup.popup()
+			btn.accept_event())
+	popup.id_pressed.connect(func(id: int) -> void: _OnHqMenuAction(id, planet))
+	list.add_child(btn)
+
+
+func _OnHqMenuAction(id: int, planet: Planet) -> void:
+	match id:
+		0, 1:   # Move / Confirmed Move - target the destination system on the map.
+			var ui: UIManager = get_parent() as UIManager
+			if ui == null:
+				return
+			ui.StartTargeting(func(dest: Planet) -> void:
+				var r: Result = CommandBus.issue("move_hq", { "destination": dest.Name })
+				if not r.ok:
+					print("[HQ] %s" % r.error))
+		4:   # Encyclopedia - stubbed, as for all facilities.
+			print("[HQ] Encyclopedia for the headquarters at %s." % planet.Name)
+		5:   # Status
+			print("[HQ] Headquarters at %s." % planet.Name)

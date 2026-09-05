@@ -183,11 +183,11 @@ static func Render(p: Planet, section: int) -> Array:
 				lines.append(c.Name if c.Rank == Enums.Rank.None else "%s %s" % [JsonUtil.enum_name(Enums.Rank, c.Rank), c.Name])
 		Enums.IntelSection.Manufacturing:
 			for t in p.BuildingQueue:
-				lines.append(DescribeTask(t, "construction"))
+				lines.append(DescribeTask(t, "construction", p))
 			for t in p.ShipyardQueue:
-				lines.append(DescribeTask(t, "shipyard"))
+				lines.append(DescribeTask(t, "shipyard", p))
 			for t in p.TrainingQueue:
-				lines.append(DescribeTask(t, "training"))
+				lines.append(DescribeTask(t, "training", p))
 	return lines
 
 
@@ -201,7 +201,7 @@ static func Describe(f: Facility) -> String:
 	return "Advanced %s" % f.Name() if f.Tier > 1 else f.Name()
 
 
-static func DescribeTask(t: ConstructionTask, where: String) -> String:
+static func DescribeTask(t: ConstructionTask, where: String, home: Planet = null) -> String:
 	var pct := 0 if t.TotalWork <= 0 else clampi(t.Progress * 100 / t.TotalWork, 0, 100)
 	var what: String
 	if t.UnitRule != null:
@@ -209,4 +209,10 @@ static func DescribeTask(t: ConstructionTask, where: String) -> String:
 	else:
 		var type_name := JsonUtil.enum_name(Enums.FacilityType, t.Type)
 		what = "Advanced %s" % type_name if t.Tier > 1 else type_name
+	# Espionage reveals where production is headed (manual/guide; the Empire's only
+	# documented HQ-finding method). Show the destination only when the order ships
+	# elsewhere - a build-in-place order (Destination null or the producing world
+	# itself) has no shipping leg to betray.
+	if t.Destination != null and t.Destination != home:
+		return "%s (%s -> %s, %d%% complete)" % [what, where, t.Destination.Name, pct]
 	return "%s (%s, %d%% complete)" % [what, where, pct]

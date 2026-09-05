@@ -136,6 +136,41 @@ static func MoveCharacters(characters: Array, destination: Planet) -> Result:
 	return Result.success(days) if ok else Result.fail("", days)
 
 
+## HQ RELOCATION — the Alliance may move its headquarters to another world it holds
+## (manual p090 / GAMEPLAY.md:2996-2998, Fig 3.82; guide Ch2/4/9/11/10). A blockade on
+## the current seat PINS it — the Imperial kill chain's whole point (GAMEPLAY.md:3078-3087).
+## It costs a small loyalty drop on the world it leaves (manual p090): the system loses
+## the HQ's support magnitude (entry 174). Only a faction whose HqDef is Movable (the
+## Alliance's hidden HQ) may relocate; the Empire's fixed Coruscant seat cannot.
+static func MoveHeadquarters(faction: Faction, destination: Planet) -> Result:
+	if faction == null or faction.Hq == null or not faction.Hq.Movable:
+		return Result.fail("This headquarters cannot be relocated.")
+	if destination == null:
+		return Result.fail("No destination.")
+	var seat: Planet = Lq.first_or_null(GameState.AllPlanets(), func(p): return p.HasHeadquarters() and p.ControllingFaction == faction)
+	if seat == null:
+		return Result.fail("There is no headquarters to move.")
+	if seat == destination:
+		return Result.fail("The headquarters is already at %s." % destination.Name)
+	if destination.ControllingFaction != faction:
+		return Result.fail("%s is not under your control - the headquarters can only move to a world your side holds." % destination.Name)
+	if BlockadeManager.IsBlockaded(seat):
+		return Result.fail("%s is blockaded - the headquarters cannot relocate until the blockade is broken." % seat.Name)
+
+	for i in range(seat.Facilities.size() - 1, -1, -1):
+		if seat.Facilities[i].Type == Enums.FacilityType.Headquarters:
+			seat.Facilities.remove_at(i)
+	destination.AddFacility(Enums.FacilityType.Headquarters)
+	# The new seat is concealed from other sides for a hidden HQ; a side always knows its own.
+	for other in FactionRegistry.Playable:
+		destination.SetExplored(other, other == faction or not faction.HasHiddenHq())
+	# A small loyalty drop on the world it left (manual p090).
+	seat.ShiftSupport(faction, -RuleManager.Get(RuleId.AllianceHqSupportShift, faction))
+	print("[HQ] %s relocated its headquarters from %s to %s." % [faction.DisplayName, seat.Name, destination.Name])
+	EventBus.BroadcastChanged()
+	return Result.success()
+
+
 ## BOARDING A FLEET. "A CHARACTER ON A SHIP HAS THAT SHIP AS THEIR BASE" (p115).
 static func BoardFleet(characters: Array, fleet: Fleet) -> Result:
 	if fleet == null:

@@ -7,7 +7,7 @@ extends RefCounted
 ## the day hash will then report.
 
 const Kinds := [
-	"move_fleets", "move_units", "move_characters", "board_fleet", "load_aboard",
+	"move_fleets", "move_units", "move_characters", "move_hq", "board_fleet", "load_aboard",
 	"unload", "unload_units", "disembark", "run_blockade",
 	"queue_facility", "queue_units", "cancel_build", "scrap_facility", "scrap_unit",
 	"retire", "take_command", "launch_mission", "abort_mission",
@@ -26,6 +26,8 @@ static func apply(c: Command) -> Result:
 			return OrderManager.MoveUnits(EntityIndex.units(a.get("units", [])), EntityIndex.planet(str(a.get("destination", ""))))
 		"move_characters":
 			return OrderManager.MoveCharacters(EntityIndex.characters(a.get("characters", [])), EntityIndex.planet(str(a.get("destination", ""))))
+		"move_hq":
+			return OrderManager.MoveHeadquarters(FactionRegistry.ById(c.Faction), EntityIndex.planet(str(a.get("destination", ""))))
 		"board_fleet":
 			return OrderManager.BoardFleet(EntityIndex.characters(a.get("characters", [])), EntityIndex.fleet(str(a.get("fleet", ""))))
 		"load_aboard":

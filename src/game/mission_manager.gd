@@ -293,6 +293,37 @@ static func AwardForceForSuccess(m: Mission, day: int) -> void:
 			Enums.MessageCategory.Missions, day, m.Target, c))
 
 
+## Characters improve the skill their mission exercised, on success (guide p094-095;
+## "SPECIAL FORCES CANNOT IMPROVE"). Lq.of_type_character filters SpecForce units out,
+## which honours that rule and matches the AwardForceForSuccess / DeathStarSabotage
+## precedent. Magnitudes are shipped gnprtb entries 111,112,114-121 (each 1), read via
+## RuleManager - never invented. DeathStarSabotage grants its own 122/123 in the success
+## block, so it is excluded here; the three Research types grow faction research, not a
+## character rating, and are left out (entry 113's rating target is unconfirmed).
+static func AwardSkillForSuccess(m: Mission) -> void:
+	for c in Lq.of_type_character(m.Team):
+		match m.Type:
+			Enums.MissionType.Diplomacy:
+				c.DiplomacyRating += RuleManager.Get(RuleId.DiplomacySuccessDiplomacyGain, m.Faction)
+			Enums.MissionType.Espionage:
+				c.EspionageRating += RuleManager.Get(RuleId.EspionageSuccessEspionageGain, m.Faction)
+			Enums.MissionType.Recruitment:
+				c.LeadershipRating += RuleManager.Get(RuleId.RecruitmentSuccessLeadershipGain, m.Faction)
+			Enums.MissionType.InciteUprising:
+				c.LeadershipRating += RuleManager.Get(RuleId.InciteUprisingSuccessLeadershipGain, m.Faction)
+			Enums.MissionType.SubdueUprising:
+				c.LeadershipRating += RuleManager.Get(RuleId.SubdueUprisingSuccessLeadershipGain, m.Faction)
+			Enums.MissionType.Rescue:
+				c.CombatRating += RuleManager.Get(RuleId.RescueSuccessCombatGain, m.Faction)
+			Enums.MissionType.Abduction:
+				c.CombatRating += RuleManager.Get(RuleId.AbductionSuccessCombatGain, m.Faction)
+			Enums.MissionType.Assassination:
+				c.CombatRating += RuleManager.Get(RuleId.AssassinationSuccessCombatGain, m.Faction)
+			Enums.MissionType.Sabotage:
+				c.EspionageRating += RuleManager.Get(RuleId.SabotageSuccessEspionageGain, m.Faction)
+				c.CombatRating += RuleManager.Get(RuleId.SabotageSuccessCombatGain, m.Faction)
+
+
 ## Rank first, as the original addresses them - "Admiral Ackbar".
 static func DisplayNameOf(u: Unit) -> Variant:
 	if u is Character and (u as Character).Rank != Enums.Rank.None:
@@ -829,6 +860,7 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 		return
 
 	AwardForceForSuccess(m, day)
+	AwardSkillForSuccess(m)
 
 	match m.Type:
 		Enums.MissionType.Diplomacy:
