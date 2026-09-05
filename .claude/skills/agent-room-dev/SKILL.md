@@ -115,6 +115,23 @@ TeeJ exactly what landed and what to validate once he pulls the changes. Include
 only merged PRs; note any issue that was researched/planned but not yet landed in
 a one-line "still open" list beneath the table.
 
+Fill in and deliver this template (as a downloadable `.md`):
+
+```markdown
+# Session handoff - <date>
+
+| PR | What changed | Suggested test |
+|----|--------------|----------------|
+| #<n> <title> | <one line> | <post-merge play-check, or "none"> |
+| #<n> <title> | <one line> | <post-merge play-check, or "none"> |
+
+**Still open (researched/planned, not landed):** <#/name>, <#/name>, ...
+```
+
+Example row: `| #11 Fog fix | Enemy agents on a mission on a world you hold are
+hidden from its Personnel tab | Send an enemy sabotage team to your world - they
+should not appear on that world's Personnel tab |`
+
 ## The repo tells you the rest
 
 `CLAUDE.md` (project rules) and the global CLAUDE.md load automatically here -
