@@ -217,13 +217,17 @@ func Populate(planet: Planet, uiManager: UIManager) -> void:
 
 		var charView: IntelManager.IntelView = IntelManager.View(GameSettings.PlayerFaction, planet, Enums.IntelSection.Characters)
 		if charView.Live:
-			# Query the GameManager's static roster for characters on this planet
-			# OURS ARE ALREADY DRAWN above and unconditionally, so this
-			# lists only what intel has bought us: everybody else's.
+			# Query the GameManager's static roster for characters on this planet.
+			# OURS ARE ALREADY DRAWN above and unconditionally, so this lists
+			# everybody else's - but only those PRESENT now. The inbound clause
+			# (Destination == planet while Enroute) applies to OUR OWN personnel
+			# only; it must NOT reveal enemy characters in transit to our world,
+			# which is fog we have not earned (reported from play: enemy personnel
+			# shown en route to a held system). Enemy inbound is invisible until
+			# they arrive - or until a mission of theirs is detected.
 			var charactersOnPlanet: Array = Lq.where(
 				Lq.where(GameState.ActiveRoster, func(c: Character) -> bool: return c.Faction != GameSettings.PlayerFaction),
-				func(c: Character) -> bool: return (c.Attached == planet and c.Status != Enums.Status.Enroute) \
-					or (c.Destination == planet and c.Status == Enums.Status.Enroute))
+				func(c: Character) -> bool: return c.Attached == planet and c.Status != Enums.Status.Enroute)
 
 			# "PERSONNEL: characters AND SPECIAL FORCES on the system"
 			# (manual p126, fig 3.73). This tab listed characters only, so a
