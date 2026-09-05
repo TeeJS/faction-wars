@@ -111,6 +111,26 @@ The one **All-tier** self-protection rule is RULE-05-23 (Alliance moves characte
 
 ---
 
+## Honest-ceiling notes (charter: name the weakest part)
+
+- **M1-F1** — For explored, non-owned worlds the context reads `p.ControllingFaction`
+  **live** to bucket them (inherited from the original `Evaluate`). Gates are present
+  (`ExploredBy` charts; `Knows` gates the Theirs* buckets), so it is a fidelity gap,
+  not a hard G3 violation: a behind-the-back control flip is seen one tick early.
+  Fix at M4 via the AI-side path (track witnessed `SystemControl` events / read the
+  intel snapshot inside AIContext), keeping the engine untouched. Ruled GREEN by
+  R2D2 (#39) and C3PO (#35).
+- **M1-F2** — Behind a correct `Knows` gate the context reads **live** `SupportFor`
+  rather than the snapshot's stored figure — a minor accuracy edge, not a fog
+  violation. Fix alongside M1-F1 at M4.
+- **M2-E3** — `asset_risk = 0` at M2; RULE-05-03 (risk your best characters less)
+  deferred to M5.
+- **M2-E5** — decoys (RULE-05-10) deferred to M5; the engine does not mark a decoy
+  busy, so naive auto-decoy risks double-committing a unit.
+
 ## Progress log
 
 - **2026-09-05** — Plan approved 3/3. Baseline `ui_compile.gd` = 52 scripts, 0 failed. M0 started.
+- **2026-09-05** — M0 committed (1cd91bb): scaffold + contracts, gate green.
+- **2026-09-05** — M1 built (AIContext.Build, fog-legal). C3PO CLEAR (#35), R2D2 VERIFY GREEN (#39), flags M1-F1/M1-F2 logged.
+- **2026-09-05** — M2 built (action selection + 5 policies). Test `ai_missions.gd` 12/0: Empire launches Abduction (vs Mon Mothma) + Sabotage (2-char team). Awaiting review.
