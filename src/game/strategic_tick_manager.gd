@@ -51,7 +51,7 @@ func AdvanceDay() -> void:
 					Enums.MessageCategory.Missions, CurrentDay,
 					character.Attached if character.Attached is Planet else null, character)
 				msg.Type = Enums.MessageType.CharacterHealth
-				EventBus.BroadcastMessage(msg)
+				EventBus.Tell(character.Faction, msg)   # own-side only, not broadcast
 		elif not character.IsInjured():
 			character.DaysResting = 0
 
@@ -71,7 +71,7 @@ func AdvanceDay() -> void:
 					"%s has successfully completed transit and safely arrived at %s. They are currently awaiting new orders." % [character.Name, destination.Name],
 					Enums.MessageCategory.Missions, CurrentDay, destination, character)
 				msg.Type = Enums.MessageType.PersonnelArrive
-				EventBus.BroadcastMessage(msg)
+				EventBus.Tell(character.Faction, msg)   # own-side only, not broadcast
 
 	# --- PROCESS UNIT MOVEMENT --- collected first and moved after.
 	var arriving: Array[Unit] = []

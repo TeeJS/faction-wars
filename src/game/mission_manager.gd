@@ -600,7 +600,7 @@ static func Launch(type: int, team: Array, from: Planet, target: Planet, decoys:
 	# "CHARACTERS STRONG IN THE FORCE CAN ALSO FERRET OUT TRAITORS IN A PARTY" (p094).
 	for exposed in LoyaltyManager.FerretOutTraitors(mission.Team):
 		print("[Loyalty] %s exposed as a traitor." % exposed.Name)
-		EventBus.BroadcastMessage(GameMessage.new(
+		EventBus.Tell(mission.Faction, GameMessage.new(
 			"%s is a traitor" % exposed.Name,
 			"My Force-sensitive companions have seen through %s, who has turned against us. They are still with the team bound for %s.\n\nThey can be retired from their right-click menu. Or leave them be - if our fortunes improve, so will theirs." % [exposed.Name, target.Name],
 			Enums.MessageCategory.Missions, StrategicTickManager.Today, from, exposed))
