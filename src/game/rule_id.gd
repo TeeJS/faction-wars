@@ -146,6 +146,26 @@ const ResearchPointsBase        := 126
 const ResearchPointsSpread      := 127
 const JediTrainingGainSpread    := 128
 
+# Per-mission skill growth on success (guide p094-095). Each is 1 in the shipped
+# tables. DeathStarSabotage (122/123) is applied in its own success block; the three
+# Research types (113) grow faction research, not a character rating, so are omitted.
+const DiplomacySuccessDiplomacyGain       := 111
+const EspionageSuccessEspionageGain       := 112
+const RecruitmentSuccessLeadershipGain    := 114
+const InciteUprisingSuccessLeadershipGain := 115
+const SubdueUprisingSuccessLeadershipGain := 116
+const RescueSuccessCombatGain             := 117
+const AbductionSuccessCombatGain          := 118
+const AssassinationSuccessCombatGain      := 119
+const SabotageSuccessEspionageGain        := 120
+const SabotageSuccessCombatGain           := 121
+
+# HQ relocation: the support magnitude the Alliance HQ lends its system. Applied as
+# the small loyalty drop on the world the HQ leaves (manual p090). ⚠ INFERRED sign/use:
+# the manual gives "small drop" qualitatively; entry 174 is the shipped HQ support
+# magnitude (=5). Measurement in the original would confirm the exact departure cost.
+const AllianceHqSupportShift := 174
+
 # --- diplomacy and uprisings ---
 const DiploOccupiedGainBase     := 137
 const DiploOccupiedGainSpread   := 138
