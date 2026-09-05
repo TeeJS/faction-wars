@@ -36,6 +36,11 @@ var expected_value: int = 0       ## p_success x objective_gain — priced on th
 var asset_risk: int = 0           ## p_loss x replacement_cost — priced on the ACTOR
 var urgency: int = 0              ## situational, not type-based
 
+## Decision noise (fixed-point), a per-tier competence lever (AITiers.DecisionNoise).
+## Easy adds a large jitter so it often takes a lower-scored option; Hard adds none.
+## Assigned deterministically from the passed Prng (A2), so replay is stable.
+var noise: int = 0
+
 ## Deterministic total-order tiebreak on equal scores (BUILD-PLAN A2). Stable
 ## integers only: action-kind ordinal, then target id, then actor id.
 var tb_type: int = 0
@@ -44,7 +49,7 @@ var tb_actor: int = 0
 
 
 func score() -> int:
-	return objective_fit + expected_value - asset_risk + urgency
+	return objective_fit + expected_value - asset_risk + urgency + noise
 
 
 ## Strict weak ordering for Array.sort_custom: highest score first, ties broken by

@@ -93,21 +93,44 @@ Owner of all code: Lord Vader (single writer, shared repo). C3PO: per-milestone 
 
 ---
 
-## M5 tier switch table (skeleton — filled at M5 with R2D2's verified numbers)
+## M5 tier switch table (BUILT — `src/game/ai/ai_tiers.gd`)
 
-All values are **OURS-design** unless a `data/*.json` entry is cited.
+All values are **OURS-design** (from `10-difficulty-and-fairness.md` §4). The DEFEND
+rule-id **lists** are the corpus's (`09-counter-exploit.md`, mapped by C3PO room #51,
+counts confirmed by R2D2 #52).
 
-| Knob | Easy | Medium | Hard | Kind / source |
-|---|---|---|---|---|
-| MovesPerDay | TBD | TBD | TBD | OURS |
-| MissionsPerDay | TBD | TBD | TBD | OURS |
-| ShipsPerDay | TBD | TBD | TBD | OURS |
-| Planning horizon | TBD | TBD | TBD | OURS |
-| Decision noise | TBD | TBD | TBD | OURS |
-| DEFEND rules active | none | 11 (list ids) | all 22 (list ids) | corpus `09-counter-exploit.md` |
-| Inference depth | shallow | medium | deep (fog-legal only) | OURS |
+| Knob | Easy | Medium | Hard |
+|---|---|---|---|
+| MovesPerDay | 1 | 2 | 3 |
+| MissionsPerDay | 1 | 2 | 3 |
+| ShipsPerDay | 1 | 1 | 2 |
+| Horizon | 1 | 2 | 4 |
+| DecisionNoise (jitter range) | 300 | 80 | 0 |
+| UseObjectives | false | true | true |
+| InferenceLevel | none | battle+flip | all (incl. logistics) |
+| DEFEND active (cumulative) | 1 | 12 | 22 |
+| ProphylacticHqDays | 0 | 0 | 30 |
 
-The one **All-tier** self-protection rule is RULE-05-23 (Alliance moves characters off known starts day one) — active at every tier, because omitting it makes the AI look *broken*, not beatable (`00-charter.md:230`).
+RULE-05-23 (Alliance scatters its roster day one) is the one **All-tier** rule —
+omitting it makes the AI look *broken*, not beatable (`00-charter.md:230`).
+
+### DEFEND wiring status (honest-ceiling — what is actually behavioural vs listed)
+
+- **WIRED behaviourally:** RULE-05-23 (dispersal), RULE-09-04 (reactive HQ move),
+  RULE-11-01 (Hard prophylactic HQ timer), RULE-05-06 (counter-intel espionage on
+  own weak worlds). Decision-noise, objective-ordering-off (Easy), and inference-level
+  are wired as tier levers.
+- **EMERGENT from the scorer** (present in behaviour, not a separate toggle):
+  RULE-07-07 (garrison via AgentDroid), RULE-03-15 / RULE-04-15 / RULE-04-16 /
+  RULE-08-16 (production & fleet-doctrine biases), RULE-09-12 / RULE-05-17 (asset_risk,
+  deferred to a later tuning pass), etc.
+- **LISTED-ONLY (in `DefendRuleIds` for the A4 diff test, not yet individually wired):**
+  RULE-10-18, RULE-10-02 (self-sufficiency logistics discipline — genuinely complex
+  AI logistics; **note the enemy-side destination render IS built** since P1/commit
+  d530221, so the doc's "blocked on V-2 render" is stale — the blocker is the AI
+  logistics behaviour, not the render), RULE-01-09 / RULE-11-15 (territory/sanctuary
+  denial beyond the basic press), RULE-05-18 (move-on-espionage-detected), RULE-05-07 /
+  RULE-11-05 (command-rank stationing), RULE-06-13 / RULE-09-01 (diversion recognition).
 
 ---
 
@@ -137,3 +160,22 @@ The one **All-tier** self-protection rule is RULE-05-23 (Alliance moves characte
 - **2026-09-05** — M3 built (objectives/bottleneck layer, 7 states, RULE-10-12 Hard-only). Test `ai_objectives.gd` 10/0. C3PO CLEAR (#46), R2D2 VERIFY GREEN (#45).
 - **2026-09-05** — M4 built (Reactions/EventBus, AR-4 reprioritise-not-spend; RULE-09-04 reactive HQ relocation). Test `ai_reactions.gd` 8/0. C3PO CLEAR (#48), R2D2 VERIFY GREEN (#49).
 - **2026-09-05** — M2+M3+M4 committed together (entangled via scorer objective_fit + urgency).
+- **2026-09-05** — M5 built (difficulty ladder, `ai_tiers.gd`). Test `ai_tiers.gd` 21/0 (A4 config-diff). Decision noise, Easy no-ordering, counter-intel, RULE-05-23 dispersal, RULE-11-01 prophylactic HQ timer. C3PO CLEAR (#56), R2D2 VERIFY GREEN (#57).
+- **2026-09-05** — M6 determinism triad: two 100-day soaks (seed 12345, fresh day-zero, AI drives both sides) → **byte-identical** hash logs; zero runtime errors. New baseline `tests/fixtures/ai-rebuild-seed12345-100d.log` (supersedes the old-AI `replay-seed12345-100d.log`).
+
+## M6 verification procedure (A1 determinism triad)
+
+```
+# (i) zero errors + (iii) generate/refresh the baseline:
+tools/run-gd.ps1 tests/soak.gd -- --days=100 --seed=12345 --faction=alliance \
+    --difficulty=Medium --size=Standard --replay-log=<path>
+# (ii) self-consistency: run again to a second path, diff must be byte-identical.
+# regression: pass --expect=tests/fixtures/ai-rebuild-seed12345-100d.log ; exit 0 == match.
+```
+
+**Known pre-existing issue (NOT the AI, flagged not fixed):** `snapshot_loader.gd:25`
+throws `Invalid assignment of property HumanFactions` on the `--snapshot=` path, so the
+soak runs from fresh day-zero instead. Engine code, untouched by this branch; out of
+scope. The exit-time `ObjectDB instances leaked` warning is a Godot SceneTree headless
+teardown artifact present across the test suite (e.g. `sabotage_targets.gd`), not a
+runtime error during the game.

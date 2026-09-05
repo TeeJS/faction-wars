@@ -67,14 +67,16 @@ func _init() -> void:
 		+ int(b.weights.get(CandidateAction.Loop.Missions, 0))
 	_check(hq_pursuit > 0, "HQ pursuit activates once captures are done (%d)" % hq_pursuit)
 
-	# --- EASY CONTRAST: HQ pursued in parallel while captures remain --------
+	# --- MEDIUM CONTRAST: no RULE-10-12, so HQ is pursued in parallel while
+	# captures remain (Hard deferred it to 0 above). Easy has no ordering at all
+	# (covered by tests/ai_tiers.gd), so the RULE-10-12 contrast lives at Medium. ---
 	for n in caps:
 		var c := _char_named(n)
 		if c != null:
 			c.CapturedBy = null   # restore "uncaptured"
-	GameSettings.SelectedDifficulty = Enums.Difficulty.Easy
-	var e := AIObjectives.Compute(AIContext.Build(GameState.ActiveGalaxy, empire, StrategicTickManager.Today))
-	_check(int(e.weights.get(CandidateAction.Loop.Combat, 0)) > 0, "Easy pursues the HQ in parallel (combat=%d)" % int(e.weights.get(CandidateAction.Loop.Combat, 0)))
+	GameSettings.SelectedDifficulty = Enums.Difficulty.Medium
+	var med := AIObjectives.Compute(AIContext.Build(GameState.ActiveGalaxy, empire, StrategicTickManager.Today))
+	_check(int(med.weights.get(CandidateAction.Loop.Combat, 0)) > 0, "Medium pursues the HQ in parallel — no RULE-10-12 deferral (combat=%d)" % int(med.weights.get(CandidateAction.Loop.Combat, 0)))
 
 	_finish()
 

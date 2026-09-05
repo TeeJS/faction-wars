@@ -45,9 +45,19 @@ class Plan:
 static func Compute(ctx: AIContext) -> Plan:
 	var plan := Plan.new()
 	var us := ctx.Us
+	var tier := AITiers.For(us)
+	# Easy has NO objective ordering (10-diff §4): it pursues whatever scores highest
+	# by intrinsic value (BASE_VALUE), with no victory-directed bottleneck bias. It
+	# still plays every loop and still abducts when handed the chance — it just does
+	# not steer toward the win. Return a neutral, weightless plan.
+	if not tier.UseObjectives:
+		plan.state = State.CHARS_UNLOCATED
+		plan.justification = "Easy: no objective ordering (pursue by value)"
+		return plan
+
 	var galaxy: Array = GameState.ActiveGalaxy
 	var opponent := _opponent(us)
-	var hard := GameSettings.SelectedDifficulty == Enums.Difficulty.Hard
+	var hard := tier.Difficulty == Enums.Difficulty.Hard
 
 	# STATE 1 — our own character captured: rescue dominates ("bend most of your
 	# efforts", RULE-05-19). Highest priority; returns immediately.

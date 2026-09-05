@@ -41,6 +41,12 @@ static func Run(ctx: AIContext, plan: AIObjectives.Plan, rng: Prng) -> void:
 	var tier := AITiers.For(ctx.Us)
 	var budget := {"moves": tier.MovesPerDay, "missions": tier.MissionsPerDay, "ships": tier.ShipsPerDay}
 	var candidates := _propose(ctx, plan, rng)
+	# Decision noise (OURS competence lever, M5): a per-tier jitter so lower tiers
+	# sometimes take a worse option. Deterministic — consumes the passed Prng in the
+	# candidates' stable creation order (A2).
+	if tier.DecisionNoise > 0:
+		for c in candidates:
+			c.noise = rng.NextMax(tier.DecisionNoise)
 	candidates.sort_custom(CandidateAction.Better)   # deterministic total order (A2)
 	_spend(candidates, budget)
 
@@ -53,6 +59,7 @@ static func _propose(ctx: AIContext, plan: AIObjectives.Plan, rng: Prng) -> Arra
 	out.append_array(_propose_fleet(ctx, plan))
 	out.append_array(_propose_combat(ctx, plan, rng))
 	out.append_array(_propose_defense(ctx, plan))
+	out.append_array(_propose_dispersal(ctx, plan))
 	return out
 
 
@@ -68,33 +75,84 @@ static func _propose(ctx: AIContext, plan: AIObjectives.Plan, rng: Prng) -> Arra
 static func _propose_defense(ctx: AIContext, plan: AIObjectives.Plan) -> Array:
 	var out: Array = []
 	var us := ctx.Us
+	var tier := AITiers.For(us)
 	if us.Hq == null or not us.Hq.Movable:
 		return out   # only a hidden, movable HQ (the Alliance) can relocate
-	if GameSettings.SelectedDifficulty == Enums.Difficulty.Easy:
-		return out   # RULE-09-04 is Medium+ (OURS tiering)
 	var seat := _hq_seat(us)
-	if seat == null or not (seat in ctx.Threatened):
-		return out   # reactive: only when the seat is actually threatened
-	if BlockadeManager.IsBlockaded(seat):
-		return out   # pinned — cannot relocate (the engine would reject it anyway)
+	if seat == null or BlockadeManager.IsBlockaded(seat):
+		return out   # no seat, or pinned (the engine would reject the move anyway)
 	var safe := Lq.where(ctx.Held, func(p): return p != seat and not (p in ctx.Threatened) and not BlockadeManager.IsBlockaded(p))
 	if safe.is_empty():
 		return out
 	var dest := _nearest_of(seat, safe)
+
+	# RULE-09-04 (Medium+): REACTIVE relocation off a threatened seat.
+	if tier.Difficulty != Enums.Difficulty.Easy and (seat in ctx.Threatened):
+		out.append(_relocate_candidate(plan, us, seat, dest, 500, "relocate HQ off threatened %s to %s (RULE-09-04)" % [seat.Name, dest.Name]))
+	# RULE-11-01 (Hard): PROPHYLACTIC relocation on a timer, even when not threatened —
+	# stay ahead of the Empire's search. ProphylacticHqDays is OURS.
+	elif tier.ProphylacticHqDays > 0 and ctx.Day > 0 and ctx.Day % tier.ProphylacticHqDays == 0:
+		out.append(_relocate_candidate(plan, us, seat, dest, 250, "prophylactic HQ move %s -> %s (RULE-11-01)" % [seat.Name, dest.Name]))
+	return out
+
+
+static func _relocate_candidate(plan: AIObjectives.Plan, us: Faction, seat: Planet, dest: Planet, urgency: int, why: String) -> CandidateAction:
 	var c := CandidateAction.new()
 	c.loop = CandidateAction.Loop.Fleet
 	c.kind = "relocate_hq"
 	c.budget_key = "moves"
 	c.expected_value = 300      # OURS
-	c.urgency = 500             # OURS — the HQ is a victory condition under threat
+	c.urgency = urgency         # OURS
 	c.objective_fit = _objective_fit(plan, c.loop, -1, dest)
-	c.justification = "relocate HQ off threatened %s to %s (RULE-09-04)" % [seat.Name, dest.Name]
+	c.justification = why
 	c.tb_type = 4
 	c.tb_target = dest.get_instance_id()
 	c.action = func() -> bool:
 		return OrderManager.MoveHeadquarters(us, dest).ok
-	out.append(c)
+	return c
+
+
+# RULE-05-23 (ALL tiers): the Alliance scatters its major characters off their known
+# starting systems early — the Empire begins the game knowing where most of them are,
+# a one-time advantage. Self-limiting: a major moves only while it shares a world with
+# another major or sits on the HQ seat, so once scattered (one per world) it stops.
+static func _propose_dispersal(ctx: AIContext, _plan: AIObjectives.Plan) -> Array:
+	var out: Array = []
+	var us := ctx.Us
+	if not us.HasHiddenHq() or ctx.Day > 20:   # the exposed side (Alliance), early game (OURS window)
+		return out
+	var seat := _hq_seat(us)
+	for ch in ctx.FreeCharacters:
+		if not ch.IsMajor or not (ch.Attached is Planet):
+			continue
+		var here: Planet = ch.Attached
+		var shares := Lq.any(GameState.ActiveRoster, func(o): return o != ch and o.Faction == us and o.IsMajor and o.Attached == here)
+		if not shares and here != seat:
+			continue   # already scattered
+		var dests := Lq.where(ctx.Held, func(p): return p != here and p != seat and not _has_major(us, p))
+		if dests.is_empty():
+			continue
+		var dest := _nearest_of(here, dests)
+		var c := CandidateAction.new()
+		c.loop = CandidateAction.Loop.Fleet
+		c.kind = "disperse_major"
+		c.budget_key = "moves"
+		c.expected_value = 200   # OURS
+		c.urgency = 700          # OURS — All-tier: leaving majors parked looks broken
+		c.justification = "scatter %s off exposed %s to %s (RULE-05-23)" % [ch.Name, here.Name, dest.Name]
+		c.tb_type = 5
+		c.tb_target = dest.get_instance_id()
+		c.tb_actor = ch.get_instance_id()
+		var mover = ch
+		var target := dest
+		c.action = func() -> bool:
+			return OrderManager.MoveCharacters([mover], target).ok
+		out.append(c)
 	return out
+
+
+static func _has_major(us: Faction, p: Planet) -> bool:
+	return Lq.any(GameState.ActiveRoster, func(o): return o.Faction == us and o.IsMajor and o.Attached == p)
 
 
 static func _hq_seat(us: Faction) -> Planet:
@@ -121,12 +179,16 @@ static func _spend(candidates: Array, budget: Dictionary) -> void:
 
 static func _propose_missions(ctx: AIContext, plan: AIObjectives.Plan) -> Array:
 	var out: Array = []
+	var tier := AITiers.For(ctx.Us)
+	# RULE-05-06 (Medium+): counter-intelligence — run espionage on OUR OWN weak
+	# worlds to detect enemy missions. The keystone DEFEND rule of threat T3.
+	var counter_intel: bool = tier.defends("RULE-05-06")
 	var operatives: Array = ctx.FreeCharacters + ctx.FreeSpecForces
 	for op in operatives:
 		if not (op.Attached is Planet):
 			continue
 		for type in MissionManager.PerformableBy([op]):
-			var pick = _best_mission_target(ctx, type, op)
+			var pick = _best_mission_target(ctx, type, op, counter_intel)
 			if pick == null:
 				continue
 			var team := _team_for(ctx, type, op)
@@ -161,13 +223,16 @@ static func _is_high_value(type: int) -> bool:
 ## Choose ONE target for (operative, type) by a cheap heuristic, then the candidate
 ## is scored once. Returns a small dict {target, victim, sab} or null. Keeps the
 ## per-day proposal bounded (operatives x types), not O(x targets).
-static func _best_mission_target(ctx: AIContext, type: int, op) -> Variant:
+static func _best_mission_target(ctx: AIContext, type: int, op, counter_intel: bool = false) -> Variant:
 	var from: Planet = op.Attached
 	match type:
 		Enums.MissionType.Diplomacy:
 			return _wrap(_nearest_legal(type, ctx.Us, from, ctx.Neutral + ctx.OursWeak))
 		Enums.MissionType.Espionage:
-			return _wrap(_nearest_legal(type, ctx.Us, from, ctx.TheirsWeak + ctx.TheirsStrong))
+			var espionage_pool: Array = ctx.TheirsWeak + ctx.TheirsStrong
+			if counter_intel:
+				espionage_pool += ctx.OursWeak   # RULE-05-06: watch our own weak systems
+			return _wrap(_nearest_legal(type, ctx.Us, from, espionage_pool))
 		Enums.MissionType.Reconnaissance:
 			# Recon can go to unexplored — the Empire's HQ search leans on this.
 			return _wrap(_nearest_legal(type, ctx.Us, from, ctx.Unexplored + ctx.TheirsWeak + ctx.TheirsStrong + ctx.Neutral))
