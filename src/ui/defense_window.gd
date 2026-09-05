@@ -215,8 +215,8 @@ func Populate(planet: Planet, uiManager: UIManager) -> void:
 		ourPersonnel += DrawOwnUnits(_personnelList, planet.SpecForces(),
 			uiManager, SelectedSpecForces)
 
-		if ShowLive(_personnelList, planet, Enums.IntelSection.Characters,
-				"No personnel seen on the system."):
+		var charView: IntelManager.IntelView = IntelManager.View(GameSettings.PlayerFaction, planet, Enums.IntelSection.Characters)
+		if charView.Live:
 			# Query the GameManager's static roster for characters on this planet
 			# OURS ARE ALREADY DRAWN above and unconditionally, so this
 			# lists only what intel has bought us: everybody else's.
@@ -262,11 +262,13 @@ func Populate(planet: Planet, uiManager: UIManager) -> void:
 				for pending in specForcesPending:
 					AddUnitToList(_personnelList, null, pending, Color.DARK_GRAY, uiManager, SelectedSpecForces)
 		else:
-			# Not live, so ShowLive has already drawn whatever is known about
-			# the characters. Special forces are a SEPARATE category and get
-			# their own line below it - an informant drawing code 9 hands over
-			# the special forces and nothing else, and this is where that
-			# lands.
+			# NOT LIVE: an enemy system seen only through intel. Draw the character
+			# snapshot as clickable, dated ABDUCTION/ASSASSINATION targets (the crosshair
+			# could not land on a plain label before - reported from play). Special
+			# forces are a SEPARATE category (an informant can hand over one without the
+			# other) and get their own clickable section below, as SABOTAGE targets.
+			_draw_intel_units(_personnelList, planet, charView, Enums.IntelSection.Characters,
+				"No personnel seen on the system.")
 			var sf: IntelManager.IntelView = IntelManager.View(GameSettings.PlayerFaction, planet,
 				Enums.IntelSection.SpecForces)
 			if sf.Known and sf.Lines.size() > 0:
@@ -276,12 +278,8 @@ func Populate(planet: Planet, uiManager: UIManager) -> void:
 				head.add_theme_font_size_override("font_size", 10)
 				head.add_theme_color_override("font_color", Color.GOLDENROD)
 				_personnelList.add_child(head)
-
-				for line in sf.Lines:
-					var row := Label.new()
-					row.text = line
-					row.add_theme_color_override("font_color", Color.LIGHT_GRAY)
-					_personnelList.add_child(row)
+				_draw_intel_units(_personnelList, planet, sf, Enums.IntelSection.SpecForces,
+					"No special forces seen on the system.")
 
 
 func AddUnitToList(list: VBoxContainer, unitData: Unit, text: String, color: Color, uiManager: UIManager, selectionList: Array) -> void:
@@ -487,6 +485,87 @@ func _defence_row(list: VBoxContainer, text: String, type: int, status: String, 
 	list.add_child(row)
 
 
+## A clickable row for an ENEMY sighting seen only through intel (a stale snapshot).
+## The mission crosshair lands on it and names the resolved object as the target -
+## a Character for Abduction/Assassination, a regiment/squadron/facility for
+## Sabotage (all handled by UIManager.ResolveObjectTarget -> the Create Mission
+## flow). `resolve` returns the live object standing there NOW, or null if the
+## sighting is stale and it has since moved. The "(seen day N)" marker makes the
+## snapshot's age plain, so a unit that has moved is not mistaken for being in two
+## places at once.
+func _intel_target_row(list: VBoxContainer, text: String, day: int, resolve: Callable) -> void:
+	var row := HBoxContainer.new()
+	var rowBtn := Button.new()
+	rowBtn.text = text
+	rowBtn.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	rowBtn.flat = true
+	rowBtn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	rowBtn.add_theme_font_size_override("font_size", 12)
+	rowBtn.add_theme_color_override("font_color", Color.LIGHT_GRAY)
+	rowBtn.set_meta("intel_target", true)
+	rowBtn.tooltip_text = "With the mission crosshair up, click to make this the mission target."
+	rowBtn.pressed.connect(func() -> void:
+		if _uiManager == null or not _uiManager.IsTargetingObject():
+			return
+		var current: Variant = resolve.call()
+		if current == null:
+			print("[Mission] Nothing answers at that position - the intelligence may be stale.")
+			return
+		_uiManager.ResolveObjectTarget(current))
+	row.add_child(rowBtn)
+	var dayLbl := Label.new()
+	dayLbl.text = "(seen day %d)" % day
+	dayLbl.add_theme_font_size_override("font_size", 11)
+	dayLbl.add_theme_color_override("font_color", Color.DARK_GRAY)
+	row.add_child(dayLbl)
+	list.add_child(row)
+
+
+## The live enemy characters, regiments or squadrons standing on `planet` now, in
+## the order intel rendered them, so an intel line's nth entry resolves to the nth
+## object of its kind. Fog-legal: the ROW is only drawn from the snapshot; this just
+## re-binds a click to the current object (null if it has moved on).
+static func _enemy_here(planet: Planet, section: int) -> Array:
+	var us: Faction = GameSettings.PlayerFaction
+	match section:
+		Enums.IntelSection.Characters:
+			return Lq.where(GameState.ActiveRoster, func(c: Character) -> bool:
+				return c.Faction != us and c.Attached == planet and c.Status != Enums.Status.Enroute \
+					and not c.IsOffMap() and c.Status != Enums.Status.Dead)
+		Enums.IntelSection.Troopers:
+			return Lq.where(planet.Troopers(), func(u: Unit) -> bool: return u.Faction != us)
+		Enums.IntelSection.Fighters:
+			return Lq.where(planet.FighterSquadrons, func(u: Unit) -> bool: return u.Faction != us)
+		Enums.IntelSection.SpecForces:
+			return Lq.where(planet.SpecForces(), func(u: Unit) -> bool: return u.Faction != us)
+	return []
+
+
+## Draw an enemy system's intel snapshot for one section as clickable, dated target
+## rows (each resolves to the live nth object of its kind). Used for the Personnel,
+## Troops and Fighters tabs so the mission crosshair can land on an enemy character
+## (abduction/assassination) or regiment/squadron (sabotage) - the same treatment
+## the Orbital Defenses tab already gives facilities.
+func _draw_intel_units(list: VBoxContainer, planet: Planet, view: IntelManager.IntelView, section: int, emptyText: String) -> void:
+	if not view.Known:
+		var none := Label.new()
+		none.text = "Sensors detect no data."
+		none.add_theme_color_override("font_color", Color.GRAY)
+		list.add_child(none)
+		return
+	if view.Lines.size() == 0:
+		_empty_defences(list, emptyText)
+		return
+	var world: Planet = planet
+	var i := 0
+	for line in view.Lines:
+		var nth := i
+		_intel_target_row(list, str(line), view.Day, func() -> Variant:
+			var here: Array = _enemy_here(world, section)
+			return here[nth] if nth < here.size() else null)
+		i += 1
+
+
 # Units ORDERED but not yet standing here: still being built, or built and
 # riding a transport in.
 #
@@ -546,8 +625,8 @@ func PopulateTroops(tabs: TabContainer, planet: Planet, uiManager: UIManager) ->
 	# THE GATE IS READ, NOT RETURNED ON. Your own regiments are drawn either
 	# way; only the garrison readout and the opponent's units depend on the
 	# system still being yours.
-	var live: bool = ShowLive(list, planet, Enums.IntelSection.Troopers,
-		"No ground troops seen on the system.")
+	var view: IntelManager.IntelView = IntelManager.View(GameSettings.PlayerFaction, planet, Enums.IntelSection.Troopers)
+	var live: bool = view.Live
 
 	if live:
 		# "Garrison requirements are stated in the Trooper Regiment tab of the
@@ -586,6 +665,10 @@ func PopulateTroops(tabs: TabContainer, planet: Planet, uiManager: UIManager) ->
 	var ourTroops: int = DrawOwnUnits(list, planet.Troopers(), uiManager, SelectedTroops)
 
 	if not live:
+		# Enemy regiments seen via intel are legal SABOTAGE targets (manual p108):
+		# draw them clickable and dated so the crosshair can land on one.
+		_draw_intel_units(list, planet, view, Enums.IntelSection.Troopers,
+			"No ground troops seen on the system.")
 		return
 
 	# TROOPER REGIMENTS ONLY. "Troops: trooper regiments on the system, and
@@ -629,12 +712,16 @@ func PopulateFighters(tabs: TabContainer, planet: Planet, uiManager: UIManager) 
 	# assault defends with them - so your squadrons are still in orbit over
 	# a world you have just lost, and this tab used to answer for them with
 	# "Sensors detect no data."
-	var live: bool = ShowLive(list, planet, Enums.IntelSection.Fighters,
-		"No fighter squadrons seen in orbit.")
+	var view: IntelManager.IntelView = IntelManager.View(GameSettings.PlayerFaction, planet, Enums.IntelSection.Fighters)
+	var live: bool = view.Live
 
 	var ourFighters: int = DrawOwnUnits(list, planet.FighterSquadrons, uiManager, SelectedFighters)
 
 	if not live:
+		# Enemy squadrons seen via intel are legal SABOTAGE targets (manual p108):
+		# draw them clickable and dated so the crosshair can land on one.
+		_draw_intel_units(list, planet, view, Enums.IntelSection.Fighters,
+			"No fighter squadrons seen in orbit.")
 		return
 
 	# Ours are already drawn, so this is everybody else's.
