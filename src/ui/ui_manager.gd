@@ -417,6 +417,25 @@ func OpenPlanetFinder() -> void:
 		func(window) -> void: window.Setup(self), Vector2(100, 150))
 
 
+## F1 Game Options - the six-slot save screen (single-player). Head-to-head uses
+## its own relay Save, so this is offered only when there is no MP session. Guards
+## against opening a second copy.
+func OpenGameOptions() -> void:
+	if MpSetup.session != null:
+		return
+	if get_node_or_null("GameOptionsWindow") != null:
+		return
+	add_child(GameOptionsWindow.new())
+
+
+## Alt+W - close every open data window at once. Windows opened through
+## OpenWindow are tracked in _openWindows; freeing one triggers its own cleanup.
+func CloseAllWindows() -> void:
+	for w: Variant in _openWindows.values().duplicate():
+		if is_instance_valid(w):
+			(w as Node).queue_free()
+
+
 func _process(_delta: float) -> void:
 	# While targeting is active, override any Control that resets the cursor.
 	if IsTargeting:
@@ -581,16 +600,47 @@ func OpenObjectives() -> void:
 
 ## Catch global right-clicks or Escape to cancel targeting.
 func _unhandled_input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed and not event.echo and event.alt_pressed:
-		# The original's own accelerators: "ALT-H Game Objectives", "ALT-O Galaxy Overview".
-		if event.keycode == KEY_H:
-			OpenObjectives()
-			get_viewport().set_input_as_handled()
-			return
-		if event.keycode == KEY_O:
-			OpenGalaxyOverview()
-			get_viewport().set_input_as_handled()
-			return
+	# The original's Command Center shortcuts (Steam guide + manual). Hardcoded key
+	# checks in the style of the existing Alt+H/Alt+O binds; this node only exists
+	# while a game is on screen, so no extra scene guard is needed. (Pause and
+	# speed - Alt+P, Alt+/- - live in game_manager.gd's own handler.)
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.alt_pressed:
+			match event.keycode:
+				KEY_H:                        # ALT-H Game Objectives
+					OpenObjectives()
+					get_viewport().set_input_as_handled()
+					return
+				KEY_O, KEY_0, KEY_KP_0:       # ALT-O / ALT-0 Galaxy Overview (synoptic chart)
+					OpenGalaxyOverview()
+					get_viewport().set_input_as_handled()
+					return
+				KEY_I:                        # ALT-I check the message index
+					OnMessageIndexClicked("All")
+					get_viewport().set_input_as_handled()
+					return
+				KEY_W:                        # ALT-W close all windows
+					CloseAllWindows()
+					get_viewport().set_input_as_handled()
+					return
+		else:
+			match event.keycode:
+				KEY_F1:                       # F1 Game Options
+					OpenGameOptions()
+					get_viewport().set_input_as_handled()
+					return
+				KEY_F2:                       # F2 System (Planetary) Finder
+					OpenPlanetFinder()
+					get_viewport().set_input_as_handled()
+					return
+				KEY_F5:                       # F5 Character (Personnel) Finder
+					OpenPersonnelFinder()
+					get_viewport().set_input_as_handled()
+					return
+				KEY_F6:                       # F6 Message index (defaults to All - manual p079)
+					OnMessageIndexClicked("All")
+					get_viewport().set_input_as_handled()
+					return
 
 	if IsTargeting:
 		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
