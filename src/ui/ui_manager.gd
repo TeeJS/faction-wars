@@ -59,7 +59,10 @@ func _ready() -> void:
 	if menuButton == null:
 		menuButton = get_node_or_null("HBoxContainer/MenuButton")
 	if menuButton != null:
-		menuButton.pressed.connect(OnMenuButtonClicked)
+		# The Menu button's `pressed` signal is already wired in Main.tscn (a
+		# [connection] node -> OnMenuButtonClicked). Connecting it again here
+		# raised "Signal already connected" errors on every load (#8), so the
+		# code connect is dropped and the scene connection is the single source.
 		# The build version, right of the Menu button (TeeJ, room #106).
 		var ver := BuildInfo.label()
 		menuButton.get_parent().add_child(ver)
