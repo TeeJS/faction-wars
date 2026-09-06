@@ -48,3 +48,9 @@ static var ProvideFeedback: bool = false
 
 ## The session's PRNG seed - see Prng. Printed at start; --seed=N replays.
 static var Seed: int = 0
+
+## Set by the start-menu "Load Game" flow to a save slot's log path. GameManager
+## reads it in _ready: if set (single-player), it replays that log instead of
+## starting a new game, then clears it. A static so it survives the Menu -> Main
+## scene change.
+static var PendingLoadPath: String = ""
