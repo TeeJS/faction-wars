@@ -58,6 +58,12 @@ For each issue:
 4. **Unanimous approval of the plan by all agents = authorization to edit.** TeeJ
    has delegated edit approval to unanimous 3-agent consensus. A single "hold"
    from any agent blocks the change. TeeJ does not sign off per edit.
+   **No-behavior-change / additive work** (docs, a redundant-connection cleanup,
+   adding a keyboard binding, an obvious default like "in-game save is required")
+   is handled by agent consensus and executed - do **not** turn it into a question
+   for TeeJ; only real behavior/design changes go to him. **2/3 fallback:** if an
+   agent is context-reset or unresponsive, proceed on 2/3 plus the chair's 4.7.1
+   verification rather than stalling; the missing agent's vote counts when it's back.
 
 5. **Implement** in small chunks. Workers implement in their own sandboxes and
    **post the diff + test results** - they cannot push. **Before writing any
@@ -70,7 +76,12 @@ For each issue:
 
 6. **Test = the plan's AUTOMATED criteria**, plus agent verification of the diff.
    It does **not** mean TeeJ playtesting. TeeJ cannot test anything until it is
-   merged and he has manually updated his container.
+   merged and he has manually updated his container. **The chair is the sole
+   Godot runner and verifies headless on the TARGET Godot version (4.7.1), not an
+   older one** - a change that passed on a worker's 4.5.1 broke parsing on 4.7.1
+   and shipped. Workers write code + tests and post them; the chair runs them.
+   A new `class_name` file needs a Godot `--import` before a headless test can
+   reference it by that class name.
 
 7. **The chair is the ONLY one who commits, pushes, and merges.** Apply the
    verified diff in the canonical checkout, push, open a PR, and **merge on green**
@@ -94,9 +105,13 @@ For each issue:
   them out.
 - **Back up a file before changing it** unless git already covers it (a tracked
   file on a branch is covered).
+- **Keep `BACKLOG.md` current** - the repo's single tracker (status / missing
+  features / backlog / known bugs / non-issues). Move items as they land, add new
+  findings, and record confirmed-but-unfixed bugs there.
 - **Brevity with TeeJ** (he has ADHD): lead with the answer, use tables, present
   **one** actionable set at a time, and never offer a choice you haven't done the
-  homework to frame.
+  homework to frame. Take an obvious reversible default and say which you took -
+  do not put it to him as a question.
 
 ## Session handoff (at room close)
 
