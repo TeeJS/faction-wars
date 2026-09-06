@@ -81,7 +81,16 @@ For each issue:
    older one** - a change that passed on a worker's 4.5.1 broke parsing on 4.7.1
    and shipped. Workers write code + tests and post them; the chair runs them.
    A new `class_name` file needs a Godot `--import` before a headless test can
-   reference it by that class name.
+   reference it by that class name. **Test the BEHAVIOUR, not the handler.** A
+   test for a UI action MUST drive it through its real trigger - press the actual
+   button (`btn.pressed.emit()`), send the key to `_unhandled_input`, click the
+   menu entry - and assert the visible OUTCOME (the window opens, the state
+   changed). Calling the handler in isolation, or only checking the diff compiled,
+   is worthless: the Comms **Go To** button shipped "verified" but did nothing in
+   play, because its test exercised `OnGotoClicked` directly and never opened the
+   window the real way - so it missed that the window's `_uiManager` was never
+   set. If the acceptance criterion is "clicking X opens Y", the test clicks X and
+   checks Y appears.
 
 7. **The chair is the ONLY one who commits, pushes, and merges.** Apply the
    verified diff in the canonical checkout, push, open a PR, and **merge on green**
