@@ -67,6 +67,18 @@ func _ready() -> void:
 	# Loop through the CommsList to wire the HUD buttons dynamically.
 	var commsList: VBoxContainer = get_node_or_null("CommsPanel/Margin/CommsList")
 	if commsList != null:
+		# "All Messages" at the top of the category list - opens the Comms Center
+		# on its existing All tab (OnMessageIndexClicked defaults to "All"; the
+		# index's own All Messages view, manual p079). Built in code so the .tscn
+		# needs no editing, and idempotent so a rebuild does not double-add it.
+		# RefreshCommsHighlights lights it whenever ANY category has unread mail,
+		# because UnreadCount(MessageCategory.All) aggregates (event_bus.gd).
+		if commsList.get_node_or_null("All") == null:
+			var allBtn := Button.new()
+			allBtn.name = "All"
+			allBtn.text = "All Messages"
+			commsList.add_child(allBtn)
+			commsList.move_child(allBtn, 0)
 		for btn in commsList.get_children():
 			if btn is Button:
 				var categoryName: String = btn.name
