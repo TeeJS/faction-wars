@@ -177,7 +177,9 @@ func OpenComposeChatMessage() -> void:
 
 func OnMessageIndexClicked(category: String = "All") -> void:
 	OpenWindow("Communications", MessageWindowTemplate,
-		func(window) -> void: window.OpenToCategory(category),
+		func(window) -> void:
+			window.Setup(self)   # without this the window's _uiManager is null and Go To is a no-op
+			window.OpenToCategory(category),
 		Vector2(50, 50))
 
 
