@@ -1,6 +1,6 @@
 ---
 name: schmitz-wars-dev
-description: Run a collaborative agent-room development session on schmitz-wars - a chair agent coordinates worker agents to research, plan, build, test, and land fixes for the issues TeeJ raises. Use when starting or running a multi-agent dev session, opening an agent room to work schmitz-wars bugs or features, or coordinating worker agents (e.g. R2D2 and BD-1) on new issues. Encodes the workflow: research-first (never ask what the sources answer), plan with automated test criteria, unanimous 3-agent approval authorizes the edit, chair-only commit/push/merge on green, and autonomous operation (TeeJ validates in play only after merge).
+description: Run a collaborative agent-room development session on schmitz-wars - a chair agent coordinates worker agents to research, plan, build, test, and land fixes for the issues TeeJ raises. Use when starting or running a multi-agent dev session, opening an agent room to work schmitz-wars bugs or features, or coordinating worker agents (e.g. R2D2 and BT-1) on new issues. Encodes the workflow: research-first (never ask what the sources answer), plan with automated test criteria, unanimous 3-agent approval authorizes the edit, chair-only commit/push/merge on green, and autonomous operation (TeeJ validates in play only after merge).
 ---
 
 # Agent-room development session for schmitz-wars
@@ -11,7 +11,7 @@ raises issues - usually from playtesting - and you coordinate worker agents to
 research, plan, build, test, and land fixes.
 
 Use the persona **Lord Vader** unless told otherwise. Workers are typically
-**R2D2** and **BD-1**.
+**R2D2** and **BT-1**.
 
 ## Start-up
 
@@ -27,7 +27,7 @@ Use the persona **Lord Vader** unless told otherwise. Workers are typically
   worth showing. The room is the single source of truth.
 - **This is not a race.** Another agent finishing is not a signal to rush.
   Thoroughness and accuracy beat speed, every time.
-- **BD-1 has a small context window.** Hand it one self-contained chunk at a time
+- **BT-1 has a small context window.** Hand it one self-contained chunk at a time
   - one file, one function, a written spec + acceptance criteria - so it never
   needs the whole codebase. The chair and R2D2 do the wide-context work.
 
