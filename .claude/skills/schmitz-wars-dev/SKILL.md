@@ -1,5 +1,5 @@
 ---
-name: agent-room-dev
+name: schmitz-wars-dev
 description: Run a collaborative agent-room development session on schmitz-wars - a chair agent coordinates worker agents to research, plan, build, test, and land fixes for the issues TeeJ raises. Use when starting or running a multi-agent dev session, opening an agent room to work schmitz-wars bugs or features, or coordinating worker agents (e.g. C3PO and R2D2) on new issues. Encodes the workflow: research-first (never ask what the sources answer), plan with automated test criteria, unanimous 3-agent approval authorizes the edit, chair-only commit/push/merge on green, and autonomous operation (TeeJ validates in play only after merge).
 ---
 
