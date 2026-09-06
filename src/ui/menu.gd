@@ -53,6 +53,21 @@ func _ready() -> void:
 		btnEmpire.pressed.connect(func() -> void: StartGame(second))
 
 	btnExit.pressed.connect(func() -> void: get_tree().quit())
+
+	# "Load Game" - restore a saved single-player game (issue #6, manual
+	# p073-077). Added in code (bottom-left of the Cockpit); opens a slot picker.
+	var btnLoad := Button.new()
+	btnLoad.text = "Load Game"
+	btnLoad.pressed.connect(func() -> void:
+		if get_node_or_null("LoadGameWindow") == null:
+			add_child(LoadGameWindow.new()))
+	add_child(btnLoad)
+	btnLoad.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
+	btnLoad.offset_left = 10.0
+	btnLoad.offset_top = -40.0
+	btnLoad.offset_right = 140.0
+	btnLoad.offset_bottom = -10.0
+
 	# The build version, bottom right of the Cockpit (TeeJ, room #106).
 	var ver := BuildInfo.label()
 	add_child(ver)

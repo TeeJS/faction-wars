@@ -98,11 +98,30 @@ func _ready() -> void:
 		for f in GameSettings.HumanFactions:
 			humans.append(f.Id)
 
+	# SINGLE-PLAYER LOAD (issue #6): if the start menu picked a save slot, replay
+	# its command log to restore that game instead of starting a new one. The
+	# header carries the seed, factions and settings, so new_game runs inside the
+	# replay - PlayerFaction etc. are set from the save, not the menu.
+	if not mp and not GameSettings.PendingLoadPath.is_empty():
+		var loadPath: String = GameSettings.PendingLoadPath
+		GameSettings.PendingLoadPath = ""
+		var saved: Array = CommandLog.Read(loadPath)
+		if not (saved[0] as Dictionary).is_empty():
+			# The saved day comes from the log's day hashes, not the commands - a
+			# game saved with few player orders must still restore to its real day.
+			var upto: int = 1
+			for d: Variant in (saved[2] as Dictionary).keys():
+				upto = maxi(upto, int(d))
+			_strategicEngine = Replayer.replay_entries(saved[0], saved[1], upto)
+		if _strategicEngine == null:
+			push_error("[GameManager] load failed for %s - starting a new game instead" % loadPath)
+
 	# The catalogs, the resets, the galaxy, the roster and day zero, in the
 	# source's order - GameSession.new_game is GameManager._Ready's load path.
-	_strategicEngine = GameSession.new_game(GameSettings.PlayerFaction.Id,
-		GameSettings.SelectedDifficulty, GameSettings.SelectedSize, seed, humans,
-		GameSettings.HostFaction.Id if mp and GameSettings.HostFaction != null else "")
+	if _strategicEngine == null:
+		_strategicEngine = GameSession.new_game(GameSettings.PlayerFaction.Id,
+			GameSettings.SelectedDifficulty, GameSettings.SelectedSize, seed, humans,
+			GameSettings.HostFaction.Id if mp and GameSettings.HostFaction != null else "")
 	print("[Prng] seed=%d" % seed)
 	if mp:
 		_StartLockstep()   # may rebuild the world (Load Game) - the map comes after
