@@ -85,7 +85,12 @@ For each issue:
 
 7. **The chair is the ONLY one who commits, pushes, and merges.** Apply the
    verified diff in the canonical checkout, push, open a PR, and **merge on green**
-   (tests pass + agents verify). One branch + one PR **per issue**.
+   (tests pass + agents verify). One branch + one PR **per issue**. **Branch
+   hygiene:** after a merge you land back on `main`, so cut a fresh per-issue
+   branch and confirm `git branch --show-current` shows it BEFORE the next
+   `git add`/`commit` - a commit once slipped onto local `main` this way (caught
+   before any push, but avoid it). Commit the generated **`.uid` sidecar** with
+   each new `.gd` file; the repo tracks them.
 
 8. **Work autonomously.** Do not wait on TeeJ to test or to approve a merge -
    merge on green and keep moving. TeeJ validates in play **after** the merge and
