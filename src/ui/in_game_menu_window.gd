@@ -14,6 +14,20 @@ func _ready() -> void:
 
 	btnResume.pressed.connect(func() -> void: queue_free())
 
+	# Single-player: the Game Options screen (manual p073-077) - six named save
+	# slots. Head-to-head keeps its own relay-based Save Game button (below)
+	# instead, so this is offered only when there is no multiplayer session.
+	if MpSetup.session == null:
+		var btnOptions := Button.new()
+		btnOptions.text = "Game Options"
+		btnOptions.custom_minimum_size = Vector2(0, 30)
+		var column: Node = btnResume.get_parent()
+		column.add_child(btnOptions)
+		column.move_child(btnOptions, btnResume.get_index() + 1)
+		btnOptions.pressed.connect(func() -> void:
+			var w := GameOptionsWindow.new()
+			get_parent().add_child(w))
+
 	# HEAD-TO-HEAD (manual p163). "Bring up the Game Options Screen. Your
 	# opponent will receive a Waiting for Opponent message, until you return to
 	# the game": the clock tells the opponent while this window is open.
