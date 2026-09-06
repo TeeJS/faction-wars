@@ -21,15 +21,16 @@ target) before landing.
 | 2b | Defender notified on enemy mission foil / sabotage success (fog-blind) | #15 |
 | 5 | "All Messages" at the top of the left-column category menu | #16 |
 | 6 (A) | Single-player **Save** + six-slot Game Options screen | #17 |
+| 6 (B) | Single-player **Load** — start-menu Load Game + GameManager replay | #22 |
+| 7 | Keyboard shortcuts — all mappable strategic ones (F1/F2/F5/F6, Alt+I/O/0/W/G/U, Alt+1-9) | #20 #23 |
 | 8 | Fix MenuButton `pressed` double-connect log spam | #18 |
 | — | `agent-room-dev` skill (workflow + context-MCP + handoff template) | #9 #10 #12 #13 |
+| — | `BACKLOG.md` tracker | #19 |
 
 ## Status — in progress
 
-| # | Item | Notes |
-|---|------|-------|
-| 6 (B) | Start-menu **Load** (replay a slot). In-game load is out of scope (TeeJ). | plan approved |
-| 7 | Keyboard shortcuts — wire every one whose target screen exists | audit done (below) |
+*None — all approved work is merged.* What remains is under **Missing Features**
+(new screens) and **Backlog** below; those need TeeJ's go before they start.
 
 ---
 
@@ -70,10 +71,10 @@ double-connect). New confirmed bugs go here with a repro + file:line.
 
 ## Keyboard-shortcut audit (Steam guide + code trace)
 
-**Working:** Alt+P (pause), Alt++/− (speed), Alt+H (objectives), Alt+O (overview).
-**Implement-now (target exists):** F1→Game Options, F2→System Finder, F5→Character
-Finder, F6/Alt+I→Message index, Alt+0→Galaxy Overview, Alt+W→close all, Alt+G/Alt+U→
-toggle Manage Garrisons/Production, Alt+1..9→Galaxy Display modes (`Gid.SetActiveMode`).
+**Done:** Alt+P (pause), Alt++/− (speed), Alt+H (objectives), Alt+O/Alt+0 (overview),
+F1→Game Options, F2→System Finder, F5→Character Finder, F6/Alt+I→Message index,
+Alt+W→close all, Alt+G/Alt+U→toggle Manage Garrisons/Production, Alt+1..9→Galaxy
+Display modes. (PRs #20, #23.)
 **Missing screen (backlog #9-#12):** F3, F4, F7, Alt+B/T/F.
 **Skip:** Alt+Y (MP), Alt+V (R2-D2 sounds), Alt+A (tips), Alt+F4 (OS). Tactical
 shortcuts (`tactical_view.gd`) — separate audit.
