@@ -428,12 +428,26 @@ func OpenGameOptions() -> void:
 	add_child(GameOptionsWindow.new())
 
 
-## Alt+W - close every open data window at once. Windows opened through
-## OpenWindow are tracked in _openWindows; freeing one triggers its own cleanup.
+## Alt+W - close every open window at once. Windows opened through OpenWindow are
+## tracked in _openWindows; freeing one triggers its own cleanup. A few screens
+## (Galaxy Overview, Objectives, Game Options, Load Game) are added as direct
+## children rather than through OpenWindow, so close those by name too.
 func CloseAllWindows() -> void:
 	for w: Variant in _openWindows.values().duplicate():
 		if is_instance_valid(w):
 			(w as Node).queue_free()
+	for wname in ["GalaxyOverviewWindow", "ObjectivesWindow", "GameOptionsWindow", "LoadGameWindow"]:
+		var extra: Node = get_node_or_null(wname)
+		if extra != null:
+			extra.queue_free()
+
+
+## Alt+1..9 - switch the galaxy map to a Galaxy Display mode. SetMode sets the
+## mode AND repaints the map (and mirroring sector windows).
+func _set_galaxy_mode(index: int) -> void:
+	var modes: Array = Gid.GalaxyDisplayModes()
+	if ActiveGalaxyMap != null and index >= 0 and index < modes.size() and modes[index] != null:
+		ActiveGalaxyMap.SetMode(modes[index])
 
 
 func _process(_delta: float) -> void:
@@ -606,6 +620,13 @@ func _unhandled_input(event: InputEvent) -> void:
 	# speed - Alt+P, Alt+/- - live in game_manager.gd's own handler.)
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.alt_pressed:
+			# ALT-1..9 select a Galaxy Display mode (Steam guide: loyalty,
+			# insurrections, idle/moving fleets, idle/active characters, idle
+			# shipyards/training/construction).
+			if event.keycode >= KEY_1 and event.keycode <= KEY_9:
+				_set_galaxy_mode(event.keycode - KEY_1)
+				get_viewport().set_input_as_handled()
+				return
 			match event.keycode:
 				KEY_H:                        # ALT-H Game Objectives
 					OpenObjectives()
@@ -621,6 +642,14 @@ func _unhandled_input(event: InputEvent) -> void:
 					return
 				KEY_W:                        # ALT-W close all windows
 					CloseAllWindows()
+					get_viewport().set_input_as_handled()
+					return
+				KEY_G:                        # ALT-G toggle Manage Garrisons (agent)
+					OnAgentMenu(5)
+					get_viewport().set_input_as_handled()
+					return
+				KEY_U:                        # ALT-U toggle Manage Production (agent)
+					OnAgentMenu(6)
 					get_viewport().set_input_as_handled()
 					return
 		else:

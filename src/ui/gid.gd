@@ -271,6 +271,32 @@ static func SetActiveMode(mode: GidMode) -> void:
 	_activeMode = mode
 
 
+## The Galaxy Display modes in the original's Alt+1..9 order (Steam guide):
+## 1 loyalty, 2 insurrections, 3 idle fleets, 4 moving fleets, 5 idle characters,
+## 6 active characters, 7 idle shipyards, 8 idle training camps, 9 idle
+## construction. Index 0 = Alt+1. Any entry may be null if a label ever changes.
+static func GalaxyDisplayModes() -> Array:
+	return [
+		_ModeByLabel("Popular Support"),
+		_ModeByLabel("Uprisings"),
+		_ModeByLabel("Idle Fleets"),
+		_ModeByLabel("Fleets Enroute"),
+		_ModeByLabel("Idle Personnel"),
+		_ModeByLabel("Active Personnel"),
+		_ModeByLabel("Idle Shipyards"),
+		_ModeByLabel("Idle Training Facilities"),
+		_ModeByLabel("Idle Construction Yards"),
+	]
+
+
+static func _ModeByLabel(label: String) -> GidMode:
+	for cat: GidCategory in Categories:
+		for m: GidMode in cat.Modes:
+			if m.LabelText == label:
+				return m
+	return null
+
+
 ## The loyalty title depends on the player's faction, which isn't known at
 ## static-init time; patch it when the key is shown.
 static func TitleFor(mode: GidMode) -> String:
