@@ -113,6 +113,10 @@ func _ready() -> void:
 			for d: Variant in (saved[2] as Dictionary).keys():
 				upto = maxi(upto, int(d))
 			_strategicEngine = Replayer.replay_entries(saved[0], saved[1], upto)
+			# The replay queues by day (Immediate off) and leaves it off. Single
+			# player applies an order on the frame it is issued - nothing here
+			# ever drains CommandBus.Pending - so turn it back on.
+			CommandBus.Immediate = true
 		if _strategicEngine == null:
 			push_error("[GameManager] load failed for %s - starting a new game instead" % loadPath)
 
