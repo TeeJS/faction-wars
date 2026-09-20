@@ -96,15 +96,50 @@ static func _Owned(p: Planet) -> bool:
 	return p.ControllingFaction == GameSettings.PlayerFaction
 
 
-## Knowledge gate: the player sees detail for any explored world. Right for
-## Resources and Manufacturing, WRONG for Defense (needs an intel model) - see
-## the source's GID-NOTES.md.
+## Knowledge gate: does the player have ANY chart of this world (drives the grey
+## "unexplored" marker). What is shown for a charted world is then FOGGED per datum
+## by the readers below - owner/support live on the Core, everything else as last
+## seen (manual p069). This closes the old "WRONG for Defense" gap noted here: the
+## modes now read IntelManager sightings, not the live world.
 static func _Known(p: Planet) -> bool:
 	return p.IsExplored
 
 
+# --- Fogged magnitude readers -------------------------------------------------
+# Every mode below reads what the player KNOWS, not the live world: live on a world
+# we hold, live owner/support on the Core, else the last sighting (IntelManager).
+
+static func _player() -> Faction:
+	return GameSettings.PlayerFaction
+
+
 static func _PlayerSupport(p: Planet) -> float:
-	return p.SupportFor(GameSettings.PlayerFaction)
+	return float(IntelManager.SupportSeen(_player(), p, _player()))
+
+
+static func _StatusFig(p: Planet, key: String) -> float:
+	return float(int(IntelManager.StatusSeen(_player(), p).get(key, 0)))
+
+
+## Count of one production facility type as last seen (live for a world we hold).
+static func _ProdCount(p: Planet, type: int) -> float:
+	var counts: Dictionary = IntelManager.SeenData(_player(), p, Enums.IntelSection.ProductionFacilities).get("counts", {})
+	return float(int(counts.get(type, 0)))
+
+
+static func _DefFig(p: Planet, key: String) -> float:
+	return float(int(IntelManager.SeenData(_player(), p, Enums.IntelSection.DefensiveFacilities).get(key, 0)))
+
+
+## Unit counts fall straight out of the section's line list - no data twin needed.
+static func _LineCount(p: Planet, section: int) -> float:
+	return float(IntelManager.View(_player(), p, section).Lines.size())
+
+
+## Fleet ORDERS (idle / moving) are knowable only for OUR OWN fleets; an enemy's are
+## not, so these count ours alone - the same our-own rule the Idle Shipyards modes use.
+static func _MyFleets(p: Planet, status: int) -> float:
+	return float(Lq.count(p.OrbitingFleets, func(f: Fleet) -> bool: return f.Status == status and f.Faction == GameSettings.PlayerFaction))
 
 
 # --- Tier builders ---------------------------------------------------
@@ -182,13 +217,13 @@ static func _BuildCategories() -> Array:
 			# "You can also select Uprisings from this menu to see systems in
 			# uprisings" (manual p091). Binary: "a large star icon indicates the
 			# system is in uprising".
-			GidMode.new("Uprisings", func(p: Planet) -> float: return 1.0 if p.IsInUprising else 0.0, _Known,
+			GidMode.new("Uprisings", func(p: Planet) -> float: return 1.0 if IntelManager.UprisingSeen(GameSettings.PlayerFaction, p) else 0.0, _Known,
 				_Binary("Currently in Uprising", "Not in Uprising"), "Worlds in Uprising"),
 		]),
 		GidCategory.new("Fleets", [
 			# The original counts FLEETS, not ships.
 			GidMode.new("Idle Fleets",
-				func(p: Planet) -> float: return Lq.count(p.OrbitingFleets, func(f: Fleet) -> bool: return f.Status == Enums.Status.AwaitingOrders),
+				func(p: Planet) -> float: return _MyFleets(p, Enums.Status.AwaitingOrders),
 				_Known, [
 					GidTier.new(3, "3+ fleets", FlareBig),
 					GidTier.new(2, "2 fleets", FlareMid),
@@ -196,7 +231,7 @@ static func _BuildCategories() -> Array:
 					GidTier.new(0, "No fleets", 0),
 				]),
 			GidMode.new("Fleets Enroute",
-				func(p: Planet) -> float: return Lq.count(p.OrbitingFleets, func(f: Fleet) -> bool: return f.Status == Enums.Status.Enroute),
+				func(p: Planet) -> float: return _MyFleets(p, Enums.Status.Enroute),
 				_Known, [
 					GidTier.new(3, "3+ fleets", FlareBig),
 					GidTier.new(2, "2 fleets", FlareMid),
@@ -215,34 +250,34 @@ static func _BuildCategories() -> Array:
 				_Known, _Binary("Active", "None")),
 		]),
 		GidCategory.new("Resources", [
-			GidMode.new("Available Energy", func(p: Planet) -> float: return p.BaseEnergy, _Known,
+			GidMode.new("Available Energy", func(p: Planet) -> float: return _StatusFig(p, "energy"), _Known,
 				_Counts(6, 3, "Points Available", "0 Points Available")),
-			GidMode.new("Available Raw Materials", func(p: Planet) -> float: return p.BaseRawMaterials, _Known,
+			GidMode.new("Available Raw Materials", func(p: Planet) -> float: return _StatusFig(p, "materials"), _Known,
 				_Counts(3, 2, "Points Available", "0 Points Available")),
-			GidMode.new("Mines", func(p: Planet) -> float: return p.Mines(), _Known, _Counts(6, 3, "Mines")),
-			GidMode.new("Refineries", func(p: Planet) -> float: return p.Refineries(), _Known, _Counts(6, 3, "Refineries")),
+			GidMode.new("Mines", func(p: Planet) -> float: return _ProdCount(p, Enums.FacilityType.Mine), _Known, _Counts(6, 3, "Mines")),
+			GidMode.new("Refineries", func(p: Planet) -> float: return _ProdCount(p, Enums.FacilityType.Refinery), _Known, _Counts(6, 3, "Refineries")),
 		]),
 		GidCategory.new("Manufacturing", [
-			GidMode.new("Shipyards", func(p: Planet) -> float: return p.Shipyards(), _Known, _Counts(5, 2, "Shipyards")),
+			GidMode.new("Shipyards", func(p: Planet) -> float: return _ProdCount(p, Enums.FacilityType.Shipyard), _Known, _Counts(5, 2, "Shipyards")),
 			GidMode.new("Idle Shipyards",
 				func(p: Planet) -> float: return 1.0 if (_Owned(p) and p.HasIdleShipyards()) else 0.0, _Known, _Binary("Idle", "Active")),
-			GidMode.new("Training Facilities", func(p: Planet) -> float: return p.TrainingFacilities(), _Known,
+			GidMode.new("Training Facilities", func(p: Planet) -> float: return _ProdCount(p, Enums.FacilityType.TrainingFacility), _Known,
 				_Counts(5, 2, "Training Facilities")),
 			GidMode.new("Idle Training Facilities",
 				func(p: Planet) -> float: return 1.0 if (_Owned(p) and p.HasIdleTroopTraining()) else 0.0, _Known, _Binary("Idle", "Active")),
-			GidMode.new("Construction Yards", func(p: Planet) -> float: return p.ConstructionYards(), _Known,
+			GidMode.new("Construction Yards", func(p: Planet) -> float: return _ProdCount(p, Enums.FacilityType.ConstructionYard), _Known,
 				_Counts(5, 2, "Construction Yards")),
 			GidMode.new("Idle Construction Yards",
 				func(p: Planet) -> float: return 1.0 if (_Owned(p) and p.HasIdleConstructionYards()) else 0.0, _Known, _Binary("Idle", "Active")),
 		]),
 		GidCategory.new("Defense", [
-			GidMode.new("Defense Batteries", func(p: Planet) -> float: return p.TurbolaserBatteries() + p.IonCannons(), _Known,
+			GidMode.new("Defense Batteries", func(p: Planet) -> float: return _DefFig(p, "batteries"), _Known,
 				_Counts(6, 3, "Batteries"), "Defense Batteries"),
-			GidMode.new("Shield Generators", func(p: Planet) -> float: return p.PlanetaryShields(), _Known,
+			GidMode.new("Shield Generators", func(p: Planet) -> float: return _DefFig(p, "shields"), _Known,
 				_Counts(6, 3, "Generators")),
-			GidMode.new("Fighter Squadrons", func(p: Planet) -> float: return p.FighterSquadrons.size(), _Known,
+			GidMode.new("Fighter Squadrons", func(p: Planet) -> float: return _LineCount(p, Enums.IntelSection.Fighters), _Known,
 				_Counts(6, 3, "Fighter Squadrons")),
-			GidMode.new("Trooper Regiments", func(p: Planet) -> float: return p.Garrison.size(), _Known,
+			GidMode.new("Trooper Regiments", func(p: Planet) -> float: return _LineCount(p, Enums.IntelSection.Troopers), _Known,
 				_Counts(6, 3, "Trooper Regiments")),
 			# Death Star shields aren't modeled yet; option present to match the original.
 			GidMode.new("Death Star Shields", func(_p: Planet) -> float: return 0.0, _Known,

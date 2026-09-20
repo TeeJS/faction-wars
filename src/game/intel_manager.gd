@@ -18,6 +18,11 @@ class IntelSnapshot:
 	var Day: int
 	var Lines: Array[String] = []
 	var Groups: Array[IntelGroup] = []
+	## The same sighting as DATA - a small structured twin taken at the same moment
+	## as Lines, of the same things, so it reveals nothing the text does not. Only
+	## the fields the windows and the GID actually read (owner, support, uprising,
+	## resources; defensive and production facility counts). {} for other sections.
+	var Data: Dictionary = {}
 
 
 ## What the viewer may show for one category right now.
@@ -46,13 +51,45 @@ class IntelView:
 ## "factionId|planetName|section" -> IntelSnapshot
 static var _known: Dictionary = {}
 
+## planet instance id -> galaxy ring. A game's galaxy never re-sectors, so the
+## lookup is cached; cleared with the snapshots on Reset().
+static var _ring_cache: Dictionary = {}
+
 
 static func Reset() -> void:
 	_known.clear()
+	_ring_cache.clear()
 
 
 static func _key(viewer: Faction, planet: Planet, section: int) -> String:
 	return "%s|%s|%d" % [viewer.Id, planet.Name, section]
+
+
+## THE MANUAL'S CORE EXCEPTION (p069). "One exception is who controls core systems,
+## and the level of popular support on core systems. These are always up to date."
+## Everything else - resources, production, defences, troops, personnel, ships - is
+## only what you last saw, however stale. Core == GalaxyRing 1 (a map fact both
+## sides share). Applied inside the Seen* accessors so the UI and the GID inherit it.
+static func IsCore(planet: Planet) -> bool:
+	return _RingOf(planet) == 1
+
+
+## The world's galaxy ring, resolved by SECTOR MEMBERSHIP. Planet.SectorId is NOT
+## populated on the new-game path (galaxy_factory.gd:50, mirrored from the source),
+## so a sector's own Planets list is the only reliable authority.
+static func _RingOf(planet: Planet) -> int:
+	if planet == null:
+		return 0
+	var id := planet.get_instance_id()
+	if _ring_cache.has(id):
+		return _ring_cache[id]
+	var ring := 0
+	for s in GameState.ActiveGalaxy:
+		if s.Planets.has(planet):
+			ring = s.GalaxyRing
+			break
+	_ring_cache[id] = ring
+	return ring
 
 
 ## Which category gates each panel.
@@ -103,6 +140,7 @@ static func Capture(viewer: Faction, planet: Planet, day: int, categories: Array
 			snap.Lines.append(l)
 		for g in RenderGroups(planet, section):
 			snap.Groups.append(g)
+		snap.Data = _Collect(planet, section)
 		_known[_key(viewer, planet, section)] = snap
 	# Anything at all charts the system.
 	planet.SetExplored(viewer, true)
@@ -128,6 +166,104 @@ static func Knows(viewer: Faction, planet: Planet, section: int) -> bool:
 
 static func IsLive(viewer: Faction, planet: Planet) -> bool:
 	return viewer != null and planet != null and planet.ControllingFaction == viewer
+
+
+# ---------------------------------------------------------------------------
+# THE SAME INTELLIGENCE, AS DATA (the small twin of Render). _Collect() is what
+# Capture() stores alongside the text; the Seen* readers below hand it back with
+# the manual's Core exception applied, so the UI and the GID read fogged numbers
+# instead of the live world.
+# ---------------------------------------------------------------------------
+
+## One category as the small data twin, captured at the same moment as the text.
+## Only the fields the UI reads; {} for sections it reads as text (Troopers,
+## Fighters, ... - a line count off View suffices there).
+static func _Collect(p: Planet, section: int) -> Dictionary:
+	match section:
+		Enums.IntelSection.SystemStatus:
+			var support: Dictionary = {}
+			for f in FactionRegistry.Playable:
+				support[f.Id] = p.SupportFor(f)
+			return {
+				"owner": p.ControllingFaction.Id if p.ControllingFaction != null else "",
+				"support": support,
+				"uprising": p.IsInUprising,
+				"energy": p.BaseEnergy,
+				"materials": p.BaseRawMaterials,
+			}
+		Enums.IntelSection.DefensiveFacilities:
+			var shields := 0
+			var batteries := 0   # turbolaser + ion, as the GID's "Defense Batteries" counts them
+			for f in p.Facilities:
+				match f.Type:
+					Enums.FacilityType.PlanetaryShield: shields += 1
+					Enums.FacilityType.TurbolaserBattery: batteries += 1
+					Enums.FacilityType.IonCannon: batteries += 1
+			return { "shields": shields, "batteries": batteries }
+		Enums.IntelSection.ProductionFacilities:
+			var counts: Dictionary = {}
+			for f in p.Facilities:
+				if not IsDefensive(f):
+					counts[f.Type] = int(counts.get(f.Type, 0)) + 1
+			return { "counts": counts }
+	return {}
+
+
+## The stored data twin for a section, or the live twin for a world we hold, or {}
+## for one never seen. No Core exception here - that is owner/support only, in
+## StatusSeen.
+static func SeenData(viewer: Faction, planet: Planet, section: int) -> Dictionary:
+	if viewer == null or planet == null:
+		return {}
+	if planet.ControllingFaction == viewer:
+		return _Collect(planet, section)
+	var k := _key(viewer, planet, section)
+	return _known[k].Data if _known.has(k) else {}
+
+
+## SystemStatus as the viewer may see it: the snapshot, with owner and support
+## overwritten LIVE on a Core world (p069). Live throughout for a world we hold.
+## {} when never charted and not Core.
+static func StatusSeen(viewer: Faction, planet: Planet) -> Dictionary:
+	if viewer == null or planet == null:
+		return {}
+	if planet.ControllingFaction == viewer:
+		return _Collect(planet, Enums.IntelSection.SystemStatus)
+	var k := _key(viewer, planet, Enums.IntelSection.SystemStatus)
+	var d: Dictionary = _known[k].Data.duplicate(true) if _known.has(k) else {}
+	if IsCore(planet):
+		d["owner"] = planet.ControllingFaction.Id if planet.ControllingFaction != null else ""
+		var support: Dictionary = {}
+		for f in FactionRegistry.Playable:
+			support[f.Id] = planet.SupportFor(f)
+		d["support"] = support
+	return d
+
+
+## Who `viewer` believes controls `planet`: the live holder for a world we hold or
+## any Core world (p069), else whoever we last saw, else null when never charted.
+## The one owner-of-record read; GetFactionColor and the maps go through it.
+static func OwnerSeen(viewer: Faction, planet: Planet) -> Faction:
+	var d := StatusSeen(viewer, planet)
+	if d.is_empty():
+		return null
+	var owner_id := str(d.get("owner", ""))
+	return FactionRegistry.Neutral if owner_id.is_empty() else FactionRegistry.ById(owner_id)
+
+
+## Support for `faction` on `planet` as `viewer` may see it - live on a Core world
+## or one we hold, else the last sighting, else 0.
+static func SupportSeen(viewer: Faction, planet: Planet, faction: Faction) -> int:
+	if faction == null:
+		return 0
+	var support: Dictionary = StatusSeen(viewer, planet).get("support", {})
+	return int(support.get(faction.Id, 0))
+
+
+## Uprising as last seen (NOT a Core-live datum - the exception is owner + support
+## only). Live for a world we hold.
+static func UprisingSeen(viewer: Faction, planet: Planet) -> bool:
+	return bool(StatusSeen(viewer, planet).get("uprising", false))
 
 
 static func RenderGroups(p: Planet, section: int) -> Array:
