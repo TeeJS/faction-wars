@@ -17,8 +17,10 @@ static func Reset() -> void:
 	Hashes.clear()
 
 
-## Open a log for writing and record how the game was made.
-static func Open(path: String, header: Dictionary) -> bool:
+## Open a log for writing and record how the game was made. `carry` writes the
+## history already held (Entries, Hashes) after the header, day by day - a LOADED
+## game keeps its past in the new file, so saving it again is complete.
+static func Open(path: String, header: Dictionary, carry: bool = false) -> bool:
 	Close()
 	_file = FileAccess.open(path, FileAccess.WRITE)
 	if _file == null:
@@ -26,8 +28,28 @@ static func Open(path: String, header: Dictionary) -> bool:
 		return false
 	_path = path
 	_file.store_line(JSON.stringify(header))
+	if carry:
+		_write_history()
 	_file.flush()
 	return true
+
+
+## The held history in the order a live game writes it: the day's hash (the
+## state right after the tick into it), then that day's commands.
+static func _write_history() -> void:
+	var days: Dictionary = {}
+	for c: Command in Entries:
+		days[c.Day] = true
+	for d: Variant in Hashes.keys():
+		days[int(d)] = true
+	var ordered: Array = days.keys()
+	ordered.sort()
+	for day: int in ordered:
+		if Hashes.has(day):
+			_file.store_line(JSON.stringify({ "day": day, "hash": Hashes[day] }))
+		for c: Command in Entries:
+			if c.Day == day:
+				_file.store_line(c.to_json())
 
 
 ## Reopen an existing log for appending (a resync rebuilt the game but the
