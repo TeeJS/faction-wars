@@ -164,6 +164,14 @@ static func OnControlChanged(lost: Planet, former_holder: Faction) -> void:
 		return
 	_withdraw_personnel(lost, former_holder)
 	_disband_ground_fighters(lost, former_holder)
+	# LOSING A WORLD IS WITNESSING IT. Without a sighting captured now, a world you
+	# just lost has no owner-of-record (View is live only while you HOLD it), so the
+	# map would grey it out or keep showing it as yours. A battle/uprising at the
+	# system reveals what a Reconnaissance would (manual p121-p123), so record that -
+	# the settled, post-withdrawal state - dated today. Human sides only: this is a
+	# player-facing correction; the AI's own knowledge model is handled apart.
+	if GameSettings.IsHuman(former_holder):
+		IntelManager.Capture(former_holder, lost, StrategicTickManager.Today, IntelManager.ReconnaissanceCategories)
 	EventBus.BroadcastChanged()
 
 

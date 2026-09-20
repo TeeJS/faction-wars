@@ -13,47 +13,89 @@ func Populate(planet: Planet) -> void:
 	var _facility: VBoxContainer = get_node("%facilities")
 
 	_title.text = planet.Name
+	var player: Faction = GameSettings.PlayerFaction
 
 	# ALWAYS CLEAR PREVIOUS UI DATA FIRST
 	for child in _facility.get_children():
 		child.queue_free()
 
-	if planet.IsExplored:
-		# Two DIFFERENT factions are being reported here: who holds the
-		# world, and how much the populace backs YOU. "Faction: Rebel
-		# Alliance | Support: 100%" read as the Alliance having 100% when it
-		# meant the Alliance holds it and the Empire's support was 100%.
-		# Name both sides so it cannot be misread.
-		var holder: Faction = planet.ControllingFaction
-		var player: Faction = GameSettings.PlayerFaction
-		var mine: String = "%s support: %d%%" % [player.DisplayName, planet.SupportFor(player)]
-		var theirs: String = ("  |  %s support: %d%%" % [holder.DisplayName, planet.SupportFor(holder)]) \
-			if (holder != null and holder != player and FactionRegistry.OrderOf(holder) >= 0) \
-			else ""
+	# ⚠ THIS WINDOW WAS READING THE LIVE WORLD FOR ANY EXPLORED SYSTEM - the
+	# enemy's current holder, both live supports, its live uprising, and its live
+	# facility list (Headquarters included) off a world scouted long ago. Only a
+	# world we HOLD reports itself live; everything else is what we last saw, with
+	# a Core world's owner and support the one live exception (manual p069). Routed
+	# through IntelManager so it obeys the same fog as the Defense/Economy windows.
+	if not planet.IsExplored:
+		_status.text = "Unexplored Planet"
+		_resources.text = ""
+	elif IntelManager.IsLive(player, planet):
+		_PopulateLive(planet, player, _status, _resources, _facility)
+	else:
+		_PopulateFromIntel(planet, player, _status, _resources, _facility)
 
-		_status.text = ("Held by: %s  |  %s%s" % [holder.DisplayName, mine, theirs]) \
-			+ ("   [IN UPRISING]" if planet.IsInUprising else "")
-		_resources.text = "Energy: %d | Materials: %d" % [planet.BaseEnergy, planet.BaseRawMaterials]
 
-		for child in _facility.get_children():
-			child.queue_free()
+## A world we hold: it reports itself, always and accurately.
+func _PopulateLive(planet: Planet, player: Faction, _status: Label, _resources: Label, _facility: VBoxContainer) -> void:
+	# Two DIFFERENT factions are being reported here: who holds the world, and how
+	# much the populace backs YOU. Name both sides so it cannot be misread.
+	var holder: Faction = planet.ControllingFaction
+	var mine: String = "%s support: %d%%" % [player.DisplayName, planet.SupportFor(player)]
+	var theirs: String = ("  |  %s support: %d%%" % [holder.DisplayName, planet.SupportFor(holder)]) \
+		if (holder != null and holder != player and FactionRegistry.OrderOf(holder) >= 0) \
+		else ""
 
-		for facility in planet.Facilities:
-			# The player's own MOVABLE headquarters carries the Fig 3.82 menu
-			# {Move, Confirmed Move, Encyclopedia, Status}; every other facility is
-			# a plain label. Only the Alliance's hidden HQ is Movable (pack-driven).
-			if facility.Type == Enums.FacilityType.Headquarters and holder == player \
-					and player.Hq != null and player.Hq.Movable:
-				_AddHqMenuRow(_facility, facility, planet)
-				continue
+	_status.text = ("Held by: %s  |  %s%s" % [holder.DisplayName, mine, theirs]) \
+		+ ("   [IN UPRISING]" if planet.IsInUprising else "")
+	_resources.text = "Energy: %d | Materials: %d" % [planet.BaseEnergy, planet.BaseRawMaterials]
+
+	for facility in planet.Facilities:
+		# The player's own MOVABLE headquarters carries the Fig 3.82 menu
+		# {Move, Confirmed Move, Encyclopedia, Status}; every other facility is
+		# a plain label. Only the Alliance's hidden HQ is Movable (pack-driven).
+		if facility.Type == Enums.FacilityType.Headquarters and holder == player \
+				and player.Hq != null and player.Hq.Movable:
+			_AddHqMenuRow(_facility, facility, planet)
+			continue
+		var facLabel := Label.new()
+		facLabel.text = "%s" % facility.Name()
+		facLabel.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		facLabel.add_theme_font_size_override("font_size", 10)
+		_facility.add_child(facLabel)
+
+
+## A world we do not hold: the dated sighting, never the live world. Owner and
+## support are live only on a Core system (p069); the rest is as last seen, and a
+## charted-but-never-scouted world (an Espionage leak) shows nothing at all.
+func _PopulateFromIntel(planet: Planet, player: Faction, _status: Label, _resources: Label, _facility: VBoxContainer) -> void:
+	var d: Dictionary = IntelManager.StatusSeen(player, planet)
+	if d.is_empty():
+		_status.text = "Sensors detect no data."
+		_resources.text = ""
+		return
+
+	var support: Dictionary = d.get("support", {})
+	var owner_id: String = str(d.get("owner", ""))
+	var holder: Faction = FactionRegistry.ById(owner_id) if not owner_id.is_empty() else null
+	var heldName: String = holder.DisplayName if holder != null else "nobody"
+	var mine: String = "%s support: %d%%" % [player.DisplayName, int(support.get(player.Id, 0))]
+	var theirs: String = ("  |  %s support: %d%%" % [holder.DisplayName, int(support.get(holder.Id, 0))]) \
+		if (holder != null and holder != player and FactionRegistry.OrderOf(holder) >= 0) \
+		else ""
+
+	_status.text = ("Held by: %s  |  %s%s" % [heldName, mine, theirs]) \
+		+ ("   [IN UPRISING]" if bool(d.get("uprising", false)) else "")
+	_resources.text = "Energy: %d | Materials: %d" % [int(d.get("energy", 0)), int(d.get("materials", 0))]
+
+	# The facility list is a sighting too: production and defensive facilities as
+	# they were last seen (a scouted HQ shows, an unscouted one does not).
+	for section in [Enums.IntelSection.ProductionFacilities, Enums.IntelSection.DefensiveFacilities]:
+		var view: IntelManager.IntelView = IntelManager.View(player, planet, section)
+		for line in view.Lines:
 			var facLabel := Label.new()
-			facLabel.text = "%s" % facility.Name()
+			facLabel.text = str(line)
 			facLabel.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			facLabel.add_theme_font_size_override("font_size", 10)
 			_facility.add_child(facLabel)
-	else:
-		_status.text = "Unexplored Planet"
-		_resources.text = ""
 
 
 ## The Alliance HQ's Fig 3.82 menu {Move, Confirmed Move, Encyclopedia, Status}
