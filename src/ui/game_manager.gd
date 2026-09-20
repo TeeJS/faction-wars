@@ -102,6 +102,7 @@ func _ready() -> void:
 	# its command log to restore that game instead of starting a new one. The
 	# header carries the seed, factions and settings, so new_game runs inside the
 	# replay - PlayerFaction etc. are set from the save, not the menu.
+	var loaded: bool = false
 	if not mp and not GameSettings.PendingLoadPath.is_empty():
 		var loadPath: String = GameSettings.PendingLoadPath
 		GameSettings.PendingLoadPath = ""
@@ -117,6 +118,13 @@ func _ready() -> void:
 			# player applies an order on the frame it is issued - nothing here
 			# ever drains CommandBus.Pending - so turn it back on.
 			CommandBus.Immediate = true
+			if _strategicEngine != null:
+				# The loaded game's past goes on into the new session log (below), so
+				# saving it again is a complete save: its day hashes (the replay does
+				# not re-record them) and its order numbering.
+				CommandLog.Hashes = (saved[2] as Dictionary).duplicate()
+				CommandBus.resume_seq(saved[1])
+				loaded = true
 		if _strategicEngine == null:
 			push_error("[GameManager] load failed for %s - starting a new game instead" % loadPath)
 
@@ -139,7 +147,7 @@ func _ready() -> void:
 	# the game from it.
 	var record: String = _ParseStringArg("--record=")
 	if not mp:
-		CommandLog.Open(record if not record.is_empty() else "user://last-session.jsonl", CommandLog.Header())
+		CommandLog.Open(record if not record.is_empty() else "user://last-session.jsonl", CommandLog.Header(), loaded)
 
 	_tickTimer = Timer.new()
 	add_child(_tickTimer)

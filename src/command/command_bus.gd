@@ -22,6 +22,13 @@ static func Reset() -> void:
 	CommandLog.Reset()
 
 
+## A LOADED game carries on numbering where its log stopped: without this the
+## first order after a load would reuse a Seq already in the log on that day.
+static func resume_seq(commands: Array) -> void:
+	for c: Command in commands:
+		_seq[c.Faction] = maxi(int(_seq.get(c.Faction, 0)), c.Seq)
+
+
 ## Issue an order from the local side. Returns the applier's Result when
 ## applied immediately; a queued command returns success (it is accepted).
 static func issue(kind: String, args: Dictionary) -> Result:
