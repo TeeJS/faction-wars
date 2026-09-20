@@ -42,12 +42,16 @@ var Inferences: Dictionary = {}  ## fog-legal deductions, e.g. planet -> "diplom
 ## Our own worlds (control == us). Convenience for the policies.
 var Held: Array = []
 
+var _facts: Dictionary = {}      ## Planet -> IntelFacts (see Facts)
+
 
 ## STAGE: CONTEXT. Categorise the whole galaxy for one faction, intel-gated for
-## other sides' worlds, and collect our own free assets. FOG-LEGAL: the only reads
-## of another side's world are behind IntelManager.Knows / p.ExploredBy; our own
-## worlds and roster are ours to read fully. (Mirrors the original's Evaluate,
-## which the corpus judged faithful; the categories are unchanged.)
+## other sides' worlds, and collect our own free assets. FOG-LEGAL: a world that is
+## not ours is categorised from IntelManager.Facts - the dated sighting - and never
+## from its state today. IntelManager.Knows only says "we saw this once"; reading the
+## live world behind it showed today's owner and support on a world scouted 200 days
+## ago. Our own worlds and roster are ours to read fully. (Mirrors the original's
+## Evaluate, which the corpus judged faithful; the categories are unchanged.)
 static func Build(galaxy: Array, us: Faction, day: int) -> AIContext:
 	var c := AIContext.new()
 	c.Us = us
@@ -71,14 +75,23 @@ static func Build(galaxy: Array, us: Faction, day: int) -> AIContext:
 					c.OursWeak.append(p)
 				else:
 					c.OursStrong.append(p)
-			elif owner == null or owner == FactionRegistry.Neutral:
-				c.Neutral.append(p)
 			else:
-				# Another side's world: only categorise it if intel says we KNOW its
-				# status. Staleness, not concealment — this is what we last saw.
-				if not IntelManager.Knows(us, p, Enums.IntelSection.SystemStatus):
-					continue
-				if p.SupportFor(owner) < WeakSupportCeiling:
+				# NOT OURS. That much we always know (our own holdings are ours to read).
+				# WHOSE it is, and how it leans, is what we last SAW - the dated sighting,
+				# never p.ControllingFaction / p.SupportFor today. Staleness, not
+				# concealment: a world that changed hands since stays in the list we saw
+				# it in until somebody looks again.
+				var seen := c.Facts(p)
+				var seen_owner: Faction = null if seen.owner_id.is_empty() else FactionRegistry.ById(seen.owner_id)
+				if seen.status_day < 0 or seen_owner == us:
+					# Charted but never looked at (an espionage leak charts a system and
+					# nothing more), or our only sighting is of when it was ours. Its
+					# owner is UNKNOWN to us - the same thing Unexplored means - so it is
+					# a world to go and look at, not one to act on.
+					c.Unexplored.append(p)
+				elif seen_owner == null or FactionRegistry.OrderOf(seen_owner) < 0:
+					c.Neutral.append(p)
+				elif seen.support_for(seen_owner) < WeakSupportCeiling:
 					c.TheirsWeak.append(p)
 				else:
 					c.TheirsStrong.append(p)
@@ -112,10 +125,22 @@ static func Build(galaxy: Array, us: Faction, day: int) -> AIContext:
 ## Fog-legal read helpers, so stages go through Context rather than touching raw
 ## enemy state directly.
 
-## What we last saw of a support figure. For our own worlds this is live; for
-## others it is only meaningful when Knows() is true (staleness model).
+## Everything we know of a world, as data: live for a world we hold, the dated
+## sighting otherwise, nothing if we never looked (IntelFacts). THE way a stage reads
+## a world that is not ours. Cached for this context - one faction, one day.
+func Facts(p: Planet) -> IntelFacts:
+	if not _facts.has(p):
+		_facts[p] = IntelManager.Facts(Us, p)
+	return _facts[p]
+
+
+## What we last saw of a support figure: live for our own worlds, the dated
+## sighting for others, -1 when we have never seen the world's status.
 func SeenSupportFor(p: Planet, of: Faction) -> int:
-	return p.SupportFor(of)
+	var seen := Facts(p)
+	if seen.status_day < 0 or of == null:
+		return -1
+	return seen.support_for(of)
 
 
 ## Do we legitimately know this category of this world?
