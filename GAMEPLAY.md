@@ -2424,6 +2424,21 @@ trade-offs are stated:
 A mobile forward base — worth noting, since it means recon range is effectively
 extended by fleet movement.
 
+**Corroboration and scope** *(researched 2026-09-20)*:
+
+| Claim | Confidence | Sources |
+|---|---|---|
+| A fleet arriving at an unexplored system learns what Recon learns, less characters, SpecForces and manufacturing | **Confirmed** | manual p121; `TEXTSTRA.DLL` advisor text, both sides: *"We can also employ our capital ships for exploration; these ships risk destruction, however, should they encounter a[n enemy] fleet"* |
+| A fleet sent to an **already-charted** system you do not hold updates what you know of it | Single-source | manual p069 (§ the intelligence model): Rim changes are *"only apparent if you **send a fleet or a mission** to a system to investigate"*. Measuring it in the original would corroborate |
+| ⚠ A fleet that **stays in orbit** keeps the information fresh day by day | **Unknown** | manual p121 says *"when the fleet arrives"*, p069 says *"send"*; `TEXTSTRA.DLL` and `ENCYTEXT.DLL` are silent; open-rebellion's Ghidra notes list a `SystemExploredNotif` / `Explored` event (`FUN_00512190`, 0x14a) and nothing on refresh. Its fleet-presence visibility (`docs/mechanics/fog-of-war.md`) is that project's own design, not a finding. **Settled only by** parking a fleet over an enemy system in the original and watching whether the System Defenses window follows a change — or by the binary, with approval |
+| An exploration-specific message or window | none found | p121 names none; `TEXTSTRA.DLL` has no such string. The generic fleet-arrival message does exist there — *"Fleet Arrives at \|"*, *"The following ships have arrived at \|"* (type *Unit Arrival*) |
+
+| How the game works | What the code does |
+|---|---|
+| arrival at a system you do not hold gives a Recon-grade sighting (manual p121, p069) | `strategic_tick_manager.gd`, PROCESS FLEET MOVEMENT: `IntelManager.Capture(..., ReconnaissanceCategories)` on the day of arrival, which also charts the system; gate `tests/fleet_explore.gd` |
+| whether a fleet in orbit keeps it fresh — **unknown** | **not implemented**, on purpose: arrival only. The sighting goes stale like any other |
+| *"Fleet Arrives at …"* message | **not implemented** — arrival is a `print()`; `MessageType.UnitArrival` is never raised |
+
 ### The Fleet menu *(PDF p119 / manual p121, Fig. 3.64)*
 
 | Command | |

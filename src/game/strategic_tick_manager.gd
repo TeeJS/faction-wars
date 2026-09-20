@@ -100,6 +100,7 @@ func AdvanceDay() -> void:
 		print("%s has arrived at %s." % [u.Name, destination.Name])
 
 	# --- PROCESS FLEET MOVEMENT ---
+	var charted := false
 	for sector in _galaxy:
 		for planet in sector.Planets:
 			for fleet in planet.OrbitingFleets:
@@ -114,6 +115,16 @@ func AdvanceDay() -> void:
 					fleet.DaysToDestination = 0
 					fleet.Status = Enums.Status.AwaitingOrders
 					print("%s has arrived at %s." % [fleet.Name, landing.Name])
+					# "A FLEET CAN EXPLORE AN UNEXPLORED SYSTEM ... WHEN THE FLEET ARRIVES YOU
+					# LEARN THE SAME INFORMATION ABOUT THE SYSTEM THAT YOU DO FROM A RECON
+					# MISSION ... EXCEPT ANY CHARACTERS OR SPECFORCES THAT MAY BE PRESENT AND
+					# INFORMATION CONCERNING CURRENT MANUFACTURING" (manual p121); a charted
+					# system is updated the same way - "IF YOU SEND A FLEET OR A MISSION TO A
+					# SYSTEM TO INVESTIGATE" (manual p069). ON ARRIVAL ONLY: no source says a
+					# fleet that stays keeps the sighting fresh (GAMEPLAY.md section 13).
+					if fleet.Faction != null and landing.ControllingFaction != fleet.Faction:
+						IntelManager.Capture(fleet.Faction, landing, CurrentDay, IntelManager.ReconnaissanceCategories)
+						charted = true
 				for ship in fleet.Ships:
 					ship.DaysToDestination = fleet.DaysToDestination
 					if arrived:
@@ -135,6 +146,8 @@ func AdvanceDay() -> void:
 					rider.DaysToDestination = fleet.DaysToDestination
 					if arrived:
 						rider.Status = Enums.Status.AwaitingOrders
+	if charted:
+		EventBus.BroadcastChanged()   # the map recolours, as it does after a Reconnaissance report
 
 	# Per-planet work: construction queues only.
 	for sector in _galaxy:
