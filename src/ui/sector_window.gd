@@ -272,7 +272,10 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 				# ⚠ The glyph is a stand-in for the original's flame artwork,
 				# in keeping with the placeholder lettering on the other three
 				# corners. It is not the manual's icon.
-				if cornerLabels[i] == "M" and planet.IsExplored and planet.IsInUprising:
+				# Fogged: an uprising is shown only where we have SEEN one (live on a
+				# world we hold, else the last sighting) - not read live off an enemy
+				# world we merely explored once. IsInUprising -> IntelManager.UprisingSeen.
+				if cornerLabels[i] == "M" and planet.IsExplored and IntelManager.UprisingSeen(GameSettings.PlayerFaction, planet):
 					cornerBtn.text = "▲"
 					cornerStyle.bg_color = Color(0.72, 0.18, 0.05, 1.0)
 					cornerBtn.add_theme_color_override("font_color", Color(1.0, 0.85, 0.4))

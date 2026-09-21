@@ -858,11 +858,13 @@ func ShiftSupport(faction: Faction, delta: int) -> void:
 	SetSupportFor(faction, SupportFor(faction) + delta)
 
 
-## Color encodes CONTROL and nothing else (manual fig 2.6).
+## Color encodes CONTROL and nothing else (manual fig 2.6) - and control is FOGGED:
+## a Core world's holder is live, a Rim world's is whoever we last saw, an uncharted
+## world is grey. IntelManager.OwnerSeen is the one owner-of-record read (p069), so
+## the sector map, the GID and the finder all colour by what we actually know.
 func GetFactionColor() -> Color:
-	if not IsExplored:
-		return FactionRegistry.Unknown.FactionColor
-	return ControllingFaction.FactionColor if ControllingFaction != null else FactionRegistry.Unknown.FactionColor
+	var owner: Faction = IntelManager.OwnerSeen(GameSettings.LocalFaction(), self)
+	return owner.FactionColor if owner != null else FactionRegistry.Unknown.FactionColor
 
 
 ## ONE SHIP LEAVING A FLEET BECOMES A FLEET OF ITS OWN (manual p115, p120).
