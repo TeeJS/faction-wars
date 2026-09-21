@@ -47,6 +47,7 @@ accounted for below — that is what this reconciliation was for.
 | *(the map bitmap)* | The galaxy backdrop the map is drawn on — a **`pack.json` field**, `map_image`, not a file of its own (§2) | `data/galaxyShaded.bmp` | ❌ |
 | `facilities.json` | Static structures + **role tags** | `production_facilities.json` (9) + `defensive_facilities.json` (6) + the `FacilityType` enum | ❌ |
 | `units.json` | Mobile units and their stats | `military_units.json` (57) | ❌ |
+| `weapons.json` | Weapon classes + **role tags** | `military_units.json` weapon columns + the four-class vocabulary in `tactical_battle.gd` | ❌ |
 | `characters.json` | Named characters | `major_characters.json` (6) + `minor_characters.json` (54) | ❌ |
 | `rules.json` | Tunable rule table, keyed by faction + difficulty | `game_rules.json` (213) | ⚠ re-keyed, not moved |
 | `setup.json` | Day-zero seeding: side lottery + logistics tables | `side_lottery.json` (35) + `day_zero_logistics.json` (11 tables) | ⚠ re-keyed, not moved |
@@ -289,9 +290,86 @@ From `military_units.json`, 57 rows, 44 columns.
 - **Stats that do not apply are omitted, not `null`.** The current file writes
   `null` for inapplicable stats, which is what crashed `SeedManager` after the
   `json_gui` merge. An open `stats` map makes absence the natural encoding.
-- The 34 weapon columns (`TurbolaserFore`, `IonCannonAft`, … `LaserPort`) are a
-  fixed four-arc vocabulary in the data schema itself. Whether arcs are pack
-  vocabulary or engine vocabulary is **unresolved — see §12 Q4.**
+- **Rows do not share a key set.** Only the five torpedo-carrying fighters have
+  `Torpedoes` / `TorpedoRange` at all; capital ships omit them entirely. Any
+  tooling that infers the schema from the first row will miss columns — the
+  omission is not `null`, it is absence, which is the encoding §6 asks for.
+
+### Weapons are a Phase 3 vocabulary item
+
+The weapon columns carry **two independent axes**, and only one of them is a
+schema question.
+
+| Axis | Values | Verdict |
+|---|---|---|
+| **Location** — firing arc | Fore, Aft, Starboard, Port | **Engine behaviour.** [`ArcTo()`](src/game/tactical_battle.gd:188) picks the arc from relative bearing; that is simulation. The engine already folds the flat columns into 4-element arrays at [military_catalog.gd:112](src/game/military_catalog.gd:112), so the flat layout is a *file* shape, not a runtime one. |
+| **Name** — weapon class | Turbolaser, Ion Cannon, Laser, Torpedo | **Setting vocabulary in engine code.** The same problem as `FacilityType`, and it belongs to the same Phase 3 job. |
+
+#### What the four classes actually do
+
+Measured, not designed — every row below is a citation, not a proposal:
+
+| Class | Arcs | Vs capitals | Vs fighters | Extra condition |
+|---|---|---|---|---|
+| Ion Cannon | 4 | counts | **excluded entirely** | — |
+| Turbolaser | 4 | counts | counts × accuracy | — |
+| Laser | 4 | counts | counts × accuracy | — |
+| Torpedo | none | counts | **excluded** | firing unit is a squadron **and** target's shields are down |
+
+Sources: [tactical_battle.gd:213](src/game/tactical_battle.gd:213) (ion excluded
+against fighters), [429-450](src/game/tactical_battle.gd:429) (the accuracy
+multiplier applied to turbolaser and laser but not ion),
+[453](src/game/tactical_battle.gd:453) (the torpedo condition),
+[568](src/game/tactical_battle.gd:568), and
+[fleet_battle_manager.gd:90](src/game/fleet_battle_manager.gd:90) for the
+strategic mirror of the same rule.
+
+**Turbolaser and laser are not distinguished anywhere.** They are summed
+together and treated identically at every site. The only thing separating them
+in the engine is their range values (turbolaser 35–75, laser 17–25).
+
+So the engine's real vocabulary is not four named weapons. It is: *does this
+weapon affect fighters, is it accuracy-scaled when it does, does it require the
+target's shields to be down* — plus a range. Role-shaped, exactly like
+facilities.
+
+#### Proposed `weapons.json`
+
+```json
+{
+  "weapons": [
+    { "id": "ion_cannon", "display_name": "Ion Cannon",
+      "roles": ["no_fighter_effect"], "arcs": true, "range": 35 },
+    { "id": "turbolaser", "display_name": "Turbolaser",
+      "roles": ["fighter_accuracy_scaled"], "arcs": true, "range": 60 },
+    { "id": "torpedo", "display_name": "Proton Torpedo",
+      "roles": ["no_fighter_effect", "requires_shields_down", "squadron_only"],
+      "arcs": false, "range": 7 }
+  ]
+}
+```
+
+A unit's `stats` then keys by weapon id rather than by a fixed column name, and
+the engine stops containing the word "turbolaser".
+
+#### Why this is Phase 3 and not a `units.json` detail
+
+Phase 3 is *"open the vocabulary"* — replacing closed engine enums with
+pack-declared defs carrying role tags. `FacilityType` is the named example;
+weapons are the same job on the same schedule, and doing them separately means
+touching the tactical engine twice. **Blocked behind the same decision**, and
+verified the same way: a pack declares a weapon class the Star Wars pack does
+not have, with no recompile.
+
+#### Still open under this item
+
+- **The redundancy.** Port and Starboard are identical in all 57 rows, and each
+  summary column is exactly the sum of its four arcs. A pack could store
+  `fore` / `aft` / `broadside` and let the engine mirror, dropping the summaries
+  as derived — but that is behaviour-visible if any consumer reads a summary
+  directly, and those consumers have not been enumerated.
+- **The role names above are descriptions of observed behaviour**, not a
+  ratified vocabulary. They need the same sign-off the facility role set gets.
 
 ---
 
@@ -537,8 +615,9 @@ by §7; its Q4 (missions and victory "not modelled yet") is **obsolete** — bot
 systems exist. Its Q3 (pack location) is **settled**: `packs/<id>/` alongside
 `data/`, which is what shipped.
 
-**One remains open: Q4.** Q1, Q2, Q3, Q5 and Q6 were decided 2026-09-21 and are
-kept here, struck through, so the numbering stays stable for cross-references.
+**None remain open.** All six were settled 2026-09-21 and are kept here, struck
+through, so the numbering stays stable for cross-references. Q4 was not answered
+but *refiled* — it is a Phase 3 vocabulary item now, tracked in §6.
 
 1. ~~**Cross-reference by display name.**~~ **★ DECIDED (TeeJ, 2026-09-21) — ids.**
    Every cross-reference between pack files uses a `lower_snake_case` id, never
@@ -584,7 +663,13 @@ kept here, struck through, so the numbering stays stable for cross-references.
    pack folder. A pack that declares none is a load error. Specified in §2;
    validation rule §11.9 added.
 
-4. **Weapon arcs.** `units.json` carries 12 per-arc columns
+4. ~~**Weapon arcs.**~~ **★ SPLIT AND REFILED (TeeJ, 2026-09-21).** The question
+   conflated two axes. **Locations (arcs) are engine behaviour** — settled, not
+   a schema question. **Weapon class names are setting vocabulary** and are now
+   a **Phase 3 vocabulary item** alongside `FacilityType`, written up in §6.
+   The redundancy sub-question travels with it. Original wording kept below.
+
+   `units.json` carries 12 per-arc columns
    (fore/aft/port/starboard × turbolaser/ion/laser), 3 summary columns and 3
    range columns. Three facts measured across all 57 units:
 
@@ -654,3 +739,5 @@ What changed from the source repo's 2026-07-25 draft, and why.
 | 18 | §12 Q5 **decided — "special powers"** (TeeJ, 2026-09-21); §7 gains the full field mapping | One naming detail left: whether enum members keep the redundant prefix |
 | 19 | §12 Q4: measured the real weapon data across all 57 units | Port == Starboard in every row; every summary column is exactly the sum of its arcs. The question is now about redundancy, not vocabulary |
 | 20 | §12 Q6 **decided — keep integer `EntryId` keys** (TeeJ, 2026-09-21) | The one place a number legitimately survives into pack data; `rule_id.gd` stays the required reference path |
+| 21 | §12 Q4 **split and refiled** (TeeJ, 2026-09-21): arcs are engine behaviour; weapon class names become a **Phase 3 vocabulary item**, written up in §6 with a proposed `weapons.json` | The question conflated location with name. Only the name half is a schema question, and it is the same job as `FacilityType` |
+| 22 | §6: **four** weapon classes recorded, not three — `Torpedoes`/`TorpedoRange` exist on five fighters only | The earlier column dump read row 0, a capital ship, so the torpedo columns were invisible. `military_units.json` rows do not share a key set |
