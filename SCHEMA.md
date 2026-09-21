@@ -537,9 +537,8 @@ by §7; its Q4 (missions and victory "not modelled yet") is **obsolete** — bot
 systems exist. Its Q3 (pack location) is **settled**: `packs/<id>/` alongside
 `data/`, which is what shipped.
 
-**Two remain open: Q4 and Q6.** Q1, Q2, Q3 and Q5 were decided 2026-09-21 and
-are kept here, struck through, so the numbering stays stable for
-cross-references.
+**One remains open: Q4.** Q1, Q2, Q3, Q5 and Q6 were decided 2026-09-21 and are
+kept here, struck through, so the numbering stays stable for cross-references.
 
 1. ~~**Cross-reference by display name.**~~ **★ DECIDED (TeeJ, 2026-09-21) — ids.**
    Every cross-reference between pack files uses a `lower_snake_case` id, never
@@ -612,12 +611,20 @@ cross-references.
    `CanTrainSpecialPower`, `SpecialPowerProbability`, `Enums.SpecialPowerRank`.
    Full mapping and the one open naming detail are in §7.
 
-6. **Name-keyed rule rows.** `game_rules.json` rows are addressed by integer
-   `EntryId`. Every row already carries a `Name`, but the names contain
-   punctuation (`"Space Travel Time: Base (%, lower=faster)"`) so a slug column
-   would have to be added in the extractors. Call sites already read by name via
-   [rule_id.gd](src/game/rule_id.gd), so the gain is raw-JSON readability, not
-   engine-code readability. Worth it?
+6. ~~**Name-keyed rule rows.**~~ **★ DECIDED (TeeJ, 2026-09-21) — keep integer
+   keys.** `game_rules.json` rows stay addressed by integer `EntryId`.
+
+   Engine code already reads rules by name through
+   [rule_id.gd](src/game/rule_id.gd), which maps a readable constant to the
+   number, so a slug would buy raw-JSON readability only — for a file that is
+   generated, not hand-edited. The cost lands in `parse_rules.py` plus a
+   re-export of all 213 rows, and the extractors are risk #3 in the charter.
+   Not worth it.
+
+   **This is the one place a number legitimately survives into pack data.**
+   `rule_id.gd` remains the required way to reference a rule from engine code —
+   its own header says a bare number next to one of those constants is the bug
+   the class exists to prevent.
 
 ---
 
@@ -646,3 +653,4 @@ What changed from the source repo's 2026-07-25 draft, and why.
 | 17 | §12 Q2 **decided — rename `.DAT` keys to roles** (TeeJ, 2026-09-21), `source_file` kept alongside for traceability; §3 and §9 updated | Five of the twelve mission tables still need reading before they can be named |
 | 18 | §12 Q5 **decided — "special powers"** (TeeJ, 2026-09-21); §7 gains the full field mapping | One naming detail left: whether enum members keep the redundant prefix |
 | 19 | §12 Q4: measured the real weapon data across all 57 units | Port == Starboard in every row; every summary column is exactly the sum of its arcs. The question is now about redundancy, not vocabulary |
+| 20 | §12 Q6 **decided — keep integer `EntryId` keys** (TeeJ, 2026-09-21) | The one place a number legitimately survives into pack data; `rule_id.gd` stays the required reference path |
