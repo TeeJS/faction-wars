@@ -53,6 +53,7 @@ The manual/original has these; the port does not yet. (New screens needed.)
 | **Ctrl+Tab** cycle windows, **PgUp/PgDn** scroll, **Arrows** browse, global **Enter/Esc** | navigation polish, not wired |
 | **Alt+M** Mission / **Alt+S** Status for the *selected* unit | needs a global "selected unit" concept — verify it exists first, else it's a no-op |
 | "(captured)" label on a held enemy character in the Personnel tab | polish (see #4) |
+| **Pack hash in the multiplayer settings** | Two clients on the same `pack.json` id but differing pack *content* desync on the lockstep hash, and the failure reads as a mystery mismatch rather than "wrong pack". `SCHEMA.md` (source repo) carries `schema_version`, which guards engine-vs-pack, not client-vs-client. Put a pack id + content hash in the `settings` blob the relay already forwards through `create`/`join`/`start` (`relay/server.ts`) and verify it on join. Relevant once Phase 2+ of the pack migration lands; see `PROJECT.md` phases in the source repo. |
 | `SaveManager.Save` atomicity — write the index before the slot file (or temp-then-rename) so a crash mid-save can't desync them | minor robustness |
 
 ## Known Bugs (confirmed, unfixed)
