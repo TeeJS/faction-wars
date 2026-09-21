@@ -38,6 +38,16 @@ func _init() -> void:
 	_case("fixed HQ on a planet absent from the map",
 		_pack({}, {}, {"hq": "Byss"}), "hq.planet 'Byss' is not in map.json")
 
+	# Rule 5 / 3 - the roster.
+	_case("character on an undeclared faction",
+		_pack({}, {}, {"char_faction": "hutts"}), "faction 'hutts' is not declared")
+	_case("duplicate character id",
+		_pack({}, {}, {"char_id": "second_person"}), "duplicate id")
+	_case("unknown can_command rank",
+		_pack({}, {}, {"char_command": ["warlord"]}), "unknown can_command entry 'warlord'")
+	_case("victory target who is not a character",
+		_pack({}, {}, {"victory": "Nobody At All"}), "victory target 'Nobody At All' is not a character")
+
 	# Rule 9 - the map image.
 	_case("map_image not declared", _pack({}, {}, {"map_image": ""}), "'map_image' is required")
 	_case("map_image names a file the pack does not ship",
@@ -60,8 +70,8 @@ func _real_pack_passes() -> void:
 		for e in errors:
 			print("    %s" % e)
 	else:
-		print("[pack_validation] ok   the shipping pack validates (%d sectors, %d planets)"
-			% [pack.Map.Sectors.size(), pack.Map.Planets.size()])
+		print("[pack_validation] ok   the shipping pack validates (%d sectors, %d planets, %d characters)"
+			% [pack.Map.Sectors.size(), pack.Map.Planets.size(), pack.Characters.size()])
 
 
 ## A minimal two-sector, two-planet pack, with one field bent per call.
@@ -99,14 +109,29 @@ func _pack(sector_over: Dictionary, planet_over: Dictionary, other: Dictionary) 
 		"hq": {"kind": "fixed", "planet": other.get("hq", "Core World")},
 		"starting_planets": [{"planet": other.get("starting", "Core World"),
 			"support": 100, "explored": true, "garrison": ""}],
+		"victory": {"capture_characters": [other.get("victory", "Second Person")]},
 	}
 	p.Factions = [PackDefs.FactionDef.from_dict(faction)]
+
+	# Two characters, so a collision has something to collide WITH.
+	var c1 := {"id": other.get("char_id", "first_person"), "display_name": "First Person",
+		"faction": other.get("char_faction", "test_side"), "is_major": true,
+		"ratings": {"diplomacy": {"base": 10, "var": 0}},
+		"can_command": other.get("char_command", ["general"]),
+		"wont_betray": true,
+		"special_power": {"probability": 0, "is_known_user": false,
+			"level": {"base": 0, "var": 0}, "can_train": false}}
+	var c2 := {"id": "second_person", "display_name": "Second Person",
+		"faction": "test_side", "is_major": false, "ratings": {},
+		"can_command": [], "wont_betray": false}
+	p.Characters = PackDefs.CharactersFile.from_dict({"characters": [c1, c2]}).Characters
 	return p
 
 
 func _case(what: String, pack: PackLoader.LoadedPack, expect: String) -> void:
 	var errors: Array[String] = []
 	PackLoader._validate_map(pack, PACK_DIR, errors)
+	PackLoader._validate_characters(pack, errors)
 	for e in errors:
 		if e.contains(expect):
 			print("[pack_validation] ok   %s" % what)

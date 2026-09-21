@@ -48,7 +48,7 @@ accounted for below — that is what this reconciliation was for.
 | `facilities.json` | Static structures + **role tags** | `production_facilities.json` (9) + `defensive_facilities.json` (6) + the `FacilityType` enum | ❌ |
 | `units.json` | Mobile units and their stats | `military_units.json` (57) | ❌ |
 | `weapons.json` | Weapon classes + **role tags** | `military_units.json` weapon columns + the four-class vocabulary in `tactical_battle.gd` | ❌ |
-| `characters.json` | Named characters | `major_characters.json` (6) + `minor_characters.json` (54) | ❌ |
+| `characters.json` | Named characters | `major_characters.json` (6) + `minor_characters.json` (54) | ✅ |
 | `rules.json` | Tunable rule table, keyed by faction + difficulty | `game_rules.json` (213) | ⚠ re-keyed, not moved |
 | `setup.json` | Day-zero seeding: side lottery + logistics tables | `side_lottery.json` (35) + `day_zero_logistics.json` (11 tables) | ⚠ re-keyed, not moved |
 | `missions.json` | The mission catalog | `missions.json` (25) | ❌ |
@@ -594,7 +594,8 @@ passes.
    ids are unique. Facilities, units, characters and missions await their files.
 4. ❌ Every `roles` entry is in the engine's known role set for this
    `schema_version`; likewise every `display.quantity.kind`.
-5. ❌ Every `buildable_by` / `available_to` entry is a declared faction id.
+5. ⚠ **Character `faction` and `can_command` checked.** `buildable_by` /
+   `available_to` await the facility, unit and mission files.
 6. ✅ Each faction's `hq` is internally consistent: a `fixed` HQ names a planet;
    a `hidden` HQ declares a `placement`.
 7. ✅ Every `starting_planets` entry exists, and a `fixed` HQ names a real planet.
@@ -741,3 +742,4 @@ What changed from the source repo's 2026-07-25 draft, and why.
 | 21 | §12 Q4 **split and refiled** (TeeJ, 2026-09-21): arcs are engine behaviour; weapon class names become a **Phase 3 vocabulary item**, written up in §6 with a proposed `weapons.json` | The question conflated location with name. Only the name half is a schema question, and it is the same job as `FacilityType` |
 | 22 | §6: **four** weapon classes recorded, not three — `Torpedoes`/`TorpedoRange` exist on five fighters only | The earlier column dump read row 0, a capital ship, so the torpedo columns were invisible. `military_units.json` rows do not share a key set |
 | 23 | **§4 built.** `map.json` generated, loaded and live; the bitmap moved into the pack; validation rules 3 (map half), 7, 9, 10 implemented and negative-tested | The hardcoded sector list is gone from `galaxy_factory.gd`. Soak gate 1004/1004 |
+| 24 | **§7 built.** `characters.json` generated, loaded and live: one file, `is_major` flag, lower-case faction ids, `ratings` map, `can_command` list, `special_power` block. Validation rules 3 and 5 for the roster | The two-file major/minor split is gone. Soak gate 1004/1004 |
