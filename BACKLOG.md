@@ -1,10 +1,11 @@
 # schmitz-wars — status, missing features, backlog & known bugs
 
 The single tracker for outstanding work. Sections: **Status** (done / in
-progress), **Missing Features** (the manual describes it, it isn't built),
-**Backlog** (lower-priority, not blocking play), **Known Bugs** (confirmed,
-unfixed), **Non-issues** (investigated, no change). Started 2026-09-05 in the
-agent-room dev session; keep it current as items move.
+progress), **Missing Features** (described by the manual, or required by the
+port's own systems; not built), **Backlog** (lower-priority, not blocking
+play), **Known Bugs** (confirmed, unfixed), **Non-issues** (investigated, no
+change). Started 2026-09-05 in the agent-room dev session; keep it current as
+items move.
 
 Every merge below was verified headless on **Godot 4.7.1** (the project's
 target) before landing.
@@ -36,7 +37,9 @@ target) before landing.
 
 ## Missing Features
 
-The manual/original has these; the port does not yet. (New screens needed.)
+Things the port does not yet have: mostly features the manual/original
+describes that need new screens, plus gaps in the port's own systems that have
+no original to cite.
 
 | # | Feature | Source / note |
 |---|---------|---------------|
