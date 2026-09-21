@@ -8,6 +8,12 @@ const SupportedSchemaVersion := 1
 const KNOWN_HQ_KINDS := ["fixed", "hidden"]
 const KNOWN_OCCUPATION_POLICIES := ["garrison_bonus", "occupation_penalty"]
 const KNOWN_COMMAND_RANKS := ["admiral", "commander", "general"]
+## SCHEMA.md section 5. The engine's selection vocabulary for this schema_version.
+## Rejecting an unknown role is what stops a typo silently creating an inert
+## facility that no system ever asks for.
+const KNOWN_FACILITY_ROLES := ["headquarters", "extracts_raw", "refines",
+	"produces_unit", "produces_troop", "produces_facility", "planet_defense",
+	"shield", "disable", "anti_ship"]
 
 
 class LoadedPack:
@@ -15,6 +21,7 @@ class LoadedPack:
 	var Factions: Array[PackDefs.FactionDef] = []
 	var Map: PackDefs.MapFile
 	var Characters: Array[PackDefs.CharacterDef] = []
+	var Facilities: Array[PackDefs.FacilityDef] = []
 
 
 ## Returns the pack, or null with `errors` populated. Never throws on bad pack
@@ -24,13 +31,15 @@ static func Load(pack_dir: String, errors: Array[String]) -> LoadedPack:
 	var factions_d: Variant = _read_json("%s/factions.json" % pack_dir, errors)
 	var map_d: Variant = _read_json("%s/map.json" % pack_dir, errors)
 	var chars_d: Variant = _read_json("%s/characters.json" % pack_dir, errors)
-	if manifest_d == null or factions_d == null or map_d == null or chars_d == null:
+	var facil_d: Variant = _read_json("%s/facilities.json" % pack_dir, errors)
+	if manifest_d == null or factions_d == null or map_d == null or chars_d == null or facil_d == null:
 		return null
 	var pack := LoadedPack.new()
 	pack.Manifest = PackDefs.PackManifest.from_dict(manifest_d)
 	pack.Factions = PackDefs.FactionsFile.from_dict(factions_d).Factions
 	pack.Map = PackDefs.MapFile.from_dict(map_d)
 	pack.Characters = PackDefs.CharactersFile.from_dict(chars_d).Characters
+	pack.Facilities = PackDefs.FacilitiesFile.from_dict(facil_d).Facilities
 	_validate(pack, pack_dir, errors)
 	return pack if errors.is_empty() else null
 
@@ -104,6 +113,61 @@ static func _validate(pack: LoadedPack, pack_dir: String, errors: Array[String])
 
 	_validate_map(pack, pack_dir, errors)
 	_validate_characters(pack, errors)
+	_validate_facilities(pack, errors)
+
+
+## SCHEMA.md section 11 rules 3, 4 and 5 for the facility catalog.
+static func _validate_facilities(pack: LoadedPack, errors: Array[String]) -> void:
+	var faction_ids := {}
+	for f in pack.Factions:
+		faction_ids[f.Id] = true
+
+	var ids := {}
+	var tiers_by_family := {}
+	for fd in pack.Facilities:
+		var ctx := "facilities.json[%s]" % (fd.Id if not fd.Id.is_empty() else "?")
+		if fd.Id.strip_edges().is_empty():
+			errors.append("%s: missing id." % ctx)
+		elif ids.has(fd.Id):
+			errors.append("%s: duplicate id." % ctx)
+		else:
+			ids[fd.Id] = true
+		if fd.DisplayName.strip_edges().is_empty():
+			errors.append("%s: missing display_name." % ctx)
+		if fd.Family.strip_edges().is_empty():
+			errors.append("%s: missing family." % ctx)
+		else:
+			if not tiers_by_family.has(fd.Family):
+				tiers_by_family[fd.Family] = {}
+			if tiers_by_family[fd.Family].has(fd.Tier):
+				errors.append("%s: family '%s' already declares tier %d." % [ctx, fd.Family, fd.Tier])
+			tiers_by_family[fd.Family][fd.Tier] = true
+
+		# Rule 4: an unknown role is a facility no system will ever select.
+		if fd.Roles.is_empty():
+			errors.append("%s: declares no roles; nothing would ever select it." % ctx)
+		for role in fd.Roles:
+			if not KNOWN_FACILITY_ROLES.has(role):
+				errors.append("%s: unknown role '%s'. Known: %s." % [ctx, role, ", ".join(KNOWN_FACILITY_ROLES)])
+
+		# Rule 5: buildable_by must name declared factions.
+		for who in fd.BuildableBy:
+			if not faction_ids.has(who):
+				errors.append("%s: buildable_by '%s' is not a declared faction." % [ctx, who])
+
+	# The catalog indexes on (family, tier) and only ever offers tier 1, so a
+	# family that starts at tier 2 can never be built.
+	for fam in tiers_by_family:
+		if not tiers_by_family[fam].has(1):
+			errors.append("facilities.json: family '%s' has no tier 1; it could never be built." % fam)
+
+	# Somebody has to be the headquarters: day zero places one per faction.
+	var hq := 0
+	for fd in pack.Facilities:
+		if fd.HasRole("headquarters"):
+			hq += 1
+	if hq == 0:
+		errors.append("facilities.json: no facility has the 'headquarters' role; day zero has nothing to place.")
 
 
 ## SCHEMA.md section 11 rules 3 and 5, for the roster: ids unique, every faction
