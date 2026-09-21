@@ -131,7 +131,7 @@ with the extraction tooling, not shipped in a pack.
 | `occupation_support_policy` | `garrison_bonus` (troops raise support over time) or `occupation_penalty` (first occupation lowers it). Asymmetry as a flag. |
 | `loyalty_label` | Display string for the GID loyalty mode. |
 | `starting_planets[]` | `{planet, support, explored, garrison}`. `planet` holds a **display name** today; **becomes a planet id** (§12 Q1, decided). |
-| `seed` | Which day-zero logistics table seeds this side's HQ, garrison and fleets. Values are **original `.DAT` filenames** — see §12 Q2. |
+| `seed` | Which day-zero logistics table seeds this side's HQ, garrison and fleets. Values are **original `.DAT` filenames** today; **become role ids** (§12 Q2, decided). |
 | `victory.capture_characters` | Characters this side must hold captive to win. **Display names** today; **become character ids** (§12 Q1, decided). |
 
 ---
@@ -321,9 +321,9 @@ flag is enough.
       },
       "can_command": ["admiral", "commander", "general"],
       "wont_betray": true,
-      "special": { "affinity_probability": 0, "affinity_known": false,
-                   "affinity_level": { "base": 0, "var": 0 },
-                   "can_train": false }
+      "special_power": { "probability": 0, "is_known_user": false,
+                         "level": { "base": 0, "var": 0 },
+                         "can_train": false }
     }
   ]
 }
@@ -336,7 +336,40 @@ flag is enough.
 | `Faction` `"Alliance"` → `"alliance"` | The raw files use **title case** while the pack uses lower case. `FactionRegistry.ById` folds case to paper over exactly this ([faction_registry.gd:69](src/game/faction_registry.gd:69)). Re-keying removes the need for the fold. |
 | 8 `XxxBase`/`XxxVar` column pairs → a `ratings` map | The pairs are uniform; a map removes named engine fields. |
 | `CanBeAdmiral`/`CanBeCommander`/`CanBeGeneral` → `can_command` list | Three booleans are a closed vocabulary. |
-| `JediProbability`, `IsKnownJedi`, `JediLevelBase/Var`, `CanTrainJedi` → `special` | **These are IP vocabulary in the data schema**, and they are mirrored in engine code as `Character.JediLevel`, `IsKnownJedi`, `CanTrainJedi` and `Enums.ForceRanking.JediMaster` ([character.gd:43-151](src/game/character.gd:43)). The charter forbids this. The generic naming is a pack decision — **see §12 Q5.** |
+| `JediProbability`, `IsKnownJedi`, `JediLevelBase/Var`, `CanTrainJedi` → `special_power` | **These are IP vocabulary in the data schema**, mirrored in engine code as `Character.JediLevel`, `IsKnownJedi`, `CanTrainJedi` and `Enums.ForceRanking.JediMaster` ([character.gd:43-151](src/game/character.gd:43)). The charter forbids it. Renamed to **special powers** — §12 Q5, decided. |
+
+### Special powers — the engine-side rename (§12 Q5)
+
+A hidden aptitude, probabilistically present, trainable, with ranked bands that
+gate abilities. Generic mechanic, IP name. The rename:
+
+| Today | Becomes |
+|---|---|
+| `Character.JediLevel` | `SpecialPowerLevel` |
+| `Character.JediLevelBase` / `JediLevelVar` | `SpecialPowerLevelBase` / `SpecialPowerLevelVar` |
+| `Character.IsKnownJedi` | `IsKnownSpecialPowerUser` |
+| `Character.CanTrainJedi` | `CanTrainSpecialPower` |
+| `Character.JediProbability` | `SpecialPowerProbability` |
+| `Enums.ForceRanking` | `Enums.SpecialPowerRank` |
+| `ForceRanking.JediMaster` | `SpecialPowerRank.SpecialPowerMaster` |
+| `RuleId.FastHealForceRankThresh` | `FastHealSpecialPowerThresh` |
+
+**The five band labels stay pack strings.** The engine holds ranked bands and
+their thresholds (10 / 20 / 80 / 100 / 120 —
+[character.gd:144-151](src/game/character.gd:144)); what they are *called*
+("Jedi Master") is `display.json` content.
+
+> **One open detail.** TeeJ named `SpecialPowerLevel`,
+> `IsKnownSpecialPowerUser` and `SpecialPowerMaster`. Inside an enum already
+> called `SpecialPowerRank`, the prefix on the band members is redundant —
+> `SpecialPowerRank.Master` reads better than
+> `SpecialPowerRank.SpecialPowerMaster`, and the lower two bands (`Novice`,
+> `Trainee`) are unprefixed already. Written above in TeeJ's literal form;
+> say if the shorter member names are preferred.
+
+**This is a code rename, not a data move** — it touches `character.gd`,
+`captivity_manager.gd`, `rule_id.gd` and the character tables together, and
+needs its own go-ahead before it lands.
 
 ---
 
@@ -432,7 +465,9 @@ last un-migrated instance.
 
 Outcome tables, keyed by original `.DAT` filename (`ABDCMSTB.DAT`,
 `ASSNMSTB.DAT`, …), each `{field1, entries_count, info, entries, description}`.
-Same filename-as-key problem as `day_zero_logistics.json` — **§12 Q2.**
+**Keys become role ids with `source_file` kept alongside** (§12 Q2, decided) —
+but five of the twelve have no obvious mission counterpart and must be read
+before they are named.
 
 ---
 
@@ -502,8 +537,9 @@ by §7; its Q4 (missions and victory "not modelled yet") is **obsolete** — bot
 systems exist. Its Q3 (pack location) is **settled**: `packs/<id>/` alongside
 `data/`, which is what shipped.
 
-**Four remain open: Q2, Q4, Q5, Q6.** Q1 and Q3 were decided 2026-09-21 and are
-kept here, struck through, so the numbering stays stable for cross-references.
+**Two remain open: Q4 and Q6.** Q1, Q2, Q3 and Q5 were decided 2026-09-21 and
+are kept here, struck through, so the numbering stays stable for
+cross-references.
 
 1. ~~**Cross-reference by display name.**~~ **★ DECIDED (TeeJ, 2026-09-21) — ids.**
    Every cross-reference between pack files uses a `lower_snake_case` id, never
@@ -523,30 +559,58 @@ kept here, struck through, so the numbering stays stable for cross-references.
    `characters.json` exist — there is nothing to hold the ids yet — so it is
    part of that migration, and validation rule §11.3 goes live with it.
 
-2. **`.DAT` filenames as pack keys.** `day_zero_logistics.json` and
-   `mission_tables.json` are keyed by original binary filenames
-   (`CMUNYVTB.DAT`), and `factions.json.seed` references those keys directly. A
-   non-Star-Wars pack would inherit meaningless names. Rename to roles
-   (`hq_garrison_table`), or keep the filenames as an extraction-traceability
-   convention?
+2. ~~**`.DAT` filenames as pack keys.**~~ **★ DECIDED (TeeJ, 2026-09-21) —
+   rename to roles.** Table keys become `lower_snake_case` ids naming what the
+   table *does*, not which file it came from. `factions.json.seed` then
+   references those ids.
+
+   **Traceability is kept as a field, not a key:** each table carries
+   `"source_file": "CMUNYVTB.DAT"`, so the link back to the extraction survives
+   without the filename being load-bearing.
+
+   ```json
+   "hq_facilities": { "source_file": "FACLHQTB.DAT", "entries": [ ... ] }
+   ```
+
+   **One pass is still needed to name them.** The 11 logistics tables map
+   cleanly onto roles that `factions.json.seed` already uses
+   (`hq_facilities`, `hq_garrison`, `fleet`, `procedural_fleet`) plus the two
+   system-infrastructure tables (core / rim). The 12 mission tables are **not
+   all 1:1 with a mission** — `ESCAPETB`, `FOILTB`, `INFORMTB`, `FDECOYTB` and
+   `CSCRHTTB` have no obvious mission counterpart and must be read before they
+   are named. Do not guess them.
 
 3. ~~**The map bitmap.**~~ **★ DECIDED (TeeJ, 2026-09-21) — named in `pack.json`.**
    `map_image` is a required manifest field holding a filename relative to the
    pack folder. A pack that declares none is a load error. Specified in §2;
    validation rule §11.9 added.
 
-4. **Weapon arcs.** `units.json` has 34 columns across a fixed four-arc model
-   (fore/aft/port/starboard × turbolaser/ion/laser). Is the arc model engine
-   vocabulary (tactical combat is engine behaviour) or pack vocabulary (a
-   setting might have different weapon classes)? The tactical engine reads these
-   directly, so this is not purely cosmetic.
+4. **Weapon arcs.** `units.json` carries 12 per-arc columns
+   (fore/aft/port/starboard × turbolaser/ion/laser), 3 summary columns and 3
+   range columns. Three facts measured across all 57 units:
 
-5. **Renaming the Force.** `Character.JediLevel` / `IsKnownJedi` / `CanTrainJedi`
-   and `Enums.ForceRanking.JediMaster` are IP vocabulary in engine code and in
-   the character data. The mechanic is generic — a hidden aptitude, trainable,
-   with ranked bands gating abilities. One candidate naming: `special`,
-   `affinity_level`, `affinity_known`, `can_train`, with the five band labels as
-   pack strings. Needs a name TeeJ is happy with before the rename lands.
+   - **Every per-arc column is used** — all 12 are non-zero somewhere.
+   - **Port and Starboard are identical in every single row.** The data models
+     one "broadside" value, stored twice.
+   - **Each summary column is exactly the sum of its four arcs**, in every row,
+     with no exceptions. `Turbolaser`, `IonCannon` and `LaserRating` are
+     derived, not independent.
+   - Fighters use only the Fore arc, and their turbolaser and all three range
+     columns are `null`.
+
+   The tactical engine *does* read arcs — `Enums.ShipArc` and `ArcTo()` at
+   [tactical_battle.gd:191-225](src/game/tactical_battle.gd:191) — so the four-arc
+   model is engine behaviour, not a data convention.
+
+   **Open:** whether to keep the redundancy. The pack could store `fore`, `aft`,
+   `broadside` (3 values, no duplication) and let the engine mirror broadside to
+   both beams, and drop the summary columns as derived. That is a cleaner file
+   but a behaviour-visible change if any consumer reads the summary directly.
+
+5. ~~**Renaming the Force.**~~ **★ DECIDED (TeeJ, 2026-09-21) — "special
+   powers".** `SpecialPowerLevel`, `IsKnownSpecialPowerUser`,
+   `CanTrainSpecialPower`, `SpecialPowerProbability`, `Enums.SpecialPowerRank`.
+   Full mapping and the one open naming detail are in §7.
 
 6. **Name-keyed rule rows.** `game_rules.json` rows are addressed by integer
    `EntryId`. Every row already carries a `Name`, but the names contain
@@ -579,3 +643,6 @@ What changed from the source repo's 2026-07-25 draft, and why.
 | 14 | §12 Q1 **decided — ids, no exception** (TeeJ, 2026-09-21); §3 and §9 updated to match | Five open questions remain |
 | 15 | §4: galaxy-size **sector membership** documented as a `map.json` field (`min_size`) | It is 20 literal sector names in `galaxy_factory.gd` — pack content living in engine code, missed by the draft |
 | 16 | §12 Q3 **decided — `map_image` in `pack.json`** (TeeJ, 2026-09-21); §2 and §4 specify it, validation rules 9–10 added | Four open questions remain |
+| 17 | §12 Q2 **decided — rename `.DAT` keys to roles** (TeeJ, 2026-09-21), `source_file` kept alongside for traceability; §3 and §9 updated | Five of the twelve mission tables still need reading before they can be named |
+| 18 | §12 Q5 **decided — "special powers"** (TeeJ, 2026-09-21); §7 gains the full field mapping | One naming detail left: whether enum members keep the redundant prefix |
+| 19 | §12 Q4: measured the real weapon data across all 57 units | Port == Starboard in every row; every summary column is exactly the sum of its arcs. The question is now about redundancy, not vocabulary |
