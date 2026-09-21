@@ -87,7 +87,7 @@ static func new_game(player_faction_id: String, difficulty: int, size: int, seed
 	load_catalogs()
 	print("Initializing Galaxy with -> Faction: %s | Difficulty: %s | Size: %s" % [str(GameSettings.PlayerFaction), JsonUtil.enum_name(Enums.Difficulty, difficulty), JsonUtil.enum_name(Enums.GalaxySize, size)])
 
-	var galaxy := GalaxyFactory.LoadGalaxy("%s/sectors_data.json" % DATA, "%s/planets_data.json" % DATA, size)
+	var galaxy := GalaxyFactory.LoadFromPack(FactionRegistry.Pack, size)
 	var roster := load_roster()
 	GameState.ActiveRoster = roster
 	DayZeroGenerator.InitializeGalaxyState(galaxy, GameSettings.SeedingFaction(), difficulty, roster)

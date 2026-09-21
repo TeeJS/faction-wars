@@ -9,8 +9,13 @@
     "color": "#5499ff"
   },
   "unexplored_color": "#cccccc",
+  "map_image": "galaxyShaded.bmp",
   "setup": {
     "difficulty_default": "medium",
-    "galaxy_sizes": ["standard", "large", "huge"]
+    "galaxy_sizes": [
+      "standard",
+      "large",
+      "huge"
+    ]
   }
 }
