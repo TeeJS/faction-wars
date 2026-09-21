@@ -43,8 +43,8 @@ accounted for below — that is what this reconciliation was for.
 |---|---|---|---|
 | `pack.json` | Manifest + setup defaults | *(new)* | ✅ |
 | `factions.json` | The sides: identity, color, HQ config, asymmetry flags | *(new)* | ✅ |
-| `map.json` | Sectors and planets: position, ring, artwork | `sectors_data.json` (20) + `planets_data.json` (200) | ❌ |
-| *(the map bitmap)* | The galaxy backdrop the map is drawn on — a **`pack.json` field**, `map_image`, not a file of its own (§2) | `data/galaxyShaded.bmp` | ❌ |
+| `map.json` | Sectors and planets: position, ring, artwork | `sectors_data.json` (20) + `planets_data.json` (200) | ✅ |
+| *(the map bitmap)* | The galaxy backdrop the map is drawn on — a **`pack.json` field**, `map_image`, not a file of its own (§2) | now `packs/star-wars-rebellion/galaxyShaded.bmp` | ✅ |
 | `facilities.json` | Static structures + **role tags** | `production_facilities.json` (9) + `defensive_facilities.json` (6) + the `FacilityType` enum | ❌ |
 | `units.json` | Mobile units and their stats | `military_units.json` (57) | ❌ |
 | `weapons.json` | Weapon classes + **role tags** | `military_units.json` weapon columns + the four-class vocabulary in `tactical_battle.gd` | ❌ |
@@ -584,24 +584,23 @@ GID legend stops being hardcoded rows.
 ## 11. Validation
 
 The loader reports **every** error before play, not the first. Implemented in
-[pack_loader.gd](src/data/pack_loader.gd) for rules 1, 2 and 6; the rest await
-their files.
+[pack_loader.gd](src/data/pack_loader.gd); each live rule has a negative test in
+`tests/pack_validation.gd` that proves it rejects, not merely that the real pack
+passes.
 
 1. ✅ `pack.json.id` equals the folder name; `schema_version` ≤ engine-supported.
 2. ✅ `faction_count` equals the entries in `factions.json`, and is 2–4.
-3. ❌ Every cross-reference resolves: planets, sectors, facilities, units,
-   characters, factions, missions, display quantities.
+3. ⚠ **Map cross-references live** — every planet resolves to a declared sector,
+   ids are unique. Facilities, units, characters and missions await their files.
 4. ❌ Every `roles` entry is in the engine's known role set for this
    `schema_version`; likewise every `display.quantity.kind`.
 5. ❌ Every `buildable_by` / `available_to` entry is a declared faction id.
 6. ✅ Each faction's `hq` is internally consistent: a `fixed` HQ names a planet;
    a `hidden` HQ declares a `placement`.
-7. ❌ Every `starting_planets` entry exists. *(Deferred: the loader's own comment
-   says map data still comes from `data/`, so there is nothing to check against
-   yet — [pack_loader.gd:98](src/data/pack_loader.gd:98).)*
+7. ✅ Every `starting_planets` entry exists, and a `fixed` HQ names a real planet.
 8. ❌ Display tiers are ordered descending and terminate with a `min: 0` tier.
-9. ❌ `map_image` is declared and names a file present in the pack folder.
-10. ❌ Every sector's `min_size` is one of `setup.galaxy_sizes`, and the smallest
+9. ✅ `map_image` is declared and names a file present in the pack folder.
+10. ✅ Every sector's `min_size` is one of `setup.galaxy_sizes`, and the smallest
     declared size has at least one sector — otherwise that menu option yields an
     empty galaxy.
 
@@ -741,3 +740,4 @@ What changed from the source repo's 2026-07-25 draft, and why.
 | 20 | §12 Q6 **decided — keep integer `EntryId` keys** (TeeJ, 2026-09-21) | The one place a number legitimately survives into pack data; `rule_id.gd` stays the required reference path |
 | 21 | §12 Q4 **split and refiled** (TeeJ, 2026-09-21): arcs are engine behaviour; weapon class names become a **Phase 3 vocabulary item**, written up in §6 with a proposed `weapons.json` | The question conflated location with name. Only the name half is a schema question, and it is the same job as `FacilityType` |
 | 22 | §6: **four** weapon classes recorded, not three — `Torpedoes`/`TorpedoRange` exist on five fighters only | The earlier column dump read row 0, a capital ship, so the torpedo columns were invisible. `military_units.json` rows do not share a key set |
+| 23 | **§4 built.** `map.json` generated, loaded and live; the bitmap moved into the pack; validation rules 3 (map half), 7, 9, 10 implemented and negative-tested | The hardcoded sector list is gone from `galaxy_factory.gd`. Soak gate 1004/1004 |
