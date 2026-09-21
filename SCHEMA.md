@@ -44,7 +44,7 @@ accounted for below — that is what this reconciliation was for.
 | `pack.json` | Manifest + setup defaults | *(new)* | ✅ |
 | `factions.json` | The sides: identity, color, HQ config, asymmetry flags | *(new)* | ✅ |
 | `map.json` | Sectors and planets: position, ring, artwork | `sectors_data.json` (20) + `planets_data.json` (200) | ❌ |
-| `map_image` | The galaxy backdrop the map is drawn on | `data/galaxyShaded.bmp` | ❌ |
+| *(the map bitmap)* | The galaxy backdrop the map is drawn on — a **`pack.json` field**, `map_image`, not a file of its own (§2) | `data/galaxyShaded.bmp` | ❌ |
 | `facilities.json` | Static structures + **role tags** | `production_facilities.json` (9) + `defensive_facilities.json` (6) + the `FacilityType` enum | ❌ |
 | `units.json` | Mobile units and their stats | `military_units.json` (57) | ❌ |
 | `characters.json` | Named characters | `major_characters.json` (6) + `minor_characters.json` (54) | ❌ |
@@ -74,6 +74,7 @@ with the extraction tooling, not shipped in a pack.
   "faction_count": 2,
   "neutral": { "id": "neutral", "display_name": "Neutral", "color": "#5499ff" },
   "unexplored_color": "#cccccc",
+  "map_image": "galaxyShaded.bmp",
   "setup": {
     "difficulty_default": "medium",
     "galaxy_sizes": ["standard", "large", "huge"]
@@ -87,6 +88,8 @@ with the extraction tooling, not shipped in a pack.
 | `faction_count` | Must equal the entries in `factions.json`; 2–4. |
 | `neutral` | The uncontrolled side. Pack data, not a hardcoded singleton, because its name and color are setting-specific. **Not** playable, not counted in `faction_count`. |
 | `unexplored_color` | Color for systems the viewing faction has no knowledge of. A display convention, not a rule. |
+| `map_image` | **★ DECIDED (TeeJ, 2026-09-21).** The galaxy backdrop, as a filename relative to the pack folder. Required; a pack that declares none is a **load error**, not a blank screen. Named here rather than fixed by convention so the engine never assumes a filename. |
+| `setup.galaxy_sizes` | The size names offered on the menu. **Which sectors each size includes is declared per sector** in `map.json` (`min_size`), not here — see §4. |
 
 ---
 
@@ -144,7 +147,7 @@ Ids replace the numeric `SectorId`/`PlanetId`; the numeric ids may remain as
   "sectors": [
     { "id": "abrion", "display_name": "Abrion", "ring": 2,
       "starts_neutral": false, "map": { "x": 469, "y": 642 },
-      "intel_tier": "presence" }
+      "min_size": "huge", "intel_tier": "presence" }
   ],
   "planets": [
     { "id": "abregado", "display_name": "Abregado", "sector": "abrion",
@@ -157,6 +160,7 @@ Ids replace the numeric `SectorId`/`PlanetId`; the numeric ids may remain as
 | Field | Notes |
 |---|---|
 | `ring` | 1 = Core, >1 = Rim. Drives day-zero seeding and default knowledge. From `GalaxyRing`. |
+| `min_size` | The **smallest galaxy size this sector appears in** — one of `pack.json`'s `setup.galaxy_sizes`. Sizes are cumulative: a `standard` sector is in all three. See below. |
 | `artwork_id` | The planet's portrait. Present in the real data as `ArtworkId`; absent from the original draft. Pack content — a different setting ships different art. |
 | `intel_tier` | `live` — control and support always current (Core). `presence` — updates only with a fleet or mission present (Rim). **`[later]`**; v1 may treat all sectors as `live`. |
 
@@ -172,11 +176,45 @@ This also closes the original §10 Q1 (an open resource vocabulary implying a
 a third means adding rule entries **and** an engine consumer, not just a pack
 file. Re-open only if that is actually wanted.
 
+### Galaxy size is currently a hardcoded sector list in engine code
+
+**⚠ Absent from the original draft.** Which sectors a `standard` / `large` /
+`huge` galaxy contains is not data at all — it is twenty literal sector names
+in [galaxy_factory.gd:14-25](src/game/galaxy_factory.gd:14):
+
+```gdscript
+var sectors := { "Corellian": true, "Sesswenna": true, "Sluis": true, ... }
+if size == Enums.GalaxySize.Large or size == Enums.GalaxySize.Huge:
+    for n in ["Farfin", "Glythe", "Jospro", "Kanchen", "Quelli"]:
+```
+
+`pack.json` declares the size *names*; the engine holds the *membership*. That
+is setting content in code, and it is `map.json`'s job.
+
+The counts reconcile exactly with `sectors_data.json`:
+
+| Size | Sectors added | Running total |
+|---|---|---|
+| `standard` | 10 | 10 |
+| `large` | +5 | 15 |
+| `huge` | +5 | **20** = every row in `sectors_data.json` |
+
+**Representation: `min_size` on each sector**, rather than a list of sector ids
+per size in `pack.json`. Sizes are strictly cumulative in the original, so one
+field per sector expresses it without duplicating ids in two files where they
+could drift. If a setting ever wants non-nested sizes — a size that *omits* a
+sector a smaller one includes — this is the field that has to change.
+
+A sector excluded by the chosen size takes its planets with it; the loader
+already drops planets whose sector was filtered out
+([galaxy_factory.gd:40](src/game/galaxy_factory.gd:40)).
+
 ### `map_image`
 
-`data/galaxyShaded.bmp` is the backdrop the galaxy map draws over. The original
-draft has nowhere to put it. A pack needs one; the manifest should name it
-rather than the engine assuming a filename. **Unresolved — see §12 Q3.**
+**★ DECIDED (TeeJ, 2026-09-21) — named in `pack.json`.** `data/galaxyShaded.bmp`
+is the backdrop the galaxy map draws over; the original draft had nowhere to put
+it. The manifest names it (§2) rather than the engine assuming a path, and a
+pack that omits it fails to load.
 
 ---
 
@@ -449,6 +487,10 @@ their files.
    says map data still comes from `data/`, so there is nothing to check against
    yet — [pack_loader.gd:98](src/data/pack_loader.gd:98).)*
 8. ❌ Display tiers are ordered descending and terminate with a `min: 0` tier.
+9. ❌ `map_image` is declared and names a file present in the pack folder.
+10. ❌ Every sector's `min_size` is one of `setup.galaxy_sizes`, and the smallest
+    declared size has at least one sector — otherwise that menu option yields an
+    empty galaxy.
 
 ---
 
@@ -459,6 +501,9 @@ The original draft's four questions, revised against the real data. Its Q1
 by §7; its Q4 (missions and victory "not modelled yet") is **obsolete** — both
 systems exist. Its Q3 (pack location) is **settled**: `packs/<id>/` alongside
 `data/`, which is what shipped.
+
+**Four remain open: Q2, Q4, Q5, Q6.** Q1 and Q3 were decided 2026-09-21 and are
+kept here, struck through, so the numbering stays stable for cross-references.
 
 1. ~~**Cross-reference by display name.**~~ **★ DECIDED (TeeJ, 2026-09-21) — ids.**
    Every cross-reference between pack files uses a `lower_snake_case` id, never
@@ -485,10 +530,10 @@ systems exist. Its Q3 (pack location) is **settled**: `packs/<id>/` alongside
    (`hq_garrison_table`), or keep the filenames as an extraction-traceability
    convention?
 
-3. **The map bitmap.** `galaxyShaded.bmp` has no home in the schema. Name it in
-   `pack.json` (`"map_image": "galaxy.bmp"`), or fix it by convention at
-   `packs/<id>/map.bmp`? Naming it in the manifest is more explicit and costs
-   one field.
+3. ~~**The map bitmap.**~~ **★ DECIDED (TeeJ, 2026-09-21) — named in `pack.json`.**
+   `map_image` is a required manifest field holding a filename relative to the
+   pack folder. A pack that declares none is a load error. Specified in §2;
+   validation rule §11.9 added.
 
 4. **Weapon arcs.** `units.json` has 34 columns across a fixed four-arc model
    (fore/aft/port/starboard × turbolaser/ion/laser). Is the arc model engine
@@ -532,3 +577,5 @@ What changed from the source repo's 2026-07-25 draft, and why.
 | 12 | §11: marked which validation rules are implemented | The draft listed eight; three are live |
 | 13 | §12: two questions closed, one answered, one obsolete; six questions now stand | Q4 assumed missions and victory did not exist |
 | 14 | §12 Q1 **decided — ids, no exception** (TeeJ, 2026-09-21); §3 and §9 updated to match | Five open questions remain |
+| 15 | §4: galaxy-size **sector membership** documented as a `map.json` field (`min_size`) | It is 20 literal sector names in `galaxy_factory.gd` — pack content living in engine code, missed by the draft |
+| 16 | §12 Q3 **decided — `map_image` in `pack.json`** (TeeJ, 2026-09-21); §2 and §4 specify it, validation rules 9–10 added | Four open questions remain |
