@@ -48,6 +48,18 @@ func _init() -> void:
 	_case("victory target who is not a character",
 		_pack({}, {}, {"victory": "Nobody At All"}), "victory target 'Nobody At All' is not a character")
 
+	# Rules 3 / 4 / 5 - the facility catalog.
+	_case("unknown facility role",
+		_pack({}, {}, {"fac_roles": ["teleporter"]}), "unknown role 'teleporter'")
+	_case("facility with no roles at all",
+		_pack({}, {}, {"fac_roles": []}), "declares no roles")
+	_case("facility buildable by an undeclared faction",
+		_pack({}, {}, {"fac_build": ["hutts"]}), "buildable_by 'hutts' is not a declared faction")
+	_case("a family whose only tier is 2",
+		_pack({}, {}, {"fac_tier": 2}), "has no tier 1")
+	_case("no headquarters role anywhere",
+		_pack({}, {}, {"fac_roles": ["extracts_raw"], "drop_hq": true}), "no facility has the 'headquarters' role")
+
 	# Rule 9 - the map image.
 	_case("map_image not declared", _pack({}, {}, {"map_image": ""}), "'map_image' is required")
 	_case("map_image names a file the pack does not ship",
@@ -70,8 +82,8 @@ func _real_pack_passes() -> void:
 		for e in errors:
 			print("    %s" % e)
 	else:
-		print("[pack_validation] ok   the shipping pack validates (%d sectors, %d planets, %d characters)"
-			% [pack.Map.Sectors.size(), pack.Map.Planets.size(), pack.Characters.size()])
+		print("[pack_validation] ok   the shipping pack validates (%d sectors, %d planets, %d characters, %d facilities)"
+			% [pack.Map.Sectors.size(), pack.Map.Planets.size(), pack.Characters.size(), pack.Facilities.size()])
 
 
 ## A minimal two-sector, two-planet pack, with one field bent per call.
@@ -125,6 +137,21 @@ func _pack(sector_over: Dictionary, planet_over: Dictionary, other: Dictionary) 
 		"faction": "test_side", "is_major": false, "ratings": {},
 		"can_command": [], "wont_betray": false}
 	p.Characters = PackDefs.CharactersFile.from_dict({"characters": [c1, c2]}).Characters
+
+	# A mine (the bent one) plus a headquarters, so "no HQ" is its own case.
+	var f1 := {"id": "mine", "display_name": "Mine", "family": "mine",
+		"tier": other.get("fac_tier", 1),
+		"roles": other.get("fac_roles", ["extracts_raw"]),
+		"buildable_by": other.get("fac_build", ["test_side"]),
+		"construction_cost": 20, "maintenance_cost": 0,
+		"stats": {"processing_rate": 5}, "source_family_id": 44}
+	var facs := [f1]
+	if not other.get("drop_hq", false):
+		facs.append({"id": "hq", "display_name": "HQ", "family": "headquarters",
+			"tier": 1, "roles": ["headquarters"], "buildable_by": ["test_side"],
+			"construction_cost": 0, "maintenance_cost": 0, "stats": {},
+			"source_family_id": 32})
+	p.Facilities = PackDefs.FacilitiesFile.from_dict({"facilities": facs}).Facilities
 	return p
 
 
@@ -132,6 +159,7 @@ func _case(what: String, pack: PackLoader.LoadedPack, expect: String) -> void:
 	var errors: Array[String] = []
 	PackLoader._validate_map(pack, PACK_DIR, errors)
 	PackLoader._validate_characters(pack, errors)
+	PackLoader._validate_facilities(pack, errors)
 	for e in errors:
 		if e.contains(expect):
 			print("[pack_validation] ok   %s" % what)
