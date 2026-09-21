@@ -18,10 +18,11 @@ class IntelSnapshot:
 	var Day: int
 	var Lines: Array[String] = []
 	var Groups: Array[IntelGroup] = []
-	## The same sighting as DATA - a small structured twin taken at the same moment
-	## as Lines, of the same things, so it reveals nothing the text does not. Only
-	## the fields the windows and the GID actually read (owner, support, uprising,
-	## resources; defensive and production facility counts). {} for other sections.
+	## The same sighting as DATA (Collect) - a structured twin taken at the same
+	## moment as Lines, of the same things, so it reveals nothing the text does not.
+	## Read by the windows and the GID (fogged, via the Seen* readers) and by code
+	## that must reason about a world it does not hold without reading its live
+	## state (the built-in AI, via Sighting/IntelFacts).
 	var Data: Dictionary = {}
 
 
@@ -140,7 +141,7 @@ static func Capture(viewer: Faction, planet: Planet, day: int, categories: Array
 			snap.Lines.append(l)
 		for g in RenderGroups(planet, section):
 			snap.Groups.append(g)
-		snap.Data = _Collect(planet, section)
+		snap.Data = Collect(planet, section)
 		_known[_key(viewer, planet, section)] = snap
 	# Anything at all charts the system.
 	planet.SetExplored(viewer, true)
@@ -169,16 +170,39 @@ static func IsLive(viewer: Faction, planet: Planet) -> bool:
 
 
 # ---------------------------------------------------------------------------
-# THE SAME INTELLIGENCE, AS DATA (the small twin of Render). _Collect() is what
-# Capture() stores alongside the text; the Seen* readers below hand it back with
-# the manual's Core exception applied, so the UI and the GID read fogged numbers
-# instead of the live world.
+# THE SAME INTELLIGENCE, AS DATA. Render() is what was on the screen; Collect()
+# is the same sighting in a form code can reason about. Both are taken by
+# Capture() at the same moment, so a side never knows more through one than
+# through the other. Two readers sit on top:
+#   - the Seen* readers below hand it to the UI and the GID with the manual's
+#     Core exception applied, so they read fogged numbers, not the live world;
+#   - Sighting()/Facts() hand it to the built-in AI, which reads ONLY these and so
+#     never reads an enemy world's live state (the fairness rule,
+#     docs/ai-framework/10 section 3).
 # ---------------------------------------------------------------------------
 
-## One category as the small data twin, captured at the same moment as the text.
-## Only the fields the UI reads; {} for sections it reads as text (Troopers,
-## Fighters, ... - a line count off View suffices there).
-static func _Collect(p: Planet, section: int) -> Dictionary:
+## { known, live, day, data } for one category - the structured twin of View().
+static func Sighting(viewer: Faction, planet: Planet, section: int) -> Dictionary:
+	if viewer == null or planet == null:
+		return { "known": false, "live": false, "day": 0, "data": {} }
+	if planet.ControllingFaction == viewer:
+		return { "known": true, "live": true, "day": StrategicTickManager.Today, "data": Collect(planet, section) }
+	var k := _key(viewer, planet, section)
+	if _known.has(k):
+		var s: IntelSnapshot = _known[k]
+		return { "known": true, "live": false, "day": s.Day, "data": s.Data }
+	return { "known": false, "live": false, "day": 0, "data": {} }
+
+
+## Everything `viewer` knows of `planet`, gathered for a planner (IntelFacts).
+static func Facts(viewer: Faction, planet: Planet) -> IntelFacts:
+	return IntelFacts.of(viewer, planet)
+
+
+## One category of one system as data. Mirrors Render() line for line: the same
+## lists, the same filters (so a fleet still in hyperspace TO this world is listed,
+## exactly as the text lists it).
+static func Collect(p: Planet, section: int) -> Dictionary:
 	match section:
 		Enums.IntelSection.SystemStatus:
 			var support: Dictionary = {}
@@ -187,25 +211,75 @@ static func _Collect(p: Planet, section: int) -> Dictionary:
 			return {
 				"owner": p.ControllingFaction.Id if p.ControllingFaction != null else "",
 				"support": support,
+				"garrison_requirement": p.GarrisonRequirement(),
 				"uprising": p.IsInUprising,
 				"energy": p.BaseEnergy,
 				"materials": p.BaseRawMaterials,
 			}
+		Enums.IntelSection.Troopers:
+			var regiments: Array = []
+			for u in p.Troopers():
+				regiments.append({ "name": u.Name, "attack": u.Attack, "defense": u.Defense })
+			return { "regiments": regiments }
+		Enums.IntelSection.Fighters:
+			return { "squadrons": p.FighterSquadrons.size() }
+		Enums.IntelSection.OrbitingShips:
+			var fleets: Array = []
+			for f in p.OrbitingFleets:
+				fleets.append({
+					"name": f.Name,
+					"faction": f.Faction.Id if f.Faction != null else "",
+					"ships": f.Ships.size(),
+					"strength": FleetBattleManager.StrengthOf(f),
+				})
+			return { "fleets": fleets }
 		Enums.IntelSection.DefensiveFacilities:
 			var shields := 0
-			var batteries := 0   # turbolaser + ion, as the GID's "Defense Batteries" counts them
+			var shield_strength := 0
+			var battery_ratings: Array = []   # turbolaser batteries only, one WeaponRating each (the AI's read)
+			var ion_cannons := 0
+			var guns: Array = []   # every defensive facility that fires on a landing (AssaultManager.Resolve: WeaponRating > 0)
 			for f in p.Facilities:
+				if IsDefensive(f) and f.WeaponRating > 0:
+					guns.append(f.WeaponRating)
 				match f.Type:
-					Enums.FacilityType.PlanetaryShield: shields += 1
-					Enums.FacilityType.TurbolaserBattery: batteries += 1
-					Enums.FacilityType.IonCannon: batteries += 1
-			return { "shields": shields, "batteries": batteries }
+					Enums.FacilityType.PlanetaryShield:
+						shields += 1
+						var rule := FacilityCatalog.Get(f.Type, f.Tier)
+						shield_strength += rule.ShieldStrength if rule != null else 0
+					Enums.FacilityType.TurbolaserBattery:
+						battery_ratings.append(f.WeaponRating)
+					Enums.FacilityType.IonCannon:
+						ion_cannons += 1
+			return {
+				"shields": shields,
+				"shield_strength": shield_strength,
+				# "batteries" is a COUNT (turbolaser + ion), as the GID's "Defense Batteries" reads it.
+				"batteries": battery_ratings.size() + ion_cannons,
+				"battery_ratings": battery_ratings,
+				"ion_cannons": ion_cannons,
+				"guns": guns,
+			}
 		Enums.IntelSection.ProductionFacilities:
 			var counts: Dictionary = {}
 			for f in p.Facilities:
 				if not IsDefensive(f):
 					counts[f.Type] = int(counts.get(f.Type, 0)) + 1
 			return { "counts": counts }
+		Enums.IntelSection.SpecForces:
+			return { "units": p.SpecForces().size() }
+		Enums.IntelSection.Characters:
+			# ONE DELIBERATE DIFFERENCE FROM Render(): an agent ON A MISSION is not listed.
+			# Such an agent is hiding - the Personnel tab already refuses to show one
+			# standing on a world we hold (issue #2a, tests/onmission_fog.gd) - and a
+			# planner that saw them could abduct a spy it has not detected. The built-in
+			# AI does exactly that; a brain reading these facts cannot.
+			var people: Array = []
+			for c in GameState.ActiveRoster:
+				if c.IsOffMap() or c.Attached != p or c.Status == Enums.Status.Dead or c.Status == Enums.Status.OnMission:
+					continue
+				people.append({ "name": c.Name, "rank": c.Rank })
+			return { "people": people }
 	return {}
 
 
@@ -216,7 +290,7 @@ static func SeenData(viewer: Faction, planet: Planet, section: int) -> Dictionar
 	if viewer == null or planet == null:
 		return {}
 	if planet.ControllingFaction == viewer:
-		return _Collect(planet, section)
+		return Collect(planet, section)
 	var k := _key(viewer, planet, section)
 	return _known[k].Data if _known.has(k) else {}
 
@@ -228,7 +302,7 @@ static func StatusSeen(viewer: Faction, planet: Planet) -> Dictionary:
 	if viewer == null or planet == null:
 		return {}
 	if planet.ControllingFaction == viewer:
-		return _Collect(planet, Enums.IntelSection.SystemStatus)
+		return Collect(planet, Enums.IntelSection.SystemStatus)
 	var k := _key(viewer, planet, Enums.IntelSection.SystemStatus)
 	var d: Dictionary = _known[k].Data.duplicate(true) if _known.has(k) else {}
 	if IsCore(planet):

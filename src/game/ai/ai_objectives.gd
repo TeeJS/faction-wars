@@ -71,12 +71,12 @@ static func Compute(ctx: AIContext) -> Plan:
 	var hq_only: bool = GameSettings.HQOnlyVictory
 	var caps: Array = [] if hq_only else VictoryManager.CaptureTargets(us)
 	var remaining: Array = Lq.where(caps, func(n): return not VictoryManager.HoldsCaptive(us, n))
-	var located: Array = Lq.where(remaining, func(n): return _target_located(us, n))
+	var located: Array = Lq.where(remaining, func(n): return _target_located(ctx, n))
 
 	var hq_met: bool = opponent != null and VictoryManager.HeadquartersConditionMet(us, opponent, galaxy)
 	var hq_known := true
 	if opponent != null and opponent.HasHiddenHq():
-		hq_known = _rebel_hq_known(us, opponent, galaxy) != null
+		hq_known = _rebel_hq_known(ctx, opponent, galaxy) != null
 
 	if not remaining.is_empty():
 		# Capture targets outstanding — pursue the characters first.
@@ -125,24 +125,38 @@ static func _own_captured(us: Faction) -> bool:
 	return Lq.any(GameState.ActiveRoster, func(c): return c.Faction == us and c.IsCaptured())
 
 
-## A named capture target we legitimately know the location of (Characters intel on
-## the world it stands on). Fog-legal (same gate as the missions policy).
-static func _target_located(us: Faction, name: String) -> bool:
+## A named capture target OUR SIGHTING names on the world it stands on - the same
+## test the missions policy offers an abduction on (AIActionSelection._sighted), so
+## "located" and "there is an order to give" cannot disagree. It used to be
+## Knows(Characters) on wherever they stand today - which "located" anybody who had
+## walked onto a world we once scouted, from that world's live roster.
+static func _target_located(ctx: AIContext, name: String) -> bool:
 	var c: Character = Lq.first_or_null(GameState.ActiveRoster, func(x): return x.Name == name)
 	if c == null or not (c.Attached is Planet):
 		return false
-	return IntelManager.Knows(us, c.Attached, Enums.IntelSection.Characters)
+	return AIActionSelection._sighted(ctx, c.Name, c.Attached)
 
 
-## The opponent's hidden HQ world, IF we have explored it (fog-legal). null == unknown.
-static func _rebel_hq_known(us: Faction, opponent: Faction, galaxy: Array) -> Planet:
+## The opponent's hidden HQ world, as far as WE HAVE SEEN: a world our sighting shows
+## as theirs with the Headquarters building on it - the freshest such sighting, the
+## first in galaxy order between equals. null == unknown. It used to be the world the
+## building stands on TODAY, behind ExploredBy - which found the headquarters the day
+## it moved onto any world we had ever charted. A sighting can be out of date: after
+## a move we go on believing the old seat until somebody looks again.
+static func _rebel_hq_known(ctx: AIContext, opponent: Faction, galaxy: Array) -> Planet:
 	if galaxy == null:
 		return null
+	var best: Planet = null
+	var best_day := -1
 	for s in galaxy:
 		for p in s.Planets:
-			if p.HasHeadquarters() and p.ControllingFaction == opponent and p.ExploredBy(us):
-				return p
-	return null
+			if p.ControllingFaction == ctx.Us or not p.ExploredBy(ctx.Us):
+				continue   # ours (no enemy seat there), or never seen at all
+			var seen := ctx.Facts(p)
+			if seen.owner_id == opponent.Id and seen.has_headquarters() and seen.production_day > best_day:
+				best = p
+				best_day = seen.production_day
+	return best
 
 
 static func _bump(d: Dictionary, key: int, amount: int) -> void:

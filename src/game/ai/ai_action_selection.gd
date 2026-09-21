@@ -282,7 +282,7 @@ static func _mission_candidate(ctx: AIContext, plan: AIObjectives.Plan, type: in
 	c.loop = _loop_of(type)
 	c.kind = "mission:%s" % JsonUtil.enum_name(Enums.MissionType, type)
 	c.budget_key = "missions"
-	var est := _estimate_success(type, team, target, victim)
+	var est := _estimate_success(ctx, type, team, target, victim)
 	var base: int = BASE_VALUE.get(type, 300)
 	c.expected_value = base * est / 100
 	c.objective_fit = _objective_fit(plan, c.loop, type, target)
@@ -308,46 +308,105 @@ static func _mission_candidate(ctx: AIContext, plan: AIObjectives.Plan, type: in
 	return c
 
 
-static func _estimate_success(type: int, team: Array, target: Planet, victim) -> int:
-	var m := Mission.new()
-	m.Type = type
-	m.Faction = team[0].Faction
-	m.Target = target
-	m.TargetCharacter = victim
+## The odds, FROM WHAT WE HAVE SEEN (_fog_estimate). It used to build a Mission over
+## the live world and call MissionManager.SuccessPercent - today's support and today's
+## garrison on a world last seen long ago.
+static func _estimate_success(ctx: AIContext, type: int, team: Array, target: Planet, victim) -> int:
+	var pct := _fog_estimate(ctx, type, team, target, victim)
+	return pct if pct >= 0 else DEFAULT_SUCCESS
+
+
+## The engine's own score (MissionManager.ScoreFor, REBEXE 0x55C680) applied to the
+## target's IntelFacts - live for our own worlds, the dated sighting otherwise, zero
+## for a term never seen - instead of to the live world, then read off the shipped
+## table. -1 when the mission rolls on no shipped table (the flat DEFAULT stands). A
+## victim's own rating stays a live read: there is no sighting of it, and the engine
+## reads the same (MissionManager.DefenceTerm against a named person).
+static func _fog_estimate(ctx: AIContext, type: int, team: Array, target: Planet, victim) -> int:
+	var table: Variant = MissionManager.TableFor(type)
+	if table == null or not MissionTableManager.Has(table) or target == null:
+		return -1
 	var rating := 0
 	for u in team:
 		rating = max(rating, MissionManager.AttributeFor(type, u))
-	var pct := MissionManager.SuccessPercent(m, rating)
-	return pct if pct >= 0 else DEFAULT_SUCCESS
+	var facts := ctx.Facts(target)
+	var defence := 0
+	if victim != null:
+		defence = MissionManager.AttributeFor(type, victim)
+	else:
+		for f in FactionRegistry.Playable:
+			if f != ctx.Us:
+				defence = max(defence, facts.support_for(f))
+	var garrison := 0
+	for reg in facts.regiments:
+		if str((reg as Dictionary).get("name", "")) == "Stormtrooper Regiment":   # MissionManager.GarrisonTerm
+			garrison += 1
+	var score := rating - defence
+	match type:
+		Enums.MissionType.Espionage, Enums.MissionType.Rescue, Enums.MissionType.Sabotage, Enums.MissionType.DeathStarSabotage:
+			score = rating
+		Enums.MissionType.Diplomacy, Enums.MissionType.SubdueUprising:
+			score = rating + garrison - defence
+		Enums.MissionType.InciteUprising:
+			score = rating - defence - garrison
+	return MissionTableManager.Lookup(table, score)
 
 
 static func _mission_already_active(us: Faction, type: int, target: Planet) -> bool:
 	return Lq.any(MissionManager.Active(), func(m): return m.Faction == us and m.Type == type and m.Target == target)
 
 
-## Highest-value enemy character whose LOCATION we legitimately know (intel-gated:
-## we hold Characters intel on the planet they are on). Fog-legal (BUILD-PLAN F-flag).
+## The best enemy character we could target - the FIRST of _enemy_target_characters
+## (highest value, then lower instance id).
 static func _best_enemy_target_character(ctx: AIContext, type: int):
-	var best = null
-	var best_score := -1
+	var seen := _enemy_target_characters(ctx, type)
+	return seen[0] if not seen.is_empty() else null
+
+
+## Enemy characters OUR SIGHTING NAMES on the world they stand on (IntelFacts.people:
+## live for a world we hold, the dated Characters sighting otherwise), value first -
+## value, then lower instance id, a total order. IntelManager.Knows was not enough: it
+## says we once saw who was on that world, not that we saw THIS person there - so
+## anybody who later walked onto a world scouted long ago was "located". A sighting
+## never lists an agent on a mission (IntelManager.Collect), so a spy we have not
+## detected is no target either.
+##
+## Somebody seen on a world who has since LEFT is not offered at their old address:
+## the engine's Abduction does not check the victim is still at the target
+## (mission_manager.gd Resolve), so that order would seize them wherever they are.
+static func _enemy_target_characters(ctx: AIContext, type: int) -> Array:
+	var out: Array = []
 	for ch in GameState.ActiveRoster:
 		if ch.Faction == null or ch.Faction == ctx.Us:
 			continue
 		if not (ch.Attached is Planet):
 			continue
 		var where: Planet = ch.Attached
-		if not IntelManager.Knows(ctx.Us, where, Enums.IntelSection.Characters):
-			continue   # we don't legitimately know this character is here
+		if not _sighted(ctx, ch.Name, where):
+			continue   # our sighting of this world does not name them
 		if not MissionManager.CanTargetPerson(type, ctx.Us, ch).ok:
 			continue
 		if not MissionManager.CanTarget(type, ctx.Us, where).ok:
 			continue
-		# Majors (victory-condition characters) are worth more.
-		var s := (100 if ch.IsMajor else 10) + ch.CombatRating
-		if s > best_score or (s == best_score and best != null and ch.get_instance_id() < best.get_instance_id()):
-			best_score = s
-			best = ch
-	return best
+		out.append(ch)
+	out.sort_custom(func(a, b) -> bool:
+		var sa := _character_value(a)
+		var sb := _character_value(b)
+		if sa != sb:
+			return sa > sb
+		return a.get_instance_id() < b.get_instance_id())
+	return out
+
+
+## Does what we have SEEN of `where` name this person there? (Shared with the
+## objectives stage's "capture target located".)
+static func _sighted(ctx: AIContext, person: String, where: Planet) -> bool:
+	return ctx.Facts(where).names_present().has(person)
+
+
+## Majors (victory-condition characters) are worth more. OURS.
+static func _character_value(ch) -> int:
+	return (100 if ch.IsMajor else 10) + ch.CombatRating
 
 
 ## Our own captured character we could rescue (its holding location known to us).
@@ -359,15 +418,32 @@ static func _best_rescue_target(ctx: AIContext):
 	return null
 
 
-## A legal enemy sabotage object (facility or unit) on a world we have intel on.
+## A legal enemy sabotage object our SIGHTING shows on a seen world (the FIRST, as the
+## built-in prefers). Fog-legal via _sabotage_targets.
 static func _best_sabotage_target(ctx: AIContext):
+	var seen := _sabotage_targets(ctx)
+	return seen[0] if not seen.is_empty() else null
+
+
+## Legal enemy sabotage objects OUR SIGHTING SHOWS on a world, each as {where, obj},
+## in context order. The mission needs a real Facility, so the world's own list is
+## walked - but a facility is offered only while our sighting shows one of its KIND
+## unclaimed (IntelFacts.facilities_of): a shipyard built since we looked is not a
+## target, and three standing where we saw one offer one. It used to walk p.Facilities
+## behind Knows(ProductionFacilities) - today's facilities, and the shields and
+## batteries gated by a sighting of the mines.
+static func _sabotage_targets(ctx: AIContext) -> Array:
+	var out: Array = []
 	for p in ctx.TheirsWeak + ctx.TheirsStrong:
-		if not IntelManager.Knows(ctx.Us, p, Enums.IntelSection.ProductionFacilities):
-			continue
+		var seen := ctx.Facts(p)
+		var offered: Dictionary = {}   # Enums.FacilityType -> how many of it are already listed
 		for f in p.Facilities:
+			if int(offered.get(f.Type, 0)) >= seen.facilities_of(f.Type):
+				continue
 			if MissionManager.CanSabotage(ctx.Us, f, p).ok:
-				return {"where": p, "obj": f}
-	return null
+				out.append({"where": p, "obj": f})
+				offered[f.Type] = int(offered.get(f.Type, 0)) + 1
+	return out
 
 
 static func _loop_of(type: int) -> int:
@@ -457,7 +533,7 @@ static func _propose_fleet(ctx: AIContext, plan: AIObjectives.Plan) -> Array:
 
 	# 2. PRESS WEAK ENEMY WORLDS we can see to be beatable (offensive).
 	for target in ctx.TheirsWeak:
-		var defending := _seen_defending_ships(ctx.Us, target)
+		var defending := _seen_defending_ships(ctx, target)
 		if defending < 0:
 			continue   # we cannot see the defence — do not commit blind
 		var strike := _nearest_fleet(idle, target)
@@ -498,11 +574,14 @@ static func _strength_at(p: Planet, f: Faction) -> int:
 	return ships + troops
 
 
-## Seen defenders via intel (fog-legal): -1 if we do not know the orbit.
-static func _seen_defending_ships(us: Faction, p: Planet) -> int:
-	if not IntelManager.Knows(us, p, Enums.IntelSection.OrbitingShips):
+## The hulls we last SAW there that are not ours (IntelFacts.hostile_ships - a fleet
+## seen inbound counts, as the sighting's text lists it): -1 if we never saw the orbit.
+## It used to count today's hulls behind Knows(OrbitingShips).
+static func _seen_defending_ships(ctx: AIContext, p: Planet) -> int:
+	var seen := ctx.Facts(p)
+	if seen.ships_day < 0:
 		return -1
-	return Lq.sum(Lq.where(p.FleetsInOrbit(), func(x): return x.Faction == p.ControllingFaction), func(x): return x.Ships.size())
+	return seen.hostile_ships(ctx.Us)
 
 
 static func _nearest_fleet(fleets: Array, to: Planet) -> Fleet:
