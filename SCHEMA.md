@@ -1,0 +1,522 @@
+<!-- reconciled from sol-conflict-revolution commit 167e2ad (SCHEMA.md, 2026-07-25) -->
+
+# Faction Pack Schema v1 — DRAFT (awaiting sign-off)
+
+The contract between the engine and a faction pack. Everything that describes
+*content* lives here; everything that describes *how the simulation runs* lives
+in engine code. See the source repo's `PROJECT.md` for why.
+
+> **This is the reconciled copy.** The original was drafted 2026-07-25 against
+> the C# repo, before any migration ran, and several of its claims no longer
+> match the data folder. Every correction is listed in §13. The source repo's
+> copy is now **behind this one** and needs TeeJ's separate go-ahead to update.
+
+**Status:** Phases 1 and 2 are **done** (`pack.json`, `factions.json`, the
+faction-keyed re-key of `game_rules.json` / `side_lottery.json` / `BuildableBy`).
+Sections marked **`[later]`** are reserved — a pack may declare them and a v1
+engine ignores them.
+
+---
+
+## 1. Conventions
+
+- **ids** are `lower_snake_case`, unique within their file. Every cross-reference
+  must resolve; the loader rejects dangling refs (§11).
+- **Names are never behaviour.** Engine code selects on **role tags**, never on
+  an id or display name. "is this an ion_cannon" is forbidden; "does this
+  facility have the disable role" is correct.
+- Colors are `#rrggbb`. Percentages are 0–100 integers. Costs are integers.
+- **Durations are in ticks. 1 tick = 1 in-game day.**
+- **N factions (2–4).** Nothing in a pack or the engine may assume two sides.
+  Anything that was a two-sided pair becomes a map keyed by faction id.
+- Unknown fields are ignored (forward-compatible). Missing required fields are a
+  load error.
+- A pack is a folder under `packs/<pack_id>/`. The Star Wars content currently in
+  `data/` becomes `packs/star-wars-rebellion/`.
+
+### Files in a pack
+
+Fifteen JSON files and one bitmap live in `data/` today. Every one of them is
+accounted for below — that is what this reconciliation was for.
+
+| File | Purpose | Current source | Built? |
+|---|---|---|---|
+| `pack.json` | Manifest + setup defaults | *(new)* | ✅ |
+| `factions.json` | The sides: identity, color, HQ config, asymmetry flags | *(new)* | ✅ |
+| `map.json` | Sectors and planets: position, ring, artwork | `sectors_data.json` (20) + `planets_data.json` (200) | ❌ |
+| `map_image` | The galaxy backdrop the map is drawn on | `data/galaxyShaded.bmp` | ❌ |
+| `facilities.json` | Static structures + **role tags** | `production_facilities.json` (9) + `defensive_facilities.json` (6) + the `FacilityType` enum | ❌ |
+| `units.json` | Mobile units and their stats | `military_units.json` (57) | ❌ |
+| `characters.json` | Named characters | `major_characters.json` (6) + `minor_characters.json` (54) | ❌ |
+| `rules.json` | Tunable rule table, keyed by faction + difficulty | `game_rules.json` (213) | ⚠ re-keyed, not moved |
+| `setup.json` | Day-zero seeding: side lottery + logistics tables | `side_lottery.json` (35) + `day_zero_logistics.json` (11 tables) | ⚠ re-keyed, not moved |
+| `missions.json` | The mission catalog | `missions.json` (25) | ❌ |
+| `mission_tables.json` | Per-mission outcome tables | `mission_tables.json` (12 tables) | ❌ |
+| `display.json` | The Galactic Information Display catalog | `src/ui/gid.gd` (currently code) | ❌ |
+| `uprising.json` | Uprising thresholds `[later]` | `uprising_start.json`, `uprising_end.json` | ❌ |
+
+**Not pack content:** `gnprtb_globals.json` (212 rows of
+`{global, parameter_id, entry_id, name}`) is a map from rule entries to the
+original binary's memory addresses — a reverse-engineering artifact belonging
+with the extraction tooling, not shipped in a pack.
+
+---
+
+## 2. `pack.json` — manifest
+
+**Built.** Matches `packs/star-wars-rebellion/pack.json`.
+
+```json
+{
+  "id": "star-wars-rebellion",
+  "display_name": "Star Wars: Rebellion",
+  "schema_version": 1,
+  "faction_count": 2,
+  "neutral": { "id": "neutral", "display_name": "Neutral", "color": "#5499ff" },
+  "unexplored_color": "#cccccc",
+  "setup": {
+    "difficulty_default": "medium",
+    "galaxy_sizes": ["standard", "large", "huge"]
+  }
+}
+```
+
+| Field | Notes |
+|---|---|
+| `schema_version` | This doc is **1**. The loader refuses anything newer. |
+| `faction_count` | Must equal the entries in `factions.json`; 2–4. |
+| `neutral` | The uncontrolled side. Pack data, not a hardcoded singleton, because its name and color are setting-specific. **Not** playable, not counted in `faction_count`. |
+| `unexplored_color` | Color for systems the viewing faction has no knowledge of. A display convention, not a rule. |
+
+---
+
+## 3. `factions.json` — the sides
+
+**Built,** and it carries three field groups the original draft did not specify:
+`starting_planets` is a list of objects (not ids), plus `seed` and `victory`.
+
+```json
+{
+  "factions": [
+    {
+      "id": "alliance",
+      "display_name": "Rebel Alliance",
+      "color": "#ff0000",
+      "loyalty_label": "Loyalty to the Alliance",
+      "hq": { "kind": "hidden", "placement": "random_rim", "movable": true },
+      "occupation_support_policy": "occupation_penalty",
+      "starting_planets": [
+        { "planet": "Yavin", "support": 100, "explored": true,
+          "garrison": "CMUNYVTB.DAT" }
+      ],
+      "seed": {
+        "hq_facilities": "FACLHQTB.DAT",
+        "hq_garrison": "CMUNHQTB.DAT",
+        "fleet": "CMUNAFTB.DAT",
+        "procedural_fleet": "CMUNALTB.DAT"
+      },
+      "victory": { "capture_characters": ["Emperor Palpatine", "Darth Vader"] }
+    }
+  ]
+}
+```
+
+| Field | Notes |
+|---|---|
+| `color` | Drives the map marker, the sector window and the GID legend. One source of truth; the engine holds no faction color constants. |
+| `hq.kind` | `fixed` — a known capital, captured when taken. `hidden` — placed at `placement` (a planet name or the `random_rim` sentinel), unknown to other factions until located, optionally `movable`, destroyed rather than captured. |
+| `occupation_support_policy` | `garrison_bonus` (troops raise support over time) or `occupation_penalty` (first occupation lowers it). Asymmetry as a flag. |
+| `loyalty_label` | Display string for the GID loyalty mode. |
+| `starting_planets[]` | `{planet, support, explored, garrison}`. `planet` is a **display name**, not an id — see §12 Q1. |
+| `seed` | Which day-zero logistics table seeds this side's HQ, garrison and fleets. Values are **original `.DAT` filenames** — see §12 Q2. |
+| `victory.capture_characters` | Characters this side must hold captive to win. **Display names**, not ids. |
+
+---
+
+## 4. `map.json` — sectors and planets
+
+Merges `sectors_data.json` (20 sectors) and `planets_data.json` (200 planets).
+Ids replace the numeric `SectorId`/`PlanetId`; the numeric ids may remain as
+`source_id` for traceability.
+
+```json
+{
+  "sectors": [
+    { "id": "abrion", "display_name": "Abrion", "ring": 2,
+      "starts_neutral": false, "map": { "x": 469, "y": 642 },
+      "intel_tier": "presence" }
+  ],
+  "planets": [
+    { "id": "abregado", "display_name": "Abregado", "sector": "abrion",
+      "starts_inhabited": false, "map": { "x": 479, "y": 726 },
+      "artwork_id": 12 }
+  ]
+}
+```
+
+| Field | Notes |
+|---|---|
+| `ring` | 1 = Core, >1 = Rim. Drives day-zero seeding and default knowledge. From `GalaxyRing`. |
+| `artwork_id` | The planet's portrait. Present in the real data as `ArtworkId`; absent from the original draft. Pack content — a different setting ships different art. |
+| `intel_tier` | `live` — control and support always current (Core). `presence` — updates only with a fleet or mission present (Rim). **`[later]`**; v1 may treat all sectors as `live`. |
+
+**⚠ Correction — there is no per-planet `base_resources`.** The original draft
+specified one. Energy and raw-material slots are **rolled at day zero** from
+rule entries 180, 182 and 189–197
+([day_zero_generator.gd:431](src/game/day_zero_generator.gd:431)), and clamped
+to hard maxima. They are generated, not authored. A pack tunes them through
+`rules.json`, not through `map.json`.
+
+This also closes the original §10 Q1 (an open resource vocabulary implying a
+`resources.json`): the two resources are *rule-driven quantities*, so declaring
+a third means adding rule entries **and** an engine consumer, not just a pack
+file. Re-open only if that is actually wanted.
+
+### `map_image`
+
+`data/galaxyShaded.bmp` is the backdrop the galaxy map draws over. The original
+draft has nowhere to put it. A pack needs one; the manifest should name it
+rather than the engine assuming a filename. **Unresolved — see §12 Q3.**
+
+---
+
+## 5. `facilities.json` — structures, selected by role
+
+Replaces the `FacilityType` enum ([enums.gd:17](src/game/enums.gd:17)), whose
+members `IonCannon`, `TurbolaserBattery`, `DeathStarShield` and `PlanetaryShield`
+are setting vocabulary in engine code.
+
+**⚠ Correction — there are two source files, not one.** The original draft named
+only `defensive_facilities.json`. The real set is 15 facilities:
+
+| Source | Rows | Extra columns beyond the common set |
+|---|---|---|
+| `production_facilities.json` | 9 | `ProcessingRate` |
+| `defensive_facilities.json` | 6 | `WeaponRating`, `ShieldStrength` |
+
+Common to both: `Id`, `FamilyId`, `Name`, `Tier`, `BuildableBy`,
+`ConstructionCost`, `MaintenanceCost`, `ResearchOrder`, `ResearchCost`,
+`BombardmentDefense`. The two differ only in their stat columns, which is
+exactly what an open `stats` map absorbs.
+
+```json
+{
+  "facilities": [
+    { "id": "ion_cannon", "display_name": "Ion Cannon", "tier": 1,
+      "family": 34,
+      "roles": ["planet_defense", "disable"],
+      "buildable_by": ["empire", "alliance"],
+      "construction_cost": 4, "maintenance_cost": 4,
+      "research_order": 2, "research_cost": 120,
+      "stats": { "weapon_rating": 2000, "shield_strength": 0,
+                 "bombardment_defense": 0 } },
+
+    { "id": "mine", "display_name": "Mine", "tier": 1,
+      "roles": ["extracts_raw"], "buildable_by": ["empire", "alliance"],
+      "construction_cost": 2, "maintenance_cost": 1,
+      "stats": { "processing_rate": 1 } }
+  ]
+}
+```
+
+| Field | Notes |
+|---|---|
+| `roles` | The engine's selection vocabulary. v1 role set: `headquarters`, `extracts_raw`, `refines`, `produces_unit`, `produces_troop`, `produces_facility`, `planet_defense`, `shield`, `disable`, `anti_ship`. The loader rejects unknown roles so a typo cannot silently create an inert facility. |
+| `buildable_by` | A list of faction ids; absent means all. **Already migrated** in the real data. |
+| `stats` | Open map. The engine has no built-in stat vocabulary; consumers read named stats declared by the pack. Absorbs the production/defensive column split. |
+
+---
+
+## 6. `units.json` — mobile units
+
+From `military_units.json`, 57 rows, 44 columns.
+
+```json
+{
+  "units": [
+    { "id": "mon_calamari_cruiser", "display_name": "Mon Calamari Cruiser",
+      "family": "capital_ship", "roles": ["capital_ship"],
+      "buildable_by": ["alliance"],
+      "construction_cost": 92, "maintenance_cost": 70,
+      "stats": { "shield": 300, "hull": 2400, "turbolaser": 360,
+                 "ion_cannon": 200, "sublight": 4, "hyperdrive": 60,
+                 "fighter_capacity": 3, "troop_capacity": 1 } }
+  ]
+}
+```
+
+- `buildable_by` **is already a list of faction ids** in the real data
+  (`"BuildableBy": ["alliance"]`). Phase 2 landed this; the original draft still
+  described it as pending.
+- **Stats that do not apply are omitted, not `null`.** The current file writes
+  `null` for inapplicable stats, which is what crashed `SeedManager` after the
+  `json_gui` merge. An open `stats` map makes absence the natural encoding.
+- The 34 weapon columns (`TurbolaserFore`, `IonCannonAft`, … `LaserPort`) are a
+  fixed four-arc vocabulary in the data schema itself. Whether arcs are pack
+  vocabulary or engine vocabulary is **unresolved — see §12 Q4.**
+
+---
+
+## 7. `characters.json` — the roster
+
+**The original draft's §10 Q2 said characters "were not examined in detail."
+This is that pass.**
+
+60 characters (6 major, 54 minor), identical 29-column schema in both files. The
+split is by importance, not by structure, so one pack file with an `is_major`
+flag is enough.
+
+```json
+{
+  "characters": [
+    { "id": "mon_mothma", "display_name": "Mon Mothma", "faction": "alliance",
+      "is_major": true,
+      "ratings": {
+        "diplomacy":        { "base": 90, "var": 10 },
+        "espionage":        { "base": 20, "var": 10 },
+        "combat":           { "base": 10, "var": 10 },
+        "leadership":       { "base": 90, "var": 10 },
+        "loyalty":          { "base": 100, "var": 0 },
+        "ship_research":    { "base": 0, "var": 0 },
+        "troop_research":   { "base": 0, "var": 0 },
+        "facility_research":{ "base": 0, "var": 0 }
+      },
+      "can_command": ["admiral", "commander", "general"],
+      "wont_betray": true,
+      "special": { "affinity_probability": 0, "affinity_known": false,
+                   "affinity_level": { "base": 0, "var": 0 },
+                   "can_train": false }
+    }
+  ]
+}
+```
+
+*(Values above are shape illustration, not transcribed from the table.)*
+
+| Change from the raw data | Why |
+|---|---|
+| `Faction` `"Alliance"` → `"alliance"` | The raw files use **title case** while the pack uses lower case. `FactionRegistry.ById` folds case to paper over exactly this ([faction_registry.gd:69](src/game/faction_registry.gd:69)). Re-keying removes the need for the fold. |
+| 8 `XxxBase`/`XxxVar` column pairs → a `ratings` map | The pairs are uniform; a map removes named engine fields. |
+| `CanBeAdmiral`/`CanBeCommander`/`CanBeGeneral` → `can_command` list | Three booleans are a closed vocabulary. |
+| `JediProbability`, `IsKnownJedi`, `JediLevelBase/Var`, `CanTrainJedi` → `special` | **These are IP vocabulary in the data schema**, and they are mirrored in engine code as `Character.JediLevel`, `IsKnownJedi`, `CanTrainJedi` and `Enums.ForceRanking.JediMaster` ([character.gd:43-151](src/game/character.gd:43)). The charter forbids this. The generic naming is a pack decision — **see §12 Q5.** |
+
+---
+
+## 8. `rules.json` and `setup.json` — the faction-keyed migration
+
+**⚠ The original draft described this as pending. It is done.** Both files are
+already nested maps keyed by faction id, and the extractors that generate them
+(`parse_rules.py`, `parse_side_lottery.py`, `parse_military.py` in the source
+repo) were updated in the same change.
+
+Real shape of `game_rules.json`, 213 rows:
+
+```json
+{ "EntryId": 1,
+  "Name": "Space Travel Time: Base (%, lower=faster)",
+  "ParameterId": 1,
+  "Development": 100,
+  "Multiplayer": 100,
+  "by_faction": {
+    "alliance": { "easy": 100, "medium": 100, "hard": 100 },
+    "empire":   { "easy": 100, "medium": 100, "hard": 100 }
+  } }
+```
+
+Two differences from the original draft's example:
+
+- Rows are addressed by the integer `EntryId`, not a `lower_snake_case` id. The
+  names this codebase reads are constants in
+  [rule_id.gd](src/game/rule_id.gd), which maps a readable name to the number.
+  Whether the table itself should be name-keyed is **§12 Q6.**
+- `Development` and `Multiplayer` are top-level columns, not entries inside
+  `by_faction`. `Multiplayer` is the shared column a head-to-head game reads;
+  `Development` is the fallback for structural entries
+  ([rule_manager.gd:61](src/game/rule_manager.gd:61)).
+
+`side_lottery.json` (35 rows) is an **N×N matrix** —
+`by_faction[side][difficulty][side]` — plus flat `dev` and `mp` maps. Today 2×2.
+A third faction makes every one of the 35 entries a 3×3, and the original
+`SDPRTB.DAT` has no values to supply them; they would have to be authored.
+
+**⚠ Correction — `core_infrastructure.json` and `rim_infrastructure.json` do not
+exist.** The original draft named them as `setup.json`'s sources. Neither file
+is in either repo. `setup.json`'s real sources are `side_lottery.json` and
+`day_zero_logistics.json`.
+
+> **The `data/*.py` extractors must be updated in the same change** as any
+> further re-keying. They regenerate these files from the original game data;
+> re-keying the JSON without re-keying the extractors means the next
+> regeneration silently reverts it. This is risk #3 in `PROJECT.md`.
+
+---
+
+## 9. `missions.json` and `mission_tables.json`
+
+**Entirely absent from the original draft**, which stated missions were "not
+modelled in the engine yet." They are: `mission_manager.gd`,
+`mission_catalog.gd`, `mission_table_manager.gd` and `Enums.MissionType`.
+
+### `missions.json` — 25 rows
+
+**⚠ It carries the exact pattern the charter forbids:** columns named
+`"Alliance": 1` and `"Empire": 1` — per-faction availability flags with the
+faction in the column name. The charter calls this out by name: *"`AllianceCanBuild`
+/ `EmpireCanBuild` columns are as much a hardcoding as an `if`."* This is the
+last un-migrated instance.
+
+```json
+{ "missions": [
+    { "id": "diplomacy", "display_name": "Diplomacy",
+      "available_to": ["alliance", "empire"],
+      "spec_forces": ["bothan_spies", "infiltrators"],
+      "length": { "base": 14, "spread": 7 },
+      "flags": { "can_continue": true, "scripted": false,
+                 "return_on_abort": true, "target_known_required": false,
+                 "abort_on_blockade": true, "can_escape": true,
+                 "can_kill": false },
+      "targets": { "friendly": false, "neutral": true, "hostile": false } }
+  ] }
+```
+
+*(Values above are shape illustration, not transcribed from the table.)*
+
+- `available_to` replaces the `Alliance` / `Empire` integer pair.
+- `spec_forces` is a list of **display names** in the raw data
+  (`"Bothan Spies"`), not ids — same cross-reference problem as §12 Q1.
+- `Enums.MissionType` ([enums.gd:35](src/game/enums.gd:35)) contains
+  `JediTraining` and `DeathStarSabotage`. Like `FacilityType`, it is a closed
+  setting vocabulary in engine code and this file must replace it.
+- Seven `UnknownN` columns remain undecoded. They stay as-is; a pack author
+  never sets them.
+
+### `mission_tables.json` — 12 tables
+
+Outcome tables, keyed by original `.DAT` filename (`ABDCMSTB.DAT`,
+`ASSNMSTB.DAT`, …), each `{field1, entries_count, info, entries, description}`.
+Same filename-as-key problem as `day_zero_logistics.json` — **§12 Q2.**
+
+---
+
+## 10. `display.json` — the Galactic Information Display
+
+Currently a code table in [gid.gd](src/ui/gid.gd). The closest thing in the
+codebase to pack-ready; moving it is mechanical.
+
+```json
+{
+  "categories": [
+    { "id": "resources", "display_name": "Resources",
+      "modes": [
+        { "id": "mines", "label": "Mines", "title": "Mines",
+          "quantity": { "kind": "facility_count", "facility": "mine" },
+          "tiers": [
+            { "min": 6, "label": "6+ Mines",  "flare": "big" },
+            { "min": 3, "label": "3-5 Mines", "flare": "mid" },
+            { "min": 1, "label": "1-2 Mines", "flare": "low" },
+            { "min": 0, "label": "No Mines",  "flare": "none" }
+          ] } ] } ]
+}
+```
+
+| Field | Notes |
+|---|---|
+| `quantity.kind` | How the engine computes the magnitude. v1 set: `facility_count`, `facility_role_count`, `unit_count`, `fleet_count`, `character_count`, `base_resource`, `support`, `constant_zero`. `constant_zero` lets a pack declare a mode whose backing system does not exist yet, without a code branch. |
+| `tiers` | Ordered descending by `min`; the last entry (`min: 0`) is the bare-dot tier. Thresholds are **absolute**, never normalised to the map maximum. |
+| `flare` | `big` / `mid` / `low` / `none`. Marker *sizes* are engine presentation constants; which tier gets which size is pack data. |
+
+Faction colors and the legend come from `factions.json` + `pack.json`, so the
+GID legend stops being hardcoded rows.
+
+---
+
+## 11. Validation
+
+The loader reports **every** error before play, not the first. Implemented in
+[pack_loader.gd](src/data/pack_loader.gd) for rules 1, 2 and 6; the rest await
+their files.
+
+1. ✅ `pack.json.id` equals the folder name; `schema_version` ≤ engine-supported.
+2. ✅ `faction_count` equals the entries in `factions.json`, and is 2–4.
+3. ❌ Every cross-reference resolves: planets, sectors, facilities, units,
+   characters, factions, missions, display quantities.
+4. ❌ Every `roles` entry is in the engine's known role set for this
+   `schema_version`; likewise every `display.quantity.kind`.
+5. ❌ Every `buildable_by` / `available_to` entry is a declared faction id.
+6. ✅ Each faction's `hq` is internally consistent: a `fixed` HQ names a planet;
+   a `hidden` HQ declares a `placement`.
+7. ❌ Every `starting_planets` entry exists. *(Deferred: the loader's own comment
+   says map data still comes from `data/`, so there is nothing to check against
+   yet — [pack_loader.gd:98](src/data/pack_loader.gd:98).)*
+8. ❌ Display tiers are ordered descending and terminate with a `min: 0` tier.
+
+---
+
+## 12. Open questions for sign-off
+
+The original draft's four questions, revised against the real data. Its Q1
+(resource vocabulary) is **closed** by §4; its Q2 (characters) is **answered**
+by §7; its Q4 (missions and victory "not modelled yet") is **obsolete** — both
+systems exist. Its Q3 (pack location) is **settled**: `packs/<id>/` alongside
+`data/`, which is what shipped.
+
+1. **Cross-reference by display name.** `factions.json` refers to planets and
+   characters by **display name** (`"Yavin"`, `"Emperor Palpatine"`), and
+   `missions.json` refers to SpecForces the same way. §1 requires
+   `lower_snake_case` ids with the loader rejecting dangling refs. Migrate these
+   to ids, or carve out an exception? Ids are the stated convention; the cost is
+   a rename pass across `factions.json` and the mission catalog.
+
+2. **`.DAT` filenames as pack keys.** `day_zero_logistics.json` and
+   `mission_tables.json` are keyed by original binary filenames
+   (`CMUNYVTB.DAT`), and `factions.json.seed` references those keys directly. A
+   non-Star-Wars pack would inherit meaningless names. Rename to roles
+   (`hq_garrison_table`), or keep the filenames as an extraction-traceability
+   convention?
+
+3. **The map bitmap.** `galaxyShaded.bmp` has no home in the schema. Name it in
+   `pack.json` (`"map_image": "galaxy.bmp"`), or fix it by convention at
+   `packs/<id>/map.bmp`? Naming it in the manifest is more explicit and costs
+   one field.
+
+4. **Weapon arcs.** `units.json` has 34 columns across a fixed four-arc model
+   (fore/aft/port/starboard × turbolaser/ion/laser). Is the arc model engine
+   vocabulary (tactical combat is engine behaviour) or pack vocabulary (a
+   setting might have different weapon classes)? The tactical engine reads these
+   directly, so this is not purely cosmetic.
+
+5. **Renaming the Force.** `Character.JediLevel` / `IsKnownJedi` / `CanTrainJedi`
+   and `Enums.ForceRanking.JediMaster` are IP vocabulary in engine code and in
+   the character data. The mechanic is generic — a hidden aptitude, trainable,
+   with ranked bands gating abilities. One candidate naming: `special`,
+   `affinity_level`, `affinity_known`, `can_train`, with the five band labels as
+   pack strings. Needs a name TeeJ is happy with before the rename lands.
+
+6. **Name-keyed rule rows.** `game_rules.json` rows are addressed by integer
+   `EntryId`. Every row already carries a `Name`, but the names contain
+   punctuation (`"Space Travel Time: Base (%, lower=faster)"`) so a slug column
+   would have to be added in the extractors. Call sites already read by name via
+   [rule_id.gd](src/game/rule_id.gd), so the gain is raw-JSON readability, not
+   engine-code readability. Worth it?
+
+---
+
+## 13. Reconciliation log
+
+What changed from the source repo's 2026-07-25 draft, and why.
+
+| # | Change | Cause |
+|---|---|---|
+| 1 | Status: "nothing is migrated" → Phases 1–2 done | The port shipped them; the charter was never updated |
+| 2 | File table: added `missions.json`, `mission_tables.json`, `map_image`; noted `gnprtb_globals.json` as non-pack | Five `data/` files were covered by no pack file |
+| 3 | File table: `facilities.json` source gains `production_facilities.json` | Draft named only the defensive file; there are two, 9 + 6 |
+| 4 | Removed `core_infrastructure.json` / `rim_infrastructure.json` as `setup.json` sources | **Neither file exists** in either repo |
+| 5 | §4: removed per-planet `base_resources`; added `artwork_id` | Resources are rolled at day zero from rules, not authored. `ArtworkId` is real data the draft missed |
+| 6 | §4: added the `map_image` subsection | The galaxy bitmap had no home |
+| 7 | §3: documented `starting_planets` as objects, plus `seed` and `victory` | The shipped `factions.json` is richer than the draft |
+| 8 | §6, §8: marked `buildable_by` and the faction-keyed rule tables **done** | Phase 2 landed; the draft still described them as pending |
+| 9 | §7: written from scratch | The draft's Q2 admitted characters were never examined |
+| 10 | §8: corrected the rule row example to the real `EntryId`/`Name`/`Development`/`Multiplayer` shape | The draft's `lower_snake_case` id example does not match the file |
+| 11 | §9: written from scratch | The draft said missions were "not modelled in the engine yet". They are |
+| 12 | §11: marked which validation rules are implemented | The draft listed eight; three are live |
+| 13 | §12: two questions closed, one answered, one obsolete; six questions now stand | Q4 assumed missions and victory did not exist |
