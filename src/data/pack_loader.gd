@@ -7,12 +7,14 @@ extends RefCounted
 const SupportedSchemaVersion := 1
 const KNOWN_HQ_KINDS := ["fixed", "hidden"]
 const KNOWN_OCCUPATION_POLICIES := ["garrison_bonus", "occupation_penalty"]
+const KNOWN_COMMAND_RANKS := ["admiral", "commander", "general"]
 
 
 class LoadedPack:
 	var Manifest: PackDefs.PackManifest
 	var Factions: Array[PackDefs.FactionDef] = []
 	var Map: PackDefs.MapFile
+	var Characters: Array[PackDefs.CharacterDef] = []
 
 
 ## Returns the pack, or null with `errors` populated. Never throws on bad pack
@@ -21,12 +23,14 @@ static func Load(pack_dir: String, errors: Array[String]) -> LoadedPack:
 	var manifest_d: Variant = _read_json("%s/pack.json" % pack_dir, errors)
 	var factions_d: Variant = _read_json("%s/factions.json" % pack_dir, errors)
 	var map_d: Variant = _read_json("%s/map.json" % pack_dir, errors)
-	if manifest_d == null or factions_d == null or map_d == null:
+	var chars_d: Variant = _read_json("%s/characters.json" % pack_dir, errors)
+	if manifest_d == null or factions_d == null or map_d == null or chars_d == null:
 		return null
 	var pack := LoadedPack.new()
 	pack.Manifest = PackDefs.PackManifest.from_dict(manifest_d)
 	pack.Factions = PackDefs.FactionsFile.from_dict(factions_d).Factions
 	pack.Map = PackDefs.MapFile.from_dict(map_d)
+	pack.Characters = PackDefs.CharactersFile.from_dict(chars_d).Characters
 	_validate(pack, pack_dir, errors)
 	return pack if errors.is_empty() else null
 
@@ -99,6 +103,44 @@ static func _validate(pack: LoadedPack, pack_dir: String, errors: Array[String])
 			errors.append("%s: hq.kind 'hidden' requires hq.placement (a planet name or 'random_rim')." % ctx)
 
 	_validate_map(pack, pack_dir, errors)
+	_validate_characters(pack, errors)
+
+
+## SCHEMA.md section 11 rules 3 and 5, for the roster: ids unique, every faction
+## reference declared, and the worlds a faction must capture people ON resolve.
+static func _validate_characters(pack: LoadedPack, errors: Array[String]) -> void:
+	var faction_ids := {}
+	for f in pack.Factions:
+		faction_ids[f.Id] = true
+
+	var ids := {}
+	var names := {}
+	for c in pack.Characters:
+		var ctx := "characters.json[%s]" % (c.Id if not c.Id.is_empty() else "?")
+		if c.Id.strip_edges().is_empty():
+			errors.append("%s: missing id." % ctx)
+		elif ids.has(c.Id):
+			errors.append("%s: duplicate id." % ctx)
+		else:
+			ids[c.Id] = true
+		if c.DisplayName.strip_edges().is_empty():
+			errors.append("%s: missing display_name." % ctx)
+		else:
+			names[c.DisplayName] = true
+		# Rule 5: a character on a side the pack does not declare can never act.
+		if not faction_ids.has(c.FactionId):
+			errors.append("%s: faction '%s' is not declared in factions.json." % [ctx, c.FactionId])
+		for rank in c.CanCommand:
+			if not KNOWN_COMMAND_RANKS.has(rank):
+				errors.append("%s: unknown can_command entry '%s'. Known: %s." % [ctx, rank, ", ".join(KNOWN_COMMAND_RANKS)])
+
+	# Rule 3: a victory condition that names nobody can never be met.
+	for f in pack.Factions:
+		if f.Victory == null:
+			continue
+		for n in f.Victory.CaptureCharacters:
+			if not names.has(n):
+				errors.append("factions.json[%s]: victory target '%s' is not a character in characters.json." % [f.Id, n])
 
 
 ## SCHEMA.md section 11 rules 3, 7, 9 and 10. The map is pack-loaded now, so the

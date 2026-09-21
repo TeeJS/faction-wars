@@ -56,14 +56,13 @@ static func _seed(seed: int) -> void:
 	print("[Prng] seed=%d" % seed)
 
 
-## The characters, exactly as GameManager loads them: majors flagged, then minors.
+## The characters, from the pack. The two-file major/minor split became an
+## is_major flag; the pack file keeps majors first, which is the order
+## GameManager loaded them in and the order day zero consumes the PRNG in.
 static func load_roster() -> Array[Character]:
 	var roster: Array[Character] = []
-	for c in Loaders.major_characters():
-		c.IsMajor = true
-		roster.append(c)
-	for c in Loaders.minor_characters():
-		roster.append(c)
+	for def in FactionRegistry.Pack.Characters:
+		roster.append(Character.FromPack(def))
 	print("Successfully loaded %d characters from the databanks." % roster.size())
 	return roster
 

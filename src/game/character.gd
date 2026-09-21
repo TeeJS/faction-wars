@@ -193,3 +193,53 @@ static func from_dict(d: Dictionary) -> Character:
 		"CapturedBy": func(id: String) -> Faction: return FactionRegistry.ById(id),
 	})
 	return c
+
+
+## FROM THE PACK (SCHEMA.md section 7). The pack's flat `ratings` map and
+## `can_command` list are spread back onto the named fields the simulation reads;
+## `special_power` is this pack's Force. Produces a Character indistinguishable
+## from what from_dict built out of the two data/ tables - the soak gate is what
+## says so.
+static func FromPack(def: PackDefs.CharacterDef) -> Character:
+	var c := Character.new()
+	c.Name = def.DisplayName
+	c.Faction = FactionRegistry.ById(def.FactionId)
+	c.IsMajor = def.IsMajor
+	c.WontBetray = def.WontBetray
+
+	var r: PackDefs.RatingDef = def.rating("diplomacy")
+	c.DiplomacyBase = r.Base
+	c.DiplomacyVar = r.Var
+	r = def.rating("espionage")
+	c.EspionageBase = r.Base
+	c.EspionageVar = r.Var
+	r = def.rating("combat")
+	c.CombatBase = r.Base
+	c.CombatVar = r.Var
+	r = def.rating("leadership")
+	c.LeadershipBase = r.Base
+	c.LeadershipVar = r.Var
+	r = def.rating("loyalty")
+	c.LoyaltyBase = r.Base
+	c.LoyaltyVar = r.Var
+	r = def.rating("ship_research")
+	c.ShipResearchBase = r.Base
+	c.ShipResearchVar = r.Var
+	r = def.rating("troop_research")
+	c.TroopResearchBase = r.Base
+	c.TroopResearchVar = r.Var
+	r = def.rating("facility_research")
+	c.FacilityResearchBase = r.Base
+	c.FacilityResearchVar = r.Var
+
+	c.CanBeAdmiral = def.CanCommand.has("admiral")
+	c.CanBeCommander = def.CanCommand.has("commander")
+	c.CanBeGeneral = def.CanCommand.has("general")
+
+	if def.SpecialPower != null:
+		c.JediProbability = def.SpecialPower.Probability
+		c.IsKnownJedi = def.SpecialPower.IsKnownUser
+		c.JediLevelBase = def.SpecialPower.LevelBase
+		c.JediLevelVar = def.SpecialPower.LevelVar
+		c.CanTrainJedi = def.SpecialPower.CanTrain
+	return c
