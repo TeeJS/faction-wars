@@ -40,8 +40,8 @@ var LeadershipBase: int
 var LeadershipVar: int
 var LoyaltyBase: int
 var LoyaltyVar: int
-var JediLevelBase: int
-var JediLevelVar: int
+var SpecialPowerLevelBase: int
+var SpecialPowerLevelVar: int
 var ShipResearchBase: int
 var ShipResearchVar: int
 var TroopResearchBase: int
@@ -54,10 +54,10 @@ var CanBeAdmiral: bool
 var CanBeCommander: bool
 var CanBeGeneral: bool
 
-var JediProbability: int
-var JediLevel: int
-var IsKnownJedi: bool
-var CanTrainJedi: bool
+var SpecialPowerProbability: int
+var SpecialPowerLevel: int
+var IsKnownSpecialPowerUser: bool
+var CanTrainSpecialPower: bool
 
 ## Loyalty drifts toward galaxy-wide support (manual p094; LoyaltyManager).
 var Loyalty: int
@@ -143,18 +143,18 @@ func IsTraitorous() -> bool:
 
 ## The five bands: Novice 10 · Trainee 20 · Jedi Student 80 · Jedi Knight 100 ·
 ## Master 120 (recovered; see the source for the corroboration).
-func ForceRank() -> int:
-	if JediLevel >= 120: return Enums.ForceRanking.JediMaster
-	if JediLevel >= 100: return Enums.ForceRanking.JediKnight
-	if JediLevel >= 80:  return Enums.ForceRanking.JediStudent
-	if JediLevel >= 20:  return Enums.ForceRanking.Trainee
-	if JediLevel >= 10:  return Enums.ForceRanking.Novice
-	return Enums.ForceRanking.None
+func SpecialPowerRankOf() -> int:
+	if SpecialPowerLevel >= 120: return Enums.SpecialPowerRank.JediMaster
+	if SpecialPowerLevel >= 100: return Enums.SpecialPowerRank.JediKnight
+	if SpecialPowerLevel >= 80:  return Enums.SpecialPowerRank.JediStudent
+	if SpecialPowerLevel >= 20:  return Enums.SpecialPowerRank.Trainee
+	if SpecialPowerLevel >= 10:  return Enums.SpecialPowerRank.Novice
+	return Enums.SpecialPowerRank.None
 
 
 ## "Strong enough" is entry 21, "Fast Heal: Force Rank Threshold" = 80.
 func HealsFast() -> bool:
-	return JediLevel >= RuleManager.Get(RuleId.FastHealForceRankThresh, Faction)
+	return SpecialPowerLevel >= RuleManager.Get(RuleId.FastHealSpecialPowerThresh, Faction)
 
 
 ## ★ LEAVING THE THING YOU COMMAND RELIEVES YOU OF THE COMMAND (measured). One
@@ -237,9 +237,9 @@ static func FromPack(def: PackDefs.CharacterDef) -> Character:
 	c.CanBeGeneral = def.CanCommand.has("general")
 
 	if def.SpecialPower != null:
-		c.JediProbability = def.SpecialPower.Probability
-		c.IsKnownJedi = def.SpecialPower.IsKnownUser
-		c.JediLevelBase = def.SpecialPower.LevelBase
-		c.JediLevelVar = def.SpecialPower.LevelVar
-		c.CanTrainJedi = def.SpecialPower.CanTrain
+		c.SpecialPowerProbability = def.SpecialPower.Probability
+		c.IsKnownSpecialPowerUser = def.SpecialPower.IsKnownUser
+		c.SpecialPowerLevelBase = def.SpecialPower.LevelBase
+		c.SpecialPowerLevelVar = def.SpecialPower.LevelVar
+		c.CanTrainSpecialPower = def.SpecialPower.CanTrain
 	return c
