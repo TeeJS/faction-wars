@@ -55,8 +55,8 @@ static func TryEscape(prisoner: Character, galaxy: Array, day: int, rng: Prng) -
 	print("[Captivity] %s ESCAPED to %s." % [prisoner.Name, home.Name if home != null else "our forces"])
 
 	# "EVASION BONUS" (manual p094), gated on being Force-aware; entry 58.
-	if prisoner.IsKnownJedi:
-		prisoner.JediLevel += RuleManager.Get(RuleId.OrdinaryMissionForceReward, prisoner.Faction)
+	if prisoner.IsKnownSpecialPowerUser:
+		prisoner.SpecialPowerLevel += RuleManager.Get(RuleId.OrdinaryMissionForceReward, prisoner.Faction)
 
 	if not GameSettings.IsHuman(prisoner.Faction):
 		return

@@ -64,13 +64,13 @@ static func ProcessEncounters(day: int, rng: Prng) -> void:
 			continue
 		if a.Attached == null or a.Attached != b.Attached:
 			continue
-		if not a.IsKnownJedi:
+		if not a.IsKnownSpecialPowerUser:
 			continue
-		if a.JediLevel < RuleManager.Get(RuleId.EncounterOwnSideMinRank, a.Faction):
+		if a.SpecialPowerLevel < RuleManager.Get(RuleId.EncounterOwnSideMinRank, a.Faction):
 			continue
-		if b.JediLevel < RuleManager.Get(RuleId.EncounterEnemyMinRank, a.Faction):
+		if b.SpecialPowerLevel < RuleManager.Get(RuleId.EncounterEnemyMinRank, a.Faction):
 			continue
-		var chance := a.JediLevel + b.JediLevel + RuleManager.Get(RuleId.EncounterProbabilityOffset, a.Faction)
+		var chance := a.SpecialPowerLevel + b.SpecialPowerLevel + RuleManager.Get(RuleId.EncounterProbabilityOffset, a.Faction)
 		if chance <= 0 or rng.NextRange(1, 101) > chance:
 			continue
 		ResolveEncounter(a, b, p, day, rng)
@@ -81,7 +81,7 @@ static func ResolveEncounter(a: Character, b: Character, p: Array, day: int, rng
 	a.KnowsHeritage = true
 
 	var hurt := false
-	if a.JediLevel < RuleManager.Get(RuleId.DagobahInjuryCeiling, a.Faction):
+	if a.SpecialPowerLevel < RuleManager.Get(RuleId.DagobahInjuryCeiling, a.Faction):
 		hurt = true
 		MissionManager.Injure(a, rng, RuleId.HeritageInjuryBase, RuleId.HeritageInjurySpread)
 
@@ -89,13 +89,13 @@ static func ResolveEncounter(a: Character, b: Character, p: Array, day: int, rng
 	if not a.IsCaptured() and a.Status != Enums.Status.Dead:
 		var scale := RuleManager.Get(p[2], a.Faction)
 		var floor_v := RuleManager.Get(p[3], a.Faction)
-		gain = max(floor_v, (b.JediLevel - a.JediLevel) * scale / 100)
-		a.JediLevel += gain
+		gain = max(floor_v, (b.SpecialPowerLevel - a.SpecialPowerLevel) * scale / 100)
+		a.SpecialPowerLevel += gain
 
-	var rank_name := JsonUtil.enum_name(Enums.ForceRanking, a.ForceRank())
+	var rank_name := JsonUtil.enum_name(Enums.SpecialPowerRank, a.SpecialPowerRankOf())
 	print("[Story] %s encountered %s at %s: heritage %s, %s, Force +%d -> %d (%s)." % [
 		a.Name, b.Name, a.Attached.Name if a.Attached != null else "", "REVEALED" if first else "already known",
-		("injured %d" % a.Injury) if hurt else "unharmed", gain, a.JediLevel, rank_name])
+		("injured %d" % a.Injury) if hurt else "unharmed", gain, a.SpecialPowerLevel, rank_name])
 
 	if not GameSettings.IsHuman(a.Faction):
 		return
@@ -258,9 +258,9 @@ static func ProcessFinalBattle(day: int, rng: Prng) -> void:
 		return
 
 	if not luke.FinalBattleReady and luke.KnowsHeritage \
-			and luke.JediLevel >= RuleManager.Get(RuleId.LukeKnowsHeritageThresh, luke.Faction):
+			and luke.SpecialPowerLevel >= RuleManager.Get(RuleId.LukeKnowsHeritageThresh, luke.Faction):
 		luke.FinalBattleReady = true
-		print("[Story] %s is ready for the final confrontation (Force %d)." % [luke.Name, luke.JediLevel])
+		print("[Story] %s is ready for the final confrontation (Force %d)." % [luke.Name, luke.SpecialPowerLevel])
 
 	if not luke.FinalBattleReady or _final_battle_decided:
 		return
@@ -288,8 +288,8 @@ static func ProcessFinalBattle(day: int, rng: Prng) -> void:
 	_final_battle_decided = true
 
 	var threshold := RuleManager.Get(RuleId.FinalBattleWinThreshold, luke.Faction)
-	var wins := luke.JediLevel >= threshold
-	print("[Story] THE FINAL BATTLE at %s: %s at Force %d vs %d -> %s." % [emperor.Attached.Name, luke.Name, luke.JediLevel, threshold, "LUKE WINS" if wins else "Luke loses"])
+	var wins := luke.SpecialPowerLevel >= threshold
+	print("[Story] THE FINAL BATTLE at %s: %s at Force %d vs %d -> %s." % [emperor.Attached.Name, luke.Name, luke.SpecialPowerLevel, threshold, "LUKE WINS" if wins else "Luke loses"])
 	if wins:
 		FinalBattleWon(luke, vader, emperor, day)
 	else:

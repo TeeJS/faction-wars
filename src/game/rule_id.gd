@@ -22,7 +22,7 @@ const StrikePermissionMax       := 11
 const ShieldsToPreventAssault   := 151
 
 # --- injury and healing ---
-const FastHealForceRankThresh   := 21
+const FastHealSpecialPowerThresh   := 21
 const FastHealDelayTicks        := 22
 const NormalHealDelayTicks      := 23
 const FastHealReductionPerTick  := 24

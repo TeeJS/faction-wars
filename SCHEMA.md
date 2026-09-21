@@ -437,6 +437,15 @@ their thresholds (10 / 20 / 80 / 100 / 120 —
 [character.gd:144-151](src/game/character.gd:144)); what they are *called*
 ("Jedi Master") is `display.json` content.
 
+**LANDED 2026-09-21**, with two boundaries held deliberately:
+> `Enums.MissionType.JediTraining` and its rule-id constants are the **mission**
+> vocabulary and move with `missions.json`, not here. The enum MEMBERS
+> `JediStudent` / `JediKnight` / `JediMaster` are **rendered straight to the
+> player** by `JsonUtil.enum_name`, so they cannot move until `display.json` can
+> hold their labels — renaming them now would put "SpecialPowerMaster" in the
+> Character Status window. `MissionManager.Pretty()` is where those labels live
+> today and is the natural hook.
+
 > **One open detail.** TeeJ named `SpecialPowerLevel`,
 > `IsKnownSpecialPowerUser` and `SpecialPowerMaster`. Inside an enum already
 > called `SpecialPowerRank`, the prefix on the band members is redundant —
@@ -743,3 +752,4 @@ What changed from the source repo's 2026-07-25 draft, and why.
 | 22 | §6: **four** weapon classes recorded, not three — `Torpedoes`/`TorpedoRange` exist on five fighters only | The earlier column dump read row 0, a capital ship, so the torpedo columns were invisible. `military_units.json` rows do not share a key set |
 | 23 | **§4 built.** `map.json` generated, loaded and live; the bitmap moved into the pack; validation rules 3 (map half), 7, 9, 10 implemented and negative-tested | The hardcoded sector list is gone from `galaxy_factory.gd`. Soak gate 1004/1004 |
 | 24 | **§7 built.** `characters.json` generated, loaded and live: one file, `is_major` flag, lower-case faction ids, `ratings` map, `can_command` list, `special_power` block. Validation rules 3 and 5 for the roster | The two-file major/minor split is gone. Soak gate 1004/1004 |
+| 25 | **§12 Q5 landed.** The character aptitude fields and `Enums.SpecialPowerRank` renamed across 11 files | Enum MEMBERS and `MissionType.JediTraining` deliberately held back — see §7 |

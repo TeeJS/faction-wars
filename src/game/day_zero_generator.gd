@@ -452,6 +452,6 @@ static func GenerateCharacterStats(c: Character, rng: Prng) -> void:
 	c.ShipDesign = c.ShipResearchBase + rng.NextRange(0, c.ShipResearchVar + 1)
 	c.FacilityDesign = c.FacilityResearchBase + rng.NextRange(0, c.FacilityResearchVar + 1)
 	c.TroopTraining = c.TroopResearchBase + rng.NextRange(0, c.TroopResearchVar + 1)
-	# LATENT FORCE POTENTIAL - rolled as a percentage; IsKnownJedi is the reveal.
-	if c.JediProbability > 0 and rng.NextRange(1, 101) <= c.JediProbability:
-		c.JediLevel = c.JediLevelBase + rng.NextRange(0, c.JediLevelVar + 1)
+	# LATENT FORCE POTENTIAL - rolled as a percentage; IsKnownSpecialPowerUser is the reveal.
+	if c.SpecialPowerProbability > 0 and rng.NextRange(1, 101) <= c.SpecialPowerProbability:
+		c.SpecialPowerLevel = c.SpecialPowerLevelBase + rng.NextRange(0, c.SpecialPowerLevelVar + 1)

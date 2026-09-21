@@ -12,7 +12,7 @@ enum Status { AwaitingOrders, Enroute, OnMission, Kidnapped, Dead }       # back
 enum Rank { None, General, Admiral, Commander, Captain }                  # backend/Character.cs
 
 ## "There are FIVE LEVELS of Force users" (manual p092); None means not a Force user.
-enum ForceRanking { None, Novice, Trainee, JediStudent, JediKnight, JediMaster }
+enum SpecialPowerRank { None, Novice, Trainee, JediStudent, JediKnight, JediMaster }
 
 enum FacilityType {                                                       # backend/Facility.cs
 	Headquarters,
