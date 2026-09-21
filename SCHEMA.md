@@ -127,9 +127,9 @@ with the extraction tooling, not shipped in a pack.
 | `hq.kind` | `fixed` — a known capital, captured when taken. `hidden` — placed at `placement` (a planet name or the `random_rim` sentinel), unknown to other factions until located, optionally `movable`, destroyed rather than captured. |
 | `occupation_support_policy` | `garrison_bonus` (troops raise support over time) or `occupation_penalty` (first occupation lowers it). Asymmetry as a flag. |
 | `loyalty_label` | Display string for the GID loyalty mode. |
-| `starting_planets[]` | `{planet, support, explored, garrison}`. `planet` is a **display name**, not an id — see §12 Q1. |
+| `starting_planets[]` | `{planet, support, explored, garrison}`. `planet` holds a **display name** today; **becomes a planet id** (§12 Q1, decided). |
 | `seed` | Which day-zero logistics table seeds this side's HQ, garrison and fleets. Values are **original `.DAT` filenames** — see §12 Q2. |
-| `victory.capture_characters` | Characters this side must hold captive to win. **Display names**, not ids. |
+| `victory.capture_characters` | Characters this side must hold captive to win. **Display names** today; **become character ids** (§12 Q1, decided). |
 
 ---
 
@@ -383,7 +383,7 @@ last un-migrated instance.
 
 - `available_to` replaces the `Alliance` / `Empire` integer pair.
 - `spec_forces` is a list of **display names** in the raw data
-  (`"Bothan Spies"`), not ids — same cross-reference problem as §12 Q1.
+  (`"Bothan Spies"`); it **becomes a list of unit ids** (§12 Q1, decided).
 - `Enums.MissionType` ([enums.gd:35](src/game/enums.gd:35)) contains
   `JediTraining` and `DeathStarSabotage`. Like `FacilityType`, it is a closed
   setting vocabulary in engine code and this file must replace it.
@@ -460,12 +460,23 @@ by §7; its Q4 (missions and victory "not modelled yet") is **obsolete** — bot
 systems exist. Its Q3 (pack location) is **settled**: `packs/<id>/` alongside
 `data/`, which is what shipped.
 
-1. **Cross-reference by display name.** `factions.json` refers to planets and
-   characters by **display name** (`"Yavin"`, `"Emperor Palpatine"`), and
-   `missions.json` refers to SpecForces the same way. §1 requires
-   `lower_snake_case` ids with the loader rejecting dangling refs. Migrate these
-   to ids, or carve out an exception? Ids are the stated convention; the cost is
-   a rename pass across `factions.json` and the mission catalog.
+1. ~~**Cross-reference by display name.**~~ **★ DECIDED (TeeJ, 2026-09-21) — ids.**
+   Every cross-reference between pack files uses a `lower_snake_case` id, never
+   a display name. No exception is carved out.
+
+   Affected today: `factions.json` `starting_planets[].planet` and
+   `victory.capture_characters`; `missions.json` `spec_forces`. All three
+   currently hold display names and are resolved by **exact string equality**
+   ([day_zero_generator.gd:180](src/game/day_zero_generator.gd:180),
+   [victory_manager.gd:50](src/game/victory_manager.gd:50)), so a rename or a
+   typo silently yields `null` rather than an error — the failure this decision
+   removes.
+
+   `display_name` stays alongside as the human label and may change freely.
+
+   **Sequencing:** the rename cannot land before `map.json` and
+   `characters.json` exist — there is nothing to hold the ids yet — so it is
+   part of that migration, and validation rule §11.3 goes live with it.
 
 2. **`.DAT` filenames as pack keys.** `day_zero_logistics.json` and
    `mission_tables.json` are keyed by original binary filenames
@@ -520,3 +531,4 @@ What changed from the source repo's 2026-07-25 draft, and why.
 | 11 | §9: written from scratch | The draft said missions were "not modelled in the engine yet". They are |
 | 12 | §11: marked which validation rules are implemented | The draft listed eight; three are live |
 | 13 | §12: two questions closed, one answered, one obsolete; six questions now stand | Q4 assumed missions and victory did not exist |
+| 14 | §12 Q1 **decided — ids, no exception** (TeeJ, 2026-09-21); §3 and §9 updated to match | Five open questions remain |
