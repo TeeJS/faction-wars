@@ -59,6 +59,7 @@ no original to cite.
 | "(captured)" label on a held enemy character in the Personnel tab | polish (see #4) |
 | `SaveManager.Save` atomicity — write the index before the slot file (or temp-then-rename) so a crash mid-save can't desync them | minor robustness |
 | **Relay WebSocket heartbeat** - no ping/pong or keepalive in `relay/server.ts` | The `websocket:` block sets only `maxPayloadLength`, `open`, `message`, `close`; `open()` is a no-op and there is no `setInterval` (read-in-full, 288 lines). Harmless as deployed - Fly does not idle-cut and nothing proxies faction-wars.com - but any CDN or reverse proxy in front would drop idle lobbies (Cloudflare cuts idle WebSockets at ~100s). **Required before putting Cloudflare's proxy in front of faction-wars.com.** |
+| **`LIMITS.feedbackBytes` declared twice** in `relay/server.ts:17-18` | Same value on both lines, so last-wins makes it inert today. Two reasons to fix it anyway: whoever edits one line will not see the other silently overriding it, and it is TS1117 ("An object literal cannot have multiple properties with the same name") - legal JS, invalid TypeScript. Nothing catches it now: the repo has no `tsconfig.json`, no `package.json`, and `.github/workflows/relay-image.yml` runs no typecheck or lint, so `bun run` just executes it. Adding any typecheck step would turn this into a build failure. |
 
 ## Known Bugs (confirmed, unfixed)
 
