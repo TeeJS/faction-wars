@@ -280,7 +280,7 @@ exactly what an open `stats` map absorbs.
 
 | Field | Notes |
 |---|---|
-| `roles` | The engine's selection vocabulary. v1 role set: `headquarters`, `extracts_raw`, `refines`, `produces_unit`, `produces_troop`, `produces_facility`, `planet_defense`, `shield`, `disable`, `anti_ship`. The loader rejects unknown roles so a typo cannot silently create an inert facility. |
+| `roles` | The engine's selection vocabulary. v1 role set: `headquarters`, `extracts_raw`, `refines`, `produces_unit`, `produces_troop`, `produces_facility`, `planet_defense`, `shield`, `disable`, `anti_ship`, `superweapon_shield` (the structure that shelters the `superweapon` unit while docked; counts as military for bombardment). The loader rejects unknown roles so a typo cannot silently create an inert facility. |
 | `buildable_by` | A list of faction ids; absent means all. **Already migrated** in the real data. |
 | `roles` | **★ APPROVED (TeeJ, 2026-09-22).** The engine's special cases for a unit, so no rule names one: `superweapon` (the Death Star — Superweapon Sabotage's target, and what plain Sabotage refuses), `garrison_troop` (the regiment the mission score's garrison term counts). Unknown roles are a load error. |
 | `stats` | Open map. The engine has no built-in stat vocabulary; consumers read named stats declared by the pack. Absorbs the production/defensive column split. |
@@ -530,6 +530,21 @@ Two differences from the original draft's example:
   `Development` is the fallback for structural entries
   ([rule_manager.gd:61](src/game/rule_manager.gd:61)).
 
+### Seeding rows name what they place BY ID
+
+**★ LANDED 2026-09-22 (branch `pack-ww2`).** A logistics row's asset is
+`{"unit": "<units.json id>"}` or `{"facility": "<facilities.json id>"}` —
+never the original's `FamilyId` / `AssetId` numbers, which `DeployAsset`
+matched with a literal `32 → headquarters, 16 → Troop, …` table. That was the
+last place a pack named a thing by the binary's table position, and the WWII
+pack found it on its first soak: "0 Fleets containing 0 Capital Ships". A
+facility row places tier 1 of that facility's family (the original's
+"Refinery (Tier 2)" rows seeded a tier-1 refinery). In a hierarchical list a
+`null` child is the original's "None" row: the first child is the CARRIER slot
+and an empty one means "no carrier" — dropping it would reorder the garrison
+and move the replay hash. Validation rule 13 rejects a row that resolves to
+nothing, and refuses `FamilyId` outright.
+
 `side_lottery.json` (35 rows) is an **N×N matrix** —
 `by_faction[side][difficulty][side]` — plus flat `dev` and `mp` maps. Today 2×2.
 A third faction makes every one of the 35 entries a 3×3, and the original
@@ -684,6 +699,9 @@ passes.
 10. ✅ Every sector's `min_size` is one of `setup.galaxy_sizes`, and the smallest
     declared size has at least one sector — otherwise that menu option yields an
     empty galaxy.
+13. ✅ Every seeding row in `setup.json` names a `unit` or `facility` id the pack
+    declares (a `null` child is the empty carrier slot); a row carrying the
+    original's `FamilyId` / `AssetId` is refused.
 
 ---
 
@@ -844,6 +862,7 @@ What changed from the source repo's 2026-07-25 draft, and why.
 | 39 | **Roles and behaviours (TeeJ approved 2026-09-22).** `characters.json` `roles` (placement + story parts), `units.json` `roles` (`superweapon`, `garrison_troop`), `missions.json` `behaviour`; validation rule 12. Day zero, the story, Force and order managers, MissionManager and MissionTableManager select on these; the fourteen character names, the Death Star family number, "Stormtrooper Regiment", `death_star_sabotage` / `jedi_training` / `dagobah` / `palace` are gone from engine code | BACKLOG #25–#32. Soak gate green — the pack's roster order matches the old named lists, so the PRNG walk is unchanged |
 | 40 | Pack defaults flipped to the manual's (`difficulty_default` easy, `galaxy_size_default` standard, manual p021); the button menu pre-presses them too. Per-region `selected_color`; the cockpit picture scrubbed of its baked-in brackets | TeeJ, 2026-09-22: the baked marks made every selection look like easy/standard |
 | 41 | HQ sabotage derived from `hq.kind` — the last `actor.Id == "empire"` in engine code is gone | TeeJ, 2026-09-22: a hidden HQ is destroyable, a fixed one is captured; no new field needed |
+| 42 | **Seeding by id.** `setup.json` rows name a `unit` or `facility` id; `DeployAsset`'s family-number table is gone; the four defence look-ups (assault shield count, intel sighting, intel facts, delivery message category) and `CanDestroySystem` select on roles; `superweapon_shield` joins the facility role set; validation rule 13 | The WWII pack (`packs/ww2`, BACKLOG #24) seeded nothing on an unchanged binary. Star Wars soak gate byte-identical |
 | 42 | `data/*.json`, `Loaders` and eleven `CatalogDtos` classes deleted; the Military Data Editor removed; `tests/dto_parity.gd` compares the loaded pack with `tests/fixtures/dto-pack.json` | TeeJ, 2026-09-22: nothing read `data/` any more but the parity dump and the editor |
 | 43 | `pack.json` `victory_tips` — the p162 Multiplayer Options tooltips come from the pack | TeeJ, 2026-09-22: pack strings, so the manual's verbatim wording stays pinned for this pack and a second pack shows its own |
 | 44 | 32 `RuleId` constants renamed from setting names to their role (`SeedCapitalFirst`, `PilgrimVsDarkLordGainScale`, `SuperweaponSabotageCombatGain`, ...); the old name stays as a trailing comment for the GNPRTB trail. Engine identifiers only; the pack's `rules.json` is untouched | TeeJ, 2026-09-22 (BACKLOG #23/#34) |

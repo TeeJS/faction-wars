@@ -5,42 +5,42 @@
       "Name": "Loyalty Drift Divisor",
       "GroupId": 2560,
       "by_faction": {
-        "alliance": {
+        "allies": {
           "easy": {
-            "alliance": 50,
-            "empire": 50
+            "allies": 50,
+            "axis": 50
           },
           "medium": {
-            "alliance": 50,
-            "empire": 50
+            "allies": 50,
+            "axis": 50
           },
           "hard": {
-            "alliance": 50,
-            "empire": 50
+            "allies": 50,
+            "axis": 50
           }
         },
-        "empire": {
+        "axis": {
           "easy": {
-            "alliance": 50,
-            "empire": 50
+            "allies": 50,
+            "axis": 50
           },
           "medium": {
-            "alliance": 50,
-            "empire": 50
+            "allies": 50,
+            "axis": 50
           },
           "hard": {
-            "alliance": 50,
-            "empire": 50
+            "allies": 50,
+            "axis": 50
           }
         }
       },
       "dev": {
-        "alliance": 50,
-        "empire": 50
+        "allies": 50,
+        "axis": 50
       },
       "mp": {
-        "alliance": 50,
-        "empire": 50
+        "allies": 50,
+        "axis": 50
       }
     },
     {
@@ -48,42 +48,42 @@
       "Name": "Incoming Side Loyalty Shift: Random Spread",
       "GroupId": 2561,
       "by_faction": {
-        "alliance": {
+        "allies": {
           "easy": {
-            "alliance": 5,
-            "empire": 5
+            "allies": 5,
+            "axis": 5
           },
           "medium": {
-            "alliance": 5,
-            "empire": 5
+            "allies": 5,
+            "axis": 5
           },
           "hard": {
-            "alliance": 5,
-            "empire": 5
+            "allies": 5,
+            "axis": 5
           }
         },
-        "empire": {
+        "axis": {
           "easy": {
-            "alliance": 5,
-            "empire": 5
+            "allies": 5,
+            "axis": 5
           },
           "medium": {
-            "alliance": 5,
-            "empire": 5
+            "allies": 5,
+            "axis": 5
           },
           "hard": {
-            "alliance": 5,
-            "empire": 5
+            "allies": 5,
+            "axis": 5
           }
         }
       },
       "dev": {
-        "alliance": 5,
-        "empire": 5
+        "allies": 5,
+        "axis": 5
       },
       "mp": {
-        "alliance": 5,
-        "empire": 5
+        "allies": 5,
+        "axis": 5
       }
     },
     {
@@ -91,42 +91,42 @@
       "Name": "Incoming Side Loyalty Shift: Base Amount",
       "GroupId": 2562,
       "by_faction": {
-        "alliance": {
+        "allies": {
           "easy": {
-            "alliance": 0,
-            "empire": 0
+            "allies": 0,
+            "axis": 0
           },
           "medium": {
-            "alliance": 0,
-            "empire": 0
+            "allies": 0,
+            "axis": 0
           },
           "hard": {
-            "alliance": 0,
-            "empire": 0
+            "allies": 0,
+            "axis": 0
           }
         },
-        "empire": {
+        "axis": {
           "easy": {
-            "alliance": 0,
-            "empire": 0
+            "allies": 0,
+            "axis": 0
           },
           "medium": {
-            "alliance": 0,
-            "empire": 0
+            "allies": 0,
+            "axis": 0
           },
           "hard": {
-            "alliance": 0,
-            "empire": 0
+            "allies": 0,
+            "axis": 0
           }
         }
       },
       "dev": {
-        "alliance": 0,
-        "empire": 0
+        "allies": 0,
+        "axis": 0
       },
       "mp": {
-        "alliance": 0,
-        "empire": 0
+        "allies": 0,
+        "axis": 0
       }
     },
     {
@@ -134,42 +134,42 @@
       "Name": "Startup Minor Characters in Standard Galaxy = 7 + ?",
       "GroupId": 5120,
       "by_faction": {
-        "alliance": {
+        "allies": {
           "easy": {
-            "alliance": 1,
-            "empire": 1
+            "allies": 1,
+            "axis": 1
           },
           "medium": {
-            "alliance": 1,
-            "empire": 1
+            "allies": 1,
+            "axis": 1
           },
           "hard": {
-            "alliance": 1,
-            "empire": 1
+            "allies": 1,
+            "axis": 1
           }
         },
-        "empire": {
+        "axis": {
           "easy": {
-            "alliance": 1,
-            "empire": 1
+            "allies": 1,
+            "axis": 1
           },
           "medium": {
-            "alliance": 1,
-            "empire": 1
+            "allies": 1,
+            "axis": 1
           },
           "hard": {
-            "alliance": 1,
-            "empire": 1
+            "allies": 1,
+            "axis": 1
           }
         }
       },
       "dev": {
-        "alliance": 1,
-        "empire": 1
+        "allies": 1,
+        "axis": 1
       },
       "mp": {
-        "alliance": 1,
-        "empire": 1
+        "allies": 1,
+        "axis": 1
       }
     },
     {
@@ -177,42 +177,42 @@
       "Name": "Startup Minor Characters in Large Galaxy = 7 + ?",
       "GroupId": 5121,
       "by_faction": {
-        "alliance": {
+        "allies": {
           "easy": {
-            "alliance": 2,
-            "empire": 2
+            "allies": 2,
+            "axis": 2
           },
           "medium": {
-            "alliance": 2,
-            "empire": 2
+            "allies": 2,
+            "axis": 2
           },
           "hard": {
-            "alliance": 2,
-            "empire": 2
+            "allies": 2,
+            "axis": 2
           }
         },
-        "empire": {
+        "axis": {
           "easy": {
-            "alliance": 2,
-            "empire": 2
+            "allies": 2,
+            "axis": 2
           },
           "medium": {
-            "alliance": 2,
-            "empire": 2
+            "allies": 2,
+            "axis": 2
           },
           "hard": {
-            "alliance": 2,
-            "empire": 2
+            "allies": 2,
+            "axis": 2
           }
         }
       },
       "dev": {
-        "alliance": 2,
-        "empire": 2
+        "allies": 2,
+        "axis": 2
       },
       "mp": {
-        "alliance": 2,
-        "empire": 2
+        "allies": 2,
+        "axis": 2
       }
     },
     {
@@ -220,42 +220,42 @@
       "Name": "Startup Minor Characters in Huge Galaxy = 7 + ?",
       "GroupId": 5122,
       "by_faction": {
-        "alliance": {
+        "allies": {
           "easy": {
-            "alliance": 4,
-            "empire": 4
+            "allies": 4,
+            "axis": 4
           },
           "medium": {
-            "alliance": 4,
-            "empire": 4
+            "allies": 4,
+            "axis": 4
           },
           "hard": {
-            "alliance": 4,
-            "empire": 4
+            "allies": 4,
+            "axis": 4
           }
         },
-        "empire": {
+        "axis": {
           "easy": {
-            "alliance": 4,
-            "empire": 4
+            "allies": 4,
+            "axis": 4
           },
           "medium": {
-            "alliance": 4,
-            "empire": 4
+            "allies": 4,
+            "axis": 4
           },
           "hard": {
-            "alliance": 4,
-            "empire": 4
+            "allies": 4,
+            "axis": 4
           }
         }
       },
       "dev": {
-        "alliance": 4,
-        "empire": 4
+        "allies": 4,
+        "axis": 4
       },
       "mp": {
-        "alliance": 4,
-        "empire": 4
+        "allies": 4,
+        "axis": 4
       }
     },
     {
@@ -263,42 +263,42 @@
       "Name": "Local Direct System Support Shift Amount",
       "GroupId": 5128,
       "by_faction": {
-        "alliance": {
+        "allies": {
           "easy": {
-            "alliance": -2,
-            "empire": -1
+            "allies": -2,
+            "axis": -1
           },
           "medium": {
-            "alliance": -2,
-            "empire": -1
+            "allies": -2,
+            "axis": -1
           },
           "hard": {
-            "alliance": -2,
-            "empire": -1
+            "allies": -2,
+            "axis": -1
           }
         },
-        "empire": {
+        "axis": {
           "easy": {
-            "alliance": -2,
-            "empire": -1
+            "allies": -2,
+            "axis": -1
           },
           "medium": {
-            "alliance": -2,
-            "empire": -1
+            "allies": -2,
+            "axis": -1
           },
           "hard": {
-            "alliance": -2,
-            "empire": -1
+            "allies": -2,
+            "axis": -1
           }
         }
       },
       "dev": {
-        "alliance": -2,
-        "empire": -1
+        "allies": -2,
+        "axis": -1
       },
       "mp": {
-        "alliance": -2,
-        "empire": -1
+        "allies": -2,
+        "axis": -1
       }
     },
     {
@@ -306,42 +306,42 @@
       "Name": "Local Direct System Support Threshold",
       "GroupId": 5129,
       "by_faction": {
-        "alliance": {
+        "allies": {
           "easy": {
-            "alliance": 101,
-            "empire": 101
+            "allies": 101,
+            "axis": 101
           },
           "medium": {
-            "alliance": 101,
-            "empire": 101
+            "allies": 101,
+            "axis": 101
           },
           "hard": {
-            "alliance": 101,
-            "empire": 101
+            "allies": 101,
+            "axis": 101
           }
         },
-        "empire": {
+        "axis": {
           "easy": {
-            "alliance": 101,
-            "empire": 101
+            "allies": 101,
+            "axis": 101
           },
           "medium": {
-            "alliance": 101,
-            "empire": 101
+            "allies": 101,
+            "axis": 101
           },
           "hard": {
-            "alliance": 101,
-            "empire": 101
+            "allies": 101,
+            "axis": 101
           }
         }
       },
       "dev": {
-        "alliance": 101,
-        "empire": 101
+        "allies": 101,
+        "axis": 101
       },
       "mp": {
-        "alliance": 101,
-        "empire": 101
+        "allies": 101,
+        "axis": 101
       }
     },
     {
@@ -349,42 +349,42 @@
       "Name": "Local Sector Scan Support Shift Amount",
       "GroupId": 5130,
       "by_faction": {
-        "alliance": {
+        "allies": {
           "easy": {
-            "alliance": -4,
-            "empire": -3
+            "allies": -4,
+            "axis": -3
           },
           "medium": {
-            "alliance": -4,
-            "empire": -3
+            "allies": -4,
+            "axis": -3
           },
           "hard": {
-            "alliance": -4,
-            "empire": -3
+            "allies": -4,
+            "axis": -3
           }
         },
-        "empire": {
+        "axis": {
           "easy": {
-            "alliance": -4,
-            "empire": -3
+            "allies": -4,
+            "axis": -3
           },
           "medium": {
-            "alliance": -4,
-            "empire": -3
+            "allies": -4,
+            "axis": -3
           },
           "hard": {
-            "alliance": -4,
-            "empire": -3
+            "allies": -4,
+            "axis": -3
           }
         }
       },
       "dev": {
-        "alliance": -4,
-        "empire": -3
+        "allies": -4,
+        "axis": -3
       },
       "mp": {
-        "alliance": -4,
-        "empire": -3
+        "allies": -4,
+        "axis": -3
       }
     },
     {
@@ -392,42 +392,42 @@
       "Name": "Local Sector Scan Support Threshold",
       "GroupId": 5131,
       "by_faction": {
-        "alliance": {
+        "allies": {
           "easy": {
-            "alliance": 101,
-            "empire": 101
+            "allies": 101,
+            "axis": 101
           },
           "medium": {
-            "alliance": 101,
-            "empire": 101
+            "allies": 101,
+            "axis": 101
           },
           "hard": {
-            "alliance": 101,
-            "empire": 101
+            "allies": 101,
+            "axis": 101
           }
         },
-        "empire": {
+        "axis": {
           "easy": {
-            "alliance": 101,
-            "empire": 101
+            "allies": 101,
+            "axis": 101
           },
           "medium": {
-            "alliance": 101,
-            "empire": 101
+            "allies": 101,
+            "axis": 101
           },
           "hard": {
-            "alliance": 101,
-            "empire": 101
+            "allies": 101,
+            "axis": 101
           }
         }
       },
       "dev": {
-        "alliance": 101,
-        "empire": 101
+        "allies": 101,
+        "axis": 101
       },
       "mp": {
-        "alliance": 101,
-        "empire": 101
+        "allies": 101,
+        "axis": 101
       }
     },
     {
@@ -435,42 +435,42 @@
       "Name": "Startup Balance: Counterpart Support Threshold",
       "GroupId": 5136,
       "by_faction": {
-        "alliance": {
+        "allies": {
           "easy": {
-            "alliance": 101,
-            "empire": 101
+            "allies": 101,
+            "axis": 101
           },
           "medium": {
-            "alliance": 101,
-            "empire": 101
+            "allies": 101,
+            "axis": 101
           },
           "hard": {
-            "alliance": 101,
-            "empire": 101
+            "allies": 101,
+            "axis": 101
           }
         },
-        "empire": {
+        "axis": {
           "easy": {
-            "alliance": 101,
-            "empire": 101
+            "allies": 101,
+            "axis": 101
           },
           "medium": {
-            "alliance": 101,
-            "empire": 101
+            "allies": 101,
+            "axis": 101
           },
           "hard": {
-            "alliance": 101,
-            "empire": 101
+            "allies": 101,
+            "axis": 101
           }
         }
       },
       "dev": {
-        "alliance": 101,
-        "empire": 101
+        "allies": 101,
+        "axis": 101
       },
       "mp": {
-        "alliance": 101,
-        "empire": 101
+        "allies": 101,
+        "axis": 101
       }
     },
     {
@@ -478,42 +478,42 @@
       "Name": "Startup Balance: Payload Magnitude Cap",
       "GroupId": 5137,
       "by_faction": {
-        "alliance": {
+        "allies": {
           "easy": {
-            "alliance": 20,
-            "empire": 20
+            "allies": 20,
+            "axis": 20
           },
           "medium": {
-            "alliance": 20,
-            "empire": 20
+            "allies": 20,
+            "axis": 20
           },
           "hard": {
-            "alliance": 20,
-            "empire": 20
+            "allies": 20,
+            "axis": 20
           }
         },
-        "empire": {
+        "axis": {
           "easy": {
-            "alliance": 20,
-            "empire": 20
+            "allies": 20,
+            "axis": 20
           },
           "medium": {
-            "alliance": 20,
-            "empire": 20
+            "allies": 20,
+            "axis": 20
           },
           "hard": {
-            "alliance": 20,
-            "empire": 20
+            "allies": 20,
+            "axis": 20
           }
         }
       },
       "dev": {
-        "alliance": 20,
-        "empire": 20
+        "allies": 20,
+        "axis": 20
       },
       "mp": {
-        "alliance": 20,
-        "empire": 20
+        "allies": 20,
+        "axis": 20
       }
     },
     {
@@ -521,42 +521,42 @@
       "Name": "Startup Balance: Leading Branch Flat Base",
       "GroupId": 5138,
       "by_faction": {
-        "alliance": {
+        "allies": {
           "easy": {
-            "alliance": 100,
-            "empire": 100
+            "allies": 100,
+            "axis": 100
           },
           "medium": {
-            "alliance": 100,
-            "empire": 100
+            "allies": 100,
+            "axis": 100
           },
           "hard": {
-            "alliance": 100,
-            "empire": 100
+            "allies": 100,
+            "axis": 100
           }
         },
-        "empire": {
+        "axis": {
           "easy": {
-            "alliance": 100,
-            "empire": 100
+            "allies": 100,
+            "axis": 100
           },
           "medium": {
-            "alliance": 100,
-            "empire": 100
+            "allies": 100,
+            "axis": 100
           },
           "hard": {
-            "alliance": 100,
-            "empire": 100
+            "allies": 100,
+            "axis": 100
           }
         }
       },
       "dev": {
-        "alliance": 100,
-        "empire": 100
+        "allies": 100,
+        "axis": 100
       },
       "mp": {
-        "alliance": 100,
-        "empire": 100
+        "allies": 100,
+        "axis": 100
       }
     },
     {
@@ -564,42 +564,42 @@
       "Name": "Startup Balance: Leading Branch Gap Scale (%)",
       "GroupId": 5139,
       "by_faction": {
-        "alliance": {
+        "allies": {
           "easy": {
-            "alliance": 400,
-            "empire": 200
+            "allies": 400,
+            "axis": 200
           },
           "medium": {
-            "alliance": 400,
-            "empire": 150
+            "allies": 400,
+            "axis": 150
           },
           "hard": {
-            "alliance": 400,
-            "empire": 100
+            "allies": 400,
+            "axis": 100
           }
         },
-        "empire": {
+        "axis": {
           "easy": {
-            "alliance": 200,
-            "empire": 400
+            "allies": 200,
+            "axis": 400
           },
           "medium": {
-            "alliance": 150,
-            "empire": 400
+            "allies": 150,
+            "axis": 400
           },
           "hard": {
-            "alliance": 100,
-            "empire": 400
+            "allies": 100,
+            "axis": 400
           }
         }
       },
       "dev": {
-        "alliance": 400,
-        "empire": 400
+        "allies": 400,
+        "axis": 400
       },
       "mp": {
-        "alliance": 400,
-        "empire": 400
+        "allies": 400,
+        "axis": 400
       }
     },
     {
@@ -607,42 +607,42 @@
       "Name": "Startup Balance: Trailing Branch Flat Base",
       "GroupId": 5140,
       "by_faction": {
-        "alliance": {
+        "allies": {
           "easy": {
-            "alliance": 0,
-            "empire": 0
+            "allies": 0,
+            "axis": 0
           },
           "medium": {
-            "alliance": 0,
-            "empire": 0
+            "allies": 0,
+            "axis": 0
           },
           "hard": {
-            "alliance": 0,
-            "empire": 0
+            "allies": 0,
+            "axis": 0
           }
         },
-        "empire": {
+        "axis": {
           "easy": {
-            "alliance": 0,
-            "empire": 0
+            "allies": 0,
+            "axis": 0
           },
           "medium": {
-            "alliance": 0,
-            "empire": 0
+            "allies": 0,
+            "axis": 0
           },
           "hard": {
-            "alliance": 0,
-            "empire": 0
+            "allies": 0,
+            "axis": 0
           }
         }
       },
       "dev": {
-        "alliance": 0,
-        "empire": 0
+        "allies": 0,
+        "axis": 0
       },
       "mp": {
-        "alliance": 0,
-        "empire": 0
+        "allies": 0,
+        "axis": 0
       }
     },
     {
@@ -650,42 +650,42 @@
       "Name": "Startup Balance: Trailing Branch Gap Scale (%)",
       "GroupId": 5141,
       "by_faction": {
-        "alliance": {
+        "allies": {
           "easy": {
-            "alliance": 100,
-            "empire": 100
+            "allies": 100,
+            "axis": 100
           },
           "medium": {
-            "alliance": 100,
-            "empire": 100
+            "allies": 100,
+            "axis": 100
           },
           "hard": {
-            "alliance": 100,
-            "empire": 100
+            "allies": 100,
+            "axis": 100
           }
         },
-        "empire": {
+        "axis": {
           "easy": {
-            "alliance": 100,
-            "empire": 100
+            "allies": 100,
+            "axis": 100
           },
           "medium": {
-            "alliance": 100,
-            "empire": 100
+            "allies": 100,
+            "axis": 100
           },
           "hard": {
-            "alliance": 100,
-            "empire": 100
+            "allies": 100,
+            "axis": 100
           }
         }
       },
       "dev": {
-        "alliance": 100,
-        "empire": 100
+        "allies": 100,
+        "axis": 100
       },
       "mp": {
-        "alliance": 100,
-        "empire": 100
+        "allies": 100,
+        "axis": 100
       }
     },
     {
@@ -693,42 +693,42 @@
       "Name": "Peaceful Control Change: Payload Offset",
       "GroupId": 5152,
       "by_faction": {
-        "alliance": {
+        "allies": {
           "easy": {
-            "alliance": 1,
-            "empire": 1
+            "allies": 1,
+            "axis": 1
           },
           "medium": {
-            "alliance": 1,
-            "empire": 1
+            "allies": 1,
+            "axis": 1
           },
           "hard": {
-            "alliance": 1,
-            "empire": 1
+            "allies": 1,
+            "axis": 1
           }
         },
-        "empire": {
+        "axis": {
           "easy": {
-            "alliance": 1,
-            "empire": 1
+            "allies": 1,
+            "axis": 1
           },
           "medium": {
-            "alliance": 1,
-            "empire": 1
+            "allies": 1,
+            "axis": 1
           },
           "hard": {
-            "alliance": 1,
-            "empire": 1
+            "allies": 1,
+            "axis": 1
           }
         }
       },
       "dev": {
-        "alliance": 1,
-        "empire": 1
+        "allies": 1,
+        "axis": 1
       },
       "mp": {
-        "alliance": 1,
-        "empire": 1
+        "allies": 1,
+        "axis": 1
       }
     },
     {
@@ -736,42 +736,42 @@
       "Name": "Peaceful Control Change: Event Row",
       "GroupId": 5153,
       "by_faction": {
-        "alliance": {
+        "allies": {
           "easy": {
-            "alliance": 100,
-            "empire": 100
+            "allies": 100,
+            "axis": 100
           },
           "medium": {
-            "alliance": 100,
-            "empire": 100
+            "allies": 100,
+            "axis": 100
           },
           "hard": {
-            "alliance": 100,
-            "empire": 100
+            "allies": 100,
+            "axis": 100
           }
         },
-        "empire": {
+        "axis": {
           "easy": {
-            "alliance": 100,
-            "empire": 100
+            "allies": 100,
+            "axis": 100
           },
           "medium": {
-            "alliance": 100,
-            "empire": 100
+            "allies": 100,
+            "axis": 100
           },
           "hard": {
-            "alliance": 100,
-            "empire": 100
+            "allies": 100,
+            "axis": 100
           }
         }
       },
       "dev": {
-        "alliance": 100,
-        "empire": 100
+        "allies": 100,
+        "axis": 100
       },
       "mp": {
-        "alliance": 100,
-        "empire": 100
+        "allies": 100,
+        "axis": 100
       }
     },
     {
@@ -779,42 +779,42 @@
       "Name": "Alternate Control Change: Payload Offset",
       "GroupId": 5154,
       "by_faction": {
-        "alliance": {
+        "allies": {
           "easy": {
-            "alliance": 10,
-            "empire": 5
+            "allies": 10,
+            "axis": 5
           },
           "medium": {
-            "alliance": 10,
-            "empire": 5
+            "allies": 10,
+            "axis": 5
           },
           "hard": {
-            "alliance": 10,
-            "empire": 5
+            "allies": 10,
+            "axis": 5
           }
         },
-        "empire": {
+        "axis": {
           "easy": {
-            "alliance": 10,
-            "empire": 5
+            "allies": 10,
+            "axis": 5
           },
           "medium": {
-            "alliance": 10,
-            "empire": 5
+            "allies": 10,
+            "axis": 5
           },
           "hard": {
-            "alliance": 10,
-            "empire": 5
+            "allies": 10,
+            "axis": 5
           }
         }
       },
       "dev": {
-        "alliance": 10,
-        "empire": 5
+        "allies": 10,
+        "axis": 5
       },
       "mp": {
-        "alliance": 10,
-        "empire": 5
+        "allies": 10,
+        "axis": 5
       }
     },
     {
@@ -822,42 +822,42 @@
       "Name": "Alternate Control Change: Event Row",
       "GroupId": 5155,
       "by_faction": {
-        "alliance": {
+        "allies": {
           "easy": {
-            "alliance": 100,
-            "empire": 90
+            "allies": 100,
+            "axis": 90
           },
           "medium": {
-            "alliance": 100,
-            "empire": 90
+            "allies": 100,
+            "axis": 90
           },
           "hard": {
-            "alliance": 100,
-            "empire": 90
+            "allies": 100,
+            "axis": 90
           }
         },
-        "empire": {
+        "axis": {
           "easy": {
-            "alliance": 100,
-            "empire": 90
+            "allies": 100,
+            "axis": 90
           },
           "medium": {
-            "alliance": 100,
-            "empire": 90
+            "allies": 100,
+            "axis": 90
           },
           "hard": {
-            "alliance": 100,
-            "empire": 90
+            "allies": 100,
+            "axis": 90
           }
         }
       },
       "dev": {
-        "alliance": 100,
-        "empire": 90
+        "allies": 100,
+        "axis": 90
       },
       "mp": {
-        "alliance": 100,
-        "empire": 90
+        "allies": 100,
+        "axis": 90
       }
     },
     {
@@ -865,42 +865,42 @@
       "Name": "% of Maintenance to deploy Random Units at Day 0 (Standard Galaxy)",
       "GroupId": 5168,
       "by_faction": {
-        "alliance": {
+        "allies": {
           "easy": {
-            "alliance": 33,
-            "empire": 33
+            "allies": 33,
+            "axis": 33
           },
           "medium": {
-            "alliance": 25,
-            "empire": 38
+            "allies": 25,
+            "axis": 38
           },
           "hard": {
-            "alliance": 25,
-            "empire": 38
+            "allies": 25,
+            "axis": 38
           }
         },
-        "empire": {
+        "axis": {
           "easy": {
-            "alliance": 33,
-            "empire": 33
+            "allies": 33,
+            "axis": 33
           },
           "medium": {
-            "alliance": 38,
-            "empire": 25
+            "allies": 38,
+            "axis": 25
           },
           "hard": {
-            "alliance": 38,
-            "empire": 25
+            "allies": 38,
+            "axis": 25
           }
         }
       },
       "dev": {
-        "alliance": 33,
-        "empire": 33
+        "allies": 33,
+        "axis": 33
       },
       "mp": {
-        "alliance": 28,
-        "empire": 28
+        "allies": 28,
+        "axis": 28
       }
     },
     {
@@ -908,42 +908,42 @@
       "Name": "% of Maintenance to deploy Random Units at Day 0 (Large Galaxy)",
       "GroupId": 5169,
       "by_faction": {
-        "alliance": {
+        "allies": {
           "easy": {
-            "alliance": 25,
-            "empire": 25
+            "allies": 25,
+            "axis": 25
           },
           "medium": {
-            "alliance": 20,
-            "empire": 30
+            "allies": 20,
+            "axis": 30
           },
           "hard": {
-            "alliance": 20,
-            "empire": 30
+            "allies": 20,
+            "axis": 30
           }
         },
-        "empire": {
+        "axis": {
           "easy": {
-            "alliance": 25,
-            "empire": 25
+            "allies": 25,
+            "axis": 25
           },
           "medium": {
-            "alliance": 30,
-            "empire": 20
+            "allies": 30,
+            "axis": 20
           },
           "hard": {
-            "alliance": 30,
-            "empire": 20
+            "allies": 30,
+            "axis": 20
           }
         }
       },
       "dev": {
-        "alliance": 25,
-        "empire": 25
+        "allies": 25,
+        "axis": 25
       },
       "mp": {
-        "alliance": 20,
-        "empire": 20
+        "allies": 20,
+        "axis": 20
       }
     },
     {
@@ -951,42 +951,42 @@
       "Name": "% of Maintenance to deploy Random Units at Day 0 (Huge Galaxy)",
       "GroupId": 5170,
       "by_faction": {
-        "alliance": {
+        "allies": {
           "easy": {
-            "alliance": 20,
-            "empire": 20
+            "allies": 20,
+            "axis": 20
           },
           "medium": {
-            "alliance": 15,
-            "empire": 25
+            "allies": 15,
+            "axis": 25
           },
           "hard": {
-            "alliance": 15,
-            "empire": 25
+            "allies": 15,
+            "axis": 25
           }
         },
-        "empire": {
+        "axis": {
           "easy": {
-            "alliance": 20,
-            "empire": 20
+            "allies": 20,
+            "axis": 20
           },
           "medium": {
-            "alliance": 25,
-            "empire": 15
+            "allies": 25,
+            "axis": 15
           },
           "hard": {
-            "alliance": 25,
-            "empire": 15
+            "allies": 25,
+            "axis": 15
           }
         }
       },
       "dev": {
-        "alliance": 20,
-        "empire": 20
+        "allies": 20,
+        "axis": 20
       },
       "mp": {
-        "alliance": 15,
-        "empire": 15
+        "allies": 15,
+        "axis": 15
       }
     },
     {
@@ -994,42 +994,42 @@
       "Name": "Troop Arrival Control Change: Payload",
       "GroupId": 5184,
       "by_faction": {
-        "alliance": {
+        "allies": {
           "easy": {
-            "alliance": 0,
-            "empire": 0
+            "allies": 0,
+            "axis": 0
           },
           "medium": {
-            "alliance": 0,
-            "empire": 0
+            "allies": 0,
+            "axis": 0
           },
           "hard": {
-            "alliance": 0,
-            "empire": 0
+            "allies": 0,
+            "axis": 0
           }
         },
-        "empire": {
+        "axis": {
           "easy": {
-            "alliance": 0,
-            "empire": 0
+            "allies": 0,
+            "axis": 0
           },
           "medium": {
-            "alliance": 0,
-            "empire": 0
+            "allies": 0,
+            "axis": 0
           },
           "hard": {
-            "alliance": 0,
-            "empire": 0
+            "allies": 0,
+            "axis": 0
           }
         }
       },
       "dev": {
-        "alliance": 0,
-        "empire": 0
+        "allies": 0,
+        "axis": 0
       },
       "mp": {
-        "alliance": 0,
-        "empire": 0
+        "allies": 0,
+        "axis": 0
       }
     },
     {
@@ -1037,42 +1037,42 @@
       "Name": "Troop Arrival Control Change: Event Row",
       "GroupId": 5185,
       "by_faction": {
-        "alliance": {
+        "allies": {
           "easy": {
-            "alliance": 101,
-            "empire": 101
+            "allies": 101,
+            "axis": 101
           },
           "medium": {
-            "alliance": 101,
-            "empire": 101
+            "allies": 101,
+            "axis": 101
           },
           "hard": {
-            "alliance": 101,
-            "empire": 101
+            "allies": 101,
+            "axis": 101
           }
         },
-        "empire": {
+        "axis": {
           "easy": {
-            "alliance": 101,
-            "empire": 101
+            "allies": 101,
+            "axis": 101
           },
           "medium": {
-            "alliance": 101,
-            "empire": 101
+            "allies": 101,
+            "axis": 101
           },
           "hard": {
-            "alliance": 101,
-            "empire": 101
+            "allies": 101,
+            "axis": 101
           }
         }
       },
       "dev": {
-        "alliance": 101,
-        "empire": 101
+        "allies": 101,
+        "axis": 101
       },
       "mp": {
-        "alliance": 101,
-        "empire": 101
+        "allies": 101,
+        "axis": 101
       }
     },
     {
@@ -1080,42 +1080,42 @@
       "Name": "Troop Withdrawal Control Change: Payload",
       "GroupId": 5186,
       "by_faction": {
-        "alliance": {
+        "allies": {
           "easy": {
-            "alliance": 10,
-            "empire": 10
+            "allies": 10,
+            "axis": 10
           },
           "medium": {
-            "alliance": 10,
-            "empire": 10
+            "allies": 10,
+            "axis": 10
           },
           "hard": {
-            "alliance": 10,
-            "empire": 10
+            "allies": 10,
+            "axis": 10
           }
         },
-        "empire": {
+        "axis": {
           "easy": {
-            "alliance": 10,
-            "empire": 10
+            "allies": 10,
+            "axis": 10
           },
           "medium": {
-            "alliance": 10,
-            "empire": 10
+            "allies": 10,
+            "axis": 10
           },
           "hard": {
-            "alliance": 10,
-            "empire": 10
+            "allies": 10,
+            "axis": 10
           }
         }
       },
       "dev": {
-        "alliance": 10,
-        "empire": 10
+        "allies": 10,
+        "axis": 10
       },
       "mp": {
-        "alliance": 10,
-        "empire": 10
+        "allies": 10,
+        "axis": 10
       }
     },
     {
@@ -1123,42 +1123,42 @@
       "Name": "Troop Withdrawal Control Change: Event Row",
       "GroupId": 5187,
       "by_faction": {
-        "alliance": {
+        "allies": {
           "easy": {
-            "alliance": 101,
-            "empire": 101
+            "allies": 101,
+            "axis": 101
           },
           "medium": {
-            "alliance": 101,
-            "empire": 101
+            "allies": 101,
+            "axis": 101
           },
           "hard": {
-            "alliance": 101,
-            "empire": 101
+            "allies": 101,
+            "axis": 101
           }
         },
-        "empire": {
+        "axis": {
           "easy": {
-            "alliance": 101,
-            "empire": 101
+            "allies": 101,
+            "axis": 101
           },
           "medium": {
-            "alliance": 101,
-            "empire": 101
+            "allies": 101,
+            "axis": 101
           },
           "hard": {
-            "alliance": 101,
-            "empire": 101
+            "allies": 101,
+            "axis": 101
           }
         }
       },
       "dev": {
-        "alliance": 101,
-        "empire": 101
+        "allies": 101,
+        "axis": 101
       },
       "mp": {
-        "alliance": 101,
-        "empire": 101
+        "allies": 101,
+        "axis": 101
       }
     },
     {
@@ -1166,42 +1166,42 @@
       "Name": "Contested Troop Presence Control Change: Payload",
       "GroupId": 5188,
       "by_faction": {
-        "alliance": {
+        "allies": {
           "easy": {
-            "alliance": 0,
-            "empire": 0
+            "allies": 0,
+            "axis": 0
           },
           "medium": {
-            "alliance": 0,
-            "empire": 0
+            "allies": 0,
+            "axis": 0
           },
           "hard": {
-            "alliance": 0,
-            "empire": 0
+            "allies": 0,
+            "axis": 0
           }
         },
-        "empire": {
+        "axis": {
           "easy": {
-            "alliance": 0,
-            "empire": 0
+            "allies": 0,
+            "axis": 0
           },
           "medium": {
-            "alliance": 0,
-            "empire": 0
+            "allies": 0,
+            "axis": 0
           },
           "hard": {
-            "alliance": 0,
-            "empire": 0
+            "allies": 0,
+            "axis": 0
           }
         }
       },
       "dev": {
-        "alliance": 0,
-        "empire": 0
+        "allies": 0,
+        "axis": 0
       },
       "mp": {
-        "alliance": 0,
-        "empire": 0
+        "allies": 0,
+        "axis": 0
       }
     },
     {
@@ -1209,42 +1209,42 @@
       "Name": "Contested Troop Presence Control Change: Event Row",
       "GroupId": 5189,
       "by_faction": {
-        "alliance": {
+        "allies": {
           "easy": {
-            "alliance": 101,
-            "empire": 101
+            "allies": 101,
+            "axis": 101
           },
           "medium": {
-            "alliance": 101,
-            "empire": 101
+            "allies": 101,
+            "axis": 101
           },
           "hard": {
-            "alliance": 101,
-            "empire": 101
+            "allies": 101,
+            "axis": 101
           }
         },
-        "empire": {
+        "axis": {
           "easy": {
-            "alliance": 101,
-            "empire": 101
+            "allies": 101,
+            "axis": 101
           },
           "medium": {
-            "alliance": 101,
-            "empire": 101
+            "allies": 101,
+            "axis": 101
           },
           "hard": {
-            "alliance": 101,
-            "empire": 101
+            "allies": 101,
+            "axis": 101
           }
         }
       },
       "dev": {
-        "alliance": 101,
-        "empire": 101
+        "allies": 101,
+        "axis": 101
       },
       "mp": {
-        "alliance": 101,
-        "empire": 101
+        "allies": 101,
+        "axis": 101
       }
     },
     {
@@ -1252,42 +1252,42 @@
       "Name": "Core Sector Owned Systems with support",
       "GroupId": 7680,
       "by_faction": {
-        "alliance": {
+        "allies": {
           "easy": {
-            "alliance": 10,
-            "empire": 10
+            "allies": 10,
+            "axis": 10
           },
           "medium": {
-            "alliance": 20,
-            "empire": 25
+            "allies": 20,
+            "axis": 25
           },
           "hard": {
-            "alliance": 15,
-            "empire": 30
+            "allies": 15,
+            "axis": 30
           }
         },
-        "empire": {
+        "axis": {
           "easy": {
-            "alliance": 10,
-            "empire": 10
+            "allies": 10,
+            "axis": 10
           },
           "medium": {
-            "alliance": 35,
-            "empire": 10
+            "allies": 35,
+            "axis": 10
           },
           "hard": {
-            "alliance": 40,
-            "empire": 10
+            "allies": 40,
+            "axis": 10
           }
         }
       },
       "dev": {
-        "alliance": 20,
-        "empire": 25
+        "allies": 20,
+        "axis": 25
       },
       "mp": {
-        "alliance": 10,
-        "empire": 10
+        "allies": 10,
+        "axis": 10
       }
     },
     {
@@ -1295,42 +1295,42 @@
       "Name": "Core Sector Owned Systems without support",
       "GroupId": 7681,
       "by_faction": {
-        "alliance": {
+        "allies": {
           "easy": {
-            "alliance": 0,
-            "empire": 4
+            "allies": 0,
+            "axis": 4
           },
           "medium": {
-            "alliance": 0,
-            "empire": 10
+            "allies": 0,
+            "axis": 10
           },
           "hard": {
-            "alliance": 0,
-            "empire": 10
+            "allies": 0,
+            "axis": 10
           }
         },
-        "empire": {
+        "axis": {
           "easy": {
-            "alliance": 0,
-            "empire": 4
+            "allies": 0,
+            "axis": 4
           },
           "medium": {
-            "alliance": 0,
-            "empire": 10
+            "allies": 0,
+            "axis": 10
           },
           "hard": {
-            "alliance": 0,
-            "empire": 5
+            "allies": 0,
+            "axis": 5
           }
         }
       },
       "dev": {
-        "alliance": 0,
-        "empire": 10
+        "allies": 0,
+        "axis": 10
       },
       "mp": {
-        "alliance": 0,
-        "empire": 4
+        "allies": 0,
+        "axis": 4
       }
     },
     {
@@ -1338,42 +1338,42 @@
       "Name": "Core Sector Owned Systems with support Popularity: Base (%)",
       "GroupId": 7682,
       "by_faction": {
-        "alliance": {
+        "allies": {
           "easy": {
-            "alliance": 60,
-            "empire": 60
+            "allies": 60,
+            "axis": 60
           },
           "medium": {
-            "alliance": 60,
-            "empire": 60
+            "allies": 60,
+            "axis": 60
           },
           "hard": {
-            "alliance": 60,
-            "empire": 60
+            "allies": 60,
+            "axis": 60
           }
         },
-        "empire": {
+        "axis": {
           "easy": {
-            "alliance": 60,
-            "empire": 60
+            "allies": 60,
+            "axis": 60
           },
           "medium": {
-            "alliance": 60,
-            "empire": 60
+            "allies": 60,
+            "axis": 60
           },
           "hard": {
-            "alliance": 60,
-            "empire": 60
+            "allies": 60,
+            "axis": 60
           }
         }
       },
       "dev": {
-        "alliance": 60,
-        "empire": 60
+        "allies": 60,
+        "axis": 60
       },
       "mp": {
-        "alliance": 60,
-        "empire": 60
+        "allies": 60,
+        "axis": 60
       }
     },
     {
@@ -1381,42 +1381,42 @@
       "Name": "Core Sector Owned Systems with support Popularity: Max Random Extra (%)",
       "GroupId": 7683,
       "by_faction": {
-        "alliance": {
+        "allies": {
           "easy": {
-            "alliance": 30,
-            "empire": 30
+            "allies": 30,
+            "axis": 30
           },
           "medium": {
-            "alliance": 30,
-            "empire": 30
+            "allies": 30,
+            "axis": 30
           },
           "hard": {
-            "alliance": 30,
-            "empire": 30
+            "allies": 30,
+            "axis": 30
           }
         },
-        "empire": {
+        "axis": {
           "easy": {
-            "alliance": 30,
-            "empire": 30
+            "allies": 30,
+            "axis": 30
           },
           "medium": {
-            "alliance": 30,
-            "empire": 30
+            "allies": 30,
+            "axis": 30
           },
           "hard": {
-            "alliance": 30,
-            "empire": 30
+            "allies": 30,
+            "axis": 30
           }
         }
       },
       "dev": {
-        "alliance": 30,
-        "empire": 30
+        "allies": 30,
+        "axis": 30
       },
       "mp": {
-        "alliance": 30,
-        "empire": 30
+        "allies": 30,
+        "axis": 30
       }
     },
     {
@@ -1424,42 +1424,42 @@
       "Name": "Core Sector Owned Systems without support Popularity: Base (%)",
       "GroupId": 7684,
       "by_faction": {
-        "alliance": {
+        "allies": {
           "easy": {
-            "alliance": 20,
-            "empire": 20
+            "allies": 20,
+            "axis": 20
           },
           "medium": {
-            "alliance": 20,
-            "empire": 20
+            "allies": 20,
+            "axis": 20
           },
           "hard": {
-            "alliance": 20,
-            "empire": 20
+            "allies": 20,
+            "axis": 20
           }
         },
-        "empire": {
+        "axis": {
           "easy": {
-            "alliance": 20,
-            "empire": 20
+            "allies": 20,
+            "axis": 20
           },
           "medium": {
-            "alliance": 20,
-            "empire": 20
+            "allies": 20,
+            "axis": 20
           },
           "hard": {
-            "alliance": 20,
-            "empire": 20
+            "allies": 20,
+            "axis": 20
           }
         }
       },
       "dev": {
-        "alliance": 20,
-        "empire": 20
+        "allies": 20,
+        "axis": 20
       },
       "mp": {
-        "alliance": 20,
-        "empire": 20
+        "allies": 20,
+        "axis": 20
       }
     },
     {
@@ -1467,42 +1467,42 @@
       "Name": "Core Sector Owned Systems without support Popularity: Max Random Extra (%)",
       "GroupId": 7685,
       "by_faction": {
-        "alliance": {
+        "allies": {
           "easy": {
-            "alliance": 30,
-            "empire": 30
+            "allies": 30,
+            "axis": 30
           },
           "medium": {
-            "alliance": 30,
-            "empire": 30
+            "allies": 30,
+            "axis": 30
           },
           "hard": {
-            "alliance": 30,
-            "empire": 30
+            "allies": 30,
+            "axis": 30
           }
         },
-        "empire": {
+        "axis": {
           "easy": {
-            "alliance": 30,
-            "empire": 30
+            "allies": 30,
+            "axis": 30
           },
           "medium": {
-            "alliance": 30,
-            "empire": 30
+            "allies": 30,
+            "axis": 30
           },
           "hard": {
-            "alliance": 30,
-            "empire": 30
+            "allies": 30,
+            "axis": 30
           }
         }
       },
       "dev": {
-        "alliance": 30,
-        "empire": 30
+        "allies": 30,
+        "axis": 30
       },
       "mp": {
-        "alliance": 30,
-        "empire": 30
+        "allies": 30,
+        "axis": 30
       }
     }
   ],
@@ -1554,7 +1554,7 @@
           "ProbabilityThreshold": 88,
           "SpawnChancePercent": 12,
           "Asset": {
-            "facility": "planetary_shield"
+            "facility": "fortifications"
           }
         },
         {
@@ -1562,7 +1562,7 @@
           "ProbabilityThreshold": 96,
           "SpawnChancePercent": 4,
           "Asset": {
-            "facility": "turbolaser_battery"
+            "facility": "coastal_battery"
           }
         },
         {
@@ -1570,11 +1570,10 @@
           "ProbabilityThreshold": 99,
           "SpawnChancePercent": 1,
           "Asset": {
-            "facility": "ion_cannon"
+            "facility": "minefield"
           }
         }
-      ],
-      "source_file": "SYFCCRTB.DAT"
+      ]
     },
     "rim_system_facilities": {
       "Type": "SYFC (Flat)",
@@ -1623,7 +1622,7 @@
           "ProbabilityThreshold": 99,
           "SpawnChancePercent": 1,
           "Asset": {
-            "facility": "planetary_shield"
+            "facility": "fortifications"
           }
         },
         {
@@ -1631,13 +1630,12 @@
           "ProbabilityThreshold": 100,
           "SpawnChancePercent": 0,
           "Asset": {
-            "facility": "turbolaser_battery"
+            "facility": "coastal_battery"
           }
         }
-      ],
-      "source_file": "SYFCRMTB.DAT"
+      ]
     },
-    "alliance_fleet": {
+    "allies_fleet": {
       "Type": "CMUN/FACL (Hierarchical)",
       "Description": "SeedFamilyTableEntry",
       "Entries": [
@@ -1648,7 +1646,7 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "unit": "corellian_corvette"
+              "unit": "tribal_class_destroyer_flotilla"
             }
           ]
         },
@@ -1659,24 +1657,23 @@
           "ChildrenCount": 3,
           "Assets": [
             {
-              "unit": "medium_transport"
+              "unit": "liberty_ship_convoy"
             },
             {
-              "unit": "alliance_fleet_regiment"
+              "unit": "royal_marines_brigade"
             },
             {
-              "unit": "alliance_fleet_regiment"
+              "unit": "royal_marines_brigade"
             }
           ]
         }
       ],
-      "source_file": "CMUNAFTB.DAT",
       "fixed_range": [
         90,
         91
       ]
     },
-    "empire_fleet": {
+    "axis_fleet": {
       "Type": "CMUN/FACL (Hierarchical)",
       "Description": "SeedFamilyTableEntry",
       "Entries": [
@@ -1687,45 +1684,44 @@
           "ChildrenCount": 10,
           "Assets": [
             {
-              "unit": "imperial_star_destroyer"
+              "unit": "bismarck_class_battleship"
             },
             {
-              "unit": "tie_fighter"
+              "unit": "bf_109_squadron"
             },
             {
-              "unit": "tie_fighter"
+              "unit": "bf_109_squadron"
             },
             {
-              "unit": "tie_fighter"
+              "unit": "bf_109_squadron"
             },
             {
-              "unit": "tie_fighter"
+              "unit": "bf_109_squadron"
             },
             {
-              "unit": "tie_fighter"
+              "unit": "bf_109_squadron"
             },
             {
-              "unit": "tie_fighter"
+              "unit": "bf_109_squadron"
             },
             {
-              "unit": "stormtrooper_regiment"
+              "unit": "waffen_ss_division"
             },
             {
-              "unit": "stormtrooper_regiment"
+              "unit": "waffen_ss_division"
             },
             {
-              "unit": "stormtrooper_regiment"
+              "unit": "waffen_ss_division"
             }
           ]
         }
       ],
-      "source_file": "CMUNEFTB.DAT",
       "fixed_range": [
         92,
         93
       ]
     },
-    "alliance_procedural_fleet": {
+    "allies_procedural_fleet": {
       "Type": "CMUN/FACL (Hierarchical)",
       "Description": "SeedFamilyTableEntry",
       "Entries": [
@@ -1736,7 +1732,7 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "unit": "bulk_cruiser"
+              "unit": "town_class_cruiser"
             }
           ]
         },
@@ -1747,13 +1743,13 @@
           "ChildrenCount": 3,
           "Assets": [
             {
-              "unit": "alliance_escort_carrier"
+              "unit": "illustrious_class_carrier"
             },
             {
-              "unit": "x_wing"
+              "unit": "p_51_mustang_squadron"
             },
             {
-              "unit": "y_wing"
+              "unit": "sbd_dauntless_squadron"
             }
           ]
         },
@@ -1764,7 +1760,7 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "unit": "corellian_corvette"
+              "unit": "tribal_class_destroyer_flotilla"
             }
           ]
         },
@@ -1775,13 +1771,13 @@
           "ChildrenCount": 3,
           "Assets": [
             {
-              "unit": "medium_transport"
+              "unit": "liberty_ship_convoy"
             },
             {
-              "unit": "alliance_army_regiment"
+              "unit": "british_infantry_division"
             },
             {
-              "unit": "alliance_army_regiment"
+              "unit": "british_infantry_division"
             }
           ]
         },
@@ -1792,7 +1788,7 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "unit": "x_wing"
+              "unit": "p_51_mustang_squadron"
             }
           ]
         },
@@ -1803,7 +1799,7 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "unit": "y_wing"
+              "unit": "sbd_dauntless_squadron"
             }
           ]
         },
@@ -1814,7 +1810,7 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "unit": "alliance_fleet_regiment"
+              "unit": "royal_marines_brigade"
             }
           ]
         },
@@ -1825,7 +1821,7 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "unit": "alliance_army_regiment"
+              "unit": "british_infantry_division"
             }
           ]
         },
@@ -1836,7 +1832,7 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "unit": "guerrillas"
+              "unit": "resistance_cell"
             }
           ]
         },
@@ -1847,7 +1843,7 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "unit": "infiltrators"
+              "unit": "commandos"
             }
           ]
         },
@@ -1858,7 +1854,7 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "unit": "longprobe_y_wing_recon_team"
+              "unit": "photo_reconnaissance_flight"
             }
           ]
         },
@@ -1869,14 +1865,13 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "unit": "bothan_spies"
+              "unit": "soe_agents"
             }
           ]
         }
-      ],
-      "source_file": "CMUNALTB.DAT"
+      ]
     },
-    "empire_procedural_fleet": {
+    "axis_procedural_fleet": {
       "Type": "CMUN/FACL (Hierarchical)",
       "Description": "SeedFamilyTableEntry",
       "Entries": [
@@ -1887,7 +1882,7 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "unit": "carrack_light_cruiser"
+              "unit": "hipper_class_heavy_cruiser"
             }
           ]
         },
@@ -1898,13 +1893,13 @@
           "ChildrenCount": 3,
           "Assets": [
             {
-              "unit": "victory_destroyer"
+              "unit": "scharnhorst_class_battlecruiser"
             },
             {
-              "unit": "imperial_fleet_regiment"
+              "unit": "kriegsmarine_marine_battalion"
             },
             {
-              "unit": "tie_fighter"
+              "unit": "bf_109_squadron"
             }
           ]
         },
@@ -1915,19 +1910,19 @@
           "ChildrenCount": 5,
           "Assets": [
             {
-              "unit": "imperial_star_destroyer"
+              "unit": "bismarck_class_battleship"
             },
             {
-              "unit": "stormtrooper_regiment"
+              "unit": "waffen_ss_division"
             },
             {
-              "unit": "stormtrooper_regiment"
+              "unit": "waffen_ss_division"
             },
             {
-              "unit": "tie_fighter"
+              "unit": "bf_109_squadron"
             },
             {
-              "unit": "tie_fighter"
+              "unit": "bf_109_squadron"
             }
           ]
         },
@@ -1938,13 +1933,13 @@
           "ChildrenCount": 3,
           "Assets": [
             {
-              "unit": "imperial_dreadnaught"
+              "unit": "takao_class_heavy_cruiser"
             },
             {
-              "unit": "imperial_fleet_regiment"
+              "unit": "kriegsmarine_marine_battalion"
             },
             {
-              "unit": "tie_fighter"
+              "unit": "bf_109_squadron"
             }
           ]
         },
@@ -1955,13 +1950,13 @@
           "ChildrenCount": 3,
           "Assets": [
             {
-              "unit": "galleon"
+              "unit": "axis_supply_convoy"
             },
             {
-              "unit": "imperial_fleet_regiment"
+              "unit": "kriegsmarine_marine_battalion"
             },
             {
-              "unit": "imperial_fleet_regiment"
+              "unit": "kriegsmarine_marine_battalion"
             }
           ]
         },
@@ -1972,7 +1967,7 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "unit": "tie_fighter"
+              "unit": "bf_109_squadron"
             }
           ]
         },
@@ -1983,7 +1978,7 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "unit": "stormtrooper_regiment"
+              "unit": "waffen_ss_division"
             }
           ]
         },
@@ -1994,7 +1989,7 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "unit": "imperial_army_regiment"
+              "unit": "wehrmacht_infantry_division"
             }
           ]
         },
@@ -2005,7 +2000,7 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "unit": "imperial_probe_droid"
+              "unit": "abwehr_agents"
             }
           ]
         },
@@ -2016,7 +2011,7 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "unit": "imperial_espionage_droid"
+              "unit": "sd_intelligence_cell"
             }
           ]
         },
@@ -2027,7 +2022,7 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "unit": "imperial_commandos"
+              "unit": "brandenburgers"
             }
           ]
         },
@@ -2038,14 +2033,13 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "unit": "noghri_death_commandos"
+              "unit": "kempeitai_operatives"
             }
           ]
         }
-      ],
-      "source_file": "CMUNEMTB.DAT"
+      ]
     },
-    "empire_hq_garrison": {
+    "axis_hq_garrison": {
       "Type": "CMUN/FACL (Hierarchical)",
       "Description": "SeedFamilyTableEntry",
       "Entries": [
@@ -2057,63 +2051,62 @@
           "Assets": [
             null,
             {
-              "unit": "stormtrooper_regiment"
+              "unit": "waffen_ss_division"
             },
             {
-              "unit": "stormtrooper_regiment"
+              "unit": "waffen_ss_division"
             },
             {
-              "unit": "stormtrooper_regiment"
+              "unit": "waffen_ss_division"
             },
             {
-              "unit": "stormtrooper_regiment"
+              "unit": "waffen_ss_division"
             },
             {
-              "unit": "stormtrooper_regiment"
+              "unit": "waffen_ss_division"
             },
             {
-              "unit": "stormtrooper_regiment"
+              "unit": "waffen_ss_division"
             },
             {
-              "unit": "tie_fighter"
+              "unit": "bf_109_squadron"
             },
             {
-              "unit": "tie_fighter"
+              "unit": "bf_109_squadron"
             },
             {
-              "unit": "tie_fighter"
+              "unit": "bf_109_squadron"
             },
             {
-              "unit": "tie_fighter"
+              "unit": "bf_109_squadron"
             },
             {
-              "unit": "tie_fighter"
+              "unit": "bf_109_squadron"
             },
             {
-              "unit": "tie_fighter"
+              "unit": "bf_109_squadron"
             },
             {
-              "unit": "tie_fighter"
+              "unit": "bf_109_squadron"
             },
             {
-              "unit": "tie_fighter"
+              "unit": "bf_109_squadron"
             },
             {
-              "unit": "tie_fighter"
+              "unit": "bf_109_squadron"
             },
             {
-              "unit": "tie_fighter"
+              "unit": "bf_109_squadron"
             }
           ]
         }
       ],
-      "source_file": "CMUNCRTB.DAT",
       "fixed_range": [
         88,
         89
       ]
     },
-    "alliance_hq_garrison": {
+    "allies_hq_garrison": {
       "Type": "CMUN/FACL (Hierarchical)",
       "Description": "SeedFamilyTableEntry",
       "Entries": [
@@ -2125,42 +2118,41 @@
           "Assets": [
             null,
             {
-              "unit": "alliance_army_regiment"
+              "unit": "british_infantry_division"
             },
             {
-              "unit": "alliance_army_regiment"
+              "unit": "british_infantry_division"
             },
             {
-              "unit": "alliance_fleet_regiment"
+              "unit": "royal_marines_brigade"
             },
             {
-              "unit": "x_wing"
+              "unit": "p_51_mustang_squadron"
             },
             {
-              "unit": "x_wing"
+              "unit": "p_51_mustang_squadron"
             },
             {
-              "unit": "x_wing"
+              "unit": "p_51_mustang_squadron"
             },
             {
-              "unit": "x_wing"
+              "unit": "p_51_mustang_squadron"
             },
             {
-              "unit": "y_wing"
+              "unit": "sbd_dauntless_squadron"
             },
             {
-              "unit": "y_wing"
+              "unit": "sbd_dauntless_squadron"
             }
           ]
         }
       ],
-      "source_file": "CMUNHQTB.DAT",
       "fixed_range": [
         86,
         87
       ]
     },
-    "alliance_start_garrison": {
+    "allies_start_garrison": {
       "Type": "CMUN/FACL (Hierarchical)",
       "Description": "SeedFamilyTableEntry",
       "Entries": [
@@ -2172,27 +2164,26 @@
           "Assets": [
             null,
             {
-              "unit": "alliance_army_regiment"
+              "unit": "british_infantry_division"
             },
             {
-              "unit": "alliance_army_regiment"
+              "unit": "british_infantry_division"
             },
             {
-              "unit": "x_wing"
+              "unit": "p_51_mustang_squadron"
             },
             {
-              "unit": "y_wing"
+              "unit": "sbd_dauntless_squadron"
             }
           ]
         }
       ],
-      "source_file": "CMUNYVTB.DAT",
       "fixed_range": [
         84,
         85
       ]
     },
-    "alliance_hq_facilities": {
+    "allies_hq_facilities": {
       "Type": "CMUN/FACL (Hierarchical)",
       "Description": "SeedFamilyTableEntry",
       "Entries": [
@@ -2225,18 +2216,17 @@
               "facility": "construction_yard"
             },
             {
-              "facility": "planetary_shield"
+              "facility": "fortifications"
             }
           ]
         }
       ],
-      "source_file": "FACLHQTB.DAT",
       "fixed_range": [
         94,
         95
       ]
     },
-    "empire_hq_facilities": {
+    "axis_hq_facilities": {
       "Type": "CMUN/FACL (Hierarchical)",
       "Description": "SeedFamilyTableEntry",
       "Entries": [
@@ -2253,10 +2243,40 @@
           ]
         }
       ],
-      "source_file": "FACLCRTB.DAT",
       "fixed_range": [
         96,
         97
+      ]
+    },
+    "axis_start_garrison": {
+      "Type": "CMUN/FACL (Hierarchical)",
+      "Description": "SeedFamilyTableEntry",
+      "Entries": [
+        {
+          "ParentId": 1,
+          "ProbabilityThreshold": 1,
+          "Multiplier": 1,
+          "ChildrenCount": 5,
+          "Assets": [
+            null,
+            {
+              "unit": "british_infantry_division"
+            },
+            {
+              "unit": "british_infantry_division"
+            },
+            {
+              "unit": "p_51_mustang_squadron"
+            },
+            {
+              "unit": "sbd_dauntless_squadron"
+            }
+          ]
+        }
+      ],
+      "fixed_range": [
+        84,
+        85
       ]
     }
   }

@@ -102,14 +102,19 @@ func count_of(family: String) -> int:
 	return int(facility_counts.get(family, 0))
 
 
-## How many facilities of `type` we saw there, whichever sighting holds that kind:
-## the three defences are seen with DefensiveFacilities, everything else with
+## How many facilities of `family` we saw there, whichever sighting holds that
+## kind: the three defences are seen with DefensiveFacilities (by ROLE - the
+## family is looked up in the catalog, never named here), everything else with
 ## ProductionFacilities (IntelManager.IsDefensive).
 func facilities_of(family: String) -> int:
-	match family:
-		"planetary_shield":   return shields
-		"turbolaser_battery": return batteries.size()
-		"ion_cannon":         return ion_cannons
+	var def := FacilityCatalog.Get(family)
+	if def != null:
+		if def.HasRole("shield"):
+			return shields
+		if def.HasRole("anti_ship"):
+			return batteries.size()
+		if def.HasRole("disable"):
+			return ion_cannons
 	return count_of(family)
 
 

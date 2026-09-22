@@ -771,15 +771,14 @@ static func Deliver(job: ConstructionTask, destination: Planet) -> void:
 		return
 
 	destination.AddFacility(job.Family, job.Tier)
-	var category: int
-	match job.Family:
-		"mine", "refinery":
-			category = Enums.MessageCategory.Resources
-		"planetary_shield", "turbolaser_battery", "ion_cannon":
-			category = Enums.MessageCategory.Defense
-		_:
-			category = Enums.MessageCategory.Manufacturing
+	# The message category follows the facility's ROLES, not its family name.
 	var rule := FacilityCatalog.Get(job.Family, job.Tier)
+	var category: int = Enums.MessageCategory.Manufacturing
+	if rule != null:
+		if rule.HasRole("extracts_raw") or rule.HasRole("refines"):
+			category = Enums.MessageCategory.Resources
+		elif rule.HasRole("shield") or rule.HasRole("anti_ship") or rule.HasRole("disable"):
+			category = Enums.MessageCategory.Defense
 	ReportDelivery(destination, rule.DisplayName if rule != null else Facility.NameOf(job.Family, job.Tier), category)
 
 

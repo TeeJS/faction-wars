@@ -242,15 +242,15 @@ static func Collect(p: Planet, section: int) -> Dictionary:
 			for f in p.Facilities:
 				if IsDefensive(f) and f.WeaponRating > 0:
 					guns.append(f.WeaponRating)
-				match f.Family():
-					"planetary_shield":
-						shields += 1
-						var rule := FacilityCatalog.Get(f.Family(), f.Tier)
-						shield_strength += rule.stat("shield_strength") if rule != null else 0
-					"turbolaser_battery":
-						battery_ratings.append(f.WeaponRating)
-					"ion_cannon":
-						ion_cannons += 1
+				# By role, never by family: a pack calls its shield whatever it likes.
+				if f.HasRole("shield"):
+					shields += 1
+					var rule := FacilityCatalog.Get(f.Family(), f.Tier)
+					shield_strength += rule.stat("shield_strength") if rule != null else 0
+				elif f.HasRole("anti_ship"):
+					battery_ratings.append(f.WeaponRating)
+				elif f.HasRole("disable"):
+					ion_cannons += 1
 			return {
 				"shields": shields,
 				"shield_strength": shield_strength,

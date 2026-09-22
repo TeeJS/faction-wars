@@ -28,7 +28,7 @@ static func CanAssault(fleet: Fleet, target: Planet) -> Result:
 		return Result.fail("%s is already ours." % target.Name)
 	if LandingForce(fleet).is_empty():
 		return Result.fail("The fleet carries no trooper regiments.")
-	var shields := target.CountOf("planetary_shield")
+	var shields := target.CountByRole("shield")
 	var needed := RuleManager.Get(RuleId.ShieldsToPreventAssault, fleet.Faction)
 	if needed > 0 and shields >= needed:
 		return Result.fail("%s is defended by %d planetary shields. Bombard or sabotage them first." % [target.Name, shields])
