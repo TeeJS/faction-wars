@@ -10,6 +10,10 @@ extends SceneTree
 const PACK_DIR := "res://packs/star-wars-rebellion"
 
 var _failed := 0
+## Every case increments _ran on entry and _ok or _failed on exit. A runtime
+## abort inside a case leaves _ran ahead - and that is a FAIL, not a pass.
+var _ran := 0
+var _ok := 0
 
 
 func _init() -> void:
@@ -78,22 +82,52 @@ func _init() -> void:
 	_case("mission needs a SpecForce no unit provides",
 		_pack({}, {}, {"mission_spec": ["ghosts"]}), "units.json does not declare")
 
+	# Rules 4 / 8 - the display catalog.
+	_case("GID mode with a quantity kind the engine cannot compute",
+		_pack({}, {}, {"gid_kind": "vibes"}), "unknown quantity.kind 'vibes'")
+	_case("GID tiers that do not end at the min-0 bare dot",
+		_pack({}, {}, {"gid_tiers": [{"min": 3, "label": "Some", "flare": "big"}, {"min": 1, "label": "One", "flare": "low"}]}),
+		"the last tier must have min 0")
+	_case("GID tiers out of descending order",
+		_pack({}, {}, {"gid_tiers": [{"min": 1, "label": "One", "flare": "low"}, {"min": 3, "label": "Some", "flare": "big"}, {"min": 0, "label": "None", "flare": "none"}]}),
+		"must be ordered descending")
+	_case("GID tier with an unknown flare",
+		_pack({}, {}, {"gid_tiers": [{"min": 1, "label": "One", "flare": "huge"}, {"min": 0, "label": "None", "flare": "none"}]}),
+		"unknown flare 'huge'")
+	_case("Alt+N slot names a mode no category declares",
+		_pack({}, {}, {"gid_alt": ["no_such_mode"]}), "galaxy_display_modes names 'no_such_mode'")
+	_case("a special-power band with no label",
+		_pack({}, {}, {"gid_ranks_drop": "master"}), "no label for 'master'")
+
 	# Rule 9 - the map image.
 	_case("map_image not declared", _pack({}, {}, {"map_image": ""}), "'map_image' is required")
 	_case("map_image names a file the pack does not ship",
 		_pack({}, {}, {"map_image": "no-such-file.bmp"}), "is not in res://packs")
 
 	_mission_join_resolves()
+	_rank_labels_resolve()
 
+	if _ok + _failed != _ran:
+		_failed += _ran - _ok - _failed
+		print("[pack_validation] %d case(s) ABORTED mid-run (a runtime error, not a verdict) - counted as failures" % (_ran - _ok))
 	if _failed == 0:
-		print("[pack_validation] every case behaved as specified; PASS")
+		print("[pack_validation] every case behaved as specified (%d ran); PASS" % _ran)
 	else:
-		print("[pack_validation] %d case(s) FAILED" % _failed)
+		print("[pack_validation] %d of %d case(s) FAILED" % [_failed, _ran])
 	quit(1 if _failed > 0 else 0)
+
+
+static func _gid_mode_count(pack: PackLoader.LoadedPack) -> int:
+	var n := 0
+	if pack.Display != null:
+		for c in pack.Display.Categories:
+			n += c.Modes.size()
+	return n
 
 
 ## The shipping pack must survive its own validator.
 func _real_pack_passes() -> void:
+	_ran += 1
 	var errors: Array[String] = []
 	var pack := PackLoader.Load(PACK_DIR, errors)
 	if pack == null or not errors.is_empty():
@@ -102,9 +136,11 @@ func _real_pack_passes() -> void:
 		for e in errors:
 			print("    %s" % e)
 	else:
-		print("[pack_validation] ok   the shipping pack validates (%d sectors, %d planets, %d characters, %d facilities, %d units, %d weapons, %d missions)"
+		_ok += 1
+		print("[pack_validation] ok   the shipping pack validates (%d sectors, %d planets, %d characters, %d facilities, %d units, %d weapons, %d missions, %d GID modes)"
 			% [pack.Map.Sectors.size(), pack.Map.Planets.size(), pack.Characters.size(),
-			   pack.Facilities.size(), pack.Units.size(), pack.Weapons.size(), pack.Missions.size()])
+			   pack.Facilities.size(), pack.Units.size(), pack.Weapons.size(), pack.Missions.size(),
+			   _gid_mode_count(pack)])
 
 
 ## EVERY engine mission behaviour must resolve to a pack mission, a display name
@@ -112,10 +148,14 @@ func _real_pack_passes() -> void:
 ## Special Power Training, so the rename of those two members is checked HERE or
 ## nowhere.
 func _mission_join_resolves() -> void:
+	_ran += 1
 	var errors: Array[String] = []
 	var pack := PackLoader.Load(PACK_DIR, errors)
 	if pack == null:
+		_failed += 1
+		print("[pack_validation] FAIL mission join: the pack did not load")
 		return
+	var before_failed := _failed
 	MissionCatalog.LoadFromPack(pack)
 	MissionTableManager.LoadFromPack(pack)
 	for t in Enums.MissionType.values():
@@ -135,6 +175,43 @@ func _mission_join_resolves() -> void:
 			print("[pack_validation] FAIL %s: no source id" % name)
 		else:
 			print("[pack_validation] ok   %s -> '%s' (pack id %s, source 0x%x)" % [name, shown, def.Id, def.SourceId])
+	if _failed == before_failed:
+		_ok += 1
+
+
+## EVERY special-power band must name itself with the PACK's wording, never the
+## enum member. The bands are engine (thresholds in Character.SpecialPowerRankOf);
+## the labels are display.json. No soak fixture ever renders one, so this is
+## where the section 12 Q5 rename is proven.
+func _rank_labels_resolve() -> void:
+	_ran += 1
+	var errors: Array[String] = []
+	var pack := PackLoader.Load(PACK_DIR, errors)
+	if pack == null:
+		_failed += 1
+		print("[pack_validation] FAIL rank labels: the pack did not load")
+		return
+	FactionRegistry.Load(pack)
+	var before_failed := _failed
+	# level -> the band the engine puts it in; the label must be the pack's.
+	var probes := { 0: "none", 10: "novice", 20: "trainee", 80: "student", 100: "knight", 120: "master" }
+	for level in probes:
+		var c := Character.new()
+		c.SpecialPowerLevel = level
+		var rank: int = c.SpecialPowerRankOf()
+		var shown := Character.RankLabel(rank)
+		var want: String = pack.Display.RankLabel(probes[level])
+		var member := JsonUtil.enum_name(Enums.SpecialPowerRank, rank)
+		if shown != want:
+			_failed += 1
+			print("[pack_validation] FAIL level %d: shown '%s', the pack says '%s'" % [level, shown, want])
+		elif shown == member and want != member:
+			_failed += 1
+			print("[pack_validation] FAIL level %d: the ENUM member '%s' leaked to the player" % [level, member])
+		else:
+			print("[pack_validation] ok   level %3d -> %-7s shown as '%s'" % [level, member, shown])
+	if _failed == before_failed:
+		_ok += 1
 
 
 ## A minimal two-sector, two-planet pack, with one field bent per call.
@@ -220,18 +297,36 @@ func _pack(sector_over: Dictionary, planet_over: Dictionary, other: Dictionary) 
 		 "length": {"base": 7, "spread": 3},
 		 "flags": {"can_continue": true}, "targets": {"hostile": true},
 		 "source_id": 21}]}).Missions
+
+	# One category, one mode, the full rank label set - each bendable.
+	var ranks := {"none": "None", "novice": "Novice", "trainee": "Trainee",
+		"student": "Adept", "knight": "Warden", "master": "Grandmaster"}
+	if other.has("gid_ranks_drop"):
+		ranks.erase(other["gid_ranks_drop"])
+	p.Display = PackDefs.DisplayDef.from_dict({
+		"categories": [{"id": "loyalty", "display_name": "Loyalty", "modes": [
+			{"id": "popular_support", "label": "Popular Support", "title_from": "loyalty_label",
+			 "quantity": {"kind": other.get("gid_kind", "support")},
+			 "tiers": other.get("gid_tiers", [
+				{"min": 50, "label": "Loyal", "flare": "big"},
+				{"min": 0, "label": "Hostile", "flare": "none"}])}]}],
+		"galaxy_display_modes": other.get("gid_alt", ["popular_support"]),
+		"special_power_ranks": ranks})
 	return p
 
 
 func _case(what: String, pack: PackLoader.LoadedPack, expect: String) -> void:
+	_ran += 1
 	var errors: Array[String] = []
 	PackLoader._validate_map(pack, PACK_DIR, errors)
 	PackLoader._validate_characters(pack, errors)
 	PackLoader._validate_facilities(pack, errors)
 	PackLoader._validate_units(pack, errors)
 	PackLoader._validate_missions(pack, errors)
+	PackLoader._validate_display(pack, errors)
 	for e in errors:
 		if e.contains(expect):
+			_ok += 1
 			print("[pack_validation] ok   %s" % what)
 			return
 	_failed += 1

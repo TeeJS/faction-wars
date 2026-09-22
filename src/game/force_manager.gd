@@ -55,7 +55,7 @@ static func ConcludeDagobah(luke: Character, day: int, completed: bool) -> void:
 	_completed = true
 
 	var served: int = maxi(0, day - _departed_on)
-	var rank_name := JsonUtil.enum_name(Enums.SpecialPowerRank, luke.SpecialPowerRankOf())
+	var rank_name := Character.RankLabel(luke.SpecialPowerRankOf())
 	print("[Force] %s has returned from Dagobah after %d day(s) (%s, +%d%%): Force %d -> %d (%s)." % [
 		luke.Name, served, "completed" if completed else "interrupted", percent, before, luke.SpecialPowerLevel, rank_name])
 
@@ -131,7 +131,7 @@ static func LeiaLearnsFromLuke(roster: Array, day: int) -> void:
 
 	leia.KnowsHeritage = true
 	leia.IsKnownSpecialPowerUser = true
-	var rank_name := JsonUtil.enum_name(Enums.SpecialPowerRank, leia.SpecialPowerRankOf())
+	var rank_name := Character.RankLabel(leia.SpecialPowerRankOf())
 	print("[Force] %s has told %s what she is (%s, level %d)." % [luke.Name, leia.Name, rank_name, leia.SpecialPowerLevel])
 
 	if not GameSettings.IsHuman(leia.Faction):
@@ -170,7 +170,7 @@ static func ProcessDay(day: int) -> void:
 
 			latent.IsKnownSpecialPowerUser = true
 			# ⚠ THE STAT BOOST IS NOT IMPLEMENTED - no magnitude in any source.
-			var rank_name := JsonUtil.enum_name(Enums.SpecialPowerRank, latent.SpecialPowerRankOf())
+			var rank_name := Character.RankLabel(latent.SpecialPowerRankOf())
 			print("[Force] %s has sensed the Force in %s (%s, level %d)." % [seer.Name, latent.Name, rank_name, latent.SpecialPowerLevel])
 
 			if not GameSettings.IsHuman(latent.Faction):

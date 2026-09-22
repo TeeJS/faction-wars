@@ -92,7 +92,7 @@ static func ResolveEncounter(a: Character, b: Character, p: Array, day: int, rng
 		gain = max(floor_v, (b.SpecialPowerLevel - a.SpecialPowerLevel) * scale / 100)
 		a.SpecialPowerLevel += gain
 
-	var rank_name := JsonUtil.enum_name(Enums.SpecialPowerRank, a.SpecialPowerRankOf())
+	var rank_name := Character.RankLabel(a.SpecialPowerRankOf())
 	print("[Story] %s encountered %s at %s: heritage %s, %s, Force +%d -> %d (%s)." % [
 		a.Name, b.Name, a.Attached.Name if a.Attached != null else "", "REVEALED" if first else "already known",
 		("injured %d" % a.Injury) if hurt else "unharmed", gain, a.SpecialPowerLevel, rank_name])

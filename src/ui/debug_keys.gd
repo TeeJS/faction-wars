@@ -112,7 +112,7 @@ static func GrantForce(amount: int) -> void:
 			continue
 		c.IsKnownSpecialPowerUser = true
 		c.SpecialPowerLevel += amount
-		print("[Debug]   %s -> Force %d (%s)" % [c.Name, c.SpecialPowerLevel, JsonUtil.enum_name(Enums.SpecialPowerRank, c.SpecialPowerRankOf())])
+		print("[Debug]   %s -> Force %d (%s)" % [c.Name, c.SpecialPowerLevel, Character.RankLabel(c.SpecialPowerRankOf())])
 		n += 1
 	print("[Debug] +%d Force to %d characters" % [amount, n])
 	EventBus.BroadcastChanged()
@@ -153,7 +153,7 @@ func DumpState() -> void:
 		if c.TraitorRevealed:
 			bits.append("TRAITOR")
 		if c.SpecialPowerRankOf() != Enums.SpecialPowerRank.None:
-			bits.append("Force %s" % JsonUtil.enum_name(Enums.SpecialPowerRank, c.SpecialPowerRankOf()))
+			bits.append("Force %s" % Character.RankLabel(c.SpecialPowerRankOf()))
 		if not bits.is_empty():
 			print("    %s: %s" % [c.Name, ", ".join(bits)])
 	print("")

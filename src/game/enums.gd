@@ -11,8 +11,12 @@ enum Status { AwaitingOrders, Enroute, OnMission, Kidnapped, Dead }       # back
 
 enum Rank { None, General, Admiral, Commander, Captain }                  # backend/Character.cs
 
-## "There are FIVE LEVELS of Force users" (manual p092); None means not a Force user.
-enum SpecialPowerRank { None, Novice, Trainee, JediStudent, JediKnight, JediMaster }
+## "There are FIVE LEVELS" of the special power (manual p092); None means not a
+## user. The engine holds the bands and their thresholds (Character
+## .SpecialPowerRankOf); what a band is CALLED is pack data - display.json
+## special_power_ranks, read through Character.RankLabel. Never render these
+## member names to the player.
+enum SpecialPowerRank { None, Novice, Trainee, Student, Knight, Master }
 
 ## FACILITIES ARE PACK DATA (SCHEMA.md section 5). This used to be a closed enum
 ## naming Star Wars structures - IonCannon, DeathStarShield - which a pack could

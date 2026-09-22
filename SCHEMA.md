@@ -53,8 +53,8 @@ accounted for below — that is what this reconciliation was for.
 | `setup.json` | Day-zero seeding: side lottery + logistics tables | `side_lottery.json` (35) + `day_zero_logistics.json` (11 tables) | ✅ |
 | `missions.json` | The mission catalog | `missions.json` (25) | ✅ |
 | `mission_tables.json` | Per-mission outcome tables | `mission_tables.json` (**20** tables) | ✅ |
-| `display.json` | The Galactic Information Display catalog | `src/ui/gid.gd` (currently code) | ❌ |
-| `uprising.json` | Uprising thresholds `[later]` | `uprising_start.json`, `uprising_end.json` | ❌ |
+| `display.json` | The Galactic Information Display catalog, the Alt+1..9 order, and the special-power band labels | `src/ui/gid.gd` (was code) | ✅ |
+| *(no `uprising.json`)* | `uprising_start.json` / `uprising_end.json` were **byte-identical copies** of two tables the pack already carries in `mission_tables.json` (`uprising_start`, `uprising_end`). `UprisingTable` reads those | `mission_tables.json` | ✅ |
 
 **Not pack content:** `gnprtb_globals.json` (212 rows of
 `{global, parameter_id, entry_id, name}`) is a map from rule entries to the
@@ -429,7 +429,7 @@ gate abilities. Generic mechanic, IP name. The rename:
 | `Character.CanTrainJedi` | `CanTrainSpecialPower` |
 | `Character.JediProbability` | `SpecialPowerProbability` |
 | `Enums.ForceRanking` | `Enums.SpecialPowerRank` |
-| `ForceRanking.JediMaster` | `SpecialPowerRank.SpecialPowerMaster` |
+| `ForceRanking.JediStudent` / `JediKnight` / `JediMaster` | `SpecialPowerRank.Student` / `Knight` / `Master` — labels in `display.json` |
 | `RuleId.FastHealForceRankThresh` | `FastHealSpecialPowerThresh` |
 
 **The five band labels stay pack strings.** The engine holds ranked bands and
@@ -437,22 +437,19 @@ their thresholds (10 / 20 / 80 / 100 / 120 —
 [character.gd:144-151](src/game/character.gd:144)); what they are *called*
 ("Jedi Master") is `display.json` content.
 
-**LANDED 2026-09-21**, with two boundaries held deliberately:
-> `Enums.MissionType.JediTraining` and its rule-id constants are the **mission**
-> vocabulary and move with `missions.json`, not here. The enum MEMBERS
-> `JediStudent` / `JediKnight` / `JediMaster` are **rendered straight to the
-> player** by `JsonUtil.enum_name`, so they cannot move until `display.json` can
-> hold their labels — renaming them now would put "SpecialPowerMaster" in the
-> Character Status window. `MissionManager.Pretty()` is where those labels live
-> today and is the natural hook.
+**LANDED IN FULL 2026-09-21.** The mission half went with `missions.json`
+(`SpecialPowerTraining`, §9). The band members went with `display.json`: the
+eight render sites — Character Status window, three Force messages, the story
+manager, `MissionManager.Pretty()` and two debug lines — all read the pack's
+label through `Character.RankLabel`. `tests/pack_validation.gd` proves every
+band resolves to the pack's wording and that no enum member leaks.
 
-> **One open detail.** TeeJ named `SpecialPowerLevel`,
-> `IsKnownSpecialPowerUser` and `SpecialPowerMaster`. Inside an enum already
-> called `SpecialPowerRank`, the prefix on the band members is redundant —
-> `SpecialPowerRank.Master` reads better than
-> `SpecialPowerRank.SpecialPowerMaster`, and the lower two bands (`Novice`,
-> `Trainee`) are unprefixed already. Written above in TeeJ's literal form;
-> say if the shorter member names are preferred.
+> **Resolved.** The band members are `Novice, Trainee, Student, Knight, Master`
+> — unprefixed, because they are **never rendered**: what a band is *called* is
+> `display.json` `special_power_ranks`, read through the one helper
+> `Character.RankLabel`. TeeJ's literal was `SpecialPowerMaster`; with the label
+> in the pack the prefix carried nothing, so the shorter form was taken. Say if
+> the literal is preferred — it is a one-line rename with no behaviour.
 
 **This is a code rename, not a data move** — it touches `character.gd`,
 `captivity_manager.gd`, `rule_id.gd` and the character tables together, and
@@ -576,8 +573,10 @@ them by; the other four are named from their descriptions: `character_search`,
 
 ## 10. `display.json` — the Galactic Information Display
 
-Currently a code table in [gid.gd](src/ui/gid.gd). The closest thing in the
-codebase to pack-ready; moving it is mechanical.
+**Live.** Was a code table in [gid.gd](src/ui/gid.gd); the pack now declares
+the catalog and the engine computes each `quantity.kind`. The pack-driven
+catalog was proven **byte-identical** to the code one — every label, title,
+threshold and flare, all 21 modes — by dumping both and diffing.
 
 ```json
 {
@@ -597,9 +596,13 @@ codebase to pack-ready; moving it is mechanical.
 
 | Field | Notes |
 |---|---|
-| `quantity.kind` | How the engine computes the magnitude. v1 set: `facility_count`, `facility_role_count`, `unit_count`, `fleet_count`, `character_count`, `base_resource`, `support`, `constant_zero`. `constant_zero` lets a pack declare a mode whose backing system does not exist yet, without a code branch. |
+| `quantity.kind` | How the engine computes the magnitude. **The v1 set is measured from the catalog it replaced — one kind per distinct reader:** `support`, `uprising`, `my_fleets` (`status`), `personnel` (`busy`), `status_figure` (`key`), `facility_count` (`family`), `idle_producer` (`role`), `defence_figure` (`key`), `intel_line_count` (`section`), `constant_zero`. The draft's guessed list is superseded. |
 | `tiers` | Ordered descending by `min`; the last entry (`min: 0`) is the bare-dot tier. Thresholds are **absolute**, never normalised to the map maximum. |
 | `flare` | `big` / `mid` / `low` / `none`. Marker *sizes* are engine presentation constants; which tier gets which size is pack data. |
+| `label` | **Load-bearing:** the active mode's label is part of the game signature (`GameSignature.GidLabel`). Rename one and the lockstep hash changes. |
+| `title_from` | `loyalty_label` — the key-panel title is the player's faction's `loyalty_label` from `factions.json`, resolved per side. |
+| `galaxy_display_modes` | Mode ids in the original's Alt+1..9 order. |
+| `special_power_ranks` | The band labels for §7's special power: `none`, `novice`, `trainee`, `student`, `knight`, `master`. |
 
 Faction colors and the legend come from `factions.json` + `pack.json`, so the
 GID legend stops being hardcoded rows.
@@ -617,14 +620,16 @@ passes.
 2. ✅ `faction_count` equals the entries in `factions.json`, and is 2–4.
 3. ⚠ **Map cross-references live** — every planet resolves to a declared sector,
    ids are unique. Facilities, units, characters and missions await their files.
-4. ⚠ **Facility `roles` checked** against the v1 set. `display.quantity.kind`
-   awaits `display.json`.
+4. ✅ Every facility `roles` entry, weapon role and `display.quantity.kind` is in
+   the engine's known set for this `schema_version`.
 5. ⚠ **Character `faction` and `can_command` checked.** `buildable_by` /
    `available_to` await the facility, unit and mission files.
 6. ✅ Each faction's `hq` is internally consistent: a `fixed` HQ names a planet;
    a `hidden` HQ declares a `placement`.
 7. ✅ Every `starting_planets` entry exists, and a `fixed` HQ names a real planet.
-8. ❌ Display tiers are ordered descending and terminate with a `min: 0` tier.
+8. ✅ Display tiers are ordered descending, use a known flare, and terminate
+   with a `min: 0` tier; every Alt+N slot names a declared mode; every band has
+   a label.
 9. ✅ `map_image` is declared and names a file present in the pack folder.
 10. ✅ Every sector's `min_size` is one of `setup.galaxy_sizes`, and the smallest
     declared size has at least one sector — otherwise that menu option yields an
@@ -771,6 +776,9 @@ What changed from the source repo's 2026-07-25 draft, and why.
 | 23 | **§4 built.** `map.json` generated, loaded and live; the bitmap moved into the pack; validation rules 3 (map half), 7, 9, 10 implemented and negative-tested | The hardcoded sector list is gone from `galaxy_factory.gd`. Soak gate 1004/1004 |
 | 24 | **§7 built.** `characters.json` generated, loaded and live: one file, `is_major` flag, lower-case faction ids, `ratings` map, `can_command` list, `special_power` block. Validation rules 3 and 5 for the roster | The two-file major/minor split is gone. Soak gate 1004/1004 |
 | 25 | **§12 Q5 landed.** The character aptitude fields and `Enums.SpecialPowerRank` renamed across 11 files | Enum MEMBERS and `MissionType.JediTraining` deliberately held back — see §7 |
+| 34 | **§10 live.** `display.json` drives the GID catalog, the Alt+1..9 order and the special-power band labels; `gid.gd`'s literal table is gone. Proven byte-identical by before/after dump; signature untouched (labels unchanged). Committed on that evidence at TeeJ's call; a single soak follows | Q5 is **complete**: the band members are `Student`/`Knight`/`Master` and never rendered. `Label` on a DTO shadows a native class — the second time |
+| 33 | `pack_validation` counts *ran* against *ok + failed*, so a runtime abort inside a case can never print PASS | It did exactly that when `PackDefs` failed to compile |
+| 32 | **No `uprising.json`.** `UprisingTable` reads the `uprising_start` table the pack already carries in `mission_tables.json` | Two byte-identical copies of one table would be a second source of truth |
 | 31 | **§8 live.** `rules.json` and `setup.json` moved into the pack; `RuleManager`, `SideLotteryManager` and `SeedManager` read it. Logistics tables renamed from use (Q2, closing its last item). **No re-baseline** | The rename exposed `FixedListRange`, which chose seeding behaviour by matching `.DAT` filenames. Now `fixed_range` on the table |
 | 30 | **§9 live.** `MissionCatalog` and `MissionTableManager` read the pack; the hardcoded MISSNSD numbers and `.DAT` filenames are gone. Two IP-named members renamed. **No re-baseline** — byte-identical | §9's claim that this file "must replace" `Enums.MissionType` is **corrected**: mission behaviour is engine, not content |
 | 29 | **§9 data built.** `missions.json` (25) and `mission_tables.json` (20) generated, loaded and validated; nothing reads them yet. `Alliance`/`Empire` became `available_to` — the last instance of the pattern the charter forbids. SpecForces resolve to unit ids (Q1) | Q2's "five tables must be read before naming" is **resolved**: the tables self-describe |
