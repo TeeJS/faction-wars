@@ -37,6 +37,9 @@ func _init() -> void:
 	for key in expect:
 		_check(Terms.label(key) == expect[key], "%s -> '%s' (got '%s')" % [key, expect[key], Terms.label(key)])
 	_check(Terms.field("hull") == "Hull Value:", "field() appends the colon (got '%s')" % Terms.field("hull"))
+	_check(Terms.lower("trooper_regiments") == "trooper regiments", "lower() for prose (got '%s')" % Terms.lower("trooper_regiments"))
+	_check(Terms.cap("in_transit") == "In hyperspace", "cap() for a sentence start (got '%s')" % Terms.cap("in_transit"))
+	_check(Terms.lower("planetary_shields") == "planetary shields" and Terms.lower("mine") == "mine", "the prose nouns come through")
 
 	# A key the pack leaves out falls back to the default; a pack word wins.
 	var saved: Dictionary = pack.Display.Terms.duplicate()

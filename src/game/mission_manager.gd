@@ -137,16 +137,22 @@ static func CanSabotageDeathStar(actor: Faction, target: Planet) -> Result:
 		return Result.fail("No galaxy.")
 	var station := DeathStarAt(target)
 	if station == null:
-		return Result.fail("There is no Death Star at %s." % target.Name)
+		return Result.fail("There is no %s at %s." % [_superweapon_name(), target.Name])
 	if station.Faction == actor:
-		return Result.fail("That Death Star is ours.")
+		return Result.fail("That %s is ours." % station.Name)
 	if station.Status == Enums.Status.Enroute \
 			or Lq.any(target.OrbitingFleets, func(f): return f.Ships.has(station) and f.Status == Enums.Status.Enroute):
-		return Result.fail("That Death Star is in hyperspace.")
+		return Result.fail("That %s is %s." % [station.Name, Terms.label("in_transit")])
 	var seen := IntelManager.View(actor, target, Enums.IntelSection.OrbitingShips)
 	if not seen.Known or not Lq.any(seen.Lines, func(l): return l.begins_with(station.Name)):
-		return Result.fail("We do not know of a Death Star at %s. Reconnaissance or an Espionage mission would find one." % target.Name)
+		return Result.fail("We do not know of a %s at %s. Reconnaissance or an Espionage mission would find one." % [_superweapon_name(), target.Name])
 	return Result.success()
+
+
+## What the pack calls its superweapon, for messages about one not present.
+static func _superweapon_name() -> String:
+	var d := MilitaryCatalog.FirstWithRole("superweapon")
+	return d.DisplayName if d != null else "superweapon"
 
 
 static func DeathStarAt(where: Planet) -> Unit:
@@ -490,7 +496,7 @@ static func CanSabotage(actor: Faction, target: Variant, where: Planet) -> Resul
 		if u.Faction == actor:
 			return Result.fail("%s is one of ours." % u.Name)
 		if u.Status == Enums.Status.Enroute:
-			return Result.fail("%s is in hyperspace." % u.Name)
+			return Result.fail("%s is %s." % [u.Name, Terms.label("in_transit")])
 		if u is Character:
 			return Result.fail("People are not sabotaged - use Abduction or Assassination.")
 		if u.HasRole("superweapon"):
@@ -508,7 +514,7 @@ static func CanTargetPerson(type: int, actor: Faction, victim: Character) -> Res
 	if victim.Status == Enums.Status.Dead:
 		return Result.fail("%s is dead." % victim.Name)
 	if victim.Status == Enums.Status.Enroute:
-		return Result.fail("%s is in hyperspace." % victim.Name)
+		return Result.fail("%s is %s." % [victim.Name, Terms.label("in_transit")])
 	if victim.IsOffMap():
 		return Result.fail("%s cannot be located." % victim.Name)
 	match type:
@@ -951,10 +957,10 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 			var lines := [
 				"Controller: %s" % owner,
 				"Popular support for us: %d%%" % m.Target.SupportFor(m.Faction),
-				"Resources: %d raw material slots, %d energy slots" % [m.Target.BaseRawMaterials, m.Target.BaseEnergy],
+				"Resources: %d %s slots, %d %s slots" % [m.Target.BaseRawMaterials, Terms.lower("raw_materials"), m.Target.BaseEnergy, Terms.lower("energy")],
 				"Facilities: %d" % m.Target.Facilities.size(),
-				"Trooper regiments: %d" % m.Target.Garrison.size(),
-				"Fighter squadrons: %d" % m.Target.FighterSquadrons.size(),
+				"%s: %d" % [Terms.label("trooper_regiments"), m.Target.Garrison.size()],
+				"%s: %d" % [Terms.label("fighter_squadrons"), m.Target.FighterSquadrons.size()],
 				"Fleets in orbit: %d" % m.Target.OrbitingFleets.size(),
 			]
 			print("[Mission] Reconnaissance of %s complete - system charted." % m.Target.Name)

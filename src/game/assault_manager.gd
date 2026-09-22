@@ -21,17 +21,17 @@ static func CanAssault(fleet: Fleet, target: Planet) -> Result:
 	if fleet == null or target == null:
 		return Result.fail("Nothing to assault.")
 	if fleet.Status == Enums.Status.Enroute:
-		return Result.fail("The fleet is in hyperspace.")
+		return Result.fail("The fleet is %s." % Terms.label("in_transit"))
 	if fleet.Attached != target:
 		return Result.fail("The fleet is not in orbit above %s." % target.Name)
 	if target.ControllingFaction == fleet.Faction:
 		return Result.fail("%s is already ours." % target.Name)
 	if LandingForce(fleet).is_empty():
-		return Result.fail("The fleet carries no trooper regiments.")
+		return Result.fail("The fleet carries no %s." % Terms.lower("trooper_regiments"))
 	var shields := target.CountByRole("shield")
 	var needed := RuleManager.Get(RuleId.ShieldsToPreventAssault, fleet.Faction)
 	if needed > 0 and shields >= needed:
-		return Result.fail("%s is defended by %d planetary shields. Bombard or sabotage them first." % [target.Name, shields])
+		return Result.fail("%s is defended by %d %s. Bombard or sabotage them first." % [target.Name, shields, Terms.lower("planetary_shields")])
 	return Result.success()
 
 

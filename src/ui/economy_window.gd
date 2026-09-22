@@ -86,15 +86,15 @@ func Populate(planet: Planet) -> void:
 		GreyEmptyTab(tabs, "Shipyards", shipyards)
 		GreyEmptyTab(tabs, "Training Facilities", training)
 		GreyEmptyTab(tabs, "Construction Yards", construction)
-		GreyEmptyTab(tabs, "Refineries", Lq.count(planet.Facilities, func(f: Facility) -> bool: return f.HasRole("refines")))
-		GreyEmptyTab(tabs, "Mines", Lq.count(planet.Facilities, func(f: Facility) -> bool: return f.HasRole("extracts_raw")))
+		GreyEmptyTab(tabs, Terms.cap("refineries"), Lq.count(planet.Facilities, func(f: Facility) -> bool: return f.HasRole("refines")))
+		GreyEmptyTab(tabs, Terms.cap("mines"), Lq.count(planet.Facilities, func(f: Facility) -> bool: return f.HasRole("extracts_raw")))
 
 		# --- SPECIFIC MANAGEMENT TABS: Dynamic Population ---
 		PopulateFacilityTab(tabs, "Shipyards", planet, "shipyard", "No Shipyards operational.")
 		PopulateFacilityTab(tabs, "Training Facilities", planet, "training_facility", "No Training Centers operational.")
 		PopulateFacilityTab(tabs, "Construction Yards", planet, "construction_yard", "No Construction Yards operational.")
-		PopulateFacilityTab(tabs, "Refineries", planet, "refinery", "No Refineries operational.")
-		PopulateFacilityTab(tabs, "Mines", planet, "mine", "No Mining Operations active.")
+		PopulateFacilityTab(tabs, Terms.cap("refineries"), planet, "refinery", "No %s operational." % Terms.lower("refineries"))
+		PopulateFacilityTab(tabs, Terms.cap("mines"), planet, "mine", "No %s active." % Terms.lower("mines"))
 
 		# Each producer gets a build panel on its own tab, matching the
 		# manual's split: construction yards make facilities, orbital
@@ -154,8 +154,8 @@ func Populate(planet: Planet) -> void:
 		StaleFacilityTab(tabs, "Shipyards", "shipyard", yards)
 		StaleFacilityTab(tabs, "Training Facilities", "training_facility", yards)
 		StaleFacilityTab(tabs, "Construction Yards", "construction_yard", yards)
-		StaleFacilityTab(tabs, "Refineries", "refinery", yards)
-		StaleFacilityTab(tabs, "Mines", "mine", yards)
+		StaleFacilityTab(tabs, Terms.cap("refineries"), "refinery", yards)
+		StaleFacilityTab(tabs, Terms.cap("mines"), "mine", yards)
 
 
 # The manual's progress bar, under the queue's own line (p084). Shows the
@@ -623,7 +623,7 @@ func OpenBuildChooser(planet: Planet, producer: String) -> void:
 		# Several facilities on one job finish it proportionally sooner -
 		# "best" time is with everything selected working it.
 		var best: int = maxi(1, days[i] / helpers)
-		costLine.text = "Refined materials necessary: %d      Maintenance capacity necessary: %d" % [refined[i], maint[i]]
+		costLine.text = "%s necessary: %d      Maintenance capacity necessary: %d" % [Terms.label("refined_materials"), refined[i], maint[i]]
 		completion.text = ("Best Time To Completion: %d Days" % best) \
 			+ (("   (%d with one)" % days[i]) if helpers > 1 else "")
 		deployment.text = "Best Time To Deployment: %d Days" % deployDays
@@ -707,8 +707,8 @@ func ConfirmScrap(planet: Planet, what: String, refund: int, maint: int, onConfi
 	dialog.title = "Confirm Scrap"
 	dialog.dialog_text = "Are you sure you want to scrap the following units?\n\n" \
 		+ "    %s\n\n" % what \
-		+ "Returns %d refined material and %d maintenance capacity,\n" % [refund, maint] \
-		+ "and frees one energy slot on %s." % planet.Name
+		+ "Returns %d %s and %d maintenance capacity,\n" % [refund, Terms.lower("refined_materials"), maint] \
+		+ "and frees one %s slot on %s." % [Terms.lower("energy"), planet.Name]
 	dialog.exclusive = true
 
 	dialog.confirmed.connect(func() -> void:

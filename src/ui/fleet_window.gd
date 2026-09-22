@@ -209,7 +209,7 @@ func DisplayFleetContents(fleet: Fleet) -> void:
 	if capitalShipsTab != null:
 		PopulateUnitTab(capitalShipsTab, capShips, "No capital ships in this fleet.", SelectedCapitalShips)
 	if fightersTab != null:
-		PopulateUnitTab(fightersTab, fighters, "No fighter squadrons in this fleet.", SelectedFighters)
+		PopulateUnitTab(fightersTab, fighters, "No %s in this fleet." % Terms.lower("fighter_squadrons"), SelectedFighters)
 	if troopsTab != null:
 		PopulateUnitTab(troopsTab, troops, "No regiments attached.", SelectedTroops)
 
@@ -560,7 +560,7 @@ func ConfirmScrapShip(ship: Unit, refund: int, onConfirm: Callable, label: Strin
 	dialog.title = "Confirm Scrap"
 	dialog.dialog_text = "Are you sure you want to scrap the following units?\n\n" \
 				 + "    %s\n\n" % what \
-				 + "Returns %d refined material, and the maintenance\n" % refund \
+				 + "Returns %d %s, and the maintenance\n" % [refund, Terms.lower("refined_materials")] \
 				 + "capacity it was drawing."
 	dialog.exclusive = true
 

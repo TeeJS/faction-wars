@@ -38,7 +38,9 @@ const KNOWN_TERMS := [
 	"bombardment", "bombardment_defense", "bombardment_modifier",
 	"maintenance", "squadron_size", "fighter_capacity", "troop_capacity",
 	# the economy
-	"energy", "raw_materials", "refined_materials", "mines", "refineries",
+	"energy", "raw_materials", "refined_materials", "mine", "mines", "refinery", "refineries",
+	# the two defence kinds, as prose plurals
+	"planetary_shields", "orbital_batteries",
 	# unit kinds, singular and plural
 	"fighter_squadron", "fighter_squadrons", "trooper_regiment", "trooper_regiments",
 	# movement between systems
