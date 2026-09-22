@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Build packs/<pack>/map.json from data/sectors_data.json + data/planets_data.json.
+"""Build packs/<pack>/map.json from the SOURCE repo's data/sectors_data.json + data/planets_data.json.
+
+The legacy data/*.json folder left this repo on 2026-09-22; the extractors and
+their output live in sol-conflict-revolution (override with SCR_SOURCE).
 
 SCHEMA.md section 4. This is a TRANSFORM, not an extractor: the .DAT parsers live
 in the source repo and produce data/*.json; this folds two of those into the pack
@@ -21,14 +24,16 @@ Usage:
     python tools/build-map-json.py --verify   # check only, write nothing
 """
 
+import os
 import json
 import re
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SECTORS_IN = ROOT / "data" / "sectors_data.json"
-PLANETS_IN = ROOT / "data" / "planets_data.json"
+SOURCE_DATA = Path(os.environ.get("SCR_SOURCE", r"D:\Github\sol-conflict-revolution")) / "data"
+SECTORS_IN = SOURCE_DATA / "sectors_data.json"
+PLANETS_IN = SOURCE_DATA / "planets_data.json"
 GALAXY_FACTORY = ROOT / "src" / "game" / "galaxy_factory.gd"
 MAP_OUT = ROOT / "packs" / "star-wars-rebellion" / "map.json"
 

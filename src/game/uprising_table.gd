@@ -12,7 +12,7 @@ static func IsLoaded() -> bool:
 
 
 ## From the pack. UPRIS1TB is one of the mission outcome tables (SCHEMA.md
-## section 9, id `uprising_start`); data/uprising_start.json was a byte-identical
+## section 9, id `uprising_start`); the legacy uprising_start.json was a byte-identical
 ## second copy of it, so there is no separate uprising.json - the pack already
 ## carries the table once.
 static func LoadFromPack(pack: PackLoader.LoadedPack) -> void:

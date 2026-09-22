@@ -67,8 +67,8 @@ SCHEMA.md §1 ("names are never behaviour") and would break a second pack.
 | 18 | Replay header defaults the local side to `"alliance"` | `src/command/replayer.gd:22` | **PR #48** |
 | 19 | `death_star_shield` / `death_star_sabotage` ids in engine | `src/game/bombardment_manager.gd:144`, `src/game/mission_table_manager.gd:18`, `src/game/mission_catalog.gd:39`, `src/data/snapshot_loader.gd:18` | facility role (`superweapon_shield`) and mission role tags |
 | 20 | `SeedManager` still loads legacy defensive/military JSON through `Loaders`, family ids 34/35/36 → `ion_cannon` etc. | `src/game/seed_manager.gd:23-38` | **PR #48** — `Facility.Def` carries the stats |
-| 21 | Military Data Editor reads `res://data/military_units.json` directly | `src/ui/military_data_editor.gd:37` | edit the pack's `units.json` |
-| 22 | Legacy `data/` folder (15 JSON files) still shipped; `tests/dto_parity.gd` reads it | `data/`, `src/data/loaders.gd` | delete once #20/#21 land; retarget the parity test at the pack |
+| 21 | Military Data Editor reads `res://data/military_units.json` directly | `src/ui/military_data_editor.gd:37` | **Done** — editor removed with its data (TeeJ, 2026-09-22) |
+| 22 | Legacy `data/` folder (15 JSON files) still shipped; `tests/dto_parity.gd` reads it | `data/`, `src/data/loaders.gd` | **Done** — folder, `Loaders` and eleven DTOs deleted; `dto_parity` compares the loaded pack with `tests/fixtures/dto-pack.json` |
 | 23 | Rule-id constants carry setting names (`SeedCoruscantFirst`, `EspionageRevealCoruscantFloor`) | `src/game/rule_id.gd:93`, `src/game/mission_manager.gd:189` | naming only — rename to `SeedCapitalFirst` etc. when #14 lands |
 | 24 | **Modularity proof** — a second, deliberately alien pack runs on an unchanged binary | source repo `PROJECT.md` Phase 5 | last; proves #14–#23 and #25–#34 |
 | 25 | Day-zero character placement by display name: six to the first world, Mon Mothma to the HQ, Palpatine to the HQ, six Imperials to a random holding | `src/game/day_zero_generator.gd:186-217` | **PR #49** — `starts_at_*` roles |
@@ -79,7 +79,7 @@ SCHEMA.md §1 ("names are never behaviour") and would break a second pack.
 | 30 | Death Star: family 24 literal, `u.Name == "Death Star"`, `DeathStarAt` | `src/game/mission_manager.gd:53,175,512` | **PR #49** — `superweapon` |
 | 31 | Garrison score term counts "Stormtrooper Regiment" by name | `src/game/mission_manager.gd:216` | **PR #49** — `garrison_troop` (engine and the AI mirror) |
 | 32 | Engine joins its behaviours to the pack ids `death_star_sabotage` / `jedi_training` (and `dagobah` / `palace`, and the ten mission-table ids) | `src/game/mission_catalog.gd:39-40` | **PR #49** — `behaviour`; a mission's table shares its id |
-| 33 | Snapshot import maps the C# snapshot's facility names (legacy format) | `src/data/snapshot_loader.gd:13-19` | goes with #22 |
+| 33 | Snapshot import maps the C# snapshot's facility names (legacy format) | `src/data/snapshot_loader.gd:13-19` | **Kept** — `tests/fixtures/snapshot-seed12345.json` is still the bench/soak day-zero fixture; the map is the format boundary for that external file |
 | 34 | Rule-id constants named for the setting (`SeedYavin*`, `SeedAllianceHq*`, `LukeVsVader*`, `DeathStarSabotage*`) | `src/game/rule_id.gd` | rename with #23 |
 | 35 | Multiplayer Options win-condition tooltips are the manual's p162 text with Star Wars names (pinned verbatim by `tests/mp_screens.gd:134`) | `src/ui/mp/multiplayer_options.gd:11-12` | UI string only, selects nothing; a pack string when the p162 wording is allowed to vary |
 
