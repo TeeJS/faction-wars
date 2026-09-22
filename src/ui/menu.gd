@@ -343,9 +343,26 @@ func _layout_cockpit() -> void:
 		var rr := _scaled(_cockpit.Readout.rect2())
 		_readout.position = rr.position
 		_readout.size = rr.size
-		_readout.add_theme_font_size_override("font_size", maxi(8, int(rr.size.y * 0.6)))
+		_readout.add_theme_font_size_override("font_size", _readout_font_size(rr.size))
 	_refresh_readout()
 	_marks.queue_redraw()
+
+
+## The largest size at which BOTH readout texts fit the panel: height-bound
+## first, then shrunk until the wider string clears the width (the longer text
+## was clipped on the narrow panel).
+func _readout_font_size(panel: Vector2) -> int:
+	var font: Font = _readout.get_theme_font("font")
+	var size := maxi(8, int(panel.y * 0.6))
+	var room := panel.x - 8.0
+	while size > 8:
+		var widest := 0.0
+		for text in [_cockpit.Readout.Standard, _cockpit.Readout.HqOnly]:
+			widest = maxf(widest, font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x)
+		if widest <= room:
+			break
+		size -= 1
+	return size
 
 
 func _refresh_readout() -> void:
@@ -369,23 +386,29 @@ func _draw_marks() -> void:
 		_bracket(Rect2(b.position, b.size), FactionRegistry.ParseColor(own) if not own.is_empty() else default_color)
 
 
-## Corner brackets, the original's selection mark (the screenshot's red corners
-## on the chosen difficulty, yellow on the chosen galaxy size).
-func _bracket(r: Rect2, color: Color) -> void:
-	var l := minf(r.size.x, r.size.y) * 0.25
-	var w := 3.0
+## Corner brackets, the original's selection mark (red corners on the chosen
+## difficulty, yellow on the chosen galaxy size). Drawn INSIDE the region so
+## they land on the screen rather than the bezel, over a dark outline so a
+## light colour reads on a light bezel too (TeeJ: the yellow was hard to see).
+func _bracket(region: Rect2, color: Color) -> void:
+	var inset := minf(region.size.x, region.size.y) * 0.10
+	var r := Rect2(region.position + Vector2(inset, inset), region.size - Vector2(inset, inset) * 2.0)
+	var l := minf(r.size.x, r.size.y) * 0.32
+	var w := maxf(3.0, minf(r.size.x, r.size.y) * 0.07)
 	var tl := r.position
 	var tr := r.position + Vector2(r.size.x, 0)
 	var bl := r.position + Vector2(0, r.size.y)
 	var br := r.end
-	_marks.draw_line(tl, tl + Vector2(l, 0), color, w)
-	_marks.draw_line(tl, tl + Vector2(0, l), color, w)
-	_marks.draw_line(tr, tr + Vector2(-l, 0), color, w)
-	_marks.draw_line(tr, tr + Vector2(0, l), color, w)
-	_marks.draw_line(bl, bl + Vector2(l, 0), color, w)
-	_marks.draw_line(bl, bl + Vector2(0, -l), color, w)
-	_marks.draw_line(br, br + Vector2(-l, 0), color, w)
-	_marks.draw_line(br, br + Vector2(0, -l), color, w)
+	var arms := [
+		[tl, tl + Vector2(l, 0)], [tl, tl + Vector2(0, l)],
+		[tr, tr + Vector2(-l, 0)], [tr, tr + Vector2(0, l)],
+		[bl, bl + Vector2(l, 0)], [bl, bl + Vector2(0, -l)],
+		[br, br + Vector2(-l, 0)], [br, br + Vector2(0, -l)],
+	]
+	for pass_color in [Color(0, 0, 0, 0.85), color]:
+		var width := w + 2.0 if pass_color.a < 1.0 else w
+		for a in arms:
+			_marks.draw_line(a[0], a[1], pass_color, width)
 
 
 func _on_region(r: PackDefs.MenuRegionDef) -> void:

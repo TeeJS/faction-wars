@@ -29,6 +29,10 @@ func _init() -> void:
 	var menu: Control = load("res://Menu.tscn").instantiate()
 	root.add_child(menu)
 	await process_frame
+	# A headless window is tiny; lay the Cockpit out at a real screen size so
+	# the fit checks below mean something.
+	menu.size = Vector2(1440, 1080)
+	await process_frame
 	await process_frame
 
 	var picture: TextureRect = menu.get_node_or_null("Cockpit")
@@ -91,6 +95,10 @@ func _init() -> void:
 	(regions.get_node("Region_hq_only_victory") as Button).pressed.emit()
 	sel = menu.call("SelectedSettings")
 	_check(sel["hq_only"] == true, "pressing the victory screen turns Headquarters Only on")
+	if readout != null:
+		var fs: int = readout.get_theme_font_size("font_size")
+		var w: float = readout.get_theme_font("font").get_string_size(readout.text, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x
+		_check(w <= readout.size.x, "'%s' fits the readout panel (%.0f of %.0f px at %d)" % [readout.text, w, readout.size.x, fs])
 	_check(readout != null and readout.text == menu_def.Readout.HqOnly, "the readout says '%s'" % menu_def.Readout.HqOnly)
 	(regions.get_node("Region_hq_only_victory") as Button).pressed.emit()
 	sel = menu.call("SelectedSettings")
