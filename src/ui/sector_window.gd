@@ -343,14 +343,18 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 # no population has no loyalty bar (p049: "no facilities, defenses, or
 # loyalty indicators ... means the system is unpopulated").
 #
-# ⚠ OURS: the square size (the original's are ~5 px on a 640x480 screen) and
-# the energy hover wording, mirrored from the sourced materials one.
-const BarsTop: float = 36.0        # clear of the lower corner icons (22 + 8, plus a gap)
+# ⚠ OURS: the square size (the original's are ~5 px on a 640x480 screen), the
+# slightly rounded corners (TeeJ, 2026-09-22: the sharp ones "feel too sharp")
+# and the energy hover wording, mirrored from the sourced materials one.
+# The sides' order on the loyalty bar is the pack's `loyalty_bar` (SCHEMA §10):
+# the Star Wars pack puts the Empire on the left, as Fig 2.9 has it.
+const BarsTop: float = 38.0        # clear of the lower corner icons (22 + 8, plus a gap; +2 for icons to come, TeeJ 2026-09-22)
 const SquareSize: float = 6.0
 const SquareGap: float = 1.0
 const RowGap: float = 2.0
 const LoyaltyHeight: float = 4.0
 const BarMinWidth: float = 30.0
+const CornerRadius: int = 2
 const CEnergyUsed := Color.WHITE
 const CEnergyFree := Color(0.3, 0.55, 1.0)
 const CMineBuilt := Color(1.0, 0.9, 0.2)
@@ -402,21 +406,40 @@ static func _AddSquareRow(sectorMap: Control, kind: String, centerX: float, y: f
 	row.tooltip_text = tip
 	row.mouse_filter = Control.MOUSE_FILTER_PASS
 	for i in total:
-		var sq := ColorRect.new()
-		sq.color = filledColor if i < mini(filled, total) else freeColor
-		sq.size = Vector2(SquareSize, SquareSize)
+		var sq := _Block(filledColor if i < mini(filled, total) else freeColor, Vector2(SquareSize, SquareSize), true, true)
 		sq.position = Vector2(i * (SquareSize + SquareGap), 0)
-		sq.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		row.add_child(sq)
 	sectorMap.add_child(row)
 	return SquareSize
+
+
+## One coloured block with rounded corners - on the left end, the right end,
+## or both - so a bar's segments read as one rounded bar.
+static func _Block(color: Color, size: Vector2, round_left: bool, round_right: bool) -> Panel:
+	var style := StyleBoxFlat.new()
+	style.bg_color = color
+	style.corner_radius_top_left = CornerRadius if round_left else 0
+	style.corner_radius_bottom_left = CornerRadius if round_left else 0
+	style.corner_radius_top_right = CornerRadius if round_right else 0
+	style.corner_radius_bottom_right = CornerRadius if round_right else 0
+	var block := Panel.new()
+	block.add_theme_stylebox_override("panel", style)
+	block.size = size
+	block.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return block
+
+
+## The colour a block was drawn in (for the tests).
+static func BlockColor(block: Control) -> Color:
+	var style: StyleBox = block.get_theme_stylebox("panel")
+	return (style as StyleBoxFlat).bg_color if style is StyleBoxFlat else Color.TRANSPARENT
 
 
 ## The loyalty bar: one segment per playable side, in that side's colour,
 ## its width the side's share of the population. Returns the bar height.
 ## `width` is the widest square row above it, so the three read as a block.
 static func _AddLoyaltyBar(sectorMap: Control, centerX: float, y: float, support: Dictionary, width: float) -> float:
-	var sides: Array = FactionRegistry.Playable
+	var sides: Array[Faction] = FactionRegistry.LoyaltyBarOrder()
 	var bar := Control.new()
 	bar.name = "Bars_loyalty"
 	bar.set_meta("bar_row", "loyalty")
@@ -426,19 +449,22 @@ static func _AddLoyaltyBar(sectorMap: Control, centerX: float, y: float, support
 	bar.mouse_filter = Control.MOUSE_FILTER_PASS
 	var words: PackedStringArray = PackedStringArray()
 	var x: float = 0.0
+	var drawn: int = 0
+	var to_draw: int = 0
+	for side in sides:
+		if int(support.get(side.Id, 0)) > 0:
+			to_draw += 1
 	for side in sides:
 		var pct: int = int(support.get(side.Id, 0))
 		words.append("%s %d%%" % [side.DisplayName, pct])
 		var w: float = width * pct / 100.0
 		if w <= 0.0:
 			continue
-		var seg := ColorRect.new()
-		seg.color = side.FactionColor
-		seg.size = Vector2(w, LoyaltyHeight)
+		var seg := _Block(side.FactionColor, Vector2(w, LoyaltyHeight), drawn == 0, drawn == to_draw - 1)
 		seg.position = Vector2(x, 0)
-		seg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		bar.add_child(seg)
 		x += w
+		drawn += 1
 	bar.tooltip_text = "Loyalty: %s" % ", ".join(words)
 	sectorMap.add_child(bar)
 	return LoyaltyHeight

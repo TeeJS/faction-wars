@@ -65,11 +65,27 @@ func _init() -> void:
 			total_w += (seg as Control).size.x
 		for side in FactionRegistry.Playable:
 			var pct: int = home.SupportFor(side)
-			var seg: ColorRect = Lq.first_or_null(bar.get_children(), func(c) -> bool: return c.color == side.FactionColor)
+			var seg: Control = Lq.first_or_null(bar.get_children(), func(c) -> bool: return SectorWindow.BlockColor(c) == side.FactionColor)
 			if pct > 0 and (seg == null or absf(seg.size.x - bar.size.x * pct / 100.0) > 0.51):
 				ok = false
 		_check(ok, "loyalty: each side's segment is its share of the bar, in its colour (%s)" % bar.tooltip_text)
 		_check(absf(total_w - bar.size.x) < 0.51, "loyalty: the segments fill the bar")
+		# Left to right in the pack's declared order (Fig 2.9: the Empire on the left).
+		var order: Array[Faction] = FactionRegistry.LoyaltyBarOrder()
+		var seen_x: float = -1.0
+		var in_order := true
+		for side in order:
+			var seg: Control = Lq.first_or_null(bar.get_children(), func(c) -> bool: return SectorWindow.BlockColor(c) == side.FactionColor)
+			if seg == null:
+				continue
+			if seg.position.x <= seen_x:
+				in_order = false
+			seen_x = seg.position.x
+		_check(in_order, "loyalty: the sides run left to right as display.json loyalty_bar says (%s)" % ", ".join(Lq.select(order, func(f: Faction) -> String: return f.Id)))
+		if Lq.any(FactionRegistry.Playable, func(f: Faction) -> bool: return f.Id == "empire"):
+			_check(order[0].Id == "empire", "Star Wars: the Empire is on the left (Fig 2.9)")
+		var first: Control = bar.get_child(0)
+		_check((first.get_theme_stylebox("panel") as StyleBoxFlat).corner_radius_top_left == SectorWindow.CornerRadius, "the bar's corners are rounded")
 	var name_lbl: Label = _name_label(ui, home)
 	_check(name_lbl != null and rows.has("loyalty") and name_lbl.position.y >= rows["loyalty"].position.y + SectorWindow.LoyaltyHeight,
 		"the name sits below the bars")
@@ -127,7 +143,7 @@ func _name_label(ui: UIManager, planet: Planet) -> Label:
 static func _count(row: Control, color: Color) -> int:
 	var n := 0
 	for c in row.get_children():
-		if c is ColorRect and (c as ColorRect).color == color:
+		if SectorWindow.BlockColor(c) == color:
 			n += 1
 	return n
 

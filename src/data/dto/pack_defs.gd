@@ -863,9 +863,14 @@ class DisplayDef:
 	## screen - a stat, a resource, a unit kind. Keys are PackLoader.KNOWN_TERMS;
 	## a key the pack leaves out gets the engine's neutral default (Terms.gd).
 	var Terms: Dictionary = {}
+	## SCHEMA.md section 10, `loyalty_bar`: the sides left to right on the sector
+	## window's loyalty bar (manual p025 Fig 2.9 has the Empire on the left).
+	## Optional; empty = the pack's faction order. Validation rule 16.
+	var LoyaltyBar: Array[String] = []
 
 	static func from_dict(d: Dictionary) -> DisplayDef:
 		var o := DisplayDef.new()
+		o.LoyaltyBar = JsonUtil.str_list(d, "loyalty_bar", [])
 		var c: Variant = JsonUtil.get_ci(d, "categories")
 		if c != null:
 			for e in c:

@@ -685,6 +685,7 @@ threshold and flare, all 21 modes — by dumping both and diffing.
 | `label` | **Load-bearing:** the active mode's label is part of the game signature (`GameSignature.GidLabel`). Rename one and the lockstep hash changes. |
 | `title_from` | `loyalty_label` — the key-panel title is the player's faction's `loyalty_label` from `factions.json`, resolved per side. |
 | `galaxy_display_modes` | Mode ids in the original's Alt+1..9 order. |
+| `loyalty_bar` | **Optional.** The playable sides left to right on the sector window's loyalty bar (manual p025 Fig 2.9 has the Empire on the left, the Alliance on the right, so the Star Wars pack says `["empire", "alliance"]`). When given it must name every faction exactly once (rule 16); left out, the bar follows the pack's faction order. |
 | `special_power_ranks` | The band labels for §7's special power: `none`, `novice`, `trainee`, `student`, `knight`, `master`. |
 | `terms` | **★ APPROVED (TeeJ, 2026-09-22).** What this setting calls the engine's concepts on screen — the unit stats (`hyperdrive`, `sublight`, `shield`, `hull`, `detection`, `weapons`, `bombardment`, `bombardment_defense`, `bombardment_modifier`, `maintenance`, `squadron_size`, `fighter_capacity`, `troop_capacity`), the economy (`energy`, `raw_materials`, `refined_materials`, `mine`/`mines`, `refinery`/`refineries`), the two defence kinds as prose plurals (`planetary_shields`, `orbital_batteries`), the unit kinds (`fighter_squadron(s)`, `trooper_regiment(s)`), `in_transit` ("in hyperspace") and the five ship systems tactical damage tracks (`system_shield_recharge`, `system_weapon_recharge`, `system_tractor`, `system_engines`, `system_hyperdrive`; manual p128) and a standing defence's state tag in the Defenses window (`shield_active`, `weapon_armed`). The key set is engine vocabulary (`PackLoader.KNOWN_TERMS`); an unknown key is a load error (rule 14). **Optional**: a key the pack leaves out takes the engine's neutral default, so a pack labels only what it wants to. Read through one helper, like the rank labels. Note the two speeds are distinct concepts: `hyperdrive` is movement *between* systems (a time multiplier, lower is faster, and 0 means "cannot"), `sublight` is speed *in* a battle. |
 
@@ -729,6 +730,8 @@ passes.
     its label is non-empty.
 15. ✅ A character's `starts_at` names a planet on the map that its side holds at
     day zero (a `starting_planets` entry or its fixed `hq` planet).
+16. ✅ `display.json` `loyalty_bar`, when given, names every playable faction
+    exactly once and nothing else.
 
 ## 12. Open questions for sign-off
 
@@ -900,3 +903,4 @@ What changed from the source repo's 2026-07-25 draft, and why.
 | 52 | **Exit returns to the picker.** The Cockpit's Exit (button and picture region) goes back to `PackPicker.tscn`, which unloads the pack (`FactionRegistry.Unload`, its only caller) and offers the cards again; the picker's own **Exit Game** quits (hidden on the web). With one pack, or `--pack=` forcing one, the Cockpit's Exit quits. The GID catalog remembers which pack built it. `tests/pack_switch.gd` proves a game after a switch hashes exactly like a fresh process | TeeJ, 2026-09-22: "make the cockpit exit to the pack picker, and have an exit game option in the picker" |
 | 53 | **The map picture comes from the pack.** `GalaxyMap` loads `map_image`, places it by `map_image_rect` in the pack's map space, fits that to its frame and scales every marker with it; the Star Wars picture baked into `Main.tscn` is gone. **Coordinates are untouched: they are travel time** (`Planet.DistanceTo`) - a first draft converted Star Wars's to picture pixels and the soak gate diverged on day 2 | TeeJ, 2026-09-22: the WWII pack played over the Star Wars galaxy; a pack's own map has to show |
 | 54 | **`starts_at`** on a character (§7): a declared opening world, winning over the placement roles; validation rule 15; day zero places it before the roles with no PRNG draw | TeeJ, 2026-09-22: every Allied leader opened at Britain because it was both first world and HQ |
+| 55 | **`loyalty_bar`** in `display.json` (§10): the sides' order on the sector window's loyalty bar; rule 16; the Star Wars pack puts the Empire on the left | TeeJ, 2026-09-22: the bar followed faction order (Alliance left), which "will mess up long-time players awfully" against Fig 2.9 |

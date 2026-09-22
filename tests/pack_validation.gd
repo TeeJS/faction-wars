@@ -145,6 +145,11 @@ func _init() -> void:
 	_case("a special-power band with no label",
 		_pack({}, {}, {"gid_ranks_drop": "master"}), "no label for 'master'")
 
+	# Rule 16 - loyalty_bar is every faction exactly once.
+	_case("loyalty_bar names a side that is not a faction",
+		_pack({}, {}, {"loyalty_bar": ["test_side", "nobody"]}), "loyalty_bar names 'nobody', which is not a faction id")
+	_case("loyalty_bar leaves a faction out",
+		_pack({}, {}, {"loyalty_bar": ["nobody"]}), "loyalty_bar leaves out 'test_side'")
 	# Rule 14 - terms are known concepts with labels.
 	_case("terms with a key the engine has no concept for",
 		_pack({}, {}, {"terms": {"warp": "Warp Factor"}}), "terms names 'warp', which the engine has no concept for")
@@ -434,7 +439,8 @@ func _pack(sector_over: Dictionary, planet_over: Dictionary, other: Dictionary) 
 				{"min": 0, "label": "Hostile", "flare": "none"}])}]}],
 		"galaxy_display_modes": other.get("gid_alt", ["popular_support"]),
 		"special_power_ranks": ranks,
-		"terms": other.get("terms", {"hyperdrive": "Transit"})})
+		"terms": other.get("terms", {"hyperdrive": "Transit"}),
+		"loyalty_bar": other.get("loyalty_bar", [])})
 
 	# One seeding table with one row, so a row that resolves to nothing is a case.
 	p.Rules = [{"EntryId": 1}]
