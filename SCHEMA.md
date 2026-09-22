@@ -77,7 +77,24 @@ with the extraction tooling, not shipped in a pack.
   "map_image": "galaxyShaded.bmp",
   "setup": {
     "difficulty_default": "medium",
-    "galaxy_sizes": ["standard", "large", "huge"]
+    "galaxy_sizes": ["standard", "large", "huge"],
+    "galaxy_size_default": "large"
+  },
+  "menu": {
+    "image": "cockpit.png",
+    "selected_color": "#ffd23c",
+    "readout": { "rect": [609, 842, 244, 34], "standard": "Standard Game", "hq_only": "Headquarters Only Victory", "color": "#40ff40" },
+    "regions": [
+      { "action": "difficulty",      "value": "easy",     "rect": [133, 82, 120, 110], "tooltip": "Set game difficulty to easy." },
+      { "action": "galaxy_size",     "value": "standard", "rect": [649, 652, 64, 64],  "tooltip": "..." },
+      { "action": "start",           "value": "empire",   "rect": [333, 680, 170, 150] },
+      { "action": "load_game",       "rect": [923, 518, 90, 94] },
+      { "action": "credits",         "rect": [1029, 542, 80, 74] },
+      { "action": "hq_only_victory", "rect": [689, 748, 96, 74] },
+      { "action": "multiplayer",     "rect": [141, 872, 136, 142] },
+      { "action": "exit",            "rect": [1237, 884, 126, 126] }
+    ],
+    "credits": ["..."]
   }
 }
 ```
@@ -90,6 +107,8 @@ with the extraction tooling, not shipped in a pack.
 | `unexplored_color` | Color for systems the viewing faction has no knowledge of. A display convention, not a rule. |
 | `map_image` | **★ DECIDED (TeeJ, 2026-09-21).** The galaxy backdrop, as a filename relative to the pack folder. Required; a pack that declares none is a **load error**, not a blank screen. Named here rather than fixed by convention so the engine never assumes a filename. |
 | `setup.galaxy_sizes` | The size names offered on the menu. **Which sectors each size includes is declared per sector** in `map.json` (`min_size`), not here — see §4. |
+| `setup.galaxy_size_default` | The size pre-selected on the Cockpit. Optional; the first of `galaxy_sizes` when absent. Must be one of them. |
+| `menu` | **The Shuttle Cockpit as the pack's picture** (manual p021, Fig. 2.2). Optional: a pack without it gets the engine's labelled-button menu. `image` is a file in the pack folder; `regions` lays one clickable area per menu function over it, `rect` = `[x, y, w, h]` in the picture's own pixels (the engine scales them with the picture, keeping aspect). `action` is engine vocabulary — `difficulty` (`value` easy/medium/hard), `galaxy_size` (`value` from `setup.galaxy_sizes`), `start` (`value` a faction id), `load_game`, `credits`, `hq_only_victory`, `multiplayer`, `exit`. **Every function must have exactly one region** — one per difficulty, per offered size, per playable faction, and one each of the rest — so the picture cannot lose a function the button menu has (validation rule 11). `readout` is the text panel the engine paints `standard` / `hq_only` on as the victory toggle changes; `selected_color` is the corner-bracket colour on the chosen difficulty and size. `credits` is the lines "View credits" shows. |
 
 ---
 
@@ -789,3 +808,4 @@ What changed from the source repo's 2026-07-25 draft, and why.
 | 28 | **§6 live.** `MilitaryCatalog` and the tactical engine read the pack; the four weapon names are gone from engine code. **No re-baseline** — byte-identical | Weapon DECLARATION ORDER in `weapons.json` is now load-bearing: the damage sum rounds to f32 per weapon |
 | 27 | **§6 data built.** `units.json` (57) and `weapons.json` (4 classes) generated, loaded and validated; nothing reads them yet. The three derived summary columns are DROPPED, and the generator re-proves on every build that each is exactly the sum of its arcs | The tactical engine still reads the flat unit fields. Swapping it is the next step |
 | 26 | **§5 built and live.** `Enums.FacilityType` is **deleted**; facilities are pack data selected by role. 154 call sites across 24 files. The game signature now carries the family id, so the soak gate is re-baselined | Proven behaviour-identical first by emitting the old ordinals: 1004/1004. Five silent bugs found on the way — see the commit |
+| 37 | **§2 `menu`** — the Shuttle Cockpit picture with a region per function, `setup.galaxy_size_default`, validation rule 11 (every function reachable, one region each). The Star Wars pack ships `cockpit.png` mapped from Fig. 2.2; a pack without `menu` keeps the button menu | TeeJ, 2026-09-22: packs own their main-menu picture. The manual labels every control of Fig. 2.2, so the region vocabulary is exactly that list |

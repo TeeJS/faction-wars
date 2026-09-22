@@ -1,0 +1,108 @@
+extends SceneTree
+## The Shuttle Cockpit as the pack's picture (manual p021, Fig. 2.2): every
+## function the figure labels is a region the pack declares, laid over the
+## picture, and pressing one does what the labelled button did.
+##
+##   Godot_console.exe --headless --path . -s tests/cockpit_menu.gd
+
+var _fails := 0
+var _checks := 0
+
+
+func _check(cond: bool, what: String) -> void:
+	_checks += 1
+	if not cond:
+		_fails += 1
+		print("  FAIL %s" % what)
+
+
+func _init() -> void:
+	await process_frame
+	FactionRegistry.EnsureLoaded()
+	var pack := FactionRegistry.Pack
+	if pack.Manifest.Menu == null:
+		print("[cockpit_menu] the active pack declares no menu picture - nothing to test")
+		quit(0)
+		return
+	var menu_def := pack.Manifest.Menu
+
+	var menu: Control = load("res://Menu.tscn").instantiate()
+	root.add_child(menu)
+	await process_frame
+	await process_frame
+
+	var picture: TextureRect = menu.get_node_or_null("Cockpit")
+	_check(picture != null and picture.texture != null, "the Cockpit picture is on screen")
+	_check(not (menu.get_node("CenterContainer") as Control).visible, "the labelled-button form is put away")
+
+	var regions: Control = menu.get_node_or_null("Regions")
+	_check(regions != null, "the region layer exists")
+
+	# Fig. 2.2: one region per labelled function.
+	var sizes: Array[String] = pack.Manifest.Setup.GalaxySizes
+	var want: Array[String] = ["load_game", "credits", "hq_only_victory", "multiplayer", "exit"]
+	for d in ["easy", "medium", "hard"]:
+		want.append("difficulty_%s" % d)
+	for s in sizes:
+		want.append("galaxy_size_%s" % s)
+	for f in FactionRegistry.Playable:
+		want.append("start_%s" % f.Id)
+	for key in want:
+		var b: Button = regions.get_node_or_null("Region_" + key) if regions != null else null
+		_check(b != null, "Fig. 2.2: a region for %s" % key)
+		if b != null:
+			_check(b.size.x > 0 and b.size.y > 0, "the %s region has a size on screen" % key)
+			_check(b.text.is_empty(), "the %s region draws no label over the picture" % key)
+
+	# Regions sit inside the picture's frame, scaled with it.
+	if picture != null and regions != null:
+		var frame: Rect2 = menu.call("_picture_frame")
+		for b in regions.get_children():
+			if b is Button:
+				var r := Rect2(b.position, b.size)
+				_check(frame.encloses(r), "%s lies inside the picture (%s in %s)" % [b.name, r, frame])
+
+	# Defaults come from the pack.
+	var sel: Dictionary = menu.call("SelectedSettings")
+	var want_diff: String = pack.Manifest.Setup.DifficultyDefault
+	var want_size: String = pack.Manifest.Setup.GalaxySizeDefault if not pack.Manifest.Setup.GalaxySizeDefault.is_empty() else sizes[0]
+	_check(sel["difficulty"] == want_diff, "difficulty starts at the pack default (%s, got %s)" % [want_diff, sel["difficulty"]])
+	_check(sel["size"] == want_size, "galaxy size starts at the pack default (%s, got %s)" % [want_size, sel["size"]])
+	_check(sel["hq_only"] == false, "Headquarters Only Victory starts off")
+
+	# Pressing a region changes the choice.
+	(regions.get_node("Region_difficulty_hard") as Button).pressed.emit()
+	(regions.get_node("Region_galaxy_size_%s" % sizes[sizes.size() - 1]) as Button).pressed.emit()
+	sel = menu.call("SelectedSettings")
+	_check(sel["difficulty"] == "hard", "pressing the hard screen sets difficulty hard")
+	_check(sel["size"] == sizes[sizes.size() - 1], "pressing the last galaxy screen sets that size")
+
+	# The readout follows the victory toggle.
+	var readout: Label = regions.get_node_or_null("Readout")
+	_check(readout != null and readout.text == menu_def.Readout.Standard, "the readout starts at '%s'" % menu_def.Readout.Standard)
+	(regions.get_node("Region_hq_only_victory") as Button).pressed.emit()
+	sel = menu.call("SelectedSettings")
+	_check(sel["hq_only"] == true, "pressing the victory screen turns Headquarters Only on")
+	_check(readout != null and readout.text == menu_def.Readout.HqOnly, "the readout says '%s'" % menu_def.Readout.HqOnly)
+	(regions.get_node("Region_hq_only_victory") as Button).pressed.emit()
+	sel = menu.call("SelectedSettings")
+	_check(sel["hq_only"] == false and readout.text == menu_def.Readout.Standard, "pressing it again turns it off")
+
+	# Credits and Load open their windows.
+	(regions.get_node("Region_credits") as Button).pressed.emit()
+	await process_frame
+	var cw: Node = menu.get_node_or_null("CreditsWindow")
+	_check(cw != null, "pressing credits opens the Credits window")
+	if cw != null:
+		var lines_box: Node = cw.find_child("Lines", true, false)
+		_check(lines_box != null and lines_box.get_child_count() == menu_def.Credits.size(), "the Credits window lists the pack's %d lines" % menu_def.Credits.size())
+	(regions.get_node("Region_load_game") as Button).pressed.emit()
+	await process_frame
+	_check(menu.get_node_or_null("LoadGameWindow") != null, "pressing load opens the slot picker")
+
+	# The web build has no desktop to exit to; the desktop build does.
+	var exit_btn: Button = regions.get_node("Region_exit")
+	_check(exit_btn.visible == (not OS.has_feature("web")), "exit is shown exactly when there is a desktop")
+
+	print("[cockpit_menu] %d checks, %d failed: %s" % [_checks, _fails, "PASS" if _fails == 0 else "FAIL"])
+	quit(1 if _fails > 0 else 0)
