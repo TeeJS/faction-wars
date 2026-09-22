@@ -39,6 +39,10 @@ var _taskbarButtons: Dictionary = {}     # DraggableWindow -> Button
 ## second entry or vanishing. Other windows minimise to the panel or close as
 ## before. Sector name -> Button.
 var _pinnedSectors: Dictionary = {}
+var _pinOrder: Array = []            # sector names in map order, for re-pinning in place
+var _pinMenu: PopupMenu = null       # "Unpin from menu" / "Pin to menu"
+var _pinMenuSector: Sector = null
+const PIN_MENU_ID := 1
 
 var _taskbarList: VBoxContainer
 
@@ -194,7 +198,14 @@ func OnSectorClicked(sector: Sector) -> void:
 	OpenWindow(sector.Name, SectorWindowTemplate,
 		func(window) -> void:
 			window.get_node("%Title").text = sector.Name
-			window.Populate(sector, self),
+			window.Populate(sector, self)
+			# Right-click on the title bar: "Pin to menu" / "Unpin from menu".
+			# Setup runs again on every restore, so wire it once.
+			if not window.has_meta("pin_menu_wired"):
+				window.set_meta("pin_menu_wired", true)
+				(window.get_node("%TitleBar") as Control).gui_input.connect(func(ev: InputEvent) -> void:
+					if ev is InputEventMouseButton and ev.button_index == MOUSE_BUTTON_RIGHT and ev.pressed:
+						ShowPinMenu(sector)),
 		targetPos)
 
 
@@ -275,27 +286,111 @@ func PinSectors(galaxy: Array) -> void:
 			_taskbarList.remove_child(old)
 			old.queue_free()
 	_pinnedSectors.clear()
+	_pinOrder.clear()
+	for sector in galaxy:
+		_pinOrder.append(sector.Name)
 	# At the top, in map order. The GID key docks itself later and takes index
 	# 0 (AddToTaskbar), so the panel reads: key, the theatres, then whatever
 	# windows are minimised.
 	var index := 0
 	for sector in galaxy:
-		var local: Sector = sector
-		var btn := Button.new()
-		btn.text = local.Name
-		btn.clip_text = true
-		btn.add_theme_font_size_override("font_size", 14)
-		btn.tooltip_text = local.Name
-		btn.pressed.connect(func() -> void: OnSectorClicked(local))
-		_taskbarList.add_child(btn)
-		_taskbarList.move_child(btn, index)
+		_taskbarList.move_child(_pin_button(sector), index)
 		index += 1
-		_pinnedSectors[local.Name] = btn
 
 
 ## The permanent sector buttons, by sector name.
 func PinnedSectors() -> Dictionary:
 	return _pinnedSectors
+
+
+func IsPinned(sector: Sector) -> bool:
+	return _pinnedSectors.has(sector.Name)
+
+
+## One pinned button: left-click opens/restores, right-click offers "Unpin".
+func _pin_button(sector: Sector) -> Button:
+	var local: Sector = sector
+	var btn := Button.new()
+	btn.text = local.Name
+	btn.clip_text = true
+	btn.add_theme_font_size_override("font_size", 14)
+	btn.tooltip_text = "%s - right-click to unpin" % local.Name
+	btn.pressed.connect(func() -> void: OnSectorClicked(local))
+	btn.gui_input.connect(func(ev: InputEvent) -> void:
+		if ev is InputEventMouseButton and ev.button_index == MOUSE_BUTTON_RIGHT and ev.pressed:
+			ShowPinMenu(local))
+	_taskbarList.add_child(btn)
+	_pinnedSectors[local.Name] = btn
+	return btn
+
+
+## "Unpin from menu" (TeeJ, 2026-09-22): the button goes, its window closes
+## if open, and for the rest of the session that theatre minimises and closes
+## like any other window. Pins are not remembered between games.
+func UnpinSector(name: String) -> void:
+	if not _pinnedSectors.has(name):
+		return
+	var btn: Button = _pinnedSectors[name]
+	_pinnedSectors.erase(name)
+	if is_instance_valid(btn):
+		_taskbarList.remove_child(btn)
+		btn.queue_free()
+	if _openWindows.has(name):
+		var w: DraggableWindow = _openWindows[name]
+		if is_instance_valid(w):
+			w.CloseWindow()
+
+
+## "Pin to menu": the mirror. The button returns to its place in map order,
+## after the docked key and before any minimised window.
+func PinSector(sector: Sector) -> void:
+	if _pinnedSectors.has(sector.Name):
+		return
+	var base := 0
+	if _taskbarList.get_child_count() > 0:
+		var first: Node = _taskbarList.get_child(0)
+		if not _pinnedSectors.values().has(first) and not _taskbarButtons.values().has(first):
+			base = 1   # the docked GID key
+	var before := 0
+	for name in _pinOrder:
+		if name == sector.Name:
+			break
+		if _pinnedSectors.has(name):
+			before += 1
+	var btn := _pin_button(sector)
+	_taskbarList.move_child(btn, base + before)
+	# If its window is minimised on a normal button, that button is now redundant.
+	if _openWindows.has(sector.Name):
+		var w: DraggableWindow = _openWindows[sector.Name]
+		if _taskbarButtons.has(w):
+			var old: Button = _taskbarButtons[w]
+			if is_instance_valid(old):
+				_taskbarList.remove_child(old)
+				old.queue_free()
+			_taskbarButtons.erase(w)
+
+
+## The one-item menu, worded for the theatre's current state.
+func ShowPinMenu(sector: Sector) -> void:
+	if _pinMenu == null:
+		_pinMenu = PopupMenu.new()
+		add_child(_pinMenu)
+		_pinMenu.id_pressed.connect(func(id: int) -> void:
+			if id != PIN_MENU_ID or _pinMenuSector == null:
+				return
+			if IsPinned(_pinMenuSector):
+				UnpinSector(_pinMenuSector.Name)
+			else:
+				PinSector(_pinMenuSector))
+	_pinMenuSector = sector
+	_pinMenu.clear()
+	_pinMenu.add_item("Unpin from menu" if IsPinned(sector) else "Pin to menu", PIN_MENU_ID)
+	_pinMenu.position = Vector2i(get_viewport().get_mouse_position())
+	_pinMenu.popup()
+
+
+func PinMenu() -> PopupMenu:
+	return _pinMenu
 
 
 func AddToTaskbar(title: String, onRestore: Callable) -> Button:
