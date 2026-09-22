@@ -185,7 +185,7 @@ static func DeathStarAt(where: Planet) -> Unit:
 static func LeakExtraSystems(m: Mission, rng: Prng) -> String:
 	if GameState.ActiveGalaxy.is_empty():
 		return ""
-	var capital := Lq.any(FactionRegistry.Playable, func(f): return f.Hq != null and not f.Hq.Planet.is_empty() and f.Hq.Planet == m.Target.Name)
+	var capital := Lq.any(FactionRegistry.Playable, func(f): return f.Hq != null and not f.Hq.Planet.is_empty() and f.Hq.Planet == m.Target.PackId)
 	var floor_id := RuleId.EspionageRevealCoruscantFloor if capital else RuleId.EspionageRevealFloor
 	var spread_id := RuleId.EspionageRevealCoruscantSpread if capital else RuleId.EspionageRevealSpread
 	var count := RuleManager.Roll(floor_id, spread_id, rng, m.Faction)

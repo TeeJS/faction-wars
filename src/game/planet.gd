@@ -5,6 +5,9 @@ extends Location
 ## comment in the source applies; the ones that decide arithmetic are repeated
 ## here so a reader of this file sees the same sources.
 
+## The pack's id for this world (map.json). References between pack files
+## resolve on THIS, never on Name (SCHEMA.md section 12 Q1).
+var PackId: String
 var StartsInhabited: bool
 var IsInhabited: bool = false
 var SectorId: int
