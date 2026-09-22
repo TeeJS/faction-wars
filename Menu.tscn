@@ -153,7 +153,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(200, 40)
 layout_mode = 2
 size_flags_horizontal = 4
-text = "Exit to Desktop"
+text = "Exit to Faction Picker"
 
 [node name="BtnMultiplayer" type="Button" parent="."]
 unique_name_in_owner = true
