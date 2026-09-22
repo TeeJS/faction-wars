@@ -27,8 +27,8 @@ static func PointsIn(f: Faction, track: int) -> int:
 
 
 ## Ships and fighters both "strengthen your fleets", so both are Ship Design.
-static func TrackFor(r: CatalogDtos.UnitStatRule) -> int:
-	if r != null and r.Type == "Troop":
+static func TrackFor(r: PackDefs.UnitDef) -> int:
+	if r != null and r.Kind == "troop":
 		return Enums.ResearchTrackKind.TroopTraining
 	return Enums.ResearchTrackKind.ShipDesign
 
@@ -39,7 +39,7 @@ static func IsUnlocked(f: Faction, track: int, order: int, cost: int) -> bool:
 	return Bank(f)[track] >= cost
 
 
-static func IsUnlockedUnit(f: Faction, r: CatalogDtos.UnitStatRule) -> bool:
+static func IsUnlockedUnit(f: Faction, r: PackDefs.UnitDef) -> bool:
 	return r == null or IsUnlocked(f, TrackFor(r), r.ResearchOrder, r.ResearchCost)
 
 
@@ -104,7 +104,7 @@ static func Discovered(f: Faction, track: int) -> Array:
 		return out
 	for r in MilitaryCatalog.All():
 		if r.ResearchOrder > 0 and MilitaryCatalog.CanBeBuiltBy(r, f) and TrackFor(r) == track and IsUnlockedUnit(f, r):
-			out.append(r.Name)
+			out.append(r.DisplayName)
 	return out
 
 

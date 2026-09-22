@@ -321,7 +321,7 @@ func TryQueueMany(type: String, tier: int, destination: Planet, count: int) -> R
 	return Result.success(placed) if placed > 0 else Result.fail(last.error, 0)
 
 
-func TryQueueManyUnits(rule: CatalogDtos.UnitStatRule, destination: Planet, count: int) -> Result:
+func TryQueueManyUnits(rule: PackDefs.UnitDef, destination: Planet, count: int) -> Result:
 	var placed := 0
 	var last := Result.success()
 	for i in max(1, count):
@@ -361,7 +361,7 @@ func TryQueueFacility(type: String, tier: int, destination: Planet) -> Result:
 
 
 ## Ships, fighters, troops and SpecForces: a unit does NOT occupy an energy slot.
-func CanQueueUnit(rule: CatalogDtos.UnitStatRule, destination: Planet) -> Result:
+func CanQueueUnit(rule: PackDefs.UnitDef, destination: Planet) -> Result:
 	var owner := ControllingFaction
 	if destination == null:
 		destination = self
@@ -374,9 +374,9 @@ func CanQueueUnit(rule: CatalogDtos.UnitStatRule, destination: Planet) -> Result
 		return Result.fail("No build data for that unit.")
 	var type: Variant = MilitaryCatalog.TypeOf(rule)
 	if type == null:
-		return Result.fail("%s has an unrecognised unit type '%s'." % [rule.Name, rule.Type])
+		return Result.fail("%s has an unrecognised unit type '%s'." % [rule.DisplayName, rule.Kind])
 	if not MilitaryCatalog.CanBeBuiltBy(rule, owner):
-		return Result.fail("%s cannot be built by %s." % [rule.Name, owner.DisplayName if owner != null else "nobody"])
+		return Result.fail("%s cannot be built by %s." % [rule.DisplayName, owner.DisplayName if owner != null else "nobody"])
 
 	var producer := MilitaryCatalog.ProducerFor(type)
 	var producer_count := CountByRole(producer)
@@ -397,7 +397,7 @@ func CanQueueUnit(rule: CatalogDtos.UnitStatRule, destination: Planet) -> Result
 	return Result.success()
 
 
-func TryQueueUnit(rule: CatalogDtos.UnitStatRule, destination: Planet) -> Result:
+func TryQueueUnit(rule: PackDefs.UnitDef, destination: Planet) -> Result:
 	if destination == null:
 		destination = self
 	var can := CanQueueUnit(rule, destination)
@@ -424,7 +424,7 @@ func TryQueueUnit(rule: CatalogDtos.UnitStatRule, destination: Planet) -> Result
 	else:
 		TrainingQueue.append(task)
 
-	print("[%s] Queued %s for %s: %d refined, %d maintenance, %d work, +%dd transport." % [Name, rule.Name, destination.Name, rule.ConstructionCost, rule.MaintenanceCost, task.TotalWork, task.TransportDays])
+	print("[%s] Queued %s for %s: %d refined, %d maintenance, %d work, +%dd transport." % [Name, rule.DisplayName, destination.Name, rule.ConstructionCost, rule.MaintenanceCost, task.TotalWork, task.TransportDays])
 	return Result.success()
 
 

@@ -19,6 +19,7 @@ static func load_catalogs() -> void:
 	SideLotteryManager.LoadRules("%s/side_lottery.json" % DATA)
 	SeedManager.Load("%s/day_zero_logistics.json" % DATA, "%s/defensive_facilities.json" % DATA, "%s/military_units.json" % DATA)
 	FacilityCatalog.LoadFromPack(FactionRegistry.Pack)
+	MilitaryCatalog.LoadFromPack(FactionRegistry.Pack)
 
 
 ## Every per-game static, cleared - the source's Reset() calls plus the ones it

@@ -180,7 +180,7 @@ func Deploy() -> void:
 static func LongestRange(u: Unit) -> int:
 	if u == null:
 		return 0
-	return max(max(u.TurbolaserRange, u.IonCannonRange), max(u.LaserRange, u.TorpedoRange))
+	return u.MaxWeaponReach()
 
 
 # --- GEOMETRY ---
@@ -210,9 +210,9 @@ static func PowerOf(u: TacticalUnit, arc: int, against_fighters: bool) -> int:
 	var s: Unit = u.Source if u != null else null
 	if s == null or u.Destroyed() or not u.Alive():
 		return 0
-	var power := _arc(s.TurbolaserArc, arc) + _arc(s.LaserArc, arc)
-	if not against_fighters:
-		power += _arc(s.IonCannonArc, arc)
+	# Everything this unit throws in that arc; against fighters the weapons the
+	# pack marks no_fighter_effect are left out. The engine names no weapon.
+	var power := s.FirepowerInArc(arc, "no_fighter_effect" if against_fighters else "")
 	if u.IsSquadron() and u.Damage != null and u.Damage.MaxAircraft > 0:
 		power = power * u.Damage.Aircraft / u.Damage.MaxAircraft
 	return max(0, power)
@@ -401,14 +401,13 @@ static func MaxWeaponRange(u: TacticalUnit) -> float:
 	var s: Unit = u.Source if u != null else null
 	if s == null:
 		return 0.0
+	# The reach of every weapon that actually bears in some arc.
 	var best := 0.0
 	for a in 4:
-		if _arc(s.IonCannonArc, a) > 0:
-			best = max(best, float(s.IonCannonRange))
-		if _arc(s.TurbolaserArc, a) > 0:
-			best = max(best, float(s.TurbolaserRange))
-		if _arc(s.LaserArc, a) > 0:
-			best = max(best, float(s.LaserRange))
+		for w in MilitaryCatalog.WeaponOrder():
+			var fitted: PackDefs.UnitWeaponDef = s.Weapon(w.Id)
+			if fitted != null and fitted.in_arc(a) > 0:
+				best = max(best, float(fitted.Reach))
 	return best
 
 
@@ -426,12 +425,22 @@ static func DamageAgainst(self_u: TacticalUnit, target: TacticalUnit) -> float:
 	if arc < 0:
 		return 0.0
 
-	var turbo := _arc(self_u.Source.TurbolaserArc, arc)
-	var ion := _arc(self_u.Source.IonCannonArc, arc)
-	var laser := _arc(self_u.Source.LaserArc, arc)
-
+	# What this unit throws in that arc, weapon by weapon, IN THE PACK'S DECLARED
+	# ORDER. The divisor counts every weapon, including the ones that will not
+	# fire at a fighter.
 	var hull_frac := HullFraction(self_u)
-	var n := f32(float(turbo + ion + laser))
+	var throw_by_weapon := []   # [WeaponDef, amount], pack order
+	var total := 0
+	for w in MilitaryCatalog.WeaponOrder():
+		var fitted: PackDefs.UnitWeaponDef = self_u.Source.Weapon(w.Id)
+		if fitted == null:
+			continue
+		var amount := fitted.in_arc(arc)
+		if amount <= 0:
+			continue
+		throw_by_weapon.append([w, amount])
+		total += amount
+	var n := f32(float(total))
 	if self_u.IsSquadron():
 		n = f32(n * hull_frac)
 	if n <= 0.0:
@@ -440,18 +449,34 @@ static func DamageAgainst(self_u: TacticalUnit, target: TacticalUnit) -> float:
 	var acc := f32(max(f32(0.1), f32(f32(Maneuver(self_u)) / f32(max(f32(0.0001), f32(Maneuver(target)))))))
 	var self_scale := hull_frac if self_u.IsSquadron() else 1.0
 
+	# ⚠ ONE f32 ROUNDING PER WEAPON, in pack order. Float addition is not
+	# associative: summing two weapons together and rounding once gives a
+	# different answer from rounding each. The original rounded per weapon, and
+	# the pack declares them in the order it did so.
 	var p := 0.0
-	if ion > 0 and not vs_fighter:
-		p = f32(p + f32(ion * self_scale))
-	if turbo > 0:
-		p = f32(p + f32(f32(turbo * (acc if vs_fighter else 1.0)) * self_scale))
-	if laser > 0:
-		p = f32(p + f32(f32(laser * (acc if vs_fighter else 1.0)) * self_scale))
+	for pair in throw_by_weapon:
+		var w: PackDefs.WeaponDef = pair[0]
+		var amount: int = pair[1]
+		if w.HasRole("no_fighter_effect"):
+			# Nothing against fighters; unscaled against everything else.
+			if not vs_fighter:
+				p = f32(p + f32(amount * self_scale))
+		elif w.HasRole("fighter_accuracy_scaled"):
+			p = f32(p + f32(f32(amount * (acc if vs_fighter else 1.0)) * self_scale))
+		else:
+			p = f32(p + f32(amount * self_scale))
 
-	# Torpedoes: fighter-only, shields down only; the hull fraction is applied
-	# TWICE in the original and reproduced rather than corrected.
-	if self_u.IsSquadron() and not vs_fighter and self_u.Source.Torpedoes > 0 and ShieldFraction(target) <= 0.0:
-		p = f32(p + f32(f32(f32(self_u.Source.Torpedoes * f32(0.53333336)) * hull_frac) * hull_frac))
+	# The pack's squadron_only + requires_shields_down weapons - torpedoes in the
+	# Star Wars pack. The hull fraction is applied TWICE in the original and is
+	# reproduced rather than corrected.
+	if self_u.IsSquadron() and not vs_fighter and ShieldFraction(target) <= 0.0:
+		for pair in self_u.Source.WeaponsWithRole("requires_shields_down"):
+			var w: PackDefs.WeaponDef = MilitaryCatalog.WeaponById(pair[0])
+			if w == null or not w.HasRole("squadron_only"):
+				continue
+			var payload: int = (pair[1] as PackDefs.UnitWeaponDef).total()
+			if payload > 0:
+				p = f32(p + f32(f32(f32(payload * f32(0.53333336)) * hull_frac) * hull_frac))
 
 	return f32(f32(p * v) / n)
 
@@ -565,7 +590,7 @@ static func BestArc(u: TacticalUnit, vs_fighter: bool) -> int:
 	var best := -1
 	var best_total := 0
 	for a in 4:
-		var total := _arc(u.Source.TurbolaserArc, a) + _arc(u.Source.LaserArc, a) + (0 if vs_fighter else _arc(u.Source.IonCannonArc, a))
+		var total := u.Source.FirepowerInArc(a, "no_fighter_effect" if vs_fighter else "")
 		if total <= best_total:
 			continue
 		best_total = total

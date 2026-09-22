@@ -562,7 +562,7 @@ func OpenBuildChooser(planet: Planet, producer: String) -> void:
 	else:
 		var rate: int = planet.BestProducerRateForUi(producer)
 		for rule in MilitaryCatalog.BuildableAt(producer, owner):
-			var r: CatalogDtos.UnitStatRule = rule
+			var r: PackDefs.UnitDef = rule
 			names.append(r.Name)
 			refined.append(r.ConstructionCost)
 			maint.append(r.MaintenanceCost)

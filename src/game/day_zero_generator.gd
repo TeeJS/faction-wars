@@ -414,8 +414,8 @@ static func DeployAsset(planet: Planet, asset: CatalogDtos.LogisticsAsset) -> Un
 		return null
 
 	var key := Vector2i(asset.FamilyId, asset.AssetId)
-	if SeedManager.MilitaryStats.has(key):
-		return MilitaryCatalog.Create(SeedManager.MilitaryStats[key], planet.ControllingFaction, planet)
+	if MilitaryCatalog.HasSource(key):
+		return MilitaryCatalog.Create(MilitaryCatalog.BySource(key), planet.ControllingFaction, planet)
 
 	var u := Unit.new()
 	u.Name = "%s (Model %d)" % [asset.FamilyName, asset.AssetId]

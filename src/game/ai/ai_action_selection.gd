@@ -495,18 +495,18 @@ static func _propose_economy(ctx: AIContext, plan: AIObjectives.Plan) -> Array:
 		return out
 	var yard: Planet = by_size[0]
 	var headroom := Economy.MaintenanceAvailable(ctx.Us)
-	var affordable := Lq.where(MilitaryCatalog.All(), func(u): return u.Type == "CapitalShip" and MilitaryCatalog.CanBeBuiltBy(u, ctx.Us) and u.MaintenanceCost <= headroom)
+	var affordable := Lq.where(MilitaryCatalog.All(), func(u): return u.Kind == "capital_ship" and MilitaryCatalog.CanBeBuiltBy(u, ctx.Us) and u.MaintenanceCost <= headroom)
 	var picks := Lq.order_by(affordable, func(u): return u.ConstructionCost, true)
 	if picks.is_empty():
 		return out
 	var pick = picks[0]
 	var c := CandidateAction.new()
 	c.loop = CandidateAction.Loop.Economy
-	c.kind = "build:%s" % pick.Name
+	c.kind = "build:%s" % pick.DisplayName
 	c.budget_key = "ships"
 	c.expected_value = 300   # OURS ranking seed; economy underpins everything
 	c.objective_fit = _objective_fit(plan, c.loop, -1, null)
-	c.justification = "lay down %s at %s (maint %d of %d free)" % [pick.Name, yard.Name, pick.MaintenanceCost, headroom]
+	c.justification = "lay down %s at %s (maint %d of %d free)" % [pick.DisplayName, yard.Name, pick.MaintenanceCost, headroom]
 	c.tb_type = 0
 	c.tb_target = yard.get_instance_id()
 	c.action = func() -> bool:

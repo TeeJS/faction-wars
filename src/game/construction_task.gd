@@ -9,7 +9,7 @@ var Family: String = ""
 var Tier: int = 1
 
 ## Non-null when this order is for a ship, fighter, trooper regiment or SpecForce.
-var UnitRule: CatalogDtos.UnitStatRule
+var UnitRule: PackDefs.UnitDef
 
 ## Refined material, already spent when the order was placed; refunded on cancel.
 var RefinedCost: int
@@ -31,7 +31,7 @@ func PercentComplete() -> int:
 
 func DisplayName() -> String:
 	if UnitRule != null:
-		return UnitRule.Name
+		return UnitRule.DisplayName
 	var r := FacilityCatalog.Get(Family, Tier)
 	return r.DisplayName if r != null else Family
 

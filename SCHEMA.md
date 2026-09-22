@@ -46,8 +46,8 @@ accounted for below — that is what this reconciliation was for.
 | `map.json` | Sectors and planets: position, ring, artwork | `sectors_data.json` (20) + `planets_data.json` (200) | ✅ |
 | *(the map bitmap)* | The galaxy backdrop the map is drawn on — a **`pack.json` field**, `map_image`, not a file of its own (§2) | now `packs/star-wars-rebellion/galaxyShaded.bmp` | ✅ |
 | `facilities.json` | Static structures + **role tags** | `production_facilities.json` (9) + `defensive_facilities.json` (6) + the `FacilityType` enum | ✅ |
-| `units.json` | Mobile units and their stats | `military_units.json` (57) | ⚠ data + validation; catalog not yet swapped |
-| `weapons.json` | Weapon classes + **role tags** | `military_units.json` weapon columns + the four-class vocabulary in `tactical_battle.gd` | ⚠ data + validation; tactical engine not yet swapped |
+| `units.json` | Mobile units and their stats | `military_units.json` (57) | ✅ |
+| `weapons.json` | Weapon classes + **role tags** | `military_units.json` weapon columns + the four-class vocabulary in `tactical_battle.gd` | ✅ |
 | `characters.json` | Named characters | `major_characters.json` (6) + `minor_characters.json` (54) | ✅ |
 | `rules.json` | Tunable rule table, keyed by faction + difficulty | `game_rules.json` (213) | ⚠ re-keyed, not moved |
 | `setup.json` | Day-zero seeding: side lottery + logistics tables | `side_lottery.json` (35) + `day_zero_logistics.json` (11 tables) | ⚠ re-keyed, not moved |
@@ -753,5 +753,6 @@ What changed from the source repo's 2026-07-25 draft, and why.
 | 23 | **§4 built.** `map.json` generated, loaded and live; the bitmap moved into the pack; validation rules 3 (map half), 7, 9, 10 implemented and negative-tested | The hardcoded sector list is gone from `galaxy_factory.gd`. Soak gate 1004/1004 |
 | 24 | **§7 built.** `characters.json` generated, loaded and live: one file, `is_major` flag, lower-case faction ids, `ratings` map, `can_command` list, `special_power` block. Validation rules 3 and 5 for the roster | The two-file major/minor split is gone. Soak gate 1004/1004 |
 | 25 | **§12 Q5 landed.** The character aptitude fields and `Enums.SpecialPowerRank` renamed across 11 files | Enum MEMBERS and `MissionType.JediTraining` deliberately held back — see §7 |
+| 28 | **§6 live.** `MilitaryCatalog` and the tactical engine read the pack; the four weapon names are gone from engine code. **No re-baseline** — byte-identical | Weapon DECLARATION ORDER in `weapons.json` is now load-bearing: the damage sum rounds to f32 per weapon |
 | 27 | **§6 data built.** `units.json` (57) and `weapons.json` (4 classes) generated, loaded and validated; nothing reads them yet. The three derived summary columns are DROPPED, and the generator re-proves on every build that each is exactly the sum of its arcs | The tactical engine still reads the flat unit fields. Swapping it is the next step |
 | 26 | **§5 built and live.** `Enums.FacilityType` is **deleted**; facilities are pack data selected by role. 154 call sites across 24 files. The game signature now carries the family id, so the soak gate is re-baselined | Proven behaviour-identical first by emitting the old ordinals: 1004/1004. Five silent bugs found on the way — see the commit |
