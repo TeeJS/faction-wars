@@ -76,17 +76,17 @@ with the extraction tooling, not shipped in a pack.
   "unexplored_color": "#cccccc",
   "map_image": "galaxyShaded.bmp",
   "setup": {
-    "difficulty_default": "medium",
+    "difficulty_default": "easy",
     "galaxy_sizes": ["standard", "large", "huge"],
-    "galaxy_size_default": "large"
+    "galaxy_size_default": "standard"
   },
   "menu": {
     "image": "cockpit.png",
     "selected_color": "#ffd23c",
     "readout": { "rect": [609, 842, 244, 34], "standard": "Standard Game", "hq_only": "Headquarters Only Victory", "color": "#40ff40" },
     "regions": [
-      { "action": "difficulty",      "value": "easy",     "rect": [133, 82, 120, 110], "tooltip": "Set game difficulty to easy." },
-      { "action": "galaxy_size",     "value": "standard", "rect": [649, 652, 64, 64],  "tooltip": "..." },
+      { "action": "difficulty",      "value": "easy",     "rect": [133, 82, 120, 110], "tooltip": "Set game difficulty to easy.", "selected_color": "#ff3030" },
+      { "action": "galaxy_size",     "value": "standard", "rect": [649, 652, 64, 64],  "tooltip": "...", "selected_color": "#ffd23c" },
       { "action": "start",           "value": "empire",   "rect": [333, 680, 170, 150] },
       { "action": "load_game",       "rect": [923, 518, 90, 94] },
       { "action": "credits",         "rect": [1029, 542, 80, 74] },
@@ -108,7 +108,7 @@ with the extraction tooling, not shipped in a pack.
 | `map_image` | **★ DECIDED (TeeJ, 2026-09-21).** The galaxy backdrop, as a filename relative to the pack folder. Required; a pack that declares none is a **load error**, not a blank screen. Named here rather than fixed by convention so the engine never assumes a filename. |
 | `setup.galaxy_sizes` | The size names offered on the menu. **Which sectors each size includes is declared per sector** in `map.json` (`min_size`), not here — see §4. |
 | `setup.galaxy_size_default` | The size pre-selected on the Cockpit. Optional; the first of `galaxy_sizes` when absent. Must be one of them. |
-| `menu` | **The Shuttle Cockpit as the pack's picture** (manual p021, Fig. 2.2). Optional: a pack without it gets the engine's labelled-button menu. `image` is a file in the pack folder; `regions` lays one clickable area per menu function over it, `rect` = `[x, y, w, h]` in the picture's own pixels (the engine scales them with the picture, keeping aspect). `action` is engine vocabulary — `difficulty` (`value` easy/medium/hard), `galaxy_size` (`value` from `setup.galaxy_sizes`), `start` (`value` a faction id), `load_game`, `credits`, `hq_only_victory`, `multiplayer`, `exit`. **Every function must have exactly one region** — one per difficulty, per offered size, per playable faction, and one each of the rest — so the picture cannot lose a function the button menu has (validation rule 11). `readout` is the text panel the engine paints `standard` / `hq_only` on as the victory toggle changes; `selected_color` is the corner-bracket colour on the chosen difficulty and size. `credits` is the lines "View credits" shows. |
+| `menu` | **The Shuttle Cockpit as the pack's picture** (manual p021, Fig. 2.2). Optional: a pack without it gets the engine's labelled-button menu. `image` is a file in the pack folder; `regions` lays one clickable area per menu function over it, `rect` = `[x, y, w, h]` in the picture's own pixels (the engine scales them with the picture, keeping aspect). `action` is engine vocabulary — `difficulty` (`value` easy/medium/hard), `galaxy_size` (`value` from `setup.galaxy_sizes`), `start` (`value` a faction id), `load_game`, `credits`, `hq_only_victory`, `multiplayer`, `exit`. **Every function must have exactly one region** — one per difficulty, per offered size, per playable faction, and one each of the rest — so the picture cannot lose a function the button menu has (validation rule 11). `readout` is the text panel the engine paints `standard` / `hq_only` on as the victory toggle changes; `selected_color` is the corner-bracket colour on the chosen difficulty and size; a region may override it with its own `selected_color` (the original marks difficulty in red, galaxy size in yellow). **The picture must carry no selection state of its own** — the engine draws the brackets; the Star Wars capture had the original's marks scrubbed from the easy and standard screens. `credits` is the lines "View credits" shows. |
 
 ---
 
@@ -841,3 +841,4 @@ What changed from the source repo's 2026-07-25 draft, and why.
 | 37 | **§2 `menu`** — the Shuttle Cockpit picture with a region per function, `setup.galaxy_size_default`, validation rule 11 (every function reachable, one region each). The Star Wars pack ships `cockpit.png` mapped from Fig. 2.2; a pack without `menu` keeps the button menu | TeeJ, 2026-09-22: packs own their main-menu picture. The manual labels every control of Fig. 2.2, so the region vocabulary is exactly that list |
 | 38 | **Phase 5, mechanical batch.** `Unit.PackId`; the SpecForce mission roster is `missions.json` `spec_forces` inverted (`MissionCatalog.SpecForceMissions`), Assassination side-lock is `available_to`; the loyalty capital is any fixed-HQ world; `factions.json` `agent_name`; `SeedManager` reads defence stats from `facilities.json`, not `data/`; replay defaults to the first playable faction; the Galaxy Overview counts units by id | The 2026-09-22 audit (BACKLOG #14-#24). No new role vocabulary; every change proven identical on the Star Wars pack by the soak gate and `tests/spec_force_missions.gd` |
 | 39 | **Roles and behaviours (TeeJ approved 2026-09-22).** `characters.json` `roles` (placement + story parts), `units.json` `roles` (`superweapon`, `garrison_troop`), `missions.json` `behaviour`; validation rule 12. Day zero, the story, Force and order managers, MissionManager and MissionTableManager select on these; the fourteen character names, the Death Star family number, "Stormtrooper Regiment", `death_star_sabotage` / `jedi_training` / `dagobah` / `palace` are gone from engine code | BACKLOG #25–#32. Soak gate green — the pack's roster order matches the old named lists, so the PRNG walk is unchanged |
+| 40 | Pack defaults flipped to the manual's (`difficulty_default` easy, `galaxy_size_default` standard, manual p021); the button menu pre-presses them too. Per-region `selected_color`; the cockpit picture scrubbed of its baked-in brackets | TeeJ, 2026-09-22: the baked marks made every selection look like easy/standard |

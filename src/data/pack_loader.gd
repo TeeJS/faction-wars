@@ -246,6 +246,8 @@ static func _validate_menu(pack: LoadedPack, pack_dir: String, errors: Array[Str
 			continue
 		if r.Rect.size() != 4 or r.Rect[2] <= 0 or r.Rect[3] <= 0:
 			errors.append("%s (%s): rect must be [x, y, w, h] with w and h > 0." % [ctx, r.Action])
+		if not r.SelectedColorHex.is_empty():
+			_require_color(r.SelectedColorHex, "%s (%s) selected_color" % [ctx, r.Action], errors)
 		var key := r.Action
 		match r.Action:
 			"difficulty":

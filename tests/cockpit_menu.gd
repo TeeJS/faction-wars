@@ -77,6 +77,14 @@ func _init() -> void:
 	_check(sel["difficulty"] == "hard", "pressing the hard screen sets difficulty hard")
 	_check(sel["size"] == sizes[sizes.size() - 1], "pressing the last galaxy screen sets that size")
 
+	# A region's own bracket colour rides on the button for the marks pass.
+	var easy_btn: Button = regions.get_node("Region_difficulty_easy")
+	var easy_def: PackDefs.MenuRegionDef = null
+	for r in menu_def.Regions:
+		if r.Action == "difficulty" and r.Value == "easy":
+			easy_def = r
+	_check(easy_def != null and str(easy_btn.get_meta("color", "")) == easy_def.SelectedColorHex, "the easy region carries its selected_color (%s)" % str(easy_btn.get_meta("color", "")))
+
 	# The readout follows the victory toggle.
 	var readout: Label = regions.get_node_or_null("Readout")
 	_check(readout != null and readout.text == menu_def.Readout.Standard, "the readout starts at '%s'" % menu_def.Readout.Standard)

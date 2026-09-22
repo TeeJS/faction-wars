@@ -59,9 +59,14 @@ func _ready() -> void:
 	SetupToggleButton(btnMediumSize, _sizeGroup)
 	SetupToggleButton(btnLarge, _sizeGroup)
 
-	# Pre-press Medium as the default for both
-	btnMedium.button_pressed = true
-	btnMediumSize.button_pressed = true
+	# Pre-press the pack's defaults (manual p021: easy and standard).
+	var setup := FactionRegistry.Pack.Manifest.Setup if FactionRegistry.Pack != null else null
+	var sizes: Array[String] = setup.GalaxySizes if setup != null else []
+	var diff_default: String = setup.DifficultyDefault if setup != null else "medium"
+	var size_default: String = setup.GalaxySizeDefault if setup != null and sizes.has(setup.GalaxySizeDefault) else (sizes[0] if not sizes.is_empty() else "")
+	({"easy": btnEasy, "medium": btnMedium, "hard": btnHard}.get(diff_default, btnMedium) as Button).button_pressed = true
+	var size_btn: Button = [btnSmall, btnMediumSize, btnLarge][clampi(sizes.find(size_default), 0, 2)]
+	size_btn.button_pressed = true
 
 	# Wire up the Faction/Launch buttons from the pack: the two buttons bind to
 	# the first two declared factions and their labels come from the pack.
@@ -260,6 +265,7 @@ func _build_cockpit(menu: PackDefs.MenuDef) -> void:
 		b.add_theme_stylebox_override("hover", hover)
 		b.set_meta("cockpit_region", true)
 		b.set_meta("rect", r.rect2())
+		b.set_meta("color", r.SelectedColorHex)
 		b.pressed.connect(_on_region.bind(r))
 		if r.Action == "exit":
 			b.visible = not OS.has_feature("web")
@@ -351,7 +357,7 @@ func _refresh_readout() -> void:
 func _draw_marks() -> void:
 	if _cockpit == null:
 		return
-	var color := FactionRegistry.ParseColor(_cockpit.SelectedColorHex)
+	var default_color := FactionRegistry.ParseColor(_cockpit.SelectedColorHex)
 	var chosen: Array[String] = ["difficulty:%s" % _difficultyId, "galaxy_size:%s" % _sizeId]
 	if _hqOnly:
 		chosen.append("hq_only_victory")
@@ -359,7 +365,8 @@ func _draw_marks() -> void:
 		if not _regionButtons.has(key):
 			continue
 		var b: Button = _regionButtons[key]
-		_bracket(Rect2(b.position, b.size), color)
+		var own: String = str(b.get_meta("color", ""))
+		_bracket(Rect2(b.position, b.size), FactionRegistry.ParseColor(own) if not own.is_empty() else default_color)
 
 
 ## Corner brackets, the original's selection mark (the screenshot's red corners
