@@ -415,7 +415,7 @@ func PopulateOrbitalDefenses(tabs: TabContainer, planet: Planet) -> void:
 			return
 		for def in defenses:
 			_defence_row(list, def.Name() + " (Tier %d)" % def.Tier, def.Family(),
-				"[DAMAGED]" if def.IsDamaged else ("[Active Shielding]" if def.HasRole("shield") else "[Weapon Armed]"),
+				"[DAMAGED]" if def.IsDamaged else ("[%s]" % Terms.label("shield_active" if def.HasRole("shield") else "weapon_armed")),
 				Color.RED if def.IsDamaged else Color.CYAN,
 				func() -> Facility: return def)
 		return

@@ -31,7 +31,8 @@ func _init() -> void:
 		"hull": "Hull", "energy": "Industry", "refined_materials": "War Materiel",
 		"trooper_regiments": "Divisions", "fighter_squadron": "Air Squadron", "in_transit": "at sea",
 		"planetary_shields": "fortifications", "orbital_batteries": "coastal batteries",
-		"system_engines": "Main Engines", "system_hyperdrive": "Cruising Engines"}
+		"system_engines": "Main Engines", "system_hyperdrive": "Cruising Engines",
+		"shield_active": "Fortified", "weapon_armed": "Manned"}
 	for key in expect:
 		_check(Terms.label(key) == expect[key], "%s -> '%s' (got '%s')" % [key, expect[key], Terms.label(key)])
 	_check(Terms.field("shield") == "Armour:", "a battleship's shield row reads 'Armour:'")

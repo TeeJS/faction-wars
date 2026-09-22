@@ -666,6 +666,8 @@
     "system_weapon_recharge": "Reload Rate",
     "system_tractor": "Pursuit Gear",
     "system_engines": "Main Engines",
-    "system_hyperdrive": "Cruising Engines"
+    "system_hyperdrive": "Cruising Engines",
+    "shield_active": "Fortified",
+    "weapon_armed": "Manned"
   }
 }
