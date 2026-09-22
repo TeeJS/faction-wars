@@ -77,7 +77,9 @@ func _ready() -> void:
 		btnEmpire.text = second.DisplayName
 		btnEmpire.pressed.connect(func() -> void: StartGame(second))
 
-	btnExit.pressed.connect(func() -> void: get_tree().quit())
+	# Exit leaves the Cockpit for the pack picker (TeeJ, 2026-09-22); quitting
+	# the game is the picker's button.
+	btnExit.pressed.connect(func() -> void: PackPicker.ExitToPicker(get_tree()))
 
 	var has_picture: bool = FactionRegistry.Pack != null and FactionRegistry.Pack.Manifest.Menu != null
 
@@ -104,8 +106,9 @@ func _ready() -> void:
 	ver.offset_right = -10.0
 	ver.offset_bottom = -10.0
 	ver.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	# A browser tab has no desktop to exit to (TeeJ, room #97).
-	btnExit.visible = not OS.has_feature("web")
+	# Exit goes to the picker, not the desktop, so a browser tab has it too;
+	# the picker hides ITS quit on the web (TeeJ, room #97).
+	btnExit.visible = true
 
 	# Visible check boxes (TeeJ, room #152): the default theme's unchecked box
 	# is a faint outline on this dark Cockpit; draw our own for both.
@@ -422,7 +425,7 @@ func _on_region(r: PackDefs.MenuRegionDef) -> void:
 		"multiplayer":
 			OpenMultiplayer()
 		"exit":
-			get_tree().quit()
+			PackPicker.ExitToPicker(get_tree())
 
 
 ## A light square (off) and the same square with a tick (on), drawn at start,

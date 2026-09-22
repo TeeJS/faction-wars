@@ -65,6 +65,22 @@ func _init() -> void:
 	_check(current_scene != null and current_scene is Menu, "the Cockpit (Menu.tscn) is the scene after Play")
 	_check(FactionRegistry.Pack.Manifest.Menu == null, "the WWII pack's Cockpit is the button form (it declares no picture)")
 
+	# The Cockpit's Exit comes back here, unloads, and another pack can be chosen.
+	PackPicker.ExitToPicker(self)
+	await process_frame
+	await process_frame
+	_check(current_scene is PackPicker, "Exit from the Cockpit returns to the picker")
+	_check(not FactionRegistry.IsLoaded(), "the pack is unloaded on the way back")
+	var again: PackPicker = current_scene
+	_check(again.PlayButtons().size() == ids.size(), "the cards are rebuilt (%d)" % again.PlayButtons().size())
+	_check((again.PlayButtons()["ww2"] as Button).has_focus(), "the pack just left is the focused card")
+	(again.PlayButtons()["star-wars-rebellion"] as Button).pressed.emit()
+	await process_frame
+	await process_frame
+	_check(FactionRegistry.LoadedId() == "star-wars-rebellion", "another pack loads after the switch ('%s')" % FactionRegistry.LoadedId())
+	_check(current_scene is Menu, "and its Cockpit is the scene")
+	_check(FactionRegistry.Pack.Manifest.Menu != null, "the Star Wars Cockpit is the picture form - the new pack, not the old one")
+
 	print("[pack_picker] %d checks, %d failed" % [_checks, _fails])
 	quit(1 if _fails > 0 else 0)
 
