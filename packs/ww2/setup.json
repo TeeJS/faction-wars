@@ -2047,8 +2047,9 @@
           "ParentId": 1,
           "ProbabilityThreshold": 1,
           "Multiplier": 1,
-          "ChildrenCount": 16,
+          "ChildrenCount": 17,
           "Assets": [
+            null,
             {
               "unit": "waffen_ss_division"
             },
@@ -2113,8 +2114,9 @@
           "ParentId": 1,
           "ProbabilityThreshold": 1,
           "Multiplier": 1,
-          "ChildrenCount": 9,
+          "ChildrenCount": 10,
           "Assets": [
+            null,
             {
               "unit": "british_infantry_division"
             },
@@ -2158,8 +2160,9 @@
           "ParentId": 1,
           "ProbabilityThreshold": 1,
           "Multiplier": 1,
-          "ChildrenCount": 4,
+          "ChildrenCount": 5,
           "Assets": [
+            null,
             {
               "unit": "british_infantry_division"
             },
@@ -2188,8 +2191,9 @@
           "ParentId": 1,
           "ProbabilityThreshold": 1,
           "Multiplier": 1,
-          "ChildrenCount": 1,
+          "ChildrenCount": 2,
           "Assets": [
+            null,
             {
               "facility": "headquarters"
             }
@@ -2199,8 +2203,9 @@
           "ParentId": 2,
           "ProbabilityThreshold": 2,
           "Multiplier": 1,
-          "ChildrenCount": 4,
+          "ChildrenCount": 5,
           "Assets": [
+            null,
             {
               "facility": "mine"
             },
@@ -2229,8 +2234,9 @@
           "ParentId": 1,
           "ProbabilityThreshold": 1,
           "Multiplier": 1,
-          "ChildrenCount": 1,
+          "ChildrenCount": 2,
           "Assets": [
+            null,
             {
               "facility": "construction_yard"
             }
@@ -2250,8 +2256,9 @@
           "ParentId": 1,
           "ProbabilityThreshold": 1,
           "Multiplier": 1,
-          "ChildrenCount": 4,
+          "ChildrenCount": 5,
           "Assets": [
+            null,
             {
               "unit": "british_infantry_division"
             },

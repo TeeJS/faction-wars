@@ -1515,22 +1515,14 @@
           "ParentId": 1,
           "ProbabilityThreshold": 0,
           "SpawnChancePercent": 0,
-          "Asset": {
-            "FamilyId": 0,
-            "FamilyName": "Null/Empty",
-            "AssetId": 0,
-            "Name": "None"
-          }
+          "Asset": null
         },
         {
           "ParentId": 2,
           "ProbabilityThreshold": 36,
           "SpawnChancePercent": 64,
           "Asset": {
-            "FamilyId": 45,
-            "FamilyName": "Refinery",
-            "AssetId": 2,
-            "Name": "Refinery (Tier 2)"
+            "facility": "refinery"
           }
         },
         {
@@ -1538,10 +1530,7 @@
           "ProbabilityThreshold": 79,
           "SpawnChancePercent": 21,
           "Asset": {
-            "FamilyId": 40,
-            "FamilyName": "Shipyard",
-            "AssetId": 1,
-            "Name": "Shipyard (Tier 1)"
+            "facility": "shipyard"
           }
         },
         {
@@ -1549,10 +1538,7 @@
           "ProbabilityThreshold": 82,
           "SpawnChancePercent": 18,
           "Asset": {
-            "FamilyId": 41,
-            "FamilyName": "Training Facility",
-            "AssetId": 2,
-            "Name": "Training Facility (Tier 2)"
+            "facility": "training_facility"
           }
         },
         {
@@ -1560,10 +1546,7 @@
           "ProbabilityThreshold": 85,
           "SpawnChancePercent": 15,
           "Asset": {
-            "FamilyId": 42,
-            "FamilyName": "Construction Yard",
-            "AssetId": 3,
-            "Name": "Construction Yard (Tier 3)"
+            "facility": "construction_yard"
           }
         },
         {
@@ -1571,10 +1554,7 @@
           "ProbabilityThreshold": 88,
           "SpawnChancePercent": 12,
           "Asset": {
-            "FamilyId": 36,
-            "FamilyName": "GenCore",
-            "AssetId": 3,
-            "Name": "Planetary Shield"
+            "facility": "planetary_shield"
           }
         },
         {
@@ -1582,10 +1562,7 @@
           "ProbabilityThreshold": 96,
           "SpawnChancePercent": 4,
           "Asset": {
-            "FamilyId": 35,
-            "FamilyName": "LNR Series",
-            "AssetId": 2,
-            "Name": "Turbolaser Battery"
+            "facility": "turbolaser_battery"
           }
         },
         {
@@ -1593,10 +1570,7 @@
           "ProbabilityThreshold": 99,
           "SpawnChancePercent": 1,
           "Asset": {
-            "FamilyId": 34,
-            "FamilyName": "KDY v150",
-            "AssetId": 1,
-            "Name": "Ion Cannon"
+            "facility": "ion_cannon"
           }
         }
       ],
@@ -1610,22 +1584,14 @@
           "ParentId": 1,
           "ProbabilityThreshold": 0,
           "SpawnChancePercent": 0,
-          "Asset": {
-            "FamilyId": 0,
-            "FamilyName": "Null/Empty",
-            "AssetId": 0,
-            "Name": "None"
-          }
+          "Asset": null
         },
         {
           "ParentId": 2,
           "ProbabilityThreshold": 91,
           "SpawnChancePercent": 9,
           "Asset": {
-            "FamilyId": 45,
-            "FamilyName": "Refinery",
-            "AssetId": 2,
-            "Name": "Refinery (Tier 2)"
+            "facility": "refinery"
           }
         },
         {
@@ -1633,10 +1599,7 @@
           "ProbabilityThreshold": 96,
           "SpawnChancePercent": 4,
           "Asset": {
-            "FamilyId": 40,
-            "FamilyName": "Shipyard",
-            "AssetId": 1,
-            "Name": "Shipyard (Tier 1)"
+            "facility": "shipyard"
           }
         },
         {
@@ -1644,10 +1607,7 @@
           "ProbabilityThreshold": 97,
           "SpawnChancePercent": 3,
           "Asset": {
-            "FamilyId": 41,
-            "FamilyName": "Training Facility",
-            "AssetId": 2,
-            "Name": "Training Facility (Tier 2)"
+            "facility": "training_facility"
           }
         },
         {
@@ -1655,10 +1615,7 @@
           "ProbabilityThreshold": 98,
           "SpawnChancePercent": 2,
           "Asset": {
-            "FamilyId": 42,
-            "FamilyName": "Construction Yard",
-            "AssetId": 3,
-            "Name": "Construction Yard (Tier 3)"
+            "facility": "construction_yard"
           }
         },
         {
@@ -1666,10 +1623,7 @@
           "ProbabilityThreshold": 99,
           "SpawnChancePercent": 1,
           "Asset": {
-            "FamilyId": 36,
-            "FamilyName": "GenCore",
-            "AssetId": 3,
-            "Name": "Planetary Shield"
+            "facility": "planetary_shield"
           }
         },
         {
@@ -1677,10 +1631,7 @@
           "ProbabilityThreshold": 100,
           "SpawnChancePercent": 0,
           "Asset": {
-            "FamilyId": 35,
-            "FamilyName": "LNR Series",
-            "AssetId": 2,
-            "Name": "Turbolaser Battery"
+            "facility": "turbolaser_battery"
           }
         }
       ],
@@ -1697,10 +1648,7 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "FamilyId": 20,
-              "FamilyName": "Capital Ship",
-              "AssetId": 69,
-              "Name": "Corellian Corvette"
+              "unit": "corellian_corvette"
             }
           ]
         },
@@ -1711,22 +1659,13 @@
           "ChildrenCount": 3,
           "Assets": [
             {
-              "FamilyId": 20,
-              "FamilyName": "Capital Ship",
-              "AssetId": 70,
-              "Name": "Medium Transport"
+              "unit": "medium_transport"
             },
             {
-              "FamilyId": 16,
-              "FamilyName": "Troop Regiment",
-              "AssetId": 1,
-              "Name": "Alliance Fleet Regiment"
+              "unit": "alliance_fleet_regiment"
             },
             {
-              "FamilyId": 16,
-              "FamilyName": "Troop Regiment",
-              "AssetId": 1,
-              "Name": "Alliance Fleet Regiment"
+              "unit": "alliance_fleet_regiment"
             }
           ]
         }
@@ -1748,64 +1687,34 @@
           "ChildrenCount": 10,
           "Assets": [
             {
-              "FamilyId": 20,
-              "FamilyName": "Capital Ship",
-              "AssetId": 133,
-              "Name": "Imperial Star Destroyer"
+              "unit": "imperial_star_destroyer"
             },
             {
-              "FamilyId": 28,
-              "FamilyName": "Fighter Squadron",
-              "AssetId": 5,
-              "Name": "TIE Fighter"
+              "unit": "tie_fighter"
             },
             {
-              "FamilyId": 28,
-              "FamilyName": "Fighter Squadron",
-              "AssetId": 5,
-              "Name": "TIE Fighter"
+              "unit": "tie_fighter"
             },
             {
-              "FamilyId": 28,
-              "FamilyName": "Fighter Squadron",
-              "AssetId": 5,
-              "Name": "TIE Fighter"
+              "unit": "tie_fighter"
             },
             {
-              "FamilyId": 28,
-              "FamilyName": "Fighter Squadron",
-              "AssetId": 5,
-              "Name": "TIE Fighter"
+              "unit": "tie_fighter"
             },
             {
-              "FamilyId": 28,
-              "FamilyName": "Fighter Squadron",
-              "AssetId": 5,
-              "Name": "TIE Fighter"
+              "unit": "tie_fighter"
             },
             {
-              "FamilyId": 28,
-              "FamilyName": "Fighter Squadron",
-              "AssetId": 5,
-              "Name": "TIE Fighter"
+              "unit": "tie_fighter"
             },
             {
-              "FamilyId": 16,
-              "FamilyName": "Troop Regiment",
-              "AssetId": 6,
-              "Name": "Stormtrooper Regiment"
+              "unit": "stormtrooper_regiment"
             },
             {
-              "FamilyId": 16,
-              "FamilyName": "Troop Regiment",
-              "AssetId": 6,
-              "Name": "Stormtrooper Regiment"
+              "unit": "stormtrooper_regiment"
             },
             {
-              "FamilyId": 16,
-              "FamilyName": "Troop Regiment",
-              "AssetId": 6,
-              "Name": "Stormtrooper Regiment"
+              "unit": "stormtrooper_regiment"
             }
           ]
         }
@@ -1827,10 +1736,7 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "FamilyId": 20,
-              "FamilyName": "Capital Ship",
-              "AssetId": 65,
-              "Name": "Bulk Cruiser"
+              "unit": "bulk_cruiser"
             }
           ]
         },
@@ -1841,22 +1747,13 @@
           "ChildrenCount": 3,
           "Assets": [
             {
-              "FamilyId": 20,
-              "FamilyName": "Capital Ship",
-              "AssetId": 68,
-              "Name": "Alliance Escort Carrier"
+              "unit": "alliance_escort_carrier"
             },
             {
-              "FamilyId": 28,
-              "FamilyName": "Fighter Squadron",
-              "AssetId": 3,
-              "Name": "X-wing"
+              "unit": "x_wing"
             },
             {
-              "FamilyId": 28,
-              "FamilyName": "Fighter Squadron",
-              "AssetId": 4,
-              "Name": "Y-wing"
+              "unit": "y_wing"
             }
           ]
         },
@@ -1867,10 +1764,7 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "FamilyId": 20,
-              "FamilyName": "Capital Ship",
-              "AssetId": 69,
-              "Name": "Corellian Corvette"
+              "unit": "corellian_corvette"
             }
           ]
         },
@@ -1881,22 +1775,13 @@
           "ChildrenCount": 3,
           "Assets": [
             {
-              "FamilyId": 20,
-              "FamilyName": "Capital Ship",
-              "AssetId": 70,
-              "Name": "Medium Transport"
+              "unit": "medium_transport"
             },
             {
-              "FamilyId": 16,
-              "FamilyName": "Troop Regiment",
-              "AssetId": 2,
-              "Name": "Alliance Army Regiment"
+              "unit": "alliance_army_regiment"
             },
             {
-              "FamilyId": 16,
-              "FamilyName": "Troop Regiment",
-              "AssetId": 2,
-              "Name": "Alliance Army Regiment"
+              "unit": "alliance_army_regiment"
             }
           ]
         },
@@ -1907,10 +1792,7 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "FamilyId": 28,
-              "FamilyName": "Fighter Squadron",
-              "AssetId": 3,
-              "Name": "X-wing"
+              "unit": "x_wing"
             }
           ]
         },
@@ -1921,10 +1803,7 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "FamilyId": 28,
-              "FamilyName": "Fighter Squadron",
-              "AssetId": 4,
-              "Name": "Y-wing"
+              "unit": "y_wing"
             }
           ]
         },
@@ -1935,10 +1814,7 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "FamilyId": 16,
-              "FamilyName": "Troop Regiment",
-              "AssetId": 1,
-              "Name": "Alliance Fleet Regiment"
+              "unit": "alliance_fleet_regiment"
             }
           ]
         },
@@ -1949,10 +1825,7 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "FamilyId": 16,
-              "FamilyName": "Troop Regiment",
-              "AssetId": 2,
-              "Name": "Alliance Army Regiment"
+              "unit": "alliance_army_regiment"
             }
           ]
         },
@@ -1963,10 +1836,7 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "FamilyId": 60,
-              "FamilyName": "Spec Force",
-              "AssetId": 1,
-              "Name": "Guerrillas"
+              "unit": "guerrillas"
             }
           ]
         },
@@ -1977,10 +1847,7 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "FamilyId": 60,
-              "FamilyName": "Spec Force",
-              "AssetId": 2,
-              "Name": "Infiltrators"
+              "unit": "infiltrators"
             }
           ]
         },
@@ -1991,10 +1858,7 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "FamilyId": 60,
-              "FamilyName": "Spec Force",
-              "AssetId": 3,
-              "Name": "Longprobe Y-wing Recon Team"
+              "unit": "longprobe_y_wing_recon_team"
             }
           ]
         },
@@ -2005,10 +1869,7 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "FamilyId": 60,
-              "FamilyName": "Spec Force",
-              "AssetId": 4,
-              "Name": "Bothan Spies"
+              "unit": "bothan_spies"
             }
           ]
         }
@@ -2026,10 +1887,7 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "FamilyId": 20,
-              "FamilyName": "Capital Ship",
-              "AssetId": 131,
-              "Name": "Carrack Light Cruiser"
+              "unit": "carrack_light_cruiser"
             }
           ]
         },
@@ -2040,22 +1898,13 @@
           "ChildrenCount": 3,
           "Assets": [
             {
-              "FamilyId": 20,
-              "FamilyName": "Capital Ship",
-              "AssetId": 132,
-              "Name": "Victory Destroyer"
+              "unit": "victory_destroyer"
             },
             {
-              "FamilyId": 16,
-              "FamilyName": "Troop Regiment",
-              "AssetId": 7,
-              "Name": "Imperial Fleet Regiment"
+              "unit": "imperial_fleet_regiment"
             },
             {
-              "FamilyId": 28,
-              "FamilyName": "Fighter Squadron",
-              "AssetId": 5,
-              "Name": "TIE Fighter"
+              "unit": "tie_fighter"
             }
           ]
         },
@@ -2066,34 +1915,19 @@
           "ChildrenCount": 5,
           "Assets": [
             {
-              "FamilyId": 20,
-              "FamilyName": "Capital Ship",
-              "AssetId": 133,
-              "Name": "Imperial Star Destroyer"
+              "unit": "imperial_star_destroyer"
             },
             {
-              "FamilyId": 16,
-              "FamilyName": "Troop Regiment",
-              "AssetId": 6,
-              "Name": "Stormtrooper Regiment"
+              "unit": "stormtrooper_regiment"
             },
             {
-              "FamilyId": 16,
-              "FamilyName": "Troop Regiment",
-              "AssetId": 6,
-              "Name": "Stormtrooper Regiment"
+              "unit": "stormtrooper_regiment"
             },
             {
-              "FamilyId": 28,
-              "FamilyName": "Fighter Squadron",
-              "AssetId": 5,
-              "Name": "TIE Fighter"
+              "unit": "tie_fighter"
             },
             {
-              "FamilyId": 28,
-              "FamilyName": "Fighter Squadron",
-              "AssetId": 5,
-              "Name": "TIE Fighter"
+              "unit": "tie_fighter"
             }
           ]
         },
@@ -2104,22 +1938,13 @@
           "ChildrenCount": 3,
           "Assets": [
             {
-              "FamilyId": 20,
-              "FamilyName": "Capital Ship",
-              "AssetId": 142,
-              "Name": "Imperial Dreadnaught"
+              "unit": "imperial_dreadnaught"
             },
             {
-              "FamilyId": 16,
-              "FamilyName": "Troop Regiment",
-              "AssetId": 7,
-              "Name": "Imperial Fleet Regiment"
+              "unit": "imperial_fleet_regiment"
             },
             {
-              "FamilyId": 28,
-              "FamilyName": "Fighter Squadron",
-              "AssetId": 5,
-              "Name": "TIE Fighter"
+              "unit": "tie_fighter"
             }
           ]
         },
@@ -2130,22 +1955,13 @@
           "ChildrenCount": 3,
           "Assets": [
             {
-              "FamilyId": 20,
-              "FamilyName": "Capital Ship",
-              "AssetId": 137,
-              "Name": "Galleon"
+              "unit": "galleon"
             },
             {
-              "FamilyId": 16,
-              "FamilyName": "Troop Regiment",
-              "AssetId": 7,
-              "Name": "Imperial Fleet Regiment"
+              "unit": "imperial_fleet_regiment"
             },
             {
-              "FamilyId": 16,
-              "FamilyName": "Troop Regiment",
-              "AssetId": 7,
-              "Name": "Imperial Fleet Regiment"
+              "unit": "imperial_fleet_regiment"
             }
           ]
         },
@@ -2156,10 +1972,7 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "FamilyId": 28,
-              "FamilyName": "Fighter Squadron",
-              "AssetId": 5,
-              "Name": "TIE Fighter"
+              "unit": "tie_fighter"
             }
           ]
         },
@@ -2170,10 +1983,7 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "FamilyId": 16,
-              "FamilyName": "Troop Regiment",
-              "AssetId": 6,
-              "Name": "Stormtrooper Regiment"
+              "unit": "stormtrooper_regiment"
             }
           ]
         },
@@ -2184,10 +1994,7 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "FamilyId": 16,
-              "FamilyName": "Troop Regiment",
-              "AssetId": 8,
-              "Name": "Imperial Army Regiment"
+              "unit": "imperial_army_regiment"
             }
           ]
         },
@@ -2198,10 +2005,7 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "FamilyId": 60,
-              "FamilyName": "Spec Force",
-              "AssetId": 5,
-              "Name": "Imperial Probe Droid"
+              "unit": "imperial_probe_droid"
             }
           ]
         },
@@ -2212,10 +2016,7 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "FamilyId": 60,
-              "FamilyName": "Spec Force",
-              "AssetId": 6,
-              "Name": "Imperial Espionage Droid"
+              "unit": "imperial_espionage_droid"
             }
           ]
         },
@@ -2226,10 +2027,7 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "FamilyId": 60,
-              "FamilyName": "Spec Force",
-              "AssetId": 7,
-              "Name": "Imperial Commandos"
+              "unit": "imperial_commandos"
             }
           ]
         },
@@ -2240,10 +2038,7 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "FamilyId": 60,
-              "FamilyName": "Spec Force",
-              "AssetId": 8,
-              "Name": "Noghri Death Commandos"
+              "unit": "noghri_death_commandos"
             }
           ]
         }
@@ -2260,107 +2055,54 @@
           "Multiplier": 1,
           "ChildrenCount": 17,
           "Assets": [
+            null,
             {
-              "FamilyId": 0,
-              "FamilyName": "Null/Empty",
-              "AssetId": 0,
-              "Name": "None"
+              "unit": "stormtrooper_regiment"
             },
             {
-              "FamilyId": 16,
-              "FamilyName": "Troop Regiment",
-              "AssetId": 6,
-              "Name": "Stormtrooper Regiment"
+              "unit": "stormtrooper_regiment"
             },
             {
-              "FamilyId": 16,
-              "FamilyName": "Troop Regiment",
-              "AssetId": 6,
-              "Name": "Stormtrooper Regiment"
+              "unit": "stormtrooper_regiment"
             },
             {
-              "FamilyId": 16,
-              "FamilyName": "Troop Regiment",
-              "AssetId": 6,
-              "Name": "Stormtrooper Regiment"
+              "unit": "stormtrooper_regiment"
             },
             {
-              "FamilyId": 16,
-              "FamilyName": "Troop Regiment",
-              "AssetId": 6,
-              "Name": "Stormtrooper Regiment"
+              "unit": "stormtrooper_regiment"
             },
             {
-              "FamilyId": 16,
-              "FamilyName": "Troop Regiment",
-              "AssetId": 6,
-              "Name": "Stormtrooper Regiment"
+              "unit": "stormtrooper_regiment"
             },
             {
-              "FamilyId": 16,
-              "FamilyName": "Troop Regiment",
-              "AssetId": 6,
-              "Name": "Stormtrooper Regiment"
+              "unit": "tie_fighter"
             },
             {
-              "FamilyId": 28,
-              "FamilyName": "Fighter Squadron",
-              "AssetId": 5,
-              "Name": "TIE Fighter"
+              "unit": "tie_fighter"
             },
             {
-              "FamilyId": 28,
-              "FamilyName": "Fighter Squadron",
-              "AssetId": 5,
-              "Name": "TIE Fighter"
+              "unit": "tie_fighter"
             },
             {
-              "FamilyId": 28,
-              "FamilyName": "Fighter Squadron",
-              "AssetId": 5,
-              "Name": "TIE Fighter"
+              "unit": "tie_fighter"
             },
             {
-              "FamilyId": 28,
-              "FamilyName": "Fighter Squadron",
-              "AssetId": 5,
-              "Name": "TIE Fighter"
+              "unit": "tie_fighter"
             },
             {
-              "FamilyId": 28,
-              "FamilyName": "Fighter Squadron",
-              "AssetId": 5,
-              "Name": "TIE Fighter"
+              "unit": "tie_fighter"
             },
             {
-              "FamilyId": 28,
-              "FamilyName": "Fighter Squadron",
-              "AssetId": 5,
-              "Name": "TIE Fighter"
+              "unit": "tie_fighter"
             },
             {
-              "FamilyId": 28,
-              "FamilyName": "Fighter Squadron",
-              "AssetId": 5,
-              "Name": "TIE Fighter"
+              "unit": "tie_fighter"
             },
             {
-              "FamilyId": 28,
-              "FamilyName": "Fighter Squadron",
-              "AssetId": 5,
-              "Name": "TIE Fighter"
+              "unit": "tie_fighter"
             },
             {
-              "FamilyId": 28,
-              "FamilyName": "Fighter Squadron",
-              "AssetId": 5,
-              "Name": "TIE Fighter"
-            },
-            {
-              "FamilyId": 28,
-              "FamilyName": "Fighter Squadron",
-              "AssetId": 5,
-              "Name": "TIE Fighter"
+              "unit": "tie_fighter"
             }
           ]
         }
@@ -2381,65 +2123,33 @@
           "Multiplier": 1,
           "ChildrenCount": 10,
           "Assets": [
+            null,
             {
-              "FamilyId": 0,
-              "FamilyName": "Null/Empty",
-              "AssetId": 0,
-              "Name": "None"
+              "unit": "alliance_army_regiment"
             },
             {
-              "FamilyId": 16,
-              "FamilyName": "Troop Regiment",
-              "AssetId": 2,
-              "Name": "Alliance Army Regiment"
+              "unit": "alliance_army_regiment"
             },
             {
-              "FamilyId": 16,
-              "FamilyName": "Troop Regiment",
-              "AssetId": 2,
-              "Name": "Alliance Army Regiment"
+              "unit": "alliance_fleet_regiment"
             },
             {
-              "FamilyId": 16,
-              "FamilyName": "Troop Regiment",
-              "AssetId": 1,
-              "Name": "Alliance Fleet Regiment"
+              "unit": "x_wing"
             },
             {
-              "FamilyId": 28,
-              "FamilyName": "Fighter Squadron",
-              "AssetId": 3,
-              "Name": "X-wing"
+              "unit": "x_wing"
             },
             {
-              "FamilyId": 28,
-              "FamilyName": "Fighter Squadron",
-              "AssetId": 3,
-              "Name": "X-wing"
+              "unit": "x_wing"
             },
             {
-              "FamilyId": 28,
-              "FamilyName": "Fighter Squadron",
-              "AssetId": 3,
-              "Name": "X-wing"
+              "unit": "x_wing"
             },
             {
-              "FamilyId": 28,
-              "FamilyName": "Fighter Squadron",
-              "AssetId": 3,
-              "Name": "X-wing"
+              "unit": "y_wing"
             },
             {
-              "FamilyId": 28,
-              "FamilyName": "Fighter Squadron",
-              "AssetId": 4,
-              "Name": "Y-wing"
-            },
-            {
-              "FamilyId": 28,
-              "FamilyName": "Fighter Squadron",
-              "AssetId": 4,
-              "Name": "Y-wing"
+              "unit": "y_wing"
             }
           ]
         }
@@ -2460,35 +2170,18 @@
           "Multiplier": 1,
           "ChildrenCount": 5,
           "Assets": [
+            null,
             {
-              "FamilyId": 0,
-              "FamilyName": "Null/Empty",
-              "AssetId": 0,
-              "Name": "None"
+              "unit": "alliance_army_regiment"
             },
             {
-              "FamilyId": 16,
-              "FamilyName": "Troop Regiment",
-              "AssetId": 2,
-              "Name": "Alliance Army Regiment"
+              "unit": "alliance_army_regiment"
             },
             {
-              "FamilyId": 16,
-              "FamilyName": "Troop Regiment",
-              "AssetId": 2,
-              "Name": "Alliance Army Regiment"
+              "unit": "x_wing"
             },
             {
-              "FamilyId": 28,
-              "FamilyName": "Fighter Squadron",
-              "AssetId": 3,
-              "Name": "X-wing"
-            },
-            {
-              "FamilyId": 28,
-              "FamilyName": "Fighter Squadron",
-              "AssetId": 4,
-              "Name": "Y-wing"
+              "unit": "y_wing"
             }
           ]
         }
@@ -2509,17 +2202,9 @@
           "Multiplier": 1,
           "ChildrenCount": 2,
           "Assets": [
+            null,
             {
-              "FamilyId": 0,
-              "FamilyName": "Null/Empty",
-              "AssetId": 0,
-              "Name": "None"
-            },
-            {
-              "FamilyId": 32,
-              "FamilyName": "Headquarters",
-              "AssetId": 1,
-              "Name": "Headquarters (Tier 1)"
+              "facility": "headquarters"
             }
           ]
         },
@@ -2529,35 +2214,18 @@
           "Multiplier": 1,
           "ChildrenCount": 5,
           "Assets": [
+            null,
             {
-              "FamilyId": 0,
-              "FamilyName": "Null/Empty",
-              "AssetId": 0,
-              "Name": "None"
+              "facility": "mine"
             },
             {
-              "FamilyId": 44,
-              "FamilyName": "Mine",
-              "AssetId": 1,
-              "Name": "Mine (Tier 1)"
+              "facility": "refinery"
             },
             {
-              "FamilyId": 45,
-              "FamilyName": "Refinery",
-              "AssetId": 2,
-              "Name": "Refinery (Tier 2)"
+              "facility": "construction_yard"
             },
             {
-              "FamilyId": 42,
-              "FamilyName": "Construction Yard",
-              "AssetId": 3,
-              "Name": "Construction Yard (Tier 3)"
-            },
-            {
-              "FamilyId": 36,
-              "FamilyName": "GenCore",
-              "AssetId": 3,
-              "Name": "Planetary Shield"
+              "facility": "planetary_shield"
             }
           ]
         }
@@ -2578,17 +2246,9 @@
           "Multiplier": 1,
           "ChildrenCount": 2,
           "Assets": [
+            null,
             {
-              "FamilyId": 0,
-              "FamilyName": "Null/Empty",
-              "AssetId": 0,
-              "Name": "None"
-            },
-            {
-              "FamilyId": 42,
-              "FamilyName": "Construction Yard",
-              "AssetId": 3,
-              "Name": "Construction Yard (Tier 3)"
+              "facility": "construction_yard"
             }
           ]
         }

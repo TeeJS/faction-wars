@@ -54,27 +54,41 @@ completes on this pack with the AI driving both sides.
 character, but **no ships, troops or facilities** — "0 Fleets containing 0
 Capital Ships". That is the leak below, and it is why this pack exists.
 
-## Phase B — the engine leak (next, needs its own go-ahead)
+## Phase B — the engine leak (done, same branch)
 
 `setup.json` in this pack references seeding targets **by pack id**
 (`{"unit": "bismarck_class_battleship"}`, `{"facility": "refinery"}`), per
-SCHEMA.md §12 Q1 — ids, never numbers. The engine still resolves them by the
-original binary's family numbers:
+SCHEMA.md §12 Q1 — ids, never numbers. The engine used to resolve them by the
+original binary's family numbers. Fixed:
 
-| Leak | Where |
+| Was | Now |
 |---|---|
-| `match asset.FamilyId: 32 → "headquarters", 34 → "ion_cannon", …, 16 → Troop, 20 → CapitalShip, 28 → Fighter, 60 → SpecForce` | `src/game/day_zero_generator.gd:388-417` |
-| `LogisticsAsset` reads `FamilyId` / `AssetId` only | `src/data/dto/catalog_dtos.gd:68` |
-| `MilitaryCatalog.BySource(Vector2i(family, id))` | `src/game/military_catalog.gd:39` |
-| Facility ids `planetary_shield`, `turbolaser_battery`, `ion_cannon` selected by name | `src/game/intel_facts.gd:110`, `src/game/intel_manager.gd:246`, `src/game/assault_manager.gd:31` |
-| `death_star_shield` family by name | `src/game/bombardment_manager.gd:144` (BACKLOG #19) |
-| Legacy snapshot family map | `src/data/snapshot_loader.gd:14` |
+| `match asset.FamilyId: 32 → "headquarters", …, 16 → Troop, 20 → CapitalShip, …` in `DeployAsset` | `FacilityCatalog.ById` / `MilitaryCatalog.ById`; a facility row places tier 1 of its family; a `null` child is the empty carrier slot |
+| `LogisticsAsset` reads `FamilyId` / `AssetId` | reads `unit` / `facility` |
+| `CountOf("planetary_shield")` in the assault gate | `CountByRole("shield")` |
+| Intel sighting and intel facts by family name | roles `shield` / `anti_ship` / `disable`, family looked up in the catalog |
+| Delivery message category by family name | by role |
+| `f.Family() == "death_star_shield"` in bombardment | role `superweapon_shield` (new in the facility role set) |
+| `s.FamilyId == 24` for "the Death Star in your fleet" | unit role `superweapon` |
+| The mines-first seeding rule placed `"mine"` by id | `FirstWithRole("extracts_raw")` |
 
-Fix direction: an asset names a `unit` or `facility` id; `DeployAsset` looks the
-unit up in `MilitaryCatalog` by id and the facility by id, and the four
-defence look-ups select on roles (`shield`, `anti_ship`, `disable`,
-`superweapon_shield`). Proven the same way as every Phase 5 change: the Star
-Wars soak gate byte-identical.
+The Star Wars pack's `setup.json` was migrated the same way (48 rows), and
+validation rule 13 refuses a row that resolves to nothing, or one still
+carrying `FamilyId`. Four negative cases in `tests/pack_validation.gd`.
+
+**Verified:** both packs validate; the WWII 30-day soak now opens with
+9 fleets, 14 capital ships and 14 refineries; the Star Wars soak gate is
+byte-identical (four soaks, `tools\soak-gate.ps1`).
+
+**Still named by family in engine code, all display-side** (BACKLOG #37): the
+Defense Facility Status window's names and icons, and the generic `mine` /
+`refinery` / `shipyard` ids in `economy.gd`, `agent_droid.gd` and one intel
+line — the same ids in both packs, so not a blocker for this one.
+
+**Out of scope here:** the source repo's `.DAT` extractor for the logistics
+tables still emits `FamilyId` / `AssetId`; it must be re-keyed the same way
+before the next regeneration (SCHEMA.md §8's standing warning), and that is a
+source-repo change on `tschmitz-dev` with its own go-ahead.
 
 ## Phase C — content
 

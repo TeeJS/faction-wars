@@ -287,7 +287,8 @@
       "family": "death_star_shield",
       "tier": 1,
       "roles": [
-        "planet_defense"
+        "planet_defense",
+        "superweapon_shield"
       ],
       "buildable_by": [
         "empire"
