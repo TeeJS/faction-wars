@@ -59,9 +59,14 @@ func _ready() -> void:
 	SetupToggleButton(btnMediumSize, _sizeGroup)
 	SetupToggleButton(btnLarge, _sizeGroup)
 
-	# Pre-press Medium as the default for both
-	btnMedium.button_pressed = true
-	btnMediumSize.button_pressed = true
+	# Pre-press the pack's defaults (manual p021: easy and standard).
+	var setup := FactionRegistry.Pack.Manifest.Setup if FactionRegistry.Pack != null else null
+	var sizes: Array[String] = setup.GalaxySizes if setup != null else []
+	var diff_default: String = setup.DifficultyDefault if setup != null else "medium"
+	var size_default: String = setup.GalaxySizeDefault if setup != null and sizes.has(setup.GalaxySizeDefault) else (sizes[0] if not sizes.is_empty() else "")
+	({"easy": btnEasy, "medium": btnMedium, "hard": btnHard}.get(diff_default, btnMedium) as Button).button_pressed = true
+	var size_btn: Button = [btnSmall, btnMediumSize, btnLarge][clampi(sizes.find(size_default), 0, 2)]
+	size_btn.button_pressed = true
 
 	# Wire up the Faction/Launch buttons from the pack: the two buttons bind to
 	# the first two declared factions and their labels come from the pack.
@@ -260,6 +265,7 @@ func _build_cockpit(menu: PackDefs.MenuDef) -> void:
 		b.add_theme_stylebox_override("hover", hover)
 		b.set_meta("cockpit_region", true)
 		b.set_meta("rect", r.rect2())
+		b.set_meta("color", r.SelectedColorHex)
 		b.pressed.connect(_on_region.bind(r))
 		if r.Action == "exit":
 			b.visible = not OS.has_feature("web")
@@ -337,9 +343,26 @@ func _layout_cockpit() -> void:
 		var rr := _scaled(_cockpit.Readout.rect2())
 		_readout.position = rr.position
 		_readout.size = rr.size
-		_readout.add_theme_font_size_override("font_size", maxi(8, int(rr.size.y * 0.6)))
+		_readout.add_theme_font_size_override("font_size", _readout_font_size(rr.size))
 	_refresh_readout()
 	_marks.queue_redraw()
+
+
+## The largest size at which BOTH readout texts fit the panel: height-bound
+## first, then shrunk until the wider string clears the width (the longer text
+## was clipped on the narrow panel).
+func _readout_font_size(panel: Vector2) -> int:
+	var font: Font = _readout.get_theme_font("font")
+	var size := maxi(8, int(panel.y * 0.6))
+	var room := panel.x - 8.0
+	while size > 8:
+		var widest := 0.0
+		for text in [_cockpit.Readout.Standard, _cockpit.Readout.HqOnly]:
+			widest = maxf(widest, font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x)
+		if widest <= room:
+			break
+		size -= 1
+	return size
 
 
 func _refresh_readout() -> void:
@@ -351,7 +374,7 @@ func _refresh_readout() -> void:
 func _draw_marks() -> void:
 	if _cockpit == null:
 		return
-	var color := FactionRegistry.ParseColor(_cockpit.SelectedColorHex)
+	var default_color := FactionRegistry.ParseColor(_cockpit.SelectedColorHex)
 	var chosen: Array[String] = ["difficulty:%s" % _difficultyId, "galaxy_size:%s" % _sizeId]
 	if _hqOnly:
 		chosen.append("hq_only_victory")
@@ -359,26 +382,33 @@ func _draw_marks() -> void:
 		if not _regionButtons.has(key):
 			continue
 		var b: Button = _regionButtons[key]
-		_bracket(Rect2(b.position, b.size), color)
+		var own: String = str(b.get_meta("color", ""))
+		_bracket(Rect2(b.position, b.size), FactionRegistry.ParseColor(own) if not own.is_empty() else default_color)
 
 
-## Corner brackets, the original's selection mark (the screenshot's red corners
-## on the chosen difficulty, yellow on the chosen galaxy size).
-func _bracket(r: Rect2, color: Color) -> void:
-	var l := minf(r.size.x, r.size.y) * 0.25
-	var w := 3.0
+## Corner brackets, the original's selection mark (red corners on the chosen
+## difficulty, yellow on the chosen galaxy size). Drawn INSIDE the region so
+## they land on the screen rather than the bezel, over a dark outline so a
+## light colour reads on a light bezel too (TeeJ: the yellow was hard to see).
+func _bracket(region: Rect2, color: Color) -> void:
+	var inset := minf(region.size.x, region.size.y) * 0.10
+	var r := Rect2(region.position + Vector2(inset, inset), region.size - Vector2(inset, inset) * 2.0)
+	var l := minf(r.size.x, r.size.y) * 0.32
+	var w := maxf(3.0, minf(r.size.x, r.size.y) * 0.07)
 	var tl := r.position
 	var tr := r.position + Vector2(r.size.x, 0)
 	var bl := r.position + Vector2(0, r.size.y)
 	var br := r.end
-	_marks.draw_line(tl, tl + Vector2(l, 0), color, w)
-	_marks.draw_line(tl, tl + Vector2(0, l), color, w)
-	_marks.draw_line(tr, tr + Vector2(-l, 0), color, w)
-	_marks.draw_line(tr, tr + Vector2(0, l), color, w)
-	_marks.draw_line(bl, bl + Vector2(l, 0), color, w)
-	_marks.draw_line(bl, bl + Vector2(0, -l), color, w)
-	_marks.draw_line(br, br + Vector2(-l, 0), color, w)
-	_marks.draw_line(br, br + Vector2(0, -l), color, w)
+	var arms := [
+		[tl, tl + Vector2(l, 0)], [tl, tl + Vector2(0, l)],
+		[tr, tr + Vector2(-l, 0)], [tr, tr + Vector2(0, l)],
+		[bl, bl + Vector2(l, 0)], [bl, bl + Vector2(0, -l)],
+		[br, br + Vector2(-l, 0)], [br, br + Vector2(0, -l)],
+	]
+	for pass_color in [Color(0, 0, 0, 0.85), color]:
+		var width := w + 2.0 if pass_color.a < 1.0 else w
+		for a in arms:
+			_marks.draw_line(a[0], a[1], pass_color, width)
 
 
 func _on_region(r: PackDefs.MenuRegionDef) -> void:

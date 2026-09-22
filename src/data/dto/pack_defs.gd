@@ -139,6 +139,9 @@ class MenuRegionDef:
 	var Value: String
 	var Rect: Array = []       # [x, y, w, h]
 	var Tooltip: String
+	## Optional: this region's bracket colour when chosen (the original marks
+	## difficulty in red and galaxy size in yellow). Empty = menu.selected_color.
+	var SelectedColorHex: String
 
 	static func from_dict(d: Dictionary) -> MenuRegionDef:
 		var o := MenuRegionDef.new()
@@ -149,6 +152,7 @@ class MenuRegionDef:
 			for v in r:
 				o.Rect.append(int(v))
 		o.Tooltip = JsonUtil.str_or(d, "tooltip", "")
+		o.SelectedColorHex = JsonUtil.str_or(d, "selected_color", "")
 		return o
 
 	func rect2() -> Rect2:
