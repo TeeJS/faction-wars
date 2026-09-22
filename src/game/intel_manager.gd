@@ -215,6 +215,12 @@ static func Collect(p: Planet, section: int) -> Dictionary:
 				"uprising": p.IsInUprising,
 				"energy": p.BaseEnergy,
 				"materials": p.BaseRawMaterials,
+				# The sector window's three bars (manual p025 Fig 2.9): used energy,
+				# built mines, and whether there is a population to be loyal at all
+				# (p049: an unpopulated world has no loyalty indicator).
+				"energy_used": p.UsedEnergySlots(),
+				"mines": p.Mines(),
+				"inhabited": p.IsInhabited,
 			}
 		Enums.IntelSection.Troopers:
 			var regiments: Array = []

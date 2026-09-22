@@ -350,6 +350,19 @@ static func _validate_display(pack: LoadedPack, errors: Array[String]) -> void:
 	for key in SPECIAL_POWER_RANK_KEYS:
 		if not d.SpecialPowerRanks.has(key):
 			errors.append("display.json: special_power_ranks has no label for '%s'." % key)
+	# Rule 16: loyalty_bar, when given, is every playable faction exactly once.
+	if not d.LoyaltyBar.is_empty():
+		var faction_ids: Array[String] = []
+		for f in pack.Factions:
+			faction_ids.append(f.Id)
+		for id in d.LoyaltyBar:
+			if not faction_ids.has(id):
+				errors.append("display.json: loyalty_bar names '%s', which is not a faction id." % id)
+			elif d.LoyaltyBar.count(id) > 1:
+				errors.append("display.json: loyalty_bar names '%s' more than once." % id)
+		for id in faction_ids:
+			if not d.LoyaltyBar.has(id):
+				errors.append("display.json: loyalty_bar leaves out '%s' - name every faction, or leave the key out for faction order." % id)
 	# Rule 14: terms are the engine's known concepts, each with a non-empty label.
 	for key in d.Terms:
 		if not KNOWN_TERMS.has(key):

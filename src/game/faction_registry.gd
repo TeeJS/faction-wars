@@ -249,6 +249,21 @@ static func CharacterRoles(id: String) -> Array:
 	return _character_roles.get(id, [])
 
 
+## The playable sides left to right on the sector window's loyalty bar:
+## display.json `loyalty_bar` when the pack declares it, else faction order.
+static func LoyaltyBarOrder() -> Array[Faction]:
+	var out: Array[Faction] = []
+	if Pack != null and Pack.Display != null and not Pack.Display.LoyaltyBar.is_empty():
+		for id in Pack.Display.LoyaltyBar:
+			var f := ById(id)
+			if f != null:
+				out.append(f)
+	if out.is_empty():
+		for f in Playable:
+			out.append(f)
+	return out
+
+
 ## The planet id characters.json opens this character on, or "".
 static func CharacterStartsAt(id: String) -> String:
 	return _character_starts.get(id, "")
