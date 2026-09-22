@@ -96,8 +96,10 @@ static func ProcessDay(faction: Faction) -> void:
 	var econ := For(faction)
 	var mines := TotalMines(faction)
 	var refineries := TotalRefineries(faction)
-	var mine_rate := FacilityCatalog.ProcessingRate("mine")
-	var ref_rate := FacilityCatalog.ProcessingRate("refinery")
+	# The two rates belong to whatever the PACK builds for the two roles - a
+	# quarry and a smelter as readily as a mine and a refinery.
+	var mine_rate := FacilityCatalog.ProcessingRateForRole("extracts_raw")
+	var ref_rate := FacilityCatalog.ProcessingRateForRole("refines")
 
 	econ.RawWork += mines
 	var mined: int = econ.RawWork / mine_rate

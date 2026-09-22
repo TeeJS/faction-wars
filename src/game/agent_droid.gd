@@ -75,8 +75,9 @@ static func RunProduction(galaxy: Array, f: Faction, _day: int) -> void:
 		if not p.HasIdleConstructionYards():
 			continue
 		var want_mine: bool = mines <= refineries and p.FreeMineSlots() > 0
-		var type := "mine" if want_mine else "refinery"
-		if not p.TryQueueFacility(type, 1, p).ok:
+		# The pack's own extractor or refiner, by role - never an id.
+		var type := FacilityCatalog.FamilyForRole("extracts_raw" if want_mine else "refines")
+		if type.is_empty() or not p.TryQueueFacility(type, 1, p).ok:
 			continue
 		if want_mine:
 			mines += 1
