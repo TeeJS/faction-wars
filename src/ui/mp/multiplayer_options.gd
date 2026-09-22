@@ -148,7 +148,8 @@ func _ready() -> void:
 	bar().cancel.connect(cancel_to_cockpit)
 
 	if _host:
-		_settings = { "side": FactionRegistry.Playable[0].Id, "size": int(Enums.GalaxySize.Large), "hq_only": false, "speed_rule": "slowest" }
+		_settings = { "pack": FactionRegistry.LoadedId(), "pack_hash": FactionRegistry.PackHash,
+			"side": FactionRegistry.Playable[0].Id, "size": int(Enums.GalaxySize.Large), "hq_only": false, "speed_rule": "slowest" }
 		_lobby.set_settings(_settings)
 		_reflect()
 		_say(MpSetup.player_name, "Game \"%s\" created. Code %s." % [MpSetup.game_name, _lobby.code])
@@ -158,6 +159,7 @@ func _ready() -> void:
 		_settings = _lobby.settings.duplicate()
 		_seen_settings = _settings.duplicate()
 		_reflect()
+		_check_pack()
 		_say(MpSetup.player_name, "Joined \"%s\" hosted by %s." % [_lobby.name, _lobby.host_name])
 		_echo_all()
 		# The guest sees the host's choices but cannot change them. Not
@@ -220,6 +222,7 @@ func _process(_delta: float) -> void:
 		_echo_diff()
 		_seen_settings = _settings.duplicate()
 		_reflect()
+		_check_pack()
 	# Saves shared with the current opponent (host): depends on the list AND
 	# on who the opponent is, so it is recomputed whenever either changes.
 	if _host and (_lobby.saves != _saves or _lobby.guest_name != _load_for):
@@ -318,6 +321,15 @@ func _echo_diff() -> void:
 
 func _say(who: String, text: String) -> void:
 	_log.append_text("%s: %s\n" % [who, text])
+
+
+## A guest on the wrong pack is told so here; the lockstep hello refuses the
+## start as well, so a host who ignores the warning still cannot desync.
+func _check_pack() -> void:
+	var why := MpSetup.pack_mismatch(_settings)
+	if not why.is_empty():
+		show_error(why)
+		_say(MpSetup.player_name, why)
 
 
 # --- start / previous ---

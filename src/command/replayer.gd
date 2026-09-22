@@ -19,7 +19,13 @@ static func replay_entries(header: Dictionary, commands: Array, upto_day: int = 
 	var entries: Array = commands.duplicate()
 	var hashes: Dictionary = CommandLog.Hashes.duplicate()
 	var log_path: String = CommandLog.Path()
-	FactionRegistry.EnsureLoaded()
+	# The log names its pack; a different loaded pack cannot rebuild it.
+	var mismatch := FactionRegistry.HeaderMismatch(header)
+	if not mismatch.is_empty():
+		push_error("[Replayer] cannot replay: %s." % mismatch)
+		return null
+	if not FactionRegistry.EnsureLoaded(str(header.get("pack", ""))):
+		return null
 	var default_side: String = FactionRegistry.Playable[0].Id if FactionRegistry.Playable.size() > 0 else ""
 	var engine := GameSession.new_game(str(header.get("local", default_side)), int(header.get("difficulty", 2)),
 		int(header.get("size", 1)), int(header.get("seed", 0)), header.get("humans", []), str(header.get("host", "")))

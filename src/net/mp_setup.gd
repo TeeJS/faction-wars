@@ -94,6 +94,23 @@ static func remember_names() -> void:
 	cfg.save(NamesFile)
 
 
+## Why this client cannot play the room described by `settings`, or "". The
+## host writes its pack id and content hash into the room; a guest on another
+## pack, or on the same pack with different files, is told before Start rather
+## than desyncing after it (BACKLOG #13). Absent keys mean an older host.
+static func pack_mismatch(settings: Dictionary) -> String:
+	FactionRegistry.EnsureLoaded()
+	var want := str(settings.get("pack", ""))
+	if want.is_empty():
+		return ""
+	if want != FactionRegistry.LoadedId():
+		return "This game uses the '%s' pack; you have '%s' loaded." % [want, FactionRegistry.LoadedId()]
+	var want_hash := str(settings.get("pack_hash", ""))
+	if not want_hash.is_empty() and want_hash != FactionRegistry.PackHash:
+		return "This game's '%s' pack differs from yours (same id, different files)." % want
+	return ""
+
+
 ## The host's side, as a Faction, from the room settings.
 static func host_faction(settings: Dictionary) -> Faction:
 	FactionRegistry.EnsureLoaded()
