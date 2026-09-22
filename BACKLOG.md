@@ -50,6 +50,28 @@ no original to cite.
 | 13 | **Pack hash in the multiplayer settings** | Two clients on the same `pack.json` id but differing pack *content* desync on the lockstep hash, presenting as a mystery mismatch rather than "wrong pack". `SCHEMA.md` (source repo) carries `schema_version`, which guards engine-vs-pack, not client-vs-client. Put a pack id + content hash in the `settings` blob the relay already forwards through `create`/`join`/`start` (`relay/server.ts`) and verify it on join. Bites once Phase 2+ of the pack migration lands; see `PROJECT.md` phases in the source repo. |
 | — | Other window-checklist gaps | see `docs/window-checklists.md` (Missing/Partial rows) — e.g. portrait art placeholders, modal-vs-nonmodal chrome |
 
+## Phase 5 — pack modularity (setting names still in engine code)
+
+Phases 1–4 of the pack migration are merged (SCHEMA.md status). Phase 5 is the
+modularity proof: a second pack on an unchanged binary. The audit below
+(2026-09-22, spot-checked non-comment code) lists every place engine code still
+selects on a Star Wars name or reads the legacy `data/` folder. Each one breaks
+SCHEMA.md §1 ("names are never behaviour") and would break a second pack.
+
+| # | Leak | Where | Fix direction |
+|---|------|-------|---------------|
+| 14 | Capital-change loyalty shock keyed on `p.Name == "Coruscant"` | `src/game/loyalty_manager.gd:85` | pack declares the capital (factions/map role), engine selects on it |
+| 15 | Day zero finds `"Emperor Palpatine"` by name | `src/game/day_zero_generator.gd:198` | character role tag in `characters.json` |
+| 16 | Droid unit display names map to mission types ("Imperial Probe Droid" …) | `src/game/mission_manager.gd:24-26` | `units.json` declares the missions a unit can run |
+| 17 | `actor.Id == "empire"` branches; agent droid names IMP-22 / C-3PO | `src/game/mission_manager.gd:490`, `src/game/agent_droid.gd:41` | faction flag / `factions.json` agent name |
+| 18 | Replay header defaults the local side to `"alliance"` | `src/command/replayer.gd:22` | first playable faction from the pack |
+| 19 | `death_star_shield` / `death_star_sabotage` ids in engine | `src/game/bombardment_manager.gd:144`, `src/game/mission_table_manager.gd:18`, `src/game/mission_catalog.gd:39`, `src/data/snapshot_loader.gd:18` | facility role (`superweapon_shield`) and mission role tags |
+| 20 | `SeedManager` still loads legacy defensive/military JSON through `Loaders`, family ids 34/35/36 → `ion_cannon` etc. | `src/game/seed_manager.gd:23-38` | read `facilities.json` / `units.json` from the loaded pack |
+| 21 | Military Data Editor reads `res://data/military_units.json` directly | `src/ui/military_data_editor.gd:37` | edit the pack's `units.json` |
+| 22 | Legacy `data/` folder (15 JSON files) still shipped; `tests/dto_parity.gd` reads it | `data/`, `src/data/loaders.gd` | delete once #20/#21 land; retarget the parity test at the pack |
+| 23 | Rule-id constants carry setting names (`SeedCoruscantFirst`, `EspionageRevealCoruscantFloor`) | `src/game/rule_id.gd:93`, `src/game/mission_manager.gd:189` | naming only — rename to `SeedCapitalFirst` etc. when #14 lands |
+| 24 | **Modularity proof** — a second, deliberately alien pack runs on an unchanged binary | source repo `PROJECT.md` Phase 5 | last; proves #14–#23 |
+
 ## Backlog (lower priority, not blocking play)
 
 | Item | Note |
