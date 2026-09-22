@@ -6,15 +6,14 @@ The contract between the engine and a faction pack. Everything that describes
 *content* lives here; everything that describes *how the simulation runs* lives
 in engine code. See the source repo's `PROJECT.md` for why.
 
-> **This is the reconciled copy.** The original was drafted 2026-07-25 against
-> the C# repo, before any migration ran, and several of its claims no longer
-> match the data folder. Every correction is listed in §13. The source repo's
-> copy is now **behind this one** and needs TeeJ's separate go-ahead to update.
+> **This is the live copy.** First drafted 2026-07-25 in the C# repo, reconciled
+> here against the real data folder, and implemented here. Every correction is
+> listed in §13. The source repo carries a synced mirror (`f2ca03c`, 2026-09-21) —
+> edit here, then re-sync there.
 
-**Status:** Phases 1 and 2 are **done** (`pack.json`, `factions.json`, the
-faction-keyed re-key of `game_rules.json` / `side_lottery.json` / `BuildableBy`).
-Sections marked **`[later]`** are reserved — a pack may declare them and a v1
-engine ignores them.
+**Status:** every file below is **built, loaded, validated and live** (PR #38,
+merged 2026-09-21). Sections marked **`[later]`** are reserved — a pack may
+declare them and a v1 engine ignores them.
 
 ---
 
@@ -110,16 +109,16 @@ with the extraction tooling, not shipped in a pack.
       "hq": { "kind": "hidden", "placement": "random_rim", "movable": true },
       "occupation_support_policy": "occupation_penalty",
       "starting_planets": [
-        { "planet": "Yavin", "support": 100, "explored": true,
-          "garrison": "CMUNYVTB.DAT" }
+        { "planet": "yavin", "support": 100, "explored": true,
+          "garrison": "alliance_start_garrison" }
       ],
       "seed": {
-        "hq_facilities": "FACLHQTB.DAT",
-        "hq_garrison": "CMUNHQTB.DAT",
-        "fleet": "CMUNAFTB.DAT",
-        "procedural_fleet": "CMUNALTB.DAT"
+        "hq_facilities": "alliance_hq_facilities",
+        "hq_garrison": "alliance_hq_garrison",
+        "fleet": "alliance_fleet",
+        "procedural_fleet": "alliance_procedural_fleet"
       },
-      "victory": { "capture_characters": ["Emperor Palpatine", "Darth Vader"] }
+      "victory": { "capture_characters": ["emperor_palpatine", "darth_vader"] }
     }
   ]
 }
@@ -128,12 +127,12 @@ with the extraction tooling, not shipped in a pack.
 | Field | Notes |
 |---|---|
 | `color` | Drives the map marker, the sector window and the GID legend. One source of truth; the engine holds no faction color constants. |
-| `hq.kind` | `fixed` — a known capital, captured when taken. `hidden` — placed at `placement` (a planet name or the `random_rim` sentinel), unknown to other factions until located, optionally `movable`, destroyed rather than captured. |
+| `hq.kind` | `fixed` — a known capital (`planet`, a **planet id**), captured when taken. `hidden` — placed at `placement` (a **planet id** or the `random_rim` sentinel), unknown to other factions until located, optionally `movable`, destroyed rather than captured. |
 | `occupation_support_policy` | `garrison_bonus` (troops raise support over time) or `occupation_penalty` (first occupation lowers it). Asymmetry as a flag. |
 | `loyalty_label` | Display string for the GID loyalty mode. |
-| `starting_planets[]` | `{planet, support, explored, garrison}`. `planet` holds a **display name** today; **becomes a planet id** (§12 Q1, decided). |
-| `seed` | Which day-zero logistics table seeds this side's HQ, garrison and fleets. Values are **original `.DAT` filenames** today; **become role ids** (§12 Q2, decided). |
-| `victory.capture_characters` | Characters this side must hold captive to win. **Display names** today; **become character ids** (§12 Q1, decided). |
+| `starting_planets[]` | `{planet, support, explored, garrison}`. `planet` is a **planet id** (`map.json`); `garrison` a logistics table id (`setup.json`). |
+| `seed` | Which day-zero logistics table seeds this side's HQ, garrison and fleets — **table ids** from `setup.json` (§12 Q2). |
+| `victory.capture_characters` | **Character ids** (`characters.json`) this side must hold captive to win. The Objectives window looks the display name up (`FactionRegistry.CharacterNameOf`). |
 
 ---
 
@@ -626,7 +625,8 @@ passes.
    `available_to` await the facility, unit and mission files.
 6. ✅ Each faction's `hq` is internally consistent: a `fixed` HQ names a planet;
    a `hidden` HQ declares a `placement`.
-7. ✅ Every `starting_planets` entry exists, and a `fixed` HQ names a real planet.
+7. ✅ Every `starting_planets` entry is a planet id, a `fixed` HQ's `planet` is a planet
+   id, and a `hidden` HQ's `placement` is `random_rim` or a planet id.
 8. ✅ Display tiers are ordered descending, use a known flare, and terminate
    with a `min: 0` tier; every Alt+N slot names a declared mode; every band has
    a label.
@@ -663,9 +663,11 @@ but *refiled* — it is a Phase 3 vocabulary item now, tracked in §6.
 
    `display_name` stays alongside as the human label and may change freely.
 
-   **Sequencing:** the rename cannot land before `map.json` and
-   `characters.json` exist — there is nothing to hold the ids yet — so it is
-   part of that migration, and validation rule §11.3 goes live with it.
+   **★ LANDED.** `Planet.PackId` / `Character.PackId` carry the ids; day zero,
+   victory, captivity, the story manager, the AI objective planner and the
+   loader all resolve on them. The two places a reference is also *shown*
+   (the Objectives window's capital and capture rows) look the display name up.
+   `missions.json` SpecForces landed with §9.
 
 2. ~~**`.DAT` filenames as pack keys.**~~ **★ DECIDED (TeeJ, 2026-09-21) —
    rename to roles.** Table keys become `lower_snake_case` ids naming what the
@@ -776,6 +778,7 @@ What changed from the source repo's 2026-07-25 draft, and why.
 | 23 | **§4 built.** `map.json` generated, loaded and live; the bitmap moved into the pack; validation rules 3 (map half), 7, 9, 10 implemented and negative-tested | The hardcoded sector list is gone from `galaxy_factory.gd`. Soak gate 1004/1004 |
 | 24 | **§7 built.** `characters.json` generated, loaded and live: one file, `is_major` flag, lower-case faction ids, `ratings` map, `can_command` list, `special_power` block. Validation rules 3 and 5 for the roster | The two-file major/minor split is gone. Soak gate 1004/1004 |
 | 25 | **§12 Q5 landed.** The character aptitude fields and `Enums.SpecialPowerRank` renamed across 11 files | Enum MEMBERS and `MissionType.JediTraining` deliberately held back — see §7 |
+| 36 | **Q1 landed** — `factions.json` references planets and characters by id; every resolver compares `PackId`; validator rules 3 and 7 check ids, including a hidden HQ's placement | Closes the last half-implemented decision. Three stale lines fixed: the "source copy is behind" blockquote, the "Phases 1–2" status, §3's `.DAT` example |
 | 35 | Two bugs the sweep found that the gate cannot: `MissionTableManager.LoadFromPack` cleared the **pack's own** table dictionary on the second game in a process (every mission table vanished; only a load-then-compare test sees it), and six surviving `Facility.Type` reads in the Economy window | `tests/load_resave.gd` and `tests/ui_smoke.gd`. The soak gate runs one game per process and never opens a window |
 | 34 | **§10 live.** `display.json` drives the GID catalog, the Alt+1..9 order and the special-power band labels; `gid.gd`'s literal table is gone. Proven byte-identical by before/after dump; signature untouched (labels unchanged). Committed on that evidence at TeeJ's call; a single soak follows | Q5 is **complete**: the band members are `Student`/`Knight`/`Master` and never rendered. `Label` on a DTO shadows a native class — the second time |
 | 33 | `pack_validation` counts *ran* against *ok + failed*, so a runtime abort inside a case can never print PASS | It did exactly that when `PackDefs` failed to compile |

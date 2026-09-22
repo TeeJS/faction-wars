@@ -32,10 +32,10 @@ func _init() -> void:
 
 	# Locate the first capture target: park it on a world and give the Empire
 	# Characters intel there (fog-legal knowledge of its location).
-	var first_name: String = caps[0]
-	var victim: Character = _char_named(first_name)
+	var first_id: String = caps[0]
+	var victim: Character = _char_named(first_id)
 	var world: Planet = _first(func(p): return p != null)
-	_check(victim != null and world != null, "target '%s' and a world exist" % first_name)
+	_check(victim != null and world != null, "target '%s' and a world exist" % first_id)
 	if victim == null:
 		_finish(); return
 	victim.CapturedBy = null
@@ -88,8 +88,9 @@ func _first(pred: Callable) -> Planet:
 	return null
 
 
-func _char_named(name: String) -> Character:
-	return Lq.first_or_null(GameState.ActiveRoster, func(c): return c.Name == name)
+## By pack id - CaptureTargets returns ids (SCHEMA.md section 12 Q1).
+func _char_named(id: String) -> Character:
+	return Lq.first_or_null(GameState.ActiveRoster, func(c): return c.PackId == id)
 
 
 func _finish() -> void:

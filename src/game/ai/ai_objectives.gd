@@ -130,8 +130,10 @@ static func _own_captured(us: Faction) -> bool:
 ## "located" and "there is an order to give" cannot disagree. It used to be
 ## Knows(Characters) on wherever they stand today - which "located" anybody who had
 ## walked onto a world we once scouted, from that world's live roster.
-static func _target_located(ctx: AIContext, name: String) -> bool:
-	var c: Character = Lq.first_or_null(GameState.ActiveRoster, func(x): return x.Name == name)
+## `id` is a pack character id (VictoryManager.CaptureTargets). Sightings are by
+## display name, so the character is found first and its Name used for the look-up.
+static func _target_located(ctx: AIContext, id: String) -> bool:
+	var c: Character = Lq.first_or_null(GameState.ActiveRoster, func(x): return x.PackId == id)
 	if c == null or not (c.Attached is Planet):
 		return false
 	return AIActionSelection._sighted(ctx, c.Name, c.Attached)

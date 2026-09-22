@@ -40,14 +40,15 @@ static func HeadquartersConditionMet(f: Faction, opponent: Faction, galaxy: Arra
 		return false
 	for s in galaxy:
 		for p in s.Planets:
-			if p.Name == capital:
+			if p.PackId == capital:
 				return p.ControllingFaction == f
 	return false
 
 
 ## Conditions 2 and 3 - "capture AND HOLD".
-static func HoldsCaptive(f: Faction, name: String) -> bool:
-	var c: Character = Lq.first_or_null(GameState.ActiveRoster, func(x): return x.Name == name)
+## `id` is the pack's character id (factions.json victory.capture_characters).
+static func HoldsCaptive(f: Faction, id: String) -> bool:
+	var c: Character = Lq.first_or_null(GameState.ActiveRoster, func(x): return x.PackId == id)
 	return c != null and c.CapturedBy == f
 
 
@@ -106,14 +107,16 @@ static func StatusFor(f: Faction, galaxy: Array, viewer: Faction = null) -> Arra
 	if opponent.HasHiddenHq():
 		rows.append(["Headquarters Destroyed" if hq else ("Destroy Headquarters" if viewer_owns else "Defend Headquarters"), hq])
 	else:
-		var capital: String = opponent.Hq.Planet if (opponent.Hq != null and not opponent.Hq.Planet.is_empty()) else "capital"
+		# Shown to the player, so the display name - the reference itself is an id.
+		var capital: String = FactionRegistry.PlanetNameOf(opponent.Hq.Planet) if (opponent.Hq != null and not opponent.Hq.Planet.is_empty()) else "capital"
 		rows.append([("%s Captured" % capital) if hq else (("Control %s" % capital) if viewer_owns else ("Defend %s" % capital)), hq])
 
 	if GameSettings.HQOnlyVictory:
 		return rows
 
-	for name in CaptureTargets(f):
-		var held := HoldsCaptive(f, name)
+	for id in CaptureTargets(f):
+		var held := HoldsCaptive(f, id)
+		var name := FactionRegistry.CharacterNameOf(id)
 		var surname: String = name.substr(name.rfind(" ") + 1) if name.contains(" ") else name
 		rows.append([("%s Captured" % surname) if held else (("Capture %s" % surname) if viewer_owns else ("Defend %s" % surname)), held])
 	return rows

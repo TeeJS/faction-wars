@@ -23,7 +23,7 @@ static func InitializeGalaxyState(galaxy: Array, human_faction: Faction, difficu
 	# --- PACK-DECLARED STARTING STATE ---
 	for faction in FactionRegistry.Playable:
 		for start in faction.StartingPlanets:
-			var sp: Planet = Lq.first_or_null(all_planets, func(x): return x.Name == start.Planet)
+			var sp: Planet = Lq.first_or_null(all_planets, func(x): return x.PackId == start.Planet)
 			if sp == null:
 				push_error("[Pack] %s: starting planet '%s' not in the map." % [faction.Id, start.Planet])
 				continue
@@ -43,9 +43,9 @@ static func InitializeGalaxyState(galaxy: Array, human_faction: Faction, difficu
 				var shuffled := Lq.order_by(unclaimed, func(_x): return rng.Next())
 				seat = shuffled[0] if not shuffled.is_empty() else null
 			else:
-				seat = Lq.first_or_null(all_planets, func(x): return x.Name == hq_def.Placement)
+				seat = Lq.first_or_null(all_planets, func(x): return x.PackId == hq_def.Placement)
 		else:
-			seat = Lq.first_or_null(all_planets, func(x): return x.Name == hq_def.Planet)
+			seat = Lq.first_or_null(all_planets, func(x): return x.PackId == hq_def.Planet)
 		if seat == null:
 			push_error("[Pack] %s: could not place hq (kind '%s')." % [faction.Id, hq_def.Kind])
 			continue
@@ -150,7 +150,7 @@ static func InitializeGalaxyState(galaxy: Array, human_faction: Faction, difficu
 			var seed: PackDefs.FactionSeedDef = owner.Seed if owner != null else null
 			var start_def: PackDefs.StartingPlanetDef = null
 			if owner != null:
-				start_def = Lq.first_or_null(owner.StartingPlanets, func(s): return s.Planet == planet.Name)
+				start_def = Lq.first_or_null(owner.StartingPlanets, func(s): return s.Planet == planet.PackId)
 
 			if planet.HasHeadquarters() and seed != null:
 				ApplyLogistics(planet, SeedManager.Logistics[seed.HqFacilities], rng)
@@ -176,8 +176,8 @@ static func InitializeGalaxyState(galaxy: Array, human_faction: Faction, difficu
 
 	var side_a_start: Planet = null
 	if side_a != null and not side_a.StartingPlanets.is_empty():
-		var first_name: String = side_a.StartingPlanets[0].Planet
-		side_a_start = Lq.first_or_null(all_planets, func(x): return x.Name == first_name)
+		var first_id: String = side_a.StartingPlanets[0].Planet
+		side_a_start = Lq.first_or_null(all_planets, func(x): return x.PackId == first_id)
 	var side_a_hq: Planet = hq_of[side_a] if (side_a != null and hq_of.has(side_a)) else side_a_start
 	var side_b_hq: Planet = hq_of[side_b] if (side_b != null and hq_of.has(side_b)) else null
 	if side_a_start == null:
