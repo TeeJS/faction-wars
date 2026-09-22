@@ -366,7 +366,9 @@ static func SeedSystemFacilities(planet: Planet, file: CatalogDtos.LogisticsFile
 			break
 		if rng.NextRange(1, 101) > chance_per_slot:
 			continue
-		planet.AddFacility("mine", 1)
+		var mine := FacilityCatalog.FirstWithRole("extracts_raw")
+		if mine != null:
+			planet.AddFacility(mine.Family, 1)
 
 	var energy_slots := planet.BaseEnergy
 	for i in energy_slots:
@@ -377,56 +379,35 @@ static func SeedSystemFacilities(planet: Planet, file: CatalogDtos.LogisticsFile
 		for e in file.Entries:
 			if roll >= e.ProbabilityThreshold:
 				pick = e
-		if pick != null and pick.Asset != null and pick.Asset.FamilyId != 0:
+		if pick != null and pick.Asset != null and not pick.Asset.IsEmpty():
 			DeployAsset(planet, pick.Asset)
 
 
+## Places one seeding asset. A facility row places TIER 1 of the facility's
+## family (the original's "Refinery (Tier 2)" rows seeded a tier-1 refinery);
+## a unit row builds the unit from the catalog. Both by pack id - the loader
+## has already proven every id resolves (validation rule 13), so an unknown one
+## here is a bug, not a pack fault.
 static func DeployAsset(planet: Planet, asset: CatalogDtos.LogisticsAsset) -> Unit:
-	if asset == null or asset.FamilyId == 0:
+	if asset == null or asset.IsEmpty():
 		return null
-	var facility_type: Variant = null
-	match asset.FamilyId:
-		32: facility_type = "headquarters"
-		34: facility_type = "ion_cannon"
-		35: facility_type = "turbolaser_battery"
-		36: facility_type = "planetary_shield"
-		40: facility_type = "shipyard"
-		41: facility_type = "training_facility"
-		42: facility_type = "construction_yard"
-		44: facility_type = "mine"
-		45: facility_type = "refinery"
-
-	if facility_type != null:
-		var is_hq: bool = facility_type == "headquarters"
+	if not asset.FacilityId.is_empty():
+		var def := FacilityCatalog.ById(asset.FacilityId)
+		if def == null:
+			push_error("[Seed] setup.json names facility '%s', which the pack does not declare." % asset.FacilityId)
+			return null
+		var is_hq := def.HasRole("headquarters")
 		if not is_hq and planet.FreeEnergySlots() <= 0:
 			return null
-		if facility_type == "mine" and planet.FreeMineSlots() <= 0:
+		if def.HasRole("extracts_raw") and planet.FreeMineSlots() <= 0:
 			return null
-		planet.AddFacility(facility_type, 1)
+		planet.AddFacility(def.Family, 1)
 		return null
-
-	var unit_type: Variant = null
-	match asset.FamilyId:
-		16: unit_type = Enums.UnitType.Troop
-		20: unit_type = Enums.UnitType.CapitalShip
-		24: unit_type = Enums.UnitType.CapitalShip   # Death Star
-		28: unit_type = Enums.UnitType.Fighter
-		60: unit_type = Enums.UnitType.SpecForce
-	if unit_type == null:
+	var unit_def := MilitaryCatalog.ById(asset.UnitId)
+	if unit_def == null:
+		push_error("[Seed] setup.json names unit '%s', which the pack does not declare." % asset.UnitId)
 		return null
-
-	var key := Vector2i(asset.FamilyId, asset.AssetId)
-	if MilitaryCatalog.HasSource(key):
-		return MilitaryCatalog.Create(MilitaryCatalog.BySource(key), planet.ControllingFaction, planet)
-
-	var u := Unit.new()
-	u.Name = "%s (Model %d)" % [asset.FamilyName, asset.AssetId]
-	u.Type = unit_type
-	u.AssetId = asset.AssetId
-	u.FamilyId = asset.FamilyId
-	u.Faction = planet.ControllingFaction
-	u.Attached = planet
-	return u
+	return MilitaryCatalog.Create(unit_def, planet.ControllingFaction, planet)
 
 
 ## GNPRTB generation rules, read from the pack (entries 189-197, 180, 182).
