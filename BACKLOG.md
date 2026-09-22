@@ -61,13 +61,10 @@ no original to cite.
 
 ## Known Bugs (confirmed, unfixed)
 
-| Bug | Repro + file:line |
-|-----|-------------------|
-| The relay's feedback endpoints take no authentication: `GET /feedback` lists every tester report, and `POST /feedback/<id>/complete` marks any report done | `curl https://faction-wars.com/feedback` -> HTTP 200 `{"count":0,...}`, and `POST /feedback/doesnotexist/complete` -> 404 (the route answers; it 404s on the id, not on auth). Verified 2026-09-22. `relay/server.ts:172` (listing), `relay/server.ts:160` (complete). Pre-existing - `wars.schmitzplex.com` deliberately has no Authelia (relay/README.md) - but that host was unadvertised; a public domain makes it discoverable. A report carries the player name, seed, settings and client info. |
-
-Bugs found in the 2026-09-05 session were all fixed and verified (fog leaks
-#2a, defender-notice gap #2b, the 4.7.1 parse break, the MenuButton
-double-connect). New confirmed bugs go here with a repro + file:line.
+*None currently open.* Bugs found in the 2026-09-05 session were all fixed
+and verified (fog leaks #2a, defender-notice gap #2b, the 4.7.1 parse break,
+the MenuButton double-connect). New confirmed bugs go here with a repro +
+file:line.
 
 ## Non-issues (investigated, no change)
 

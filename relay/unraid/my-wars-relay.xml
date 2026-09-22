@@ -20,4 +20,5 @@
   <Config Name="PORT" Target="PORT" Default="8787" Mode="" Description="Port the relay listens on inside the container. Keep in step with the port mapping." Type="Variable" Display="advanced" Required="true" Mask="false">8787</Config>
   <Config Name="DATA_DIR" Target="DATA_DIR" Default="/data" Mode="" Description="Where the relay writes rooms/ (the Data path above)." Type="Variable" Display="advanced" Required="true" Mask="false">/data</Config>
   <Config Name="STATIC_DIR" Target="STATIC_DIR" Default="/web" Mode="" Description="Where the web game inside the image is served from. Empty = relay only, no game files." Type="Variable" Display="advanced" Required="false" Mask="false">/web</Config>
+  <Config Name="FEEDBACK_TOKEN" Target="FEEDBACK_TOKEN" Default="" Mode="" Description="Bearer token for reading the tester feedback reports (GET /feedback and marking one complete). Submitting feedback from the game needs none. Empty = the reports cannot be read at all." Type="Variable" Display="always" Required="false" Mask="true"></Config>
 </Container>

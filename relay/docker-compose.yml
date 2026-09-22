@@ -8,6 +8,9 @@ services:
     container_name: wars-relay
     volumes:
       - ./data:/data
+    environment:
+      # Reading the tester reports needs this as a bearer token (README).
+      FEEDBACK_TOKEN: ${FEEDBACK_TOKEN}
     expose:
       - "8787"
     restart: unless-stopped

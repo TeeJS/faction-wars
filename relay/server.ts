@@ -9,6 +9,7 @@
 
 import { mkdirSync, existsSync, readdirSync, readFileSync, appendFileSync, writeFileSync, statSync, renameSync } from "node:fs";
 import { join, resolve, sep } from "node:path";
+import { timingSafeEqual } from "node:crypto";
 
 const LIMITS = {
   lineBytes: 64 * 1024,   // one JSON line
@@ -38,10 +39,25 @@ type Data = { room: Room | null; side: Side | null };
 // No look-alikes: 0/O, 1/I, S/5, Z/2, B/8 are all out (TeeJ, room #103).
 const ALPHABET = "ACDEFGHJKLMNPQRTUVWXY34679";
 
-export function startRelay(opts: { port?: number; dataDir?: string; staticDir?: string; heartbeatMs?: number } = {}) {
+export function startRelay(opts: { port?: number; dataDir?: string; staticDir?: string; heartbeatMs?: number; feedbackToken?: string } = {}) {
   const port = opts.port ?? Number(process.env.PORT ?? 8787);
   const dataDir = opts.dataDir ?? process.env.DATA_DIR ?? "./data";
   const staticDir = opts.staticDir ?? process.env.STATIC_DIR ?? "";
+  // Reading the tester reports - the listing, a report's files, and marking
+  // one complete - takes `Authorization: Bearer <FEEDBACK_TOKEN>`. A report
+  // carries the player's name, seed, settings and session log, and the game
+  // is on a public domain. Submitting one (POST /feedback) stays open: the
+  // game runs in a browser, which cannot keep a secret. No token configured
+  // means the reads are closed, not open.
+  const feedbackToken = opts.feedbackToken ?? process.env.FEEDBACK_TOKEN ?? "";
+  const canReadFeedback = (req: Request): boolean => {
+    if (!feedbackToken) return false;
+    const h = req.headers.get("authorization") ?? "";
+    const given = Buffer.from(h.startsWith("Bearer ") ? h.slice(7) : "");
+    const want = Buffer.from(feedbackToken);
+    return given.length === want.length && timingSafeEqual(given, want);
+  };
+  const unauthorized = () => new Response(feedbackToken ? "unauthorized" : "feedback reads need FEEDBACK_TOKEN on the relay", { status: 401, headers: { "WWW-Authenticate": "Bearer" } });
   const roomsDir = join(dataDir, "rooms");
   mkdirSync(roomsDir, { recursive: true });
   const feedbackDir = join(dataDir, "feedback");
@@ -161,6 +177,11 @@ export function startRelay(opts: { port?: number; dataDir?: string; staticDir?: 
         return new Response("websocket only", { status: 426 });
       }
       if (url.pathname === "/healthz") return new Response("ok");
+      // Everything under /feedback other than the submission above is a read of
+      // the reports, or marks one complete: the token, or nothing.
+      if (url.pathname === "/feedback" || url.pathname.startsWith("/feedback/")) {
+        if (!canReadFeedback(req)) return unauthorized();
+      }
       // One report's files by id: /feedback/<id>.json (the report) or .jsonl (its
       // session log), so a report can be replayed from anywhere (TeeJ, room #185).
       const one = /^\/feedback\/([A-Za-z0-9_-]{1,80})\.(json|jsonl)$/.exec(url.pathname);
