@@ -48,6 +48,7 @@ no original to cite.
 | 11 | **F7** Encyclopedia window | no Encyclopedia window exists at all |
 | 12 | **Alt+B / Alt+T / Alt+F** build ships / troops / installations screens | no standalone build/manufacturing window |
 | 13 | **Pack hash in the multiplayer settings** | Two clients on the same `pack.json` id but differing pack *content* desync on the lockstep hash, presenting as a mystery mismatch rather than "wrong pack". `SCHEMA.md` (source repo) carries `schema_version`, which guards engine-vs-pack, not client-vs-client. Put a pack id + content hash in the `settings` blob the relay already forwards through `create`/`join`/`start` (`relay/server.ts`) and verify it on join. Bites once Phase 2+ of the pack migration lands; see `PROJECT.md` phases in the source repo. |
+| 36 | **Old-repo dependency in the generators.** `tools/build-map-json.py`, `build-units-json.py` and `build-rules-json.py` read `sol-conflict-revolution/data/*.json` via `SCR_SOURCE`; `build-rules-json.py` also still copies raw `FamilyId`/`AssetId` seeding assets through (rule 13 refuses them). Vendor the raw JSON the generators need under `tools/raw/` (or retire the generators) and resolve seeding assets to ids | TeeJ, 2026-09-22: the old repo is reference only; nothing here may depend on it |
 | — | Other window-checklist gaps | see `docs/window-checklists.md` (Missing/Partial rows) — e.g. portrait art placeholders, modal-vs-nonmodal chrome |
 
 ## Phase 5 — pack modularity (setting names still in engine code)

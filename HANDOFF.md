@@ -1,3 +1,5 @@
+> **HISTORY.** This file describes the port as it was being made. The port is the game now; `sol-conflict-revolution` is the OLD repo, reference only for the manual, the strategy guide and the `.DAT`/`.DLL` files. Do not act on any step below that touches it (TeeJ, 2026-09-22; see CLAUDE.md Repo facts).
+
 # HANDOFF — Porting sol-conflict-revolution to GDScript
 
 **Date:** 2026-09-02 (v2 — amended after review room AM-4A9S3YYV7KGYHBLPJNGC52XD8B)
