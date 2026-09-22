@@ -59,10 +59,12 @@ var Shield: int
 var Sublight: int
 var Hyperdrive: int
 var Bombardment: int
-var Turbolaser: int
-var LaserRating: int
-var IonCannon: int
-var Torpedoes: int
+## WEAPONS ARE PACK DATA (SCHEMA.md section 6). This used to be four named
+## fields plus four ranges plus three per-arc arrays - "turbolaser", "ion cannon"
+## and "laser" written into the engine. The pack declares the classes; the engine
+## asks what each one DOES through its roles.
+## weapon id -> PackDefs.UnitWeaponDef
+var Weapons: Dictionary = {}
 
 # --- THE REST OF THE COMBAT BLOCK (CAPSHPSD/FIGHTSD; PDF p114) ---
 var Maneuverability: int
@@ -76,15 +78,7 @@ var GravityWell: int
 var InterdictionStrength: int
 var SquadronSize: int
 
-var TurbolaserRange: int
-var IonCannonRange: int
-var LaserRange: int
-var TorpedoRange: int
 
-## Per-arc, indexed by ShipArc (PDF p138).
-var TurbolaserArc: Array[int] = [0, 0, 0, 0]
-var IonCannonArc: Array[int] = [0, 0, 0, 0]
-var LaserArc: Array[int] = [0, 0, 0, 0]
 
 # --- DAMAGE STATE (PDF p114) --- null means undamaged.
 var Damage: ShipDamage = null
@@ -121,3 +115,41 @@ func IsDamaged() -> bool:
 ## Which vars are enums, for hydration and the canonical dump.
 static func _enum_fields() -> Dictionary:
 	return { "Type": Enums.UnitType, "Status": Enums.Status }
+
+
+# --- WEAPONS, asked by ROLE (SCHEMA.md section 6) ---
+
+## This unit's fitting of `id`, or null when it carries none.
+func Weapon(id: String) -> PackDefs.UnitWeaponDef:
+	return Weapons.get(id)
+
+
+## Every weapon this unit carries that has `role`, as [id, UnitWeaponDef] pairs,
+## in the pack's declared order so the sum is deterministic.
+func WeaponsWithRole(role: String) -> Array:
+	var out := []
+	for w in MilitaryCatalog.WeaponOrder():
+		if Weapons.has(w.Id) and w.HasRole(role):
+			out.append([w.Id, Weapons[w.Id]])
+	return out
+
+
+## What this unit throws in `arc`, counting only weapons that do NOT have
+## `excluded_role`. The engine's one question of a weapon.
+func FirepowerInArc(arc: int, excluded_role: String = "") -> int:
+	var n := 0
+	for w in MilitaryCatalog.WeaponOrder():
+		if not Weapons.has(w.Id):
+			continue
+		if not excluded_role.is_empty() and w.HasRole(excluded_role):
+			continue
+		n += (Weapons[w.Id] as PackDefs.UnitWeaponDef).in_arc(arc)
+	return n
+
+
+## The longest reach of any weapon this unit carries.
+func MaxWeaponReach() -> int:
+	var best := 0
+	for id in Weapons:
+		best = max(best, (Weapons[id] as PackDefs.UnitWeaponDef).Reach)
+	return best

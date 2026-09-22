@@ -90,11 +90,11 @@ static func RunGarrisons(galaxy: Array, f: Faction, _day: int) -> void:
 		return
 
 	# The cheapest trooper regiment this side can train. ⚠ That choice is ours.
-	var troopers := Lq.where(MilitaryCatalog.All(), func(u): return u.Type == "Troop" and MilitaryCatalog.CanBeBuiltBy(u, f))
+	var troopers := Lq.where(MilitaryCatalog.All(), func(u): return u.Kind == "troop" and MilitaryCatalog.CanBeBuiltBy(u, f))
 	var sorted := Lq.order_by(troopers, func(u): return u.ConstructionCost)
 	if sorted.is_empty():
 		return
-	var trooper: CatalogDtos.UnitStatRule = sorted[0]
+	var trooper: PackDefs.UnitDef = sorted[0]
 
 	var rows := []
 	for p in ours:
@@ -120,7 +120,7 @@ static func RunGarrisons(galaxy: Array, f: Faction, _day: int) -> void:
 		var factory: Planet = factories[0]
 		if not factory.TryQueueUnit(trooper, p).ok:
 			return
-		print("[Agent] %s ordered a %s from %s for %s (%d/%d%s)." % [NameFor(f), trooper.Name, factory.Name, p.Name, p.TrooperRegiments(), want, ", IN UPRISING" if x.rioting else ""])
+		print("[Agent] %s ordered a %s from %s for %s (%d/%d%s)." % [NameFor(f), trooper.DisplayName, factory.Name, p.Name, p.TrooperRegiments(), want, ", IN UPRISING" if x.rioting else ""])
 		return   # one order a day
 
 
@@ -132,9 +132,9 @@ static func Pending(destination: Planet) -> int:
 	var flying := 0
 	for p in worlds:
 		for t in p.TrainingQueue:
-			if t.Destination == destination and t.UnitRule != null and t.UnitRule.Type == "Troop":
+			if t.Destination == destination and t.UnitRule != null and t.UnitRule.Kind == "troop":
 				queued += 1
 		for t in p.InTransit():
-			if t.Destination == destination and t.UnitRule != null and t.UnitRule.Type == "Troop":
+			if t.Destination == destination and t.UnitRule != null and t.UnitRule.Kind == "troop":
 				flying += 1
 	return queued + flying

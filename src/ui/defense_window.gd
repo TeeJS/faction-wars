@@ -611,7 +611,7 @@ static func PendingFor(here: Planet, kind: int) -> Array[String]:
 						if task.Progress >= task.TotalWork \
 						else ("under construction at %s, %d%%" % [source.Name, task.PercentComplete()])
 
-					found.append("%s  (%s)" % [task.UnitRule.Name, state])
+					found.append("%s  (%s)" % [task.UnitRule.DisplayName, state])
 
 	return found
 

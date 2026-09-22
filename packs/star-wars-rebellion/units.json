@@ -12,15 +12,6 @@
       "research_order": 2,
       "research_cost": 24,
       "weapons": {
-        "turbolaser": {
-          "arcs": {
-            "fore": 60,
-            "aft": 60,
-            "starboard": 120,
-            "port": 120
-          },
-          "range": 50
-        },
         "ion_cannon": {
           "arcs": {
             "fore": 40,
@@ -29,6 +20,15 @@
             "port": 60
           },
           "range": 35
+        },
+        "turbolaser": {
+          "arcs": {
+            "fore": 60,
+            "aft": 60,
+            "starboard": 120,
+            "port": 120
+          },
+          "range": 50
         }
       },
       "stats": {
@@ -111,15 +111,6 @@
       "research_order": 7,
       "research_cost": 60,
       "weapons": {
-        "turbolaser": {
-          "arcs": {
-            "fore": 70,
-            "aft": 0,
-            "starboard": 120,
-            "port": 120
-          },
-          "range": 60
-        },
         "ion_cannon": {
           "arcs": {
             "fore": 50,
@@ -128,6 +119,15 @@
             "port": 40
           },
           "range": 35
+        },
+        "turbolaser": {
+          "arcs": {
+            "fore": 70,
+            "aft": 0,
+            "starboard": 120,
+            "port": 120
+          },
+          "range": 60
         }
       },
       "stats": {
@@ -533,15 +533,6 @@
       "research_order": 11,
       "research_cost": 100,
       "weapons": {
-        "turbolaser": {
-          "arcs": {
-            "fore": 600,
-            "aft": 120,
-            "starboard": 300,
-            "port": 300
-          },
-          "range": 70
-        },
         "ion_cannon": {
           "arcs": {
             "fore": 200,
@@ -550,6 +541,15 @@
             "port": 150
           },
           "range": 40
+        },
+        "turbolaser": {
+          "arcs": {
+            "fore": 600,
+            "aft": 120,
+            "starboard": 300,
+            "port": 300
+          },
+          "range": 70
         }
       },
       "stats": {
@@ -587,15 +587,6 @@
       "research_order": 8,
       "research_cost": 80,
       "weapons": {
-        "turbolaser": {
-          "arcs": {
-            "fore": 40,
-            "aft": 40,
-            "starboard": 80,
-            "port": 80
-          },
-          "range": 60
-        },
         "ion_cannon": {
           "arcs": {
             "fore": 40,
@@ -604,6 +595,15 @@
             "port": 80
           },
           "range": 40
+        },
+        "turbolaser": {
+          "arcs": {
+            "fore": 40,
+            "aft": 40,
+            "starboard": 80,
+            "port": 80
+          },
+          "range": 60
         }
       },
       "stats": {
@@ -641,15 +641,6 @@
       "research_order": 9,
       "research_cost": 80,
       "weapons": {
-        "turbolaser": {
-          "arcs": {
-            "fore": 60,
-            "aft": 40,
-            "starboard": 120,
-            "port": 120
-          },
-          "range": 75
-        },
         "ion_cannon": {
           "arcs": {
             "fore": 40,
@@ -658,6 +649,15 @@
             "port": 40
           },
           "range": 35
+        },
+        "turbolaser": {
+          "arcs": {
+            "fore": 60,
+            "aft": 40,
+            "starboard": 120,
+            "port": 120
+          },
+          "range": 75
         }
       },
       "stats": {
@@ -695,15 +695,6 @@
       "research_order": 10,
       "research_cost": 100,
       "weapons": {
-        "turbolaser": {
-          "arcs": {
-            "fore": 120,
-            "aft": 60,
-            "starboard": 200,
-            "port": 200
-          },
-          "range": 65
-        },
         "ion_cannon": {
           "arcs": {
             "fore": 60,
@@ -712,6 +703,15 @@
             "port": 200
           },
           "range": 40
+        },
+        "turbolaser": {
+          "arcs": {
+            "fore": 120,
+            "aft": 60,
+            "starboard": 200,
+            "port": 200
+          },
+          "range": 65
         }
       },
       "stats": {
@@ -749,19 +749,19 @@
       "research_order": 9,
       "research_cost": 80,
       "weapons": {
-        "turbolaser": {
+        "ion_cannon": {
           "arcs": {
-            "fore": 120,
-            "aft": 80,
+            "fore": 60,
+            "aft": 0,
             "starboard": 40,
             "port": 40
           },
           "range": 60
         },
-        "ion_cannon": {
+        "turbolaser": {
           "arcs": {
-            "fore": 60,
-            "aft": 0,
+            "fore": 120,
+            "aft": 80,
             "starboard": 40,
             "port": 40
           },
@@ -848,15 +848,6 @@
       "research_order": 6,
       "research_cost": 70,
       "weapons": {
-        "turbolaser": {
-          "arcs": {
-            "fore": 10,
-            "aft": 0,
-            "starboard": 20,
-            "port": 20
-          },
-          "range": 50
-        },
         "ion_cannon": {
           "arcs": {
             "fore": 0,
@@ -865,6 +856,15 @@
             "port": 10
           },
           "range": 35
+        },
+        "turbolaser": {
+          "arcs": {
+            "fore": 10,
+            "aft": 0,
+            "starboard": 20,
+            "port": 20
+          },
+          "range": 50
         },
         "laser": {
           "arcs": {
@@ -1010,15 +1010,6 @@
       "research_order": 0,
       "research_cost": 0,
       "weapons": {
-        "turbolaser": {
-          "arcs": {
-            "fore": 100,
-            "aft": 40,
-            "starboard": 60,
-            "port": 60
-          },
-          "range": 50
-        },
         "ion_cannon": {
           "arcs": {
             "fore": 100,
@@ -1027,6 +1018,15 @@
             "port": 40
           },
           "range": 35
+        },
+        "turbolaser": {
+          "arcs": {
+            "fore": 100,
+            "aft": 40,
+            "starboard": 60,
+            "port": 60
+          },
+          "range": 50
         }
       },
       "stats": {
@@ -1064,15 +1064,6 @@
       "research_order": 11,
       "research_cost": 100,
       "weapons": {
-        "turbolaser": {
-          "arcs": {
-            "fore": 500,
-            "aft": 150,
-            "starboard": 300,
-            "port": 300
-          },
-          "range": 70
-        },
         "ion_cannon": {
           "arcs": {
             "fore": 200,
@@ -1081,6 +1072,15 @@
             "port": 200
           },
           "range": 40
+        },
+        "turbolaser": {
+          "arcs": {
+            "fore": 500,
+            "aft": 150,
+            "starboard": 300,
+            "port": 300
+          },
+          "range": 70
         }
       },
       "stats": {
@@ -1163,15 +1163,6 @@
       "research_order": 0,
       "research_cost": 0,
       "weapons": {
-        "turbolaser": {
-          "arcs": {
-            "fore": 1400,
-            "aft": 1400,
-            "starboard": 1400,
-            "port": 1400
-          },
-          "range": 60
-        },
         "ion_cannon": {
           "arcs": {
             "fore": 400,
@@ -1180,6 +1171,15 @@
             "port": 400
           },
           "range": 40
+        },
+        "turbolaser": {
+          "arcs": {
+            "fore": 1400,
+            "aft": 1400,
+            "starboard": 1400,
+            "port": 1400
+          },
+          "range": 60
         }
       },
       "stats": {
@@ -1252,15 +1252,6 @@
       "research_order": 7,
       "research_cost": 80,
       "weapons": {
-        "turbolaser": {
-          "arcs": {
-            "fore": 120,
-            "aft": 80,
-            "starboard": 80,
-            "port": 80
-          },
-          "range": 60
-        },
         "ion_cannon": {
           "arcs": {
             "fore": 40,
@@ -1269,6 +1260,15 @@
             "port": 40
           },
           "range": 35
+        },
+        "turbolaser": {
+          "arcs": {
+            "fore": 120,
+            "aft": 80,
+            "starboard": 80,
+            "port": 80
+          },
+          "range": 60
         }
       },
       "stats": {
@@ -1306,15 +1306,6 @@
       "research_order": 10,
       "research_cost": 100,
       "weapons": {
-        "turbolaser": {
-          "arcs": {
-            "fore": 200,
-            "aft": 60,
-            "starboard": 120,
-            "port": 120
-          },
-          "range": 70
-        },
         "ion_cannon": {
           "arcs": {
             "fore": 200,
@@ -1323,6 +1314,15 @@
             "port": 80
           },
           "range": 40
+        },
+        "turbolaser": {
+          "arcs": {
+            "fore": 200,
+            "aft": 60,
+            "starboard": 120,
+            "port": 120
+          },
+          "range": 70
         }
       },
       "stats": {
@@ -1511,7 +1511,8 @@
         "maneuverability": 8,
         "hyperdrive": 60,
         "hyperdrive_damaged": 0,
-        "bombardment": 0
+        "bombardment": 0,
+        "squadron_size": 12
       },
       "source_family_id": 28,
       "source_id": 1,
@@ -1557,7 +1558,8 @@
         "maneuverability": 3,
         "hyperdrive": 60,
         "hyperdrive_damaged": 0,
-        "bombardment": 2
+        "bombardment": 2,
+        "squadron_size": 12
       },
       "source_family_id": 28,
       "source_id": 2,
@@ -1595,7 +1597,8 @@
         "maneuverability": 5,
         "hyperdrive": 60,
         "hyperdrive_damaged": 0,
-        "bombardment": 1
+        "bombardment": 1,
+        "squadron_size": 12
       },
       "source_family_id": 28,
       "source_id": 3,
@@ -1641,7 +1644,8 @@
         "maneuverability": 4,
         "hyperdrive": 60,
         "hyperdrive_damaged": 0,
-        "bombardment": 2
+        "bombardment": 2,
+        "squadron_size": 12
       },
       "source_family_id": 28,
       "source_id": 4,
@@ -1675,7 +1679,8 @@
         "maneuverability": 5,
         "hyperdrive": 0,
         "hyperdrive_damaged": 0,
-        "bombardment": 0
+        "bombardment": 0,
+        "squadron_size": 12
       },
       "source_family_id": 28,
       "source_id": 5,
@@ -1709,7 +1714,8 @@
         "maneuverability": 8,
         "hyperdrive": 0,
         "hyperdrive_damaged": 0,
-        "bombardment": 0
+        "bombardment": 0,
+        "squadron_size": 12
       },
       "source_family_id": 28,
       "source_id": 6,
@@ -1755,7 +1761,8 @@
         "maneuverability": 4,
         "hyperdrive": 0,
         "hyperdrive_damaged": 0,
-        "bombardment": 2
+        "bombardment": 2,
+        "squadron_size": 12
       },
       "source_family_id": 28,
       "source_id": 7,
@@ -1793,7 +1800,8 @@
         "maneuverability": 6,
         "hyperdrive": 60,
         "hyperdrive_damaged": 0,
-        "bombardment": 1
+        "bombardment": 1,
+        "squadron_size": 12
       },
       "source_family_id": 28,
       "source_id": 8,
@@ -1812,7 +1820,10 @@
       "research_cost": 0,
       "weapons": {},
       "stats": {
-        "detection": 15
+        "detection": 15,
+        "bombardment_defense": 5,
+        "attack": 6,
+        "defense": 3
       },
       "source_family_id": 16,
       "source_id": 1,
@@ -1831,7 +1842,10 @@
       "research_cost": 0,
       "weapons": {},
       "stats": {
-        "detection": 10
+        "detection": 10,
+        "bombardment_defense": 5,
+        "attack": 3,
+        "defense": 5
       },
       "source_family_id": 16,
       "source_id": 2,
@@ -1850,7 +1864,10 @@
       "research_cost": 12,
       "weapons": {},
       "stats": {
-        "detection": 35
+        "detection": 35,
+        "bombardment_defense": 2,
+        "attack": 1,
+        "defense": 4
       },
       "source_family_id": 16,
       "source_id": 3,
@@ -1869,7 +1886,10 @@
       "research_cost": 60,
       "weapons": {},
       "stats": {
-        "detection": 20
+        "detection": 20,
+        "bombardment_defense": 4,
+        "attack": 8,
+        "defense": 4
       },
       "source_family_id": 16,
       "source_id": 4,
@@ -1888,7 +1908,10 @@
       "research_cost": 40,
       "weapons": {},
       "stats": {
-        "detection": 20
+        "detection": 20,
+        "bombardment_defense": 9,
+        "attack": 2,
+        "defense": 8
       },
       "source_family_id": 16,
       "source_id": 5,
@@ -1907,7 +1930,10 @@
       "research_cost": 0,
       "weapons": {},
       "stats": {
-        "detection": 25
+        "detection": 25,
+        "bombardment_defense": 6,
+        "attack": 6,
+        "defense": 6
       },
       "source_family_id": 16,
       "source_id": 6,
@@ -1926,7 +1952,10 @@
       "research_cost": 0,
       "weapons": {},
       "stats": {
-        "detection": 20
+        "detection": 20,
+        "bombardment_defense": 2,
+        "attack": 5,
+        "defense": 3
       },
       "source_family_id": 16,
       "source_id": 7,
@@ -1945,7 +1974,10 @@
       "research_cost": 0,
       "weapons": {},
       "stats": {
-        "detection": 15
+        "detection": 15,
+        "bombardment_defense": 5,
+        "attack": 3,
+        "defense": 5
       },
       "source_family_id": 16,
       "source_id": 8,
@@ -1964,7 +1996,10 @@
       "research_cost": 46,
       "weapons": {},
       "stats": {
-        "detection": 5
+        "detection": 5,
+        "bombardment_defense": 2,
+        "attack": 8,
+        "defense": 2
       },
       "source_family_id": 16,
       "source_id": 9,
@@ -1983,7 +2018,10 @@
       "research_cost": 66,
       "weapons": {},
       "stats": {
-        "detection": 30
+        "detection": 30,
+        "bombardment_defense": 6,
+        "attack": 8,
+        "defense": 8
       },
       "source_family_id": 16,
       "source_id": 10,
@@ -2002,7 +2040,11 @@
       "research_cost": 0,
       "weapons": {},
       "stats": {
-        "detection": 0
+        "detection": 0,
+        "diplomacy_rating": 0,
+        "espionage_rating": 55,
+        "combat_rating": 20,
+        "leadership_rating": 50
       },
       "source_family_id": 60,
       "source_id": 1,
@@ -2021,7 +2063,11 @@
       "research_cost": 0,
       "weapons": {},
       "stats": {
-        "detection": 0
+        "detection": 0,
+        "diplomacy_rating": 0,
+        "espionage_rating": 60,
+        "combat_rating": 55,
+        "leadership_rating": 0
       },
       "source_family_id": 60,
       "source_id": 2,
@@ -2040,7 +2086,11 @@
       "research_cost": 0,
       "weapons": {},
       "stats": {
-        "detection": 0
+        "detection": 0,
+        "diplomacy_rating": 0,
+        "espionage_rating": 40,
+        "combat_rating": 30,
+        "leadership_rating": 0
       },
       "source_family_id": 60,
       "source_id": 3,
@@ -2059,7 +2109,11 @@
       "research_cost": 0,
       "weapons": {},
       "stats": {
-        "detection": 0
+        "detection": 0,
+        "diplomacy_rating": 0,
+        "espionage_rating": 70,
+        "combat_rating": 0,
+        "leadership_rating": 0
       },
       "source_family_id": 60,
       "source_id": 4,
@@ -2078,7 +2132,11 @@
       "research_cost": 0,
       "weapons": {},
       "stats": {
-        "detection": 0
+        "detection": 0,
+        "diplomacy_rating": 0,
+        "espionage_rating": 30,
+        "combat_rating": 10,
+        "leadership_rating": 0
       },
       "source_family_id": 60,
       "source_id": 5,
@@ -2097,7 +2155,11 @@
       "research_cost": 0,
       "weapons": {},
       "stats": {
-        "detection": 0
+        "detection": 0,
+        "diplomacy_rating": 0,
+        "espionage_rating": 60,
+        "combat_rating": 5,
+        "leadership_rating": 0
       },
       "source_family_id": 60,
       "source_id": 6,
@@ -2116,7 +2178,11 @@
       "research_cost": 0,
       "weapons": {},
       "stats": {
-        "detection": 0
+        "detection": 0,
+        "diplomacy_rating": 0,
+        "espionage_rating": 55,
+        "combat_rating": 55,
+        "leadership_rating": 50
       },
       "source_family_id": 60,
       "source_id": 7,
@@ -2135,7 +2201,11 @@
       "research_cost": 0,
       "weapons": {},
       "stats": {
-        "detection": 0
+        "detection": 0,
+        "diplomacy_rating": 0,
+        "espionage_rating": 55,
+        "combat_rating": 70,
+        "leadership_rating": 0
       },
       "source_family_id": 60,
       "source_id": 8,
@@ -2154,7 +2224,11 @@
       "research_cost": 0,
       "weapons": {},
       "stats": {
-        "detection": 0
+        "detection": 0,
+        "diplomacy_rating": 0,
+        "espionage_rating": 0,
+        "combat_rating": 0,
+        "leadership_rating": 0
       },
       "source_family_id": 60,
       "source_id": 9,

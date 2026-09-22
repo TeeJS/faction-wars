@@ -59,7 +59,7 @@ static func apply(c: Command) -> Result:
 			return p.TryQueueMany(str(a.get("type", "")), int(a.get("tier", 1)), EntityIndex.planet(str(a.get("destination", ""))), int(a.get("count", 1)))
 		"queue_units":
 			var p: Planet = EntityIndex.planet(str(a.get("planet", "")))
-			var rule: CatalogDtos.UnitStatRule = Lq.first_or_null(MilitaryCatalog.All(), func(r) -> bool: return r.Name == str(a.get("rule", "")))
+			var rule: PackDefs.UnitDef = Lq.first_or_null(MilitaryCatalog.All(), func(r) -> bool: return r.DisplayName == str(a.get("rule", "")))
 			if p == null or rule == null:
 				return Result.fail("Unknown world or unit type.")
 			return p.TryQueueManyUnits(rule, EntityIndex.planet(str(a.get("destination", ""))), int(a.get("count", 1)))

@@ -47,11 +47,16 @@ ARCS = ["Fore", "Aft", "Starboard", "Port"]
 #                            firing at fighters, and ion by nothing (:429-450)
 #   requires_shields_down    the torpedo term needs ShieldFraction(target) <= 0
 #   squadron_only            ...and self_u.IsSquadron() (:453)
+# ⚠ DECLARATION ORDER IS LOAD-BEARING. TacticalBattle.Power accumulates in
+# FLOAT and rounds to f32 after every weapon, so the ORDER the weapons are
+# summed in changes the result. The original summed ion, then turbolaser, then
+# laser; the engine now sums in the pack's declared order, so this list keeps
+# that order. Re-ordering it is a behaviour change, not a cosmetic one.
 WEAPONS = {
-    "turbolaser": ("Turbolaser", "Turbolaser", "TurbolaserRange",
-                   ["fighter_accuracy_scaled"], True),
     "ion_cannon": ("Ion Cannon", "IonCannon", "IonCannonRange",
                    ["no_fighter_effect"], True),
+    "turbolaser": ("Turbolaser", "Turbolaser", "TurbolaserRange",
+                   ["fighter_accuracy_scaled"], True),
     "laser":      ("Laser", "Laser", "LaserRange",
                    ["fighter_accuracy_scaled"], True),
     "torpedo":    ("Torpedo", "Torpedoes", "TorpedoRange",
@@ -78,7 +83,26 @@ STATS = {
     "Bombardment": "bombardment", "DamageControl": "damage_control",
     "WeaponRecharge": "weapon_recharge", "ShieldRecharge": "shield_recharge",
     "FighterCapacity": "fighter_capacity", "TroopCapacity": "troop_capacity",
+    # Present on SOME ROWS ONLY - the troop and SpecForce columns. The rows do
+    # not share a key set, so a stat table derived from row 0 (a capital ship)
+    # misses every one of these.
+    "BombardmentDefense": "bombardment_defense", "Attack": "attack",
+    "Defense": "defense", "SquadronSize": "squadron_size",
+    "DiplomacyRating": "diplomacy_rating", "EspionageRating": "espionage_rating",
+    "CombatRating": "combat_rating", "LeadershipRating": "leadership_rating",
 }
+
+# Columns that are identity/among the weapon block, and so are not stats. Any
+# column in the data that is in NEITHER this set nor STATS is unaccounted for,
+# which main() refuses to write on - see check_every_column_is_carried.
+NON_STAT_COLUMNS = {
+    "Id", "FamilyId", "StringId", "Name", "Type", "BuildableBy",
+    "ConstructionCost", "MaintenanceCost", "ResearchOrder", "ResearchCost",
+    "Turbolaser", "IonCannon", "LaserRating",
+    "TurbolaserRange", "IonCannonRange", "LaserRange",
+    "Torpedoes", "TorpedoRange",
+} | {p + a for p in ("Turbolaser", "IonCannon", "Laser")
+     for a in ("Fore", "Aft", "Starboard", "Port")}
 
 # Derived columns: each is exactly the sum of its four arcs in all 57 rows, so
 # they are NOT carried. Recorded here so the omission is deliberate, not missed.
@@ -92,6 +116,26 @@ def slug(name: str) -> str:
 def load(path: Path):
     with path.open(encoding="utf-8") as fh:
         return json.load(fh)
+
+
+def check_every_column_is_carried(rows, problems: list) -> None:
+    """No column may be silently dropped.
+
+    The 57 rows DO NOT SHARE A KEY SET - Torpedoes sit on five fighters, and
+    Attack/Defense/SquadronSize/the four ratings on the troops and SpecForces.
+    A stat table written from the first row (a capital ship) misses all of them,
+    and nothing downstream complains: the unit just gets a zero. So take the
+    UNION of every key across every row and insist each one is accounted for.
+    """
+    seen = set()
+    for r in rows:
+        seen |= set(r.keys())
+    unaccounted = sorted(seen - set(STATS) - NON_STAT_COLUMNS)
+    for col in unaccounted:
+        n = sum(1 for r in rows if col in r)
+        problems.append(
+            f"column '{col}' (on {n}/{len(rows)} rows) is carried nowhere - "
+            "add it to STATS or to NON_STAT_COLUMNS deliberately")
 
 
 def check_derived_columns(rows, problems: list) -> None:
@@ -202,6 +246,7 @@ def main() -> int:
     problems: list = []
     rows = load(UNITS_IN)
 
+    check_every_column_is_carried(rows, problems)
     check_derived_columns(rows, problems)
     weapons = build_weapons(rows, problems)
     units = build_units(rows, problems)

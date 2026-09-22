@@ -87,9 +87,18 @@ static func Reset() -> void:
 static func PowerOf(u: Unit, against_fighters: bool) -> int:
 	if u == null:
 		return 0
-	var power := u.Turbolaser + u.LaserRating
-	if not against_fighters:
-		power += u.IonCannon
+	# The strategic mirror of TacticalBattle.PowerOf: everything the unit
+	# throws, less the weapons the pack marks no_fighter_effect when the target
+	# is a fighter. Summed over all arcs, which is what the table's old
+	# "Turbolaser"/"IonCannon"/"LaserRating" columns were.
+	var power := 0
+	for w in MilitaryCatalog.WeaponOrder():
+		var fitted: PackDefs.UnitWeaponDef = u.Weapon(w.Id)
+		if fitted == null:
+			continue
+		if against_fighters and w.HasRole("no_fighter_effect"):
+			continue
+		power += fitted.total()
 	return power
 
 

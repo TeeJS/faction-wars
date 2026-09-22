@@ -1,6 +1,19 @@
 {
   "weapons": [
     {
+      "id": "ion_cannon",
+      "display_name": "Ion Cannon",
+      "roles": [
+        "no_fighter_effect"
+      ],
+      "arcs": true,
+      "observed_ranges": [
+        35,
+        40,
+        60
+      ]
+    },
+    {
       "id": "turbolaser",
       "display_name": "Turbolaser",
       "roles": [
@@ -14,19 +27,6 @@
         65,
         70,
         75
-      ]
-    },
-    {
-      "id": "ion_cannon",
-      "display_name": "Ion Cannon",
-      "roles": [
-        "no_fighter_effect"
-      ],
-      "arcs": true,
-      "observed_ranges": [
-        35,
-        40,
-        60
       ]
     },
     {

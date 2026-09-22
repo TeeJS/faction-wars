@@ -415,7 +415,7 @@ static func DescribeTask(t: ConstructionTask, where: String, home: Planet = null
 	var pct := 0 if t.TotalWork <= 0 else clampi(t.Progress * 100 / t.TotalWork, 0, 100)
 	var what: String
 	if t.UnitRule != null:
-		what = t.UnitRule.Name
+		what = t.UnitRule.DisplayName
 	else:
 		var type_name := Facility.NameOf(t.Family, t.Tier)
 		what = "Advanced %s" % type_name if t.Tier > 1 else type_name

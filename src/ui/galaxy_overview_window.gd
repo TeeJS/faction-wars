@@ -79,16 +79,16 @@ func Refresh() -> void:
 		Row(rule.DisplayName, held, held * rule.MaintenanceCost)
 
 	Head("Ships")
-	Units(worlds, us, "CapitalShip")
+	Units(worlds, us, "capital_ship")
 
 	Head("Fighters")
-	Units(worlds, us, "Fighter")
+	Units(worlds, us, "fighter")
 
 	Head("Troops")
-	Units(worlds, us, "Troop")
+	Units(worlds, us, "troop")
 
 	Head("Special Forces")
-	Units(worlds, us, "SpecForce")
+	Units(worlds, us, "spec_force")
 
 	_rows.add_child(HSeparator.new())
 
@@ -102,7 +102,7 @@ func Refresh() -> void:
 	_rows.add_child(foot)
 
 
-func Units(worlds: Array, us: Faction, type: String) -> void:
+func Units(worlds: Array, us: Faction, kind: String) -> void:
 	# Everything of that type this side can field, held anywhere it can be.
 	var all: Array = []
 	for p in worlds:
@@ -116,10 +116,10 @@ func Units(worlds: Array, us: Faction, type: String) -> void:
 				if s.Hangar != null:
 					all.append_array(s.Hangar)
 
-	var rules: Array = Lq.where(MilitaryCatalog.All(), func(r) -> bool: return r.Type == type and MilitaryCatalog.CanBeBuiltBy(r, us))
-	for rule in Lq.order_by(rules, func(r) -> String: return r.Name):
-		var held: int = Lq.count(all, func(u: Unit) -> bool: return u.Name == rule.Name and u.Faction == us)
-		Row(rule.Name, held, held * rule.MaintenanceCost)
+	var rules: Array = Lq.where(MilitaryCatalog.All(), func(r) -> bool: return r.Kind == kind and MilitaryCatalog.CanBeBuiltBy(r, us))
+	for rule in Lq.order_by(rules, func(r) -> String: return r.DisplayName):
+		var held: int = Lq.count(all, func(u: Unit) -> bool: return u.Name == rule.DisplayName and u.Faction == us)
+		Row(rule.DisplayName, held, held * rule.MaintenanceCost)
 
 
 func Head(text: String) -> void:

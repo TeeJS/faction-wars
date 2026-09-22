@@ -441,10 +441,13 @@ class UnitWeaponDef:
 			o.Reach = JsonUtil.int_or(d, "range")
 		return o
 
-	## This weapon's throw in one arc; the flat Amount when it has no arcs.
+	## This weapon's throw in one arc. An ARC-LESS weapon contributes NOTHING
+	## here - a torpedo is not part of a broadside, and counting its payload as
+	## arc firepower both inflates the shot and skews the divisor it is averaged
+	## by. Read arc-less payloads with total().
 	func in_arc(arc: int) -> int:
 		if Arcs.is_empty():
-			return Amount
+			return 0
 		return Arcs[arc] if arc >= 0 and arc < Arcs.size() else 0
 
 	## Every arc summed - the "Turbolaser"/"IonCannon"/"LaserRating" columns the
