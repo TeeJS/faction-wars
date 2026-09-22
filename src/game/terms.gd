@@ -31,8 +31,13 @@ const DEFAULTS := {
 	"energy":               "Energy",
 	"raw_materials":        "Raw Materials",
 	"refined_materials":    "Refined Materials",
+	"mine":                 "extractor",
 	"mines":                "extractors",
+	"refinery":             "refinery",
 	"refineries":           "refineries",
+	# the two defence kinds, as prose plurals
+	"planetary_shields":    "shield sites",
+	"orbital_batteries":    "gun batteries",
 	# unit kinds, singular and plural
 	"fighter_squadron":     "Fighter Squadron",
 	"fighter_squadrons":    "Fighter Squadrons",
@@ -63,3 +68,15 @@ static func label(key: String) -> String:
 ## "Label:" - the common form in the status windows.
 static func field(key: String) -> String:
 	return label(key) + ":"
+
+
+## The word in running prose ("carries no trooper regiments").
+static func lower(key: String) -> String:
+	return label(key).to_lower()
+
+
+## The word starting a sentence ("In hyperspace - 3d out"): first letter up,
+## the rest as the pack wrote it.
+static func cap(key: String) -> String:
+	var s := label(key)
+	return s if s.is_empty() else s[0].to_upper() + s.substr(1)

@@ -46,7 +46,7 @@ static func ProcessDay(galaxy: Array, day: int, _rng: Prng) -> void:
 			if not GameSettings.IsHuman(holder):
 				continue
 			var msg := GameMessage.new("Smuggling on %s" % p.Name,
-				"%s does not strongly support us, and smugglers are working the mines and refineries there. Support has fallen to %d%%.\n\nA Diplomacy mission would raise it out of their reach." % [p.Name, p.SupportFor(holder)],
+				"%s does not strongly support us, and smugglers are working the %s and %s there. Support has fallen to %d%%.\n\nA Diplomacy mission would raise it out of their reach." % [p.Name, Terms.lower("mines"), Terms.lower("refineries"), p.SupportFor(holder)],
 				Enums.MessageCategory.Missions, day, p)
 			msg.Type = Enums.MessageType.Smuggling
 			EventBus.Tell(holder, msg)

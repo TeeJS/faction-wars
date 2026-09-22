@@ -166,9 +166,9 @@ func Forces(fleet: Fleet) -> void:
 	if ships.is_empty():
 		Row("None", "")
 	for s in ships:
-		Row(s.Name, "Operational   hull %d   shield %d" % [s.Hull, s.Shield])
+		Row(s.Name, "Operational   %s %d   %s %d" % [Terms.lower("hull"), s.Hull, Terms.lower("shield"), s.Shield])
 
-	Head("Fighter Squadrons")
+	Head(Terms.label("fighter_squadrons"))
 	var fighters: Array = []
 	for s in fleet.Ships:
 		if s.Hangar != null:
@@ -201,7 +201,7 @@ func SystemSummary() -> void:
 	Head("Defense Facilities")
 	Section(Enums.IntelSection.DefensiveFacilities)
 
-	Head("Trooper Regiments")
+	Head(Terms.label("trooper_regiments"))
 	Section(Enums.IntelSection.Troopers)
 
 

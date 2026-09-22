@@ -244,18 +244,18 @@ func CanQueueFacility(type: String, tier: int, destination: Planet) -> Result:
 		return Result.fail("%s is not under your control." % destination.Name)
 
 	if destination.FreeEnergySlots() <= 0:
-		return Result.fail("%s has no free energy slots (%d/%d used). Scrap a facility to make room." % [destination.Name, destination.UsedEnergySlots(), destination.BaseEnergy])
+		return Result.fail("%s has no free %s slots (%d/%d used). Scrap a facility to make room." % [destination.Name, Terms.lower("energy"), destination.UsedEnergySlots(), destination.BaseEnergy])
 
 	if type == "mine" and destination.FreeMineSlots() <= 0:
-		return Result.fail("%s has no raw material sites left (%d/%d mined)." % [destination.Name, destination.UsedMineSlots(), destination.BaseRawMaterials])
+		return Result.fail("%s has no %s sites left (%d/%d used)." % [destination.Name, Terms.lower("raw_materials"), destination.UsedMineSlots(), destination.BaseRawMaterials])
 
 	if Economy.For(owner).RefinedMaterials < stats.ConstructionCost:
-		return Result.fail("Need %d refined material, have %d." % [stats.ConstructionCost, Economy.For(owner).RefinedMaterials])
+		return Result.fail("Need %d %s, have %d." % [stats.ConstructionCost, Terms.lower("refined_materials"), Economy.For(owner).RefinedMaterials])
 
 	# A zero-maintenance item is ALWAYS buildable (manual p086's escape hatch).
 	var available_maintenance := Economy.MaintenanceAvailable(owner)
 	if stats.MaintenanceCost > 0 and available_maintenance < stats.MaintenanceCost:
-		return Result.fail("Need %d maintenance capacity, have %d. Build a mine/refinery pair." % [stats.MaintenanceCost, available_maintenance])
+		return Result.fail("Need %d maintenance capacity, have %d. Build a %s/%s pair." % [stats.MaintenanceCost, available_maintenance, Terms.lower("mine"), Terms.lower("refinery")])
 
 	return Result.success()
 
@@ -391,11 +391,11 @@ func CanQueueUnit(rule: PackDefs.UnitDef, destination: Planet) -> Result:
 		return Result.fail("%s is not under your control." % destination.Name)
 
 	if Economy.For(owner).RefinedMaterials < rule.ConstructionCost:
-		return Result.fail("Need %d refined material, have %d." % [rule.ConstructionCost, Economy.For(owner).RefinedMaterials])
+		return Result.fail("Need %d %s, have %d." % [rule.ConstructionCost, Terms.lower("refined_materials"), Economy.For(owner).RefinedMaterials])
 
 	var available_maintenance := Economy.MaintenanceAvailable(owner)
 	if rule.MaintenanceCost > 0 and available_maintenance < rule.MaintenanceCost:
-		return Result.fail("Need %d maintenance capacity, have %d. Build a mine/refinery pair." % [rule.MaintenanceCost, available_maintenance])
+		return Result.fail("Need %d maintenance capacity, have %d. Build a %s/%s pair." % [rule.MaintenanceCost, available_maintenance, Terms.lower("mine"), Terms.lower("refinery")])
 
 	return Result.success()
 
@@ -578,7 +578,7 @@ func WarnGarrison(need: int, have: int) -> void:
 	if not GameSettings.IsHuman(ControllingFaction):
 		return
 	var msg := GameMessage.new("Near Uprising",
-		"Unrest has pushed %s close to uprising.\n\nIt holds %d trooper regiment(s) against a garrison requirement of %d. Move troops there, or train more, before the populace rises." % [Name, have, need],
+		"Unrest has pushed %s close to uprising.\n\nIt holds %d %s against a garrison requirement of %d. Move troops there, or train more, before the populace rises." % [Name, have, Terms.lower("trooper_regiments"), need],
 		Enums.MessageCategory.Defense, StrategicTickManager.Today, self)
 	msg.Type = Enums.MessageType.GarrisonWarning
 	EventBus.Tell(ControllingFaction, msg)

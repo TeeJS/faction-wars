@@ -125,7 +125,7 @@ static func CanWithdraw(fleet: Fleet, enemy: Fleet, from: Planet) -> Result:
 	if EnemyHoldsThemHere(enemy):
 		return Result.fail("%s is projecting a gravity well. We cannot withdraw." % enemy.Name)
 	if not Lq.any(fleet.Ships, func(s): return s.Hyperdrive > 0):
-		return Result.fail("No hyperdrive-capable ship remains. We cannot withdraw.")
+		return Result.fail("No ship able to leave the system remains. We cannot withdraw.")
 	if Refuge(fleet, from) == null:
 		return Result.fail("There is no friendly or neutral system to withdraw to.")
 	return Result.success()
@@ -285,7 +285,7 @@ static func Describe(u: TacticalBattle.TacticalUnit) -> String:
 	if u.Destroyed() or u.Damage == null:
 		return u.Name()
 	if u.Damage.Hull < u.Damage.MaxHull or u.Damage.IsDamaged():
-		return "%s  (hull %d/%d)" % [u.Name(), u.Damage.Hull, u.Damage.MaxHull]
+		return "%s  (%s %d/%d)" % [u.Name(), Terms.lower("hull"), u.Damage.Hull, u.Damage.MaxHull]
 	return u.Name()
 
 

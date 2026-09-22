@@ -90,8 +90,8 @@ static func Pretty(c: int) -> String:
 	match c:
 		Enums.IntelCategory.SystemStatus:         return "the state of the system"
 		Enums.IntelCategory.MilitaryUnits:        return "troops, fighters and ships"
-		Enums.IntelCategory.DefensiveFacilities:  return "shields and orbital batteries"
-		Enums.IntelCategory.ProductionFacilities: return "mines, refineries and yards"
+		Enums.IntelCategory.DefensiveFacilities:  return "%s and %s" % [Terms.lower("planetary_shields"), Terms.lower("orbital_batteries")]
+		Enums.IntelCategory.ProductionFacilities: return "%s, %s and yards" % [Terms.lower("mines"), Terms.lower("refineries")]
 		Enums.IntelCategory.SpecForces:           return "special forces present"
 		Enums.IntelCategory.Characters:           return "who is on the system"
 		Enums.IntelCategory.Manufacturing:        return "what is being built"

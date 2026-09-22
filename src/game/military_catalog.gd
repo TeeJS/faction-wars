@@ -52,6 +52,11 @@ static func ById(id: String) -> PackDefs.UnitDef:
 	return _by_id.get(id)
 
 
+## The first unit the pack marks with a role (the superweapon, for messages).
+static func FirstWithRole(role: String) -> PackDefs.UnitDef:
+	return Lq.first_or_null(_all, func(d: PackDefs.UnitDef) -> bool: return d.Roles.has(role))
+
+
 ## The roles units.json gives this unit (SCHEMA.md section 6).
 static func RolesOf(id: String) -> Array:
 	var d: PackDefs.UnitDef = _by_id.get(id)

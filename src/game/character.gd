@@ -113,7 +113,7 @@ func TryTakeCommand(rank: int) -> Result:
 	if IsCaptured():
 		return Result.fail("%s is a prisoner and answers to the other side." % Name)
 	if Status == Enums.Status.Enroute:
-		return Result.fail("%s is in hyperspace." % Name)
+		return Result.fail("%s is %s." % [Name, Terms.label("in_transit")])
 	if rank == Enums.Rank.None:
 		Rank = Enums.Rank.None
 		Commanding = null

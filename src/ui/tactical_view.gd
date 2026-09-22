@@ -203,8 +203,8 @@ func DrawHud(size_: Vector2) -> void:
 	for s in _battle.Sides:
 		var ships: int = Lq.count(s.Ships, func(u) -> bool: return u.Alive() and not u.Destroyed())
 		var sq: int = Lq.count(s.Squadrons, func(u) -> bool: return u.Alive() and not u.Destroyed())
-		var line: String = "%s   Capital Ships %d   Fighter Squadrons %d   strength %d" % [
-			s.Faction.DisplayName if s.Faction != null else "?", ships, sq, s.Strength]
+		var line: String = "%s   Capital Ships %d   %s %d   strength %d" % [
+			s.Faction.DisplayName if s.Faction != null else "?", ships, Terms.label("fighter_squadrons"), sq, s.Strength]
 		draw_string(font, Vector2(16, y), line, HORIZONTAL_ALIGNMENT_LEFT, -1, fs,
 			s.Faction.FactionColor if s.Faction != null else Color.GRAY)
 		y += 18
@@ -212,7 +212,7 @@ func DrawHud(size_: Vector2) -> void:
 	if _selected != null:
 		var d: ShipDamage = _selected.Damage
 		var sel: String = "%s   %s" % [_selected.Name(), JsonUtil.enum_name(TacticalBattle.TacticalState, _selected.State)] \
-			+ (("   hull %d/%d   shield %d/%d" % [d.Hull, d.MaxHull, d.Shield, d.MaxShield]) if d != null else "")
+			+ (("   %s %d/%d   %s %d/%d" % [Terms.lower("hull"), d.Hull, d.MaxHull, Terms.lower("shield"), d.Shield, d.MaxShield]) if d != null else "")
 		draw_string(font, Vector2(16, size_.y - 44), sel, HORIZONTAL_ALIGNMENT_LEFT, -1, fs, Color(0.95, 0.95, 1.0))
 
 	# The mode banner. "Observe Battle" is the original's own name for it.
