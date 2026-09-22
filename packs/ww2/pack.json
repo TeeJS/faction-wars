@@ -19,6 +19,11 @@
     ],
     "galaxy_size_default": "standard"
   },
+  "victory_tips": {
+    "_comment": "The Multiplayer Options tooltips (manual p162 pattern). Both headquarters are fixed capitals, so both sides CAPTURE; the names follow factions.json.",
+    "standard": "Allied Win Conditions: Capture Germany and capture Adolf Hitler and Benito Mussolini.\nAxis Win Conditions: Capture Britain and capture Winston Churchill and Franklin D. Roosevelt.",
+    "hq_only": "Allied Win Conditions: Capture Germany.\nAxis Win Conditions: Capture Britain."
+  },
   "credits": [
     "World War II faction pack for the Faction Wars engine.",
     "Unit, facility and seeding numbers are the Star Wars: Rebellion tables re-skinned; balance is measured, not invented.",
