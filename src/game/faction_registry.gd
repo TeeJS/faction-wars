@@ -5,9 +5,12 @@ extends RefCounted
 ## a multiplayer room), else the `--pack=<id>` command-line argument, else
 ## packs/active.json. The engine holds no default pack id.
 ##
-## ONE PACK PER PROCESS. Every catalog is static state filled from the pack, so
-## a second, different load is refused rather than half-applied. The picker
-## chooses before the Cockpit; a game never changes pack mid-process.
+## ONE PACK AT A TIME. Every catalog is static state filled from the pack, so
+## a second, different load is refused rather than half-applied. The one way to
+## switch is Unload() and it has one caller: the pack picker, when the Cockpit
+## exits back to it - nothing is mid-game then, and GameSession.load_catalogs
+## refills every catalog from the new pack at StartGame. A game never changes
+## pack mid-process.
 
 const PACKS_ROOT := "res://packs"
 ## The files a pack is made of - what PackLoader.Load reads and what the
@@ -100,6 +103,21 @@ static func EnsureLoaded(pack_id: String = "") -> bool:
 	PackHash = ContentHash(dir)
 	print("[Pack] '%s' loaded from %s (hash %s)." % [pack.Manifest.DisplayName, dir, PackHash.substr(0, 12)])
 	return true
+
+
+## Forget the loaded pack so another can be chosen. THE PACK PICKER'S CALL ONLY,
+## on the way back from the Cockpit: nothing is mid-game, and the catalogs the
+## old pack filled are all refilled by GameSession.load_catalogs before the
+## next day zero. tests/pack_switch.gd proves a game after a switch hashes
+## exactly like one in a fresh process.
+static func Unload() -> void:
+	Pack = null
+	Playable = []
+	Neutral = null
+	Unknown = null
+	_by_id.clear()
+	_character_roles.clear()
+	PackHash = ""
 
 
 ## SHA-256 over the pack's JSON files, in PACK_FILES order. JSON only: an
