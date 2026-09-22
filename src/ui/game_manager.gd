@@ -188,6 +188,9 @@ func _ready() -> void:
 	charInfoBtn.get_parent().add_child(agentBtn)
 	charInfoBtn.get_parent().move_child(agentBtn, charInfoBtn.get_index() + 1)
 
+	# The bar reads the engine's day from the first frame; it used to read
+	# "Day: 0" until the first tick and then jump to 2 (TeeJ, 2026-09-22).
+	_lastDay = StrategicTickManager.Today
 	RefreshStatusBar()
 
 
