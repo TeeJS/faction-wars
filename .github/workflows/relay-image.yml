@@ -74,4 +74,4 @@ jobs:
             ${{ env.IMAGE }}:${{ github.sha }}
           labels: |
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
-            org.opencontainers.image.description=The schmitz-wars relay with the web game baked in
+            org.opencontainers.image.description=The faction-wars relay with the web game baked in

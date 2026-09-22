@@ -2,15 +2,15 @@
 <Container version="2">
   <Name>wars-relay</Name>
   <Repository>ghcr.io/teejs/wars-relay:latest</Repository>
-  <Registry>https://github.com/TeeJS/schmitz-wars/pkgs/container/wars-relay</Registry>
+  <Registry>https://github.com/TeeJS/faction-wars/pkgs/container/wars-relay</Registry>
   <Network>bridge</Network>
   <Privileged>false</Privileged>
-  <Support>https://github.com/TeeJS/schmitz-wars</Support>
-  <Project>https://github.com/TeeJS/schmitz-wars</Project>
-  <Overview>The schmitz-wars relay with the web game baked in: rooms, an append-only log per game (the saved games), forwarding between the two players, and the exported game served on the same origin. Built by GitHub Actions from the repo on every push to main. Only /data is mounted. NPM Plus proxy host: wars.schmitzplex.com -> http://[unraid ip]:8787, Websockets Support ON, no Authelia.</Overview>
+  <Support>https://github.com/TeeJS/faction-wars</Support>
+  <Project>https://github.com/TeeJS/faction-wars</Project>
+  <Overview>The faction-wars relay with the web game baked in: rooms, an append-only log per game (the saved games), forwarding between the two players, and the exported game served on the same origin. Built by GitHub Actions from the repo on every push to main. Only /data is mounted. NPM Plus proxy host: wars.schmitzplex.com -> http://[unraid ip]:8787, Websockets Support ON, no Authelia.</Overview>
   <Category>GameServers: Network:Other</Category>
   <WebUI>http://[IP]:[PORT:8787]/</WebUI>
-  <TemplateURL>https://raw.githubusercontent.com/TeeJS/schmitz-wars/main/relay/unraid/my-wars-relay.xml</TemplateURL>
+  <TemplateURL>https://raw.githubusercontent.com/TeeJS/faction-wars/main/relay/unraid/my-wars-relay.xml</TemplateURL>
   <Icon>https://raw.githubusercontent.com/oven-sh/bun/main/packages/bun-vscode/example/bun.png</Icon>
   <ExtraParams/>
   <PostArgs/>

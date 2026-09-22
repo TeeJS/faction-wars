@@ -1,4 +1,4 @@
-// The schmitz-wars relay (docs/m3-plan.md). A WebSocket service that knows
+// The faction-wars relay (docs/m3-plan.md). A WebSocket service that knows
 // nothing about the game: rooms, one host and one guest each, an append-only
 // log of every line either side sends, forwarding, and replay of the log to a
 // client that (re)joins. It never runs the simulation and never validates a
@@ -232,7 +232,7 @@ export function startRelay(opts: { port?: number; dataDir?: string; staticDir?: 
         // Ctrl+F5 - TeeJ, room #100).
         return file.size > 0 ? new Response(file, { headers: { "Cache-Control": "no-cache" } }) : new Response("not found", { status: 404 });
       }
-      return new Response("schmitz-wars relay", { status: 200 });
+      return new Response("faction-wars relay", { status: 200 });
     },
     websocket: {
       maxPayloadLength: LIMITS.lineBytes,
