@@ -1,0 +1,57 @@
+# Fly.io deployment for the schmitz-wars relay.
+#
+# This deploys the PREBUILT image from GHCR - it does not build from source.
+# relay/Dockerfile cannot be built from a git checkout: it does
+# `COPY build/web /web`, and `build/` is gitignored (.gitignore:8). Only
+# .github/workflows/relay-image.yml has the Godot web export, so the image it
+# publishes is the only one with the game in it.
+#
+#   fly volumes create wars_relay_data -c relay/fly.toml -r sea -s 1
+#   fly deploy -c relay/fly.toml
+#
+# The GHCR package must be public (README.md "The image"), or Fly cannot pull
+# it. New CI builds are picked up by re-running `fly deploy`.
+
+app = 'wars-relay'
+primary_region = 'sea'
+
+[build]
+  image = 'ghcr.io/teejs/wars-relay:latest'
+
+# PORT=8787, DATA_DIR=/data and STATIC_DIR=/web are already baked into the
+# image; set here too so a swapped image still lands in the right places.
+[env]
+  PORT = '8787'
+  DATA_DIR = '/data'
+  STATIC_DIR = '/web'
+
+[http_service]
+  internal_port = 8787
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  # 0: the machine sleeps when idle and wakes on the next request, so an idle
+  # relay is free. First connect after a sleep pays a cold start. A live
+  # WebSocket counts as traffic, so a game in progress is not stopped.
+  min_machines_running = 0
+
+[[http_service.checks]]
+  method = 'GET'
+  path = '/healthz'
+  interval = '30s'
+  timeout = '5s'
+  grace_period = '10s'
+
+# The append-only room logs and the feedback reports. A volume is single-machine
+# by design - do not scale this app past one machine.
+[mounts]
+  source = 'wars_relay_data'
+  destination = '/data'
+  initial_size = '1gb'
+
+# Matches what the Fly launch dialog had selected.
+[[vm]]
+  size = 'shared-cpu-1x'
+  memory = '256mb'
+  cpu_kind = 'shared'
+  cpus = 1
