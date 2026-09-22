@@ -45,6 +45,13 @@ const DEFAULTS := {
 	"trooper_regiments":    "Ground Regiments",
 	# movement between systems
 	"in_transit":           "in transit",
+	# the five ship systems tactical damage tracks (manual p128: shield recharge,
+	# weapon recharge, tractor beam power, sub-light engines, hyperdrive)
+	"system_shield_recharge": "Shielding Recharge",
+	"system_weapon_recharge": "Weapon Recharge",
+	"system_tractor":         "Tractor Power",
+	"system_engines":         "Combat Engines",
+	"system_hyperdrive":      "Transit Drive",
 }
 
 

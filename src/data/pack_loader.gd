@@ -45,6 +45,8 @@ const KNOWN_TERMS := [
 	"fighter_squadron", "fighter_squadrons", "trooper_regiment", "trooper_regiments",
 	# movement between systems
 	"in_transit",
+	# the five ship systems tactical damage tracks
+	"system_shield_recharge", "system_weapon_recharge", "system_tractor", "system_engines", "system_hyperdrive",
 ]
 ## SCHEMA.md section 2, `menu`. Every function of the Shuttle Cockpit (manual
 ## p021, Fig. 2.2); a picture menu must offer each one, so no function is lost
