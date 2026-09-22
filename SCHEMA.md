@@ -502,8 +502,8 @@ error.
 
 **⚠ The original draft described this as pending. It is done.** Both files are
 already nested maps keyed by faction id, and the extractors that generate them
-(`parse_rules.py`, `parse_side_lottery.py`, `parse_military.py` in the source
-repo) were updated in the same change.
+(`parse_rules.py`, `parse_side_lottery.py`, `parse_military.py` in the old
+repo) were updated in the same change. (Historical: the pack is hand-edited now.)
 
 Real shape of `game_rules.json`, 213 rows:
 
@@ -555,10 +555,14 @@ exist.** The original draft named them as `setup.json`'s sources. Neither file
 is in either repo. `setup.json`'s real sources are `side_lottery.json` and
 `day_zero_logistics.json`.
 
-> **The `data/*.py` extractors must be updated in the same change** as any
-> further re-keying. They regenerate these files from the original game data;
-> re-keying the JSON without re-keying the extractors means the next
-> regeneration silently reverts it. This is risk #3 in `PROJECT.md`.
+> **The pack files are hand-edited and are the contract (2026-09-22).** The
+> `tools/build-*-json.py` transforms that first produced them from the old
+> repo's parsed tables were retired: they knew nothing of the fields added by
+> hand since (roles, `behaviour`, `agent_name`, `menu`, `victory_tips`, id-keyed
+> seeding) and would have wiped them. Provenance is the `source_family_id` /
+> `source_id` / `source_file` fields on the rows, not a regeneration path.
+> Risk #3 of the old charter ("regeneration silently reverts") no longer exists
+> because there is no regeneration.
 
 ---
 
@@ -804,9 +808,8 @@ but *refiled* — it is a Phase 3 vocabulary item now, tracked in §6.
    Engine code already reads rules by name through
    [rule_id.gd](src/game/rule_id.gd), which maps a readable constant to the
    number, so a slug would buy raw-JSON readability only — for a file that is
-   generated, not hand-edited. The cost lands in `parse_rules.py` plus a
-   re-export of all 213 rows, and the extractors are risk #3 in the charter.
-   Not worth it.
+   generated, not hand-edited (it was, then). The cost landed in `parse_rules.py`
+   plus a re-export of all 213 rows. Not worth it.
 
    **This is the one place a number legitimately survives into pack data.**
    `rule_id.gd` remains the required way to reference a rule from engine code —
@@ -866,3 +869,4 @@ What changed from the source repo's 2026-07-25 draft, and why.
 | 42 | `data/*.json`, `Loaders` and eleven `CatalogDtos` classes deleted; the Military Data Editor removed; `tests/dto_parity.gd` compares the loaded pack with `tests/fixtures/dto-pack.json` | TeeJ, 2026-09-22: nothing read `data/` any more but the parity dump and the editor |
 | 43 | `pack.json` `victory_tips` — the p162 Multiplayer Options tooltips come from the pack | TeeJ, 2026-09-22: pack strings, so the manual's verbatim wording stays pinned for this pack and a second pack shows its own |
 | 44 | 32 `RuleId` constants renamed from setting names to their role (`SeedCapitalFirst`, `PilgrimVsDarkLordGainScale`, `SuperweaponSabotageCombatGain`, ...); the old name stays as a trailing comment for the GNPRTB trail. Engine identifiers only; the pack's `rules.json` is untouched | TeeJ, 2026-09-22 (BACKLOG #23/#34) |
+| 45 | The six `tools/build-*-json.py` generators retired; the pack is hand-edited and is the contract, provenance via the `source_*` fields | TeeJ, 2026-09-22 (BACKLOG #36): four read a folder deleted in #52, two read the old repo, all six would have wiped the hand-added fields |
