@@ -5,8 +5,8 @@ extends RefCounted
 ## The discovery threshold (entry 41) is OURS in the sense the source records:
 ## it reproduces the manual's asymmetry and nothing in REBEXE.EXE reads it.
 
-const PilgrimName := "Luke Skywalker"
-const HeirName := "Leia Organa"
+## The pilgrim and the heir are ROLES in characters.json (SCHEMA.md section 7),
+## not names: Luke and Leia in the Star Wars pack.
 
 static var _departs_on: int = -1
 static var _departed_on: int = -1
@@ -25,14 +25,15 @@ static func Reset() -> void:
 
 ## MISSNSD's own length for Dagobah: 100 base, 0 spread.
 static func DagobahStayDays(rng: Prng) -> int:
-	return MissionCatalog.RollLengthById(MissionCatalog.DagobahId, rng, 100)
+	var d := MissionCatalog.ByBehaviour("dagobah")
+	return MissionCatalog.RollLengthById(d.Id, rng, 100) if d != null else 100
 
 
 ## Called by StoryManager when the hunters take Han. Ends the course there and then.
 static func InterruptDagobah() -> void:
 	if _completed:
 		return
-	var luke: Character = Lq.first_or_null(GameState.ActiveRoster, func(c): return c.Name == PilgrimName)
+	var luke: Character = Lq.first_or_null(GameState.ActiveRoster, func(c): return c.HasRole("pilgrim"))
 	if luke == null or not luke.AtDagobah:
 		return
 	ConcludeDagobah(luke, StrategicTickManager.Today, false)
@@ -77,7 +78,7 @@ static func ProcessDagobah(day: int) -> void:
 	var roster := GameState.ActiveRoster
 	if roster == null:
 		return
-	var luke: Character = Lq.first_or_null(roster, func(c): return c.Name == PilgrimName)
+	var luke: Character = Lq.first_or_null(roster, func(c): return c.HasRole("pilgrim"))
 	if luke == null:
 		return
 
@@ -118,12 +119,12 @@ static func ProcessDagobah(day: int) -> void:
 
 ## LEIA IS THE ONE EXCEPTION (manual p094; REBEXE.EXE 0x560BCF): no rank threshold.
 static func LeiaLearnsFromLuke(roster: Array, day: int) -> void:
-	var leia: Character = Lq.first_or_null(roster, func(c): return c.Name == HeirName)
+	var leia: Character = Lq.first_or_null(roster, func(c): return c.HasRole("heir"))
 	if leia == null or leia.KnowsHeritage:
 		return
 	if leia.Status == Enums.Status.Dead or leia.IsOffMap() or leia.Attached == null:
 		return
-	var luke: Character = Lq.first_or_null(roster, func(c): return c.Name == PilgrimName)
+	var luke: Character = Lq.first_or_null(roster, func(c): return c.HasRole("pilgrim"))
 	if luke == null or not luke.KnowsHeritage:
 		return
 	if luke.Status == Enums.Status.Dead or luke.Attached != leia.Attached:
@@ -157,7 +158,7 @@ static func ProcessDay(day: int) -> void:
 	for seer in detectors:
 		for latent in roster:
 			# ⛔ LEIA IS EXEMPT FROM THIS ENTIRE ROUTINE (p094).
-			if latent.Name == HeirName:
+			if latent.HasRole("heir"):
 				continue
 			if latent.IsKnownSpecialPowerUser or latent.SpecialPowerLevel <= 0:
 				continue

@@ -219,7 +219,7 @@ static func Collect(p: Planet, section: int) -> Dictionary:
 		Enums.IntelSection.Troopers:
 			var regiments: Array = []
 			for u in p.Troopers():
-				regiments.append({ "name": u.Name, "attack": u.Attack, "defense": u.Defense })
+				regiments.append({ "id": u.PackId, "name": u.Name, "attack": u.Attack, "defense": u.Defense })
 			return { "regiments": regiments }
 		Enums.IntelSection.Fighters:
 			return { "squadrons": p.FighterSquadrons.size() }

@@ -2,14 +2,9 @@ class_name StoryManager
 extends RefCounted
 ## backend/StoryManager.cs - THE SCRIPTED SET-PIECES, manual p094-p097, p100, and
 ## the tables behind them: the Force encounter (heritage), the bounty hunters and
-## Jabba's palace, and the Final Battle. Keyed by name, as the original is.
-
-const LukeName := "Luke Skywalker"
-const LeiaName := "Leia Organa"
-const HanName := "Han Solo"
-const ChewieName := "Chewbacca"
-const VaderName := "Darth Vader"
-const EmperorName := "Emperor Palpatine"
+## Jabba's palace, and the Final Battle. The original keys them by NAME; here
+## each part is a ROLE in characters.json (SCHEMA.md section 7) - pilgrim, heir,
+## dark_lord, dark_master, smuggler, companion - so the engine never names anyone.
 
 static var _next_encounter_scan: int = -1
 static var _bounty_hunters_due_on: int = -1
@@ -17,17 +12,19 @@ static var _bounty_hunters_fired: bool = false
 static var _final_battle_decided: bool = false
 static var _palace_rolls_from: int = -1
 
-## ⚠ THE FOUR NAMED PAIRINGS ARE ALL THERE ARE: [aggressor, antagonist, scale id, min id]
+## ⚠ THE FOUR PAIRINGS ARE ALL THERE ARE: [aggressor role, antagonist role, scale id, min id]
 const Pairings := [
-	[LukeName, VaderName,   RuleId.LukeVsVaderGainScale,   RuleId.LukeVsVaderGainMin],
-	[LukeName, EmperorName, RuleId.LukeVsEmperorGainScale, RuleId.LukeVsEmperorGainMin],
-	[LeiaName, VaderName,   RuleId.LeiaVsVaderGainScale,   RuleId.LeiaVsVaderGainMin],
-	[LeiaName, EmperorName, RuleId.LeiaVsEmperorGainScale, RuleId.LeiaVsEmperorGainMin],
+	["pilgrim", "dark_lord",   RuleId.LukeVsVaderGainScale,   RuleId.LukeVsVaderGainMin],
+	["pilgrim", "dark_master", RuleId.LukeVsEmperorGainScale, RuleId.LukeVsEmperorGainMin],
+	["heir",    "dark_lord",   RuleId.LeiaVsVaderGainScale,   RuleId.LeiaVsVaderGainMin],
+	["heir",    "dark_master", RuleId.LeiaVsEmperorGainScale, RuleId.LeiaVsEmperorGainMin],
 ]
 
 
-static func Who(name: String) -> Character:
-	return Lq.first_or_null(GameState.ActiveRoster, func(c): return c.Name == name)
+## The character the pack casts in a story role, or null when it casts nobody
+## (then that set-piece simply never fires).
+static func WhoHas(role: String) -> Character:
+	return Lq.first_or_null(GameState.ActiveRoster, func(c): return c.HasRole(role))
 
 
 static func Reset() -> void:
@@ -54,8 +51,8 @@ static func ProcessEncounters(day: int, rng: Prng) -> void:
 	_next_encounter_scan = day + max(1, RuleManager.Roll(RuleId.EncounterScanBase, RuleId.EncounterScanSpread, rng))
 
 	for p in Pairings:
-		var a := Who(p[0])
-		var b := Who(p[1])
+		var a := WhoHas(p[0])
+		var b := WhoHas(p[1])
 		if a == null or b == null:
 			continue
 		if a.Status == Enums.Status.Dead or b.Status == Enums.Status.Dead:
@@ -114,7 +111,7 @@ static func ResolveEncounter(a: Character, b: Character, p: Array, day: int, rng
 # --- 2. THE BOUNTY HUNTERS, AND JABBA'S PALACE (entries 103/104/105; RLEVADTB) ---
 
 static func ProcessBountyHunters(day: int, rng: Prng) -> void:
-	var han := Who(HanName)
+	var han := WhoHas("smuggler")
 	if han == null:
 		return
 	if han.AtJabbasPalace:
@@ -166,13 +163,14 @@ static func TakeToPalace(han: Character, day: int, rng: Prng) -> void:
 	han.Destination = null
 	han.DaysToDestination = 0
 
-	_palace_rolls_from = day + MissionCatalog.RollLengthById(MissionCatalog.PalaceId, rng, 0)
+	var palace := MissionCatalog.ByBehaviour("palace")
+	_palace_rolls_from = day + (MissionCatalog.RollLengthById(palace.Id, rng, 0) if palace != null else 0)
 
 	ForceManager.InterruptDagobah()
 
 	var party := []
-	for name in [LukeName, LeiaName, ChewieName]:
-		var c := Who(name)
+	for role in ["pilgrim", "heir", "companion"]:
+		var c := WhoHas(role)
 		if c == null or c.Status == Enums.Status.Dead or c.IsCaptured() or c.IsOffMap():
 			continue
 		c.AtJabbasPalace = true
@@ -208,7 +206,7 @@ static func ProcessPalace(han: Character, day: int, rng: Prng) -> void:
 	var com_div: int = maxi(1, RuleManager.Get(RuleId.PalaceCombatDivisor, han.Faction))
 	for rescuer in party:
 		var score: int = rescuer.EspionageRating / esp_div + rescuer.CombatRating / com_div
-		var chance := MissionTableManager.Lookup(MissionTableManager.Rescue, score)
+		var chance := MissionTableManager.Lookup(MissionManager.TableFor(Enums.MissionType.Rescue), score)
 		if chance < 0:
 			return
 		if rng.NextRange(1, 101) > chance:
@@ -253,7 +251,7 @@ static func HomeFor(f: Faction) -> Location:
 # --- 3. THE FINAL BATTLE (0x56F7A0 ARMED at entry 55; 0x54B040 DECIDED at entry 106) ---
 
 static func ProcessFinalBattle(day: int, rng: Prng) -> void:
-	var luke := Who(LukeName)
+	var luke := WhoHas("pilgrim")
 	if luke == null or luke.Status == Enums.Status.Dead:
 		return
 
@@ -265,8 +263,8 @@ static func ProcessFinalBattle(day: int, rng: Prng) -> void:
 	if not luke.FinalBattleReady or _final_battle_decided:
 		return
 
-	var vader := Who(VaderName)
-	var emperor := Who(EmperorName)
+	var vader := WhoHas("dark_lord")
+	var emperor := WhoHas("dark_master")
 	if vader == null or emperor == null:
 		return
 

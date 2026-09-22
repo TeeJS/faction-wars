@@ -200,6 +200,7 @@
     {
       "id": "diplomacy",
       "display_name": "Diplomacy",
+      "behaviour": "diplomacy",
       "available_to": [
         "alliance",
         "empire"
@@ -240,6 +241,7 @@
     {
       "id": "rescue",
       "display_name": "Rescue",
+      "behaviour": "rescue",
       "available_to": [
         "alliance",
         "empire"
@@ -283,6 +285,7 @@
     {
       "id": "sabotage",
       "display_name": "Sabotage",
+      "behaviour": "sabotage",
       "available_to": [
         "alliance",
         "empire"
@@ -326,6 +329,7 @@
     {
       "id": "espionage",
       "display_name": "Espionage",
+      "behaviour": "espionage",
       "available_to": [
         "alliance",
         "empire"
@@ -369,6 +373,7 @@
     {
       "id": "reconnaissance",
       "display_name": "Reconnaissance",
+      "behaviour": "reconnaissance",
       "available_to": [
         "alliance",
         "empire"
@@ -412,6 +417,7 @@
     {
       "id": "recruitment",
       "display_name": "Recruitment",
+      "behaviour": "recruitment",
       "available_to": [
         "alliance",
         "empire"
@@ -452,6 +458,7 @@
     {
       "id": "abduction",
       "display_name": "Abduction",
+      "behaviour": "abduction",
       "available_to": [
         "alliance",
         "empire"
@@ -495,6 +502,7 @@
     {
       "id": "ship_design_research",
       "display_name": "Ship Design Research",
+      "behaviour": "ship_design_research",
       "available_to": [
         "alliance",
         "empire"
@@ -535,6 +543,7 @@
     {
       "id": "facility_design_research",
       "display_name": "Facility Design Research",
+      "behaviour": "facility_design_research",
       "available_to": [
         "alliance",
         "empire"
@@ -575,6 +584,7 @@
     {
       "id": "troop_training_research",
       "display_name": "Troop Training Research",
+      "behaviour": "troop_training_research",
       "available_to": [
         "alliance",
         "empire"
@@ -615,6 +625,7 @@
     {
       "id": "incite_uprising",
       "display_name": "Incite Uprising",
+      "behaviour": "incite_uprising",
       "available_to": [
         "alliance",
         "empire"
@@ -658,6 +669,7 @@
     {
       "id": "death_star_sabotage",
       "display_name": "Death Star Sabotage",
+      "behaviour": "superweapon_sabotage",
       "available_to": [
         "alliance"
       ],
@@ -699,6 +711,7 @@
     {
       "id": "jedi_training",
       "display_name": "Jedi Training",
+      "behaviour": "special_power_training",
       "available_to": [
         "alliance",
         "empire"
@@ -739,6 +752,7 @@
     {
       "id": "dagobah",
       "display_name": "Dagobah",
+      "behaviour": "dagobah",
       "available_to": [
         "alliance"
       ],
@@ -778,6 +792,7 @@
     {
       "id": "palace",
       "display_name": "Palace",
+      "behaviour": "palace",
       "available_to": [
         "alliance"
       ],
@@ -895,6 +910,7 @@
     {
       "id": "subdue_uprising",
       "display_name": "Subdue Uprising",
+      "behaviour": "subdue_uprising",
       "available_to": [
         "alliance",
         "empire"
@@ -938,6 +954,7 @@
     {
       "id": "assassination",
       "display_name": "Assassination",
+      "behaviour": "assassination",
       "available_to": [
         "empire"
       ],

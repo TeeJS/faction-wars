@@ -13,6 +13,7 @@ static var Playable: Array[Faction] = []
 static var Neutral: Faction = null
 static var Unknown: Faction = null
 static var _by_id: Dictionary = {}
+static var _character_roles: Dictionary = {}   # character id -> Array[String]
 
 
 static func IsLoaded() -> bool:
@@ -43,6 +44,9 @@ static func EnsureLoaded() -> void:
 static func Load(pack: PackLoader.LoadedPack) -> void:
 	Pack = pack
 	_by_id.clear()
+	_character_roles.clear()
+	for c in pack.Characters:
+		_character_roles[c.Id] = c.Roles
 	var playable: Array[Faction] = []
 	for def in pack.Factions:
 		var f := Faction.FromPack(def)
@@ -127,3 +131,8 @@ static func CharacterNameOf(id: String) -> String:
 			if cd.Id == id:
 				return cd.DisplayName
 	return id
+
+
+## The roles characters.json gives this character (SCHEMA.md section 7).
+static func CharacterRoles(id: String) -> Array:
+	return _character_roles.get(id, [])
