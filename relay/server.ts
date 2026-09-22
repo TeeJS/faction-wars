@@ -15,7 +15,6 @@ const LIMITS = {
   clientsPerRoom: 2,      // a host and a guest - "two players" (manual p156)
   rooms: 100,             // more than a household needs
   feedbackBytes: 4 * 1024 * 1024,   // one report with its session log
-  feedbackBytes: 4 * 1024 * 1024,   // one report with its session log
   codeLength: 6,
 };
 
