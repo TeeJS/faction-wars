@@ -1,4 +1,4 @@
-# schmitz-wars relay
+# faction-wars relay
 
 A WebSocket relay for head-to-head games (docs/m3-plan.md). It keeps rooms,
 forwards each side's lines to the other, stores every line in an append-only

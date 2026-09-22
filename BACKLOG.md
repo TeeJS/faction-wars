@@ -1,4 +1,4 @@
-# schmitz-wars — status, missing features, backlog & known bugs
+# faction-wars — status, missing features, backlog & known bugs
 
 The single tracker for outstanding work. Sections: **Status** (done / in
 progress), **Missing Features** (described by the manual, or required by the
@@ -25,7 +25,7 @@ target) before landing.
 | 6 (B) | Single-player **Load** — start-menu Load Game + GameManager replay | #22 |
 | 7 | Keyboard shortcuts — all mappable strategic ones (F1/F2/F5/F6, Alt+I/O/0/W/G/U, Alt+1-9) | #20 #23 |
 | 8 | Fix MenuButton `pressed` double-connect log spam | #18 |
-| — | `schmitz-wars-dev` skill (workflow + context-MCP + handoff template) | #9 #10 #12 #13 |
+| — | `faction-wars-dev` skill (workflow + context-MCP + handoff template) | #9 #10 #12 #13 |
 | — | `BACKLOG.md` tracker | #19 |
 
 ## Status — in progress
@@ -90,5 +90,5 @@ shortcuts (`tactical_view.gd`) — separate audit.
   #2a parse break). New `class_name` files need a `--import` before a headless
   test can reference them.
 - One branch + one PR per issue; the chair is the sole committer/pusher/merger.
-  See `.claude/skills/schmitz-wars-dev`. Related ledgers: `docs/window-checklists.md`
+  See `.claude/skills/faction-wars-dev`. Related ledgers: `docs/window-checklists.md`
   (per-window manual-vs-port), `docs/BACKPORT-LOG.md`, `HANDOFF.md`.

@@ -1,4 +1,4 @@
-# Fly.io deployment for the schmitz-wars relay.
+# Fly.io deployment for the faction-wars relay.
 #
 # This deploys the PREBUILT image from GHCR - it does not build from source.
 # relay/Dockerfile cannot be built from a git checkout: it does
