@@ -45,9 +45,9 @@ static func ConcludeDagobah(luke: Character, day: int, completed: bool) -> void:
 	var before := luke.SpecialPowerLevel
 	var percent: int
 	if completed:
-		percent = RuleManager.Get(RuleId.DagobahBonusPercent, luke.Faction)
+		percent = RuleManager.Get(RuleId.PilgrimageBonusPercent, luke.Faction)
 	else:
-		percent = max(0, day - _departed_on) / max(1, RuleManager.Get(RuleId.DagobahPartialDivisor, luke.Faction))
+		percent = max(0, day - _departed_on) / max(1, RuleManager.Get(RuleId.PilgrimagePartialDivisor, luke.Faction))
 	luke.SpecialPowerLevel = before + before * percent / 100
 
 	luke.AtDagobah = false
@@ -83,7 +83,7 @@ static func ProcessDagobah(day: int) -> void:
 		return
 
 	if _departs_on < 0:
-		_departs_on = day + RuleManager.Roll(RuleId.DagobahTriggerBase, RuleId.DagobahTriggerSpread, Prng.Session, luke.Faction)
+		_departs_on = day + RuleManager.Roll(RuleId.PilgrimageTriggerBase, RuleId.PilgrimageTriggerSpread, Prng.Session, luke.Faction)
 		print("[Force] %s will be called to Dagobah on day %d." % [luke.Name, _departs_on])
 
 	if luke.AtDagobah:

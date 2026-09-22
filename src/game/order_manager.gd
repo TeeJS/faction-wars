@@ -165,7 +165,7 @@ static func MoveHeadquarters(faction: Faction, destination: Planet) -> Result:
 	for other in FactionRegistry.Playable:
 		destination.SetExplored(other, other == faction or not faction.HasHiddenHq())
 	# A small loyalty drop on the world it left (manual p090).
-	seat.ShiftSupport(faction, -RuleManager.Get(RuleId.AllianceHqSupportShift, faction))
+	seat.ShiftSupport(faction, -RuleManager.Get(RuleId.HiddenHqSupportShift, faction))
 	print("[HQ] %s relocated its headquarters from %s to %s." % [faction.DisplayName, seat.Name, destination.Name])
 	EventBus.BroadcastChanged()
 	return Result.success()
