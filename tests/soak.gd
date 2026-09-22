@@ -7,6 +7,7 @@ extends SceneTree
 ##   Godot_console.exe --headless --path . -s tests/soak.gd -- --days=100 --seed=12345 \
 ##       [--snapshot=res://tests/fixtures/snapshot-seed12345.json]   (else a fresh day zero)
 ##       [--faction=alliance] [--difficulty=Medium] [--size=Large]
+##       [--pack=ww2]   (else packs/active.json; read by FactionRegistry.DefaultPackId)
 ##       [--humans=alliance|empire|both] [--host=alliance|empire]
 ##       (the M0 gate: --humans=both --difficulty=Multiplayer, once with each --faction)
 ##       [--replay-log=path] [--replay-text=path] [--expect=path]

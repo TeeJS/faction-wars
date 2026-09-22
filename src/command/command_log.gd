@@ -82,6 +82,8 @@ static func Header() -> Dictionary:
 	for f in GameSettings.HumanFactions:
 		humans.append(f.Id)
 	return {
+		"pack": FactionRegistry.LoadedId(),
+		"pack_hash": FactionRegistry.PackHash,
 		"seed": GameSettings.Seed,
 		"local": GameSettings.PlayerFaction.Id if GameSettings.PlayerFaction != null else "",
 		"humans": humans,

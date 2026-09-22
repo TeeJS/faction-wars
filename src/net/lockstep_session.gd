@@ -131,6 +131,13 @@ func _handle(msg: Dictionary) -> void:
 			remote_hello = msg
 			# JSON numbers arrive as floats; compare by value, not by text.
 			var mine := CommandLog.Header()
+			# The pack first: everything else is meaningless across packs, and a
+			# same-id/different-content pair would otherwise desync on day 1's
+			# hash with nothing to say why (BACKLOG #13).
+			if str(mine.get("pack", "")) != str(msg.get("pack", "")):
+				hello_mismatch = "pack: ours %s, theirs %s" % [str(mine.get("pack")), str(msg.get("pack"))]
+			elif str(mine.get("pack_hash", "")) != str(msg.get("pack_hash", "")):
+				hello_mismatch = "pack content differs (same id '%s', different files)" % str(mine.get("pack"))
 			for k in ["seed", "size", "difficulty"]:
 				if int(mine.get(k, 0)) != int(msg.get(k, 0)):
 					hello_mismatch = "%s: ours %s, theirs %s" % [k, str(mine.get(k)), str(msg.get(k))]
