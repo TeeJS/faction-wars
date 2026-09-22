@@ -350,7 +350,7 @@ static func AttachMissionMenu(icon: Button, planet: Planet, uiManager: UIManager
 			if not mission.Arrived():
 				var idx: int = popup.get_item_index(id)
 				popup.set_item_disabled(idx, true)
-				popup.set_item_tooltip(idx, "In hyperspace - %dd out. Orders cannot be given in transit." % mission.DaysToTarget)
+				popup.set_item_tooltip(idx, "%s - %dd out. Orders cannot be given in transit." % [Terms.cap("in_transit"), mission.DaysToTarget])
 
 		icon.add_child(popup)
 		popup.position = Vector2i(int(e.global_position.x), int(e.global_position.y))

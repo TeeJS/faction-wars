@@ -411,7 +411,7 @@ func PopulateOrbitalDefenses(tabs: TabContainer, planet: Planet) -> void:
 	if view.Live:
 		var defenses: Array = Lq.where(planet.Facilities, IntelManager.IsDefensive)
 		if defenses.size() == 0:
-			_empty_defences(list, "No orbital batteries or planetary shields detected.")
+			_empty_defences(list, "No %s or %s detected." % [Terms.lower("orbital_batteries"), Terms.lower("planetary_shields")])
 			return
 		for def in defenses:
 			_defence_row(list, def.Name() + " (Tier %d)" % def.Tier, def.Family(),
@@ -421,7 +421,7 @@ func PopulateOrbitalDefenses(tabs: TabContainer, planet: Planet) -> void:
 		return
 
 	if view.Lines.size() == 0:
-		_empty_defences(list, "No orbital batteries or planetary shields seen.")
+		_empty_defences(list, "No %s or %s seen." % [Terms.lower("orbital_batteries"), Terms.lower("planetary_shields")])
 		return
 
 	# The snapshot: one row per line, re-resolving the nth defence of that
@@ -726,7 +726,7 @@ func PopulateFighters(tabs: TabContainer, planet: Planet, uiManager: UIManager) 
 		# Enemy squadrons seen via intel are legal SABOTAGE targets (manual p108):
 		# draw them clickable and dated so the crosshair can land on one.
 		_draw_intel_units(list, planet, view, Enums.IntelSection.Fighters,
-			"No fighter squadrons seen in orbit.")
+			"No %s seen in orbit." % Terms.lower("fighter_squadrons"))
 		return
 
 	# Ours are already drawn, so this is everybody else's.
@@ -735,7 +735,7 @@ func PopulateFighters(tabs: TabContainer, planet: Planet, uiManager: UIManager) 
 	var pending: Array[String] = PendingFor(planet, Enums.UnitType.Fighter)
 
 	if ourFighters == 0 and fighters.size() == 0 and pending.size() == 0:
-		AddUnitToList(list, null, "No fighter squadrons in orbit.", Color.GRAY, uiManager, SelectedFighters)
+		AddUnitToList(list, null, "No %s in orbit." % Terms.lower("fighter_squadrons"), Color.GRAY, uiManager, SelectedFighters)
 		return
 
 	for fighter in fighters:
