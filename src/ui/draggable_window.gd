@@ -589,7 +589,7 @@ func ConfirmRetire(what: String, refund: int, onConfirm: Callable) -> void:
 	dialog.title = "Confirm Retire"
 	dialog.dialog_text = "Are you sure you want to retire the following?\n\n" \
 		+ "    %s\n\n" % what \
-		+ "Returns %d refined material and the maintenance\n" % refund \
+		+ "Returns %d %s and the maintenance\n" % [refund, Terms.lower("refined_materials")] \
 		+ "capacity they were drawing."
 	dialog.exclusive = true
 

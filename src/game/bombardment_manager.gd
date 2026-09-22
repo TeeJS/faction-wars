@@ -223,7 +223,7 @@ static func Announce(r: BombardmentReport, fleet: Fleet, mode: int, day: int) ->
 	if r.Blocked:
 		lines.append("The fleet could not bring its guns to bear at all.")
 	else:
-		lines.append("Firepower %d against shields %d - %d reached the surface." % [r.Firepower, r.ShieldStrength, r.Through])
+		lines.append("Firepower %d against %s %d - %d reached the surface." % [r.Firepower, Terms.lower("planetary_shields"), r.ShieldStrength, r.Through])
 		lines.append(("Destroyed: %s." % Lq.join(r.Destroyed)) if not r.Destroyed.is_empty() else "Nothing on the surface was destroyed.")
 	if r.CivilianLoss:
 		lines.append("Civilian losses have hurt our standing across the sector.")

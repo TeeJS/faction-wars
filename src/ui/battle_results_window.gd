@@ -172,7 +172,7 @@ func Forces(c: FleetBattleManager.Casualties, fleet: Fleet) -> void:
 	tabs.add_theme_constant_override("separation", 4)
 	_body.add_child(tabs)
 
-	var names: Array[String] = ["Capital Ships", "Fighter Squadrons", "Trooper Regiments", "Personnel"]
+	var names: Array[String] = ["Capital Ships", Terms.label("fighter_squadrons"), Terms.label("trooper_regiments"), "Personnel"]
 	for i in names.size():
 		var which: int = i
 		var b := Button.new()

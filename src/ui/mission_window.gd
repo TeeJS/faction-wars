@@ -112,7 +112,7 @@ func BuildAbortRows(anchor: Label, missions: Array) -> void:
 		# No orders reach a team in hyperspace (manual p109).
 		if not m.Arrived():
 			abort.disabled = true
-			abort.tooltip_text = "In hyperspace - %dd out. Orders cannot be given in transit." % m.DaysToTarget
+			abort.tooltip_text = "%s - %dd out. Orders cannot be given in transit." % [Terms.cap("in_transit"), m.DaysToTarget]
 		else:
 			var captured: Mission = m
 			abort.pressed.connect(func() -> void:
@@ -168,7 +168,7 @@ static func Describe(m: Mission) -> String:
 	# period of time when the character is in hyperspace ... you cannot give
 	# orders to units in hyperspace" (manual p109).
 	if not m.Arrived():
-		return "%s - in hyperspace, %dd out" % [LabelText(m), m.DaysToTarget]
+		return "%s - %s, %dd out" % [LabelText(m), Terms.label("in_transit"), m.DaysToTarget]
 
 	var attempts: String = "arriving" if m.Attempts == 0 else "attempt %d" % m.Attempts
 

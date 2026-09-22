@@ -364,7 +364,7 @@ static func Render(p: Planet, section: int) -> Array:
 			lines.append("Garrison requirement: %d" % p.GarrisonRequirement())
 			if p.IsInUprising:
 				lines.append("The system is in open revolt.")
-			lines.append("Energy: %d   Raw materials: %d" % [p.BaseEnergy, p.BaseRawMaterials])
+			lines.append("%s: %d   %s: %d" % [Terms.label("energy"), p.BaseEnergy, Terms.label("raw_materials"), p.BaseRawMaterials])
 		Enums.IntelSection.Troopers:
 			for u in p.Troopers():
 				lines.append(u.Name)
