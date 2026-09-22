@@ -844,6 +844,10 @@ class DisplayDef:
 	## none, novice, trainee, student, knight, master. The engine holds the
 	## thresholds; what a band is CALLED is this pack's business.
 	var SpecialPowerRanks: Dictionary = {}
+	## SCHEMA.md section 10, `terms`: what the pack calls the engine's concepts on
+	## screen - a stat, a resource, a unit kind. Keys are PackLoader.KNOWN_TERMS;
+	## a key the pack leaves out gets the engine's neutral default (Terms.gd).
+	var Terms: Dictionary = {}
 
 	static func from_dict(d: Dictionary) -> DisplayDef:
 		var o := DisplayDef.new()
@@ -856,6 +860,12 @@ class DisplayDef:
 		if r is Dictionary:
 			for k in r.keys():
 				o.SpecialPowerRanks[str(k)] = str(r[k])
+		var t: Variant = JsonUtil.get_ci(d, "terms")
+		if t is Dictionary:
+			for k in t.keys():
+				if str(k).begins_with("_"):   # a _comment, like everywhere else in the pack
+					continue
+				o.Terms[str(k)] = str(t[k])
 		return o
 
 	## The label for a band key; the key itself when the pack names none, so a

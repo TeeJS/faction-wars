@@ -140,6 +140,12 @@ func _init() -> void:
 	_case("a special-power band with no label",
 		_pack({}, {}, {"gid_ranks_drop": "master"}), "no label for 'master'")
 
+	# Rule 14 - terms are known concepts with labels.
+	_case("terms with a key the engine has no concept for",
+		_pack({}, {}, {"terms": {"warp": "Warp Factor"}}), "terms names 'warp', which the engine has no concept for")
+	_case("terms with an empty label",
+		_pack({}, {}, {"terms": {"hyperdrive": ""}}), "terms['hyperdrive'] is empty")
+
 	# Rule 13 - seeding rows name a unit or facility the pack declares.
 	_case("seeding row names a unit units.json never declares",
 		_pack({}, {}, {"setup_asset": {"unit": "ghost_ship"}}), "unit 'ghost_ship' is not declared in units.json")
@@ -421,7 +427,8 @@ func _pack(sector_over: Dictionary, planet_over: Dictionary, other: Dictionary) 
 				{"min": 50, "label": "Loyal", "flare": "big"},
 				{"min": 0, "label": "Hostile", "flare": "none"}])}]}],
 		"galaxy_display_modes": other.get("gid_alt", ["popular_support"]),
-		"special_power_ranks": ranks})
+		"special_power_ranks": ranks,
+		"terms": other.get("terms", {"hyperdrive": "Transit"})})
 
 	# One seeding table with one row, so a row that resolves to nothing is a case.
 	p.Rules = [{"EntryId": 1}]
