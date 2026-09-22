@@ -6,8 +6,8 @@
       "ring": 2,
       "starts_neutral": false,
       "map": {
-        "x": 283,
-        "y": 318
+        "x": 469,
+        "y": 642
       },
       "min_size": "huge",
       "intel_tier": "presence",
@@ -20,8 +20,8 @@
       "ring": 3,
       "starts_neutral": true,
       "map": {
-        "x": 166,
-        "y": -8
+        "x": 272,
+        "y": 96
       },
       "min_size": "huge",
       "intel_tier": "presence",
@@ -34,8 +34,8 @@
       "ring": 2,
       "starts_neutral": false,
       "map": {
-        "x": 82,
-        "y": 184
+        "x": 132,
+        "y": 417
       },
       "min_size": "standard",
       "intel_tier": "presence",
@@ -48,8 +48,8 @@
       "ring": 1,
       "starts_neutral": false,
       "map": {
-        "x": 157,
-        "y": 170
+        "x": 258,
+        "y": 394
       },
       "min_size": "standard",
       "intel_tier": "live",
@@ -62,8 +62,8 @@
       "ring": 2,
       "starts_neutral": false,
       "map": {
-        "x": 230,
-        "y": 11
+        "x": 380,
+        "y": 129
       },
       "min_size": "standard",
       "intel_tier": "presence",
@@ -76,8 +76,8 @@
       "ring": 1,
       "starts_neutral": false,
       "map": {
-        "x": 285,
-        "y": 85
+        "x": 472,
+        "y": 253
       },
       "min_size": "huge",
       "intel_tier": "live",
@@ -90,8 +90,8 @@
       "ring": 2,
       "starts_neutral": false,
       "map": {
-        "x": 218,
-        "y": 331
+        "x": 359,
+        "y": 663
       },
       "min_size": "standard",
       "intel_tier": "presence",
@@ -104,8 +104,8 @@
       "ring": 1,
       "starts_neutral": false,
       "map": {
-        "x": 233,
-        "y": 248
+        "x": 385,
+        "y": 525
       },
       "min_size": "huge",
       "intel_tier": "live",
@@ -118,8 +118,8 @@
       "ring": 1,
       "starts_neutral": false,
       "map": {
-        "x": 354,
-        "y": 155
+        "x": 587,
+        "y": 370
       },
       "min_size": "large",
       "intel_tier": "live",
@@ -132,8 +132,8 @@
       "ring": 2,
       "starts_neutral": false,
       "map": {
-        "x": 359,
-        "y": 85
+        "x": 596,
+        "y": 253
       },
       "min_size": "large",
       "intel_tier": "presence",
@@ -146,8 +146,8 @@
       "ring": 3,
       "starts_neutral": true,
       "map": {
-        "x": 444,
-        "y": 262
+        "x": 737,
+        "y": 548
       },
       "min_size": "large",
       "intel_tier": "presence",
@@ -160,8 +160,8 @@
       "ring": 2,
       "starts_neutral": false,
       "map": {
-        "x": 135,
-        "y": 274
+        "x": 221,
+        "y": 569
       },
       "min_size": "large",
       "intel_tier": "presence",
@@ -174,8 +174,8 @@
       "ring": 2,
       "starts_neutral": false,
       "map": {
-        "x": 295,
-        "y": 11
+        "x": 488,
+        "y": 129
       },
       "min_size": "standard",
       "intel_tier": "presence",
@@ -188,8 +188,8 @@
       "ring": 3,
       "starts_neutral": true,
       "map": {
-        "x": 117,
-        "y": 23
+        "x": 191,
+        "y": 148
       },
       "min_size": "standard",
       "intel_tier": "presence",
@@ -202,8 +202,8 @@
       "ring": 3,
       "starts_neutral": true,
       "map": {
-        "x": 418,
-        "y": 343
+        "x": 695,
+        "y": 684
       },
       "min_size": "standard",
       "intel_tier": "presence",
@@ -216,8 +216,8 @@
       "ring": 3,
       "starts_neutral": true,
       "map": {
-        "x": 71,
-        "y": 100
+        "x": 113,
+        "y": 277
       },
       "min_size": "large",
       "intel_tier": "presence",
@@ -230,8 +230,8 @@
       "ring": 1,
       "starts_neutral": false,
       "map": {
-        "x": 192,
-        "y": 82
+        "x": 317,
+        "y": 248
       },
       "min_size": "standard",
       "intel_tier": "live",
@@ -244,8 +244,8 @@
       "ring": 1,
       "starts_neutral": false,
       "map": {
-        "x": 317,
-        "y": 252
+        "x": 526,
+        "y": 532
       },
       "min_size": "standard",
       "intel_tier": "live",
@@ -258,8 +258,8 @@
       "ring": 3,
       "starts_neutral": true,
       "map": {
-        "x": 432,
-        "y": 196
+        "x": 717,
+        "y": 438
       },
       "min_size": "standard",
       "intel_tier": "presence",
@@ -272,8 +272,8 @@
       "ring": 3,
       "starts_neutral": true,
       "map": {
-        "x": 347,
-        "y": 386
+        "x": 575,
+        "y": 755
       },
       "min_size": "huge",
       "intel_tier": "presence",
@@ -288,8 +288,8 @@
       "sector": "abrion",
       "starts_inhabited": false,
       "map": {
-        "x": 289,
-        "y": 368
+        "x": 479,
+        "y": 726
       },
       "artwork_id": 1,
       "source_id": 100,
@@ -301,8 +301,8 @@
       "sector": "abrion",
       "starts_inhabited": false,
       "map": {
-        "x": 304,
-        "y": 346
+        "x": 503,
+        "y": 689
       },
       "artwork_id": 2,
       "source_id": 101,
@@ -314,8 +314,8 @@
       "sector": "abrion",
       "starts_inhabited": false,
       "map": {
-        "x": 311,
-        "y": 323
+        "x": 515,
+        "y": 651
       },
       "artwork_id": 7,
       "source_id": 102,
@@ -327,8 +327,8 @@
       "sector": "abrion",
       "starts_inhabited": false,
       "map": {
-        "x": 304,
-        "y": 360
+        "x": 503,
+        "y": 712
       },
       "artwork_id": 8,
       "source_id": 103,
@@ -340,8 +340,8 @@
       "sector": "abrion",
       "starts_inhabited": false,
       "map": {
-        "x": 317,
-        "y": 346
+        "x": 525,
+        "y": 689
       },
       "artwork_id": 3,
       "source_id": 104,
@@ -353,8 +353,8 @@
       "sector": "abrion",
       "starts_inhabited": false,
       "map": {
-        "x": 288,
-        "y": 351
+        "x": 476,
+        "y": 698
       },
       "artwork_id": 4,
       "source_id": 105,
@@ -366,8 +366,8 @@
       "sector": "abrion",
       "starts_inhabited": false,
       "map": {
-        "x": 295,
-        "y": 326
+        "x": 489,
+        "y": 656
       },
       "artwork_id": 9,
       "source_id": 106,
@@ -379,8 +379,8 @@
       "sector": "abrion",
       "starts_inhabited": false,
       "map": {
-        "x": 319,
-        "y": 363
+        "x": 528,
+        "y": 717
       },
       "artwork_id": 10,
       "source_id": 107,
@@ -392,8 +392,8 @@
       "sector": "abrion",
       "starts_inhabited": false,
       "map": {
-        "x": 310,
-        "y": 335
+        "x": 513,
+        "y": 670
       },
       "artwork_id": 11,
       "source_id": 108,
@@ -405,8 +405,8 @@
       "sector": "abrion",
       "starts_inhabited": false,
       "map": {
-        "x": 288,
-        "y": 339
+        "x": 477,
+        "y": 677
       },
       "artwork_id": 12,
       "source_id": 109,
@@ -418,8 +418,8 @@
       "sector": "atrivis",
       "starts_inhabited": false,
       "map": {
-        "x": 185,
-        "y": 29
+        "x": 305,
+        "y": 159
       },
       "artwork_id": 5,
       "source_id": 110,
@@ -431,8 +431,8 @@
       "sector": "atrivis",
       "starts_inhabited": false,
       "map": {
-        "x": 201,
-        "y": 0
+        "x": 331,
+        "y": 110
       },
       "artwork_id": 13,
       "source_id": 111,
@@ -444,8 +444,8 @@
       "sector": "atrivis",
       "starts_inhabited": false,
       "map": {
-        "x": 201,
-        "y": 20
+        "x": 331,
+        "y": 143
       },
       "artwork_id": 11,
       "source_id": 112,
@@ -457,8 +457,8 @@
       "sector": "atrivis",
       "starts_inhabited": false,
       "map": {
-        "x": 173,
-        "y": 14
+        "x": 285,
+        "y": 134
       },
       "artwork_id": 14,
       "source_id": 113,
@@ -470,8 +470,8 @@
       "sector": "atrivis",
       "starts_inhabited": false,
       "map": {
-        "x": 175,
-        "y": 41
+        "x": 288,
+        "y": 178
       },
       "artwork_id": 15,
       "source_id": 114,
@@ -483,8 +483,8 @@
       "sector": "atrivis",
       "starts_inhabited": false,
       "map": {
-        "x": 191,
-        "y": 10
+        "x": 315,
+        "y": 127
       },
       "artwork_id": 8,
       "source_id": 115,
@@ -496,8 +496,8 @@
       "sector": "atrivis",
       "starts_inhabited": false,
       "map": {
-        "x": 184,
-        "y": 0
+        "x": 302,
+        "y": 110
       },
       "artwork_id": 7,
       "source_id": 116,
@@ -509,8 +509,8 @@
       "sector": "atrivis",
       "starts_inhabited": false,
       "map": {
-        "x": 169,
-        "y": 27
+        "x": 277,
+        "y": 155
       },
       "artwork_id": 11,
       "source_id": 117,
@@ -522,8 +522,8 @@
       "sector": "atrivis",
       "starts_inhabited": false,
       "map": {
-        "x": 189,
-        "y": 42
+        "x": 312,
+        "y": 180
       },
       "artwork_id": 6,
       "source_id": 118,
@@ -535,8 +535,8 @@
       "sector": "atrivis",
       "starts_inhabited": false,
       "map": {
-        "x": 172,
-        "y": -4
+        "x": 282,
+        "y": 103
       },
       "artwork_id": 7,
       "source_id": 119,
@@ -548,8 +548,8 @@
       "sector": "calaron",
       "starts_inhabited": false,
       "map": {
-        "x": 233,
-        "y": 17
+        "x": 385,
+        "y": 138
       },
       "artwork_id": 8,
       "source_id": 120,
@@ -561,8 +561,8 @@
       "sector": "calaron",
       "starts_inhabited": false,
       "map": {
-        "x": 261,
-        "y": 59
+        "x": 432,
+        "y": 209
       },
       "artwork_id": 7,
       "source_id": 121,
@@ -574,8 +574,8 @@
       "sector": "calaron",
       "starts_inhabited": false,
       "map": {
-        "x": 261,
-        "y": 17
+        "x": 432,
+        "y": 138
       },
       "artwork_id": 1,
       "source_id": 122,
@@ -587,8 +587,8 @@
       "sector": "calaron",
       "starts_inhabited": false,
       "map": {
-        "x": 246,
-        "y": 31
+        "x": 407,
+        "y": 162
       },
       "artwork_id": 13,
       "source_id": 123,
@@ -600,8 +600,8 @@
       "sector": "calaron",
       "starts_inhabited": false,
       "map": {
-        "x": 264,
-        "y": 42
+        "x": 437,
+        "y": 180
       },
       "artwork_id": 2,
       "source_id": 124,
@@ -613,8 +613,8 @@
       "sector": "calaron",
       "starts_inhabited": false,
       "map": {
-        "x": 234,
-        "y": 35
+        "x": 386,
+        "y": 169
       },
       "artwork_id": 16,
       "source_id": 125,
@@ -626,8 +626,8 @@
       "sector": "calaron",
       "starts_inhabited": false,
       "map": {
-        "x": 258,
-        "y": 29
+        "x": 427,
+        "y": 159
       },
       "artwork_id": 17,
       "source_id": 126,
@@ -639,8 +639,8 @@
       "sector": "calaron",
       "starts_inhabited": false,
       "map": {
-        "x": 235,
-        "y": 62
+        "x": 388,
+        "y": 213
       },
       "artwork_id": 3,
       "source_id": 127,
@@ -652,8 +652,8 @@
       "sector": "calaron",
       "starts_inhabited": false,
       "map": {
-        "x": 235,
-        "y": 49
+        "x": 388,
+        "y": 192
       },
       "artwork_id": 4,
       "source_id": 128,
@@ -665,8 +665,8 @@
       "sector": "calaron",
       "starts_inhabited": false,
       "map": {
-        "x": 247,
-        "y": 57
+        "x": 408,
+        "y": 206
       },
       "artwork_id": 18,
       "source_id": 129,
@@ -678,8 +678,8 @@
       "sector": "churba",
       "starts_inhabited": false,
       "map": {
-        "x": 85,
-        "y": 219
+        "x": 137,
+        "y": 476
       },
       "artwork_id": 9,
       "source_id": 130,
@@ -691,8 +691,8 @@
       "sector": "churba",
       "starts_inhabited": false,
       "map": {
-        "x": 114,
-        "y": 195
+        "x": 186,
+        "y": 436
       },
       "artwork_id": 13,
       "source_id": 131,
@@ -704,8 +704,8 @@
       "sector": "churba",
       "starts_inhabited": false,
       "map": {
-        "x": 110,
-        "y": 213
+        "x": 179,
+        "y": 466
       },
       "artwork_id": 15,
       "source_id": 132,
@@ -717,8 +717,8 @@
       "sector": "churba",
       "starts_inhabited": false,
       "map": {
-        "x": 103,
-        "y": 200
+        "x": 167,
+        "y": 445
       },
       "artwork_id": 7,
       "source_id": 133,
@@ -730,8 +730,8 @@
       "sector": "churba",
       "starts_inhabited": false,
       "map": {
-        "x": 88,
-        "y": 204
+        "x": 142,
+        "y": 452
       },
       "artwork_id": 14,
       "source_id": 134,
@@ -743,8 +743,8 @@
       "sector": "churba",
       "starts_inhabited": false,
       "map": {
-        "x": 99,
-        "y": 219
+        "x": 160,
+        "y": 476
       },
       "artwork_id": 18,
       "source_id": 135,
@@ -756,8 +756,8 @@
       "sector": "churba",
       "starts_inhabited": false,
       "map": {
-        "x": 85,
-        "y": 188
+        "x": 137,
+        "y": 424
       },
       "artwork_id": 19,
       "source_id": 136,
@@ -769,8 +769,8 @@
       "sector": "churba",
       "starts_inhabited": false,
       "map": {
-        "x": 112,
-        "y": 225
+        "x": 182,
+        "y": 487
       },
       "artwork_id": 20,
       "source_id": 137,
@@ -782,8 +782,8 @@
       "sector": "churba",
       "starts_inhabited": false,
       "map": {
-        "x": 90,
-        "y": 231
+        "x": 145,
+        "y": 497
       },
       "artwork_id": 8,
       "source_id": 138,
@@ -795,8 +795,8 @@
       "sector": "churba",
       "starts_inhabited": false,
       "map": {
-        "x": 97,
-        "y": 189
+        "x": 157,
+        "y": 426
       },
       "artwork_id": 13,
       "source_id": 139,
@@ -808,8 +808,8 @@
       "sector": "corellian",
       "starts_inhabited": true,
       "map": {
-        "x": 178,
-        "y": 179
+        "x": 292,
+        "y": 410
       },
       "artwork_id": 5,
       "source_id": 140,
@@ -821,8 +821,8 @@
       "sector": "corellian",
       "starts_inhabited": true,
       "map": {
-        "x": 191,
-        "y": 185
+        "x": 314,
+        "y": 419
       },
       "artwork_id": 6,
       "source_id": 141,
@@ -834,8 +834,8 @@
       "sector": "corellian",
       "starts_inhabited": true,
       "map": {
-        "x": 164,
-        "y": 213
+        "x": 270,
+        "y": 466
       },
       "artwork_id": 1,
       "source_id": 142,
@@ -847,8 +847,8 @@
       "sector": "corellian",
       "starts_inhabited": true,
       "map": {
-        "x": 185,
-        "y": 203
+        "x": 304,
+        "y": 450
       },
       "artwork_id": 2,
       "source_id": 143,
@@ -860,8 +860,8 @@
       "sector": "corellian",
       "starts_inhabited": true,
       "map": {
-        "x": 163,
-        "y": 187
+        "x": 268,
+        "y": 422
       },
       "artwork_id": 3,
       "source_id": 144,
@@ -873,8 +873,8 @@
       "sector": "corellian",
       "starts_inhabited": true,
       "map": {
-        "x": 175,
-        "y": 195
+        "x": 288,
+        "y": 436
       },
       "artwork_id": 7,
       "source_id": 145,
@@ -886,8 +886,8 @@
       "sector": "corellian",
       "starts_inhabited": true,
       "map": {
-        "x": 161,
-        "y": 200
+        "x": 265,
+        "y": 445
       },
       "artwork_id": 4,
       "source_id": 146,
@@ -899,8 +899,8 @@
       "sector": "corellian",
       "starts_inhabited": true,
       "map": {
-        "x": 187,
-        "y": 216
+        "x": 307,
+        "y": 471
       },
       "artwork_id": 5,
       "source_id": 147,
@@ -912,8 +912,8 @@
       "sector": "corellian",
       "starts_inhabited": true,
       "map": {
-        "x": 175,
-        "y": 220
+        "x": 287,
+        "y": 478
       },
       "artwork_id": 6,
       "source_id": 148,
@@ -925,8 +925,8 @@
       "sector": "corellian",
       "starts_inhabited": true,
       "map": {
-        "x": 166,
-        "y": 174
+        "x": 272,
+        "y": 401
       },
       "artwork_id": 1,
       "source_id": 149,
@@ -938,8 +938,8 @@
       "sector": "dolomar",
       "starts_inhabited": true,
       "map": {
-        "x": 291,
-        "y": 129
+        "x": 482,
+        "y": 326
       },
       "artwork_id": 2,
       "source_id": 150,
@@ -951,8 +951,8 @@
       "sector": "dolomar",
       "starts_inhabited": true,
       "map": {
-        "x": 317,
-        "y": 136
+        "x": 526,
+        "y": 337
       },
       "artwork_id": 3,
       "source_id": 151,
@@ -964,8 +964,8 @@
       "sector": "dolomar",
       "starts_inhabited": true,
       "map": {
-        "x": 292,
-        "y": 102
+        "x": 484,
+        "y": 281
       },
       "artwork_id": 11,
       "source_id": 152,
@@ -977,8 +977,8 @@
       "sector": "dolomar",
       "starts_inhabited": true,
       "map": {
-        "x": 288,
-        "y": 117
+        "x": 477,
+        "y": 305
       },
       "artwork_id": 4,
       "source_id": 153,
@@ -990,8 +990,8 @@
       "sector": "dolomar",
       "starts_inhabited": true,
       "map": {
-        "x": 305,
-        "y": 129
+        "x": 506,
+        "y": 326
       },
       "artwork_id": 11,
       "source_id": 154,
@@ -1003,8 +1003,8 @@
       "sector": "dolomar",
       "starts_inhabited": true,
       "map": {
-        "x": 305,
-        "y": 90
+        "x": 506,
+        "y": 260
       },
       "artwork_id": 5,
       "source_id": 155,
@@ -1016,8 +1016,8 @@
       "sector": "dolomar",
       "starts_inhabited": true,
       "map": {
-        "x": 289,
-        "y": 91
+        "x": 479,
+        "y": 262
       },
       "artwork_id": 6,
       "source_id": 156,
@@ -1029,8 +1029,8 @@
       "sector": "dolomar",
       "starts_inhabited": true,
       "map": {
-        "x": 319,
-        "y": 109
+        "x": 528,
+        "y": 293
       },
       "artwork_id": 1,
       "source_id": 157,
@@ -1042,8 +1042,8 @@
       "sector": "dolomar",
       "starts_inhabited": true,
       "map": {
-        "x": 307,
-        "y": 106
+        "x": 509,
+        "y": 288
       },
       "artwork_id": 2,
       "source_id": 158,
@@ -1055,8 +1055,8 @@
       "sector": "dolomar",
       "starts_inhabited": true,
       "map": {
-        "x": 317,
-        "y": 95
+        "x": 526,
+        "y": 269
       },
       "artwork_id": 3,
       "source_id": 159,
@@ -1068,8 +1068,8 @@
       "sector": "dufilvan",
       "starts_inhabited": false,
       "map": {
-        "x": 231,
-        "y": 353
+        "x": 381,
+        "y": 701
       },
       "artwork_id": 9,
       "source_id": 160,
@@ -1081,8 +1081,8 @@
       "sector": "dufilvan",
       "starts_inhabited": false,
       "map": {
-        "x": 247,
-        "y": 337
+        "x": 408,
+        "y": 673
       },
       "artwork_id": 4,
       "source_id": 161,
@@ -1094,8 +1094,8 @@
       "sector": "dufilvan",
       "starts_inhabited": false,
       "map": {
-        "x": 252,
-        "y": 360
+        "x": 417,
+        "y": 712
       },
       "artwork_id": 5,
       "source_id": 162,
@@ -1107,8 +1107,8 @@
       "sector": "dufilvan",
       "starts_inhabited": false,
       "map": {
-        "x": 225,
-        "y": 377
+        "x": 371,
+        "y": 740
       },
       "artwork_id": 11,
       "source_id": 163,
@@ -1120,8 +1120,8 @@
       "sector": "dufilvan",
       "starts_inhabited": false,
       "map": {
-        "x": 238,
-        "y": 378
+        "x": 393,
+        "y": 743
       },
       "artwork_id": 19,
       "source_id": 164,
@@ -1133,8 +1133,8 @@
       "sector": "dufilvan",
       "starts_inhabited": false,
       "map": {
-        "x": 253,
-        "y": 381
+        "x": 418,
+        "y": 747
       },
       "artwork_id": 6,
       "source_id": 165,
@@ -1146,8 +1146,8 @@
       "sector": "dufilvan",
       "starts_inhabited": false,
       "map": {
-        "x": 233,
-        "y": 342
+        "x": 385,
+        "y": 682
       },
       "artwork_id": 1,
       "source_id": 166,
@@ -1159,8 +1159,8 @@
       "sector": "dufilvan",
       "starts_inhabited": false,
       "map": {
-        "x": 240,
-        "y": 364
+        "x": 396,
+        "y": 719
       },
       "artwork_id": 13,
       "source_id": 167,
@@ -1172,8 +1172,8 @@
       "sector": "dufilvan",
       "starts_inhabited": false,
       "map": {
-        "x": 222,
-        "y": 364
+        "x": 366,
+        "y": 719
       },
       "artwork_id": 19,
       "source_id": 168,
@@ -1185,8 +1185,8 @@
       "sector": "dufilvan",
       "starts_inhabited": false,
       "map": {
-        "x": 221,
-        "y": 335
+        "x": 364,
+        "y": 670
       },
       "artwork_id": 11,
       "source_id": 169,
@@ -1198,8 +1198,8 @@
       "sector": "fakir",
       "starts_inhabited": true,
       "map": {
-        "x": 265,
-        "y": 252
+        "x": 439,
+        "y": 532
       },
       "artwork_id": 7,
       "source_id": 170,
@@ -1211,8 +1211,8 @@
       "sector": "fakir",
       "starts_inhabited": true,
       "map": {
-        "x": 260,
-        "y": 266
+        "x": 430,
+        "y": 555
       },
       "artwork_id": 2,
       "source_id": 171,
@@ -1224,8 +1224,8 @@
       "sector": "fakir",
       "starts_inhabited": true,
       "map": {
-        "x": 241,
-        "y": 296
+        "x": 398,
+        "y": 605
       },
       "artwork_id": 13,
       "source_id": 172,
@@ -1237,8 +1237,8 @@
       "sector": "fakir",
       "starts_inhabited": true,
       "map": {
-        "x": 249,
-        "y": 282
+        "x": 412,
+        "y": 581
       },
       "artwork_id": 3,
       "source_id": 173,
@@ -1250,8 +1250,8 @@
       "sector": "fakir",
       "starts_inhabited": true,
       "map": {
-        "x": 236,
-        "y": 256
+        "x": 390,
+        "y": 539
       },
       "artwork_id": 13,
       "source_id": 174,
@@ -1263,8 +1263,8 @@
       "sector": "fakir",
       "starts_inhabited": true,
       "map": {
-        "x": 261,
-        "y": 285
+        "x": 432,
+        "y": 586
       },
       "artwork_id": 8,
       "source_id": 175,
@@ -1276,8 +1276,8 @@
       "sector": "fakir",
       "starts_inhabited": true,
       "map": {
-        "x": 238,
-        "y": 285
+        "x": 393,
+        "y": 586
       },
       "artwork_id": 4,
       "source_id": 176,
@@ -1289,8 +1289,8 @@
       "sector": "fakir",
       "starts_inhabited": true,
       "map": {
-        "x": 247,
-        "y": 265
+        "x": 408,
+        "y": 553
       },
       "artwork_id": 5,
       "source_id": 177,
@@ -1302,8 +1302,8 @@
       "sector": "fakir",
       "starts_inhabited": true,
       "map": {
-        "x": 254,
-        "y": 253
+        "x": 420,
+        "y": 534
       },
       "artwork_id": 6,
       "source_id": 178,
@@ -1315,8 +1315,8 @@
       "sector": "fakir",
       "starts_inhabited": true,
       "map": {
-        "x": 258,
-        "y": 297
+        "x": 427,
+        "y": 607
       },
       "artwork_id": 1,
       "source_id": 179,
@@ -1328,8 +1328,8 @@
       "sector": "farfin",
       "starts_inhabited": true,
       "map": {
-        "x": 358,
-        "y": 178
+        "x": 594,
+        "y": 408
       },
       "artwork_id": 1,
       "source_id": 180,
@@ -1341,8 +1341,8 @@
       "sector": "farfin",
       "starts_inhabited": true,
       "map": {
-        "x": 363,
-        "y": 189
+        "x": 602,
+        "y": 426
       },
       "artwork_id": 8,
       "source_id": 181,
@@ -1354,8 +1354,8 @@
       "sector": "farfin",
       "starts_inhabited": true,
       "map": {
-        "x": 386,
-        "y": 203
+        "x": 641,
+        "y": 450
       },
       "artwork_id": 2,
       "source_id": 182,
@@ -1367,8 +1367,8 @@
       "sector": "farfin",
       "starts_inhabited": true,
       "map": {
-        "x": 385,
-        "y": 160
+        "x": 639,
+        "y": 377
       },
       "artwork_id": 3,
       "source_id": 183,
@@ -1380,8 +1380,8 @@
       "sector": "farfin",
       "starts_inhabited": true,
       "map": {
-        "x": 370,
-        "y": 163
+        "x": 614,
+        "y": 382
       },
       "artwork_id": 4,
       "source_id": 184,
@@ -1393,8 +1393,8 @@
       "sector": "farfin",
       "starts_inhabited": true,
       "map": {
-        "x": 378,
-        "y": 192
+        "x": 628,
+        "y": 431
       },
       "artwork_id": 5,
       "source_id": 185,
@@ -1406,8 +1406,8 @@
       "sector": "farfin",
       "starts_inhabited": true,
       "map": {
-        "x": 375,
-        "y": 181
+        "x": 622,
+        "y": 412
       },
       "artwork_id": 11,
       "source_id": 186,
@@ -1419,8 +1419,8 @@
       "sector": "farfin",
       "starts_inhabited": true,
       "map": {
-        "x": 371,
-        "y": 203
+        "x": 616,
+        "y": 450
       },
       "artwork_id": 19,
       "source_id": 187,
@@ -1432,8 +1432,8 @@
       "sector": "farfin",
       "starts_inhabited": true,
       "map": {
-        "x": 386,
-        "y": 174
+        "x": 641,
+        "y": 401
       },
       "artwork_id": 11,
       "source_id": 188,
@@ -1445,8 +1445,8 @@
       "sector": "farfin",
       "starts_inhabited": true,
       "map": {
-        "x": 358,
-        "y": 164
+        "x": 594,
+        "y": 384
       },
       "artwork_id": 6,
       "source_id": 189,
@@ -1458,8 +1458,8 @@
       "sector": "glythe",
       "starts_inhabited": false,
       "map": {
-        "x": 387,
-        "y": 97
+        "x": 643,
+        "y": 272
       },
       "artwork_id": 13,
       "source_id": 190,
@@ -1471,8 +1471,8 @@
       "sector": "glythe",
       "starts_inhabited": false,
       "map": {
-        "x": 392,
-        "y": 111
+        "x": 651,
+        "y": 295
       },
       "artwork_id": 1,
       "source_id": 191,
@@ -1484,8 +1484,8 @@
       "sector": "glythe",
       "starts_inhabited": false,
       "map": {
-        "x": 367,
-        "y": 105
+        "x": 609,
+        "y": 286
       },
       "artwork_id": 2,
       "source_id": 192,
@@ -1497,8 +1497,8 @@
       "sector": "glythe",
       "starts_inhabited": false,
       "map": {
-        "x": 395,
-        "y": 127
+        "x": 655,
+        "y": 323
       },
       "artwork_id": 20,
       "source_id": 193,
@@ -1510,8 +1510,8 @@
       "sector": "glythe",
       "starts_inhabited": false,
       "map": {
-        "x": 377,
-        "y": 129
+        "x": 626,
+        "y": 326
       },
       "artwork_id": 21,
       "source_id": 194,
@@ -1523,8 +1523,8 @@
       "sector": "glythe",
       "starts_inhabited": false,
       "map": {
-        "x": 362,
-        "y": 91
+        "x": 601,
+        "y": 262
       },
       "artwork_id": 8,
       "source_id": 195,
@@ -1536,8 +1536,8 @@
       "sector": "glythe",
       "starts_inhabited": false,
       "map": {
-        "x": 363,
-        "y": 134
+        "x": 602,
+        "y": 335
       },
       "artwork_id": 7,
       "source_id": 196,
@@ -1549,8 +1549,8 @@
       "sector": "glythe",
       "starts_inhabited": false,
       "map": {
-        "x": 382,
-        "y": 118
+        "x": 634,
+        "y": 307
       },
       "artwork_id": 13,
       "source_id": 197,
@@ -1562,8 +1562,8 @@
       "sector": "glythe",
       "starts_inhabited": false,
       "map": {
-        "x": 375,
-        "y": 94
+        "x": 622,
+        "y": 267
       },
       "artwork_id": 11,
       "source_id": 198,
@@ -1575,8 +1575,8 @@
       "sector": "glythe",
       "starts_inhabited": false,
       "map": {
-        "x": 362,
-        "y": 119
+        "x": 601,
+        "y": 309
       },
       "artwork_id": 8,
       "source_id": 199,
@@ -1588,8 +1588,8 @@
       "sector": "jospro",
       "starts_inhabited": false,
       "map": {
-        "x": 476,
-        "y": 307
+        "x": 791,
+        "y": 623
       },
       "artwork_id": 11,
       "source_id": 200,
@@ -1601,8 +1601,8 @@
       "sector": "jospro",
       "starts_inhabited": false,
       "map": {
-        "x": 462,
-        "y": 269
+        "x": 768,
+        "y": 560
       },
       "artwork_id": 13,
       "source_id": 201,
@@ -1614,8 +1614,8 @@
       "sector": "jospro",
       "starts_inhabited": false,
       "map": {
-        "x": 447,
-        "y": 266
+        "x": 742,
+        "y": 555
       },
       "artwork_id": 3,
       "source_id": 202,
@@ -1627,8 +1627,8 @@
       "sector": "jospro",
       "starts_inhabited": false,
       "map": {
-        "x": 458,
-        "y": 280
+        "x": 761,
+        "y": 579
       },
       "artwork_id": 13,
       "source_id": 203,
@@ -1640,8 +1640,8 @@
       "sector": "jospro",
       "starts_inhabited": false,
       "map": {
-        "x": 463,
-        "y": 311
+        "x": 769,
+        "y": 630
       },
       "artwork_id": 11,
       "source_id": 204,
@@ -1653,8 +1653,8 @@
       "sector": "jospro",
       "starts_inhabited": false,
       "map": {
-        "x": 449,
-        "y": 305
+        "x": 746,
+        "y": 621
       },
       "artwork_id": 15,
       "source_id": 205,
@@ -1666,8 +1666,8 @@
       "sector": "jospro",
       "starts_inhabited": false,
       "map": {
-        "x": 464,
-        "y": 298
+        "x": 771,
+        "y": 609
       },
       "artwork_id": 7,
       "source_id": 206,
@@ -1679,8 +1679,8 @@
       "sector": "jospro",
       "starts_inhabited": false,
       "map": {
-        "x": 475,
-        "y": 268
+        "x": 790,
+        "y": 558
       },
       "artwork_id": 4,
       "source_id": 207,
@@ -1692,8 +1692,8 @@
       "sector": "jospro",
       "starts_inhabited": false,
       "map": {
-        "x": 476,
-        "y": 283
+        "x": 791,
+        "y": 583
       },
       "artwork_id": 5,
       "source_id": 208,
@@ -1705,8 +1705,8 @@
       "sector": "jospro",
       "starts_inhabited": false,
       "map": {
-        "x": 452,
-        "y": 293
+        "x": 751,
+        "y": 600
       },
       "artwork_id": 19,
       "source_id": 209,
@@ -1718,8 +1718,8 @@
       "sector": "kanchen",
       "starts_inhabited": false,
       "map": {
-        "x": 170,
-        "y": 283
+        "x": 280,
+        "y": 583
       },
       "artwork_id": 10,
       "source_id": 210,
@@ -1731,8 +1731,8 @@
       "sector": "kanchen",
       "starts_inhabited": false,
       "map": {
-        "x": 138,
-        "y": 318
+        "x": 226,
+        "y": 642
       },
       "artwork_id": 20,
       "source_id": 211,
@@ -1744,8 +1744,8 @@
       "sector": "kanchen",
       "starts_inhabited": false,
       "map": {
-        "x": 157,
-        "y": 290
+        "x": 258,
+        "y": 595
       },
       "artwork_id": 20,
       "source_id": 212,
@@ -1757,8 +1757,8 @@
       "sector": "kanchen",
       "starts_inhabited": false,
       "map": {
-        "x": 149,
-        "y": 313
+        "x": 245,
+        "y": 633
       },
       "artwork_id": 11,
       "source_id": 213,
@@ -1770,8 +1770,8 @@
       "sector": "kanchen",
       "starts_inhabited": false,
       "map": {
-        "x": 146,
-        "y": 300
+        "x": 240,
+        "y": 612
       },
       "artwork_id": 19,
       "source_id": 214,
@@ -1783,8 +1783,8 @@
       "sector": "kanchen",
       "starts_inhabited": false,
       "map": {
-        "x": 154,
-        "y": 325
+        "x": 253,
+        "y": 654
       },
       "artwork_id": 6,
       "source_id": 215,
@@ -1796,8 +1796,8 @@
       "sector": "kanchen",
       "starts_inhabited": false,
       "map": {
-        "x": 166,
-        "y": 319
+        "x": 272,
+        "y": 644
       },
       "artwork_id": 9,
       "source_id": 216,
@@ -1809,8 +1809,8 @@
       "sector": "kanchen",
       "starts_inhabited": false,
       "map": {
-        "x": 169,
-        "y": 296
+        "x": 277,
+        "y": 605
       },
       "artwork_id": 1,
       "source_id": 217,
@@ -1822,8 +1822,8 @@
       "sector": "kanchen",
       "starts_inhabited": false,
       "map": {
-        "x": 143,
-        "y": 289
+        "x": 234,
+        "y": 593
       },
       "artwork_id": 20,
       "source_id": 218,
@@ -1835,8 +1835,8 @@
       "sector": "kanchen",
       "starts_inhabited": false,
       "map": {
-        "x": 138,
-        "y": 276
+        "x": 226,
+        "y": 572
       },
       "artwork_id": 2,
       "source_id": 219,
@@ -1848,8 +1848,8 @@
       "sector": "mayagil",
       "starts_inhabited": false,
       "map": {
-        "x": 332,
-        "y": 62
+        "x": 550,
+        "y": 213
       },
       "artwork_id": 19,
       "source_id": 220,
@@ -1861,8 +1861,8 @@
       "sector": "mayagil",
       "starts_inhabited": false,
       "map": {
-        "x": 328,
-        "y": 33
+        "x": 543,
+        "y": 166
       },
       "artwork_id": 14,
       "source_id": 221,
@@ -1874,8 +1874,8 @@
       "sector": "mayagil",
       "starts_inhabited": false,
       "map": {
-        "x": 301,
-        "y": 48
+        "x": 498,
+        "y": 190
       },
       "artwork_id": 22,
       "source_id": 222,
@@ -1887,8 +1887,8 @@
       "sector": "mayagil",
       "starts_inhabited": false,
       "map": {
-        "x": 310,
-        "y": 36
+        "x": 513,
+        "y": 171
       },
       "artwork_id": 9,
       "source_id": 223,
@@ -1900,8 +1900,8 @@
       "sector": "mayagil",
       "starts_inhabited": false,
       "map": {
-        "x": 322,
-        "y": 48
+        "x": 533,
+        "y": 190
       },
       "artwork_id": 11,
       "source_id": 224,
@@ -1913,8 +1913,8 @@
       "sector": "mayagil",
       "starts_inhabited": false,
       "map": {
-        "x": 313,
-        "y": 23
+        "x": 518,
+        "y": 148
       },
       "artwork_id": 13,
       "source_id": 225,
@@ -1926,8 +1926,8 @@
       "sector": "mayagil",
       "starts_inhabited": false,
       "map": {
-        "x": 299,
-        "y": 16
+        "x": 496,
+        "y": 136
       },
       "artwork_id": 3,
       "source_id": 226,
@@ -1939,8 +1939,8 @@
       "sector": "mayagil",
       "starts_inhabited": false,
       "map": {
-        "x": 326,
-        "y": 17
+        "x": 540,
+        "y": 138
       },
       "artwork_id": 11,
       "source_id": 227,
@@ -1952,8 +1952,8 @@
       "sector": "mayagil",
       "starts_inhabited": false,
       "map": {
-        "x": 298,
-        "y": 32
+        "x": 494,
+        "y": 164
       },
       "artwork_id": 8,
       "source_id": 228,
@@ -1965,8 +1965,8 @@
       "sector": "mayagil",
       "starts_inhabited": false,
       "map": {
-        "x": 311,
-        "y": 59
+        "x": 515,
+        "y": 209
       },
       "artwork_id": 18,
       "source_id": 229,
@@ -1978,8 +1978,8 @@
       "sector": "moddell",
       "starts_inhabited": false,
       "map": {
-        "x": 132,
-        "y": 31
+        "x": 216,
+        "y": 162
       },
       "artwork_id": 4,
       "source_id": 230,
@@ -1991,8 +1991,8 @@
       "sector": "moddell",
       "starts_inhabited": false,
       "map": {
-        "x": 145,
-        "y": 28
+        "x": 238,
+        "y": 157
       },
       "artwork_id": 20,
       "source_id": 231,
@@ -2004,8 +2004,8 @@
       "sector": "moddell",
       "starts_inhabited": false,
       "map": {
-        "x": 120,
-        "y": 53
+        "x": 196,
+        "y": 199
       },
       "artwork_id": 15,
       "source_id": 232,
@@ -2017,8 +2017,8 @@
       "sector": "moddell",
       "starts_inhabited": false,
       "map": {
-        "x": 122,
-        "y": 39
+        "x": 199,
+        "y": 176
       },
       "artwork_id": 8,
       "source_id": 233,
@@ -2030,8 +2030,8 @@
       "sector": "moddell",
       "starts_inhabited": false,
       "map": {
-        "x": 145,
-        "y": 50
+        "x": 238,
+        "y": 194
       },
       "artwork_id": 13,
       "source_id": 234,
@@ -2043,8 +2043,8 @@
       "sector": "moddell",
       "starts_inhabited": false,
       "map": {
-        "x": 126,
-        "y": 72
+        "x": 206,
+        "y": 230
       },
       "artwork_id": 8,
       "source_id": 235,
@@ -2056,8 +2056,8 @@
       "sector": "moddell",
       "starts_inhabited": false,
       "map": {
-        "x": 143,
-        "y": 68
+        "x": 234,
+        "y": 223
       },
       "artwork_id": 8,
       "source_id": 236,
@@ -2069,8 +2069,8 @@
       "sector": "moddell",
       "starts_inhabited": false,
       "map": {
-        "x": 134,
-        "y": 49
+        "x": 219,
+        "y": 192
       },
       "artwork_id": 19,
       "source_id": 237,
@@ -2082,8 +2082,8 @@
       "sector": "moddell",
       "starts_inhabited": false,
       "map": {
-        "x": 131,
-        "y": 60
+        "x": 214,
+        "y": 211
       },
       "artwork_id": 13,
       "source_id": 238,
@@ -2095,8 +2095,8 @@
       "sector": "moddell",
       "starts_inhabited": false,
       "map": {
-        "x": 151,
-        "y": 39
+        "x": 248,
+        "y": 176
       },
       "artwork_id": 8,
       "source_id": 239,
@@ -2108,8 +2108,8 @@
       "sector": "orus",
       "starts_inhabited": false,
       "map": {
-        "x": 435,
-        "y": 386
+        "x": 722,
+        "y": 755
       },
       "artwork_id": 5,
       "source_id": 240,
@@ -2121,8 +2121,8 @@
       "sector": "orus",
       "starts_inhabited": false,
       "map": {
-        "x": 429,
-        "y": 374
+        "x": 712,
+        "y": 736
       },
       "artwork_id": 19,
       "source_id": 241,
@@ -2134,8 +2134,8 @@
       "sector": "orus",
       "starts_inhabited": false,
       "map": {
-        "x": 454,
-        "y": 368
+        "x": 754,
+        "y": 726
       },
       "artwork_id": 13,
       "source_id": 242,
@@ -2147,8 +2147,8 @@
       "sector": "orus",
       "starts_inhabited": false,
       "map": {
-        "x": 447,
-        "y": 346
+        "x": 742,
+        "y": 689
       },
       "artwork_id": 6,
       "source_id": 243,
@@ -2160,8 +2160,8 @@
       "sector": "orus",
       "starts_inhabited": false,
       "map": {
-        "x": 427,
-        "y": 350
+        "x": 709,
+        "y": 696
       },
       "artwork_id": 1,
       "source_id": 244,
@@ -2173,8 +2173,8 @@
       "sector": "orus",
       "starts_inhabited": false,
       "map": {
-        "x": 423,
-        "y": 390
+        "x": 702,
+        "y": 762
       },
       "artwork_id": 13,
       "source_id": 245,
@@ -2186,8 +2186,8 @@
       "sector": "orus",
       "starts_inhabited": false,
       "map": {
-        "x": 438,
-        "y": 362
+        "x": 727,
+        "y": 715
       },
       "artwork_id": 20,
       "source_id": 246,
@@ -2199,8 +2199,8 @@
       "sector": "orus",
       "starts_inhabited": false,
       "map": {
-        "x": 446,
-        "y": 394
+        "x": 741,
+        "y": 769
       },
       "artwork_id": 8,
       "source_id": 247,
@@ -2212,8 +2212,8 @@
       "sector": "orus",
       "starts_inhabited": false,
       "map": {
-        "x": 450,
-        "y": 381
+        "x": 747,
+        "y": 747
       },
       "artwork_id": 19,
       "source_id": 248,
@@ -2225,8 +2225,8 @@
       "sector": "orus",
       "starts_inhabited": false,
       "map": {
-        "x": 421,
-        "y": 363
+        "x": 700,
+        "y": 717
       },
       "artwork_id": 9,
       "source_id": 249,
@@ -2238,8 +2238,8 @@
       "sector": "quelli",
       "starts_inhabited": false,
       "map": {
-        "x": 102,
-        "y": 117
+        "x": 165,
+        "y": 305
       },
       "artwork_id": 11,
       "source_id": 250,
@@ -2251,8 +2251,8 @@
       "sector": "quelli",
       "starts_inhabited": false,
       "map": {
-        "x": 100,
-        "y": 133
+        "x": 162,
+        "y": 333
       },
       "artwork_id": 13,
       "source_id": 251,
@@ -2264,8 +2264,8 @@
       "sector": "quelli",
       "starts_inhabited": false,
       "map": {
-        "x": 79,
-        "y": 149
+        "x": 127,
+        "y": 359
       },
       "artwork_id": 2,
       "source_id": 252,
@@ -2277,8 +2277,8 @@
       "sector": "quelli",
       "starts_inhabited": false,
       "map": {
-        "x": 87,
-        "y": 106
+        "x": 140,
+        "y": 288
       },
       "artwork_id": 3,
       "source_id": 253,
@@ -2290,8 +2290,8 @@
       "sector": "quelli",
       "starts_inhabited": false,
       "map": {
-        "x": 74,
-        "y": 137
+        "x": 118,
+        "y": 340
       },
       "artwork_id": 13,
       "source_id": 254,
@@ -2303,8 +2303,8 @@
       "sector": "quelli",
       "starts_inhabited": false,
       "map": {
-        "x": 75,
-        "y": 115
+        "x": 121,
+        "y": 302
       },
       "artwork_id": 18,
       "source_id": 255,
@@ -2316,8 +2316,8 @@
       "sector": "quelli",
       "starts_inhabited": false,
       "map": {
-        "x": 108,
-        "y": 149
+        "x": 175,
+        "y": 359
       },
       "artwork_id": 4,
       "source_id": 256,
@@ -2329,8 +2329,8 @@
       "sector": "quelli",
       "starts_inhabited": false,
       "map": {
-        "x": 88,
-        "y": 137
+        "x": 142,
+        "y": 340
       },
       "artwork_id": 5,
       "source_id": 257,
@@ -2342,8 +2342,8 @@
       "sector": "quelli",
       "starts_inhabited": false,
       "map": {
-        "x": 82,
-        "y": 126
+        "x": 133,
+        "y": 321
       },
       "artwork_id": 7,
       "source_id": 258,
@@ -2355,8 +2355,8 @@
       "sector": "quelli",
       "starts_inhabited": false,
       "map": {
-        "x": 91,
-        "y": 150
+        "x": 147,
+        "y": 361
       },
       "artwork_id": 11,
       "source_id": 259,
@@ -2368,8 +2368,8 @@
       "sector": "sesswenna",
       "starts_inhabited": true,
       "map": {
-        "x": 198,
-        "y": 104
+        "x": 326,
+        "y": 284
       },
       "artwork_id": 19,
       "source_id": 260,
@@ -2381,8 +2381,8 @@
       "sector": "sesswenna",
       "starts_inhabited": true,
       "map": {
-        "x": 206,
-        "y": 123
+        "x": 339,
+        "y": 316
       },
       "artwork_id": 11,
       "source_id": 261,
@@ -2394,8 +2394,8 @@
       "sector": "sesswenna",
       "starts_inhabited": true,
       "map": {
-        "x": 217,
-        "y": 133
+        "x": 358,
+        "y": 333
       },
       "artwork_id": 6,
       "source_id": 262,
@@ -2407,8 +2407,8 @@
       "sector": "sesswenna",
       "starts_inhabited": true,
       "map": {
-        "x": 195,
-        "y": 90
+        "x": 322,
+        "y": 260
       },
       "artwork_id": 13,
       "source_id": 263,
@@ -2420,8 +2420,8 @@
       "sector": "sesswenna",
       "starts_inhabited": true,
       "map": {
-        "x": 229,
-        "y": 117
+        "x": 378,
+        "y": 305
       },
       "artwork_id": 1,
       "source_id": 264,
@@ -2433,8 +2433,8 @@
       "sector": "sesswenna",
       "starts_inhabited": true,
       "map": {
-        "x": 210,
-        "y": 111
+        "x": 346,
+        "y": 295
       },
       "artwork_id": 23,
       "source_id": 265,
@@ -2446,8 +2446,8 @@
       "sector": "sesswenna",
       "starts_inhabited": true,
       "map": {
-        "x": 226,
-        "y": 97
+        "x": 373,
+        "y": 272
       },
       "artwork_id": 2,
       "source_id": 266,
@@ -2459,8 +2459,8 @@
       "sector": "sesswenna",
       "starts_inhabited": true,
       "map": {
-        "x": 195,
-        "y": 133
+        "x": 322,
+        "y": 333
       },
       "artwork_id": 3,
       "source_id": 267,
@@ -2472,8 +2472,8 @@
       "sector": "sesswenna",
       "starts_inhabited": true,
       "map": {
-        "x": 218,
-        "y": 122
+        "x": 359,
+        "y": 314
       },
       "artwork_id": 13,
       "source_id": 268,
@@ -2485,8 +2485,8 @@
       "sector": "sesswenna",
       "starts_inhabited": true,
       "map": {
-        "x": 211,
-        "y": 87
+        "x": 348,
+        "y": 255
       },
       "artwork_id": 4,
       "source_id": 269,
@@ -2498,8 +2498,8 @@
       "sector": "sluis",
       "starts_inhabited": true,
       "map": {
-        "x": 338,
-        "y": 262
+        "x": 560,
+        "y": 548
       },
       "artwork_id": 5,
       "source_id": 270,
@@ -2511,8 +2511,8 @@
       "sector": "sluis",
       "starts_inhabited": true,
       "map": {
-        "x": 323,
-        "y": 287
+        "x": 535,
+        "y": 590
       },
       "artwork_id": 24,
       "source_id": 271,
@@ -2524,8 +2524,8 @@
       "sector": "sluis",
       "starts_inhabited": true,
       "map": {
-        "x": 335,
-        "y": 287
+        "x": 555,
+        "y": 590
       },
       "artwork_id": 7,
       "source_id": 272,
@@ -2537,8 +2537,8 @@
       "sector": "sluis",
       "starts_inhabited": true,
       "map": {
-        "x": 346,
-        "y": 298
+        "x": 574,
+        "y": 609
       },
       "artwork_id": 6,
       "source_id": 273,
@@ -2550,8 +2550,8 @@
       "sector": "sluis",
       "starts_inhabited": true,
       "map": {
-        "x": 341,
-        "y": 274
+        "x": 565,
+        "y": 569
       },
       "artwork_id": 1,
       "source_id": 274,
@@ -2563,8 +2563,8 @@
       "sector": "sluis",
       "starts_inhabited": true,
       "map": {
-        "x": 326,
-        "y": 269
+        "x": 540,
+        "y": 560
       },
       "artwork_id": 8,
       "source_id": 275,
@@ -2576,8 +2576,8 @@
       "sector": "sluis",
       "starts_inhabited": true,
       "map": {
-        "x": 330,
-        "y": 302
+        "x": 547,
+        "y": 616
       },
       "artwork_id": 13,
       "source_id": 276,
@@ -2589,8 +2589,8 @@
       "sector": "sluis",
       "starts_inhabited": true,
       "map": {
-        "x": 352,
-        "y": 259
+        "x": 584,
+        "y": 544
       },
       "artwork_id": 2,
       "source_id": 277,
@@ -2602,8 +2602,8 @@
       "sector": "sluis",
       "starts_inhabited": true,
       "map": {
-        "x": 320,
-        "y": 256
+        "x": 531,
+        "y": 539
       },
       "artwork_id": 14,
       "source_id": 278,
@@ -2615,8 +2615,8 @@
       "sector": "sluis",
       "starts_inhabited": true,
       "map": {
-        "x": 352,
-        "y": 280
+        "x": 584,
+        "y": 579
       },
       "artwork_id": 25,
       "source_id": 279,
@@ -2628,8 +2628,8 @@
       "sector": "sumitra",
       "starts_inhabited": false,
       "map": {
-        "x": 438,
-        "y": 247
+        "x": 727,
+        "y": 523
       },
       "artwork_id": 19,
       "source_id": 280,
@@ -2641,8 +2641,8 @@
       "sector": "sumitra",
       "starts_inhabited": false,
       "map": {
-        "x": 448,
-        "y": 240
+        "x": 744,
+        "y": 511
       },
       "artwork_id": 3,
       "source_id": 281,
@@ -2654,8 +2654,8 @@
       "sector": "sumitra",
       "starts_inhabited": false,
       "map": {
-        "x": 436,
-        "y": 227
+        "x": 724,
+        "y": 490
       },
       "artwork_id": 26,
       "source_id": 282,
@@ -2667,8 +2667,8 @@
       "sector": "sumitra",
       "starts_inhabited": false,
       "map": {
-        "x": 445,
-        "y": 215
+        "x": 739,
+        "y": 469
       },
       "artwork_id": 13,
       "source_id": 283,
@@ -2680,8 +2680,8 @@
       "sector": "sumitra",
       "starts_inhabited": false,
       "map": {
-        "x": 448,
-        "y": 202
+        "x": 744,
+        "y": 448
       },
       "artwork_id": 20,
       "source_id": 284,
@@ -2693,8 +2693,8 @@
       "sector": "sumitra",
       "starts_inhabited": false,
       "map": {
-        "x": 466,
-        "y": 207
+        "x": 774,
+        "y": 457
       },
       "artwork_id": 4,
       "source_id": 285,
@@ -2706,8 +2706,8 @@
       "sector": "sumitra",
       "starts_inhabited": false,
       "map": {
-        "x": 465,
-        "y": 227
+        "x": 773,
+        "y": 490
       },
       "artwork_id": 11,
       "source_id": 286,
@@ -2719,8 +2719,8 @@
       "sector": "sumitra",
       "starts_inhabited": false,
       "map": {
-        "x": 436,
-        "y": 200
+        "x": 724,
+        "y": 445
       },
       "artwork_id": 19,
       "source_id": 287,
@@ -2732,8 +2732,8 @@
       "sector": "sumitra",
       "starts_inhabited": false,
       "map": {
-        "x": 460,
-        "y": 241
+        "x": 764,
+        "y": 513
       },
       "artwork_id": 5,
       "source_id": 288,
@@ -2745,8 +2745,8 @@
       "sector": "sumitra",
       "starts_inhabited": false,
       "map": {
-        "x": 450,
-        "y": 227
+        "x": 747,
+        "y": 490
       },
       "artwork_id": 20,
       "source_id": 289,
@@ -2758,8 +2758,8 @@
       "sector": "xappyh",
       "starts_inhabited": false,
       "map": {
-        "x": 362,
-        "y": 398
+        "x": 601,
+        "y": 776
       },
       "artwork_id": 9,
       "source_id": 290,
@@ -2771,8 +2771,8 @@
       "sector": "xappyh",
       "starts_inhabited": false,
       "map": {
-        "x": 373,
-        "y": 403
+        "x": 619,
+        "y": 785
       },
       "artwork_id": 20,
       "source_id": 291,
@@ -2784,8 +2784,8 @@
       "sector": "xappyh",
       "starts_inhabited": false,
       "map": {
-        "x": 362,
-        "y": 432
+        "x": 601,
+        "y": 832
       },
       "artwork_id": 9,
       "source_id": 292,
@@ -2797,8 +2797,8 @@
       "sector": "xappyh",
       "starts_inhabited": false,
       "map": {
-        "x": 377,
-        "y": 429
+        "x": 626,
+        "y": 827
       },
       "artwork_id": 9,
       "source_id": 293,
@@ -2810,8 +2810,8 @@
       "sector": "xappyh",
       "starts_inhabited": false,
       "map": {
-        "x": 353,
-        "y": 406
+        "x": 585,
+        "y": 790
       },
       "artwork_id": 19,
       "source_id": 294,
@@ -2823,8 +2823,8 @@
       "sector": "xappyh",
       "starts_inhabited": false,
       "map": {
-        "x": 382,
-        "y": 390
+        "x": 634,
+        "y": 762
       },
       "artwork_id": 6,
       "source_id": 295,
@@ -2836,8 +2836,8 @@
       "sector": "xappyh",
       "starts_inhabited": false,
       "map": {
-        "x": 367,
-        "y": 420
+        "x": 609,
+        "y": 813
       },
       "artwork_id": 8,
       "source_id": 296,
@@ -2849,8 +2849,8 @@
       "sector": "xappyh",
       "starts_inhabited": false,
       "map": {
-        "x": 352,
-        "y": 387
+        "x": 584,
+        "y": 757
       },
       "artwork_id": 1,
       "source_id": 297,
@@ -2862,8 +2862,8 @@
       "sector": "xappyh",
       "starts_inhabited": false,
       "map": {
-        "x": 351,
-        "y": 436
+        "x": 582,
+        "y": 839
       },
       "artwork_id": 19,
       "source_id": 298,
@@ -2875,8 +2875,8 @@
       "sector": "xappyh",
       "starts_inhabited": false,
       "map": {
-        "x": 380,
-        "y": 415
+        "x": 631,
+        "y": 804
       },
       "artwork_id": 8,
       "source_id": 299,

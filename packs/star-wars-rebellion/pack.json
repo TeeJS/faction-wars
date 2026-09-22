@@ -11,6 +11,12 @@
   },
   "unexplored_color": "#cccccc",
   "map_image": "galaxyShaded.bmp",
+  "map_image_rect": [
+    -5,
+    110,
+    1070.6666,
+    803
+  ],
   "setup": {
     "difficulty_default": "easy",
     "galaxy_sizes": [

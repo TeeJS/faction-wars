@@ -11,6 +11,12 @@
   },
   "unexplored_color": "#cccccc",
   "map_image": "world_1941.jpg",
+  "map_image_rect": [
+    0,
+    0,
+    700,
+    420
+  ],
   "setup": {
     "difficulty_default": "easy",
     "galaxy_sizes": [

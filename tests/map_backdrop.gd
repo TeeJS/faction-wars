@@ -40,10 +40,14 @@ func _init() -> void:
 	var expected: Texture2D = load("%s/%s/%s" % [FactionRegistry.PACKS_ROOT, pack.Manifest.Id, pack.Manifest.MapImage])
 	_check(backdrop != null and backdrop.texture.get_size() == expected.get_size(),
 		"the backdrop is the pack's map_image '%s' (%s)" % [pack.Manifest.MapImage, str(expected.get_size())])
-	var want_scale := minf(GalaxyMap.Frame.x / expected.get_size().x, GalaxyMap.Frame.y / expected.get_size().y)
-	_check(absf(map.MapScale() - want_scale) < 0.0001, "the picture is fitted into the frame (scale %.4f)" % map.MapScale())
-	_check(backdrop != null and backdrop.scale.is_equal_approx(Vector2(want_scale, want_scale)) and backdrop.position == Vector2.ZERO,
-		"the backdrop sits at the origin at that scale")
+	var rect := pack.Manifest.MapImageRect
+	if rect.size.x <= 0.0:
+		rect = Rect2(Vector2.ZERO, expected.get_size())
+	var want_scale := minf(GalaxyMap.Frame.x / rect.size.x, GalaxyMap.Frame.y / rect.size.y)
+	_check(absf(map.MapScale() - want_scale) < 0.0001, "the map space is fitted into the frame by the picture's rect (scale %.4f)" % map.MapScale())
+	_check(backdrop != null and backdrop.position.is_equal_approx(rect.position * want_scale)
+		and backdrop.scale.is_equal_approx(rect.size * want_scale / expected.get_size()),
+		"the backdrop is drawn where map_image_rect puts it, at that scale")
 	_check(backdrop != null and backdrop.z_index < 0, "the backdrop is behind every marker")
 
 	# A marker lands at coordinate * scale - the picture and the regions agree.
@@ -63,6 +67,10 @@ func _init() -> void:
 		"%s's marker is at its coordinate x scale (%s)" % [planet.Name, str(centre)])
 	_check(map.MapPos(planet.MapX, planet.MapY).x <= GalaxyMap.Frame.x + 1 and map.MapPos(planet.MapX, planet.MapY).y <= GalaxyMap.Frame.y + 1,
 		"and inside the frame")
+	# The Star Wars picture lands exactly where Main.tscn used to bake it.
+	if pack.Manifest.Id == "star-wars-rebellion":
+		_check(backdrop.position.is_equal_approx(Vector2(-5, 110)) and absf(map.MapScale() - 1.0) < 0.0001,
+			"Star Wars: coordinates unscaled and the picture at (-5,110), as the baked scene had it")
 
 	print("[map_backdrop] %d checks, %d failed" % [_checks, _fails])
 	quit(1 if _fails > 0 else 0)
