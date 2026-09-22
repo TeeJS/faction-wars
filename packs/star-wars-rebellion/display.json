@@ -650,6 +650,8 @@
     "system_weapon_recharge": "Weapon Recharge",
     "system_tractor": "Tractor Beam Power",
     "system_engines": "Sub-Light Engine",
-    "system_hyperdrive": "Hyper-drive"
+    "system_hyperdrive": "Hyper-drive",
+    "shield_active": "Active Shielding",
+    "weapon_armed": "Weapon Armed"
   }
 }

@@ -1,8 +1,8 @@
 extends SceneTree
-## The four windows that show engine concepts now take their words from the
-## pack (Terms, SCHEMA.md section 10). On the Star Wars pack every label must
-## read exactly as it did when it was a literal - the manual's words - and no
-## neutral default may leak through.
+## The windows that show engine concepts take their words from the pack
+## (Terms, SCHEMA.md section 10) and select facilities by role. On the Star
+## Wars pack every label must read exactly as it did when it was a literal -
+## the manual's words - and no neutral default may leak through.
 ##
 ##   Godot_console.exe --headless --path . -s tests/terms_windows.gd
 
@@ -46,6 +46,7 @@ func _init() -> void:
 	# give it the two this test opens by template.
 	_ui.UnitStatusWindowTemplate = load("res://src/ui/UnitStatusWindow.tscn")
 	_ui.PlanetWindowTemplate = load("res://src/ui/PlanetWindow.tscn")
+	_ui.DefenseFacilityStatusWindowTemplate = load("res://src/ui/DefenseFacilityStatusWindow.tscn")
 	root.add_child(_ui)
 	await process_frame
 
@@ -93,6 +94,34 @@ func _init() -> void:
 	var l4: Array = await _open("PlanetWindow", func() -> void: _ui.OnPlanetClicked(owned))
 	_check(not l4.is_empty(), "the planet window opened")
 	_check(Lq.any(l4, func(t: String) -> bool: return t.begins_with("Energy: ") and t.contains("| Raw Materials: ")), "the planet window reads 'Energy: N | Raw Materials: N'")
+
+	# Defense Facility Status (manual p085): title and type are the pack's name
+	# for the KIND, the shield row is the pack's stat word, chosen by role.
+	var shield: Facility = null
+	var battery: Facility = null
+	for p in GameState.AllPlanets():
+		if p.ControllingFaction != us:
+			continue
+		for f in p.Facilities:
+			if shield == null and f.HasRole("shield"):
+				shield = f
+			elif battery == null and f.HasRole("anti_ship"):
+				battery = f
+	_check(shield != null, "we hold a shield somewhere")
+	_check(battery != null, "we hold a battery somewhere")
+	if shield != null:
+		var l5: Array = await _open("DefenseFacilityStatusWindow", func() -> void: _ui.OpenDefenseFacilityStatusWindow(shield))
+		_check(l5.has("Planetary Shield Status"), "the shield's window is titled 'Planetary Shield Status'")
+		_check(l5.has("Planetary Shield"), "the shield's type reads 'Planetary Shield'")
+		_check(l5.has("Shield Strength:"), "the shield row reads 'Shield Strength:'")
+		_check(Lq.any(l5, func(t: String) -> bool: return t.ends_with(" HP")), "the shield row has a value")
+		_check(l5.has("🛡️"), "the shield's glyph")
+	if battery != null:
+		var l6: Array = await _open("DefenseFacilityStatusWindow", func() -> void: _ui.OpenDefenseFacilityStatusWindow(battery))
+		_check(l6.has("Turbolaser Battery Status"), "the battery's window is titled 'Turbolaser Battery Status'")
+		_check(l6.has("N/A"), "the battery has no shield strength")
+		_check(l6.has("💥"), "the battery's glyph")
+	_check(Terms.label("shield_active") == "Active Shielding" and Terms.label("weapon_armed") == "Weapon Armed", "the Defenses tags keep their words")
 
 	print("[terms_windows] %d checks, %d failed: %s" % [_checks, _fails, "PASS" if _fails == 0 else "FAIL"])
 	quit(1 if _fails > 0 else 0)

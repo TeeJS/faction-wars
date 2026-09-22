@@ -81,9 +81,10 @@ carrying `FamilyId`. Four negative cases in `tests/pack_validation.gd`.
 byte-identical (four soaks, `tools\soak-gate.ps1`).
 
 **Still named by family in engine code, all display-side** (BACKLOG #37): the
-Defense Facility Status window's names and icons, and the generic `mine` /
-`refinery` / `shipyard` ids in `economy.gd`, `agent_droid.gd` and one intel
-line — the same ids in both packs, so not a blocker for this one.
+generic `mine` / `refinery` / `shipyard` ids in `economy.gd`, `agent_droid.gd`
+and one intel line — the same ids in both packs, so not a blocker for this one.
+(The Defense Facility Status window selects by role and names by the pack
+since 2026-09-22.)
 
 **Out of scope here:** the source repo's `.DAT` extractor for the logistics
 tables still emits `FamilyId` / `AssetId`; it must be re-keyed the same way
