@@ -292,11 +292,10 @@ code state get conflated and where guesses hide.
   `<!-- last synced from sol-conflict-revolution ... -->` first lines are
   history, not an instruction: these are the live copies and are edited here.
 - **The pack is the only data the engine reads:** `packs/<id>/` (SCHEMA.md).
-  The legacy `data/*.json` and its loaders left this repo 2026-09-22.
-  **Known debt (BACKLOG #36):** `tools/build-map-json.py`, `build-units-json.py`
-  and `build-rules-json.py` still read the old repo's raw JSON through
-  `SCR_SOURCE`. That is a dependency to remove, not a licence to edit the old
-  repo.
+  The legacy `data/*.json`, its loaders and the `tools/build-*-json.py`
+  generators left this repo 2026-09-22: **the pack files are hand-edited and
+  are the contract**; each row's `source_*` fields are the trail back to the
+  original tables. Nothing here reads the old repo.
 - **Not in this repo at all:** `*.DAT`, `ENCYTEXT.DLL`/`TEXTSTRA.DLL` (the
   installed game), `manual/Manual.pdf`, `manual/pages/` (171 MB) and the strategy
   guide (the old repo folder). Read them there; change nothing there.
