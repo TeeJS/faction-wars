@@ -97,6 +97,48 @@ func _init() -> void:
 			await process_frame
 		_check(list.get_child_count() == panel_before + 1, "an ordinary window minimises to a new panel button (%d)" % list.get_child_count())
 
+	# --- Unpin / re-pin (TeeJ, 2026-09-22) ---
+	var second: Sector = galaxy[1]
+	var pin2: Button = pins[second.Name]
+	pin2.pressed.emit()
+	for _i in 3:
+		await process_frame
+	_check(_window_titled(ui, second.Name) != null, "'%s' is open before unpinning" % second.Name)
+	ui.ShowPinMenu(second)
+	_check(ui.PinMenu() != null and ui.PinMenu().get_item_text(0) == "Unpin from menu", "the pinned theatre's menu says 'Unpin from menu'")
+	ui.PinMenu().hide()
+	ui.UnpinSector(second.Name)
+	for _i in 3:
+		await process_frame
+	_check(not ui.IsPinned(second) and not is_instance_valid(pin2), "unpinning removes the button")
+	_check(_window_titled(ui, second.Name) == null, "unpinning closes its open window")
+	var count_after_unpin := list.get_child_count()
+	ui.OnSectorClicked(second)
+	for _i in 3:
+		await process_frame
+	var w2: DraggableWindow = _window_titled(ui, second.Name)
+	_check(w2 != null, "an unpinned theatre still opens from the map")
+	ui.ShowPinMenu(second)
+	_check(ui.PinMenu().get_item_text(0) == "Pin to menu", "the unpinned theatre's menu says 'Pin to menu'")
+	ui.PinMenu().hide()
+	w2.MinimizeWindow()
+	for _i in 2:
+		await process_frame
+	_check(list.get_child_count() == count_after_unpin + 1, "an unpinned theatre minimises to a normal panel button")
+	ui.PinSector(second)
+	for _i in 2:
+		await process_frame
+	_check(ui.IsPinned(second), "re-pinning restores the button")
+	var idx: int = (ui.PinnedSectors()[second.Name] as Button).get_index()
+	var idx_first: int = (ui.PinnedSectors()[galaxy[0].Name] as Button).get_index()
+	_check(idx == idx_first + 1, "the re-pinned button returns to its place in map order (%d after %d)" % [idx, idx_first])
+	# The pin is back (+1) and the minimised-window button is gone (-1).
+	_check(list.get_child_count() == count_after_unpin + 1, "re-pinning removed the redundant minimised-window button (%d)" % list.get_child_count())
+	(ui.PinnedSectors()[second.Name] as Button).pressed.emit()
+	for _i in 2:
+		await process_frame
+	_check(is_instance_valid(w2) and w2.visible, "the re-pinned button restores the minimised window")
+
 	print("[sector_pins] %d checks, %d failed" % [_checks, _fails])
 	quit(1 if _fails > 0 else 0)
 
