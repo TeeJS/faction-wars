@@ -3,7 +3,7 @@ extends SceneTree
 ## map picture with its regions over it. Needs a window (NOT --headless), like
 ## tests/capture_menu.gd:
 ##
-##   Godot_console.exe --path . --resolution 1280x850 -s tests/capture_map.gd -- --out=C:/tmp/map.png [--pack=ww2]
+##   Godot_console.exe --path . --resolution 1280x850 -s tests/capture_map.gd -- --out=C:/tmp/map.png [--pack=ww2] [--titles]
 
 func _init() -> void:
 	await process_frame
@@ -16,6 +16,14 @@ func _init() -> void:
 	root.add_child(main)
 	for _i in 12:
 		await process_frame
+	# --titles: paint every theatre's hover name as if hovered, for a look.
+	if OS.get_cmdline_user_args().has("--titles"):
+		var map: GalaxyMap = main.get_node("GalaxyMap")
+		for c in map.get_children():
+			if c is Button and not (c as Button).text.is_empty():
+				(c as Button).add_theme_color_override("font_color", GalaxyMap.TitleColor)
+		for _i in 3:
+			await process_frame
 	var img: Image = root.get_viewport().get_texture().get_image()
 	var err := img.save_png(out)
 	print("[capture_map] %s -> %s" % [out, "ok" if err == OK else ("error %d" % err)])
