@@ -113,6 +113,9 @@ class NeutralDef:
 class PackSetupDef:
 	var DifficultyDefault: String
 	var GalaxySizes: Array[String] = []
+	## The size pre-selected on the Cockpit (manual p021: "default is standard").
+	## Optional; the first entry of galaxy_sizes when absent.
+	var GalaxySizeDefault: String
 
 	static func from_dict(d: Variant) -> PackSetupDef:
 		if d == null:
@@ -120,6 +123,87 @@ class PackSetupDef:
 		var o := PackSetupDef.new()
 		o.DifficultyDefault = JsonUtil.str_or(d, "difficulty_default", "")
 		o.GalaxySizes = JsonUtil.str_list(d, "galaxy_sizes", [])
+		o.GalaxySizeDefault = JsonUtil.str_or(d, "galaxy_size_default", "")
+		return o
+
+
+## ONE CLICKABLE AREA OF THE COCKPIT PICTURE - manual p021, Fig. 2.2. `rect` is
+## [x, y, w, h] in the picture's own pixels; the engine scales it with the
+## picture. `action` is the engine's menu vocabulary (PackLoader.KNOWN_MENU_ACTIONS);
+## `value` names WHICH difficulty / galaxy size / faction for the three actions
+## that take one.
+class MenuRegionDef:
+	var Action: String
+	var Value: String
+	var Rect: Array = []       # [x, y, w, h]
+	var Tooltip: String
+
+	static func from_dict(d: Dictionary) -> MenuRegionDef:
+		var o := MenuRegionDef.new()
+		o.Action = JsonUtil.str_or(d, "action", "")
+		o.Value = JsonUtil.str_or(d, "value", "")
+		var r: Variant = JsonUtil.get_ci(d, "rect")
+		if r is Array:
+			for v in r:
+				o.Rect.append(int(v))
+		o.Tooltip = JsonUtil.str_or(d, "tooltip", "")
+		return o
+
+	func rect2() -> Rect2:
+		if Rect.size() != 4:
+			return Rect2()
+		return Rect2(Rect[0], Rect[1], Rect[2], Rect[3])
+
+
+## The text panel under the victory-condition screen (the screenshot's
+## "Standard Game"). The engine paints `standard` or `hq_only` over `rect`.
+class MenuReadoutDef:
+	var Rect: Array = []
+	var Standard: String
+	var HqOnly: String
+	var ColorHex: String
+
+	static func from_dict(d: Variant) -> MenuReadoutDef:
+		if d == null:
+			return null
+		var o := MenuReadoutDef.new()
+		var r: Variant = JsonUtil.get_ci(d, "rect")
+		if r is Array:
+			for v in r:
+				o.Rect.append(int(v))
+		o.Standard = JsonUtil.str_or(d, "standard", "")
+		o.HqOnly = JsonUtil.str_or(d, "hq_only", "")
+		o.ColorHex = JsonUtil.str_or(d, "color", "#40ff40")
+		return o
+
+	func rect2() -> Rect2:
+		if Rect.size() != 4:
+			return Rect2()
+		return Rect2(Rect[0], Rect[1], Rect[2], Rect[3])
+
+
+## THE SHUTTLE COCKPIT AS A PICTURE (manual p021, Fig. 2.2): the pack's own
+## image with a clickable region per menu function. Optional - a pack without
+## one gets the labelled-button menu.
+class MenuDef:
+	var ImageFile: String   # "Image" would shadow the native class
+	var SelectedColorHex: String
+	var Regions: Array[MenuRegionDef] = []
+	var Readout: MenuReadoutDef
+	var Credits: Array[String] = []
+
+	static func from_dict(d: Variant) -> MenuDef:
+		if d == null:
+			return null
+		var o := MenuDef.new()
+		o.ImageFile = JsonUtil.str_or(d, "image", "")
+		o.SelectedColorHex = JsonUtil.str_or(d, "selected_color", "#ffd23c")
+		var rs: Variant = JsonUtil.get_ci(d, "regions")
+		if rs is Array:
+			for e in rs:
+				o.Regions.append(MenuRegionDef.from_dict(e))
+		o.Readout = MenuReadoutDef.from_dict(JsonUtil.get_ci(d, "readout"))
+		o.Credits = JsonUtil.str_list(d, "credits", [])
 		return o
 
 
@@ -134,6 +218,8 @@ class PackManifest:
 	## pack folder. Declared here so the engine never assumes a filename.
 	var MapImage: String
 	var Setup: PackSetupDef
+	## SCHEMA.md section 2: the Cockpit picture and its regions. Null = button menu.
+	var Menu: MenuDef
 
 	static func from_dict(d: Dictionary) -> PackManifest:
 		var o := PackManifest.new()
@@ -145,6 +231,7 @@ class PackManifest:
 		o.UnexploredColor = JsonUtil.str_or(d, "unexplored_color", "")
 		o.MapImage = JsonUtil.str_or(d, "map_image", "")
 		o.Setup = PackSetupDef.from_dict(JsonUtil.get_ci(d, "setup"))
+		o.Menu = MenuDef.from_dict(JsonUtil.get_ci(d, "menu"))
 		return o
 
 

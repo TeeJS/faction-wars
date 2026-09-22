@@ -27,6 +27,12 @@ const KNOWN_GID_KINDS := ["support", "uprising", "my_fleets", "personnel",
 	"intel_line_count", "constant_zero"]
 const KNOWN_GID_FLARES := ["big", "mid", "low", "none"]
 const SPECIAL_POWER_RANK_KEYS := ["none", "novice", "trainee", "student", "knight", "master"]
+## SCHEMA.md section 2, `menu`. Every function of the Shuttle Cockpit (manual
+## p021, Fig. 2.2); a picture menu must offer each one, so no function is lost
+## behind an image that forgot it.
+const KNOWN_MENU_ACTIONS := ["difficulty", "galaxy_size", "start", "load_game",
+	"credits", "hq_only_victory", "multiplayer", "exit"]
+const KNOWN_DIFFICULTIES := ["easy", "medium", "hard"]
 
 
 class LoadedPack:
@@ -154,6 +160,79 @@ static func _validate(pack: LoadedPack, pack_dir: String, errors: Array[String])
 	_validate_missions(pack, errors)
 	_validate_setup(pack, errors)
 	_validate_display(pack, errors)
+	_validate_menu(pack, pack_dir, errors)
+
+
+## Rule 11: the Cockpit picture, when a pack has one, reaches every menu function
+## exactly the way the button menu does - one region per difficulty, per offered
+## galaxy size and per playable faction, and one each of the rest.
+static func _validate_menu(pack: LoadedPack, pack_dir: String, errors: Array[String]) -> void:
+	var setup := pack.Manifest.Setup
+	var sizes: Array[String] = setup.GalaxySizes if setup != null else []
+	if setup != null and not setup.GalaxySizeDefault.is_empty() and not sizes.has(setup.GalaxySizeDefault):
+		errors.append("pack.json: setup.galaxy_size_default '%s' is not one of setup.galaxy_sizes (%s)." % [setup.GalaxySizeDefault, ", ".join(sizes)])
+	if setup != null and not setup.DifficultyDefault.is_empty() and not KNOWN_DIFFICULTIES.has(setup.DifficultyDefault):
+		errors.append("pack.json: setup.difficulty_default '%s' is not one of %s." % [setup.DifficultyDefault, ", ".join(KNOWN_DIFFICULTIES)])
+	var menu := pack.Manifest.Menu
+	if menu == null:
+		return
+	if menu.ImageFile.strip_edges().is_empty():
+		errors.append("pack.json menu: 'image' is required - name the Cockpit picture shipped with the pack.")
+	else:
+		var image_path := "%s/%s" % [pack_dir, menu.ImageFile]
+		if not (ResourceLoader.exists(image_path) or FileAccess.file_exists(image_path)):
+			errors.append("pack.json menu: image '%s' is not in %s." % [menu.ImageFile, pack_dir])
+	_require_color(menu.SelectedColorHex, "pack.json menu.selected_color", errors)
+	if menu.Readout == null:
+		errors.append("pack.json menu: 'readout' is required - the panel that shows Standard Game / Headquarters Only Victory.")
+	else:
+		if menu.Readout.Rect.size() != 4 or menu.Readout.Rect[2] <= 0 or menu.Readout.Rect[3] <= 0:
+			errors.append("pack.json menu.readout: rect must be [x, y, w, h] with w and h > 0.")
+		if menu.Readout.Standard.strip_edges().is_empty() or menu.Readout.HqOnly.strip_edges().is_empty():
+			errors.append("pack.json menu.readout: 'standard' and 'hq_only' texts are required.")
+		_require_color(menu.Readout.ColorHex, "pack.json menu.readout.color", errors)
+
+	var faction_ids: Array[String] = []
+	for f in pack.Factions:
+		faction_ids.append(f.Id)
+	var seen: Dictionary = {}   # "action" or "action:value" -> count
+	for i in menu.Regions.size():
+		var r := menu.Regions[i]
+		var ctx := "pack.json menu.regions[%d]" % i
+		if not KNOWN_MENU_ACTIONS.has(r.Action):
+			errors.append("%s: action '%s' is not one of %s." % [ctx, r.Action, ", ".join(KNOWN_MENU_ACTIONS)])
+			continue
+		if r.Rect.size() != 4 or r.Rect[2] <= 0 or r.Rect[3] <= 0:
+			errors.append("%s (%s): rect must be [x, y, w, h] with w and h > 0." % [ctx, r.Action])
+		var key := r.Action
+		match r.Action:
+			"difficulty":
+				if not KNOWN_DIFFICULTIES.has(r.Value):
+					errors.append("%s: difficulty value '%s' is not one of %s." % [ctx, r.Value, ", ".join(KNOWN_DIFFICULTIES)])
+				key = "difficulty:%s" % r.Value
+			"galaxy_size":
+				if not sizes.has(r.Value):
+					errors.append("%s: galaxy_size value '%s' is not one of pack.json setup.galaxy_sizes (%s)." % [ctx, r.Value, ", ".join(sizes)])
+				key = "galaxy_size:%s" % r.Value
+			"start":
+				if not faction_ids.has(r.Value):
+					errors.append("%s: start value '%s' is not a faction id in factions.json." % [ctx, r.Value])
+				key = "start:%s" % r.Value
+		seen[key] = seen.get(key, 0) + 1
+
+	var required: Array[String] = ["load_game", "credits", "hq_only_victory", "multiplayer", "exit"]
+	for d in KNOWN_DIFFICULTIES:
+		required.append("difficulty:%s" % d)
+	for sz in sizes:
+		required.append("galaxy_size:%s" % sz)
+	for fid in faction_ids:
+		required.append("start:%s" % fid)
+	for key in required:
+		var n: int = seen.get(key, 0)
+		if n == 0:
+			errors.append("pack.json menu: no region for '%s' - every Cockpit function needs one (manual p021, Fig. 2.2)." % key)
+		elif n > 1:
+			errors.append("pack.json menu: '%s' has %d regions; one each." % [key, n])
 
 
 ## SCHEMA.md section 11 rules 4 and 8 for the display catalog.
