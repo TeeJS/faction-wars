@@ -1,0 +1,2164 @@
+{
+  "units": [
+    {
+      "id": "mon_calamari_cruiser",
+      "display_name": "Mon Calamari Cruiser",
+      "kind": "capital_ship",
+      "buildable_by": [
+        "alliance"
+      ],
+      "construction_cost": 92,
+      "maintenance_cost": 70,
+      "research_order": 2,
+      "research_cost": 24,
+      "weapons": {
+        "turbolaser": {
+          "arcs": {
+            "fore": 60,
+            "aft": 60,
+            "starboard": 120,
+            "port": 120
+          },
+          "range": 50
+        },
+        "ion_cannon": {
+          "arcs": {
+            "fore": 40,
+            "aft": 40,
+            "starboard": 60,
+            "port": 60
+          },
+          "range": 35
+        }
+      },
+      "stats": {
+        "detection": 10,
+        "shield": 300,
+        "sublight": 4,
+        "maneuverability": 2,
+        "hyperdrive": 60,
+        "hyperdrive_damaged": 100,
+        "hull": 2400,
+        "tractor_power": 2,
+        "tractor_range": 20,
+        "gravity_well": 0,
+        "interdiction_strength": 0,
+        "bombardment": 2,
+        "damage_control": 50,
+        "weapon_recharge": 18,
+        "shield_recharge": 15,
+        "fighter_capacity": 3,
+        "troop_capacity": 1
+      },
+      "source_family_id": 20,
+      "source_id": 64,
+      "string_id": 10048
+    },
+    {
+      "id": "bulk_cruiser",
+      "display_name": "Bulk Cruiser",
+      "kind": "capital_ship",
+      "buildable_by": [
+        "alliance"
+      ],
+      "construction_cost": 30,
+      "maintenance_cost": 30,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {
+        "turbolaser": {
+          "arcs": {
+            "fore": 15,
+            "aft": 0,
+            "starboard": 30,
+            "port": 30
+          },
+          "range": 35
+        }
+      },
+      "stats": {
+        "detection": 10,
+        "shield": 200,
+        "sublight": 3,
+        "maneuverability": 1,
+        "hyperdrive": 80,
+        "hyperdrive_damaged": 120,
+        "hull": 1200,
+        "tractor_power": 1,
+        "tractor_range": 20,
+        "gravity_well": 0,
+        "interdiction_strength": 0,
+        "bombardment": 1,
+        "damage_control": 5,
+        "weapon_recharge": 6,
+        "shield_recharge": 10,
+        "fighter_capacity": 0,
+        "troop_capacity": 0
+      },
+      "source_family_id": 20,
+      "source_id": 65,
+      "string_id": 10049
+    },
+    {
+      "id": "assault_frigate",
+      "display_name": "Assault Frigate",
+      "kind": "capital_ship",
+      "buildable_by": [
+        "alliance"
+      ],
+      "construction_cost": 60,
+      "maintenance_cost": 60,
+      "research_order": 7,
+      "research_cost": 60,
+      "weapons": {
+        "turbolaser": {
+          "arcs": {
+            "fore": 70,
+            "aft": 0,
+            "starboard": 120,
+            "port": 120
+          },
+          "range": 60
+        },
+        "ion_cannon": {
+          "arcs": {
+            "fore": 50,
+            "aft": 0,
+            "starboard": 40,
+            "port": 40
+          },
+          "range": 35
+        }
+      },
+      "stats": {
+        "detection": 15,
+        "shield": 600,
+        "sublight": 5,
+        "maneuverability": 2,
+        "hyperdrive": 80,
+        "hyperdrive_damaged": 120,
+        "hull": 1400,
+        "tractor_power": 0,
+        "tractor_range": 0,
+        "gravity_well": 0,
+        "interdiction_strength": 0,
+        "bombardment": 2,
+        "damage_control": 30,
+        "weapon_recharge": 16,
+        "shield_recharge": 30,
+        "fighter_capacity": 0,
+        "troop_capacity": 0
+      },
+      "source_family_id": 20,
+      "source_id": 66,
+      "string_id": 10050
+    },
+    {
+      "id": "nebulon_b_frigate",
+      "display_name": "Nebulon-B Frigate",
+      "kind": "capital_ship",
+      "buildable_by": [
+        "alliance"
+      ],
+      "construction_cost": 34,
+      "maintenance_cost": 35,
+      "research_order": 1,
+      "research_cost": 12,
+      "weapons": {
+        "turbolaser": {
+          "arcs": {
+            "fore": 80,
+            "aft": 0,
+            "starboard": 40,
+            "port": 40
+          },
+          "range": 60
+        },
+        "laser": {
+          "arcs": {
+            "fore": 60,
+            "aft": 60,
+            "starboard": 30,
+            "port": 30
+          },
+          "range": 17
+        }
+      },
+      "stats": {
+        "detection": 30,
+        "shield": 300,
+        "sublight": 3,
+        "maneuverability": 2,
+        "hyperdrive": 80,
+        "hyperdrive_damaged": 120,
+        "hull": 600,
+        "tractor_power": 1,
+        "tractor_range": 20,
+        "gravity_well": 0,
+        "interdiction_strength": 0,
+        "bombardment": 1,
+        "damage_control": 20,
+        "weapon_recharge": 12,
+        "shield_recharge": 15,
+        "fighter_capacity": 2,
+        "troop_capacity": 0
+      },
+      "source_family_id": 20,
+      "source_id": 67,
+      "string_id": 10051
+    },
+    {
+      "id": "alliance_escort_carrier",
+      "display_name": "Alliance Escort Carrier",
+      "kind": "capital_ship",
+      "buildable_by": [
+        "alliance"
+      ],
+      "construction_cost": 32,
+      "maintenance_cost": 29,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {
+        "laser": {
+          "arcs": {
+            "fore": 30,
+            "aft": 0,
+            "starboard": 60,
+            "port": 60
+          },
+          "range": 17
+        }
+      },
+      "stats": {
+        "detection": 10,
+        "shield": 200,
+        "sublight": 2,
+        "maneuverability": 1,
+        "hyperdrive": 80,
+        "hyperdrive_damaged": 120,
+        "hull": 900,
+        "tractor_power": 0,
+        "tractor_range": 0,
+        "gravity_well": 0,
+        "interdiction_strength": 0,
+        "bombardment": 0,
+        "damage_control": 5,
+        "weapon_recharge": 4,
+        "shield_recharge": 10,
+        "fighter_capacity": 6,
+        "troop_capacity": 0
+      },
+      "source_family_id": 20,
+      "source_id": 68,
+      "string_id": 10052
+    },
+    {
+      "id": "corellian_corvette",
+      "display_name": "Corellian Corvette",
+      "kind": "capital_ship",
+      "buildable_by": [
+        "alliance"
+      ],
+      "construction_cost": 14,
+      "maintenance_cost": 23,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {
+        "laser": {
+          "arcs": {
+            "fore": 120,
+            "aft": 90,
+            "starboard": 120,
+            "port": 120
+          },
+          "range": 17
+        }
+      },
+      "stats": {
+        "detection": 20,
+        "shield": 200,
+        "sublight": 6,
+        "maneuverability": 3,
+        "hyperdrive": 80,
+        "hyperdrive_damaged": 0,
+        "hull": 500,
+        "tractor_power": 0,
+        "tractor_range": 0,
+        "gravity_well": 0,
+        "interdiction_strength": 0,
+        "bombardment": 1,
+        "damage_control": 10,
+        "weapon_recharge": 8,
+        "shield_recharge": 10,
+        "fighter_capacity": 0,
+        "troop_capacity": 0
+      },
+      "source_family_id": 20,
+      "source_id": 69,
+      "string_id": 10053
+    },
+    {
+      "id": "medium_transport",
+      "display_name": "Medium Transport",
+      "kind": "capital_ship",
+      "buildable_by": [
+        "alliance"
+      ],
+      "construction_cost": 10,
+      "maintenance_cost": 12,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {
+        "laser": {
+          "arcs": {
+            "fore": 0,
+            "aft": 0,
+            "starboard": 30,
+            "port": 30
+          },
+          "range": 17
+        }
+      },
+      "stats": {
+        "detection": 5,
+        "shield": 100,
+        "sublight": 2,
+        "maneuverability": 2,
+        "hyperdrive": 100,
+        "hyperdrive_damaged": 0,
+        "hull": 360,
+        "tractor_power": 0,
+        "tractor_range": 0,
+        "gravity_well": 0,
+        "interdiction_strength": 0,
+        "bombardment": 0,
+        "damage_control": 5,
+        "weapon_recharge": 2,
+        "shield_recharge": 5,
+        "fighter_capacity": 0,
+        "troop_capacity": 2
+      },
+      "source_family_id": 20,
+      "source_id": 70,
+      "string_id": 10054
+    },
+    {
+      "id": "bulk_transport",
+      "display_name": "Bulk Transport",
+      "kind": "capital_ship",
+      "buildable_by": [
+        "alliance"
+      ],
+      "construction_cost": 24,
+      "maintenance_cost": 22,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {},
+      "stats": {
+        "detection": 1,
+        "shield": 200,
+        "sublight": 1,
+        "maneuverability": 1,
+        "hyperdrive": 90,
+        "hyperdrive_damaged": 0,
+        "hull": 600,
+        "tractor_power": 0,
+        "tractor_range": 0,
+        "gravity_well": 0,
+        "interdiction_strength": 0,
+        "bombardment": 0,
+        "damage_control": 5,
+        "weapon_recharge": 0,
+        "shield_recharge": 10,
+        "fighter_capacity": 0,
+        "troop_capacity": 6
+      },
+      "source_family_id": 20,
+      "source_id": 71,
+      "string_id": 10055
+    },
+    {
+      "id": "corellian_gunship",
+      "display_name": "Corellian Gunship",
+      "kind": "capital_ship",
+      "buildable_by": [
+        "alliance"
+      ],
+      "construction_cost": 10,
+      "maintenance_cost": 23,
+      "research_order": 4,
+      "research_cost": 48,
+      "weapons": {
+        "laser": {
+          "arcs": {
+            "fore": 90,
+            "aft": 90,
+            "starboard": 150,
+            "port": 150
+          },
+          "range": 25
+        }
+      },
+      "stats": {
+        "detection": 30,
+        "shield": 200,
+        "sublight": 10,
+        "maneuverability": 4,
+        "hyperdrive": 80,
+        "hyperdrive_damaged": 160,
+        "hull": 300,
+        "tractor_power": 0,
+        "tractor_range": 0,
+        "gravity_well": 0,
+        "interdiction_strength": 0,
+        "bombardment": 0,
+        "damage_control": 20,
+        "weapon_recharge": 10,
+        "shield_recharge": 10,
+        "fighter_capacity": 0,
+        "troop_capacity": 0
+      },
+      "source_family_id": 20,
+      "source_id": 72,
+      "string_id": 10056
+    },
+    {
+      "id": "alliance_dreadnaught",
+      "display_name": "Alliance Dreadnaught",
+      "kind": "capital_ship",
+      "buildable_by": [
+        "alliance"
+      ],
+      "construction_cost": 44,
+      "maintenance_cost": 33,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {
+        "turbolaser": {
+          "arcs": {
+            "fore": 40,
+            "aft": 20,
+            "starboard": 70,
+            "port": 70
+          },
+          "range": 60
+        }
+      },
+      "stats": {
+        "detection": 10,
+        "shield": 200,
+        "sublight": 3,
+        "maneuverability": 1,
+        "hyperdrive": 80,
+        "hyperdrive_damaged": 180,
+        "hull": 1200,
+        "tractor_power": 0,
+        "tractor_range": 0,
+        "gravity_well": 0,
+        "interdiction_strength": 0,
+        "bombardment": 1,
+        "damage_control": 10,
+        "weapon_recharge": 7,
+        "shield_recharge": 10,
+        "fighter_capacity": 1,
+        "troop_capacity": 2
+      },
+      "source_family_id": 20,
+      "source_id": 73,
+      "string_id": 10057
+    },
+    {
+      "id": "cc_7700_frigate",
+      "display_name": "CC-7700 Frigate",
+      "kind": "capital_ship",
+      "buildable_by": [
+        "alliance"
+      ],
+      "construction_cost": 42,
+      "maintenance_cost": 37,
+      "research_order": 6,
+      "research_cost": 70,
+      "weapons": {
+        "turbolaser": {
+          "arcs": {
+            "fore": 10,
+            "aft": 0,
+            "starboard": 20,
+            "port": 20
+          },
+          "range": 50
+        },
+        "laser": {
+          "arcs": {
+            "fore": 60,
+            "aft": 90,
+            "starboard": 90,
+            "port": 90
+          },
+          "range": 17
+        }
+      },
+      "stats": {
+        "detection": 10,
+        "shield": 300,
+        "sublight": 4,
+        "maneuverability": 1,
+        "hyperdrive": 70,
+        "hyperdrive_damaged": 140,
+        "hull": 1400,
+        "tractor_power": 1,
+        "tractor_range": 20,
+        "gravity_well": 4,
+        "interdiction_strength": 100,
+        "bombardment": 1,
+        "damage_control": 30,
+        "weapon_recharge": 8,
+        "shield_recharge": 15,
+        "fighter_capacity": 0,
+        "troop_capacity": 0
+      },
+      "source_family_id": 20,
+      "source_id": 74,
+      "string_id": 10058
+    },
+    {
+      "id": "bulwark_battlecruiser",
+      "display_name": "Bulwark Battlecruiser",
+      "kind": "capital_ship",
+      "buildable_by": [
+        "alliance"
+      ],
+      "construction_cost": 248,
+      "maintenance_cost": 175,
+      "research_order": 11,
+      "research_cost": 100,
+      "weapons": {
+        "turbolaser": {
+          "arcs": {
+            "fore": 600,
+            "aft": 120,
+            "starboard": 300,
+            "port": 300
+          },
+          "range": 70
+        },
+        "ion_cannon": {
+          "arcs": {
+            "fore": 200,
+            "aft": 80,
+            "starboard": 150,
+            "port": 150
+          },
+          "range": 40
+        }
+      },
+      "stats": {
+        "detection": 10,
+        "shield": 1100,
+        "sublight": 3,
+        "maneuverability": 2,
+        "hyperdrive": 60,
+        "hyperdrive_damaged": 100,
+        "hull": 3000,
+        "tractor_power": 6,
+        "tractor_range": 20,
+        "gravity_well": 0,
+        "interdiction_strength": 0,
+        "bombardment": 4,
+        "damage_control": 40,
+        "weapon_recharge": 80,
+        "shield_recharge": 60,
+        "fighter_capacity": 10,
+        "troop_capacity": 4
+      },
+      "source_family_id": 20,
+      "source_id": 75,
+      "string_id": 10059
+    },
+    {
+      "id": "liberator_cruiser",
+      "display_name": "Liberator Cruiser",
+      "kind": "capital_ship",
+      "buildable_by": [
+        "alliance"
+      ],
+      "construction_cost": 66,
+      "maintenance_cost": 55,
+      "research_order": 8,
+      "research_cost": 80,
+      "weapons": {
+        "turbolaser": {
+          "arcs": {
+            "fore": 40,
+            "aft": 40,
+            "starboard": 80,
+            "port": 80
+          },
+          "range": 60
+        },
+        "ion_cannon": {
+          "arcs": {
+            "fore": 40,
+            "aft": 0,
+            "starboard": 80,
+            "port": 80
+          },
+          "range": 40
+        }
+      },
+      "stats": {
+        "detection": 10,
+        "shield": 600,
+        "sublight": 4,
+        "maneuverability": 2,
+        "hyperdrive": 80,
+        "hyperdrive_damaged": 120,
+        "hull": 1840,
+        "tractor_power": 1,
+        "tractor_range": 20,
+        "gravity_well": 0,
+        "interdiction_strength": 0,
+        "bombardment": 2,
+        "damage_control": 25,
+        "weapon_recharge": 16,
+        "shield_recharge": 30,
+        "fighter_capacity": 6,
+        "troop_capacity": 3
+      },
+      "source_family_id": 20,
+      "source_id": 76,
+      "string_id": 10060
+    },
+    {
+      "id": "cc_9600_frigate",
+      "display_name": "CC-9600 Frigate",
+      "kind": "capital_ship",
+      "buildable_by": [
+        "alliance"
+      ],
+      "construction_cost": 58,
+      "maintenance_cost": 53,
+      "research_order": 9,
+      "research_cost": 80,
+      "weapons": {
+        "turbolaser": {
+          "arcs": {
+            "fore": 60,
+            "aft": 40,
+            "starboard": 120,
+            "port": 120
+          },
+          "range": 75
+        },
+        "ion_cannon": {
+          "arcs": {
+            "fore": 40,
+            "aft": 0,
+            "starboard": 40,
+            "port": 40
+          },
+          "range": 35
+        }
+      },
+      "stats": {
+        "detection": 10,
+        "shield": 600,
+        "sublight": 6,
+        "maneuverability": 2,
+        "hyperdrive": 60,
+        "hyperdrive_damaged": 100,
+        "hull": 1200,
+        "tractor_power": 1,
+        "tractor_range": 20,
+        "gravity_well": 0,
+        "interdiction_strength": 0,
+        "bombardment": 1,
+        "damage_control": 35,
+        "weapon_recharge": 16,
+        "shield_recharge": 30,
+        "fighter_capacity": 0,
+        "troop_capacity": 1
+      },
+      "source_family_id": 20,
+      "source_id": 77,
+      "string_id": 10061
+    },
+    {
+      "id": "dauntless_cruiser",
+      "display_name": "Dauntless Cruiser",
+      "kind": "capital_ship",
+      "buildable_by": [
+        "alliance"
+      ],
+      "construction_cost": 136,
+      "maintenance_cost": 90,
+      "research_order": 10,
+      "research_cost": 100,
+      "weapons": {
+        "turbolaser": {
+          "arcs": {
+            "fore": 120,
+            "aft": 60,
+            "starboard": 200,
+            "port": 200
+          },
+          "range": 65
+        },
+        "ion_cannon": {
+          "arcs": {
+            "fore": 60,
+            "aft": 60,
+            "starboard": 200,
+            "port": 200
+          },
+          "range": 40
+        }
+      },
+      "stats": {
+        "detection": 10,
+        "shield": 800,
+        "sublight": 4,
+        "maneuverability": 1,
+        "hyperdrive": 60,
+        "hyperdrive_damaged": 100,
+        "hull": 2200,
+        "tractor_power": 2,
+        "tractor_range": 20,
+        "gravity_well": 0,
+        "interdiction_strength": 0,
+        "bombardment": 2,
+        "damage_control": 45,
+        "weapon_recharge": 40,
+        "shield_recharge": 20,
+        "fighter_capacity": 4,
+        "troop_capacity": 2
+      },
+      "source_family_id": 20,
+      "source_id": 78,
+      "string_id": 10062
+    },
+    {
+      "id": "strike_cruiser",
+      "display_name": "Strike Cruiser",
+      "kind": "capital_ship",
+      "buildable_by": [
+        "empire"
+      ],
+      "construction_cost": 70,
+      "maintenance_cost": 60,
+      "research_order": 9,
+      "research_cost": 80,
+      "weapons": {
+        "turbolaser": {
+          "arcs": {
+            "fore": 120,
+            "aft": 80,
+            "starboard": 40,
+            "port": 40
+          },
+          "range": 60
+        },
+        "ion_cannon": {
+          "arcs": {
+            "fore": 60,
+            "aft": 0,
+            "starboard": 40,
+            "port": 40
+          },
+          "range": 60
+        }
+      },
+      "stats": {
+        "detection": 10,
+        "shield": 600,
+        "sublight": 4,
+        "maneuverability": 2,
+        "hyperdrive": 80,
+        "hyperdrive_damaged": 120,
+        "hull": 1600,
+        "tractor_power": 3,
+        "tractor_range": 20,
+        "gravity_well": 0,
+        "interdiction_strength": 0,
+        "bombardment": 1,
+        "damage_control": 10,
+        "weapon_recharge": 18,
+        "shield_recharge": 30,
+        "fighter_capacity": 1,
+        "troop_capacity": 0
+      },
+      "source_family_id": 20,
+      "source_id": 128,
+      "string_id": 10112
+    },
+    {
+      "id": "lancer_frigate",
+      "display_name": "Lancer Frigate",
+      "kind": "capital_ship",
+      "buildable_by": [
+        "empire"
+      ],
+      "construction_cost": 14,
+      "maintenance_cost": 30,
+      "research_order": 2,
+      "research_cost": 28,
+      "weapons": {
+        "laser": {
+          "arcs": {
+            "fore": 150,
+            "aft": 150,
+            "starboard": 150,
+            "port": 150
+          },
+          "range": 17
+        }
+      },
+      "stats": {
+        "detection": 30,
+        "shield": 300,
+        "sublight": 6,
+        "maneuverability": 3,
+        "hyperdrive": 80,
+        "hyperdrive_damaged": 140,
+        "hull": 500,
+        "tractor_power": 0,
+        "tractor_range": 0,
+        "gravity_well": 0,
+        "interdiction_strength": 0,
+        "bombardment": 0,
+        "damage_control": 20,
+        "weapon_recharge": 10,
+        "shield_recharge": 15,
+        "fighter_capacity": 0,
+        "troop_capacity": 0
+      },
+      "source_family_id": 20,
+      "source_id": 129,
+      "string_id": 10113
+    },
+    {
+      "id": "interdictor_cruiser",
+      "display_name": "Interdictor Cruiser",
+      "kind": "capital_ship",
+      "buildable_by": [
+        "empire"
+      ],
+      "construction_cost": 40,
+      "maintenance_cost": 34,
+      "research_order": 6,
+      "research_cost": 70,
+      "weapons": {
+        "turbolaser": {
+          "arcs": {
+            "fore": 10,
+            "aft": 0,
+            "starboard": 20,
+            "port": 20
+          },
+          "range": 50
+        },
+        "ion_cannon": {
+          "arcs": {
+            "fore": 0,
+            "aft": 0,
+            "starboard": 10,
+            "port": 10
+          },
+          "range": 35
+        },
+        "laser": {
+          "arcs": {
+            "fore": 90,
+            "aft": 0,
+            "starboard": 60,
+            "port": 60
+          },
+          "range": 17
+        }
+      },
+      "stats": {
+        "detection": 30,
+        "shield": 600,
+        "sublight": 4,
+        "maneuverability": 1,
+        "hyperdrive": 80,
+        "hyperdrive_damaged": 100,
+        "hull": 1200,
+        "tractor_power": 0,
+        "tractor_range": 0,
+        "gravity_well": 4,
+        "interdiction_strength": 100,
+        "bombardment": 0,
+        "damage_control": 10,
+        "weapon_recharge": 7,
+        "shield_recharge": 15,
+        "fighter_capacity": 0,
+        "troop_capacity": 0
+      },
+      "source_family_id": 20,
+      "source_id": 130,
+      "string_id": 10114
+    },
+    {
+      "id": "carrack_light_cruiser",
+      "display_name": "Carrack Light Cruiser",
+      "kind": "capital_ship",
+      "buildable_by": [
+        "empire"
+      ],
+      "construction_cost": 26,
+      "maintenance_cost": 24,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {
+        "turbolaser": {
+          "arcs": {
+            "fore": 5,
+            "aft": 5,
+            "starboard": 15,
+            "port": 15
+          },
+          "range": 50
+        },
+        "laser": {
+          "arcs": {
+            "fore": 60,
+            "aft": 60,
+            "starboard": 90,
+            "port": 90
+          },
+          "range": 17
+        }
+      },
+      "stats": {
+        "detection": 20,
+        "shield": 200,
+        "sublight": 6,
+        "maneuverability": 2,
+        "hyperdrive": 60,
+        "hyperdrive_damaged": 120,
+        "hull": 1000,
+        "tractor_power": 1,
+        "tractor_range": 20,
+        "gravity_well": 0,
+        "interdiction_strength": 0,
+        "bombardment": 1,
+        "damage_control": 30,
+        "weapon_recharge": 6,
+        "shield_recharge": 10,
+        "fighter_capacity": 0,
+        "troop_capacity": 0
+      },
+      "source_family_id": 20,
+      "source_id": 131,
+      "string_id": 10115
+    },
+    {
+      "id": "victory_destroyer",
+      "display_name": "Victory Destroyer",
+      "kind": "capital_ship",
+      "buildable_by": [
+        "empire"
+      ],
+      "construction_cost": 68,
+      "maintenance_cost": 44,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {
+        "turbolaser": {
+          "arcs": {
+            "fore": 120,
+            "aft": 0,
+            "starboard": 100,
+            "port": 100
+          },
+          "range": 50
+        }
+      },
+      "stats": {
+        "detection": 10,
+        "shield": 200,
+        "sublight": 3,
+        "maneuverability": 1,
+        "hyperdrive": 60,
+        "hyperdrive_damaged": 140,
+        "hull": 1800,
+        "tractor_power": 2,
+        "tractor_range": 20,
+        "gravity_well": 0,
+        "interdiction_strength": 0,
+        "bombardment": 4,
+        "damage_control": 20,
+        "weapon_recharge": 12,
+        "shield_recharge": 10,
+        "fighter_capacity": 2,
+        "troop_capacity": 2
+      },
+      "source_family_id": 20,
+      "source_id": 132,
+      "string_id": 10116
+    },
+    {
+      "id": "imperial_star_destroyer",
+      "display_name": "Imperial Star Destroyer",
+      "kind": "capital_ship",
+      "buildable_by": [
+        "empire"
+      ],
+      "construction_cost": 112,
+      "maintenance_cost": 71,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {
+        "turbolaser": {
+          "arcs": {
+            "fore": 100,
+            "aft": 40,
+            "starboard": 60,
+            "port": 60
+          },
+          "range": 50
+        },
+        "ion_cannon": {
+          "arcs": {
+            "fore": 100,
+            "aft": 40,
+            "starboard": 40,
+            "port": 40
+          },
+          "range": 35
+        }
+      },
+      "stats": {
+        "detection": 10,
+        "shield": 300,
+        "sublight": 4,
+        "maneuverability": 1,
+        "hyperdrive": 80,
+        "hyperdrive_damaged": 100,
+        "hull": 2750,
+        "tractor_power": 3,
+        "tractor_range": 20,
+        "gravity_well": 0,
+        "interdiction_strength": 0,
+        "bombardment": 2,
+        "damage_control": 30,
+        "weapon_recharge": 20,
+        "shield_recharge": 15,
+        "fighter_capacity": 6,
+        "troop_capacity": 3
+      },
+      "source_family_id": 20,
+      "source_id": 133,
+      "string_id": 10117
+    },
+    {
+      "id": "super_star_destroyer",
+      "display_name": "Super Star Destroyer",
+      "kind": "capital_ship",
+      "buildable_by": [
+        "empire"
+      ],
+      "construction_cost": 282,
+      "maintenance_cost": 170,
+      "research_order": 11,
+      "research_cost": 100,
+      "weapons": {
+        "turbolaser": {
+          "arcs": {
+            "fore": 500,
+            "aft": 150,
+            "starboard": 300,
+            "port": 300
+          },
+          "range": 70
+        },
+        "ion_cannon": {
+          "arcs": {
+            "fore": 200,
+            "aft": 100,
+            "starboard": 200,
+            "port": 200
+          },
+          "range": 40
+        }
+      },
+      "stats": {
+        "detection": 5,
+        "shield": 1200,
+        "sublight": 2,
+        "maneuverability": 1,
+        "hyperdrive": 80,
+        "hyperdrive_damaged": 110,
+        "hull": 5000,
+        "tractor_power": 6,
+        "tractor_range": 20,
+        "gravity_well": 0,
+        "interdiction_strength": 0,
+        "bombardment": 3,
+        "damage_control": 20,
+        "weapon_recharge": 70,
+        "shield_recharge": 60,
+        "fighter_capacity": 12,
+        "troop_capacity": 9
+      },
+      "source_family_id": 20,
+      "source_id": 134,
+      "string_id": 10118
+    },
+    {
+      "id": "assault_transport",
+      "display_name": "Assault Transport",
+      "kind": "capital_ship",
+      "buildable_by": [
+        "empire"
+      ],
+      "construction_cost": 12,
+      "maintenance_cost": 29,
+      "research_order": 5,
+      "research_cost": 40,
+      "weapons": {
+        "laser": {
+          "arcs": {
+            "fore": 150,
+            "aft": 0,
+            "starboard": 60,
+            "port": 60
+          },
+          "range": 25
+        }
+      },
+      "stats": {
+        "detection": 1,
+        "shield": 300,
+        "sublight": 8,
+        "maneuverability": 3,
+        "hyperdrive": 50,
+        "hyperdrive_damaged": 100,
+        "hull": 320,
+        "tractor_power": 0,
+        "tractor_range": 0,
+        "gravity_well": 0,
+        "interdiction_strength": 0,
+        "bombardment": 0,
+        "damage_control": 10,
+        "weapon_recharge": 10,
+        "shield_recharge": 15,
+        "fighter_capacity": 0,
+        "troop_capacity": 1
+      },
+      "source_family_id": 20,
+      "source_id": 135,
+      "string_id": 10119
+    },
+    {
+      "id": "death_star",
+      "display_name": "Death Star",
+      "kind": "capital_ship",
+      "buildable_by": [
+        "empire"
+      ],
+      "construction_cost": 584,
+      "maintenance_cost": 600,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {
+        "turbolaser": {
+          "arcs": {
+            "fore": 1400,
+            "aft": 1400,
+            "starboard": 1400,
+            "port": 1400
+          },
+          "range": 60
+        },
+        "ion_cannon": {
+          "arcs": {
+            "fore": 400,
+            "aft": 400,
+            "starboard": 400,
+            "port": 400
+          },
+          "range": 40
+        }
+      },
+      "stats": {
+        "detection": 5,
+        "shield": 2000,
+        "sublight": 1,
+        "maneuverability": 0,
+        "hyperdrive": 80,
+        "hyperdrive_damaged": 140,
+        "hull": 25000,
+        "tractor_power": 15,
+        "tractor_range": 24,
+        "gravity_well": 0,
+        "interdiction_strength": 0,
+        "bombardment": 15,
+        "damage_control": 60,
+        "weapon_recharge": 180,
+        "shield_recharge": 100,
+        "fighter_capacity": 24,
+        "troop_capacity": 18
+      },
+      "source_family_id": 24,
+      "source_id": 136,
+      "string_id": 10120
+    },
+    {
+      "id": "galleon",
+      "display_name": "Galleon",
+      "kind": "capital_ship",
+      "buildable_by": [
+        "empire"
+      ],
+      "construction_cost": 10,
+      "maintenance_cost": 10,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {},
+      "stats": {
+        "detection": 1,
+        "shield": 100,
+        "sublight": 2,
+        "maneuverability": 1,
+        "hyperdrive": 80,
+        "hyperdrive_damaged": 140,
+        "hull": 300,
+        "tractor_power": 0,
+        "tractor_range": 0,
+        "gravity_well": 0,
+        "interdiction_strength": 0,
+        "bombardment": 0,
+        "damage_control": 5,
+        "weapon_recharge": 0,
+        "shield_recharge": 5,
+        "fighter_capacity": 0,
+        "troop_capacity": 2
+      },
+      "source_family_id": 20,
+      "source_id": 137,
+      "string_id": 10121
+    },
+    {
+      "id": "victory_ii_star_destroyer",
+      "display_name": "Victory II Star Destroyer",
+      "kind": "capital_ship",
+      "buildable_by": [
+        "empire"
+      ],
+      "construction_cost": 72,
+      "maintenance_cost": 63,
+      "research_order": 7,
+      "research_cost": 80,
+      "weapons": {
+        "turbolaser": {
+          "arcs": {
+            "fore": 120,
+            "aft": 80,
+            "starboard": 80,
+            "port": 80
+          },
+          "range": 60
+        },
+        "ion_cannon": {
+          "arcs": {
+            "fore": 40,
+            "aft": 40,
+            "starboard": 40,
+            "port": 40
+          },
+          "range": 35
+        }
+      },
+      "stats": {
+        "detection": 10,
+        "shield": 600,
+        "sublight": 4,
+        "maneuverability": 2,
+        "hyperdrive": 60,
+        "hyperdrive_damaged": 140,
+        "hull": 1800,
+        "tractor_power": 2,
+        "tractor_range": 20,
+        "gravity_well": 0,
+        "interdiction_strength": 0,
+        "bombardment": 5,
+        "damage_control": 25,
+        "weapon_recharge": 16,
+        "shield_recharge": 30,
+        "fighter_capacity": 2,
+        "troop_capacity": 0
+      },
+      "source_family_id": 20,
+      "source_id": 138,
+      "string_id": 10122
+    },
+    {
+      "id": "imperial_ii_star_destroyer",
+      "display_name": "Imperial II Star Destroyer",
+      "kind": "capital_ship",
+      "buildable_by": [
+        "empire"
+      ],
+      "construction_cost": 158,
+      "maintenance_cost": 99,
+      "research_order": 10,
+      "research_cost": 100,
+      "weapons": {
+        "turbolaser": {
+          "arcs": {
+            "fore": 200,
+            "aft": 60,
+            "starboard": 120,
+            "port": 120
+          },
+          "range": 70
+        },
+        "ion_cannon": {
+          "arcs": {
+            "fore": 200,
+            "aft": 20,
+            "starboard": 80,
+            "port": 80
+          },
+          "range": 40
+        }
+      },
+      "stats": {
+        "detection": 10,
+        "shield": 800,
+        "sublight": 4,
+        "maneuverability": 1,
+        "hyperdrive": 60,
+        "hyperdrive_damaged": 100,
+        "hull": 3000,
+        "tractor_power": 3,
+        "tractor_range": 20,
+        "gravity_well": 0,
+        "interdiction_strength": 0,
+        "bombardment": 2,
+        "damage_control": 35,
+        "weapon_recharge": 40,
+        "shield_recharge": 20,
+        "fighter_capacity": 6,
+        "troop_capacity": 3
+      },
+      "source_family_id": 20,
+      "source_id": 139,
+      "string_id": 10123
+    },
+    {
+      "id": "star_galleon",
+      "display_name": "Star Galleon",
+      "kind": "capital_ship",
+      "buildable_by": [
+        "empire"
+      ],
+      "construction_cost": 15,
+      "maintenance_cost": 20,
+      "research_order": 4,
+      "research_cost": 24,
+      "weapons": {
+        "laser": {
+          "arcs": {
+            "fore": 0,
+            "aft": 30,
+            "starboard": 30,
+            "port": 30
+          },
+          "range": 17
+        }
+      },
+      "stats": {
+        "detection": 4,
+        "shield": 200,
+        "sublight": 3,
+        "maneuverability": 1,
+        "hyperdrive": 80,
+        "hyperdrive_damaged": 140,
+        "hull": 400,
+        "tractor_power": 0,
+        "tractor_range": 0,
+        "gravity_well": 0,
+        "interdiction_strength": 0,
+        "bombardment": 0,
+        "damage_control": 5,
+        "weapon_recharge": 1,
+        "shield_recharge": 10,
+        "fighter_capacity": 0,
+        "troop_capacity": 3
+      },
+      "source_family_id": 20,
+      "source_id": 140,
+      "string_id": 10124
+    },
+    {
+      "id": "imperial_escort_carrier",
+      "display_name": "Imperial Escort Carrier",
+      "kind": "capital_ship",
+      "buildable_by": [
+        "empire"
+      ],
+      "construction_cost": 34,
+      "maintenance_cost": 30,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {
+        "laser": {
+          "arcs": {
+            "fore": 30,
+            "aft": 30,
+            "starboard": 60,
+            "port": 60
+          },
+          "range": 17
+        }
+      },
+      "stats": {
+        "detection": 4,
+        "shield": 200,
+        "sublight": 3,
+        "maneuverability": 1,
+        "hyperdrive": 80,
+        "hyperdrive_damaged": 140,
+        "hull": 1000,
+        "tractor_power": 0,
+        "tractor_range": 0,
+        "gravity_well": 0,
+        "interdiction_strength": 0,
+        "bombardment": 0,
+        "damage_control": 5,
+        "weapon_recharge": 4,
+        "shield_recharge": 10,
+        "fighter_capacity": 6,
+        "troop_capacity": 0
+      },
+      "source_family_id": 20,
+      "source_id": 141,
+      "string_id": 10125
+    },
+    {
+      "id": "imperial_dreadnaught",
+      "display_name": "Imperial Dreadnaught",
+      "kind": "capital_ship",
+      "buildable_by": [
+        "empire"
+      ],
+      "construction_cost": 44,
+      "maintenance_cost": 33,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {
+        "turbolaser": {
+          "arcs": {
+            "fore": 40,
+            "aft": 20,
+            "starboard": 70,
+            "port": 70
+          },
+          "range": 60
+        }
+      },
+      "stats": {
+        "detection": 10,
+        "shield": 200,
+        "sublight": 3,
+        "maneuverability": 1,
+        "hyperdrive": 80,
+        "hyperdrive_damaged": 180,
+        "hull": 1200,
+        "tractor_power": 0,
+        "tractor_range": 0,
+        "gravity_well": 0,
+        "interdiction_strength": 0,
+        "bombardment": 1,
+        "damage_control": 10,
+        "weapon_recharge": 7,
+        "shield_recharge": 10,
+        "fighter_capacity": 1,
+        "troop_capacity": 2
+      },
+      "source_family_id": 20,
+      "source_id": 142,
+      "string_id": 10126
+    },
+    {
+      "id": "a_wing",
+      "display_name": "A-wing",
+      "kind": "fighter",
+      "buildable_by": [
+        "alliance"
+      ],
+      "construction_cost": 5,
+      "maintenance_cost": 4,
+      "research_order": 3,
+      "research_cost": 24,
+      "weapons": {
+        "laser": {
+          "arcs": {
+            "fore": 5,
+            "aft": 0,
+            "starboard": 0,
+            "port": 0
+          }
+        }
+      },
+      "stats": {
+        "detection": 15,
+        "shield": 5,
+        "sublight": 11,
+        "maneuverability": 8,
+        "hyperdrive": 60,
+        "hyperdrive_damaged": 0,
+        "bombardment": 0
+      },
+      "source_family_id": 28,
+      "source_id": 1,
+      "string_id": 9792
+    },
+    {
+      "id": "b_wing",
+      "display_name": "B-wing",
+      "kind": "fighter",
+      "buildable_by": [
+        "alliance"
+      ],
+      "construction_cost": 7,
+      "maintenance_cost": 8,
+      "research_order": 5,
+      "research_cost": 50,
+      "weapons": {
+        "ion_cannon": {
+          "arcs": {
+            "fore": 6,
+            "aft": 0,
+            "starboard": 0,
+            "port": 0
+          }
+        },
+        "laser": {
+          "arcs": {
+            "fore": 8,
+            "aft": 0,
+            "starboard": 0,
+            "port": 0
+          }
+        },
+        "torpedo": {
+          "amount": 12,
+          "range": 7
+        }
+      },
+      "stats": {
+        "detection": 15,
+        "shield": 9,
+        "sublight": 7,
+        "maneuverability": 3,
+        "hyperdrive": 60,
+        "hyperdrive_damaged": 0,
+        "bombardment": 2
+      },
+      "source_family_id": 28,
+      "source_id": 2,
+      "string_id": 9793
+    },
+    {
+      "id": "x_wing",
+      "display_name": "X-wing",
+      "kind": "fighter",
+      "buildable_by": [
+        "alliance"
+      ],
+      "construction_cost": 5,
+      "maintenance_cost": 4,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {
+        "laser": {
+          "arcs": {
+            "fore": 8,
+            "aft": 0,
+            "starboard": 0,
+            "port": 0
+          }
+        },
+        "torpedo": {
+          "amount": 4,
+          "range": 7
+        }
+      },
+      "stats": {
+        "detection": 15,
+        "shield": 5,
+        "sublight": 8,
+        "maneuverability": 5,
+        "hyperdrive": 60,
+        "hyperdrive_damaged": 0,
+        "bombardment": 1
+      },
+      "source_family_id": 28,
+      "source_id": 3,
+      "string_id": 9794
+    },
+    {
+      "id": "y_wing",
+      "display_name": "Y-wing",
+      "kind": "fighter",
+      "buildable_by": [
+        "alliance"
+      ],
+      "construction_cost": 5,
+      "maintenance_cost": 4,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {
+        "ion_cannon": {
+          "arcs": {
+            "fore": 3,
+            "aft": 0,
+            "starboard": 0,
+            "port": 0
+          }
+        },
+        "laser": {
+          "arcs": {
+            "fore": 5,
+            "aft": 0,
+            "starboard": 0,
+            "port": 0
+          }
+        },
+        "torpedo": {
+          "amount": 8,
+          "range": 7
+        }
+      },
+      "stats": {
+        "detection": 12,
+        "shield": 5,
+        "sublight": 8,
+        "maneuverability": 4,
+        "hyperdrive": 60,
+        "hyperdrive_damaged": 0,
+        "bombardment": 2
+      },
+      "source_family_id": 28,
+      "source_id": 4,
+      "string_id": 9795
+    },
+    {
+      "id": "tie_fighter",
+      "display_name": "TIE Fighter",
+      "kind": "fighter",
+      "buildable_by": [
+        "empire"
+      ],
+      "construction_cost": 3,
+      "maintenance_cost": 3,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {
+        "laser": {
+          "arcs": {
+            "fore": 5,
+            "aft": 0,
+            "starboard": 0,
+            "port": 0
+          }
+        }
+      },
+      "stats": {
+        "detection": 12,
+        "shield": 0,
+        "sublight": 9,
+        "maneuverability": 5,
+        "hyperdrive": 0,
+        "hyperdrive_damaged": 0,
+        "bombardment": 0
+      },
+      "source_family_id": 28,
+      "source_id": 5,
+      "string_id": 9856
+    },
+    {
+      "id": "tie_interceptor",
+      "display_name": "TIE Interceptor",
+      "kind": "fighter",
+      "buildable_by": [
+        "empire"
+      ],
+      "construction_cost": 3,
+      "maintenance_cost": 3,
+      "research_order": 3,
+      "research_cost": 24,
+      "weapons": {
+        "laser": {
+          "arcs": {
+            "fore": 8,
+            "aft": 0,
+            "starboard": 0,
+            "port": 0
+          }
+        }
+      },
+      "stats": {
+        "detection": 20,
+        "shield": 0,
+        "sublight": 10,
+        "maneuverability": 8,
+        "hyperdrive": 0,
+        "hyperdrive_damaged": 0,
+        "bombardment": 0
+      },
+      "source_family_id": 28,
+      "source_id": 6,
+      "string_id": 9857
+    },
+    {
+      "id": "tie_bomber",
+      "display_name": "TIE Bomber",
+      "kind": "fighter",
+      "buildable_by": [
+        "empire"
+      ],
+      "construction_cost": 3,
+      "maintenance_cost": 3,
+      "research_order": 1,
+      "research_cost": 8,
+      "weapons": {
+        "ion_cannon": {
+          "arcs": {
+            "fore": 3,
+            "aft": 0,
+            "starboard": 0,
+            "port": 0
+          }
+        },
+        "laser": {
+          "arcs": {
+            "fore": 5,
+            "aft": 0,
+            "starboard": 0,
+            "port": 0
+          }
+        },
+        "torpedo": {
+          "amount": 8,
+          "range": 7
+        }
+      },
+      "stats": {
+        "detection": 12,
+        "shield": 0,
+        "sublight": 7,
+        "maneuverability": 4,
+        "hyperdrive": 0,
+        "hyperdrive_damaged": 0,
+        "bombardment": 2
+      },
+      "source_family_id": 28,
+      "source_id": 7,
+      "string_id": 9858
+    },
+    {
+      "id": "tie_defender",
+      "display_name": "TIE Defender",
+      "kind": "fighter",
+      "buildable_by": [
+        "empire"
+      ],
+      "construction_cost": 5,
+      "maintenance_cost": 7,
+      "research_order": 8,
+      "research_cost": 50,
+      "weapons": {
+        "laser": {
+          "arcs": {
+            "fore": 10,
+            "aft": 0,
+            "starboard": 0,
+            "port": 0
+          }
+        },
+        "torpedo": {
+          "amount": 10,
+          "range": 10
+        }
+      },
+      "stats": {
+        "detection": 25,
+        "shield": 5,
+        "sublight": 8,
+        "maneuverability": 6,
+        "hyperdrive": 60,
+        "hyperdrive_damaged": 0,
+        "bombardment": 1
+      },
+      "source_family_id": 28,
+      "source_id": 8,
+      "string_id": 9859
+    },
+    {
+      "id": "alliance_fleet_regiment",
+      "display_name": "Alliance Fleet Regiment",
+      "kind": "troop",
+      "buildable_by": [
+        "alliance"
+      ],
+      "construction_cost": 8,
+      "maintenance_cost": 6,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {},
+      "stats": {
+        "detection": 15
+      },
+      "source_family_id": 16,
+      "source_id": 1,
+      "string_id": 9280
+    },
+    {
+      "id": "alliance_army_regiment",
+      "display_name": "Alliance Army Regiment",
+      "kind": "troop",
+      "buildable_by": [
+        "alliance"
+      ],
+      "construction_cost": 6,
+      "maintenance_cost": 3,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {},
+      "stats": {
+        "detection": 10
+      },
+      "source_family_id": 16,
+      "source_id": 2,
+      "string_id": 9281
+    },
+    {
+      "id": "sullustan_regiment",
+      "display_name": "Sullustan Regiment",
+      "kind": "troop",
+      "buildable_by": [
+        "alliance"
+      ],
+      "construction_cost": 3,
+      "maintenance_cost": 1,
+      "research_order": 1,
+      "research_cost": 12,
+      "weapons": {},
+      "stats": {
+        "detection": 35
+      },
+      "source_family_id": 16,
+      "source_id": 3,
+      "string_id": 9282
+    },
+    {
+      "id": "wookiee_regiment",
+      "display_name": "Wookiee Regiment",
+      "kind": "troop",
+      "buildable_by": [
+        "alliance"
+      ],
+      "construction_cost": 10,
+      "maintenance_cost": 8,
+      "research_order": 3,
+      "research_cost": 60,
+      "weapons": {},
+      "stats": {
+        "detection": 20
+      },
+      "source_family_id": 16,
+      "source_id": 4,
+      "string_id": 9283
+    },
+    {
+      "id": "mon_calamari_regiment",
+      "display_name": "Mon Calamari Regiment",
+      "kind": "troop",
+      "buildable_by": [
+        "alliance"
+      ],
+      "construction_cost": 6,
+      "maintenance_cost": 4,
+      "research_order": 2,
+      "research_cost": 40,
+      "weapons": {},
+      "stats": {
+        "detection": 20
+      },
+      "source_family_id": 16,
+      "source_id": 5,
+      "string_id": 9284
+    },
+    {
+      "id": "stormtrooper_regiment",
+      "display_name": "Stormtrooper Regiment",
+      "kind": "troop",
+      "buildable_by": [
+        "empire"
+      ],
+      "construction_cost": 9,
+      "maintenance_cost": 6,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {},
+      "stats": {
+        "detection": 25
+      },
+      "source_family_id": 16,
+      "source_id": 6,
+      "string_id": 9344
+    },
+    {
+      "id": "imperial_fleet_regiment",
+      "display_name": "Imperial Fleet Regiment",
+      "kind": "troop",
+      "buildable_by": [
+        "empire"
+      ],
+      "construction_cost": 7,
+      "maintenance_cost": 5,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {},
+      "stats": {
+        "detection": 20
+      },
+      "source_family_id": 16,
+      "source_id": 7,
+      "string_id": 9345
+    },
+    {
+      "id": "imperial_army_regiment",
+      "display_name": "Imperial Army Regiment",
+      "kind": "troop",
+      "buildable_by": [
+        "empire"
+      ],
+      "construction_cost": 6,
+      "maintenance_cost": 3,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {},
+      "stats": {
+        "detection": 15
+      },
+      "source_family_id": 16,
+      "source_id": 8,
+      "string_id": 9346
+    },
+    {
+      "id": "war_droid_regiment",
+      "display_name": "War Droid Regiment",
+      "kind": "troop",
+      "buildable_by": [
+        "empire"
+      ],
+      "construction_cost": 9,
+      "maintenance_cost": 8,
+      "research_order": 1,
+      "research_cost": 46,
+      "weapons": {},
+      "stats": {
+        "detection": 5
+      },
+      "source_family_id": 16,
+      "source_id": 9,
+      "string_id": 9347
+    },
+    {
+      "id": "dark_trooper_regiment",
+      "display_name": "Dark Trooper Regiment",
+      "kind": "troop",
+      "buildable_by": [
+        "empire"
+      ],
+      "construction_cost": 12,
+      "maintenance_cost": 8,
+      "research_order": 2,
+      "research_cost": 66,
+      "weapons": {},
+      "stats": {
+        "detection": 30
+      },
+      "source_family_id": 16,
+      "source_id": 10,
+      "string_id": 9348
+    },
+    {
+      "id": "guerrillas",
+      "display_name": "Guerrillas",
+      "kind": "spec_force",
+      "buildable_by": [
+        "alliance"
+      ],
+      "construction_cost": 1,
+      "maintenance_cost": 1,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {},
+      "stats": {
+        "detection": 0
+      },
+      "source_family_id": 60,
+      "source_id": 1,
+      "string_id": 9536
+    },
+    {
+      "id": "infiltrators",
+      "display_name": "Infiltrators",
+      "kind": "spec_force",
+      "buildable_by": [
+        "alliance"
+      ],
+      "construction_cost": 2,
+      "maintenance_cost": 1,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {},
+      "stats": {
+        "detection": 0
+      },
+      "source_family_id": 60,
+      "source_id": 2,
+      "string_id": 9537
+    },
+    {
+      "id": "longprobe_y_wing_recon_team",
+      "display_name": "Longprobe Y-wing Recon Team",
+      "kind": "spec_force",
+      "buildable_by": [
+        "alliance"
+      ],
+      "construction_cost": 2,
+      "maintenance_cost": 1,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {},
+      "stats": {
+        "detection": 0
+      },
+      "source_family_id": 60,
+      "source_id": 3,
+      "string_id": 9538
+    },
+    {
+      "id": "bothan_spies",
+      "display_name": "Bothan Spies",
+      "kind": "spec_force",
+      "buildable_by": [
+        "alliance"
+      ],
+      "construction_cost": 1,
+      "maintenance_cost": 1,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {},
+      "stats": {
+        "detection": 0
+      },
+      "source_family_id": 60,
+      "source_id": 4,
+      "string_id": 9539
+    },
+    {
+      "id": "imperial_probe_droid",
+      "display_name": "Imperial Probe Droid",
+      "kind": "spec_force",
+      "buildable_by": [
+        "empire"
+      ],
+      "construction_cost": 1,
+      "maintenance_cost": 1,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {},
+      "stats": {
+        "detection": 0
+      },
+      "source_family_id": 60,
+      "source_id": 5,
+      "string_id": 9600
+    },
+    {
+      "id": "imperial_espionage_droid",
+      "display_name": "Imperial Espionage Droid",
+      "kind": "spec_force",
+      "buildable_by": [
+        "empire"
+      ],
+      "construction_cost": 1,
+      "maintenance_cost": 1,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {},
+      "stats": {
+        "detection": 0
+      },
+      "source_family_id": 60,
+      "source_id": 6,
+      "string_id": 9601
+    },
+    {
+      "id": "imperial_commandos",
+      "display_name": "Imperial Commandos",
+      "kind": "spec_force",
+      "buildable_by": [
+        "empire"
+      ],
+      "construction_cost": 2,
+      "maintenance_cost": 1,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {},
+      "stats": {
+        "detection": 0
+      },
+      "source_family_id": 60,
+      "source_id": 7,
+      "string_id": 9602
+    },
+    {
+      "id": "noghri_death_commandos",
+      "display_name": "Noghri Death Commandos",
+      "kind": "spec_force",
+      "buildable_by": [
+        "empire"
+      ],
+      "construction_cost": 2,
+      "maintenance_cost": 1,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {},
+      "stats": {
+        "detection": 0
+      },
+      "source_family_id": 60,
+      "source_id": 8,
+      "string_id": 9603
+    },
+    {
+      "id": "bounty_hunters",
+      "display_name": "Bounty Hunters",
+      "kind": "spec_force",
+      "buildable_by": [
+        "empire"
+      ],
+      "construction_cost": 0,
+      "maintenance_cost": 0,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {},
+      "stats": {
+        "detection": 0
+      },
+      "source_family_id": 60,
+      "source_id": 9,
+      "string_id": 9604
+    }
+  ]
+}
