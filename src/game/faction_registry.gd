@@ -28,6 +28,7 @@ static var Neutral: Faction = null
 static var Unknown: Faction = null
 static var _by_id: Dictionary = {}
 static var _character_roles: Dictionary = {}   # character id -> Array[String]
+static var _character_starts: Dictionary = {}  # character id -> planet id ("" = none)
 ## SHA-256 over PACK_FILES of the loaded pack, hex. Travels in the command-log
 ## header and the multiplayer room settings.
 static var PackHash: String = ""
@@ -117,6 +118,7 @@ static func Unload() -> void:
 	Unknown = null
 	_by_id.clear()
 	_character_roles.clear()
+	_character_starts.clear()
 	PackHash = ""
 
 
@@ -152,8 +154,10 @@ static func Load(pack: PackLoader.LoadedPack) -> void:
 	Pack = pack
 	_by_id.clear()
 	_character_roles.clear()
+	_character_starts.clear()
 	for c in pack.Characters:
 		_character_roles[c.Id] = c.Roles
+		_character_starts[c.Id] = c.StartsAt
 	var playable: Array[Faction] = []
 	for def in pack.Factions:
 		var f := Faction.FromPack(def)
@@ -243,3 +247,8 @@ static func CharacterNameOf(id: String) -> String:
 ## The roles characters.json gives this character (SCHEMA.md section 7).
 static func CharacterRoles(id: String) -> Array:
 	return _character_roles.get(id, [])
+
+
+## The planet id characters.json opens this character on, or "".
+static func CharacterStartsAt(id: String) -> String:
+	return _character_starts.get(id, "")
