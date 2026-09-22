@@ -283,7 +283,7 @@ exactly what an open `stats` map absorbs.
 | `roles` | The engine's selection vocabulary. v1 role set: `headquarters`, `extracts_raw`, `refines`, `produces_unit`, `produces_troop`, `produces_facility`, `planet_defense`, `shield`, `disable`, `anti_ship`, `superweapon_shield` (the structure that shelters the `superweapon` unit while docked; counts as military for bombardment). The loader rejects unknown roles so a typo cannot silently create an inert facility. |
 | `buildable_by` | A list of faction ids; absent means all. **Already migrated** in the real data. |
 | `roles` | **★ APPROVED (TeeJ, 2026-09-22).** The engine's special cases for a unit, so no rule names one: `superweapon` (the Death Star — Superweapon Sabotage's target, and what plain Sabotage refuses), `garrison_troop` (the regiment the mission score's garrison term counts). Unknown roles are a load error. |
-| `stats` | Open map. The engine has no built-in stat vocabulary; consumers read named stats declared by the pack. Absorbs the production/defensive column split. |
+| `stats` | A map keyed by the engine's **stat vocabulary** — `shield`, `hull`, `hyperdrive`, `sublight`, `detection`, `weapon_rating`, `shield_strength`, `bombardment_defense`, `processing_rate`, … — read by name in `military_catalog.gd` and `facility_catalog.gd`. **⚠ Corrected 2026-09-22:** this row used to say the engine has no built-in stat vocabulary; it does, exactly as it has a role vocabulary. The pack supplies the values here and the on-screen **words** in `display.json` `terms` (§10). Absorbs the production/defensive column split. |
 
 ---
 
@@ -671,6 +671,7 @@ threshold and flare, all 21 modes — by dumping both and diffing.
 | `title_from` | `loyalty_label` — the key-panel title is the player's faction's `loyalty_label` from `factions.json`, resolved per side. |
 | `galaxy_display_modes` | Mode ids in the original's Alt+1..9 order. |
 | `special_power_ranks` | The band labels for §7's special power: `none`, `novice`, `trainee`, `student`, `knight`, `master`. |
+| `terms` | **★ APPROVED (TeeJ, 2026-09-22).** What this setting calls the engine's concepts on screen — the unit stats (`hyperdrive`, `sublight`, `shield`, `hull`, `detection`, `weapons`, `bombardment`, `bombardment_defense`, `bombardment_modifier`, `maintenance`, `squadron_size`, `fighter_capacity`, `troop_capacity`), the economy (`energy`, `raw_materials`, `refined_materials`, `mines`, `refineries`), the unit kinds (`fighter_squadron(s)`, `trooper_regiment(s)`) and `in_transit` ("in hyperspace"). The key set is engine vocabulary (`PackLoader.KNOWN_TERMS`); an unknown key is a load error (rule 14). **Optional**: a key the pack leaves out takes the engine's neutral default, so a pack labels only what it wants to. Read through one helper, like the rank labels. Note the two speeds are distinct concepts: `hyperdrive` is movement *between* systems (a time multiplier, lower is faster, and 0 means "cannot"), `sublight` is speed *in* a battle. |
 
 Faction colors and the legend come from `factions.json` + `pack.json`, so the
 GID legend stops being hardcoded rows.
@@ -708,6 +709,9 @@ passes.
     original's `FamilyId` / `AssetId` is refused.
 
 ---
+
+14. ✅ Every `display.json` `terms` key is one of the engine's known terms and
+    its label is non-empty.
 
 ## 12. Open questions for sign-off
 
@@ -870,3 +874,4 @@ What changed from the source repo's 2026-07-25 draft, and why.
 | 43 | `pack.json` `victory_tips` — the p162 Multiplayer Options tooltips come from the pack | TeeJ, 2026-09-22: pack strings, so the manual's verbatim wording stays pinned for this pack and a second pack shows its own |
 | 44 | 32 `RuleId` constants renamed from setting names to their role (`SeedCapitalFirst`, `PilgrimVsDarkLordGainScale`, `SuperweaponSabotageCombatGain`, ...); the old name stays as a trailing comment for the GNPRTB trail. Engine identifiers only; the pack's `rules.json` is untouched | TeeJ, 2026-09-22 (BACKLOG #23/#34) |
 | 45 | The six `tools/build-*-json.py` generators retired; the pack is hand-edited and is the contract, provenance via the `source_*` fields | TeeJ, 2026-09-22 (BACKLOG #36): four read a folder deleted in #52, two read the old repo, all six would have wiped the hand-added fields |
+| 46 | **§10 `terms`** — the pack names the engine's stats, resources and unit kinds on screen; validation rule 14; §6's `stats` row corrected (stat keys ARE engine vocabulary). Step 1 of 5: schema and data only; the windows switch to the helper next | TeeJ, 2026-09-22: on the WWII pack a battleship showed "Shield" and "Hyperdrive" |

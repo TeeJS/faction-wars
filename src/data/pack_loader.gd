@@ -27,6 +27,23 @@ const KNOWN_GID_KINDS := ["support", "uprising", "my_fleets", "personnel",
 	"intel_line_count", "constant_zero"]
 const KNOWN_GID_FLARES := ["big", "mid", "low", "none"]
 const SPECIAL_POWER_RANK_KEYS := ["none", "novice", "trainee", "student", "knight", "master"]
+## SCHEMA.md section 10, `terms`: the engine concepts a pack may label. The
+## engine reads stats and resources by THESE keys (they are vocabulary, like
+## roles); the pack supplies the values and, here, the words. Optional - a key
+## a pack omits falls back to the engine's neutral label - but an unknown key is
+## an error, so a typo cannot silently label nothing.
+const KNOWN_TERMS := [
+	# unit stats
+	"hyperdrive", "sublight", "shield", "hull", "detection", "weapons",
+	"bombardment", "bombardment_defense", "bombardment_modifier",
+	"maintenance", "squadron_size", "fighter_capacity", "troop_capacity",
+	# the economy
+	"energy", "raw_materials", "refined_materials", "mines", "refineries",
+	# unit kinds, singular and plural
+	"fighter_squadron", "fighter_squadrons", "trooper_regiment", "trooper_regiments",
+	# movement between systems
+	"in_transit",
+]
 ## SCHEMA.md section 2, `menu`. Every function of the Shuttle Cockpit (manual
 ## p021, Fig. 2.2); a picture menu must offer each one, so no function is lost
 ## behind an image that forgot it.
@@ -327,6 +344,12 @@ static func _validate_display(pack: LoadedPack, errors: Array[String]) -> void:
 	for key in SPECIAL_POWER_RANK_KEYS:
 		if not d.SpecialPowerRanks.has(key):
 			errors.append("display.json: special_power_ranks has no label for '%s'." % key)
+	# Rule 14: terms are the engine's known concepts, each with a non-empty label.
+	for key in d.Terms:
+		if not KNOWN_TERMS.has(key):
+			errors.append("display.json: terms names '%s', which the engine has no concept for. Known: %s." % [key, ", ".join(KNOWN_TERMS)])
+		elif str(d.Terms[key]).strip_edges().is_empty():
+			errors.append("display.json: terms['%s'] is empty - leave the key out to take the engine's default." % key)
 
 
 ## SCHEMA.md section 11 rules 3 and 13 for setup: every logistics table a faction
