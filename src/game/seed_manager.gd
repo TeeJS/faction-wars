@@ -8,14 +8,14 @@ static var DefenseStats: Dictionary = {}    # "family|tier" -> DefenseStatRule
 static var MilitaryStats: Dictionary = {}   # Vector2i(FamilyId, Id) -> UnitStatRule
 
 
-static func Load(logistics_path: String, defenses_path: String, military_path: String) -> void:
-	# The FILE NAME is the dictionary key and lives nowhere on the object - it is
-	# stamped on at load (Loaders.logistics does so).
+static func Load(pack: PackLoader.LoadedPack, defenses_path: String, military_path: String) -> void:
+	# The TABLE ID is the dictionary key and lives nowhere on the object - it is
+	# stamped on at load. These were .DAT filenames; they are role ids now
+	# (SCHEMA.md section 12 Q2) and factions.json names them.
 	Logistics = {}
-	var data: Variant = JsonUtil.parse(logistics_path)
-	if data != null:
-		for key in data.keys():
-			var f := CatalogDtos.LogisticsFile.from_dict(data[key])
+	if pack != null and pack.Setup != null:
+		for key in pack.Setup.Logistics:
+			var f := CatalogDtos.LogisticsFile.from_dict(pack.Setup.Logistics[key])
 			f.Name = str(key)
 			Logistics[str(key)] = f
 	print("[SeedManager] Loaded %d Logistics Files." % Logistics.size())
