@@ -90,7 +90,7 @@ check(sv2.saves.length === 0, "a player not in the game has no save of it");
 
 // The relay restarted: the room and its log come back from disk.
 relay.stop(); await new Promise((r) => setTimeout(r, 50));
-const relay2 = startRelay({ port: 0, dataDir });
+const relay2 = startRelay({ port: 0, dataDir, heartbeatMs: 40 });
 const url2 = `ws://127.0.0.1:${relay2.port}/ws`;
 const ws3 = new WebSocket(url2); const inbox3: any[] = [];
 await new Promise<void>((res) => { ws3.onopen = () => res(); });
@@ -101,6 +101,11 @@ check(back3.t === "joined" && back3.side === "guest" && back3.started === true &
 ws3.send(JSON.stringify({ t: "since", n: 0 }));
 const r1 = await next3(); const r2 = await next3(); const r3 = await next3();
 check(r1.t === "cmd" && r2.t === "hash" && r3.t === "caught_up", "and the log replays from disk");
+// The heartbeat: relay2 pings every 40 ms here (25 s in production), and the
+// client's automatic pongs come back - what keeps a proxy's idle timer, and
+// Bun's own, from closing a quiet lobby.
+await new Promise((r) => setTimeout(r, 300));
+check(relay2.pongs() >= 3, "the relay pings every open socket and the client's pongs come back");
 // Tester feedback: POST /feedback writes the report and its log; junk is refused.
 const fbBase = `http://127.0.0.1:${relay2.port}`;
 const fb = await fetch(`${fbBase}/feedback`, { method: "POST", headers: { "Content-Type": "application/json" },

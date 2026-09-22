@@ -58,7 +58,6 @@ no original to cite.
 | **Alt+M** Mission / **Alt+S** Status for the *selected* unit | needs a global "selected unit" concept — verify it exists first, else it's a no-op |
 | "(captured)" label on a held enemy character in the Personnel tab | polish (see #4) |
 | `SaveManager.Save` atomicity — write the index before the slot file (or temp-then-rename) so a crash mid-save can't desync them | minor robustness |
-| **Relay WebSocket heartbeat** - no ping/pong or keepalive in `relay/server.ts` | The `websocket:` block sets only `maxPayloadLength`, `open`, `message`, `close`; `open()` is a no-op and there is no `setInterval` (read-in-full, 288 lines). Harmless as deployed - Fly does not idle-cut and nothing proxies faction-wars.com - but any CDN or reverse proxy in front would drop idle lobbies (Cloudflare cuts idle WebSockets at ~100s). **Required before putting Cloudflare's proxy in front of faction-wars.com.** |
 
 ## Known Bugs (confirmed, unfixed)
 
