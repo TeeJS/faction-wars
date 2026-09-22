@@ -1,0 +1,3 @@
+# Godot rewrites .import files with LF on every import; with core.autocrlf on,
+# git would otherwise flag them modified forever. Keep them LF on disk.
+*.import text eol=lf
