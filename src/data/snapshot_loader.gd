@@ -25,7 +25,12 @@ static func Load(path: String) -> bool:
 		push_error("snapshot: cannot read %s" % path)
 		return false
 
-	FactionRegistry.EnsureLoaded()
+	var mismatch := FactionRegistry.HeaderMismatch(data)
+	if not mismatch.is_empty():
+		push_error("snapshot: %s" % mismatch)
+		return false
+	if not FactionRegistry.EnsureLoaded(str(data.get("pack", ""))):
+		return false
 
 	GameSettings.Seed = int(data.get("seed", 0))
 	GameSettings.SelectedDifficulty = JsonUtil.enum_or(data, "difficulty", Enums.Difficulty, Enums.Difficulty.Medium)
