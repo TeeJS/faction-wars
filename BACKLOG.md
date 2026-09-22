@@ -58,11 +58,16 @@ no original to cite.
 | **Alt+M** Mission / **Alt+S** Status for the *selected* unit | needs a global "selected unit" concept — verify it exists first, else it's a no-op |
 | "(captured)" label on a held enemy character in the Personnel tab | polish (see #4) |
 | `SaveManager.Save` atomicity — write the index before the slot file (or temp-then-rename) so a crash mid-save can't desync them | minor robustness |
+| **Relay WebSocket heartbeat** - no ping/pong or keepalive in `relay/server.ts` | The `websocket:` block sets only `maxPayloadLength`, `open`, `message`, `close`; `open()` is a no-op and there is no `setInterval` (read-in-full, 288 lines). Harmless as deployed - Fly does not idle-cut and nothing proxies faction-wars.com - but any CDN or reverse proxy in front would drop idle lobbies (Cloudflare cuts idle WebSockets at ~100s). **Required before putting Cloudflare's proxy in front of faction-wars.com.** |
 
 ## Known Bugs (confirmed, unfixed)
 
-*None currently open.* Every bug found this session was fixed and verified
-(fog leaks #2a, defender-notice gap #2b, the 4.7.1 parse break, the MenuButton
+| Bug | Repro + file:line |
+|-----|-------------------|
+| The relay's feedback endpoints take no authentication: `GET /feedback` lists every tester report, and `POST /feedback/<id>/complete` marks any report done | `curl https://faction-wars.com/feedback` -> HTTP 200 `{"count":0,...}`, and `POST /feedback/doesnotexist/complete` -> 404 (the route answers; it 404s on the id, not on auth). Verified 2026-09-22. `relay/server.ts:172` (listing), `relay/server.ts:160` (complete). Pre-existing - `wars.schmitzplex.com` deliberately has no Authelia (relay/README.md) - but that host was unadvertised; a public domain makes it discoverable. A report carries the player name, seed, settings and client info. |
+
+Bugs found in the 2026-09-05 session were all fixed and verified (fog leaks
+#2a, defender-notice gap #2b, the 4.7.1 parse break, the MenuButton
 double-connect). New confirmed bugs go here with a repro + file:line.
 
 ## Non-issues (investigated, no change)
