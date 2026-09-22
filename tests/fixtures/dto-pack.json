@@ -8483,7 +8483,11 @@
         "huge"
       ]
     },
-    "UnexploredColor": "#cccccc"
+    "UnexploredColor": "#cccccc",
+    "VictoryTips": {
+      "HqOnly": "Rebel Win Conditions: Capture Coruscant.\nImperial Win Conditions: Destroy the Rebel headquarters.",
+      "Standard": "Rebel Win Conditions: Capture Coruscant and capture Emperor Palpatine and Darth Vader.\nImperial Win Conditions: Destroy the Rebel headquarters and capture President Mon Mothma and Luke Skywalker."
+    }
   },
   "rules": [
     {
