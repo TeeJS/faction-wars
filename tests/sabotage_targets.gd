@@ -32,11 +32,11 @@ func _init() -> void:
 	if them == null:
 		_finish()
 		return
-	them.AddFacility(Enums.FacilityType.PlanetaryShield)
-	them.AddFacility(Enums.FacilityType.TurbolaserBattery)
-	them.AddFacility(Enums.FacilityType.IonCannon)
+	them.AddFacility("planetary_shield")
+	them.AddFacility("turbolaser_battery")
+	them.AddFacility("ion_cannon")
 	var defences: Array = Lq.where(them.Facilities, func(f: Facility) -> bool:
-		return f.Type in [Enums.FacilityType.PlanetaryShield, Enums.FacilityType.TurbolaserBattery, Enums.FacilityType.IonCannon])
+		return f.Family() in ["planetary_shield", "turbolaser_battery", "ion_cannon"])
 	_check(defences.size() >= 3, "shield, battery and ion cannon stand on %s" % them.Name)
 	for f in defences:
 		_check(MissionManager.CanSabotage(us, f, them).ok, "CanSabotage accepts the enemy %s" % f.Name())
@@ -47,7 +47,7 @@ func _init() -> void:
 			ours = p
 			break
 	if ours != null:
-		ours.AddFacility(Enums.FacilityType.PlanetaryShield)
+		ours.AddFacility("planetary_shield")
 		var mine: Facility = ours.Facilities[ours.Facilities.size() - 1]
 		_check(not MissionManager.CanSabotage(us, mine, ours).ok, "CanSabotage refuses our own shield")
 
@@ -66,8 +66,8 @@ func _init() -> void:
 	_check(rows.size() == defences.size(), "the Orbital Defenses tab has %d target rows (has %d)" % [defences.size(), rows.size()])
 	var types: Array = []
 	for r in rows:
-		types.append(int(r.get_meta("defence_type")))
-	for t in [Enums.FacilityType.PlanetaryShield, Enums.FacilityType.TurbolaserBattery, Enums.FacilityType.IonCannon]:
+		types.append(str(r.get_meta("defence_type")))
+	for t in ["planetary_shield", "turbolaser_battery", "ion_cannon"]:
 		_check(t in types, "a row names the %s" % Facility.NameOf(t))
 	# Before any sighting the tab says so and offers nothing.
 	IntelManager.Reset()
@@ -84,7 +84,7 @@ func _init() -> void:
 	agent.Faction = us
 	var shield: Facility = null
 	for f in defences:
-		if f.Type == Enums.FacilityType.PlanetaryShield:
+		if f.Family() == "planetary_shield":
 			shield = f
 			break
 	_check(shield != null, "a Planetary Shield to target")

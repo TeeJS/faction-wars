@@ -54,7 +54,7 @@ static func Bombard(fleet: Fleet, target: Planet, mode: int, rng: Prng, day: int
 	# 1. THE DEFENDERS SHOOT FIRST.
 	var disabled: Array = []
 	for f in target.Facilities:
-		if f.Type != Enums.FacilityType.IonCannon:
+		if not f.HasRole("disable"):
 			continue
 		var victim: Unit = Lq.first_or_null(ships, func(s): return not disabled.has(s))
 		if victim == null:
@@ -63,7 +63,7 @@ static func Bombard(fleet: Fleet, target: Planet, mode: int, rng: Prng, day: int
 		report.ShipsDisabled += 1
 
 	for bat in target.Facilities:
-		if bat.Type != Enums.FacilityType.TurbolaserBattery:
+		if not bat.HasRole("anti_ship"):
 			continue
 		var victim: Unit = ships[rng.NextMax(ships.size())] if ships.size() > 0 else null
 		if victim == null:
@@ -102,9 +102,9 @@ static func Bombard(fleet: Fleet, target: Planet, mode: int, rng: Prng, day: int
 
 	report.ShieldStrength = 0
 	for f in target.Facilities:
-		if f.Type == Enums.FacilityType.PlanetaryShield:
-			var rule := FacilityCatalog.Get(f.Type, f.Tier)
-			report.ShieldStrength += rule.ShieldStrength if rule != null else 0
+		if f.HasRole("shield"):
+			var rule := FacilityCatalog.Get(f.Family(), f.Tier)
+			report.ShieldStrength += rule.stat("shield_strength") if rule != null else 0
 
 	report.Through = max(0, report.Firepower - report.ShieldStrength)
 	if report.Through <= 0:
@@ -120,7 +120,7 @@ static func Bombard(fleet: Fleet, target: Planet, mode: int, rng: Prng, day: int
 		return report
 
 	var military := Lq.where(target.Facilities, IsMilitary)
-	var civilian := Lq.where(target.Facilities, func(f): return not IsMilitary(f) and f.Type != Enums.FacilityType.Headquarters)
+	var civilian := Lq.where(target.Facilities, func(f): return not IsMilitary(f) and not f.HasRole("headquarters"))
 
 	match mode:
 		BombardmentMode.MilitaryFacilities:
@@ -140,8 +140,8 @@ static func Bombard(fleet: Fleet, target: Planet, mode: int, rng: Prng, day: int
 
 ## The four defensive families, 34 to 37.
 static func IsMilitary(f: Facility) -> bool:
-	return f.Type == Enums.FacilityType.PlanetaryShield or f.Type == Enums.FacilityType.TurbolaserBattery \
-		or f.Type == Enums.FacilityType.IonCannon or f.Type == Enums.FacilityType.DeathStarShield
+	return f.HasRole("shield") or f.HasRole("anti_ship") \
+		or f.HasRole("disable") or f.Family() == "death_star_shield"
 
 
 ## 0x58E186: `through` shots, each a random surviving target against
@@ -155,8 +155,8 @@ static func SpendOn(pool: Array, shots: int, rng: Prng, r: BombardmentReport) ->
 	while shots > 0 and alive.size() > 0:
 		shots -= 1
 		var f: Facility = alive[rng.NextMax(alive.size())]
-		var rule := FacilityCatalog.Get(f.Type, f.Tier)
-		var resistance: int = maxi(0, rule.BombardmentDefense if rule != null else 0)
+		var rule := FacilityCatalog.Get(f.Family(), f.Tier)
+		var resistance: int = maxi(0, rule.stat("bombardment_defense") if rule != null else 0)
 		if rng.NextRange(lo, hi + 1) <= resistance:
 			continue
 		alive.erase(f)
@@ -187,7 +187,7 @@ static func SpendOnTroops(target: Planet, budget: int, rng: Prng, r: Bombardment
 
 ## A HEADQUARTERS DESTROYED WITH THE SYSTEM STILL COUNTS (manual p136).
 static func DestroyEverything(target: Planet, r: BombardmentReport) -> void:
-	var hq_owner: Faction = target.ControllingFaction if Lq.any(target.Facilities, func(f): return f.Type == Enums.FacilityType.Headquarters) else null
+	var hq_owner: Faction = target.ControllingFaction if Lq.any(target.Facilities, func(f): return f.HasRole("headquarters")) else null
 	for f in target.Facilities.duplicate():
 		if target.DestroyFacility(f):
 			r.Destroyed.append(f.Name())

@@ -436,13 +436,13 @@ static func _sabotage_targets(ctx: AIContext) -> Array:
 	var out: Array = []
 	for p in ctx.TheirsWeak + ctx.TheirsStrong:
 		var seen := ctx.Facts(p)
-		var offered: Dictionary = {}   # Enums.FacilityType -> how many of it are already listed
+		var offered: Dictionary = {}   # facility family id -> how many of it are already listed
 		for f in p.Facilities:
-			if int(offered.get(f.Type, 0)) >= seen.facilities_of(f.Type):
+			if int(offered.get(f.Family(), 0)) >= seen.facilities_of(f.Family()):
 				continue
 			if MissionManager.CanSabotage(ctx.Us, f, p).ok:
 				out.append({"where": p, "obj": f})
-				offered[f.Type] = int(offered.get(f.Type, 0)) + 1
+				offered[f.Family()] = int(offered.get(f.Family(), 0)) + 1
 	return out
 
 

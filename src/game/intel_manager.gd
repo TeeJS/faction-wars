@@ -242,14 +242,14 @@ static func Collect(p: Planet, section: int) -> Dictionary:
 			for f in p.Facilities:
 				if IsDefensive(f) and f.WeaponRating > 0:
 					guns.append(f.WeaponRating)
-				match f.Type:
-					Enums.FacilityType.PlanetaryShield:
+				match f.Family():
+					"planetary_shield":
 						shields += 1
-						var rule := FacilityCatalog.Get(f.Type, f.Tier)
-						shield_strength += rule.ShieldStrength if rule != null else 0
-					Enums.FacilityType.TurbolaserBattery:
+						var rule := FacilityCatalog.Get(f.Family(), f.Tier)
+						shield_strength += rule.stat("shield_strength") if rule != null else 0
+					"turbolaser_battery":
 						battery_ratings.append(f.WeaponRating)
-					Enums.FacilityType.IonCannon:
+					"ion_cannon":
 						ion_cannons += 1
 			return {
 				"shields": shields,
@@ -264,7 +264,7 @@ static func Collect(p: Planet, section: int) -> Dictionary:
 			var counts: Dictionary = {}
 			for f in p.Facilities:
 				if not IsDefensive(f):
-					counts[f.Type] = int(counts.get(f.Type, 0)) + 1
+					counts[f.Family()] = int(counts.get(f.Family(), 0)) + 1
 			return { "counts": counts }
 		Enums.IntelSection.SpecForces:
 			return { "units": p.SpecForces().size() }
@@ -402,9 +402,9 @@ static func Render(p: Planet, section: int) -> Array:
 
 
 static func IsDefensive(f: Facility) -> bool:
-	return f.Type == Enums.FacilityType.PlanetaryShield \
-		or f.Type == Enums.FacilityType.TurbolaserBattery \
-		or f.Type == Enums.FacilityType.IonCannon
+	return f.HasRole("shield") \
+		or f.HasRole("anti_ship") \
+		or f.HasRole("disable")
 
 
 static func Describe(f: Facility) -> String:
@@ -417,7 +417,7 @@ static func DescribeTask(t: ConstructionTask, where: String, home: Planet = null
 	if t.UnitRule != null:
 		what = t.UnitRule.Name
 	else:
-		var type_name := JsonUtil.enum_name(Enums.FacilityType, t.Type)
+		var type_name := Facility.NameOf(t.Family, t.Tier)
 		what = "Advanced %s" % type_name if t.Tier > 1 else type_name
 	# Espionage reveals where production is headed (manual/guide; the Empire's only
 	# documented HQ-finding method). Show the destination only when the order ships

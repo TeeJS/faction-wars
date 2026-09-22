@@ -42,11 +42,10 @@ ROOT = Path(__file__).resolve().parent.parent
 PRODUCTION_IN = ROOT / "data" / "production_facilities.json"
 DEFENSIVE_IN = ROOT / "data" / "defensive_facilities.json"
 FACTIONS = ROOT / "packs" / "star-wars-rebellion" / "factions.json"
-CATALOG = ROOT / "src" / "game" / "facility_catalog.gd"
 OUT = ROOT / "packs" / "star-wars-rebellion" / "facilities.json"
 
-# family id -> (family slug, roles). Transcribed from FacilityCatalog.Families
-# and verified against that file by --verify.
+# family id -> (family slug, roles). The family ids are the original binary's;
+# every one present in the data tables must be mapped here, which is checked.
 FAMILIES = {
     32: ("headquarters", ["headquarters"]),
     34: ("ion_cannon", ["planet_defense", "disable"]),
@@ -66,7 +65,16 @@ V1_ROLES = {"headquarters", "extracts_raw", "refines", "produces_unit",
             "produces_troop", "produces_facility", "planet_defense", "shield",
             "disable", "anti_ship"}
 
-STATS = ["BombardmentDefense", "ProcessingRate", "WeaponRating", "ShieldStrength"]
+# Column -> stat key. EXPLICIT, not slug()-derived: slug() lowercases without
+# splitting camelCase, so "ProcessingRate" became "processingrate" and every
+# consumer silently fell through to its default. The mine and refinery rates
+# read 4 instead of 5 and nothing failed - it just played differently.
+STATS = {
+    "BombardmentDefense": "bombardment_defense",
+    "ProcessingRate": "processing_rate",
+    "WeaponRating": "weapon_rating",
+    "ShieldStrength": "shield_strength",
+}
 
 
 def slug(name: str) -> str:
@@ -78,20 +86,22 @@ def load(path: Path):
         return json.load(fh)
 
 
-def check_families_match_engine(problems: list) -> None:
-    """FAMILIES is a copy of FacilityCatalog.Families. Fail if the engine's moved."""
-    if not CATALOG.exists():
-        problems.append(f"{CATALOG}: missing; cannot verify the family table")
-        return
-    source = CATALOG.read_text(encoding="utf-8")
-    declared = {int(m) for m in re.findall(r"^\s*(\d+): Enums\.FacilityType\.",
-                                           source, re.M)}
-    missing = declared - set(FAMILIES)
-    extra = set(FAMILIES) - declared
-    for f in sorted(missing):
-        problems.append(f"family {f} is in FacilityCatalog.Families but not in this script")
-    for f in sorted(extra):
-        problems.append(f"family {f} is in this script but no longer in FacilityCatalog.Families")
+def check_families_cover_the_data(problems: list) -> None:
+    """FAMILIES must cover exactly the family ids the two tables contain.
+
+    This used to compare against FacilityCatalog.Families in the engine. That
+    table is GONE - the pack is the catalog now - so the check points at the
+    DATA instead: a family the tables carry but this script does not map would
+    be dropped silently, and one mapped here but absent from the tables is dead.
+    """
+    present = set()
+    for path in (PRODUCTION_IN, DEFENSIVE_IN):
+        for r in load(path):
+            present.add(r["FamilyId"])
+    for f in sorted(present - set(FAMILIES)):
+        problems.append(f"family {f} is in the data tables but has no role mapping here")
+    for f in sorted(set(FAMILIES) - present):
+        problems.append(f"family {f} is mapped here but no longer in the data tables")
 
 
 def build(problems: list):
@@ -121,7 +131,7 @@ def build(problems: list):
                     problems.append(
                         f"'{r['Name']}': buildable_by '{who}' is not a declared faction")
 
-            stats = {slug(k): r[k] for k in STATS if k in r and r[k] is not None}
+            stats = {v: r[k] for k, v in STATS.items() if k in r and r[k] is not None}
 
             out.append({
                 "id": fid,
@@ -155,7 +165,7 @@ def main() -> int:
     verify_only = "--verify" in sys.argv
     problems: list = []
 
-    check_families_match_engine(problems)
+    check_families_cover_the_data(problems)
     doc = build(problems)
 
     n_in = len(load(PRODUCTION_IN)) + len(load(DEFENSIVE_IN))

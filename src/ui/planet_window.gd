@@ -52,7 +52,7 @@ func _PopulateLive(planet: Planet, player: Faction, _status: Label, _resources: 
 		# The player's own MOVABLE headquarters carries the Fig 3.82 menu
 		# {Move, Confirmed Move, Encyclopedia, Status}; every other facility is
 		# a plain label. Only the Alliance's hidden HQ is Movable (pack-driven).
-		if facility.Type == Enums.FacilityType.Headquarters and holder == player \
+		if facility.HasRole("headquarters") and holder == player \
 				and player.Hq != null and player.Hq.Movable:
 			_AddHqMenuRow(_facility, facility, planet)
 			continue

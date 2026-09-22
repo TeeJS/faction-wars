@@ -8,6 +8,16 @@ extends RefCounted
 
 static var _planets_by_name: Dictionary = {}
 
+## Enums.FacilityType member names, as the C# snapshot writer spells them, mapped
+## onto this pack's facility families (SCHEMA.md section 5).
+const LEGACY_FACILITY_FAMILIES := {
+	"Headquarters": "headquarters", "Mine": "mine", "Refinery": "refinery",
+	"ConstructionYard": "construction_yard", "Shipyard": "shipyard",
+	"TrainingFacility": "training_facility", "PlanetaryShield": "planetary_shield",
+	"TurbolaserBattery": "turbolaser_battery", "IonCannon": "ion_cannon",
+	"DeathStarShield": "death_star_shield",
+}
+
 
 static func Load(path: String) -> bool:
 	var data: Variant = JsonUtil.parse(path)
@@ -127,8 +137,12 @@ static func _planet(pd: Dictionary, deferred: Array) -> Planet:
 	for fd in pd.get("Facilities", []):
 		var f := Facility.new()
 		f.Attached = p
-		f.Type = JsonUtil.enum_or(fd, "Type", Enums.FacilityType, Enums.FacilityType.Mine)
+		# The C# snapshot writes the old Enums.FacilityType NAME ("TurbolaserBattery").
+		# Mapped to a pack family here, as with the character aptitude fields above:
+		# an external format keeps its own spelling.
+		var fam: String = LEGACY_FACILITY_FAMILIES.get(str(fd.get("Type", "")), "mine")
 		f.Tier = int(fd.get("Tier", 1))
+		f.Def = FacilityCatalog.Get(fam, f.Tier)
 		f.IsDamaged = bool(fd.get("IsDamaged", false))
 		f.IsSelected = bool(fd.get("IsSelected", false))
 		f.ConstructionCost = int(fd.get("ConstructionCost", 0))

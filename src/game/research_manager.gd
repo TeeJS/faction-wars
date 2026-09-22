@@ -43,7 +43,7 @@ static func IsUnlockedUnit(f: Faction, r: CatalogDtos.UnitStatRule) -> bool:
 	return r == null or IsUnlocked(f, TrackFor(r), r.ResearchOrder, r.ResearchCost)
 
 
-static func IsUnlockedFacility(f: Faction, r: CatalogDtos.FacilityStatRule) -> bool:
+static func IsUnlockedFacility(f: Faction, r: PackDefs.FacilityDef) -> bool:
 	return r == null or IsUnlocked(f, Enums.ResearchTrackKind.FacilityDesign, r.ResearchOrder, r.ResearchCost)
 
 
@@ -61,9 +61,9 @@ static func ProcessDay(galaxy: Array, day: int) -> void:
 			for p in s.Planets:
 				if p.ControllingFaction != f:
 					continue
-				yards += p.CountOf(Enums.FacilityType.ConstructionYard)
-				shipyards += p.CountOf(Enums.FacilityType.Shipyard)
-				training += p.CountOf(Enums.FacilityType.TrainingFacility)
+				yards += p.CountOf("construction_yard")
+				shipyards += p.CountOf("shipyard")
+				training += p.CountOf("training_facility")
 		Award(f, Enums.ResearchTrackKind.FacilityDesign, yards * PassivePerFacilityPerDay, day, true)
 		Award(f, Enums.ResearchTrackKind.ShipDesign, shipyards * PassivePerFacilityPerDay, day, true)
 		Award(f, Enums.ResearchTrackKind.TroopTraining, training * PassivePerFacilityPerDay, day, true)
@@ -100,7 +100,7 @@ static func Discovered(f: Faction, track: int) -> Array:
 	if track == Enums.ResearchTrackKind.FacilityDesign:
 		for r in FacilityCatalog.All():
 			if r.ResearchOrder > 0 and r.CanBeBuiltBy(f) and IsUnlockedFacility(f, r):
-				out.append(r.Name)
+				out.append(r.DisplayName)
 		return out
 	for r in MilitaryCatalog.All():
 		if r.ResearchOrder > 0 and MilitaryCatalog.CanBeBuiltBy(r, f) and TrackFor(r) == track and IsUnlockedUnit(f, r):

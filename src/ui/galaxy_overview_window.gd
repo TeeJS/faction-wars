@@ -73,11 +73,10 @@ func Refresh() -> void:
 
 	Head("Facilities")
 	# Every facility TYPE, whether or not any are held - a zero row is information too.
-	for rule in Lq.order_by(FacilityCatalog.All(), func(r) -> String: return r.Name):
-		var type: int = FacilityCatalog.TypeOf(rule)
+	for rule in Lq.order_by(FacilityCatalog.All(), func(r) -> String: return r.DisplayName):
 		var held: int = Lq.sum(worlds, func(p: Planet) -> int:
-			return Lq.count(p.Facilities, func(f: Facility) -> bool: return f.Type == type and f.Tier == rule.Tier))
-		Row(rule.Name, held, held * rule.MaintenanceCost)
+			return Lq.count(p.Facilities, func(f: Facility) -> bool: return f.TypeId() == rule.Id))
+		Row(rule.DisplayName, held, held * rule.MaintenanceCost)
 
 	Head("Ships")
 	Units(worlds, us, "CapitalShip")

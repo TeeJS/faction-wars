@@ -75,7 +75,7 @@ func _facts(alliance: Faction, empire: Faction) -> void:
 	IntelManager.Capture(alliance, them, today, IntelManager.EspionageCategories)
 	var f := IntelManager.Facts(alliance, them)
 	var live_regiments := them.Troopers().size()
-	var live_shields := them.CountOf(Enums.FacilityType.PlanetaryShield)
+	var live_shields := them.CountOf("planetary_shield")
 	var live_support := them.SupportFor(alliance)
 	var live_fleets := them.OrbitingFleets.size()
 	var live_production := Lq.where(them.Facilities, func(x): return not IntelManager.IsDefensive(x)).size()
@@ -96,12 +96,12 @@ func _facts(alliance: Faction, empire: Faction) -> void:
 	_check(not f.ours and f.explored, "an enemy world: not ours, but charted")
 
 	# facilities_of: the sighting's per-kind count, the gate the sabotage policy reads.
-	_check(f.facilities_of(Enums.FacilityType.PlanetaryShield) == live_shields, "facilities_of(shield) == the sighting's shield count")
+	_check(f.facilities_of("planetary_shield") == live_shields, "facilities_of(shield) == the sighting's shield count")
 
 	# 2. frozen afterwards.
 	StrategicTickManager.Today = today + 25
 	them.Garrison.erase(them.Troopers()[0])
-	them.AddFacility(Enums.FacilityType.PlanetaryShield, 1)
+	them.AddFacility("planetary_shield", 1)
 	them.ShiftSupport(alliance, 15)
 	if officer != null:
 		var elsewhere: Planet = _first(func(p): return p.ControllingFaction == empire and p != them)
@@ -114,7 +114,7 @@ func _facts(alliance: Faction, empire: Faction) -> void:
 	_check(later.support_for(alliance) == live_support, "support moved; the snapshot did not")
 	if officer != null:
 		_check(later.names_present().has(officer.Name), "%s left; the snapshot still names them" % officer.Name)
-	_check(them.Troopers().size() == live_regiments - 1 and them.CountOf(Enums.FacilityType.PlanetaryShield) == live_shields + 1, "(the live world really did change)")
+	_check(them.Troopers().size() == live_regiments - 1 and them.CountOf("planetary_shield") == live_shields + 1, "(the live world really did change)")
 
 	# A later Reconnaissance refreshes what it covers and leaves the people as they were seen.
 	IntelManager.Capture(alliance, them, StrategicTickManager.Today, IntelManager.ReconnaissanceCategories)

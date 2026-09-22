@@ -158,9 +158,9 @@ static func MoveHeadquarters(faction: Faction, destination: Planet) -> Result:
 		return Result.fail("%s is blockaded - the headquarters cannot relocate until the blockade is broken." % seat.Name)
 
 	for i in range(seat.Facilities.size() - 1, -1, -1):
-		if seat.Facilities[i].Type == Enums.FacilityType.Headquarters:
+		if seat.Facilities[i].HasRole("headquarters"):
 			seat.Facilities.remove_at(i)
-	destination.AddFacility(Enums.FacilityType.Headquarters)
+	destination.AddFacility("headquarters")
 	# The new seat is concealed from other sides for a hidden HQ; a side always knows its own.
 	for other in FactionRegistry.Playable:
 		destination.SetExplored(other, other == faction or not faction.HasHiddenHq())

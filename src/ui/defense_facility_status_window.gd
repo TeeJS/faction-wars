@@ -15,10 +15,10 @@ func Populate(facility: Facility) -> void:
 
 	# Title bar
 	var facilityType: String
-	match facility.Type:
-		Enums.FacilityType.PlanetaryShield: facilityType = "Planetary Shield"
-		Enums.FacilityType.TurbolaserBattery: facilityType = "Turbolaser Battery"
-		Enums.FacilityType.IonCannon: facilityType = "Ion Cannon"
+	match facility.Family():
+		"planetary_shield": facilityType = "Planetary Shield"
+		"turbolaser_battery": facilityType = "Turbolaser Battery"
+		"ion_cannon": facilityType = "Ion Cannon"
 		_: facilityType = "Defense Facility"
 	(get_node("%TitleBarLabel") as Label).text = "%s Status" % facilityType
 
@@ -62,7 +62,7 @@ func Populate(facility: Facility) -> void:
 	# "Standard Processing Rate: NUMBER OF DAYS TO CONVERT ONE REFINED
 	# MATERIAL POINT" - which is why a construction yard's is 0: it does not
 	# refine anything.
-	var isWeapon: bool = facility.Type == Enums.FacilityType.TurbolaserBattery or facility.Type == Enums.FacilityType.IonCannon
+	var isWeapon: bool = facility.HasRole("anti_ship") or facility.HasRole("disable")
 	var weaponKey: Label = get_node_or_null("%LblWeaponRating")
 	var weaponVal: Label = get_node("%ValWeaponRating")
 
@@ -71,15 +71,15 @@ func Populate(facility: Facility) -> void:
 			weaponKey.text = "Weapons Rating:"
 		weaponVal.text = "%d (Damage per shot)" % facility.WeaponRating
 	else:
-		var rate: int = FacilityCatalog.ProcessingRate(facility.Type, facility.Tier)
+		var rate: int = FacilityCatalog.ProcessingRate(facility.Family(), facility.Tier)
 		if weaponKey != null:
 			weaponKey.text = "Std Processing Rate:"
 		weaponVal.text = ("%d days per refined point" % rate) if rate > 0 else "0 (does not refine)"
 
 	# Shield Strength (only for shields)
 	var shieldText: String
-	match facility.Type:
-		Enums.FacilityType.PlanetaryShield: shieldText = "%d HP" % facility.ShieldStrength
+	match facility.Family():
+		"planetary_shield": shieldText = "%d HP" % facility.ShieldStrength
 		_: shieldText = "N/A"
 	(get_node("%ValShieldStrength") as Label).text = shieldText
 
@@ -99,19 +99,19 @@ func Populate(facility: Facility) -> void:
 
 	(get_node("%ValTier") as Label).text = "Tier %d" % facility.Tier
 	var typeText: String
-	match facility.Type:
-		Enums.FacilityType.PlanetaryShield: typeText = "Planetary Shield"
-		Enums.FacilityType.TurbolaserBattery: typeText = "Turbolaser Battery"
-		Enums.FacilityType.IonCannon: typeText = "Ion Cannon"
+	match facility.Family():
+		"planetary_shield": typeText = "Planetary Shield"
+		"turbolaser_battery": typeText = "Turbolaser Battery"
+		"ion_cannon": typeText = "Ion Cannon"
 		_: typeText = "Defense Facility"
 	(get_node("%ValType") as Label).text = typeText
 
 	# Also update portrait icon to reflect type
 	var iconLabel: Label = get_node("%IconLabel")
-	match facility.Type:
-		Enums.FacilityType.PlanetaryShield: iconLabel.text = "🛡️"   # Shield
-		Enums.FacilityType.TurbolaserBattery: iconLabel.text = "💥"   # Weapon
-		Enums.FacilityType.IonCannon: iconLabel.text = "⚡"           # Ion
+	match facility.Family():
+		"planetary_shield": iconLabel.text = "🛡️"   # Shield
+		"turbolaser_battery": iconLabel.text = "💥"   # Weapon
+		"ion_cannon": iconLabel.text = "⚡"           # Ion
 		_: iconLabel.text = "🛰️"
 
 
