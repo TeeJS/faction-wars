@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Build packs/<pack>/weapons.json and units.json from data/military_units.json.
+"""Build packs/<pack>/weapons.json and units.json from the SOURCE repo's data/military_units.json.
+
+The legacy data/*.json folder left this repo on 2026-09-22; the extractors and
+their output live in sol-conflict-revolution (override with SCR_SOURCE).
 
 SCHEMA.md sections 6 and its "Weapons are a Phase 3 vocabulary item" subsection.
 A TRANSFORM, not an extractor. Re-runnable.
@@ -25,13 +28,15 @@ Usage:
     python tools/build-units-json.py --verify   # check only, write nothing
 """
 
+import os
 import json
 import re
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-UNITS_IN = ROOT / "data" / "military_units.json"
+SOURCE_DATA = Path(os.environ.get("SCR_SOURCE", r"D:\Github\sol-conflict-revolution")) / "data"
+UNITS_IN = SOURCE_DATA / "military_units.json"
 FACTIONS = ROOT / "packs" / "star-wars-rebellion" / "factions.json"
 UNITS_OUT = ROOT / "packs" / "star-wars-rebellion" / "units.json"
 WEAPONS_OUT = ROOT / "packs" / "star-wars-rebellion" / "weapons.json"

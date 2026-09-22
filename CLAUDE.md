@@ -92,7 +92,7 @@ Before asking anything about how the game works, you must have checked:
 | Original binary tables | `GData/*.DAT` in the installed game, via `data/parse_*.py` |
 | In-game Encyclopedia text | `ENCYTEXT.DLL` — greppable off disk, no need to launch |
 | UI strings | `TEXTSTRA.DLL` |
-| Rules constants | `data/game_rules.json` |
+| Rules constants | `packs/star-wars-rebellion/rules.json` (213 GNPRTB entries, faction-keyed) |
 | Manual page scans | `manual/pages/`, digested in `GAMEPLAY.md` |
 | Prior findings | `ECONOMY-NOTES.md`, `GAMEPLAY.md`, `manual/ILLUSTRATIONS.md` |
 | Existing project conventions | the code already in this repo |
@@ -281,13 +281,15 @@ code state get conflated and where guesses hide.
 - **Remotes:** this repo's own. The source repo's `origin`/`upstream` rules do not
   apply here; changes to the source (e.g. HANDOFF step 0b) go on its
   `tschmitz-dev` branch with TeeJ's separate go-ahead.
-- **In this repo, copied from the source (HANDOFF §6 step 0):** `data/*.json`
-  (the shipping form of the `.DAT` tables - JSON is the contract; the Python
-  parsers stay in the source), `GAMEPLAY.md`, `manual/ILLUSTRATIONS.md`. Each
-  copied doc starts with `<!-- last synced from sol-conflict-revolution commit
-  <sha> -->` - **check that line before trusting it**, and re-sync from the source
-  when it moves.
-- **Not in this repo at all:** `*.DAT`, `ENCYTEXT.DLL`/`TEXTSTRA.DLL`,
+- **In this repo, copied from the source (HANDOFF §6 step 0):** `GAMEPLAY.md`,
+  `manual/ILLUSTRATIONS.md`. Each copied doc starts with `<!-- last synced from
+  sol-conflict-revolution commit <sha> -->` - **check that line before trusting
+  it**, and re-sync from the source when it moves.
+- **The pack is the only data the engine reads:** `packs/star-wars-rebellion/`
+  (SCHEMA.md). The legacy `data/*.json` (the Python parsers' output) left this
+  repo 2026-09-22; it and the parsers stay in the source repo, and
+  `tools/build-*.py` read it from there (`SCR_SOURCE`).
+- **Not in this repo at all:** `*.DAT`, `ENCYTEXT.DLL`/`TEXTSTRA.DLL`, `data/*.json`,
   `manual/Manual.pdf`, `manual/pages/` (171 MB). All of those live only in the
   source repo / the installed game; rule 1's source table still applies, read
   them there.

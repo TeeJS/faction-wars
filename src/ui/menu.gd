@@ -45,8 +45,6 @@ func _ready() -> void:
 	var btnEmpire: Button = get_node("%BtnEmpire")
 	var btnExit: Button = get_node("%BtnExit")
 
-	var milData: Button = get_node("%BtnMilitaryDataEditor")
-
 	# Set up the Difficulty "Radio Buttons"
 	_difficultyGroup = ButtonGroup.new()
 	SetupToggleButton(btnEasy, _difficultyGroup)
@@ -127,13 +125,6 @@ func _ready() -> void:
 		GameSettings.ProvideFeedback = on
 		MpSetup.remember_names())
 	(get_node("%BtnMultiplayer") as Button).pressed.connect(OpenMultiplayer)
-
-	# EDITOR ONLY. The Military Data Editor writes military_units.json back to
-	# disk, and an exported build's data lives inside the read-only .pck.
-	if OS.has_feature("editor"):
-		milData.pressed.connect(func() -> void: get_tree().change_scene_to_file("res://src/ui/MilitaryDataEditor.tscn"))
-	else:
-		milData.visible = false
 
 	if has_picture:
 		_build_cockpit(FactionRegistry.Pack.Manifest.Menu)
@@ -221,15 +212,12 @@ func _build_cockpit(menu: PackDefs.MenuDef) -> void:
 	_sizeId = setup.GalaxySizeDefault if setup != null and sizes.has(setup.GalaxySizeDefault) else (sizes[0] if not sizes.is_empty() else "")
 	_hqOnly = false
 
-	# The button form's controls give way to the picture; the ones the manual's
-	# screen does not have (feedback, the editor tool) move to the corners.
+	# The button form's controls give way to the picture; the one the manual's
+	# screen does not have (feedback) moves to a corner.
 	(get_node("CenterContainer") as Control).visible = false
 	(get_node("Background") as ColorRect).color = Color.BLACK
 	(get_node("%BtnMultiplayer") as Button).visible = false
 	_to_corner(get_node("%ChkFeedback"), Control.PRESET_BOTTOM_RIGHT, Vector2(-240, -60), Vector2(-10, -34))
-	var milData: Button = get_node("%BtnMilitaryDataEditor")
-	if milData.visible:
-		_to_corner(milData, Control.PRESET_TOP_RIGHT, Vector2(-170, 10), Vector2(-10, 40))
 
 	_picture = TextureRect.new()
 	_picture.name = "Cockpit"
