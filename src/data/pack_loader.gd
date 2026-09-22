@@ -14,6 +14,12 @@ const KNOWN_COMMAND_RANKS := ["admiral", "commander", "general"]
 const KNOWN_FACILITY_ROLES := ["headquarters", "extracts_raw", "refines",
 	"produces_unit", "produces_troop", "produces_facility", "planet_defense",
 	"shield", "disable", "anti_ship"]
+## SCHEMA.md section 6. What a weapon DOES; the tactical engine branches on
+## these and on nothing else about a weapon.
+const KNOWN_WEAPON_ROLES := ["fighter_accuracy_scaled", "no_fighter_effect",
+	"requires_shields_down", "squadron_only"]
+## Which producer and queue a unit uses is engine structure, not pack vocabulary.
+const KNOWN_UNIT_KINDS := ["capital_ship", "fighter", "troop", "spec_force"]
 
 
 class LoadedPack:
@@ -22,6 +28,8 @@ class LoadedPack:
 	var Map: PackDefs.MapFile
 	var Characters: Array[PackDefs.CharacterDef] = []
 	var Facilities: Array[PackDefs.FacilityDef] = []
+	var Units: Array[PackDefs.UnitDef] = []
+	var Weapons: Array[PackDefs.WeaponDef] = []
 
 
 ## Returns the pack, or null with `errors` populated. Never throws on bad pack
@@ -32,14 +40,19 @@ static func Load(pack_dir: String, errors: Array[String]) -> LoadedPack:
 	var map_d: Variant = _read_json("%s/map.json" % pack_dir, errors)
 	var chars_d: Variant = _read_json("%s/characters.json" % pack_dir, errors)
 	var facil_d: Variant = _read_json("%s/facilities.json" % pack_dir, errors)
-	if manifest_d == null or factions_d == null or map_d == null or chars_d == null or facil_d == null:
-		return null
+	var units_d: Variant = _read_json("%s/units.json" % pack_dir, errors)
+	var weapons_d: Variant = _read_json("%s/weapons.json" % pack_dir, errors)
+	for d in [manifest_d, factions_d, map_d, chars_d, facil_d, units_d, weapons_d]:
+		if d == null:
+			return null
 	var pack := LoadedPack.new()
 	pack.Manifest = PackDefs.PackManifest.from_dict(manifest_d)
 	pack.Factions = PackDefs.FactionsFile.from_dict(factions_d).Factions
 	pack.Map = PackDefs.MapFile.from_dict(map_d)
 	pack.Characters = PackDefs.CharactersFile.from_dict(chars_d).Characters
 	pack.Facilities = PackDefs.FacilitiesFile.from_dict(facil_d).Facilities
+	pack.Units = PackDefs.UnitsFile.from_dict(units_d).Units
+	pack.Weapons = PackDefs.WeaponsFile.from_dict(weapons_d).Weapons
 	_validate(pack, pack_dir, errors)
 	return pack if errors.is_empty() else null
 
@@ -114,6 +127,50 @@ static func _validate(pack: LoadedPack, pack_dir: String, errors: Array[String])
 	_validate_map(pack, pack_dir, errors)
 	_validate_characters(pack, errors)
 	_validate_facilities(pack, errors)
+	_validate_units(pack, errors)
+
+
+## SCHEMA.md section 11 rules 3, 4 and 5 for units and their weapons.
+static func _validate_units(pack: LoadedPack, errors: Array[String]) -> void:
+	var faction_ids := {}
+	for f in pack.Factions:
+		faction_ids[f.Id] = true
+
+	var weapon_ids := {}
+	for w in pack.Weapons:
+		var wctx := "weapons.json[%s]" % (w.Id if not w.Id.is_empty() else "?")
+		if w.Id.strip_edges().is_empty():
+			errors.append("%s: missing id." % wctx)
+		elif weapon_ids.has(w.Id):
+			errors.append("%s: duplicate id." % wctx)
+		else:
+			weapon_ids[w.Id] = true
+		if w.Roles.is_empty():
+			errors.append("%s: declares no roles; the tactical engine would treat it as an ordinary gun." % wctx)
+		for role in w.Roles:
+			if not KNOWN_WEAPON_ROLES.has(role):
+				errors.append("%s: unknown role '%s'. Known: %s." % [wctx, role, ", ".join(KNOWN_WEAPON_ROLES)])
+
+	var ids := {}
+	for u in pack.Units:
+		var ctx := "units.json[%s]" % (u.Id if not u.Id.is_empty() else "?")
+		if u.Id.strip_edges().is_empty():
+			errors.append("%s: missing id." % ctx)
+		elif ids.has(u.Id):
+			errors.append("%s: duplicate id." % ctx)
+		else:
+			ids[u.Id] = true
+		if u.DisplayName.strip_edges().is_empty():
+			errors.append("%s: missing display_name." % ctx)
+		if not KNOWN_UNIT_KINDS.has(u.Kind):
+			errors.append("%s: unknown kind '%s'. Known: %s." % [ctx, u.Kind, ", ".join(KNOWN_UNIT_KINDS)])
+		for who in u.BuildableBy:
+			if not faction_ids.has(who):
+				errors.append("%s: buildable_by '%s' is not a declared faction." % [ctx, who])
+		# Rule 3: a weapon nothing declares can never fire.
+		for wid in u.Weapons:
+			if not weapon_ids.has(wid):
+				errors.append("%s: carries weapon '%s', which weapons.json does not declare." % [ctx, wid])
 
 
 ## SCHEMA.md section 11 rules 3, 4 and 5 for the facility catalog.

@@ -60,6 +60,18 @@ func _init() -> void:
 	_case("no headquarters role anywhere",
 		_pack({}, {}, {"fac_roles": ["extracts_raw"], "drop_hq": true}), "no facility has the 'headquarters' role")
 
+	# Rules 3 / 4 - units and their weapons.
+	_case("unit on an unknown kind",
+		_pack({}, {}, {"unit_kind": "spaceship"}), "unknown kind 'spaceship'")
+	_case("unit buildable by an undeclared faction",
+		_pack({}, {}, {"unit_build": ["hutts"]}), "buildable_by 'hutts' is not a declared faction")
+	_case("unit carries a weapon weapons.json never declares",
+		_pack({}, {}, {"unit_weapon": "disruptor"}), "weapons.json does not declare")
+	_case("weapon with no roles",
+		_pack({}, {}, {"weapon_roles": []}), "declares no roles")
+	_case("unknown weapon role",
+		_pack({}, {}, {"weapon_roles": ["vaporises"]}), "unknown role 'vaporises'")
+
 	# Rule 9 - the map image.
 	_case("map_image not declared", _pack({}, {}, {"map_image": ""}), "'map_image' is required")
 	_case("map_image names a file the pack does not ship",
@@ -82,8 +94,9 @@ func _real_pack_passes() -> void:
 		for e in errors:
 			print("    %s" % e)
 	else:
-		print("[pack_validation] ok   the shipping pack validates (%d sectors, %d planets, %d characters, %d facilities)"
-			% [pack.Map.Sectors.size(), pack.Map.Planets.size(), pack.Characters.size(), pack.Facilities.size()])
+		print("[pack_validation] ok   the shipping pack validates (%d sectors, %d planets, %d characters, %d facilities, %d units, %d weapons)"
+			% [pack.Map.Sectors.size(), pack.Map.Planets.size(), pack.Characters.size(),
+			   pack.Facilities.size(), pack.Units.size(), pack.Weapons.size()])
 
 
 ## A minimal two-sector, two-planet pack, with one field bent per call.
@@ -152,6 +165,16 @@ func _pack(sector_over: Dictionary, planet_over: Dictionary, other: Dictionary) 
 			"construction_cost": 0, "maintenance_cost": 0, "stats": {},
 			"source_family_id": 32})
 	p.Facilities = PackDefs.FacilitiesFile.from_dict({"facilities": facs}).Facilities
+
+	p.Weapons = PackDefs.WeaponsFile.from_dict({"weapons": [
+		{"id": "laser", "display_name": "Laser",
+		 "roles": other.get("weapon_roles", ["fighter_accuracy_scaled"]), "arcs": true}]}).Weapons
+	p.Units = PackDefs.UnitsFile.from_dict({"units": [
+		{"id": "scout", "display_name": "Scout", "kind": other.get("unit_kind", "fighter"),
+		 "buildable_by": other.get("unit_build", ["test_side"]),
+		 "construction_cost": 5, "maintenance_cost": 1,
+		 "weapons": {other.get("unit_weapon", "laser"): {"arcs": {"fore": 8}, "range": 17}},
+		 "stats": {"hull": 10}}]}).Units
 	return p
 
 
@@ -160,6 +183,7 @@ func _case(what: String, pack: PackLoader.LoadedPack, expect: String) -> void:
 	PackLoader._validate_map(pack, PACK_DIR, errors)
 	PackLoader._validate_characters(pack, errors)
 	PackLoader._validate_facilities(pack, errors)
+	PackLoader._validate_units(pack, errors)
 	for e in errors:
 		if e.contains(expect):
 			print("[pack_validation] ok   %s" % what)
