@@ -72,14 +72,14 @@ static func RunProduction(galaxy: Array, f: Faction, _day: int) -> void:
 		if not p.HasIdleConstructionYards():
 			continue
 		var want_mine: bool = mines <= refineries and p.FreeMineSlots() > 0
-		var type := Enums.FacilityType.Mine if want_mine else Enums.FacilityType.Refinery
+		var type := "mine" if want_mine else "refinery"
 		if not p.TryQueueFacility(type, 1, p).ok:
 			continue
 		if want_mine:
 			mines += 1
 		else:
 			refineries += 1
-		print("[Agent] %s ordered a %s on %s (mines %d / refineries %d)." % [NameFor(f), JsonUtil.enum_name(Enums.FacilityType, type), p.Name, mines, refineries])
+		print("[Agent] %s ordered a %s on %s (mines %d / refineries %d)." % [NameFor(f), Facility.NameOf(type), p.Name, mines, refineries])
 
 
 ## MANAGE GARRISONS - manual p128's numbered priority list, as a sort. Builds

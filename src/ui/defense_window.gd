@@ -414,8 +414,8 @@ func PopulateOrbitalDefenses(tabs: TabContainer, planet: Planet) -> void:
 			_empty_defences(list, "No orbital batteries or planetary shields detected.")
 			return
 		for def in defenses:
-			_defence_row(list, def.Name() + " (Tier %d)" % def.Tier, def.Type,
-				"[DAMAGED]" if def.IsDamaged else ("[Active Shielding]" if def.Type == Enums.FacilityType.PlanetaryShield else "[Weapon Armed]"),
+			_defence_row(list, def.Name() + " (Tier %d)" % def.Tier, def.Family(),
+				"[DAMAGED]" if def.IsDamaged else ("[Active Shielding]" if def.HasRole("shield") else "[Weapon Armed]"),
 				Color.RED if def.IsDamaged else Color.CYAN,
 				func() -> Facility: return def)
 		return
@@ -430,22 +430,23 @@ func PopulateOrbitalDefenses(tabs: TabContainer, planet: Planet) -> void:
 	var counted: Dictionary = {}
 	for line in view.Lines:
 		var type := _defence_type_of(str(line))
-		if type < 0:
-			_defence_row(list, str(line), -1, "", Color.LIGHT_GRAY, Callable())
+		if type.is_empty():
+			_defence_row(list, str(line), "", "", Color.LIGHT_GRAY, Callable())
 			continue
 		var nth: int = int(counted.get(type, 0))
 		counted[type] = nth + 1
 		_defence_row(list, str(line), type, "(day %d)" % view.Day, Color.LIGHT_GRAY, func() -> Facility:
-			var ofType: Array = Lq.where(world.Facilities, func(f: Facility) -> bool: return f.Type == type)
+			var ofType: Array = Lq.where(world.Facilities, func(f: Facility) -> bool: return f.Family() == type)
 			return ofType[nth] if nth < ofType.size() else null)
 
 
-static func _defence_type_of(line: String) -> int:
-	for t in [Enums.FacilityType.PlanetaryShield, Enums.FacilityType.TurbolaserBattery, Enums.FacilityType.IonCannon]:
+static func _defence_type_of(line: String) -> String:
+	for d in FacilityCatalog.WithRole("planet_defense"):
+		var t: String = d.Family
 		var name: String = Facility.NameOf(t)
 		if line == name or line == "Advanced %s" % name:
 			return t
-	return -1
+	return ""
 
 
 static func _empty_defences(list: VBoxContainer, text: String) -> void:
@@ -459,7 +460,7 @@ static func _empty_defences(list: VBoxContainer, text: String) -> void:
 ## One defence row: a flat button the mission crosshair can land on, with its
 ## status beside it. `resolve` returns the facility to target when clicked
 ## (null when the sighting is stale and nothing stands there any more).
-func _defence_row(list: VBoxContainer, text: String, type: int, status: String, statusColor: Color, resolve: Callable) -> void:
+func _defence_row(list: VBoxContainer, text: String, family: String, status: String, statusColor: Color, resolve: Callable) -> void:
 	var row := HBoxContainer.new()
 	var rowBtn := Button.new()
 	rowBtn.text = text
@@ -467,7 +468,7 @@ func _defence_row(list: VBoxContainer, text: String, type: int, status: String, 
 	rowBtn.flat = true
 	rowBtn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	rowBtn.add_theme_font_size_override("font_size", 12)
-	rowBtn.set_meta("defence_type", type)
+	rowBtn.set_meta("defence_type", family)
 	if resolve.is_valid():
 		rowBtn.tooltip_text = "With the mission crosshair up, click to make this the Sabotage target."
 		rowBtn.pressed.connect(func() -> void:

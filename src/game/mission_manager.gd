@@ -412,13 +412,15 @@ static func CanTarget(type: int, actor: Faction, target: Planet) -> Result:
 		Enums.MissionType.ShipDesignResearch, Enums.MissionType.TroopTrainingResearch, Enums.MissionType.FacilityDesignResearch:
 			if target.ControllingFaction != actor:
 				return Result.fail("%s is not ours." % target.Name)
-			var needed: int
+			# Which PRODUCER the research needs, by role.
+			var needed: String
 			match type:
-				Enums.MissionType.ShipDesignResearch:    needed = Enums.FacilityType.Shipyard
-				Enums.MissionType.TroopTrainingResearch: needed = Enums.FacilityType.TrainingFacility
-				_:                                       needed = Enums.FacilityType.ConstructionYard
-			if target.CountOf(needed) == 0:
-				return Result.fail("%s has no %s." % [target.Name, JsonUtil.enum_name(Enums.FacilityType, needed)])
+				Enums.MissionType.ShipDesignResearch:    needed = "produces_unit"
+				Enums.MissionType.TroopTrainingResearch: needed = "produces_troop"
+				_:                                       needed = "produces_facility"
+			if target.CountByRole(needed) == 0:
+				var example := FacilityCatalog.FirstWithRole(needed)
+				return Result.fail("%s has no %s." % [target.Name, example.DisplayName if example != null else needed])
 			return Result.success()
 	return Result.fail("Unknown mission type.")
 
@@ -499,7 +501,7 @@ static func CanSabotage(actor: Faction, target: Variant, where: Planet) -> Resul
 			return Result.fail("That facility is not there.")
 		if where.ControllingFaction == actor:
 			return Result.fail("The %s is ours." % f.Name())
-		if f.Type == Enums.FacilityType.Headquarters and not _is_empire(actor):
+		if f.HasRole("headquarters") and not _is_empire(actor):
 			return Result.fail("Only the Empire can sabotage a headquarters.")
 		return Result.success()
 	if target is Unit:

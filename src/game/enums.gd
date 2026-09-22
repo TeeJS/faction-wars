@@ -14,18 +14,11 @@ enum Rank { None, General, Admiral, Commander, Captain }                  # back
 ## "There are FIVE LEVELS of Force users" (manual p092); None means not a Force user.
 enum SpecialPowerRank { None, Novice, Trainee, JediStudent, JediKnight, JediMaster }
 
-enum FacilityType {                                                       # backend/Facility.cs
-	Headquarters,
-	Mine,
-	Refinery,
-	ConstructionYard,
-	Shipyard,
-	TrainingFacility,
-	PlanetaryShield,     # GenCore, family 36
-	TurbolaserBattery,   # LNR series, family 35
-	IonCannon,           # KDY v150, family 34
-	DeathStarShield,     # family 37 - protects the Death Star only, no bombardment shield
-}
+## FACILITIES ARE PACK DATA (SCHEMA.md section 5). This used to be a closed enum
+## naming Star Wars structures - IonCannon, DeathStarShield - which a pack could
+## not add to without a recompile. facilities.json replaces it and the engine
+## selects on ROLE tags; see PackDefs.FacilityDef and FacilityCatalog.
+
 
 enum Difficulty { Multiplayer, Easy, Medium, Hard }                       # backend/GameContext.cs
 

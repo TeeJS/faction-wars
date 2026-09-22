@@ -50,7 +50,7 @@ static func InitializeGalaxyState(galaxy: Array, human_faction: Faction, difficu
 			push_error("[Pack] %s: could not place hq (kind '%s')." % [faction.Id, hq_def.Kind])
 			continue
 		seat.ControllingFaction = faction
-		seat.AddFacility(Enums.FacilityType.Headquarters)
+		seat.AddFacility("headquarters")
 		seat.SetSupportFor(faction, 100)
 		seat.StartsInhabited = true
 		seat.IsInhabited = true
@@ -364,7 +364,7 @@ static func SeedSystemFacilities(planet: Planet, file: CatalogDtos.LogisticsFile
 			break
 		if rng.NextRange(1, 101) > chance_per_slot:
 			continue
-		planet.AddFacility(Enums.FacilityType.Mine, 1)
+		planet.AddFacility("mine", 1)
 
 	var energy_slots := planet.BaseEnergy
 	for i in energy_slots:
@@ -384,21 +384,21 @@ static func DeployAsset(planet: Planet, asset: CatalogDtos.LogisticsAsset) -> Un
 		return null
 	var facility_type: Variant = null
 	match asset.FamilyId:
-		32: facility_type = Enums.FacilityType.Headquarters
-		34: facility_type = Enums.FacilityType.IonCannon
-		35: facility_type = Enums.FacilityType.TurbolaserBattery
-		36: facility_type = Enums.FacilityType.PlanetaryShield
-		40: facility_type = Enums.FacilityType.Shipyard
-		41: facility_type = Enums.FacilityType.TrainingFacility
-		42: facility_type = Enums.FacilityType.ConstructionYard
-		44: facility_type = Enums.FacilityType.Mine
-		45: facility_type = Enums.FacilityType.Refinery
+		32: facility_type = "headquarters"
+		34: facility_type = "ion_cannon"
+		35: facility_type = "turbolaser_battery"
+		36: facility_type = "planetary_shield"
+		40: facility_type = "shipyard"
+		41: facility_type = "training_facility"
+		42: facility_type = "construction_yard"
+		44: facility_type = "mine"
+		45: facility_type = "refinery"
 
 	if facility_type != null:
-		var is_hq: bool = facility_type == Enums.FacilityType.Headquarters
+		var is_hq: bool = facility_type == "headquarters"
 		if not is_hq and planet.FreeEnergySlots() <= 0:
 			return null
-		if facility_type == Enums.FacilityType.Mine and planet.FreeMineSlots() <= 0:
+		if facility_type == "mine" and planet.FreeMineSlots() <= 0:
 			return null
 		planet.AddFacility(facility_type, 1)
 		return null

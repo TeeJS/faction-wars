@@ -45,7 +45,7 @@ accounted for below — that is what this reconciliation was for.
 | `factions.json` | The sides: identity, color, HQ config, asymmetry flags | *(new)* | ✅ |
 | `map.json` | Sectors and planets: position, ring, artwork | `sectors_data.json` (20) + `planets_data.json` (200) | ✅ |
 | *(the map bitmap)* | The galaxy backdrop the map is drawn on — a **`pack.json` field**, `map_image`, not a file of its own (§2) | now `packs/star-wars-rebellion/galaxyShaded.bmp` | ✅ |
-| `facilities.json` | Static structures + **role tags** | `production_facilities.json` (9) + `defensive_facilities.json` (6) + the `FacilityType` enum | ❌ |
+| `facilities.json` | Static structures + **role tags** | `production_facilities.json` (9) + `defensive_facilities.json` (6) + the `FacilityType` enum | ✅ |
 | `units.json` | Mobile units and their stats | `military_units.json` (57) | ❌ |
 | `weapons.json` | Weapon classes + **role tags** | `military_units.json` weapon columns + the four-class vocabulary in `tactical_battle.gd` | ❌ |
 | `characters.json` | Named characters | `major_characters.json` (6) + `minor_characters.json` (54) | ✅ |
@@ -601,8 +601,8 @@ passes.
 2. ✅ `faction_count` equals the entries in `factions.json`, and is 2–4.
 3. ⚠ **Map cross-references live** — every planet resolves to a declared sector,
    ids are unique. Facilities, units, characters and missions await their files.
-4. ❌ Every `roles` entry is in the engine's known role set for this
-   `schema_version`; likewise every `display.quantity.kind`.
+4. ⚠ **Facility `roles` checked** against the v1 set. `display.quantity.kind`
+   awaits `display.json`.
 5. ⚠ **Character `faction` and `can_command` checked.** `buildable_by` /
    `available_to` await the facility, unit and mission files.
 6. ✅ Each faction's `hq` is internally consistent: a `fixed` HQ names a planet;
@@ -753,3 +753,4 @@ What changed from the source repo's 2026-07-25 draft, and why.
 | 23 | **§4 built.** `map.json` generated, loaded and live; the bitmap moved into the pack; validation rules 3 (map half), 7, 9, 10 implemented and negative-tested | The hardcoded sector list is gone from `galaxy_factory.gd`. Soak gate 1004/1004 |
 | 24 | **§7 built.** `characters.json` generated, loaded and live: one file, `is_major` flag, lower-case faction ids, `ratings` map, `can_command` list, `special_power` block. Validation rules 3 and 5 for the roster | The two-file major/minor split is gone. Soak gate 1004/1004 |
 | 25 | **§12 Q5 landed.** The character aptitude fields and `Enums.SpecialPowerRank` renamed across 11 files | Enum MEMBERS and `MissionType.JediTraining` deliberately held back — see §7 |
+| 26 | **§5 built and live.** `Enums.FacilityType` is **deleted**; facilities are pack data selected by role. 154 call sites across 24 files. The game signature now carries the family id, so the soak gate is re-baselined | Proven behaviour-identical first by emitting the old ordinals: 1004/1004. Five silent bugs found on the way — see the commit |

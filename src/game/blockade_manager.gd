@@ -46,7 +46,7 @@ static func IsBlockaded(p: Planet) -> bool:
 static func WithdrawPercent(p: Planet) -> int:
 	if not IsBlockaded(p):
 		return 100
-	if Lq.any(p.Facilities, func(f): return f.Type == Enums.FacilityType.IonCannon):
+	if Lq.any(p.Facilities, func(f): return f.HasRole("disable")):
 		return 100
 	var blockader := BlockaderOf(p)
 	var capitals := 0
@@ -120,7 +120,7 @@ static func Begun(p: Planet, blockader: Faction, day: int) -> void:
 	if audiences.is_empty():
 		return
 	var fleet: Fleet = Lq.first_or_null(p.FleetsInOrbit(), func(f): return f.Faction == blockader)
-	var ion := Lq.any(p.Facilities, func(f): return f.Type == Enums.FacilityType.IonCannon)
+	var ion := Lq.any(p.Facilities, func(f): return f.HasRole("disable"))
 	var msg := GameMessage.new("Fleet Initiates Blockade of %s" % p.Name,
 		"%s has initiated a blockade of %s.\n\nProduction is halted and the system's facilities cannot be used while it lasts. Units leaving have a %d%% chance of getting clear.%s" % [
 			fleet.Name if fleet != null else blockader.DisplayName, p.Name, WithdrawPercent(p),

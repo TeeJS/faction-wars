@@ -18,11 +18,11 @@ static func TypeOf(rule: CatalogDtos.UnitStatRule) -> Variant:
 	return null
 
 
-## Which facility builds this kind of unit.
-static func ProducerFor(type: int) -> int:
+## Which facility ROLE builds this kind of unit (SCHEMA.md section 5).
+static func ProducerFor(type: int) -> String:
 	if type == Enums.UnitType.CapitalShip or type == Enums.UnitType.Fighter:
-		return Enums.FacilityType.Shipyard
-	return Enums.FacilityType.TrainingFacility
+		return "produces_unit"
+	return "produces_troop"
 
 
 static func CanBeBuiltBy(rule: CatalogDtos.UnitStatRule, f: Faction) -> bool:
@@ -37,7 +37,7 @@ static func All() -> Array:
 ## Everything `faction` may build at `producer`, cheapest first. Zero-cost
 ## entries are excluded (the one is "Bounty Hunters", a scripted event); the
 ## tables repeat a name per tier, so one per name.
-static func BuildableAt(producer: int, faction: Faction) -> Array:
+static func BuildableAt(producer: String, faction: Faction) -> Array:
 	var seen := {}
 	var out := []
 	for r in SeedManager.MilitaryStats.values():

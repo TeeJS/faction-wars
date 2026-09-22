@@ -68,7 +68,7 @@ static func MaintenanceCommitted(f: Faction) -> int:
 	var committed := 0
 	for p in WorldsOf(f):
 		for fac in p.Facilities:
-			committed += FacilityCatalog.MaintenanceCost(fac.Type, fac.Tier)
+			committed += FacilityCatalog.MaintenanceCost(fac.Family(), fac.Tier)
 		for u in p.Garrison:
 			committed += u.MaintenanceCost
 		for u in p.FighterSquadrons:
@@ -96,8 +96,8 @@ static func ProcessDay(faction: Faction) -> void:
 	var econ := For(faction)
 	var mines := TotalMines(faction)
 	var refineries := TotalRefineries(faction)
-	var mine_rate := FacilityCatalog.ProcessingRate(Enums.FacilityType.Mine)
-	var ref_rate := FacilityCatalog.ProcessingRate(Enums.FacilityType.Refinery)
+	var mine_rate := FacilityCatalog.ProcessingRate("mine")
+	var ref_rate := FacilityCatalog.ProcessingRate("refinery")
 
 	econ.RawWork += mines
 	var mined: int = econ.RawWork / mine_rate

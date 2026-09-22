@@ -18,7 +18,7 @@ static func load_catalogs() -> void:
 	UprisingTable.Load("%s/uprising_start.json" % DATA)
 	SideLotteryManager.LoadRules("%s/side_lottery.json" % DATA)
 	SeedManager.Load("%s/day_zero_logistics.json" % DATA, "%s/defensive_facilities.json" % DATA, "%s/military_units.json" % DATA)
-	FacilityCatalog.Load(["%s/production_facilities.json" % DATA, "%s/defensive_facilities.json" % DATA])
+	FacilityCatalog.LoadFromPack(FactionRegistry.Pack)
 
 
 ## Every per-game static, cleared - the source's Reset() calls plus the ones it

@@ -363,6 +363,10 @@ class FacilityDef:
 	func HasRole(role: String) -> bool:
 		return Roles.has(role)
 
+	## An absent buildable_by means every side may build it (SCHEMA.md section 5).
+	func CanBeBuiltBy(f: Faction) -> bool:
+		return f != null and (BuildableBy.is_empty() or BuildableBy.has(f.Id))
+
 	## A named stat, or `fallback` when this pack does not declare it. Absence is
 	## the encoding - the tables omit inapplicable stats rather than writing null.
 	func stat(name: String, fallback: int = 0) -> int:

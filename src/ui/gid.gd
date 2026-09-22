@@ -122,9 +122,9 @@ static func _StatusFig(p: Planet, key: String) -> float:
 
 
 ## Count of one production facility type as last seen (live for a world we hold).
-static func _ProdCount(p: Planet, type: int) -> float:
+static func _ProdCount(p: Planet, family: String) -> float:
 	var counts: Dictionary = IntelManager.SeenData(_player(), p, Enums.IntelSection.ProductionFacilities).get("counts", {})
-	return float(int(counts.get(type, 0)))
+	return float(int(counts.get(family, 0)))
 
 
 static func _DefFig(p: Planet, key: String) -> float:
@@ -254,18 +254,18 @@ static func _BuildCategories() -> Array:
 				_Counts(6, 3, "Points Available", "0 Points Available")),
 			GidMode.new("Available Raw Materials", func(p: Planet) -> float: return _StatusFig(p, "materials"), _Known,
 				_Counts(3, 2, "Points Available", "0 Points Available")),
-			GidMode.new("Mines", func(p: Planet) -> float: return _ProdCount(p, Enums.FacilityType.Mine), _Known, _Counts(6, 3, "Mines")),
-			GidMode.new("Refineries", func(p: Planet) -> float: return _ProdCount(p, Enums.FacilityType.Refinery), _Known, _Counts(6, 3, "Refineries")),
+			GidMode.new("Mines", func(p: Planet) -> float: return _ProdCount(p, "mine"), _Known, _Counts(6, 3, "Mines")),
+			GidMode.new("Refineries", func(p: Planet) -> float: return _ProdCount(p, "refinery"), _Known, _Counts(6, 3, "Refineries")),
 		]),
 		GidCategory.new("Manufacturing", [
-			GidMode.new("Shipyards", func(p: Planet) -> float: return _ProdCount(p, Enums.FacilityType.Shipyard), _Known, _Counts(5, 2, "Shipyards")),
+			GidMode.new("Shipyards", func(p: Planet) -> float: return _ProdCount(p, "shipyard"), _Known, _Counts(5, 2, "Shipyards")),
 			GidMode.new("Idle Shipyards",
 				func(p: Planet) -> float: return 1.0 if (_Owned(p) and p.HasIdleShipyards()) else 0.0, _Known, _Binary("Idle", "Active")),
-			GidMode.new("Training Facilities", func(p: Planet) -> float: return _ProdCount(p, Enums.FacilityType.TrainingFacility), _Known,
+			GidMode.new("Training Facilities", func(p: Planet) -> float: return _ProdCount(p, "training_facility"), _Known,
 				_Counts(5, 2, "Training Facilities")),
 			GidMode.new("Idle Training Facilities",
 				func(p: Planet) -> float: return 1.0 if (_Owned(p) and p.HasIdleTroopTraining()) else 0.0, _Known, _Binary("Idle", "Active")),
-			GidMode.new("Construction Yards", func(p: Planet) -> float: return _ProdCount(p, Enums.FacilityType.ConstructionYard), _Known,
+			GidMode.new("Construction Yards", func(p: Planet) -> float: return _ProdCount(p, "construction_yard"), _Known,
 				_Counts(5, 2, "Construction Yards")),
 			GidMode.new("Idle Construction Yards",
 				func(p: Planet) -> float: return 1.0 if (_Owned(p) and p.HasIdleConstructionYards()) else 0.0, _Known, _Binary("Idle", "Active")),

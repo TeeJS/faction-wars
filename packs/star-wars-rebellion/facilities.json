@@ -16,8 +16,8 @@
       "research_order": 0,
       "research_cost": 0,
       "stats": {
-        "bombardmentdefense": 9,
-        "processingrate": 0
+        "bombardment_defense": 9,
+        "processing_rate": 0
       },
       "source_family_id": 32,
       "source_id": 1
@@ -39,8 +39,8 @@
       "research_order": 0,
       "research_cost": 0,
       "stats": {
-        "bombardmentdefense": 2,
-        "processingrate": 4
+        "bombardment_defense": 2,
+        "processing_rate": 4
       },
       "source_family_id": 40,
       "source_id": 1
@@ -62,8 +62,8 @@
       "research_order": 0,
       "research_cost": 0,
       "stats": {
-        "bombardmentdefense": 3,
-        "processingrate": 4
+        "bombardment_defense": 3,
+        "processing_rate": 4
       },
       "source_family_id": 41,
       "source_id": 2
@@ -85,8 +85,8 @@
       "research_order": 0,
       "research_cost": 0,
       "stats": {
-        "bombardmentdefense": 3,
-        "processingrate": 4
+        "bombardment_defense": 3,
+        "processing_rate": 4
       },
       "source_family_id": 42,
       "source_id": 3
@@ -108,8 +108,8 @@
       "research_order": 5,
       "research_cost": 60,
       "stats": {
-        "bombardmentdefense": 2,
-        "processingrate": 2
+        "bombardment_defense": 2,
+        "processing_rate": 2
       },
       "source_family_id": 40,
       "source_id": 4
@@ -131,8 +131,8 @@
       "research_order": 1,
       "research_cost": 24,
       "stats": {
-        "bombardmentdefense": 4,
-        "processingrate": 2
+        "bombardment_defense": 4,
+        "processing_rate": 2
       },
       "source_family_id": 41,
       "source_id": 5
@@ -154,8 +154,8 @@
       "research_order": 2,
       "research_cost": 40,
       "stats": {
-        "bombardmentdefense": 4,
-        "processingrate": 2
+        "bombardment_defense": 4,
+        "processing_rate": 2
       },
       "source_family_id": 42,
       "source_id": 6
@@ -177,8 +177,8 @@
       "research_order": 0,
       "research_cost": 0,
       "stats": {
-        "bombardmentdefense": 5,
-        "processingrate": 5
+        "bombardment_defense": 5,
+        "processing_rate": 5
       },
       "source_family_id": 44,
       "source_id": 1
@@ -200,8 +200,8 @@
       "research_order": 0,
       "research_cost": 0,
       "stats": {
-        "bombardmentdefense": 2,
-        "processingrate": 5
+        "bombardment_defense": 2,
+        "processing_rate": 5
       },
       "source_family_id": 45,
       "source_id": 2
@@ -224,9 +224,9 @@
       "research_order": 0,
       "research_cost": 0,
       "stats": {
-        "bombardmentdefense": 5,
-        "weaponrating": 2000,
-        "shieldstrength": 0
+        "bombardment_defense": 5,
+        "weapon_rating": 2000,
+        "shield_strength": 0
       },
       "source_family_id": 34,
       "source_id": 1
@@ -249,9 +249,9 @@
       "research_order": 0,
       "research_cost": 0,
       "stats": {
-        "bombardmentdefense": 4,
-        "weaponrating": 800,
-        "shieldstrength": 0
+        "bombardment_defense": 4,
+        "weapon_rating": 800,
+        "shield_strength": 0
       },
       "source_family_id": 35,
       "source_id": 2
@@ -274,9 +274,9 @@
       "research_order": 0,
       "research_cost": 0,
       "stats": {
-        "bombardmentdefense": 2,
-        "weaponrating": 0,
-        "shieldstrength": 40
+        "bombardment_defense": 2,
+        "weapon_rating": 0,
+        "shield_strength": 40
       },
       "source_family_id": 36,
       "source_id": 3
@@ -297,9 +297,9 @@
       "research_order": 3,
       "research_cost": 24,
       "stats": {
-        "bombardmentdefense": 1,
-        "weaponrating": 0,
-        "shieldstrength": 0
+        "bombardment_defense": 1,
+        "weapon_rating": 0,
+        "shield_strength": 0
       },
       "source_family_id": 37,
       "source_id": 4
@@ -322,9 +322,9 @@
       "research_order": 4,
       "research_cost": 40,
       "stats": {
-        "bombardmentdefense": 3,
-        "weaponrating": 5000,
-        "shieldstrength": 0
+        "bombardment_defense": 3,
+        "weapon_rating": 5000,
+        "shield_strength": 0
       },
       "source_family_id": 35,
       "source_id": 5
@@ -347,9 +347,9 @@
       "research_order": 6,
       "research_cost": 40,
       "stats": {
-        "bombardmentdefense": 3,
-        "weaponrating": 0,
-        "shieldstrength": 80
+        "bombardment_defense": 3,
+        "weapon_rating": 0,
+        "shield_strength": 80
       },
       "source_family_id": 36,
       "source_id": 6

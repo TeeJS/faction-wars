@@ -28,7 +28,7 @@ static func CanAssault(fleet: Fleet, target: Planet) -> Result:
 		return Result.fail("%s is already ours." % target.Name)
 	if LandingForce(fleet).is_empty():
 		return Result.fail("The fleet carries no trooper regiments.")
-	var shields := target.CountOf(Enums.FacilityType.PlanetaryShield)
+	var shields := target.CountOf("planetary_shield")
 	var needed := RuleManager.Get(RuleId.ShieldsToPreventAssault, fleet.Faction)
 	if needed > 0 and shields >= needed:
 		return Result.fail("%s is defended by %d planetary shields. Bombard or sabotage them first." % [target.Name, shields])
@@ -154,9 +154,9 @@ static func Resolve(fleet: Fleet, target: Planet, rng: Prng, day: int) -> Assaul
 		MilitaryCatalog.OnControlChanged(target, previous)
 		print("[Assault] %s taken by %s after %d rounds (%d regiments hold it)." % [target.Name, attacker.DisplayName, report.Steps, report.AttackersRemaining])
 
-		if previous != null and target.CountOf(Enums.FacilityType.Headquarters) > 0:
+		if previous != null and target.CountOf("headquarters") > 0:
 			for i in range(target.Facilities.size() - 1, -1, -1):
-				if target.Facilities[i].Type == Enums.FacilityType.Headquarters:
+				if target.Facilities[i].HasRole("headquarters"):
 					target.Facilities.remove_at(i)
 			VictoryManager.HeadquartersDestroyed(previous)
 	else:

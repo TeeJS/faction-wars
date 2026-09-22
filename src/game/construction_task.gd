@@ -3,7 +3,9 @@ extends RefCounted
 ## backend/Planet.cs ConstructionTask - one order in a production queue. Builds
 ## EITHER a facility (Type/Tier) or a unit (UnitRule).
 
-var Type: Enums.FacilityType = Enums.FacilityType.Headquarters
+## The FAMILY being built, e.g. "shipyard", with Tier picking the variant.
+## Was Enums.FacilityType; the pack owns the vocabulary now.
+var Family: String = ""
 var Tier: int = 1
 
 ## Non-null when this order is for a ship, fighter, trooper regiment or SpecForce.
@@ -30,9 +32,9 @@ func PercentComplete() -> int:
 func DisplayName() -> String:
 	if UnitRule != null:
 		return UnitRule.Name
-	var r := FacilityCatalog.Get(Type, Tier)
-	return r.Name if r != null else JsonUtil.enum_name(Enums.FacilityType, Type)
+	var r := FacilityCatalog.Get(Family, Tier)
+	return r.DisplayName if r != null else Family
 
 
 static func _enum_fields() -> Dictionary:
-	return { "Type": Enums.FacilityType }
+	return {}
