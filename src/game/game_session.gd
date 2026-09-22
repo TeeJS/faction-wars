@@ -17,7 +17,7 @@ static func load_catalogs() -> void:
 	RuleManager.LoadFromPack(FactionRegistry.Pack)
 	MissionTableManager.LoadFromPack(FactionRegistry.Pack)
 	MissionCatalog.LoadFromPack(FactionRegistry.Pack)
-	UprisingTable.Load("%s/uprising_start.json" % DATA)
+	UprisingTable.LoadFromPack(FactionRegistry.Pack)
 	SideLotteryManager.LoadFromPack(FactionRegistry.Pack)
 	SeedManager.Load(FactionRegistry.Pack, "%s/defensive_facilities.json" % DATA, "%s/military_units.json" % DATA)
 	FacilityCatalog.LoadFromPack(FactionRegistry.Pack)
