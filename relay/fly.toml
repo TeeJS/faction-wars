@@ -6,14 +6,21 @@
 # .github/workflows/relay-image.yml has the Godot web export, so the image it
 # publishes is the only one with the game in it.
 #
-#   fly volumes create wars_relay_data -c relay/fly.toml -r sea -s 1
-#   fly deploy -c relay/fly.toml
+#   flyctl deploy -c relay/fly.toml
 #
-# The GHCR package must be public (README.md "The image"), or Fly cannot pull
-# it. New CI builds are picked up by re-running `fly deploy`.
+# That one command is the whole deploy: it creates the wars_relay_data volume
+# from [mounts] on the first run, so no separate `flyctl volumes create` is
+# needed. The binary winget installs is `flyctl` - there is no `fly` alias.
+#
+# The GHCR package must be public (verified 2026-09-22: an anonymous GHCR pull
+# returns 200). New CI builds are picked up by re-running `flyctl deploy`.
+#
+# Deployed and verified 2026-09-22 at https://faction-wars.com - Porkbun DNS,
+# A + AAAA straight at Fly, nothing proxying. See BACKLOG.md for why a CDN in
+# front needs a WebSocket heartbeat first.
 
 app = 'wars-relay'
-primary_region = 'sea'
+primary_region = 'sjc'
 
 [build]
   image = 'ghcr.io/teejs/wars-relay:latest'
