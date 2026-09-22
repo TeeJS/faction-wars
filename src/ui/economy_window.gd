@@ -37,17 +37,17 @@ func Populate(planet: Planet) -> void:
 	# live build queues for the rest of the game - the exact thing the manual
 	# reserves for espionage, handed over by a probe and never going stale.
 	if IntelManager.IsLive(GameSettings.PlayerFaction, planet):
-		# --- OVERVIEW TAB: Strong Enum Checking ---
-		var shipyards: int = Lq.count(planet.Facilities, func(f: Facility) -> bool: return f.Type == Enums.FacilityType.Shipyard)
-		var training: int = Lq.count(planet.Facilities, func(f: Facility) -> bool: return f.Type == Enums.FacilityType.TrainingFacility)
-		var construction: int = Lq.count(planet.Facilities, func(f: Facility) -> bool: return f.Type == Enums.FacilityType.ConstructionYard)
+		# --- OVERVIEW TAB: producers counted by ROLE ---
+		var shipyards: int = Lq.count(planet.Facilities, func(f: Facility) -> bool: return f.HasRole("produces_unit"))
+		var training: int = Lq.count(planet.Facilities, func(f: Facility) -> bool: return f.HasRole("produces_troop"))
+		var construction: int = Lq.count(planet.Facilities, func(f: Facility) -> bool: return f.HasRole("produces_facility"))
 
 		# "The first number here is the number of construction yards at this
 		# site. The second number also includes the construction yard now
 		# being built." (manual p083, fig 3.24)
-		(get_node("%ShipCapLabel") as Label).text = Pair(shipyards, planet, Enums.FacilityType.Shipyard)
-		(get_node("%TroopCapLabel") as Label).text = Pair(training, planet, Enums.FacilityType.TrainingFacility)
-		(get_node("%FacCapLabel") as Label).text = Pair(construction, planet, Enums.FacilityType.ConstructionYard)
+		(get_node("%ShipCapLabel") as Label).text = Pair(shipyards, planet, "produces_unit")
+		(get_node("%TroopCapLabel") as Label).text = Pair(training, planet, "produces_troop")
+		(get_node("%FacCapLabel") as Label).text = Pair(construction, planet, "produces_facility")
 
 		(get_node("%ShipQueueLabel") as Label).text = QueueSummary(planet.ShipyardQueue)
 		(get_node("%TroopQueueLabel") as Label).text = QueueSummary(planet.TrainingQueue)
@@ -77,24 +77,24 @@ func Populate(planet: Planet) -> void:
 		# and the original's own menu). Each of the three queues is one
 		# entry: Ship Construction, Troops in Training, Facilities Under
 		# Construction.
-		AttachQueueMenu("%ShipQueueLabel", planet, Enums.FacilityType.Shipyard, planet.ShipyardQueue)
-		AttachQueueMenu("%TroopQueueLabel", planet, Enums.FacilityType.TrainingFacility, planet.TrainingQueue)
-		AttachQueueMenu("%FacQueueLabel", planet, Enums.FacilityType.ConstructionYard, planet.BuildingQueue)
+		AttachQueueMenu("%ShipQueueLabel", planet, "produces_unit", planet.ShipyardQueue)
+		AttachQueueMenu("%TroopQueueLabel", planet, "produces_troop", planet.TrainingQueue)
+		AttachQueueMenu("%FacQueueLabel", planet, "produces_facility", planet.BuildingQueue)
 
 		# "GRAYED-OUT TABS INDICATE NO FACILITIES OF THAT TYPE ARE ON THE
 		# SYSTEM" (manual p084).
 		GreyEmptyTab(tabs, "Shipyards", shipyards)
 		GreyEmptyTab(tabs, "Training Facilities", training)
 		GreyEmptyTab(tabs, "Construction Yards", construction)
-		GreyEmptyTab(tabs, "Refineries", Lq.count(planet.Facilities, func(f: Facility) -> bool: return f.Type == Enums.FacilityType.Refinery))
-		GreyEmptyTab(tabs, "Mines", Lq.count(planet.Facilities, func(f: Facility) -> bool: return f.Type == Enums.FacilityType.Mine))
+		GreyEmptyTab(tabs, "Refineries", Lq.count(planet.Facilities, func(f: Facility) -> bool: return f.HasRole("refines")))
+		GreyEmptyTab(tabs, "Mines", Lq.count(planet.Facilities, func(f: Facility) -> bool: return f.HasRole("extracts_raw")))
 
 		# --- SPECIFIC MANAGEMENT TABS: Dynamic Population ---
-		PopulateFacilityTab(tabs, "Shipyards", planet, Enums.FacilityType.Shipyard, "No Shipyards operational.")
-		PopulateFacilityTab(tabs, "Training Facilities", planet, Enums.FacilityType.TrainingFacility, "No Training Centers operational.")
-		PopulateFacilityTab(tabs, "Construction Yards", planet, Enums.FacilityType.ConstructionYard, "No Construction Yards operational.")
-		PopulateFacilityTab(tabs, "Refineries", planet, Enums.FacilityType.Refinery, "No Refineries operational.")
-		PopulateFacilityTab(tabs, "Mines", planet, Enums.FacilityType.Mine, "No Mining Operations active.")
+		PopulateFacilityTab(tabs, "Shipyards", planet, "shipyard", "No Shipyards operational.")
+		PopulateFacilityTab(tabs, "Training Facilities", planet, "training_facility", "No Training Centers operational.")
+		PopulateFacilityTab(tabs, "Construction Yards", planet, "construction_yard", "No Construction Yards operational.")
+		PopulateFacilityTab(tabs, "Refineries", planet, "refinery", "No Refineries operational.")
+		PopulateFacilityTab(tabs, "Mines", planet, "mine", "No Mining Operations active.")
 
 		# Each producer gets a build panel on its own tab, matching the
 		# manual's split: construction yards make facilities, orbital
@@ -151,11 +151,11 @@ func Populate(planet: Planet) -> void:
 		# for that system is accurate ... a snapshot" (manual p106) - a
 		# snapshot of each tab as it stood, not of the union pasted five
 		# times.
-		StaleFacilityTab(tabs, "Shipyards", Enums.FacilityType.Shipyard, yards)
-		StaleFacilityTab(tabs, "Training Facilities", Enums.FacilityType.TrainingFacility, yards)
-		StaleFacilityTab(tabs, "Construction Yards", Enums.FacilityType.ConstructionYard, yards)
-		StaleFacilityTab(tabs, "Refineries", Enums.FacilityType.Refinery, yards)
-		StaleFacilityTab(tabs, "Mines", Enums.FacilityType.Mine, yards)
+		StaleFacilityTab(tabs, "Shipyards", "shipyard", yards)
+		StaleFacilityTab(tabs, "Training Facilities", "training_facility", yards)
+		StaleFacilityTab(tabs, "Construction Yards", "construction_yard", yards)
+		StaleFacilityTab(tabs, "Refineries", "refinery", yards)
+		StaleFacilityTab(tabs, "Mines", "mine", yards)
 
 
 # The manual's progress bar, under the queue's own line (p084). Shows the
@@ -200,7 +200,7 @@ func QueueBar(labelPath: String, queue: Array, _planet: Planet) -> void:
 # A production queue entry carries the orders. "Right-click a production
 # entry" gives Build, Stop, Destination (manual p084) - the same menu the
 # original shows, minus the parts that need systems we do not have.
-func AttachQueueMenu(labelPath: String, planet: Planet, producer: int, queue: Array) -> void:
+func AttachQueueMenu(labelPath: String, planet: Planet, producer: String, queue: Array) -> void:
 	var label: Label = get_node_or_null(labelPath)
 	if label == null:
 		return
@@ -252,7 +252,7 @@ static func GreyEmptyTab(tabs: TabContainer, tabName: String, count: int) -> voi
 		tabs.set_tab_disabled(idx, count == 0)
 
 
-func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, type: int, emptyMsg: String) -> void:
+func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, family: String, emptyMsg: String) -> void:
 	var container: VBoxContainer = tabs.get_node_or_null(tabName)
 	if container == null:
 		return
@@ -268,7 +268,7 @@ func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, ty
 	header.add_theme_color_override("font_color", Color(0.6, 0.9, 0.6))
 	container.add_child(header)
 
-	var matchingFacilities: Array = Lq.where(planet.Facilities, func(f: Facility) -> bool: return f.Type == type)
+	var matchingFacilities: Array = Lq.where(planet.Facilities, func(f: Facility) -> bool: return f.Family() == family)
 
 	if matchingFacilities.size() == 0:
 		var emptyLabel := Label.new()
@@ -295,12 +295,8 @@ func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, ty
 		# training centers, or construction yards that are CURRENTLY IDLE"
 		# (manual p086). A facility is therefore either working or idle, and
 		# the list that shows your facilities should say which.
-		var ownQ: Variant
-		match fac.Type:
-			Enums.FacilityType.ConstructionYard: ownQ = planet.BuildingQueue
-			Enums.FacilityType.Shipyard:         ownQ = planet.ShipyardQueue
-			Enums.FacilityType.TrainingFacility: ownQ = planet.TrainingQueue
-			_:                                   ownQ = null
+		# The queue this facility feeds, by its producer ROLE; null if it feeds none.
+		var ownQ: Variant = planet.QueueFor(fac.ProducerRole())
 
 		var statusText: String
 		var statusColor: Color
@@ -368,7 +364,7 @@ func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, ty
 			var additive: bool = Input.is_key_pressed(KEY_SHIFT) or Input.is_key_pressed(KEY_CTRL)
 			if not additive:
 				for f in _selected.duplicate():
-					if f.Type == rowFac.Type:
+					if f.Family() == rowFac.Family():
 						_selected.erase(f)
 			if on:
 				if not _selected.has(rowFac):
@@ -392,18 +388,15 @@ func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, ty
 		#
 		# A mine or refinery produces nothing to order, so it gets only the
 		# three that apply to it: Encyclopedia, Status, Scrap (p085).
-		var produces: bool = rowFac.Type == Enums.FacilityType.ConstructionYard \
-			or rowFac.Type == Enums.FacilityType.Shipyard \
-			or rowFac.Type == Enums.FacilityType.TrainingFacility
+		var produces: bool = rowFac.HasRole("produces_facility") \
+			or rowFac.HasRole("produces_unit") \
+			or rowFac.HasRole("produces_troop")
 
 		var menu := PopupMenu.new()
 
 		if produces:
-			var ownQueue: Array
-			match rowFac.Type:
-				Enums.FacilityType.Shipyard:         ownQueue = planet.ShipyardQueue
-				Enums.FacilityType.TrainingFacility: ownQueue = planet.TrainingQueue
-				_:                                   ownQueue = planet.BuildingQueue
+			var q: Variant = planet.QueueFor(rowFac.ProducerRole())
+			var ownQueue: Array = q if q != null else planet.BuildingQueue
 
 			menu.add_item("Build...", 0)
 			menu.add_item("Stop", 6)
@@ -425,7 +418,7 @@ func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, ty
 		# facility to build mines and refineries" (manual p086). Listed
 		# where the manual puts it - on the yard - and disabled until the
 		# agent's Maintenance Production role exists to be reserved from.
-		if rowFac.Type == Enums.FacilityType.ConstructionYard:
+		if rowFac.HasRole("produces_facility"):
 			menu.add_item("Reserve", 5)
 			menu.set_item_disabled(menu.get_item_index(5), true)
 		if planet.ControllingFaction == GameSettings.PlayerFaction and planet.CanScrap(fac):
@@ -449,11 +442,11 @@ func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, ty
 		var onMenuId := func(id: int) -> void:
 			match id:
 				0:
-					OpenBuildChooser(planet, rowFac.Type)
+					OpenBuildChooser(planet, rowFac.ProducerRole())
 				4:
 					OpenDestinationChooser(planet)
 				6:
-					CommandBus.issue("cancel_build", { "planet": planet.Name, "producer": rowFac.Type })
+					CommandBus.issue("cancel_build", { "planet": planet.Name, "producer": rowFac.ProducerRole() })
 					Populate(planet)
 				1:
 					# Windows are children of the UIManager, so it is the
@@ -462,8 +455,8 @@ func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, ty
 					if ui != null:
 						ui.OpenDefenseFacilityStatusWindow(rowFac)
 				3:
-					var r: int = FacilityCatalog.ConstructionCost(rowFac.Type, rowFac.Tier) * Planet.ScrapRefundPercent / 100
-					var mt: int = FacilityCatalog.MaintenanceCost(rowFac.Type, rowFac.Tier)
+					var r: int = FacilityCatalog.ConstructionCost(rowFac.Family(), rowFac.Tier) * Planet.ScrapRefundPercent / 100
+					var mt: int = FacilityCatalog.MaintenanceCost(rowFac.Family(), rowFac.Tier)
 					var onScrap := func() -> void:
 						CommandBus.issue("scrap_facility", { "facility": rowFac.Serial })
 						_selected.erase(rowFac)
@@ -474,7 +467,7 @@ func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, ty
 
 	# Say out loud what selecting several of them buys you, because the
 	# speed rule was previously invisible and automatic.
-	var chosen: int = Lq.count(_selected, func(f: Facility) -> bool: return f.Type == type)
+	var chosen: int = Lq.count(_selected, func(f: Facility) -> bool: return f.Family() == family)
 	if chosen > 1:
 		var note := Label.new()
 		note.text = "%d selected - they share a job and finish it %dx faster." % [chosen, chosen]
@@ -484,8 +477,11 @@ func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, ty
 
 
 # built : built + under construction
-static func Pair(built: int, planet: Planet, type: int) -> String:
-	var building: int = Lq.count(planet.BuildingQueue, func(t: ConstructionTask) -> bool: return t.Type == type)
+## Built, and built-plus-queued, for a producer ROLE.
+static func Pair(built: int, planet: Planet, producer_role: String) -> String:
+	var building: int = Lq.count(planet.BuildingQueue, func(t: ConstructionTask) -> bool:
+		var d := FacilityCatalog.Get(t.Family, t.Tier)
+		return d != null and d.HasRole(producer_role))
 	return "%d:%d" % [built, built + building]
 
 
@@ -526,13 +522,13 @@ static func QueueSummary(queue: Array) -> String:
 #                                    destination system once it has been built"
 #   Number to build                  "You also choose Number to build in one order"
 #   confirm / cancel
-func OpenBuildChooser(planet: Planet, producer: int) -> void:
+func OpenBuildChooser(planet: Planet, producer: String) -> void:
 	var owner: Faction = planet.ControllingFaction
 	if owner == null or owner != GameSettings.PlayerFaction:
 		return
 
 	var target: Planet = _destination if _destination != null else planet
-	var helpers: int = maxi(1, Lq.count(_selected, func(f: Facility) -> bool: return f.Type == producer))
+	var helpers: int = maxi(1, Lq.count(_selected, func(f: Facility) -> bool: return f.HasRole(producer)))
 
 	# One shape for both catalogues, so the window does not care whether it
 	# is ordering a refinery or a Star Destroyer.
@@ -543,23 +539,23 @@ func OpenBuildChooser(planet: Planet, producer: int) -> void:
 	var place: Array[Callable] = []   # C#: List<Func<int, (int made, string error)>> - each returns a Result (value = made, error)
 	var blocked: Array[String] = []   # C#: null when nothing blocks - "" here
 
-	if producer == Enums.FacilityType.ConstructionYard:
+	if producer == "produces_facility":
 		var rate: int = planet.BestYardRateForUi()
 		for rule in FacilityCatalog.BuildableBy(owner):
-			var r: CatalogDtos.FacilityStatRule = rule
-			var rType: int = FacilityCatalog.TypeOf(r)
-			names.append("%s (Tier %d)" % [r.Name, r.Tier])
+			var r: PackDefs.FacilityDef = rule
+			var rFamily: String = r.Family
+			names.append("%s (Tier %d)" % [r.DisplayName, r.Tier])
 			refined.append(r.ConstructionCost)
 			maint.append(r.MaintenanceCost)
 			days.append(r.ConstructionCost * rate)
-			var why: Result = planet.CanQueueFacility(rType, r.Tier, target)
+			var why: Result = planet.CanQueueFacility(rFamily, r.Tier, target)
 			blocked.append(why.error)
 			place.append(func(n: int) -> Result:
-				return CommandBus.issue("queue_facility", { "planet": planet.Name, "type": rType, "tier": r.Tier, "destination": target.Name if target != null else "", "count": n }))
+				return CommandBus.issue("queue_facility", { "planet": planet.Name, "type": rFamily, "tier": r.Tier, "destination": target.Name if target != null else "", "count": n }))
 	else:
 		var rate: int = planet.BestProducerRateForUi(producer)
 		for rule in MilitaryCatalog.BuildableAt(producer, owner):
-			var r: CatalogDtos.UnitStatRule = rule
+			var r: PackDefs.UnitDef = rule
 			names.append(r.Name)
 			refined.append(r.ConstructionCost)
 			maint.append(r.MaintenanceCost)
@@ -740,12 +736,12 @@ func ConfirmScrap(planet: Planet, what: String, refund: int, maint: int, onConfi
 # window could deliver. Found on the third report, after the system gate
 # and the ship path had each been fixed and each turned out not to be the
 # whole story.
-func StaleFacilityTab(tabs: TabContainer, tabName: String, type: int, yards: IntelManager.IntelView) -> void:
+func StaleFacilityTab(tabs: TabContainer, tabName: String, family: String, yards: IntelManager.IntelView) -> void:
 	if not yards.Known:
 		ClearFacilityTab(tabs, tabName, "Sensors detect no data.")
 		return
 
-	var name: String = Facility.NameOf(type)
+	var name: String = Facility.NameOf(family)
 	var seen: Array = Lq.where(yards.Lines, func(l: String) -> bool: return l == name or l == "Advanced %s" % name)
 
 	if seen.size() == 0:
@@ -784,7 +780,7 @@ func StaleFacilityTab(tabs: TabContainer, tabName: String, type: int, yards: Int
 			# was ruled the lesser evil. If play shows it matters, the fix
 			# is here.
 			var ofType: Array = Lq.where(world.Facilities if world != null else [],
-				func(f: Facility) -> bool: return f.Type == type)
+				func(f: Facility) -> bool: return f.Family() == family)
 			var current: Facility = ofType[nth] if nth < ofType.size() else null
 
 			if current == null:

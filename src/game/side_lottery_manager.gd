@@ -15,12 +15,14 @@ const WeakSupportVar := 35
 static var _rules: Dictionary = {}   # EntryId -> SideRuleData
 
 
-static func LoadRules(json_path: String) -> void:
-	if not FileAccess.file_exists(json_path):
-		push_error("CRITICAL ERROR: Cannot find %s" % json_path)
-		return
+## From the pack's setup.json (SCHEMA.md section 8).
+static func LoadFromPack(pack: PackLoader.LoadedPack) -> void:
 	_rules.clear()
-	for rule in Loaders._list(json_path, CatalogDtos.SideRuleData.from_dict):
+	if pack == null or pack.Setup == null:
+		push_error("[SideLottery] no pack loaded!")
+		return
+	for row in pack.Setup.SideLottery:
+		var rule := CatalogDtos.SideRuleData.from_dict(row)
 		_rules[rule.EntryId] = rule
 	print("Loaded %d Side Lottery Probabilities." % _rules.size())
 

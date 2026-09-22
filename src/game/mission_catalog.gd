@@ -1,67 +1,102 @@
 class_name MissionCatalog
 extends RefCounted
-## backend/MissionCatalog.cs - MISSNSD.DAT as data (data/missions.json).
+## backend/MissionCatalog.cs - the mission catalog, now from the pack
+## (SCHEMA.md section 9, packs/<pack>/missions.json).
+##
+## ⚠ MISSION BEHAVIOUR IS ENGINE, NOT PACK. Unlike facilities - whose behaviour
+## reduced entirely to role tags - each mission kind is a block of bespoke code
+## in MissionManager: its own scoring terms, its own rating gains, its own
+## resolution. A pack cannot add a mission kind without code, and Enums
+## .MissionType is the engine's list of behaviours it implements, not a
+## vocabulary of content. What IS content - which of them this setting offers,
+## what they are called, who may run them, their lengths, flags, teams and
+## outcome tables - lives in the pack.
+##
+## This map is the JOIN between the two: an engine behaviour and the pack
+## mission it is implemented for. The pack side is an id, so the hardcoded
+## MISSNSD numbers (0x10, 0x41, ...) are gone.
 
-static var _by_id: Dictionary = {}   # shipped mission id -> MissionDef
+static var _by_id: Dictionary = {}          # source id -> PackDefs.MissionDefPack
+static var _by_pack_id: Dictionary = {}     # pack id   -> PackDefs.MissionDefPack
 
-## The ids this codebase needs by name.
-const Dagobah := 0x43
-const Palace := 0x44
+## Pack mission ids this codebase needs by name but has no MissionType for.
+const DagobahId := "dagobah"
+const PalaceId := "palace"
 
-## MissionType is ordinal; this is the join with MISSNSD's own ids.
-const _ids := {
-	Enums.MissionType.Diplomacy:              0x10,
-	Enums.MissionType.Rescue:                 0x11,
-	Enums.MissionType.Sabotage:               0x12,
-	Enums.MissionType.Espionage:              0x13,
-	Enums.MissionType.Reconnaissance:         0x15,
-	Enums.MissionType.Recruitment:            0x16,
-	Enums.MissionType.Abduction:              0x17,
-	Enums.MissionType.ShipDesignResearch:     0x20,
-	Enums.MissionType.FacilityDesignResearch: 0x21,
-	Enums.MissionType.TroopTrainingResearch:  0x22,
-	Enums.MissionType.InciteUprising:         0x40,
-	Enums.MissionType.DeathStarSabotage:      0x41,
-	Enums.MissionType.JediTraining:           0x42,
-	Enums.MissionType.SubdueUprising:         0x80,
-	Enums.MissionType.Assassination:          0x81,
+const _pack_ids := {
+	Enums.MissionType.Diplomacy:              "diplomacy",
+	Enums.MissionType.Rescue:                 "rescue",
+	Enums.MissionType.Sabotage:               "sabotage",
+	Enums.MissionType.Espionage:              "espionage",
+	Enums.MissionType.Reconnaissance:         "reconnaissance",
+	Enums.MissionType.Recruitment:            "recruitment",
+	Enums.MissionType.Abduction:              "abduction",
+	Enums.MissionType.ShipDesignResearch:     "ship_design_research",
+	Enums.MissionType.FacilityDesignResearch: "facility_design_research",
+	Enums.MissionType.TroopTrainingResearch:  "troop_training_research",
+	Enums.MissionType.InciteUprising:         "incite_uprising",
+	# The engine behaviour is generic; the PACK names its own flavour of it.
+	Enums.MissionType.SuperweaponSabotage:    "death_star_sabotage",
+	Enums.MissionType.SpecialPowerTraining:   "jedi_training",
+	Enums.MissionType.SubdueUprising:         "subdue_uprising",
+	Enums.MissionType.Assassination:          "assassination",
 }
 
 
+## The pack's mission for an engine behaviour, or null when this pack offers none.
+static func DefFor(type: int) -> PackDefs.MissionDefPack:
+	var pid: Variant = _pack_ids.get(type)
+	return null if pid == null else _by_pack_id.get(pid)
+
+
+static func ById(pack_id: String) -> PackDefs.MissionDefPack:
+	return _by_pack_id.get(pack_id)
+
+
+## What the player calls this mission - the PACK's wording, not the enum's.
+static func DisplayNameFor(type: int) -> String:
+	var d := DefFor(type)
+	return d.DisplayName if d != null else JsonUtil.enum_name(Enums.MissionType, type)
+
+
 static func IdFor(type: int) -> int:
-	return _ids.get(type, -1)
+	var d := DefFor(type)
+	return d.SourceId if d != null else -1
 
 
 static func RollLength(type: int, rng: Prng, fallback: int) -> int:
-	return RollLengthById(IdFor(type), rng, fallback)
+	var pid: Variant = _pack_ids.get(type)
+	return fallback if pid == null else RollLengthById(str(pid), rng, fallback)
 
 
-## "Do you wish the mission to continue?" - col 12. Null when the pack ships no
-## MISSNSD, so the caller can fall back rather than read a missing table as
+## "Do you wish the mission to continue?" Null when the pack declares no such
+## mission, so the caller can fall back rather than read a missing table as
 ## "nothing is persistent".
 static func CanContinue(type: int) -> Variant:
-	var d := Get(IdFor(type))
-	return null if d == null else d.CanContinue != 0
+	var d := DefFor(type)
+	return null if d == null else d.flag("can_continue")
 
 
-static func Load(path: String) -> void:
+static func LoadFromPack(pack: PackLoader.LoadedPack) -> void:
 	_by_id.clear()
-	if not FileAccess.file_exists(path):
-		push_error("ERROR: Could not find mission definitions at %s!" % path)
+	_by_pack_id.clear()
+	if pack == null:
+		push_error("[MissionCatalog] no pack loaded!")
 		return
-	for d in Loaders._list(path, CatalogDtos.MissionDef.from_dict):
-		_by_id[d.MissionId] = d
-	print("Successfully loaded %d mission definitions." % _by_id.size())
+	for d in pack.Missions:
+		_by_id[d.SourceId] = d
+		_by_pack_id[d.Id] = d
+	print("Successfully loaded %d mission definitions from the pack." % _by_id.size())
 
 
-static func Get(mission_id: int) -> CatalogDtos.MissionDef:
+static func Get(mission_id: int) -> PackDefs.MissionDefPack:
 	return _by_id.get(mission_id)
 
 
 ## base + rand(0..spread), inclusive at both ends, matching RuleManager.Roll.
-## Falls back to the supplied default when a pack ships no MISSNSD.
-static func RollLengthById(mission_id: int, rng: Prng, fallback: int) -> int:
-	var d := Get(mission_id)
+## Falls back to the supplied default when the pack declares no such mission.
+static func RollLengthById(pack_id: String, rng: Prng, fallback: int) -> int:
+	var d := ById(pack_id)
 	if d == null or d.LengthBase <= 0:
 		return fallback
 	var extra := 0

@@ -1,0 +1,2603 @@
+{
+  "side_lottery": [
+    {
+      "EntryId": 1,
+      "Name": "Loyalty Drift Divisor",
+      "GroupId": 2560,
+      "by_faction": {
+        "alliance": {
+          "easy": {
+            "alliance": 50,
+            "empire": 50
+          },
+          "medium": {
+            "alliance": 50,
+            "empire": 50
+          },
+          "hard": {
+            "alliance": 50,
+            "empire": 50
+          }
+        },
+        "empire": {
+          "easy": {
+            "alliance": 50,
+            "empire": 50
+          },
+          "medium": {
+            "alliance": 50,
+            "empire": 50
+          },
+          "hard": {
+            "alliance": 50,
+            "empire": 50
+          }
+        }
+      },
+      "dev": {
+        "alliance": 50,
+        "empire": 50
+      },
+      "mp": {
+        "alliance": 50,
+        "empire": 50
+      }
+    },
+    {
+      "EntryId": 2,
+      "Name": "Incoming Side Loyalty Shift: Random Spread",
+      "GroupId": 2561,
+      "by_faction": {
+        "alliance": {
+          "easy": {
+            "alliance": 5,
+            "empire": 5
+          },
+          "medium": {
+            "alliance": 5,
+            "empire": 5
+          },
+          "hard": {
+            "alliance": 5,
+            "empire": 5
+          }
+        },
+        "empire": {
+          "easy": {
+            "alliance": 5,
+            "empire": 5
+          },
+          "medium": {
+            "alliance": 5,
+            "empire": 5
+          },
+          "hard": {
+            "alliance": 5,
+            "empire": 5
+          }
+        }
+      },
+      "dev": {
+        "alliance": 5,
+        "empire": 5
+      },
+      "mp": {
+        "alliance": 5,
+        "empire": 5
+      }
+    },
+    {
+      "EntryId": 3,
+      "Name": "Incoming Side Loyalty Shift: Base Amount",
+      "GroupId": 2562,
+      "by_faction": {
+        "alliance": {
+          "easy": {
+            "alliance": 0,
+            "empire": 0
+          },
+          "medium": {
+            "alliance": 0,
+            "empire": 0
+          },
+          "hard": {
+            "alliance": 0,
+            "empire": 0
+          }
+        },
+        "empire": {
+          "easy": {
+            "alliance": 0,
+            "empire": 0
+          },
+          "medium": {
+            "alliance": 0,
+            "empire": 0
+          },
+          "hard": {
+            "alliance": 0,
+            "empire": 0
+          }
+        }
+      },
+      "dev": {
+        "alliance": 0,
+        "empire": 0
+      },
+      "mp": {
+        "alliance": 0,
+        "empire": 0
+      }
+    },
+    {
+      "EntryId": 4,
+      "Name": "Startup Minor Characters in Standard Galaxy = 7 + ?",
+      "GroupId": 5120,
+      "by_faction": {
+        "alliance": {
+          "easy": {
+            "alliance": 1,
+            "empire": 1
+          },
+          "medium": {
+            "alliance": 1,
+            "empire": 1
+          },
+          "hard": {
+            "alliance": 1,
+            "empire": 1
+          }
+        },
+        "empire": {
+          "easy": {
+            "alliance": 1,
+            "empire": 1
+          },
+          "medium": {
+            "alliance": 1,
+            "empire": 1
+          },
+          "hard": {
+            "alliance": 1,
+            "empire": 1
+          }
+        }
+      },
+      "dev": {
+        "alliance": 1,
+        "empire": 1
+      },
+      "mp": {
+        "alliance": 1,
+        "empire": 1
+      }
+    },
+    {
+      "EntryId": 5,
+      "Name": "Startup Minor Characters in Large Galaxy = 7 + ?",
+      "GroupId": 5121,
+      "by_faction": {
+        "alliance": {
+          "easy": {
+            "alliance": 2,
+            "empire": 2
+          },
+          "medium": {
+            "alliance": 2,
+            "empire": 2
+          },
+          "hard": {
+            "alliance": 2,
+            "empire": 2
+          }
+        },
+        "empire": {
+          "easy": {
+            "alliance": 2,
+            "empire": 2
+          },
+          "medium": {
+            "alliance": 2,
+            "empire": 2
+          },
+          "hard": {
+            "alliance": 2,
+            "empire": 2
+          }
+        }
+      },
+      "dev": {
+        "alliance": 2,
+        "empire": 2
+      },
+      "mp": {
+        "alliance": 2,
+        "empire": 2
+      }
+    },
+    {
+      "EntryId": 6,
+      "Name": "Startup Minor Characters in Huge Galaxy = 7 + ?",
+      "GroupId": 5122,
+      "by_faction": {
+        "alliance": {
+          "easy": {
+            "alliance": 4,
+            "empire": 4
+          },
+          "medium": {
+            "alliance": 4,
+            "empire": 4
+          },
+          "hard": {
+            "alliance": 4,
+            "empire": 4
+          }
+        },
+        "empire": {
+          "easy": {
+            "alliance": 4,
+            "empire": 4
+          },
+          "medium": {
+            "alliance": 4,
+            "empire": 4
+          },
+          "hard": {
+            "alliance": 4,
+            "empire": 4
+          }
+        }
+      },
+      "dev": {
+        "alliance": 4,
+        "empire": 4
+      },
+      "mp": {
+        "alliance": 4,
+        "empire": 4
+      }
+    },
+    {
+      "EntryId": 7,
+      "Name": "Local Direct System Support Shift Amount",
+      "GroupId": 5128,
+      "by_faction": {
+        "alliance": {
+          "easy": {
+            "alliance": -2,
+            "empire": -1
+          },
+          "medium": {
+            "alliance": -2,
+            "empire": -1
+          },
+          "hard": {
+            "alliance": -2,
+            "empire": -1
+          }
+        },
+        "empire": {
+          "easy": {
+            "alliance": -2,
+            "empire": -1
+          },
+          "medium": {
+            "alliance": -2,
+            "empire": -1
+          },
+          "hard": {
+            "alliance": -2,
+            "empire": -1
+          }
+        }
+      },
+      "dev": {
+        "alliance": -2,
+        "empire": -1
+      },
+      "mp": {
+        "alliance": -2,
+        "empire": -1
+      }
+    },
+    {
+      "EntryId": 8,
+      "Name": "Local Direct System Support Threshold",
+      "GroupId": 5129,
+      "by_faction": {
+        "alliance": {
+          "easy": {
+            "alliance": 101,
+            "empire": 101
+          },
+          "medium": {
+            "alliance": 101,
+            "empire": 101
+          },
+          "hard": {
+            "alliance": 101,
+            "empire": 101
+          }
+        },
+        "empire": {
+          "easy": {
+            "alliance": 101,
+            "empire": 101
+          },
+          "medium": {
+            "alliance": 101,
+            "empire": 101
+          },
+          "hard": {
+            "alliance": 101,
+            "empire": 101
+          }
+        }
+      },
+      "dev": {
+        "alliance": 101,
+        "empire": 101
+      },
+      "mp": {
+        "alliance": 101,
+        "empire": 101
+      }
+    },
+    {
+      "EntryId": 9,
+      "Name": "Local Sector Scan Support Shift Amount",
+      "GroupId": 5130,
+      "by_faction": {
+        "alliance": {
+          "easy": {
+            "alliance": -4,
+            "empire": -3
+          },
+          "medium": {
+            "alliance": -4,
+            "empire": -3
+          },
+          "hard": {
+            "alliance": -4,
+            "empire": -3
+          }
+        },
+        "empire": {
+          "easy": {
+            "alliance": -4,
+            "empire": -3
+          },
+          "medium": {
+            "alliance": -4,
+            "empire": -3
+          },
+          "hard": {
+            "alliance": -4,
+            "empire": -3
+          }
+        }
+      },
+      "dev": {
+        "alliance": -4,
+        "empire": -3
+      },
+      "mp": {
+        "alliance": -4,
+        "empire": -3
+      }
+    },
+    {
+      "EntryId": 10,
+      "Name": "Local Sector Scan Support Threshold",
+      "GroupId": 5131,
+      "by_faction": {
+        "alliance": {
+          "easy": {
+            "alliance": 101,
+            "empire": 101
+          },
+          "medium": {
+            "alliance": 101,
+            "empire": 101
+          },
+          "hard": {
+            "alliance": 101,
+            "empire": 101
+          }
+        },
+        "empire": {
+          "easy": {
+            "alliance": 101,
+            "empire": 101
+          },
+          "medium": {
+            "alliance": 101,
+            "empire": 101
+          },
+          "hard": {
+            "alliance": 101,
+            "empire": 101
+          }
+        }
+      },
+      "dev": {
+        "alliance": 101,
+        "empire": 101
+      },
+      "mp": {
+        "alliance": 101,
+        "empire": 101
+      }
+    },
+    {
+      "EntryId": 11,
+      "Name": "Startup Balance: Counterpart Support Threshold",
+      "GroupId": 5136,
+      "by_faction": {
+        "alliance": {
+          "easy": {
+            "alliance": 101,
+            "empire": 101
+          },
+          "medium": {
+            "alliance": 101,
+            "empire": 101
+          },
+          "hard": {
+            "alliance": 101,
+            "empire": 101
+          }
+        },
+        "empire": {
+          "easy": {
+            "alliance": 101,
+            "empire": 101
+          },
+          "medium": {
+            "alliance": 101,
+            "empire": 101
+          },
+          "hard": {
+            "alliance": 101,
+            "empire": 101
+          }
+        }
+      },
+      "dev": {
+        "alliance": 101,
+        "empire": 101
+      },
+      "mp": {
+        "alliance": 101,
+        "empire": 101
+      }
+    },
+    {
+      "EntryId": 12,
+      "Name": "Startup Balance: Payload Magnitude Cap",
+      "GroupId": 5137,
+      "by_faction": {
+        "alliance": {
+          "easy": {
+            "alliance": 20,
+            "empire": 20
+          },
+          "medium": {
+            "alliance": 20,
+            "empire": 20
+          },
+          "hard": {
+            "alliance": 20,
+            "empire": 20
+          }
+        },
+        "empire": {
+          "easy": {
+            "alliance": 20,
+            "empire": 20
+          },
+          "medium": {
+            "alliance": 20,
+            "empire": 20
+          },
+          "hard": {
+            "alliance": 20,
+            "empire": 20
+          }
+        }
+      },
+      "dev": {
+        "alliance": 20,
+        "empire": 20
+      },
+      "mp": {
+        "alliance": 20,
+        "empire": 20
+      }
+    },
+    {
+      "EntryId": 13,
+      "Name": "Startup Balance: Leading Branch Flat Base",
+      "GroupId": 5138,
+      "by_faction": {
+        "alliance": {
+          "easy": {
+            "alliance": 100,
+            "empire": 100
+          },
+          "medium": {
+            "alliance": 100,
+            "empire": 100
+          },
+          "hard": {
+            "alliance": 100,
+            "empire": 100
+          }
+        },
+        "empire": {
+          "easy": {
+            "alliance": 100,
+            "empire": 100
+          },
+          "medium": {
+            "alliance": 100,
+            "empire": 100
+          },
+          "hard": {
+            "alliance": 100,
+            "empire": 100
+          }
+        }
+      },
+      "dev": {
+        "alliance": 100,
+        "empire": 100
+      },
+      "mp": {
+        "alliance": 100,
+        "empire": 100
+      }
+    },
+    {
+      "EntryId": 14,
+      "Name": "Startup Balance: Leading Branch Gap Scale (%)",
+      "GroupId": 5139,
+      "by_faction": {
+        "alliance": {
+          "easy": {
+            "alliance": 400,
+            "empire": 200
+          },
+          "medium": {
+            "alliance": 400,
+            "empire": 150
+          },
+          "hard": {
+            "alliance": 400,
+            "empire": 100
+          }
+        },
+        "empire": {
+          "easy": {
+            "alliance": 200,
+            "empire": 400
+          },
+          "medium": {
+            "alliance": 150,
+            "empire": 400
+          },
+          "hard": {
+            "alliance": 100,
+            "empire": 400
+          }
+        }
+      },
+      "dev": {
+        "alliance": 400,
+        "empire": 400
+      },
+      "mp": {
+        "alliance": 400,
+        "empire": 400
+      }
+    },
+    {
+      "EntryId": 15,
+      "Name": "Startup Balance: Trailing Branch Flat Base",
+      "GroupId": 5140,
+      "by_faction": {
+        "alliance": {
+          "easy": {
+            "alliance": 0,
+            "empire": 0
+          },
+          "medium": {
+            "alliance": 0,
+            "empire": 0
+          },
+          "hard": {
+            "alliance": 0,
+            "empire": 0
+          }
+        },
+        "empire": {
+          "easy": {
+            "alliance": 0,
+            "empire": 0
+          },
+          "medium": {
+            "alliance": 0,
+            "empire": 0
+          },
+          "hard": {
+            "alliance": 0,
+            "empire": 0
+          }
+        }
+      },
+      "dev": {
+        "alliance": 0,
+        "empire": 0
+      },
+      "mp": {
+        "alliance": 0,
+        "empire": 0
+      }
+    },
+    {
+      "EntryId": 16,
+      "Name": "Startup Balance: Trailing Branch Gap Scale (%)",
+      "GroupId": 5141,
+      "by_faction": {
+        "alliance": {
+          "easy": {
+            "alliance": 100,
+            "empire": 100
+          },
+          "medium": {
+            "alliance": 100,
+            "empire": 100
+          },
+          "hard": {
+            "alliance": 100,
+            "empire": 100
+          }
+        },
+        "empire": {
+          "easy": {
+            "alliance": 100,
+            "empire": 100
+          },
+          "medium": {
+            "alliance": 100,
+            "empire": 100
+          },
+          "hard": {
+            "alliance": 100,
+            "empire": 100
+          }
+        }
+      },
+      "dev": {
+        "alliance": 100,
+        "empire": 100
+      },
+      "mp": {
+        "alliance": 100,
+        "empire": 100
+      }
+    },
+    {
+      "EntryId": 17,
+      "Name": "Peaceful Control Change: Payload Offset",
+      "GroupId": 5152,
+      "by_faction": {
+        "alliance": {
+          "easy": {
+            "alliance": 1,
+            "empire": 1
+          },
+          "medium": {
+            "alliance": 1,
+            "empire": 1
+          },
+          "hard": {
+            "alliance": 1,
+            "empire": 1
+          }
+        },
+        "empire": {
+          "easy": {
+            "alliance": 1,
+            "empire": 1
+          },
+          "medium": {
+            "alliance": 1,
+            "empire": 1
+          },
+          "hard": {
+            "alliance": 1,
+            "empire": 1
+          }
+        }
+      },
+      "dev": {
+        "alliance": 1,
+        "empire": 1
+      },
+      "mp": {
+        "alliance": 1,
+        "empire": 1
+      }
+    },
+    {
+      "EntryId": 18,
+      "Name": "Peaceful Control Change: Event Row",
+      "GroupId": 5153,
+      "by_faction": {
+        "alliance": {
+          "easy": {
+            "alliance": 100,
+            "empire": 100
+          },
+          "medium": {
+            "alliance": 100,
+            "empire": 100
+          },
+          "hard": {
+            "alliance": 100,
+            "empire": 100
+          }
+        },
+        "empire": {
+          "easy": {
+            "alliance": 100,
+            "empire": 100
+          },
+          "medium": {
+            "alliance": 100,
+            "empire": 100
+          },
+          "hard": {
+            "alliance": 100,
+            "empire": 100
+          }
+        }
+      },
+      "dev": {
+        "alliance": 100,
+        "empire": 100
+      },
+      "mp": {
+        "alliance": 100,
+        "empire": 100
+      }
+    },
+    {
+      "EntryId": 19,
+      "Name": "Alternate Control Change: Payload Offset",
+      "GroupId": 5154,
+      "by_faction": {
+        "alliance": {
+          "easy": {
+            "alliance": 10,
+            "empire": 5
+          },
+          "medium": {
+            "alliance": 10,
+            "empire": 5
+          },
+          "hard": {
+            "alliance": 10,
+            "empire": 5
+          }
+        },
+        "empire": {
+          "easy": {
+            "alliance": 10,
+            "empire": 5
+          },
+          "medium": {
+            "alliance": 10,
+            "empire": 5
+          },
+          "hard": {
+            "alliance": 10,
+            "empire": 5
+          }
+        }
+      },
+      "dev": {
+        "alliance": 10,
+        "empire": 5
+      },
+      "mp": {
+        "alliance": 10,
+        "empire": 5
+      }
+    },
+    {
+      "EntryId": 20,
+      "Name": "Alternate Control Change: Event Row",
+      "GroupId": 5155,
+      "by_faction": {
+        "alliance": {
+          "easy": {
+            "alliance": 100,
+            "empire": 90
+          },
+          "medium": {
+            "alliance": 100,
+            "empire": 90
+          },
+          "hard": {
+            "alliance": 100,
+            "empire": 90
+          }
+        },
+        "empire": {
+          "easy": {
+            "alliance": 100,
+            "empire": 90
+          },
+          "medium": {
+            "alliance": 100,
+            "empire": 90
+          },
+          "hard": {
+            "alliance": 100,
+            "empire": 90
+          }
+        }
+      },
+      "dev": {
+        "alliance": 100,
+        "empire": 90
+      },
+      "mp": {
+        "alliance": 100,
+        "empire": 90
+      }
+    },
+    {
+      "EntryId": 21,
+      "Name": "% of Maintenance to deploy Random Units at Day 0 (Standard Galaxy)",
+      "GroupId": 5168,
+      "by_faction": {
+        "alliance": {
+          "easy": {
+            "alliance": 33,
+            "empire": 33
+          },
+          "medium": {
+            "alliance": 25,
+            "empire": 38
+          },
+          "hard": {
+            "alliance": 25,
+            "empire": 38
+          }
+        },
+        "empire": {
+          "easy": {
+            "alliance": 33,
+            "empire": 33
+          },
+          "medium": {
+            "alliance": 38,
+            "empire": 25
+          },
+          "hard": {
+            "alliance": 38,
+            "empire": 25
+          }
+        }
+      },
+      "dev": {
+        "alliance": 33,
+        "empire": 33
+      },
+      "mp": {
+        "alliance": 28,
+        "empire": 28
+      }
+    },
+    {
+      "EntryId": 22,
+      "Name": "% of Maintenance to deploy Random Units at Day 0 (Large Galaxy)",
+      "GroupId": 5169,
+      "by_faction": {
+        "alliance": {
+          "easy": {
+            "alliance": 25,
+            "empire": 25
+          },
+          "medium": {
+            "alliance": 20,
+            "empire": 30
+          },
+          "hard": {
+            "alliance": 20,
+            "empire": 30
+          }
+        },
+        "empire": {
+          "easy": {
+            "alliance": 25,
+            "empire": 25
+          },
+          "medium": {
+            "alliance": 30,
+            "empire": 20
+          },
+          "hard": {
+            "alliance": 30,
+            "empire": 20
+          }
+        }
+      },
+      "dev": {
+        "alliance": 25,
+        "empire": 25
+      },
+      "mp": {
+        "alliance": 20,
+        "empire": 20
+      }
+    },
+    {
+      "EntryId": 23,
+      "Name": "% of Maintenance to deploy Random Units at Day 0 (Huge Galaxy)",
+      "GroupId": 5170,
+      "by_faction": {
+        "alliance": {
+          "easy": {
+            "alliance": 20,
+            "empire": 20
+          },
+          "medium": {
+            "alliance": 15,
+            "empire": 25
+          },
+          "hard": {
+            "alliance": 15,
+            "empire": 25
+          }
+        },
+        "empire": {
+          "easy": {
+            "alliance": 20,
+            "empire": 20
+          },
+          "medium": {
+            "alliance": 25,
+            "empire": 15
+          },
+          "hard": {
+            "alliance": 25,
+            "empire": 15
+          }
+        }
+      },
+      "dev": {
+        "alliance": 20,
+        "empire": 20
+      },
+      "mp": {
+        "alliance": 15,
+        "empire": 15
+      }
+    },
+    {
+      "EntryId": 24,
+      "Name": "Troop Arrival Control Change: Payload",
+      "GroupId": 5184,
+      "by_faction": {
+        "alliance": {
+          "easy": {
+            "alliance": 0,
+            "empire": 0
+          },
+          "medium": {
+            "alliance": 0,
+            "empire": 0
+          },
+          "hard": {
+            "alliance": 0,
+            "empire": 0
+          }
+        },
+        "empire": {
+          "easy": {
+            "alliance": 0,
+            "empire": 0
+          },
+          "medium": {
+            "alliance": 0,
+            "empire": 0
+          },
+          "hard": {
+            "alliance": 0,
+            "empire": 0
+          }
+        }
+      },
+      "dev": {
+        "alliance": 0,
+        "empire": 0
+      },
+      "mp": {
+        "alliance": 0,
+        "empire": 0
+      }
+    },
+    {
+      "EntryId": 25,
+      "Name": "Troop Arrival Control Change: Event Row",
+      "GroupId": 5185,
+      "by_faction": {
+        "alliance": {
+          "easy": {
+            "alliance": 101,
+            "empire": 101
+          },
+          "medium": {
+            "alliance": 101,
+            "empire": 101
+          },
+          "hard": {
+            "alliance": 101,
+            "empire": 101
+          }
+        },
+        "empire": {
+          "easy": {
+            "alliance": 101,
+            "empire": 101
+          },
+          "medium": {
+            "alliance": 101,
+            "empire": 101
+          },
+          "hard": {
+            "alliance": 101,
+            "empire": 101
+          }
+        }
+      },
+      "dev": {
+        "alliance": 101,
+        "empire": 101
+      },
+      "mp": {
+        "alliance": 101,
+        "empire": 101
+      }
+    },
+    {
+      "EntryId": 26,
+      "Name": "Troop Withdrawal Control Change: Payload",
+      "GroupId": 5186,
+      "by_faction": {
+        "alliance": {
+          "easy": {
+            "alliance": 10,
+            "empire": 10
+          },
+          "medium": {
+            "alliance": 10,
+            "empire": 10
+          },
+          "hard": {
+            "alliance": 10,
+            "empire": 10
+          }
+        },
+        "empire": {
+          "easy": {
+            "alliance": 10,
+            "empire": 10
+          },
+          "medium": {
+            "alliance": 10,
+            "empire": 10
+          },
+          "hard": {
+            "alliance": 10,
+            "empire": 10
+          }
+        }
+      },
+      "dev": {
+        "alliance": 10,
+        "empire": 10
+      },
+      "mp": {
+        "alliance": 10,
+        "empire": 10
+      }
+    },
+    {
+      "EntryId": 27,
+      "Name": "Troop Withdrawal Control Change: Event Row",
+      "GroupId": 5187,
+      "by_faction": {
+        "alliance": {
+          "easy": {
+            "alliance": 101,
+            "empire": 101
+          },
+          "medium": {
+            "alliance": 101,
+            "empire": 101
+          },
+          "hard": {
+            "alliance": 101,
+            "empire": 101
+          }
+        },
+        "empire": {
+          "easy": {
+            "alliance": 101,
+            "empire": 101
+          },
+          "medium": {
+            "alliance": 101,
+            "empire": 101
+          },
+          "hard": {
+            "alliance": 101,
+            "empire": 101
+          }
+        }
+      },
+      "dev": {
+        "alliance": 101,
+        "empire": 101
+      },
+      "mp": {
+        "alliance": 101,
+        "empire": 101
+      }
+    },
+    {
+      "EntryId": 28,
+      "Name": "Contested Troop Presence Control Change: Payload",
+      "GroupId": 5188,
+      "by_faction": {
+        "alliance": {
+          "easy": {
+            "alliance": 0,
+            "empire": 0
+          },
+          "medium": {
+            "alliance": 0,
+            "empire": 0
+          },
+          "hard": {
+            "alliance": 0,
+            "empire": 0
+          }
+        },
+        "empire": {
+          "easy": {
+            "alliance": 0,
+            "empire": 0
+          },
+          "medium": {
+            "alliance": 0,
+            "empire": 0
+          },
+          "hard": {
+            "alliance": 0,
+            "empire": 0
+          }
+        }
+      },
+      "dev": {
+        "alliance": 0,
+        "empire": 0
+      },
+      "mp": {
+        "alliance": 0,
+        "empire": 0
+      }
+    },
+    {
+      "EntryId": 29,
+      "Name": "Contested Troop Presence Control Change: Event Row",
+      "GroupId": 5189,
+      "by_faction": {
+        "alliance": {
+          "easy": {
+            "alliance": 101,
+            "empire": 101
+          },
+          "medium": {
+            "alliance": 101,
+            "empire": 101
+          },
+          "hard": {
+            "alliance": 101,
+            "empire": 101
+          }
+        },
+        "empire": {
+          "easy": {
+            "alliance": 101,
+            "empire": 101
+          },
+          "medium": {
+            "alliance": 101,
+            "empire": 101
+          },
+          "hard": {
+            "alliance": 101,
+            "empire": 101
+          }
+        }
+      },
+      "dev": {
+        "alliance": 101,
+        "empire": 101
+      },
+      "mp": {
+        "alliance": 101,
+        "empire": 101
+      }
+    },
+    {
+      "EntryId": 30,
+      "Name": "Core Sector Owned Systems with support",
+      "GroupId": 7680,
+      "by_faction": {
+        "alliance": {
+          "easy": {
+            "alliance": 10,
+            "empire": 10
+          },
+          "medium": {
+            "alliance": 20,
+            "empire": 25
+          },
+          "hard": {
+            "alliance": 15,
+            "empire": 30
+          }
+        },
+        "empire": {
+          "easy": {
+            "alliance": 10,
+            "empire": 10
+          },
+          "medium": {
+            "alliance": 35,
+            "empire": 10
+          },
+          "hard": {
+            "alliance": 40,
+            "empire": 10
+          }
+        }
+      },
+      "dev": {
+        "alliance": 20,
+        "empire": 25
+      },
+      "mp": {
+        "alliance": 10,
+        "empire": 10
+      }
+    },
+    {
+      "EntryId": 31,
+      "Name": "Core Sector Owned Systems without support",
+      "GroupId": 7681,
+      "by_faction": {
+        "alliance": {
+          "easy": {
+            "alliance": 0,
+            "empire": 4
+          },
+          "medium": {
+            "alliance": 0,
+            "empire": 10
+          },
+          "hard": {
+            "alliance": 0,
+            "empire": 10
+          }
+        },
+        "empire": {
+          "easy": {
+            "alliance": 0,
+            "empire": 4
+          },
+          "medium": {
+            "alliance": 0,
+            "empire": 10
+          },
+          "hard": {
+            "alliance": 0,
+            "empire": 5
+          }
+        }
+      },
+      "dev": {
+        "alliance": 0,
+        "empire": 10
+      },
+      "mp": {
+        "alliance": 0,
+        "empire": 4
+      }
+    },
+    {
+      "EntryId": 32,
+      "Name": "Core Sector Owned Systems with support Popularity: Base (%)",
+      "GroupId": 7682,
+      "by_faction": {
+        "alliance": {
+          "easy": {
+            "alliance": 60,
+            "empire": 60
+          },
+          "medium": {
+            "alliance": 60,
+            "empire": 60
+          },
+          "hard": {
+            "alliance": 60,
+            "empire": 60
+          }
+        },
+        "empire": {
+          "easy": {
+            "alliance": 60,
+            "empire": 60
+          },
+          "medium": {
+            "alliance": 60,
+            "empire": 60
+          },
+          "hard": {
+            "alliance": 60,
+            "empire": 60
+          }
+        }
+      },
+      "dev": {
+        "alliance": 60,
+        "empire": 60
+      },
+      "mp": {
+        "alliance": 60,
+        "empire": 60
+      }
+    },
+    {
+      "EntryId": 33,
+      "Name": "Core Sector Owned Systems with support Popularity: Max Random Extra (%)",
+      "GroupId": 7683,
+      "by_faction": {
+        "alliance": {
+          "easy": {
+            "alliance": 30,
+            "empire": 30
+          },
+          "medium": {
+            "alliance": 30,
+            "empire": 30
+          },
+          "hard": {
+            "alliance": 30,
+            "empire": 30
+          }
+        },
+        "empire": {
+          "easy": {
+            "alliance": 30,
+            "empire": 30
+          },
+          "medium": {
+            "alliance": 30,
+            "empire": 30
+          },
+          "hard": {
+            "alliance": 30,
+            "empire": 30
+          }
+        }
+      },
+      "dev": {
+        "alliance": 30,
+        "empire": 30
+      },
+      "mp": {
+        "alliance": 30,
+        "empire": 30
+      }
+    },
+    {
+      "EntryId": 34,
+      "Name": "Core Sector Owned Systems without support Popularity: Base (%)",
+      "GroupId": 7684,
+      "by_faction": {
+        "alliance": {
+          "easy": {
+            "alliance": 20,
+            "empire": 20
+          },
+          "medium": {
+            "alliance": 20,
+            "empire": 20
+          },
+          "hard": {
+            "alliance": 20,
+            "empire": 20
+          }
+        },
+        "empire": {
+          "easy": {
+            "alliance": 20,
+            "empire": 20
+          },
+          "medium": {
+            "alliance": 20,
+            "empire": 20
+          },
+          "hard": {
+            "alliance": 20,
+            "empire": 20
+          }
+        }
+      },
+      "dev": {
+        "alliance": 20,
+        "empire": 20
+      },
+      "mp": {
+        "alliance": 20,
+        "empire": 20
+      }
+    },
+    {
+      "EntryId": 35,
+      "Name": "Core Sector Owned Systems without support Popularity: Max Random Extra (%)",
+      "GroupId": 7685,
+      "by_faction": {
+        "alliance": {
+          "easy": {
+            "alliance": 30,
+            "empire": 30
+          },
+          "medium": {
+            "alliance": 30,
+            "empire": 30
+          },
+          "hard": {
+            "alliance": 30,
+            "empire": 30
+          }
+        },
+        "empire": {
+          "easy": {
+            "alliance": 30,
+            "empire": 30
+          },
+          "medium": {
+            "alliance": 30,
+            "empire": 30
+          },
+          "hard": {
+            "alliance": 30,
+            "empire": 30
+          }
+        }
+      },
+      "dev": {
+        "alliance": 30,
+        "empire": 30
+      },
+      "mp": {
+        "alliance": 30,
+        "empire": 30
+      }
+    }
+  ],
+  "logistics": {
+    "core_system_facilities": {
+      "Type": "SYFC (Flat)",
+      "Description": "SeedTableEntry",
+      "Entries": [
+        {
+          "ParentId": 1,
+          "ProbabilityThreshold": 0,
+          "SpawnChancePercent": 0,
+          "Asset": {
+            "FamilyId": 0,
+            "FamilyName": "Null/Empty",
+            "AssetId": 0,
+            "Name": "None"
+          }
+        },
+        {
+          "ParentId": 2,
+          "ProbabilityThreshold": 36,
+          "SpawnChancePercent": 64,
+          "Asset": {
+            "FamilyId": 45,
+            "FamilyName": "Refinery",
+            "AssetId": 2,
+            "Name": "Refinery (Tier 2)"
+          }
+        },
+        {
+          "ParentId": 3,
+          "ProbabilityThreshold": 79,
+          "SpawnChancePercent": 21,
+          "Asset": {
+            "FamilyId": 40,
+            "FamilyName": "Shipyard",
+            "AssetId": 1,
+            "Name": "Shipyard (Tier 1)"
+          }
+        },
+        {
+          "ParentId": 4,
+          "ProbabilityThreshold": 82,
+          "SpawnChancePercent": 18,
+          "Asset": {
+            "FamilyId": 41,
+            "FamilyName": "Training Facility",
+            "AssetId": 2,
+            "Name": "Training Facility (Tier 2)"
+          }
+        },
+        {
+          "ParentId": 5,
+          "ProbabilityThreshold": 85,
+          "SpawnChancePercent": 15,
+          "Asset": {
+            "FamilyId": 42,
+            "FamilyName": "Construction Yard",
+            "AssetId": 3,
+            "Name": "Construction Yard (Tier 3)"
+          }
+        },
+        {
+          "ParentId": 6,
+          "ProbabilityThreshold": 88,
+          "SpawnChancePercent": 12,
+          "Asset": {
+            "FamilyId": 36,
+            "FamilyName": "GenCore",
+            "AssetId": 3,
+            "Name": "Planetary Shield"
+          }
+        },
+        {
+          "ParentId": 7,
+          "ProbabilityThreshold": 96,
+          "SpawnChancePercent": 4,
+          "Asset": {
+            "FamilyId": 35,
+            "FamilyName": "LNR Series",
+            "AssetId": 2,
+            "Name": "Turbolaser Battery"
+          }
+        },
+        {
+          "ParentId": 8,
+          "ProbabilityThreshold": 99,
+          "SpawnChancePercent": 1,
+          "Asset": {
+            "FamilyId": 34,
+            "FamilyName": "KDY v150",
+            "AssetId": 1,
+            "Name": "Ion Cannon"
+          }
+        }
+      ],
+      "source_file": "SYFCCRTB.DAT"
+    },
+    "rim_system_facilities": {
+      "Type": "SYFC (Flat)",
+      "Description": "SeedTableEntry",
+      "Entries": [
+        {
+          "ParentId": 1,
+          "ProbabilityThreshold": 0,
+          "SpawnChancePercent": 0,
+          "Asset": {
+            "FamilyId": 0,
+            "FamilyName": "Null/Empty",
+            "AssetId": 0,
+            "Name": "None"
+          }
+        },
+        {
+          "ParentId": 2,
+          "ProbabilityThreshold": 91,
+          "SpawnChancePercent": 9,
+          "Asset": {
+            "FamilyId": 45,
+            "FamilyName": "Refinery",
+            "AssetId": 2,
+            "Name": "Refinery (Tier 2)"
+          }
+        },
+        {
+          "ParentId": 3,
+          "ProbabilityThreshold": 96,
+          "SpawnChancePercent": 4,
+          "Asset": {
+            "FamilyId": 40,
+            "FamilyName": "Shipyard",
+            "AssetId": 1,
+            "Name": "Shipyard (Tier 1)"
+          }
+        },
+        {
+          "ParentId": 4,
+          "ProbabilityThreshold": 97,
+          "SpawnChancePercent": 3,
+          "Asset": {
+            "FamilyId": 41,
+            "FamilyName": "Training Facility",
+            "AssetId": 2,
+            "Name": "Training Facility (Tier 2)"
+          }
+        },
+        {
+          "ParentId": 5,
+          "ProbabilityThreshold": 98,
+          "SpawnChancePercent": 2,
+          "Asset": {
+            "FamilyId": 42,
+            "FamilyName": "Construction Yard",
+            "AssetId": 3,
+            "Name": "Construction Yard (Tier 3)"
+          }
+        },
+        {
+          "ParentId": 6,
+          "ProbabilityThreshold": 99,
+          "SpawnChancePercent": 1,
+          "Asset": {
+            "FamilyId": 36,
+            "FamilyName": "GenCore",
+            "AssetId": 3,
+            "Name": "Planetary Shield"
+          }
+        },
+        {
+          "ParentId": 7,
+          "ProbabilityThreshold": 100,
+          "SpawnChancePercent": 0,
+          "Asset": {
+            "FamilyId": 35,
+            "FamilyName": "LNR Series",
+            "AssetId": 2,
+            "Name": "Turbolaser Battery"
+          }
+        }
+      ],
+      "source_file": "SYFCRMTB.DAT"
+    },
+    "alliance_fleet": {
+      "Type": "CMUN/FACL (Hierarchical)",
+      "Description": "SeedFamilyTableEntry",
+      "Entries": [
+        {
+          "ParentId": 1,
+          "ProbabilityThreshold": 1,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "FamilyId": 20,
+              "FamilyName": "Capital Ship",
+              "AssetId": 69,
+              "Name": "Corellian Corvette"
+            }
+          ]
+        },
+        {
+          "ParentId": 2,
+          "ProbabilityThreshold": 2,
+          "Multiplier": 1,
+          "ChildrenCount": 3,
+          "Assets": [
+            {
+              "FamilyId": 20,
+              "FamilyName": "Capital Ship",
+              "AssetId": 70,
+              "Name": "Medium Transport"
+            },
+            {
+              "FamilyId": 16,
+              "FamilyName": "Troop Regiment",
+              "AssetId": 1,
+              "Name": "Alliance Fleet Regiment"
+            },
+            {
+              "FamilyId": 16,
+              "FamilyName": "Troop Regiment",
+              "AssetId": 1,
+              "Name": "Alliance Fleet Regiment"
+            }
+          ]
+        }
+      ],
+      "source_file": "CMUNAFTB.DAT",
+      "fixed_range": [
+        90,
+        91
+      ]
+    },
+    "empire_fleet": {
+      "Type": "CMUN/FACL (Hierarchical)",
+      "Description": "SeedFamilyTableEntry",
+      "Entries": [
+        {
+          "ParentId": 1,
+          "ProbabilityThreshold": 1,
+          "Multiplier": 1,
+          "ChildrenCount": 10,
+          "Assets": [
+            {
+              "FamilyId": 20,
+              "FamilyName": "Capital Ship",
+              "AssetId": 133,
+              "Name": "Imperial Star Destroyer"
+            },
+            {
+              "FamilyId": 28,
+              "FamilyName": "Fighter Squadron",
+              "AssetId": 5,
+              "Name": "TIE Fighter"
+            },
+            {
+              "FamilyId": 28,
+              "FamilyName": "Fighter Squadron",
+              "AssetId": 5,
+              "Name": "TIE Fighter"
+            },
+            {
+              "FamilyId": 28,
+              "FamilyName": "Fighter Squadron",
+              "AssetId": 5,
+              "Name": "TIE Fighter"
+            },
+            {
+              "FamilyId": 28,
+              "FamilyName": "Fighter Squadron",
+              "AssetId": 5,
+              "Name": "TIE Fighter"
+            },
+            {
+              "FamilyId": 28,
+              "FamilyName": "Fighter Squadron",
+              "AssetId": 5,
+              "Name": "TIE Fighter"
+            },
+            {
+              "FamilyId": 28,
+              "FamilyName": "Fighter Squadron",
+              "AssetId": 5,
+              "Name": "TIE Fighter"
+            },
+            {
+              "FamilyId": 16,
+              "FamilyName": "Troop Regiment",
+              "AssetId": 6,
+              "Name": "Stormtrooper Regiment"
+            },
+            {
+              "FamilyId": 16,
+              "FamilyName": "Troop Regiment",
+              "AssetId": 6,
+              "Name": "Stormtrooper Regiment"
+            },
+            {
+              "FamilyId": 16,
+              "FamilyName": "Troop Regiment",
+              "AssetId": 6,
+              "Name": "Stormtrooper Regiment"
+            }
+          ]
+        }
+      ],
+      "source_file": "CMUNEFTB.DAT",
+      "fixed_range": [
+        92,
+        93
+      ]
+    },
+    "alliance_procedural_fleet": {
+      "Type": "CMUN/FACL (Hierarchical)",
+      "Description": "SeedFamilyTableEntry",
+      "Entries": [
+        {
+          "ParentId": 1,
+          "ProbabilityThreshold": 1,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "FamilyId": 20,
+              "FamilyName": "Capital Ship",
+              "AssetId": 65,
+              "Name": "Bulk Cruiser"
+            }
+          ]
+        },
+        {
+          "ParentId": 2,
+          "ProbabilityThreshold": 9,
+          "Multiplier": 1,
+          "ChildrenCount": 3,
+          "Assets": [
+            {
+              "FamilyId": 20,
+              "FamilyName": "Capital Ship",
+              "AssetId": 68,
+              "Name": "Alliance Escort Carrier"
+            },
+            {
+              "FamilyId": 28,
+              "FamilyName": "Fighter Squadron",
+              "AssetId": 3,
+              "Name": "X-wing"
+            },
+            {
+              "FamilyId": 28,
+              "FamilyName": "Fighter Squadron",
+              "AssetId": 4,
+              "Name": "Y-wing"
+            }
+          ]
+        },
+        {
+          "ParentId": 3,
+          "ProbabilityThreshold": 13,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "FamilyId": 20,
+              "FamilyName": "Capital Ship",
+              "AssetId": 69,
+              "Name": "Corellian Corvette"
+            }
+          ]
+        },
+        {
+          "ParentId": 4,
+          "ProbabilityThreshold": 27,
+          "Multiplier": 1,
+          "ChildrenCount": 3,
+          "Assets": [
+            {
+              "FamilyId": 20,
+              "FamilyName": "Capital Ship",
+              "AssetId": 70,
+              "Name": "Medium Transport"
+            },
+            {
+              "FamilyId": 16,
+              "FamilyName": "Troop Regiment",
+              "AssetId": 2,
+              "Name": "Alliance Army Regiment"
+            },
+            {
+              "FamilyId": 16,
+              "FamilyName": "Troop Regiment",
+              "AssetId": 2,
+              "Name": "Alliance Army Regiment"
+            }
+          ]
+        },
+        {
+          "ParentId": 5,
+          "ProbabilityThreshold": 36,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "FamilyId": 28,
+              "FamilyName": "Fighter Squadron",
+              "AssetId": 3,
+              "Name": "X-wing"
+            }
+          ]
+        },
+        {
+          "ParentId": 6,
+          "ProbabilityThreshold": 40,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "FamilyId": 28,
+              "FamilyName": "Fighter Squadron",
+              "AssetId": 4,
+              "Name": "Y-wing"
+            }
+          ]
+        },
+        {
+          "ParentId": 7,
+          "ProbabilityThreshold": 54,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "FamilyId": 16,
+              "FamilyName": "Troop Regiment",
+              "AssetId": 1,
+              "Name": "Alliance Fleet Regiment"
+            }
+          ]
+        },
+        {
+          "ParentId": 8,
+          "ProbabilityThreshold": 58,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "FamilyId": 16,
+              "FamilyName": "Troop Regiment",
+              "AssetId": 2,
+              "Name": "Alliance Army Regiment"
+            }
+          ]
+        },
+        {
+          "ParentId": 9,
+          "ProbabilityThreshold": 89,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "FamilyId": 60,
+              "FamilyName": "Spec Force",
+              "AssetId": 1,
+              "Name": "Guerrillas"
+            }
+          ]
+        },
+        {
+          "ParentId": 10,
+          "ProbabilityThreshold": 90,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "FamilyId": 60,
+              "FamilyName": "Spec Force",
+              "AssetId": 2,
+              "Name": "Infiltrators"
+            }
+          ]
+        },
+        {
+          "ParentId": 11,
+          "ProbabilityThreshold": 93,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "FamilyId": 60,
+              "FamilyName": "Spec Force",
+              "AssetId": 3,
+              "Name": "Longprobe Y-wing Recon Team"
+            }
+          ]
+        },
+        {
+          "ParentId": 12,
+          "ProbabilityThreshold": 97,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "FamilyId": 60,
+              "FamilyName": "Spec Force",
+              "AssetId": 4,
+              "Name": "Bothan Spies"
+            }
+          ]
+        }
+      ],
+      "source_file": "CMUNALTB.DAT"
+    },
+    "empire_procedural_fleet": {
+      "Type": "CMUN/FACL (Hierarchical)",
+      "Description": "SeedFamilyTableEntry",
+      "Entries": [
+        {
+          "ParentId": 1,
+          "ProbabilityThreshold": 1,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "FamilyId": 20,
+              "FamilyName": "Capital Ship",
+              "AssetId": 131,
+              "Name": "Carrack Light Cruiser"
+            }
+          ]
+        },
+        {
+          "ParentId": 2,
+          "ProbabilityThreshold": 9,
+          "Multiplier": 1,
+          "ChildrenCount": 3,
+          "Assets": [
+            {
+              "FamilyId": 20,
+              "FamilyName": "Capital Ship",
+              "AssetId": 132,
+              "Name": "Victory Destroyer"
+            },
+            {
+              "FamilyId": 16,
+              "FamilyName": "Troop Regiment",
+              "AssetId": 7,
+              "Name": "Imperial Fleet Regiment"
+            },
+            {
+              "FamilyId": 28,
+              "FamilyName": "Fighter Squadron",
+              "AssetId": 5,
+              "Name": "TIE Fighter"
+            }
+          ]
+        },
+        {
+          "ParentId": 3,
+          "ProbabilityThreshold": 20,
+          "Multiplier": 1,
+          "ChildrenCount": 5,
+          "Assets": [
+            {
+              "FamilyId": 20,
+              "FamilyName": "Capital Ship",
+              "AssetId": 133,
+              "Name": "Imperial Star Destroyer"
+            },
+            {
+              "FamilyId": 16,
+              "FamilyName": "Troop Regiment",
+              "AssetId": 6,
+              "Name": "Stormtrooper Regiment"
+            },
+            {
+              "FamilyId": 16,
+              "FamilyName": "Troop Regiment",
+              "AssetId": 6,
+              "Name": "Stormtrooper Regiment"
+            },
+            {
+              "FamilyId": 28,
+              "FamilyName": "Fighter Squadron",
+              "AssetId": 5,
+              "Name": "TIE Fighter"
+            },
+            {
+              "FamilyId": 28,
+              "FamilyName": "Fighter Squadron",
+              "AssetId": 5,
+              "Name": "TIE Fighter"
+            }
+          ]
+        },
+        {
+          "ParentId": 4,
+          "ProbabilityThreshold": 24,
+          "Multiplier": 1,
+          "ChildrenCount": 3,
+          "Assets": [
+            {
+              "FamilyId": 20,
+              "FamilyName": "Capital Ship",
+              "AssetId": 142,
+              "Name": "Imperial Dreadnaught"
+            },
+            {
+              "FamilyId": 16,
+              "FamilyName": "Troop Regiment",
+              "AssetId": 7,
+              "Name": "Imperial Fleet Regiment"
+            },
+            {
+              "FamilyId": 28,
+              "FamilyName": "Fighter Squadron",
+              "AssetId": 5,
+              "Name": "TIE Fighter"
+            }
+          ]
+        },
+        {
+          "ParentId": 5,
+          "ProbabilityThreshold": 29,
+          "Multiplier": 1,
+          "ChildrenCount": 3,
+          "Assets": [
+            {
+              "FamilyId": 20,
+              "FamilyName": "Capital Ship",
+              "AssetId": 137,
+              "Name": "Galleon"
+            },
+            {
+              "FamilyId": 16,
+              "FamilyName": "Troop Regiment",
+              "AssetId": 7,
+              "Name": "Imperial Fleet Regiment"
+            },
+            {
+              "FamilyId": 16,
+              "FamilyName": "Troop Regiment",
+              "AssetId": 7,
+              "Name": "Imperial Fleet Regiment"
+            }
+          ]
+        },
+        {
+          "ParentId": 6,
+          "ProbabilityThreshold": 39,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "FamilyId": 28,
+              "FamilyName": "Fighter Squadron",
+              "AssetId": 5,
+              "Name": "TIE Fighter"
+            }
+          ]
+        },
+        {
+          "ParentId": 7,
+          "ProbabilityThreshold": 61,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "FamilyId": 16,
+              "FamilyName": "Troop Regiment",
+              "AssetId": 6,
+              "Name": "Stormtrooper Regiment"
+            }
+          ]
+        },
+        {
+          "ParentId": 8,
+          "ProbabilityThreshold": 69,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "FamilyId": 16,
+              "FamilyName": "Troop Regiment",
+              "AssetId": 8,
+              "Name": "Imperial Army Regiment"
+            }
+          ]
+        },
+        {
+          "ParentId": 9,
+          "ProbabilityThreshold": 84,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "FamilyId": 60,
+              "FamilyName": "Spec Force",
+              "AssetId": 5,
+              "Name": "Imperial Probe Droid"
+            }
+          ]
+        },
+        {
+          "ParentId": 10,
+          "ProbabilityThreshold": 89,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "FamilyId": 60,
+              "FamilyName": "Spec Force",
+              "AssetId": 6,
+              "Name": "Imperial Espionage Droid"
+            }
+          ]
+        },
+        {
+          "ParentId": 11,
+          "ProbabilityThreshold": 94,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "FamilyId": 60,
+              "FamilyName": "Spec Force",
+              "AssetId": 7,
+              "Name": "Imperial Commandos"
+            }
+          ]
+        },
+        {
+          "ParentId": 12,
+          "ProbabilityThreshold": 98,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "FamilyId": 60,
+              "FamilyName": "Spec Force",
+              "AssetId": 8,
+              "Name": "Noghri Death Commandos"
+            }
+          ]
+        }
+      ],
+      "source_file": "CMUNEMTB.DAT"
+    },
+    "empire_hq_garrison": {
+      "Type": "CMUN/FACL (Hierarchical)",
+      "Description": "SeedFamilyTableEntry",
+      "Entries": [
+        {
+          "ParentId": 1,
+          "ProbabilityThreshold": 1,
+          "Multiplier": 1,
+          "ChildrenCount": 17,
+          "Assets": [
+            {
+              "FamilyId": 0,
+              "FamilyName": "Null/Empty",
+              "AssetId": 0,
+              "Name": "None"
+            },
+            {
+              "FamilyId": 16,
+              "FamilyName": "Troop Regiment",
+              "AssetId": 6,
+              "Name": "Stormtrooper Regiment"
+            },
+            {
+              "FamilyId": 16,
+              "FamilyName": "Troop Regiment",
+              "AssetId": 6,
+              "Name": "Stormtrooper Regiment"
+            },
+            {
+              "FamilyId": 16,
+              "FamilyName": "Troop Regiment",
+              "AssetId": 6,
+              "Name": "Stormtrooper Regiment"
+            },
+            {
+              "FamilyId": 16,
+              "FamilyName": "Troop Regiment",
+              "AssetId": 6,
+              "Name": "Stormtrooper Regiment"
+            },
+            {
+              "FamilyId": 16,
+              "FamilyName": "Troop Regiment",
+              "AssetId": 6,
+              "Name": "Stormtrooper Regiment"
+            },
+            {
+              "FamilyId": 16,
+              "FamilyName": "Troop Regiment",
+              "AssetId": 6,
+              "Name": "Stormtrooper Regiment"
+            },
+            {
+              "FamilyId": 28,
+              "FamilyName": "Fighter Squadron",
+              "AssetId": 5,
+              "Name": "TIE Fighter"
+            },
+            {
+              "FamilyId": 28,
+              "FamilyName": "Fighter Squadron",
+              "AssetId": 5,
+              "Name": "TIE Fighter"
+            },
+            {
+              "FamilyId": 28,
+              "FamilyName": "Fighter Squadron",
+              "AssetId": 5,
+              "Name": "TIE Fighter"
+            },
+            {
+              "FamilyId": 28,
+              "FamilyName": "Fighter Squadron",
+              "AssetId": 5,
+              "Name": "TIE Fighter"
+            },
+            {
+              "FamilyId": 28,
+              "FamilyName": "Fighter Squadron",
+              "AssetId": 5,
+              "Name": "TIE Fighter"
+            },
+            {
+              "FamilyId": 28,
+              "FamilyName": "Fighter Squadron",
+              "AssetId": 5,
+              "Name": "TIE Fighter"
+            },
+            {
+              "FamilyId": 28,
+              "FamilyName": "Fighter Squadron",
+              "AssetId": 5,
+              "Name": "TIE Fighter"
+            },
+            {
+              "FamilyId": 28,
+              "FamilyName": "Fighter Squadron",
+              "AssetId": 5,
+              "Name": "TIE Fighter"
+            },
+            {
+              "FamilyId": 28,
+              "FamilyName": "Fighter Squadron",
+              "AssetId": 5,
+              "Name": "TIE Fighter"
+            },
+            {
+              "FamilyId": 28,
+              "FamilyName": "Fighter Squadron",
+              "AssetId": 5,
+              "Name": "TIE Fighter"
+            }
+          ]
+        }
+      ],
+      "source_file": "CMUNCRTB.DAT",
+      "fixed_range": [
+        88,
+        89
+      ]
+    },
+    "alliance_hq_garrison": {
+      "Type": "CMUN/FACL (Hierarchical)",
+      "Description": "SeedFamilyTableEntry",
+      "Entries": [
+        {
+          "ParentId": 1,
+          "ProbabilityThreshold": 1,
+          "Multiplier": 1,
+          "ChildrenCount": 10,
+          "Assets": [
+            {
+              "FamilyId": 0,
+              "FamilyName": "Null/Empty",
+              "AssetId": 0,
+              "Name": "None"
+            },
+            {
+              "FamilyId": 16,
+              "FamilyName": "Troop Regiment",
+              "AssetId": 2,
+              "Name": "Alliance Army Regiment"
+            },
+            {
+              "FamilyId": 16,
+              "FamilyName": "Troop Regiment",
+              "AssetId": 2,
+              "Name": "Alliance Army Regiment"
+            },
+            {
+              "FamilyId": 16,
+              "FamilyName": "Troop Regiment",
+              "AssetId": 1,
+              "Name": "Alliance Fleet Regiment"
+            },
+            {
+              "FamilyId": 28,
+              "FamilyName": "Fighter Squadron",
+              "AssetId": 3,
+              "Name": "X-wing"
+            },
+            {
+              "FamilyId": 28,
+              "FamilyName": "Fighter Squadron",
+              "AssetId": 3,
+              "Name": "X-wing"
+            },
+            {
+              "FamilyId": 28,
+              "FamilyName": "Fighter Squadron",
+              "AssetId": 3,
+              "Name": "X-wing"
+            },
+            {
+              "FamilyId": 28,
+              "FamilyName": "Fighter Squadron",
+              "AssetId": 3,
+              "Name": "X-wing"
+            },
+            {
+              "FamilyId": 28,
+              "FamilyName": "Fighter Squadron",
+              "AssetId": 4,
+              "Name": "Y-wing"
+            },
+            {
+              "FamilyId": 28,
+              "FamilyName": "Fighter Squadron",
+              "AssetId": 4,
+              "Name": "Y-wing"
+            }
+          ]
+        }
+      ],
+      "source_file": "CMUNHQTB.DAT",
+      "fixed_range": [
+        86,
+        87
+      ]
+    },
+    "alliance_start_garrison": {
+      "Type": "CMUN/FACL (Hierarchical)",
+      "Description": "SeedFamilyTableEntry",
+      "Entries": [
+        {
+          "ParentId": 1,
+          "ProbabilityThreshold": 1,
+          "Multiplier": 1,
+          "ChildrenCount": 5,
+          "Assets": [
+            {
+              "FamilyId": 0,
+              "FamilyName": "Null/Empty",
+              "AssetId": 0,
+              "Name": "None"
+            },
+            {
+              "FamilyId": 16,
+              "FamilyName": "Troop Regiment",
+              "AssetId": 2,
+              "Name": "Alliance Army Regiment"
+            },
+            {
+              "FamilyId": 16,
+              "FamilyName": "Troop Regiment",
+              "AssetId": 2,
+              "Name": "Alliance Army Regiment"
+            },
+            {
+              "FamilyId": 28,
+              "FamilyName": "Fighter Squadron",
+              "AssetId": 3,
+              "Name": "X-wing"
+            },
+            {
+              "FamilyId": 28,
+              "FamilyName": "Fighter Squadron",
+              "AssetId": 4,
+              "Name": "Y-wing"
+            }
+          ]
+        }
+      ],
+      "source_file": "CMUNYVTB.DAT",
+      "fixed_range": [
+        84,
+        85
+      ]
+    },
+    "alliance_hq_facilities": {
+      "Type": "CMUN/FACL (Hierarchical)",
+      "Description": "SeedFamilyTableEntry",
+      "Entries": [
+        {
+          "ParentId": 1,
+          "ProbabilityThreshold": 1,
+          "Multiplier": 1,
+          "ChildrenCount": 2,
+          "Assets": [
+            {
+              "FamilyId": 0,
+              "FamilyName": "Null/Empty",
+              "AssetId": 0,
+              "Name": "None"
+            },
+            {
+              "FamilyId": 32,
+              "FamilyName": "Headquarters",
+              "AssetId": 1,
+              "Name": "Headquarters (Tier 1)"
+            }
+          ]
+        },
+        {
+          "ParentId": 2,
+          "ProbabilityThreshold": 2,
+          "Multiplier": 1,
+          "ChildrenCount": 5,
+          "Assets": [
+            {
+              "FamilyId": 0,
+              "FamilyName": "Null/Empty",
+              "AssetId": 0,
+              "Name": "None"
+            },
+            {
+              "FamilyId": 44,
+              "FamilyName": "Mine",
+              "AssetId": 1,
+              "Name": "Mine (Tier 1)"
+            },
+            {
+              "FamilyId": 45,
+              "FamilyName": "Refinery",
+              "AssetId": 2,
+              "Name": "Refinery (Tier 2)"
+            },
+            {
+              "FamilyId": 42,
+              "FamilyName": "Construction Yard",
+              "AssetId": 3,
+              "Name": "Construction Yard (Tier 3)"
+            },
+            {
+              "FamilyId": 36,
+              "FamilyName": "GenCore",
+              "AssetId": 3,
+              "Name": "Planetary Shield"
+            }
+          ]
+        }
+      ],
+      "source_file": "FACLHQTB.DAT",
+      "fixed_range": [
+        94,
+        95
+      ]
+    },
+    "empire_hq_facilities": {
+      "Type": "CMUN/FACL (Hierarchical)",
+      "Description": "SeedFamilyTableEntry",
+      "Entries": [
+        {
+          "ParentId": 1,
+          "ProbabilityThreshold": 1,
+          "Multiplier": 1,
+          "ChildrenCount": 2,
+          "Assets": [
+            {
+              "FamilyId": 0,
+              "FamilyName": "Null/Empty",
+              "AssetId": 0,
+              "Name": "None"
+            },
+            {
+              "FamilyId": 42,
+              "FamilyName": "Construction Yard",
+              "AssetId": 3,
+              "Name": "Construction Yard (Tier 3)"
+            }
+          ]
+        }
+      ],
+      "source_file": "FACLCRTB.DAT",
+      "fixed_range": [
+        96,
+        97
+      ]
+    }
+  }
+}

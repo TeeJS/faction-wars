@@ -53,10 +53,13 @@ static func apply(c: Command) -> Result:
 			var p: Planet = EntityIndex.planet(str(a.get("planet", "")))
 			if p == null:
 				return Result.fail("Unknown world.")
-			return p.TryQueueMany(int(a.get("type", 0)), int(a.get("tier", 1)), EntityIndex.planet(str(a.get("destination", ""))), int(a.get("count", 1)))
+			# The facility FAMILY, e.g. "shipyard". Was the FacilityType ordinal;
+			# command logs written before 2026-09-21 carry the int and no longer
+			# resolve - single player only, and the pack owns the vocabulary now.
+			return p.TryQueueMany(str(a.get("type", "")), int(a.get("tier", 1)), EntityIndex.planet(str(a.get("destination", ""))), int(a.get("count", 1)))
 		"queue_units":
 			var p: Planet = EntityIndex.planet(str(a.get("planet", "")))
-			var rule: CatalogDtos.UnitStatRule = Lq.first_or_null(MilitaryCatalog.All(), func(r) -> bool: return r.Name == str(a.get("rule", "")))
+			var rule: PackDefs.UnitDef = Lq.first_or_null(MilitaryCatalog.All(), func(r) -> bool: return r.DisplayName == str(a.get("rule", "")))
 			if p == null or rule == null:
 				return Result.fail("Unknown world or unit type.")
 			return p.TryQueueManyUnits(rule, EntityIndex.planet(str(a.get("destination", ""))), int(a.get("count", 1)))
@@ -64,7 +67,7 @@ static func apply(c: Command) -> Result:
 			var p: Planet = EntityIndex.planet(str(a.get("planet", "")))
 			if p == null:
 				return Result.fail("Unknown world.")
-			p.CancelCurrentBuild(int(a.get("producer", 0)))
+			p.CancelCurrentBuild(str(a.get("producer", "")))
 			return Result.success()
 		"scrap_facility":
 			var f: Facility = EntityIndex.facility(int(a.get("facility", 0)))

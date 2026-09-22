@@ -61,8 +61,8 @@ func _planet_window(alliance: Faction, empire: Faction) -> void:
 		var facAtCapture: int = _count_labels(pw.get_node("%facilities"))
 		# The world changes after we looked: support swings, defences go up.
 		r.SetSupportFor(alliance, 88)
-		r.AddFacility(Enums.FacilityType.PlanetaryShield, 1)
-		r.AddFacility(Enums.FacilityType.PlanetaryShield, 1)
+		r.AddFacility("planetary_shield", 1)
+		r.AddFacility("planetary_shield", 1)
 		pw.Populate(r)
 		var status: String = (pw.get_node("%status") as Label).text
 		_check(status.contains("15%") and not status.contains("88%"), "planet window shows the SCOUTED support (15%%), not the live value (88%%)")

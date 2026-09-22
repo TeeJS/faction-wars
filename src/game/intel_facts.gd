@@ -40,7 +40,7 @@ var ion_cannons: int = 0
 var guns: Array = []              ## weapon ratings of EVERY defence that fires on a landing (AssaultManager.Estimate's `batteries`)
 
 var production_day: int = -1      ## ProductionFacilities
-var facility_counts: Dictionary = {}   ## Enums.FacilityType -> count (the Headquarters building is one)
+var facility_counts: Dictionary = {}   ## facility family id -> count (the headquarters building is one)
 
 var people_day: int = -1          ## Characters - everybody standing there, either side's, EXCEPT an agent on a mission (hidden)
 var people: Array = []            ## [{name, rank}]
@@ -98,23 +98,23 @@ func age(day_seen: int, today: int) -> int:
 	return today - day_seen if day_seen >= 0 else 1 << 30
 
 
-func count_of(type: int) -> int:
-	return int(facility_counts.get(type, 0))
+func count_of(family: String) -> int:
+	return int(facility_counts.get(family, 0))
 
 
 ## How many facilities of `type` we saw there, whichever sighting holds that kind:
 ## the three defences are seen with DefensiveFacilities, everything else with
 ## ProductionFacilities (IntelManager.IsDefensive).
-func facilities_of(type: int) -> int:
-	match type:
-		Enums.FacilityType.PlanetaryShield:   return shields
-		Enums.FacilityType.TurbolaserBattery: return batteries.size()
-		Enums.FacilityType.IonCannon:         return ion_cannons
-	return count_of(type)
+func facilities_of(family: String) -> int:
+	match family:
+		"planetary_shield":   return shields
+		"turbolaser_battery": return batteries.size()
+		"ion_cannon":         return ion_cannons
+	return count_of(family)
 
 
 func has_headquarters() -> bool:
-	return count_of(Enums.FacilityType.Headquarters) > 0
+	return count_of("headquarters") > 0
 
 
 ## Combined strength of the fleets seen there that are NOT `side`'s.

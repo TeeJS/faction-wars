@@ -69,7 +69,7 @@ func _init() -> void:
 	var saboteur: Character = _first_char(func(c): return c.Faction == empire and c.Status != Enums.Status.Dead and not c.IsCaptured())
 	_check(saboteur != null, "AC3: an Imperial operative exists")
 	if saboteur != null:
-		ally_planet.AddFacility(Enums.FacilityType.TurbolaserBattery)
+		ally_planet.AddFacility("turbolaser_battery")
 		var fac: Facility = ally_planet.Facilities[ally_planet.Facilities.size() - 1]
 		var m := Mission.new()
 		m.Type = Enums.MissionType.Sabotage

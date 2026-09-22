@@ -11,21 +11,18 @@ enum Status { AwaitingOrders, Enroute, OnMission, Kidnapped, Dead }       # back
 
 enum Rank { None, General, Admiral, Commander, Captain }                  # backend/Character.cs
 
-## "There are FIVE LEVELS of Force users" (manual p092); None means not a Force user.
-enum ForceRanking { None, Novice, Trainee, JediStudent, JediKnight, JediMaster }
+## "There are FIVE LEVELS" of the special power (manual p092); None means not a
+## user. The engine holds the bands and their thresholds (Character
+## .SpecialPowerRankOf); what a band is CALLED is pack data - display.json
+## special_power_ranks, read through Character.RankLabel. Never render these
+## member names to the player.
+enum SpecialPowerRank { None, Novice, Trainee, Student, Knight, Master }
 
-enum FacilityType {                                                       # backend/Facility.cs
-	Headquarters,
-	Mine,
-	Refinery,
-	ConstructionYard,
-	Shipyard,
-	TrainingFacility,
-	PlanetaryShield,     # GenCore, family 36
-	TurbolaserBattery,   # LNR series, family 35
-	IonCannon,           # KDY v150, family 34
-	DeathStarShield,     # family 37 - protects the Death Star only, no bombardment shield
-}
+## FACILITIES ARE PACK DATA (SCHEMA.md section 5). This used to be a closed enum
+## naming Star Wars structures - IonCannon, DeathStarShield - which a pack could
+## not add to without a recompile. facilities.json replaces it and the engine
+## selects on ROLE tags; see PackDefs.FacilityDef and FacilityCatalog.
+
 
 enum Difficulty { Multiplayer, Easy, Medium, Hard }                       # backend/GameContext.cs
 
@@ -43,11 +40,11 @@ enum MissionType {
 	Assassination,
 	Rescue,
 	Sabotage,
-	DeathStarSabotage,
+	SuperweaponSabotage,
 	ShipDesignResearch,
 	TroopTrainingResearch,
 	FacilityDesignResearch,
-	JediTraining,
+	SpecialPowerTraining,
 }
 
 ## backend/GameMessage.cs - the TABS on the message index (TEXTSTRA.DLL's own strip).

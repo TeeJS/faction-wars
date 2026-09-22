@@ -16,14 +16,14 @@
           "planet": "Yavin",
           "support": 100,
           "explored": true,
-          "garrison": "CMUNYVTB.DAT"
+          "garrison": "alliance_start_garrison"
         }
       ],
       "seed": {
-        "hq_facilities": "FACLHQTB.DAT",
-        "hq_garrison": "CMUNHQTB.DAT",
-        "fleet": "CMUNAFTB.DAT",
-        "procedural_fleet": "CMUNALTB.DAT"
+        "hq_facilities": "alliance_hq_facilities",
+        "hq_garrison": "alliance_hq_garrison",
+        "fleet": "alliance_fleet",
+        "procedural_fleet": "alliance_procedural_fleet"
       },
       "victory": {
         "capture_characters": [
@@ -44,10 +44,10 @@
       "occupation_support_policy": "garrison_bonus",
       "starting_planets": [],
       "seed": {
-        "hq_facilities": "FACLCRTB.DAT",
-        "hq_garrison": "CMUNCRTB.DAT",
-        "fleet": "CMUNEFTB.DAT",
-        "procedural_fleet": "CMUNEMTB.DAT"
+        "hq_facilities": "empire_hq_facilities",
+        "hq_garrison": "empire_hq_garrison",
+        "fleet": "empire_fleet",
+        "procedural_fleet": "empire_procedural_fleet"
       },
       "victory": {
         "capture_characters": [

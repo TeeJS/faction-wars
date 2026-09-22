@@ -6,6 +6,9 @@ extends RefCounted
 
 const PACKS_ROOT := "res://packs"
 
+## THE LOADED PACK. Held here because this is what loads it, and the map, the
+## rules and the catalogs all need it after the factions are built.
+static var Pack: PackLoader.LoadedPack = null
 static var Playable: Array[Faction] = []
 static var Neutral: Faction = null
 static var Unknown: Faction = null
@@ -38,6 +41,7 @@ static func EnsureLoaded() -> void:
 
 
 static func Load(pack: PackLoader.LoadedPack) -> void:
+	Pack = pack
 	_by_id.clear()
 	var playable: Array[Faction] = []
 	for def in pack.Factions:

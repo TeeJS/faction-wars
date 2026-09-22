@@ -1,0 +1,3322 @@
+{
+  "characters": [
+    {
+      "id": "mon_mothma",
+      "display_name": "Mon Mothma",
+      "faction": "alliance",
+      "is_major": true,
+      "ratings": {
+        "diplomacy": {
+          "base": 100,
+          "var": 0
+        },
+        "espionage": {
+          "base": 10,
+          "var": 0
+        },
+        "combat": {
+          "base": 10,
+          "var": 0
+        },
+        "leadership": {
+          "base": 100,
+          "var": 0
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [],
+      "wont_betray": true,
+      "special_power": {
+        "probability": 0,
+        "is_known_user": false,
+        "level": {
+          "base": 0,
+          "var": 0
+        },
+        "can_train": false
+      },
+      "source_id": 576,
+      "string_id": 10304
+    },
+    {
+      "id": "leia_organa",
+      "display_name": "Leia Organa",
+      "faction": "alliance",
+      "is_major": true,
+      "ratings": {
+        "diplomacy": {
+          "base": 120,
+          "var": 0
+        },
+        "espionage": {
+          "base": 30,
+          "var": 0
+        },
+        "combat": {
+          "base": 50,
+          "var": 0
+        },
+        "leadership": {
+          "base": 70,
+          "var": 0
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [],
+      "wont_betray": true,
+      "special_power": {
+        "probability": 100,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 0
+        },
+        "can_train": false
+      },
+      "source_id": 577,
+      "string_id": 10305
+    },
+    {
+      "id": "luke_skywalker",
+      "display_name": "Luke Skywalker",
+      "faction": "alliance",
+      "is_major": true,
+      "ratings": {
+        "diplomacy": {
+          "base": 50,
+          "var": 0
+        },
+        "espionage": {
+          "base": 50,
+          "var": 0
+        },
+        "combat": {
+          "base": 90,
+          "var": 0
+        },
+        "leadership": {
+          "base": 70,
+          "var": 0
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "admiral",
+        "commander",
+        "general"
+      ],
+      "wont_betray": true,
+      "special_power": {
+        "probability": 100,
+        "is_known_user": true,
+        "level": {
+          "base": 50,
+          "var": 0
+        },
+        "can_train": true
+      },
+      "source_id": 578,
+      "string_id": 10306
+    },
+    {
+      "id": "han_solo",
+      "display_name": "Han Solo",
+      "faction": "alliance",
+      "is_major": true,
+      "ratings": {
+        "diplomacy": {
+          "base": 10,
+          "var": 0
+        },
+        "espionage": {
+          "base": 100,
+          "var": 0
+        },
+        "combat": {
+          "base": 100,
+          "var": 0
+        },
+        "leadership": {
+          "base": 90,
+          "var": 0
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "admiral",
+        "commander",
+        "general"
+      ],
+      "wont_betray": true,
+      "special_power": {
+        "probability": 0,
+        "is_known_user": false,
+        "level": {
+          "base": 0,
+          "var": 0
+        },
+        "can_train": false
+      },
+      "source_id": 579,
+      "string_id": 10307
+    },
+    {
+      "id": "emperor_palpatine",
+      "display_name": "Emperor Palpatine",
+      "faction": "empire",
+      "is_major": true,
+      "ratings": {
+        "diplomacy": {
+          "base": 30,
+          "var": 0
+        },
+        "espionage": {
+          "base": 20,
+          "var": 0
+        },
+        "combat": {
+          "base": 50,
+          "var": 0
+        },
+        "leadership": {
+          "base": 100,
+          "var": 0
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [],
+      "wont_betray": true,
+      "special_power": {
+        "probability": 100,
+        "is_known_user": true,
+        "level": {
+          "base": 150,
+          "var": 0
+        },
+        "can_train": false
+      },
+      "source_id": 640,
+      "string_id": 10368
+    },
+    {
+      "id": "darth_vader",
+      "display_name": "Darth Vader",
+      "faction": "empire",
+      "is_major": true,
+      "ratings": {
+        "diplomacy": {
+          "base": 40,
+          "var": 0
+        },
+        "espionage": {
+          "base": 50,
+          "var": 0
+        },
+        "combat": {
+          "base": 100,
+          "var": 0
+        },
+        "leadership": {
+          "base": 100,
+          "var": 0
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "admiral",
+        "commander",
+        "general"
+      ],
+      "wont_betray": true,
+      "special_power": {
+        "probability": 100,
+        "is_known_user": true,
+        "level": {
+          "base": 120,
+          "var": 0
+        },
+        "can_train": true
+      },
+      "source_id": 641,
+      "string_id": 10369
+    },
+    {
+      "id": "ackbar",
+      "display_name": "Ackbar",
+      "faction": "alliance",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 0,
+          "var": 50
+        },
+        "combat": {
+          "base": 0,
+          "var": 50
+        },
+        "leadership": {
+          "base": 90,
+          "var": 10
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 40,
+          "var": 60
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "admiral",
+        "general"
+      ],
+      "wont_betray": true,
+      "special_power": {
+        "probability": 10,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 832,
+      "string_id": 10816
+    },
+    {
+      "id": "wedge_antilles",
+      "display_name": "Wedge Antilles",
+      "faction": "alliance",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 70,
+          "var": 30
+        },
+        "combat": {
+          "base": 70,
+          "var": 30
+        },
+        "leadership": {
+          "base": 80,
+          "var": 20
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 40,
+          "var": 60
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "admiral",
+        "commander",
+        "general"
+      ],
+      "wont_betray": true,
+      "special_power": {
+        "probability": 10,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 833,
+      "string_id": 10817
+    },
+    {
+      "id": "lando_calrissian",
+      "display_name": "Lando Calrissian",
+      "faction": "alliance",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 70,
+          "var": 30
+        },
+        "espionage": {
+          "base": 70,
+          "var": 30
+        },
+        "combat": {
+          "base": 70,
+          "var": 30
+        },
+        "leadership": {
+          "base": 80,
+          "var": 20
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 40,
+          "var": 60
+        }
+      },
+      "can_command": [
+        "admiral",
+        "commander",
+        "general"
+      ],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 10,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 834,
+      "string_id": 10818
+    },
+    {
+      "id": "chewbacca",
+      "display_name": "Chewbacca",
+      "faction": "alliance",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 90,
+          "var": 10
+        },
+        "combat": {
+          "base": 90,
+          "var": 10
+        },
+        "leadership": {
+          "base": 0,
+          "var": 30
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [],
+      "wont_betray": true,
+      "special_power": {
+        "probability": 10,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 835,
+      "string_id": 10819
+    },
+    {
+      "id": "jan_dodonna",
+      "display_name": "Jan Dodonna",
+      "faction": "alliance",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 70,
+          "var": 30
+        },
+        "espionage": {
+          "base": 0,
+          "var": 50
+        },
+        "combat": {
+          "base": 0,
+          "var": 50
+        },
+        "leadership": {
+          "base": 80,
+          "var": 20
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "admiral",
+        "general"
+      ],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 10,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 836,
+      "string_id": 10820
+    },
+    {
+      "id": "crix_madine",
+      "display_name": "Crix Madine",
+      "faction": "alliance",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 70,
+          "var": 30
+        },
+        "combat": {
+          "base": 70,
+          "var": 30
+        },
+        "leadership": {
+          "base": 80,
+          "var": 20
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 40,
+          "var": 60
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "general"
+      ],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 20,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 837,
+      "string_id": 10821
+    },
+    {
+      "id": "carlist_rieekan",
+      "display_name": "Carlist Rieekan",
+      "faction": "alliance",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 0,
+          "var": 50
+        },
+        "combat": {
+          "base": 0,
+          "var": 50
+        },
+        "leadership": {
+          "base": 80,
+          "var": 20
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 40,
+          "var": 60
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "general"
+      ],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 20,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 838,
+      "string_id": 10822
+    },
+    {
+      "id": "afyon",
+      "display_name": "Afyon",
+      "faction": "alliance",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 70,
+          "var": 30
+        },
+        "combat": {
+          "base": 70,
+          "var": 30
+        },
+        "leadership": {
+          "base": 80,
+          "var": 20
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "admiral",
+        "commander",
+        "general"
+      ],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 20,
+        "is_known_user": false,
+        "level": {
+          "base": 20,
+          "var": 30
+        },
+        "can_train": false
+      },
+      "source_id": 839,
+      "string_id": 10823
+    },
+    {
+      "id": "drayson",
+      "display_name": "Drayson",
+      "faction": "alliance",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 70,
+          "var": 30
+        },
+        "espionage": {
+          "base": 0,
+          "var": 50
+        },
+        "combat": {
+          "base": 0,
+          "var": 50
+        },
+        "leadership": {
+          "base": 80,
+          "var": 20
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "admiral",
+        "general"
+      ],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 20,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 840,
+      "string_id": 10824
+    },
+    {
+      "id": "borsk_fey_lya",
+      "display_name": "Borsk Fey'lya",
+      "faction": "alliance",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 80,
+          "var": 20
+        },
+        "espionage": {
+          "base": 70,
+          "var": 30
+        },
+        "combat": {
+          "base": 70,
+          "var": 30
+        },
+        "leadership": {
+          "base": 0,
+          "var": 30
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 20,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 841,
+      "string_id": 10825
+    },
+    {
+      "id": "tura_raftican",
+      "display_name": "Tura Raftican",
+      "faction": "alliance",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 90,
+          "var": 10
+        },
+        "combat": {
+          "base": 80,
+          "var": 20
+        },
+        "leadership": {
+          "base": 0,
+          "var": 30
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 20,
+        "is_known_user": false,
+        "level": {
+          "base": 20,
+          "var": 30
+        },
+        "can_train": false
+      },
+      "source_id": 842,
+      "string_id": 10826
+    },
+    {
+      "id": "bren_derlin",
+      "display_name": "Bren Derlin",
+      "faction": "alliance",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 70,
+          "var": 30
+        },
+        "combat": {
+          "base": 70,
+          "var": 30
+        },
+        "leadership": {
+          "base": 80,
+          "var": 20
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "commander",
+        "general"
+      ],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 20,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 843,
+      "string_id": 10827
+    },
+    {
+      "id": "garm_bel_iblis",
+      "display_name": "Garm Bel Iblis",
+      "faction": "alliance",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 80,
+          "var": 20
+        },
+        "combat": {
+          "base": 80,
+          "var": 20
+        },
+        "leadership": {
+          "base": 80,
+          "var": 20
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "admiral",
+        "general"
+      ],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 20,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 844,
+      "string_id": 10828
+    },
+    {
+      "id": "talon_karrde",
+      "display_name": "Talon Karrde",
+      "faction": "alliance",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 80,
+          "var": 20
+        },
+        "espionage": {
+          "base": 0,
+          "var": 50
+        },
+        "combat": {
+          "base": 0,
+          "var": 50
+        },
+        "leadership": {
+          "base": 80,
+          "var": 20
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 40,
+          "var": 60
+        }
+      },
+      "can_command": [
+        "admiral",
+        "commander",
+        "general"
+      ],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 20,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 845,
+      "string_id": 10829
+    },
+    {
+      "id": "narra",
+      "display_name": "Narra",
+      "faction": "alliance",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 70,
+          "var": 30
+        },
+        "combat": {
+          "base": 70,
+          "var": 30
+        },
+        "leadership": {
+          "base": 80,
+          "var": 20
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "commander",
+        "general"
+      ],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 20,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 846,
+      "string_id": 10830
+    },
+    {
+      "id": "huoba_neva",
+      "display_name": "Huoba Neva",
+      "faction": "alliance",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 80,
+          "var": 20
+        },
+        "combat": {
+          "base": 80,
+          "var": 20
+        },
+        "leadership": {
+          "base": 80,
+          "var": 20
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "admiral",
+        "general"
+      ],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 20,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 847,
+      "string_id": 10831
+    },
+    {
+      "id": "page",
+      "display_name": "Page",
+      "faction": "alliance",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 90,
+          "var": 10
+        },
+        "combat": {
+          "base": 90,
+          "var": 10
+        },
+        "leadership": {
+          "base": 0,
+          "var": 30
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 20,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 848,
+      "string_id": 10832
+    },
+    {
+      "id": "syub_snunb",
+      "display_name": "Syub Snunb",
+      "faction": "alliance",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 70,
+          "var": 30
+        },
+        "combat": {
+          "base": 70,
+          "var": 30
+        },
+        "leadership": {
+          "base": 80,
+          "var": 20
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "admiral",
+        "commander"
+      ],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 20,
+        "is_known_user": false,
+        "level": {
+          "base": 30,
+          "var": 20
+        },
+        "can_train": false
+      },
+      "source_id": 849,
+      "string_id": 10833
+    },
+    {
+      "id": "adar_tallon",
+      "display_name": "Adar Tallon",
+      "faction": "alliance",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 0,
+          "var": 50
+        },
+        "combat": {
+          "base": 0,
+          "var": 50
+        },
+        "leadership": {
+          "base": 90,
+          "var": 10
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 40,
+          "var": 60
+        },
+        "troop_research": {
+          "base": 40,
+          "var": 60
+        },
+        "facility_research": {
+          "base": 40,
+          "var": 60
+        }
+      },
+      "can_command": [
+        "admiral",
+        "commander",
+        "general"
+      ],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 10,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 850,
+      "string_id": 10834
+    },
+    {
+      "id": "sarin_virgilio",
+      "display_name": "Sarin Virgilio",
+      "faction": "alliance",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 70,
+          "var": 30
+        },
+        "combat": {
+          "base": 70,
+          "var": 30
+        },
+        "leadership": {
+          "base": 80,
+          "var": 20
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "admiral",
+        "general"
+      ],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 20,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 851,
+      "string_id": 10835
+    },
+    {
+      "id": "vanden_willard",
+      "display_name": "Vanden Willard",
+      "faction": "alliance",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 70,
+          "var": 30
+        },
+        "espionage": {
+          "base": 0,
+          "var": 50
+        },
+        "combat": {
+          "base": 0,
+          "var": 50
+        },
+        "leadership": {
+          "base": 80,
+          "var": 20
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "admiral",
+        "general"
+      ],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 20,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 852,
+      "string_id": 10836
+    },
+    {
+      "id": "roget_jiriss",
+      "display_name": "Roget Jiriss",
+      "faction": "alliance",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 80,
+          "var": 20
+        },
+        "combat": {
+          "base": 70,
+          "var": 30
+        },
+        "leadership": {
+          "base": 80,
+          "var": 20
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "admiral",
+        "commander"
+      ],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 20,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 853,
+      "string_id": 10837
+    },
+    {
+      "id": "kaiya_andrimetrum",
+      "display_name": "Kaiya Andrimetrum",
+      "faction": "alliance",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 70,
+          "var": 30
+        },
+        "combat": {
+          "base": 70,
+          "var": 30
+        },
+        "leadership": {
+          "base": 90,
+          "var": 10
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "general"
+      ],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 20,
+        "is_known_user": false,
+        "level": {
+          "base": 30,
+          "var": 20
+        },
+        "can_train": false
+      },
+      "source_id": 854,
+      "string_id": 10838
+    },
+    {
+      "id": "mazer_rackus",
+      "display_name": "Mazer Rackus",
+      "faction": "alliance",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 80,
+          "var": 20
+        },
+        "combat": {
+          "base": 80,
+          "var": 20
+        },
+        "leadership": {
+          "base": 0,
+          "var": 30
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 20,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 855,
+      "string_id": 10839
+    },
+    {
+      "id": "orrimaarko",
+      "display_name": "Orrimaarko",
+      "faction": "alliance",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 90,
+          "var": 10
+        },
+        "combat": {
+          "base": 80,
+          "var": 20
+        },
+        "leadership": {
+          "base": 0,
+          "var": 30
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 20,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 856,
+      "string_id": 10840
+    },
+    {
+      "id": "ma_w_shiye",
+      "display_name": "Ma'w'shiye",
+      "faction": "alliance",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 90,
+          "var": 10
+        },
+        "combat": {
+          "base": 80,
+          "var": 20
+        },
+        "leadership": {
+          "base": 0,
+          "var": 30
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 20,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 857,
+      "string_id": 10841
+    },
+    {
+      "id": "jerjerrod",
+      "display_name": "Jerjerrod",
+      "faction": "empire",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 70,
+          "var": 30
+        },
+        "espionage": {
+          "base": 0,
+          "var": 50
+        },
+        "combat": {
+          "base": 0,
+          "var": 50
+        },
+        "leadership": {
+          "base": 80,
+          "var": 20
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "admiral",
+        "commander",
+        "general"
+      ],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 10,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 896,
+      "string_id": 10880
+    },
+    {
+      "id": "ozzel",
+      "display_name": "Ozzel",
+      "faction": "empire",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 70,
+          "var": 30
+        },
+        "combat": {
+          "base": 70,
+          "var": 30
+        },
+        "leadership": {
+          "base": 80,
+          "var": 20
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "admiral",
+        "general"
+      ],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 10,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 897,
+      "string_id": 10881
+    },
+    {
+      "id": "piett",
+      "display_name": "Piett",
+      "faction": "empire",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 70,
+          "var": 30
+        },
+        "espionage": {
+          "base": 0,
+          "var": 50
+        },
+        "combat": {
+          "base": 0,
+          "var": 50
+        },
+        "leadership": {
+          "base": 80,
+          "var": 20
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "admiral",
+        "commander",
+        "general"
+      ],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 10,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 898,
+      "string_id": 10882
+    },
+    {
+      "id": "veers",
+      "display_name": "Veers",
+      "faction": "empire",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 0,
+          "var": 50
+        },
+        "combat": {
+          "base": 0,
+          "var": 50
+        },
+        "leadership": {
+          "base": 90,
+          "var": 10
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 40,
+          "var": 60
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "general"
+      ],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 10,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 899,
+      "string_id": 10883
+    },
+    {
+      "id": "brandei",
+      "display_name": "Brandei",
+      "faction": "empire",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 70,
+          "var": 30
+        },
+        "combat": {
+          "base": 70,
+          "var": 30
+        },
+        "leadership": {
+          "base": 80,
+          "var": 20
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "admiral",
+        "commander",
+        "general"
+      ],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 10,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 900,
+      "string_id": 10884
+    },
+    {
+      "id": "covell",
+      "display_name": "Covell",
+      "faction": "empire",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 0,
+          "var": 50
+        },
+        "combat": {
+          "base": 0,
+          "var": 50
+        },
+        "leadership": {
+          "base": 80,
+          "var": 20
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 40,
+          "var": 60
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "general"
+      ],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 10,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 901,
+      "string_id": 10885
+    },
+    {
+      "id": "dorja",
+      "display_name": "Dorja",
+      "faction": "empire",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 70,
+          "var": 30
+        },
+        "combat": {
+          "base": 70,
+          "var": 30
+        },
+        "leadership": {
+          "base": 80,
+          "var": 20
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "admiral",
+        "commander",
+        "general"
+      ],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 10,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 902,
+      "string_id": 10886
+    },
+    {
+      "id": "bin_essada",
+      "display_name": "Bin Essada",
+      "faction": "empire",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 70,
+          "var": 30
+        },
+        "espionage": {
+          "base": 0,
+          "var": 50
+        },
+        "combat": {
+          "base": 0,
+          "var": 50
+        },
+        "leadership": {
+          "base": 80,
+          "var": 20
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 10,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 903,
+      "string_id": 10887
+    },
+    {
+      "id": "niles_ferrier",
+      "display_name": "Niles Ferrier",
+      "faction": "empire",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 80,
+          "var": 20
+        },
+        "combat": {
+          "base": 80,
+          "var": 20
+        },
+        "leadership": {
+          "base": 0,
+          "var": 30
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 20,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 904,
+      "string_id": 10888
+    },
+    {
+      "id": "grammel",
+      "display_name": "Grammel",
+      "faction": "empire",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 70,
+          "var": 30
+        },
+        "combat": {
+          "base": 70,
+          "var": 30
+        },
+        "leadership": {
+          "base": 80,
+          "var": 20
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "admiral",
+        "commander",
+        "general"
+      ],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 10,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 905,
+      "string_id": 10889
+    },
+    {
+      "id": "griff",
+      "display_name": "Griff",
+      "faction": "empire",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 70,
+          "var": 30
+        },
+        "combat": {
+          "base": 70,
+          "var": 30
+        },
+        "leadership": {
+          "base": 80,
+          "var": 20
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "admiral",
+        "general"
+      ],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 10,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 906,
+      "string_id": 10890
+    },
+    {
+      "id": "klev",
+      "display_name": "Klev",
+      "faction": "empire",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 0,
+          "var": 50
+        },
+        "combat": {
+          "base": 0,
+          "var": 50
+        },
+        "leadership": {
+          "base": 80,
+          "var": 20
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 40,
+          "var": 60
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "admiral",
+        "general"
+      ],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 10,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 907,
+      "string_id": 10891
+    },
+    {
+      "id": "needa",
+      "display_name": "Needa",
+      "faction": "empire",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 70,
+          "var": 30
+        },
+        "combat": {
+          "base": 70,
+          "var": 30
+        },
+        "leadership": {
+          "base": 80,
+          "var": 20
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "admiral",
+        "commander",
+        "general"
+      ],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 10,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 908,
+      "string_id": 10892
+    },
+    {
+      "id": "bane_nothos",
+      "display_name": "Bane Nothos",
+      "faction": "empire",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 70,
+          "var": 30
+        },
+        "combat": {
+          "base": 70,
+          "var": 30
+        },
+        "leadership": {
+          "base": 80,
+          "var": 20
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "admiral",
+        "commander",
+        "general"
+      ],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 10,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 909,
+      "string_id": 10893
+    },
+    {
+      "id": "orlok",
+      "display_name": "Orlok",
+      "faction": "empire",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 0,
+          "var": 50
+        },
+        "combat": {
+          "base": 0,
+          "var": 50
+        },
+        "leadership": {
+          "base": 80,
+          "var": 20
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 40,
+          "var": 60
+        }
+      },
+      "can_command": [
+        "general"
+      ],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 10,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 910,
+      "string_id": 10894
+    },
+    {
+      "id": "pellaeon",
+      "display_name": "Pellaeon",
+      "faction": "empire",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 70,
+          "var": 30
+        },
+        "espionage": {
+          "base": 0,
+          "var": 50
+        },
+        "combat": {
+          "base": 0,
+          "var": 50
+        },
+        "leadership": {
+          "base": 80,
+          "var": 20
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "admiral",
+        "commander",
+        "general"
+      ],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 10,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 911,
+      "string_id": 10895
+    },
+    {
+      "id": "screed",
+      "display_name": "Screed",
+      "faction": "empire",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 70,
+          "var": 30
+        },
+        "combat": {
+          "base": 70,
+          "var": 30
+        },
+        "leadership": {
+          "base": 90,
+          "var": 10
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "admiral",
+        "commander",
+        "general"
+      ],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 10,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 912,
+      "string_id": 10896
+    },
+    {
+      "id": "thrawn",
+      "display_name": "Thrawn",
+      "faction": "empire",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 0,
+          "var": 50
+        },
+        "combat": {
+          "base": 70,
+          "var": 30
+        },
+        "leadership": {
+          "base": 100,
+          "var": 30
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 40,
+          "var": 60
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "admiral",
+        "commander",
+        "general"
+      ],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 0,
+        "is_known_user": false,
+        "level": {
+          "base": 0,
+          "var": 0
+        },
+        "can_train": false
+      },
+      "source_id": 913,
+      "string_id": 10897
+    },
+    {
+      "id": "zuggs",
+      "display_name": "Zuggs",
+      "faction": "empire",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 70,
+          "var": 30
+        },
+        "combat": {
+          "base": 70,
+          "var": 30
+        },
+        "leadership": {
+          "base": 80,
+          "var": 20
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "admiral",
+        "commander",
+        "general"
+      ],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 10,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 914,
+      "string_id": 10898
+    },
+    {
+      "id": "daala",
+      "display_name": "Daala",
+      "faction": "empire",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 70,
+          "var": 30
+        },
+        "combat": {
+          "base": 70,
+          "var": 30
+        },
+        "leadership": {
+          "base": 90,
+          "var": 10
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "admiral",
+        "commander",
+        "general"
+      ],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 10,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 915,
+      "string_id": 10899
+    },
+    {
+      "id": "pter_thanas",
+      "display_name": "Pter Thanas",
+      "faction": "empire",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 70,
+          "var": 30
+        },
+        "espionage": {
+          "base": 0,
+          "var": 50
+        },
+        "combat": {
+          "base": 0,
+          "var": 50
+        },
+        "leadership": {
+          "base": 80,
+          "var": 20
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "admiral",
+        "commander",
+        "general"
+      ],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 10,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 916,
+      "string_id": 10900
+    },
+    {
+      "id": "bevel_lemelisk",
+      "display_name": "Bevel Lemelisk",
+      "faction": "empire",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 0,
+          "var": 50
+        },
+        "combat": {
+          "base": 0,
+          "var": 50
+        },
+        "leadership": {
+          "base": 0,
+          "var": 30
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 50,
+          "var": 50
+        },
+        "troop_research": {
+          "base": 50,
+          "var": 50
+        },
+        "facility_research": {
+          "base": 50,
+          "var": 50
+        }
+      },
+      "can_command": [],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 10,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 917,
+      "string_id": 10901
+    },
+    {
+      "id": "shenir_rix",
+      "display_name": "Shenir Rix",
+      "faction": "empire",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 90,
+          "var": 10
+        },
+        "combat": {
+          "base": 80,
+          "var": 20
+        },
+        "leadership": {
+          "base": 0,
+          "var": 30
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 10,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 918,
+      "string_id": 10902
+    },
+    {
+      "id": "noval_garaint",
+      "display_name": "Noval Garaint",
+      "faction": "empire",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 90,
+          "var": 10
+        },
+        "combat": {
+          "base": 80,
+          "var": 20
+        },
+        "leadership": {
+          "base": 0,
+          "var": 30
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 10,
+        "is_known_user": false,
+        "level": {
+          "base": 30,
+          "var": 20
+        },
+        "can_train": false
+      },
+      "source_id": 919,
+      "string_id": 10903
+    },
+    {
+      "id": "garindan",
+      "display_name": "Garindan",
+      "faction": "empire",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 80,
+          "var": 20
+        },
+        "combat": {
+          "base": 80,
+          "var": 20
+        },
+        "leadership": {
+          "base": 0,
+          "var": 30
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 10,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 920,
+      "string_id": 10904
+    },
+    {
+      "id": "menndo",
+      "display_name": "Menndo",
+      "faction": "empire",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 80,
+          "var": 20
+        },
+        "combat": {
+          "base": 90,
+          "var": 10
+        },
+        "leadership": {
+          "base": 0,
+          "var": 30
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 10,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 921,
+      "string_id": 10905
+    },
+    {
+      "id": "labansat",
+      "display_name": "Labansat",
+      "faction": "empire",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 80,
+          "var": 20
+        },
+        "combat": {
+          "base": 90,
+          "var": 10
+        },
+        "leadership": {
+          "base": 0,
+          "var": 30
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 10,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 922,
+      "string_id": 10906
+    },
+    {
+      "id": "villar",
+      "display_name": "Villar",
+      "faction": "empire",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 0,
+          "var": 30
+        },
+        "espionage": {
+          "base": 80,
+          "var": 20
+        },
+        "combat": {
+          "base": 70,
+          "var": 30
+        },
+        "leadership": {
+          "base": 0,
+          "var": 30
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 40,
+          "var": 60
+        }
+      },
+      "can_command": [],
+      "wont_betray": false,
+      "special_power": {
+        "probability": 10,
+        "is_known_user": false,
+        "level": {
+          "base": 10,
+          "var": 40
+        },
+        "can_train": false
+      },
+      "source_id": 923,
+      "string_id": 10907
+    }
+  ]
+}

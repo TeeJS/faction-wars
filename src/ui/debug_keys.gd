@@ -108,11 +108,11 @@ static func GrantResearch(points: int) -> void:
 static func GrantForce(amount: int) -> void:
 	var n := 0
 	for c in GameState.ActiveRoster:
-		if c.Faction != GameSettings.PlayerFaction or c.JediProbability <= 0:
+		if c.Faction != GameSettings.PlayerFaction or c.SpecialPowerProbability <= 0:
 			continue
-		c.IsKnownJedi = true
-		c.JediLevel += amount
-		print("[Debug]   %s -> Force %d (%s)" % [c.Name, c.JediLevel, JsonUtil.enum_name(Enums.ForceRanking, c.ForceRank())])
+		c.IsKnownSpecialPowerUser = true
+		c.SpecialPowerLevel += amount
+		print("[Debug]   %s -> Force %d (%s)" % [c.Name, c.SpecialPowerLevel, Character.RankLabel(c.SpecialPowerRankOf())])
 		n += 1
 	print("[Debug] +%d Force to %d characters" % [amount, n])
 	EventBus.BroadcastChanged()
@@ -152,8 +152,8 @@ func DumpState() -> void:
 			bits.append("DEAD")
 		if c.TraitorRevealed:
 			bits.append("TRAITOR")
-		if c.ForceRank() != Enums.ForceRanking.None:
-			bits.append("Force %s" % JsonUtil.enum_name(Enums.ForceRanking, c.ForceRank()))
+		if c.SpecialPowerRankOf() != Enums.SpecialPowerRank.None:
+			bits.append("Force %s" % Character.RankLabel(c.SpecialPowerRankOf()))
 		if not bits.is_empty():
 			print("    %s: %s" % [c.Name, ", ".join(bits)])
 	print("")

@@ -40,8 +40,8 @@ var LeadershipBase: int
 var LeadershipVar: int
 var LoyaltyBase: int
 var LoyaltyVar: int
-var JediLevelBase: int
-var JediLevelVar: int
+var SpecialPowerLevelBase: int
+var SpecialPowerLevelVar: int
 var ShipResearchBase: int
 var ShipResearchVar: int
 var TroopResearchBase: int
@@ -54,10 +54,10 @@ var CanBeAdmiral: bool
 var CanBeCommander: bool
 var CanBeGeneral: bool
 
-var JediProbability: int
-var JediLevel: int
-var IsKnownJedi: bool
-var CanTrainJedi: bool
+var SpecialPowerProbability: int
+var SpecialPowerLevel: int
+var IsKnownSpecialPowerUser: bool
+var CanTrainSpecialPower: bool
 
 ## Loyalty drifts toward galaxy-wide support (manual p094; LoyaltyManager).
 var Loyalty: int
@@ -143,18 +143,38 @@ func IsTraitorous() -> bool:
 
 ## The five bands: Novice 10 · Trainee 20 · Jedi Student 80 · Jedi Knight 100 ·
 ## Master 120 (recovered; see the source for the corroboration).
-func ForceRank() -> int:
-	if JediLevel >= 120: return Enums.ForceRanking.JediMaster
-	if JediLevel >= 100: return Enums.ForceRanking.JediKnight
-	if JediLevel >= 80:  return Enums.ForceRanking.JediStudent
-	if JediLevel >= 20:  return Enums.ForceRanking.Trainee
-	if JediLevel >= 10:  return Enums.ForceRanking.Novice
-	return Enums.ForceRanking.None
+func SpecialPowerRankOf() -> int:
+	if SpecialPowerLevel >= 120: return Enums.SpecialPowerRank.Master
+	if SpecialPowerLevel >= 100: return Enums.SpecialPowerRank.Knight
+	if SpecialPowerLevel >= 80:  return Enums.SpecialPowerRank.Student
+	if SpecialPowerLevel >= 20:  return Enums.SpecialPowerRank.Trainee
+	if SpecialPowerLevel >= 10:  return Enums.SpecialPowerRank.Novice
+	return Enums.SpecialPowerRank.None
+
+
+## THE ONLY WAY A BAND IS NAMED TO THE PLAYER. The pack decides the wording
+## (display.json special_power_ranks); the enum member is never shown.
+const _RANK_KEYS := {
+	Enums.SpecialPowerRank.None: "none",
+	Enums.SpecialPowerRank.Novice: "novice",
+	Enums.SpecialPowerRank.Trainee: "trainee",
+	Enums.SpecialPowerRank.Student: "student",
+	Enums.SpecialPowerRank.Knight: "knight",
+	Enums.SpecialPowerRank.Master: "master",
+}
+
+
+static func RankLabel(rank: int) -> String:
+	var key: String = _RANK_KEYS.get(rank, "none")
+	var pack := FactionRegistry.Pack
+	if pack != null and pack.Display != null:
+		return pack.Display.RankLabel(key)
+	return key
 
 
 ## "Strong enough" is entry 21, "Fast Heal: Force Rank Threshold" = 80.
 func HealsFast() -> bool:
-	return JediLevel >= RuleManager.Get(RuleId.FastHealForceRankThresh, Faction)
+	return SpecialPowerLevel >= RuleManager.Get(RuleId.FastHealSpecialPowerThresh, Faction)
 
 
 ## ★ LEAVING THE THING YOU COMMAND RELIEVES YOU OF THE COMMAND (measured). One
@@ -192,4 +212,54 @@ static func from_dict(d: Dictionary) -> Character:
 		"Faction": func(id: String) -> Faction: return FactionRegistry.ById(id),
 		"CapturedBy": func(id: String) -> Faction: return FactionRegistry.ById(id),
 	})
+	return c
+
+
+## FROM THE PACK (SCHEMA.md section 7). The pack's flat `ratings` map and
+## `can_command` list are spread back onto the named fields the simulation reads;
+## `special_power` is this pack's Force. Produces a Character indistinguishable
+## from what from_dict built out of the two data/ tables - the soak gate is what
+## says so.
+static func FromPack(def: PackDefs.CharacterDef) -> Character:
+	var c := Character.new()
+	c.Name = def.DisplayName
+	c.Faction = FactionRegistry.ById(def.FactionId)
+	c.IsMajor = def.IsMajor
+	c.WontBetray = def.WontBetray
+
+	var r: PackDefs.RatingDef = def.rating("diplomacy")
+	c.DiplomacyBase = r.Base
+	c.DiplomacyVar = r.Var
+	r = def.rating("espionage")
+	c.EspionageBase = r.Base
+	c.EspionageVar = r.Var
+	r = def.rating("combat")
+	c.CombatBase = r.Base
+	c.CombatVar = r.Var
+	r = def.rating("leadership")
+	c.LeadershipBase = r.Base
+	c.LeadershipVar = r.Var
+	r = def.rating("loyalty")
+	c.LoyaltyBase = r.Base
+	c.LoyaltyVar = r.Var
+	r = def.rating("ship_research")
+	c.ShipResearchBase = r.Base
+	c.ShipResearchVar = r.Var
+	r = def.rating("troop_research")
+	c.TroopResearchBase = r.Base
+	c.TroopResearchVar = r.Var
+	r = def.rating("facility_research")
+	c.FacilityResearchBase = r.Base
+	c.FacilityResearchVar = r.Var
+
+	c.CanBeAdmiral = def.CanCommand.has("admiral")
+	c.CanBeCommander = def.CanCommand.has("commander")
+	c.CanBeGeneral = def.CanCommand.has("general")
+
+	if def.SpecialPower != null:
+		c.SpecialPowerProbability = def.SpecialPower.Probability
+		c.IsKnownSpecialPowerUser = def.SpecialPower.IsKnownUser
+		c.SpecialPowerLevelBase = def.SpecialPower.LevelBase
+		c.SpecialPowerLevelVar = def.SpecialPower.LevelVar
+		c.CanTrainSpecialPower = def.SpecialPower.CanTrain
 	return c

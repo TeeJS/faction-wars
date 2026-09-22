@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://b2snkopk5igwb"]
 
 [ext_resource type="Script" path="res://src/ui/game_manager.gd" id="1_gm"]
-[ext_resource type="Texture2D" uid="uid://et4glgnfv6pb" path="res://data/galaxyShaded.bmp" id="2_c2ibq"]
+[ext_resource type="Texture2D" uid="uid://yqyss122muny" path="res://packs/star-wars-rebellion/galaxyShaded.bmp" id="2_c2ibq"]
 [ext_resource type="Script" path="res://src/ui/galaxy_map.gd" id="2_map"]
 [ext_resource type="Script" path="res://src/ui/ui_manager.gd" id="3_ui"]
 [ext_resource type="PackedScene" uid="uid://co3lfm7s0kqaq" path="res://src/ui/SectorWindow.tscn" id="4_sec"]

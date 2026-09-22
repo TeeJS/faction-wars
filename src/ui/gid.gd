@@ -21,6 +21,8 @@ class GidTier:
 ## One selectable GID mode. Magnitude sorts a planet into one of Tiers; the
 ## planet's faction color drives the dot and the flare.
 class GidMode:
+	var Id: String               # the pack's mode id (display.json)
+	var TitleFrom: String        # "loyalty_label" -> resolved per player faction
 	var LabelText: String        # C# Label - selector-menu text
 	var Title: String            # key-panel title
 	var Magnitude: Callable      # Func<Planet, float>
@@ -44,12 +46,14 @@ class GidMode:
 
 
 class GidCategory:
+	var Id: String     # the pack's category id
 	var Name: String
 	var Modes: Array   # Array[GidMode]
 
-	func _init(name: String, modes: Array) -> void:
+	func _init(name: String, modes: Array, id: String = "") -> void:
 		Name = name
 		Modes = modes
+		Id = id
 
 
 # --- Marker geometry -------------------------------------------------
@@ -57,6 +61,8 @@ const FlareBig := 46
 const FlareMid := 32
 const FlareLow := 22
 const DotSize := 15
+## The pack names a tier's flare; the SIZE is engine presentation.
+const FlareByName := { "big": FlareBig, "mid": FlareMid, "low": FlareLow, "none": 0 }
 # HQ highlight - DRAWN as geometry rather than set as a glyph in a Label.
 const HaloSpan := 52.0        # tip-to-tip of the straight rays
 const HaloThickness := 2.0    # ray width
@@ -122,9 +128,9 @@ static func _StatusFig(p: Planet, key: String) -> float:
 
 
 ## Count of one production facility type as last seen (live for a world we hold).
-static func _ProdCount(p: Planet, type: int) -> float:
+static func _ProdCount(p: Planet, family: String) -> float:
 	var counts: Dictionary = IntelManager.SeenData(_player(), p, Enums.IntelSection.ProductionFacilities).get("counts", {})
-	return float(int(counts.get(type, 0)))
+	return float(int(counts.get(family, 0)))
 
 
 static func _DefFig(p: Planet, key: String) -> float:
@@ -202,91 +208,91 @@ static func _CountUnits(units: Array, p: Planet, busy: bool, requireAvailable: b
 	return n
 
 
-static var Categories: Array = _BuildCategories()
+## THE CATALOG IS PACK DATA (SCHEMA.md section 10, display.json). It used to be
+## a literal table here - every label, threshold and flare in engine code. Now
+## the pack declares the modes and the engine computes each `quantity.kind`.
+## Populated by LoadFromPack from GameSession.load_catalogs; lazily built from
+## the loaded pack if something asks first.
+static var Categories: Array = []
+static var _by_id: Dictionary = {}
 
 
-static func _BuildCategories() -> Array:
-	return [
-		GidCategory.new("Loyalty", [
-			GidMode.new("Popular Support", _PlayerSupport, _Known, [
-				GidTier.new(75, "Loyal", FlareBig),
-				GidTier.new(50, "Obedient", FlareMid),
-				GidTier.new(25, "Disloyal", FlareLow),
-				GidTier.new(0, "Hostile", 0),
-			], "Loyalty to the Alliance"),
-			# "You can also select Uprisings from this menu to see systems in
-			# uprisings" (manual p091). Binary: "a large star icon indicates the
-			# system is in uprising".
-			GidMode.new("Uprisings", func(p: Planet) -> float: return 1.0 if IntelManager.UprisingSeen(GameSettings.PlayerFaction, p) else 0.0, _Known,
-				_Binary("Currently in Uprising", "Not in Uprising"), "Worlds in Uprising"),
-		]),
-		GidCategory.new("Fleets", [
-			# The original counts FLEETS, not ships.
-			GidMode.new("Idle Fleets",
-				func(p: Planet) -> float: return _MyFleets(p, Enums.Status.AwaitingOrders),
-				_Known, [
-					GidTier.new(3, "3+ fleets", FlareBig),
-					GidTier.new(2, "2 fleets", FlareMid),
-					GidTier.new(1, "1 fleet", FlareLow),
-					GidTier.new(0, "No fleets", 0),
-				]),
-			GidMode.new("Fleets Enroute",
-				func(p: Planet) -> float: return _MyFleets(p, Enums.Status.Enroute),
-				_Known, [
-					GidTier.new(3, "3+ fleets", FlareBig),
-					GidTier.new(2, "2 fleets", FlareMid),
-					GidTier.new(1, "1 fleet", FlareLow),
-					GidTier.new(0, "No fleets", 0),
-				]),
-		]),
-		GidCategory.new("Personnel", [
-			# Both modes show YOUR people only (manual p100), split by MISSION OR
-			# COMMAND, and "personnel" is characters PLUS Special Forces (p126).
-			GidMode.new("Idle Personnel",
-				func(p: Planet) -> float: return _CountUnits(GameState.ActiveRoster, p, false, true) + _CountUnits(p.SpecForces(), p, false, true),
-				_Known, _Binary("Idle", "None")),
-			GidMode.new("Active Personnel",
-				func(p: Planet) -> float: return _CountUnits(GameState.ActiveRoster, p, true, false) + _CountUnits(p.SpecForces(), p, true, false),
-				_Known, _Binary("Active", "None")),
-		]),
-		GidCategory.new("Resources", [
-			GidMode.new("Available Energy", func(p: Planet) -> float: return _StatusFig(p, "energy"), _Known,
-				_Counts(6, 3, "Points Available", "0 Points Available")),
-			GidMode.new("Available Raw Materials", func(p: Planet) -> float: return _StatusFig(p, "materials"), _Known,
-				_Counts(3, 2, "Points Available", "0 Points Available")),
-			GidMode.new("Mines", func(p: Planet) -> float: return _ProdCount(p, Enums.FacilityType.Mine), _Known, _Counts(6, 3, "Mines")),
-			GidMode.new("Refineries", func(p: Planet) -> float: return _ProdCount(p, Enums.FacilityType.Refinery), _Known, _Counts(6, 3, "Refineries")),
-		]),
-		GidCategory.new("Manufacturing", [
-			GidMode.new("Shipyards", func(p: Planet) -> float: return _ProdCount(p, Enums.FacilityType.Shipyard), _Known, _Counts(5, 2, "Shipyards")),
-			GidMode.new("Idle Shipyards",
-				func(p: Planet) -> float: return 1.0 if (_Owned(p) and p.HasIdleShipyards()) else 0.0, _Known, _Binary("Idle", "Active")),
-			GidMode.new("Training Facilities", func(p: Planet) -> float: return _ProdCount(p, Enums.FacilityType.TrainingFacility), _Known,
-				_Counts(5, 2, "Training Facilities")),
-			GidMode.new("Idle Training Facilities",
-				func(p: Planet) -> float: return 1.0 if (_Owned(p) and p.HasIdleTroopTraining()) else 0.0, _Known, _Binary("Idle", "Active")),
-			GidMode.new("Construction Yards", func(p: Planet) -> float: return _ProdCount(p, Enums.FacilityType.ConstructionYard), _Known,
-				_Counts(5, 2, "Construction Yards")),
-			GidMode.new("Idle Construction Yards",
-				func(p: Planet) -> float: return 1.0 if (_Owned(p) and p.HasIdleConstructionYards()) else 0.0, _Known, _Binary("Idle", "Active")),
-		]),
-		GidCategory.new("Defense", [
-			GidMode.new("Defense Batteries", func(p: Planet) -> float: return _DefFig(p, "batteries"), _Known,
-				_Counts(6, 3, "Batteries"), "Defense Batteries"),
-			GidMode.new("Shield Generators", func(p: Planet) -> float: return _DefFig(p, "shields"), _Known,
-				_Counts(6, 3, "Generators")),
-			GidMode.new("Fighter Squadrons", func(p: Planet) -> float: return _LineCount(p, Enums.IntelSection.Fighters), _Known,
-				_Counts(6, 3, "Fighter Squadrons")),
-			GidMode.new("Trooper Regiments", func(p: Planet) -> float: return _LineCount(p, Enums.IntelSection.Troopers), _Known,
-				_Counts(6, 3, "Trooper Regiments")),
-			# Death Star shields aren't modeled yet; option present to match the original.
-			GidMode.new("Death Star Shields", func(_p: Planet) -> float: return 0.0, _Known,
-				_Binary("Death Star Shield", "No Death Star Shield")),
-		]),
-	]
+static func LoadFromPack(pack: PackLoader.LoadedPack) -> void:
+	Categories.clear()
+	_by_id.clear()
+	_activeMode = null
+	if pack == null or pack.Display == null:
+		push_error("[GID] no pack display catalog loaded!")
+		return
+	for cd in pack.Display.Categories:
+		var modes := []
+		for md in cd.Modes:
+			var tiers := []
+			for td in md.Tiers:
+				tiers.append(GidTier.new(td.Min, td.LabelText, FlareByName.get(td.Flare, 0)))
+			var title := md.Title
+			if md.TitleFrom == "loyalty_label":
+				# Resolved per player faction; stored here so the key-panel title
+				# is right from the first frame and dynamic via TitleFor after.
+				title = _LoyaltyTitle()
+			var m := GidMode.new(md.LabelText, _magnitude_for(md.Kind, md.Args), _Known, tiers, title)
+			m.Id = md.Id
+			m.TitleFrom = md.TitleFrom
+			modes.append(m)
+			_by_id[md.Id] = m
+		Categories.append(GidCategory.new(cd.DisplayName, modes, cd.Id))
+	print("[GID] catalog from the pack: %d categories, %d modes." % [Categories.size(), _by_id.size()])
+
+
+static func _EnsureBuilt() -> void:
+	if Categories.is_empty() and FactionRegistry.Pack != null:
+		LoadFromPack(FactionRegistry.Pack)
+
+
+static func ModeById(id: String) -> GidMode:
+	_EnsureBuilt()
+	return _by_id.get(id)
+
+
+## THE ENGINE'S HALF OF THE CONTRACT: one magnitude reader per kind. Measured
+## from the catalog this replaced - each kind is one of its former lambdas.
+static func _magnitude_for(kind: String, args: Dictionary) -> Callable:
+	match kind:
+		"support":
+			return _PlayerSupport
+		"uprising":
+			return func(p: Planet) -> float: return 1.0 if IntelManager.UprisingSeen(GameSettings.PlayerFaction, p) else 0.0
+		"my_fleets":
+			var status: int = Enums.Status.Enroute if str(args.get("status", "")) == "enroute" else Enums.Status.AwaitingOrders
+			return func(p: Planet) -> float: return _MyFleets(p, status)
+		"personnel":
+			var busy: bool = bool(args.get("busy", false))
+			# Idle counts only the AVAILABLE (not injured, not captured - manual p096).
+			var require_available: bool = not busy
+			return func(p: Planet) -> float: return _CountUnits(GameState.ActiveRoster, p, busy, require_available) + _CountUnits(p.SpecForces(), p, busy, require_available)
+		"status_figure":
+			var key: String = str(args.get("key", ""))
+			return func(p: Planet) -> float: return _StatusFig(p, key)
+		"facility_count":
+			var family: String = str(args.get("family", ""))
+			return func(p: Planet) -> float: return _ProdCount(p, family)
+		"idle_producer":
+			var role: String = str(args.get("role", ""))
+			return func(p: Planet) -> float: return 1.0 if (_Owned(p) and p.CountByRole(role) > 0 and p.QueueFor(role) != null and (p.QueueFor(role) as Array).is_empty()) else 0.0
+		"defence_figure":
+			var key: String = str(args.get("key", ""))
+			return func(p: Planet) -> float: return _DefFig(p, key)
+		"intel_line_count":
+			var section: int = Enums.IntelSection.Troopers if str(args.get("section", "")) == "troopers" else Enums.IntelSection.Fighters
+			return func(p: Planet) -> float: return _LineCount(p, section)
+		"constant_zero":
+			return func(_p: Planet) -> float: return 0.0
+	push_error("[GID] unknown quantity kind '%s' - the loader should have refused it." % kind)
+	return func(_p: Planet) -> float: return 0.0
 
 
 static func Default() -> GidMode:
+	_EnsureBuilt()
 	return Categories[0].Modes[0]
 
 
@@ -306,33 +312,21 @@ static func SetActiveMode(mode: GidMode) -> void:
 	_activeMode = mode
 
 
-## The Galaxy Display modes in the original's Alt+1..9 order (Steam guide):
-## 1 loyalty, 2 insurrections, 3 idle fleets, 4 moving fleets, 5 idle characters,
-## 6 active characters, 7 idle shipyards, 8 idle training camps, 9 idle
-## construction. Index 0 = Alt+1. Any entry may be null if a label ever changes.
+## The Galaxy Display modes in the original's Alt+1..9 order (Steam guide),
+## as the PACK lists them (display.json galaxy_display_modes). Index 0 = Alt+1.
+## An entry is null if the pack names a mode it does not declare - the loader
+## refuses that, so in practice every slot resolves.
 static func GalaxyDisplayModes() -> Array:
-	return [
-		_ModeByLabel("Popular Support"),
-		_ModeByLabel("Uprisings"),
-		_ModeByLabel("Idle Fleets"),
-		_ModeByLabel("Fleets Enroute"),
-		_ModeByLabel("Idle Personnel"),
-		_ModeByLabel("Active Personnel"),
-		_ModeByLabel("Idle Shipyards"),
-		_ModeByLabel("Idle Training Facilities"),
-		_ModeByLabel("Idle Construction Yards"),
-	]
-
-
-static func _ModeByLabel(label: String) -> GidMode:
-	for cat: GidCategory in Categories:
-		for m: GidMode in cat.Modes:
-			if m.LabelText == label:
-				return m
-	return null
+	_EnsureBuilt()
+	var out := []
+	var pack := FactionRegistry.Pack
+	if pack != null and pack.Display != null:
+		for id in pack.Display.GalaxyDisplayModes:
+			out.append(_by_id.get(id))
+	return out
 
 
 ## The loyalty title depends on the player's faction, which isn't known at
 ## static-init time; patch it when the key is shown.
 static func TitleFor(mode: GidMode) -> String:
-	return _LoyaltyTitle() if mode.LabelText == "Popular Support" else mode.Title
+	return _LoyaltyTitle() if mode.TitleFrom == "loyalty_label" else mode.Title

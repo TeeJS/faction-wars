@@ -50,7 +50,7 @@ static func InitializeGalaxyState(galaxy: Array, human_faction: Faction, difficu
 			push_error("[Pack] %s: could not place hq (kind '%s')." % [faction.Id, hq_def.Kind])
 			continue
 		seat.ControllingFaction = faction
-		seat.AddFacility(Enums.FacilityType.Headquarters)
+		seat.AddFacility("headquarters")
 		seat.SetSupportFor(faction, 100)
 		seat.StartsInhabited = true
 		seat.IsInhabited = true
@@ -162,7 +162,7 @@ static func InitializeGalaxyState(galaxy: Array, human_faction: Faction, difficu
 			elif seed != null and not seed.ProceduralFleet.is_empty():
 				ApplyLogistics(planet, SeedManager.Logistics[seed.ProceduralFleet], rng)
 
-			var syfc_file := "SYFCCRTB.DAT" if is_core else "SYFCRMTB.DAT"
+			var syfc_file := "core_system_facilities" if is_core else "rim_system_facilities"
 			ApplyLogistics(planet, SeedManager.Logistics[syfc_file], rng, is_core)
 
 	# --- CHARACTER SPAWNING ---
@@ -295,7 +295,10 @@ static func ApplyLogistics(planet: Planet, file: CatalogDtos.LogisticsFile, rng:
 		return
 
 	var chosen: Array = []
-	var range_ids := FixedListRange(file.Name)
+	# The table says whether it is a fixed list and which rule entries bound it
+	# (setup.json fixed_range). This used to be decided by matching the .DAT
+	# FILENAME, which the pack's role ids silently stopped matching.
+	var range_ids: Array = file.FixedRange if file.FixedRange.size() == 2 else [0, 0]
 	if range_ids[0] != 0:
 		var first: int = maxi(1, RuleManager.GetShared(range_ids[0]))
 		var max_v: int = maxi(first, RuleManager.GetShared(range_ids[1]))
@@ -332,17 +335,6 @@ static func ApplyLogistics(planet: Planet, file: CatalogDtos.LogisticsFile, rng:
 
 
 ## Which GNPRTB first/max pair governs a seed file, or [0, 0] for a random table.
-static func FixedListRange(type: String) -> Array:
-	if type.contains("CMUNYVTB"): return [RuleId.SeedYavinFirst, RuleId.SeedYavinMax]
-	if type.contains("CMUNHQTB"): return [RuleId.SeedAllianceHqFirst, RuleId.SeedAllianceHqMax]
-	if type.contains("CMUNCRTB"): return [RuleId.SeedCoruscantFirst, RuleId.SeedCoruscantMax]
-	if type.contains("CMUNAFTB"): return [RuleId.SeedAllianceFleetFirst, RuleId.SeedAllianceFleetMax]
-	if type.contains("CMUNEFTB"): return [RuleId.SeedEmpireFleetFirst, RuleId.SeedEmpireFleetMax]
-	if type.contains("FACLHQTB"): return [RuleId.SeedHqFacilitiesFirst, RuleId.SeedHqFacilitiesMax]
-	if type.contains("FACLCRTB"): return [RuleId.SeedCoruscantFacilitiesFirst, RuleId.SeedCoruscantFacilitiesMax]
-	return [0, 0]
-
-
 static func AssignUnitToPlanet(planet: Planet, unit: Unit) -> void:
 	if unit == null:
 		return
@@ -364,7 +356,7 @@ static func SeedSystemFacilities(planet: Planet, file: CatalogDtos.LogisticsFile
 			break
 		if rng.NextRange(1, 101) > chance_per_slot:
 			continue
-		planet.AddFacility(Enums.FacilityType.Mine, 1)
+		planet.AddFacility("mine", 1)
 
 	var energy_slots := planet.BaseEnergy
 	for i in energy_slots:
@@ -384,21 +376,21 @@ static func DeployAsset(planet: Planet, asset: CatalogDtos.LogisticsAsset) -> Un
 		return null
 	var facility_type: Variant = null
 	match asset.FamilyId:
-		32: facility_type = Enums.FacilityType.Headquarters
-		34: facility_type = Enums.FacilityType.IonCannon
-		35: facility_type = Enums.FacilityType.TurbolaserBattery
-		36: facility_type = Enums.FacilityType.PlanetaryShield
-		40: facility_type = Enums.FacilityType.Shipyard
-		41: facility_type = Enums.FacilityType.TrainingFacility
-		42: facility_type = Enums.FacilityType.ConstructionYard
-		44: facility_type = Enums.FacilityType.Mine
-		45: facility_type = Enums.FacilityType.Refinery
+		32: facility_type = "headquarters"
+		34: facility_type = "ion_cannon"
+		35: facility_type = "turbolaser_battery"
+		36: facility_type = "planetary_shield"
+		40: facility_type = "shipyard"
+		41: facility_type = "training_facility"
+		42: facility_type = "construction_yard"
+		44: facility_type = "mine"
+		45: facility_type = "refinery"
 
 	if facility_type != null:
-		var is_hq: bool = facility_type == Enums.FacilityType.Headquarters
+		var is_hq: bool = facility_type == "headquarters"
 		if not is_hq and planet.FreeEnergySlots() <= 0:
 			return null
-		if facility_type == Enums.FacilityType.Mine and planet.FreeMineSlots() <= 0:
+		if facility_type == "mine" and planet.FreeMineSlots() <= 0:
 			return null
 		planet.AddFacility(facility_type, 1)
 		return null
@@ -414,8 +406,8 @@ static func DeployAsset(planet: Planet, asset: CatalogDtos.LogisticsAsset) -> Un
 		return null
 
 	var key := Vector2i(asset.FamilyId, asset.AssetId)
-	if SeedManager.MilitaryStats.has(key):
-		return MilitaryCatalog.Create(SeedManager.MilitaryStats[key], planet.ControllingFaction, planet)
+	if MilitaryCatalog.HasSource(key):
+		return MilitaryCatalog.Create(MilitaryCatalog.BySource(key), planet.ControllingFaction, planet)
 
 	var u := Unit.new()
 	u.Name = "%s (Model %d)" % [asset.FamilyName, asset.AssetId]
@@ -452,6 +444,6 @@ static func GenerateCharacterStats(c: Character, rng: Prng) -> void:
 	c.ShipDesign = c.ShipResearchBase + rng.NextRange(0, c.ShipResearchVar + 1)
 	c.FacilityDesign = c.FacilityResearchBase + rng.NextRange(0, c.FacilityResearchVar + 1)
 	c.TroopTraining = c.TroopResearchBase + rng.NextRange(0, c.TroopResearchVar + 1)
-	# LATENT FORCE POTENTIAL - rolled as a percentage; IsKnownJedi is the reveal.
-	if c.JediProbability > 0 and rng.NextRange(1, 101) <= c.JediProbability:
-		c.JediLevel = c.JediLevelBase + rng.NextRange(0, c.JediLevelVar + 1)
+	# LATENT FORCE POTENTIAL - rolled as a percentage; IsKnownSpecialPowerUser is the reveal.
+	if c.SpecialPowerProbability > 0 and rng.NextRange(1, 101) <= c.SpecialPowerProbability:
+		c.SpecialPowerLevel = c.SpecialPowerLevelBase + rng.NextRange(0, c.SpecialPowerLevelVar + 1)

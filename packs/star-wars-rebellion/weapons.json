@@ -1,0 +1,59 @@
+{
+  "weapons": [
+    {
+      "id": "ion_cannon",
+      "display_name": "Ion Cannon",
+      "roles": [
+        "no_fighter_effect"
+      ],
+      "arcs": true,
+      "observed_ranges": [
+        35,
+        40,
+        60
+      ]
+    },
+    {
+      "id": "turbolaser",
+      "display_name": "Turbolaser",
+      "roles": [
+        "fighter_accuracy_scaled"
+      ],
+      "arcs": true,
+      "observed_ranges": [
+        35,
+        50,
+        60,
+        65,
+        70,
+        75
+      ]
+    },
+    {
+      "id": "laser",
+      "display_name": "Laser",
+      "roles": [
+        "fighter_accuracy_scaled"
+      ],
+      "arcs": true,
+      "observed_ranges": [
+        17,
+        25
+      ]
+    },
+    {
+      "id": "torpedo",
+      "display_name": "Torpedo",
+      "roles": [
+        "no_fighter_effect",
+        "requires_shields_down",
+        "squadron_only"
+      ],
+      "arcs": false,
+      "observed_ranges": [
+        7,
+        10
+      ]
+    }
+  ]
+}

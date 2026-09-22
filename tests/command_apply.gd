@@ -47,10 +47,10 @@ func _init() -> void:
 
 		# Every 5th day: queue a regiment at a world with a training facility.
 		if day % 5 == 2:
-			var rule = Lq.first_or_null(MilitaryCatalog.All(), func(r) -> bool: return r.Type == "Troop" and MilitaryCatalog.CanBeBuiltBy(r, us))
+			var rule = Lq.first_or_null(MilitaryCatalog.All(), func(r) -> bool: return r.Kind == "troop" and MilitaryCatalog.CanBeBuiltBy(r, us))
 			var yard: Planet = Lq.first_or_null(ours, func(p: Planet) -> bool: return p.TrainingFacilities() > 0)
 			if rule != null and yard != null:
-				issue.call("queue_units", { "planet": yard.Name, "rule": rule.Name, "destination": yard.Name, "count": 1 })
+				issue.call("queue_units", { "planet": yard.Name, "rule": rule.DisplayName, "destination": yard.Name, "count": 1 })
 
 		# Every 11th day: a diplomacy mission by an idle character at a world we hold.
 		if day % 11 == 3:

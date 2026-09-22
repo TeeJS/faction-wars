@@ -8,6 +8,16 @@ extends RefCounted
 
 static var _planets_by_name: Dictionary = {}
 
+## Enums.FacilityType member names, as the C# snapshot writer spells them, mapped
+## onto this pack's facility families (SCHEMA.md section 5).
+const LEGACY_FACILITY_FAMILIES := {
+	"Headquarters": "headquarters", "Mine": "mine", "Refinery": "refinery",
+	"ConstructionYard": "construction_yard", "Shipyard": "shipyard",
+	"TrainingFacility": "training_facility", "PlanetaryShield": "planetary_shield",
+	"TurbolaserBattery": "turbolaser_battery", "IonCannon": "ion_cannon",
+	"DeathStarShield": "death_star_shield",
+}
+
 
 static func Load(path: String) -> bool:
 	var data: Variant = JsonUtil.parse(path)
@@ -22,7 +32,12 @@ static func Load(path: String) -> bool:
 	GameSettings.SelectedSize = JsonUtil.enum_or(data, "galaxySize", Enums.GalaxySize, Enums.GalaxySize.Large)
 	GameSettings.HQOnlyVictory = bool(data.get("hqOnlyVictory", false))
 	GameSettings.PlayerFaction = FactionRegistry.ById(data.get("playerFaction"))
-	GameSettings.HumanFactions = [GameSettings.PlayerFaction] if GameSettings.PlayerFaction != null else []
+	# A ternary yields an UNTYPED Array, which will not assign to Array[Faction];
+	# that rejection took the whole snapshot path down (bench_1b, soak --snapshot).
+	var humans: Array[Faction] = []
+	if GameSettings.PlayerFaction != null:
+		humans.append(GameSettings.PlayerFaction)
+	GameSettings.HumanFactions = humans
 
 	_planets_by_name.clear()
 	var galaxy: Array[Sector] = []
@@ -122,8 +137,12 @@ static func _planet(pd: Dictionary, deferred: Array) -> Planet:
 	for fd in pd.get("Facilities", []):
 		var f := Facility.new()
 		f.Attached = p
-		f.Type = JsonUtil.enum_or(fd, "Type", Enums.FacilityType, Enums.FacilityType.Mine)
+		# The C# snapshot writes the old Enums.FacilityType NAME ("TurbolaserBattery").
+		# Mapped to a pack family here, as with the character aptitude fields above:
+		# an external format keeps its own spelling.
+		var fam: String = LEGACY_FACILITY_FAMILIES.get(str(fd.get("Type", "")), "mine")
 		f.Tier = int(fd.get("Tier", 1))
+		f.Def = FacilityCatalog.Get(fam, f.Tier)
 		f.IsDamaged = bool(fd.get("IsDamaged", false))
 		f.IsSelected = bool(fd.get("IsSelected", false))
 		f.ConstructionCost = int(fd.get("ConstructionCost", 0))
@@ -181,9 +200,27 @@ static func _unit(ud: Dictionary, deferred: Array) -> Unit:
 	return u
 
 
+## The C# snapshot writer's names for the character aptitude fields, which this
+## engine renamed to "special power" (SCHEMA.md section 12 Q5). The snapshot is an
+## EXTERNAL format produced by the other repo, so it keeps its own spelling and is
+## mapped here. Without this, `hydrate` drops the keys silently and every
+## snapshot-loaded character comes back with a zeroed aptitude - no error, no hint.
+const LEGACY_POWER_FIELDS := {
+	"JediLevel": "SpecialPowerLevel",
+	"JediLevelBase": "SpecialPowerLevelBase",
+	"JediLevelVar": "SpecialPowerLevelVar",
+	"JediProbability": "SpecialPowerProbability",
+	"IsKnownJedi": "IsKnownSpecialPowerUser",
+	"CanTrainJedi": "CanTrainSpecialPower",
+}
+
+
 static func _character(cd: Dictionary, deferred: Array) -> Character:
 	var c := Character.new()
 	_hydrate_unit_fields(c, cd)
+	for legacy in LEGACY_POWER_FIELDS:
+		if cd.has(legacy):
+			c.set(LEGACY_POWER_FIELDS[legacy], cd[legacy])
 	c.CapturedBy = _faction(cd.get("CapturedBy"))
 	deferred.append([c, "Attached", cd.get("Attached")])
 	deferred.append([c, "Destination", cd.get("Destination")])
