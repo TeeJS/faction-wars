@@ -1,6 +1,6 @@
 class_name MissionTableManager
 extends RefCounted
-## backend/MissionTableManager.cs - THE MISSION OUTCOME TABLES (data/mission_tables.json,
+## backend/MissionTableManager.cs - THE MISSION OUTCOME TABLES (the pack's mission_tables.json,
 ## from the *MSTB.DAT and friends). Each table is a STEP FUNCTION: ascending
 ## thresholds, each carrying the value that applies from that threshold up.
 

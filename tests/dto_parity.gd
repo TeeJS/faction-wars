@@ -1,61 +1,100 @@
 extends SceneTree
-## HANDOFF step 1A, GDScript half: hydrate every data file the source reads and
-## write the canonical dump. Run headless:
+## The pack hydration regression: load the active pack exactly as the game does,
+## write every loaded file in canonical form, and compare it with the committed
+## fixture. A DTO change that silently drops, renames or re-types a field shows
+## up here as a diff. Run headless:
 ##
-##   Godot_console.exe --headless --path . -s tests/dto_parity.gd -- --out=C:\path\gd-dto.json
+##   Godot_console.exe --headless --path . -s tests/dto_parity.gd
+##   ... -s tests/dto_parity.gd -- --rebaseline     (rewrite the fixture; say so in the commit)
+##   ... -s tests/dto_parity.gd -- --out=C:\path\gd-dto.json   (dump only)
 ##
-## The C# half is `--dto-dump=path` on the source's Main.tscn. tools/dto-parity.ps1
-## runs both and diffs them field by field.
+## History: HANDOFF step 1A compared this dump with the C# source's own dump of
+## data/*.json. That folder and its loaders are gone (2026-09-22); the pack is
+## the only data the engine reads, so the fixture is the port's own.
+
+const FIXTURE := "res://tests/fixtures/dto-pack.json"
 
 
 func _init() -> void:
 	var out_path := _arg("--out=")
-	if out_path.is_empty():
-		push_error("usage: -s tests/dto_parity.gd -- --out=<file>")
-		quit(2)
-		return
+	var rebaseline := OS.get_cmdline_user_args().has("--rebaseline")
 
 	FactionRegistry.EnsureLoaded()
-
 	var pack_id: String = str(JsonUtil.get_ci(JsonUtil.parse("res://packs/active.json"), "pack"))
 	var errors: Array[String] = []
 	var pack := PackLoader.Load("res://packs/%s" % pack_id, errors)
+	if pack == null:
+		push_error("[dto_parity] the pack did not load: %s" % ", ".join(errors))
+		quit(2)
+		return
 
 	var dump := {
-		"pack_manifest":          pack.Manifest if pack != null else null,
-		"factions_file":          pack.Factions if pack != null else null,
-		"sectors":                Loaders.sectors(),
-		"planets":                Loaders.planets(),
-		"missions":               Loaders.missions(),
-		"rules":                  Loaders.rules(),
-		"side_lottery":           Loaders.side_lottery(),
-		"production_facilities":  Loaders.production_facilities(),
-		"defensive_facilities":   Loaders.defensive_facilities(),
-		"defense_stats":          Loaders.defense_stats(),
-		"military_units":         Loaders.military_units(),
-		"military_units_editor":  Loaders.military_units_editor(),
-		"logistics":              Loaders.logistics(),
-		"mission_tables":         Loaders.mission_tables(),
-		"uprising_start":         Loaders.uprising_start(),
-		"uprising_end":           Loaders.uprising_end(),
-		"major_characters":       Loaders.major_characters(),
-		"minor_characters":       Loaders.minor_characters(),
+		"pack_manifest":  pack.Manifest,
+		"factions":       pack.Factions,
+		"map":            pack.Map,
+		"characters":     pack.Characters,
+		"facilities":     pack.Facilities,
+		"units":          pack.Units,
+		"weapons":        pack.Weapons,
+		"missions":       pack.Missions,
+		"mission_tables": pack.MissionTables,
+		"rules":          pack.Rules,
+		"setup":          pack.Setup,
+		"display":        pack.Display,
 	}
-
-	var f := FileAccess.open(out_path, FileAccess.WRITE)
-	if f == null:
-		push_error("cannot write %s" % out_path)
-		quit(1)
-		return
-	f.store_string(Canonical.to_json(dump))
-	f.close()
+	var text := Canonical.to_json(dump)
 
 	var counts := []
 	for k in dump.keys():
 		var v = dump[k]
 		counts.append("%s=%d" % [k, v.size() if (v is Array or v is Dictionary) else 1])
-	print("[dto_parity] wrote %s: %s" % [out_path, ", ".join(counts)])
-	quit(0)
+	print("[dto_parity] pack '%s': %s" % [pack_id, ", ".join(counts)])
+
+	if not out_path.is_empty():
+		_write(out_path, text)
+		quit(0)
+		return
+	if rebaseline:
+		_write(FIXTURE, text)
+		print("[dto_parity] fixture rewritten: %s" % FIXTURE)
+		quit(0)
+		return
+
+	var expected := FileAccess.get_file_as_string(FIXTURE)
+	if expected.is_empty():
+		push_error("[dto_parity] no fixture at %s - run with --rebaseline once" % FIXTURE)
+		quit(2)
+		return
+	if expected == text:
+		print("[dto_parity] PASS: the loaded pack matches %s byte for byte" % FIXTURE)
+		quit(0)
+		return
+	# Say WHERE, not just that.
+	var a := expected.split("\n")
+	var b := text.split("\n")
+	var first := -1
+	for i in mini(a.size(), b.size()):
+		if a[i] != b[i]:
+			first = i
+			break
+	if first < 0:
+		first = mini(a.size(), b.size())
+	print("[dto_parity] FAIL: differs from %s at line %d of %d/%d" % [FIXTURE, first + 1, a.size(), b.size()])
+	print("  fixture: %s" % (a[first] if first < a.size() else "<end>"))
+	print("  loaded:  %s" % (b[first] if first < b.size() else "<end>"))
+	_write("user://dto-pack-actual.json", text)
+	print("  full dump written to user://dto-pack-actual.json (tools/compare_json.py shows every field)")
+	quit(1)
+
+
+func _write(path: String, text: String) -> void:
+	var f := FileAccess.open(path, FileAccess.WRITE)
+	if f == null:
+		push_error("[dto_parity] cannot write %s" % path)
+		quit(1)
+		return
+	f.store_string(text)
+	f.close()
 
 
 func _arg(prefix: String) -> String:

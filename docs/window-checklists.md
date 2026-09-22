@@ -311,7 +311,7 @@ Confidence: **high**.
 
 ## 17. Military Data Editor
 
-Manual passage: **none**. This is a developer tool, not a player-facing Rebellion window.
+Manual passage: **none**. This was a developer tool, not a player-facing Rebellion window. **Removed 2026-09-22** with the legacy `data/military_units.json` it edited; the pack's `units.json` is the data now.
 
 | Manual element | C# frontend state |
 |---|---|
@@ -335,7 +335,7 @@ Manual passage: PDF p. 20 (manual p. 21), fig. 2.2; save/options elaboration PDF
 | Exit | **Present.** |
 | Shuttle Cockpit artwork and original side/difficulty controls | **Present (2026-09-22).** The pack's `menu` picture with one clickable region per Fig. 2.2 label (`packs/<id>/pack.json`, `src/ui/menu.gd`); selection shown as corner brackets, the victory readout painted under the centre screen. A pack without a picture keeps the labelled buttons. |
 | “View credits” | **Present (2026-09-22).** A region on the picture; the lines are the pack's `menu.credits`. |
-| “View Military Data” | **Extra/non-manual.** Developer-tool entry. |
+| “View Military Data” | **Removed 2026-09-22** with the Military Data Editor. |
 
 Confidence: **high**.
 

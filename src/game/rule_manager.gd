@@ -1,6 +1,6 @@
 class_name RuleManager
 extends RefCounted
-## backend/RuleManager.cs - GNPRTB.DAT's 213 tuning constants, as data/game_rules.json.
+## backend/RuleManager.cs - GNPRTB.DAT's 213 tuning constants, as the pack's rules.json.
 ## The entry ids this codebase reads by name live in RuleId; values live in the
 ## pack, NOT here.
 

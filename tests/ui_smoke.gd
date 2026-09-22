@@ -15,7 +15,6 @@ const ALL := [
 	"PersonnelFinder", "PlanetFinder", "TransitConfirmWindow", "UnitStatusWindow",
 	"DefenseFacilityStatusWindow", "FleetStatusWindow", "GalaxyOverviewWindow",
 	"ObjectivesWindow", "BattleAlertWindow", "BattleResultsWindow", "TacticalView",
-	"MilitaryDataEditor",
 ]
 
 var _ui: UIManager
@@ -104,10 +103,6 @@ func _run(wanted: Array) -> void:
 			"ObjectivesWindow": _ui.OpenObjectives()
 			"BattleAlertWindow", "BattleResultsWindow", "TacticalView":
 				_battle_windows(w)
-			"MilitaryDataEditor":
-				var scene: PackedScene = load("res://src/ui/MilitaryDataEditor.tscn")
-				if scene != null:
-					root.add_child(scene.instantiate())
 			_:
 				push_error("[ui_smoke] unknown window %s" % w)
 		await process_frame

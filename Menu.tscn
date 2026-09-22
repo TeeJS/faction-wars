@@ -155,18 +155,6 @@ layout_mode = 2
 size_flags_horizontal = 4
 text = "Exit to Desktop"
 
-[node name="Spacer3" type="Control" parent="CenterContainer/MenuVBox" unique_id=1551736081]
-custom_minimum_size = Vector2(0, 10)
-layout_mode = 2
-
-[node name="HBoxContainer" type="HBoxContainer" parent="CenterContainer/MenuVBox" unique_id=153635522]
-layout_mode = 2
-
-[node name="BtnMilitaryDataEditor" type="Button" parent="CenterContainer/MenuVBox/HBoxContainer" unique_id=835017435]
-unique_name_in_owner = true
-layout_mode = 2
-text = "View Military Data"
-
 [node name="BtnMultiplayer" type="Button" parent="."]
 unique_name_in_owner = true
 layout_mode = 1

@@ -1,6 +1,6 @@
 class_name SideLotteryManager
 extends RefCounted
-## backend/SideLotteryManager.cs - SDPRTB as data/side_lottery.json: faction id ->
+## backend/SideLotteryManager.cs - SDPRTB as the pack's setup.json side lottery: faction id ->
 ## difficulty -> {faction id -> value}. `perspective` is WHOSE GAME THIS IS (the
 ## human player's side); `for_side` is WHOSE VALUE YOU WANT out of the pair.
 
