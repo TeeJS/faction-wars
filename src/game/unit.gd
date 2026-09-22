@@ -28,6 +28,10 @@ func _init() -> void:
 
 var AssetId: int
 var FamilyId: int
+## The pack's id for this unit (units.json; for a Character, characters.json).
+## Engine code that must know WHICH unit this is compares this, never Name -
+## names are display strings (SCHEMA.md section 12 Q1).
+var PackId: String = ""
 
 var Faction: Faction
 ## VIRTUAL in C#: a Character reacts to being moved (leaving the fleet or system it

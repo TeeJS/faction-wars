@@ -12,22 +12,10 @@ static func Active() -> Array:
 	return _active
 
 
-## WHAT EACH SPECFORCE MAY BE SENT TO DO - manual p098's roster, entire.
-## Name-matched because nothing in the unit tables flags capability.
-const SpecForceMissions := {
-	# --- Alliance ---
-	"Longprobe Y-wing Recon Team": [Enums.MissionType.Reconnaissance],
-	"Bothan Spies":                [Enums.MissionType.Espionage],
-	"Guerrillas":                  [Enums.MissionType.InciteUprising, Enums.MissionType.SubdueUprising],
-	"Infiltrators":                [Enums.MissionType.Abduction, Enums.MissionType.Rescue, Enums.MissionType.Sabotage, Enums.MissionType.SuperweaponSabotage],
-	# --- Empire ---
-	"Imperial Probe Droid":        [Enums.MissionType.Reconnaissance],
-	"Imperial Espionage Droid":    [Enums.MissionType.Espionage],
-	"Imperial Commandos":          [Enums.MissionType.SubdueUprising, Enums.MissionType.InciteUprising, Enums.MissionType.Sabotage],
-	"Noghri Death Commandos":      [Enums.MissionType.Abduction, Enums.MissionType.Assassination, Enums.MissionType.Rescue],
-	# Not player-buildable - a scripted event.
-	"Bounty Hunters":              [],
-}
+## WHAT EACH SPECFORCE MAY BE SENT TO DO - manual p098's roster. It used to be
+## a literal table of nine unit NAMES here; it is the pack's `spec_forces` lists
+## in missions.json now, read by MissionCatalog.SpecForceMissions (and proven
+## identical to the old table by tests/spec_force_missions.gd).
 
 ## ⚠ THE EMPEROR IS EXCLUDED BY THE PROJECT COORDINATOR'S RULING, NOT BY A SOURCE.
 const EmperorName := "Emperor Palpatine"
@@ -73,9 +61,7 @@ static func CanPerform(u: Unit, type: int) -> bool:
 	# "ONLY Longprobe Y-wing Recon Teams and Imperial Probe Droids may perform it" (p107).
 	if u is Character:
 		return type != Enums.MissionType.Reconnaissance
-	if not SpecForceMissions.has(u.Name):
-		return false
-	return SpecForceMissions[u.Name].has(type)
+	return MissionCatalog.SpecForceCanRun(u.PackId, type)
 
 
 ## EVERY member has to be able to do the job, decoys included (p102-p103).
@@ -245,7 +231,7 @@ static func Pretty(r: int) -> String:
 
 ## Does this unit go on missions at all? (manual p045, p047, p098)
 static func CanEverPerformMissions(u: Unit) -> bool:
-	return u is Character or (u != null and SpecForceMissions.has(u.Name))
+	return u is Character or (u != null and u.Type == Enums.UnitType.SpecForce)
 
 
 ## The cross on a mission report (manual p109). The team is released HERE.
@@ -486,6 +472,10 @@ static func NeedsObjectTarget(type: int) -> bool:
 	return type == Enums.MissionType.Sabotage
 
 
+## ⚠ PHASE 5 LEAK (BACKLOG #17): "the Empire can sabotage the Alliance
+## headquarters" (manual p108, GAMEPLAY.md) is a faction asymmetry the pack has
+## no field for yet. Selecting on the id is wrong for a second pack; it stays
+## until the field is signed off.
 static func _is_empire(actor: Faction) -> bool:
 	return actor != null and actor.Id.to_lower() == "empire"
 
@@ -533,8 +523,9 @@ static func CanTargetPerson(type: int, actor: Faction, victim: Character) -> Res
 				return Result.fail("%s is one of yours." % victim.Name)
 			if victim.IsCaptured():
 				return Result.fail("%s is already captured." % victim.Name)
-			if type == Enums.MissionType.Assassination and not _is_empire(actor):
-				return Result.fail("Only the Empire carries out assassinations.")
+			# Side-locked by the pack: missions.json `available_to` (manual p106).
+			if type == Enums.MissionType.Assassination and not MissionCatalog.AvailableTo(type, actor):
+				return Result.fail("%s does not carry out assassinations." % actor.DisplayName)
 			return Result.success()
 		Enums.MissionType.Rescue:
 			if not victim.IsCaptured():

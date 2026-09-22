@@ -36,9 +36,12 @@ static func SetManageGarrisons(f: Faction, on: bool) -> void:
 	print("[Agent] %s: Manage Garrisons %s." % [f.DisplayName, "ON" if on else "off"])
 
 
-## The droid's own name, for the menu and the messages it files.
+## The agent's own name, for the menu and the messages it files - the pack's
+## (factions.json `agent_name`; C-3PO and IMP-22 in the Star Wars pack).
 static func NameFor(f: Faction) -> String:
-	return "IMP-22" if (f != null and f.Id.to_lower() == "empire") else "C-3PO"
+	if f != null and not f.AgentName.is_empty():
+		return f.AgentName
+	return "Agent"
 
 
 static func ProcessDay(galaxy: Array, day: int) -> void:

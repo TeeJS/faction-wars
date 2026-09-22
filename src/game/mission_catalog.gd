@@ -18,6 +18,10 @@ extends RefCounted
 
 static var _by_id: Dictionary = {}          # source id -> PackDefs.MissionDefPack
 static var _by_pack_id: Dictionary = {}     # pack id   -> PackDefs.MissionDefPack
+## WHAT EACH SPECFORCE MAY BE SENT TO DO (manual p098): unit pack id -> the
+## engine behaviours whose pack mission lists it under `spec_forces`. This is
+## the pack's own roster read the other way round; nothing here names a unit.
+static var _spec_force_missions: Dictionary = {}   # unit id -> Array[int]
 
 ## Pack mission ids this codebase needs by name but has no MissionType for.
 const DagobahId := "dagobah"
@@ -86,7 +90,32 @@ static func LoadFromPack(pack: PackLoader.LoadedPack) -> void:
 	for d in pack.Missions:
 		_by_id[d.SourceId] = d
 		_by_pack_id[d.Id] = d
+	_spec_force_missions.clear()
+	for type in _pack_ids:
+		var d: PackDefs.MissionDefPack = _by_pack_id.get(_pack_ids[type])
+		if d == null:
+			continue
+		for unit_id in d.SpecForces:
+			if not _spec_force_missions.has(unit_id):
+				_spec_force_missions[unit_id] = []
+			_spec_force_missions[unit_id].append(type)
 	print("Successfully loaded %d mission definitions from the pack." % _by_id.size())
+
+
+## The engine behaviours this SpecForce unit (by pack id) may be sent on.
+static func SpecForceMissions(unit_pack_id: String) -> Array:
+	return _spec_force_missions.get(unit_pack_id, [])
+
+
+static func SpecForceCanRun(unit_pack_id: String, type: int) -> bool:
+	return SpecForceMissions(unit_pack_id).has(type)
+
+
+## May this side run this mission at all? `available_to` in missions.json; a
+## mission the pack does not declare is available to nobody.
+static func AvailableTo(type: int, f: Faction) -> bool:
+	var d := DefFor(type)
+	return d != null and f != null and d.AvailableTo.has(f.Id)
 
 
 static func Get(mission_id: int) -> PackDefs.MissionDefPack:

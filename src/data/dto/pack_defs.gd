@@ -77,6 +77,7 @@ class FactionDef:
 	var StartingPlanets: Array[StartingPlanetDef] = []
 	var Seed: FactionSeedDef
 	var Victory: VictoryDef
+	var AgentName: String
 
 	static func from_dict(d: Dictionary) -> FactionDef:
 		var o := FactionDef.new()
@@ -92,6 +93,7 @@ class FactionDef:
 				o.StartingPlanets.append(StartingPlanetDef.from_dict(e))
 		o.Seed = FactionSeedDef.from_dict(JsonUtil.get_ci(d, "seed"))
 		o.Victory = VictoryDef.from_dict(JsonUtil.get_ci(d, "victory"))
+		o.AgentName = JsonUtil.str_or(d, "agent_name", "")
 		return o
 
 
