@@ -89,11 +89,11 @@ Before asking anything about how the game works, you must have checked:
 
 | Source | Where |
 |---|---|
-| Original binary tables | `GData/*.DAT` in the installed game, via `data/parse_*.py` |
+| Original binary tables | `GData/*.DAT` in the installed game (`C:\Program Files (x86)\GOG Galaxy\Games\Star Wars - Rebellion`); parse them, never edit them |
 | In-game Encyclopedia text | `ENCYTEXT.DLL` — greppable off disk, no need to launch |
 | UI strings | `TEXTSTRA.DLL` |
 | Rules constants | `packs/star-wars-rebellion/rules.json` (213 GNPRTB entries, faction-keyed) |
-| Manual page scans | `manual/pages/`, digested in `GAMEPLAY.md` |
+| Manual page scans | `manual/pages/` and `Star_Wars_Rebellion_Guide.pdf` in the OLD repo folder (reference only, see Repo facts), digested in `GAMEPLAY.md` here |
 | Prior findings | `ECONOMY-NOTES.md`, `GAMEPLAY.md`, `manual/ILLUSTRATIONS.md` |
 | Existing project conventions | the code already in this repo |
 | Community reverse-engineering | Steam app 441550, swrebellion.net — corroboration only |
@@ -270,29 +270,36 @@ code state get conflated and where guesses hide.
 
 ## Repo facts
 
-- **This is the GDScript port** of `sol-conflict-revolution` (the source, Godot
-  4.7.1 mono/C#, at `D:\Github\sol-conflict-revolution`). See `HANDOFF.md`.
+- **⚠ THIS REPO IS THE GAME. `D:\Github\sol-conflict-revolution` IS THE OLD
+  ONE.** It is the finished C# predecessor this port was translated from, and it
+  is **reference only**: the manual scans (`manual/pages/`), the strategy guide
+  PDF, and the installed game's `.DAT` / `.DLL` files are read there and nowhere
+  else. **Never propose, plan or make a change in it. Never make this repo
+  depend on it** - no script here may read from it, no doc here may say
+  "re-sync from the source". Anything it once owned that this repo needs is
+  copied here for good. (TeeJ, 2026-09-22, after two sessions in one day
+  proposed edits there because this file still called it "the source".)
+  `HANDOFF.md` describes the port as it was being made and is history.
 - **Engine:** Godot 4.7.1 **non-Mono** (GDScript). **Not yet downloaded** as of
   2026-09-02 - only the mono build exists at
   `D:\Downloads\Godot_v4.7.1-stable_mono_win64\`. The mono editor opens GDScript
   projects, so steps 0-1A can use it; the non-Mono build plus its web export
   templates are needed before step 1B's web export. Launch via a `run-game` skill
   for this repo once one exists - the WinGet `godot` shim on PATH does not work.
-- **Remotes:** this repo's own. The source repo's `origin`/`upstream` rules do not
-  apply here; changes to the source (e.g. HANDOFF step 0b) go on its
-  `tschmitz-dev` branch with TeeJ's separate go-ahead.
-- **In this repo, copied from the source (HANDOFF §6 step 0):** `GAMEPLAY.md`,
-  `manual/ILLUSTRATIONS.md`. Each copied doc starts with `<!-- last synced from
-  sol-conflict-revolution commit <sha> -->` - **check that line before trusting
-  it**, and re-sync from the source when it moves.
-- **The pack is the only data the engine reads:** `packs/star-wars-rebellion/`
-  (SCHEMA.md). The legacy `data/*.json` (the Python parsers' output) left this
-  repo 2026-09-22; it and the parsers stay in the source repo, and
-  `tools/build-*.py` read it from there (`SCR_SOURCE`).
-- **Not in this repo at all:** `*.DAT`, `ENCYTEXT.DLL`/`TEXTSTRA.DLL`, `data/*.json`,
-  `manual/Manual.pdf`, `manual/pages/` (171 MB). All of those live only in the
-  source repo / the installed game; rule 1's source table still applies, read
-  them there.
+- **Remotes:** this repo's own (`TeeJS/faction-wars`). Branch off `origin/main`,
+  PR, TeeJ merges.
+- **`GAMEPLAY.md`, `SCHEMA.md` and `manual/ILLUSTRATIONS.md` live HERE.** The
+  `<!-- last synced from sol-conflict-revolution ... -->` first lines are
+  history, not an instruction: these are the live copies and are edited here.
+- **The pack is the only data the engine reads:** `packs/<id>/` (SCHEMA.md).
+  The legacy `data/*.json` and its loaders left this repo 2026-09-22.
+  **Known debt (BACKLOG #36):** `tools/build-map-json.py`, `build-units-json.py`
+  and `build-rules-json.py` still read the old repo's raw JSON through
+  `SCR_SOURCE`. That is a dependency to remove, not a licence to edit the old
+  repo.
+- **Not in this repo at all:** `*.DAT`, `ENCYTEXT.DLL`/`TEXTSTRA.DLL` (the
+  installed game), `manual/Manual.pdf`, `manual/pages/` (171 MB) and the strategy
+  guide (the old repo folder). Read them there; change nothing there.
 - **Page numbers:** always say "PDF pN" or "manual pN". The offset varies 0–3.
 - The original game runs windowed via the **"SW - Rebellion Window Mode"** Start
   menu entry. Computer-use **cannot drive it** - input is accepted and ignored -
