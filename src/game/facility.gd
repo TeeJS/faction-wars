@@ -62,6 +62,15 @@ func HasRole(role: String) -> bool:
 	return Def != null and Def.HasRole(role)
 
 
+## The producer role this facility carries, if any - the key to the queue it
+## feeds (Planet.QueueFor). "" for a facility that produces nothing.
+func ProducerRole() -> String:
+	for role in ["produces_facility", "produces_unit", "produces_troop"]:
+		if HasRole(role):
+			return role
+	return ""
+
+
 ## The display name for a family/tier nobody has built yet.
 static func NameOf(family: String, tier: int = 1) -> String:
 	var d := FacilityCatalog.Get(family, tier)

@@ -37,11 +37,16 @@ static func IsLoaded() -> bool:
 
 
 static func LoadFromPack(pack: PackLoader.LoadedPack) -> void:
-	_tables.clear()
+	# ⚠ NEVER clear() here. After the first game _tables IS pack.MissionTables,
+	# so a clear() on the second game in one process empties the PACK's own
+	# dictionary and every mission table vanishes - Lookup returns -1, the AI
+	# picks different agents, and only a load-then-compare test can see it
+	# (tests/load_resave.gd did). Rebind to a fresh copy instead.
+	_tables = {}
 	if pack == null:
 		push_error("[MissionTableManager] no pack loaded!")
 		return
-	_tables = pack.MissionTables
+	_tables = pack.MissionTables.duplicate()
 	var rows := 0
 	for t in _tables.values():
 		rows += (t as PackDefs.MissionTableDef).Entries.size()

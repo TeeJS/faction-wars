@@ -295,12 +295,8 @@ func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, fa
 		# training centers, or construction yards that are CURRENTLY IDLE"
 		# (manual p086). A facility is therefore either working or idle, and
 		# the list that shows your facilities should say which.
-		var ownQ: Variant
-		match fac.Type:
-			"construction_yard": ownQ = planet.BuildingQueue
-			"shipyard":         ownQ = planet.ShipyardQueue
-			"training_facility": ownQ = planet.TrainingQueue
-			_:                                   ownQ = null
+		# The queue this facility feeds, by its producer ROLE; null if it feeds none.
+		var ownQ: Variant = planet.QueueFor(fac.ProducerRole())
 
 		var statusText: String
 		var statusColor: Color
@@ -368,7 +364,7 @@ func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, fa
 			var additive: bool = Input.is_key_pressed(KEY_SHIFT) or Input.is_key_pressed(KEY_CTRL)
 			if not additive:
 				for f in _selected.duplicate():
-					if f.Type == rowFac.Type:
+					if f.Family() == rowFac.Family():
 						_selected.erase(f)
 			if on:
 				if not _selected.has(rowFac):
@@ -399,11 +395,8 @@ func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, fa
 		var menu := PopupMenu.new()
 
 		if produces:
-			var ownQueue: Array
-			match rowFac.Type:
-				"shipyard":         ownQueue = planet.ShipyardQueue
-				"training_facility": ownQueue = planet.TrainingQueue
-				_:                                   ownQueue = planet.BuildingQueue
+			var q: Variant = planet.QueueFor(rowFac.ProducerRole())
+			var ownQueue: Array = q if q != null else planet.BuildingQueue
 
 			menu.add_item("Build...", 0)
 			menu.add_item("Stop", 6)
@@ -449,11 +442,11 @@ func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, fa
 		var onMenuId := func(id: int) -> void:
 			match id:
 				0:
-					OpenBuildChooser(planet, rowFac.Type)
+					OpenBuildChooser(planet, rowFac.ProducerRole())
 				4:
 					OpenDestinationChooser(planet)
 				6:
-					CommandBus.issue("cancel_build", { "planet": planet.Name, "producer": rowFac.Def.Roles[0] if rowFac.Def != null and not rowFac.Def.Roles.is_empty() else "" })
+					CommandBus.issue("cancel_build", { "planet": planet.Name, "producer": rowFac.ProducerRole() })
 					Populate(planet)
 				1:
 					# Windows are children of the UIManager, so it is the
@@ -462,8 +455,8 @@ func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, fa
 					if ui != null:
 						ui.OpenDefenseFacilityStatusWindow(rowFac)
 				3:
-					var r: int = FacilityCatalog.ConstructionCost(rowFac.Type, rowFac.Tier) * Planet.ScrapRefundPercent / 100
-					var mt: int = FacilityCatalog.MaintenanceCost(rowFac.Type, rowFac.Tier)
+					var r: int = FacilityCatalog.ConstructionCost(rowFac.Family(), rowFac.Tier) * Planet.ScrapRefundPercent / 100
+					var mt: int = FacilityCatalog.MaintenanceCost(rowFac.Family(), rowFac.Tier)
 					var onScrap := func() -> void:
 						CommandBus.issue("scrap_facility", { "facility": rowFac.Serial })
 						_selected.erase(rowFac)
