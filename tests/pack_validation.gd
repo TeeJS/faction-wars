@@ -44,6 +44,8 @@ func _init() -> void:
 		_pack({}, {}, {"menu": _menu({"flat_rect": true})}), "rect must be [x, y, w, h]")
 	_case("menu region with a bad selected_color",
 		_pack({}, {}, {"menu": _menu({"bad_color": true})}), "selected_color: 'red' is not a #rrggbb color")
+	_case("victory_tips missing a text",
+		_pack({}, {}, {"victory_tips": {"standard": "Win.", "hq_only": ""}}), "victory_tips: 'standard' and 'hq_only' texts are both required")
 	_case("menu with no readout",
 		_pack({}, {}, {"menu": _menu({"no_readout": true})}), "'readout' is required")
 	_case("galaxy_size_default not offered",
@@ -311,6 +313,8 @@ func _pack(sector_over: Dictionary, planet_over: Dictionary, other: Dictionary) 
 	}
 	if other.has("menu"):
 		manifest["menu"] = other["menu"]
+	if other.has("victory_tips"):
+		manifest["victory_tips"] = other["victory_tips"]
 	p.Manifest = PackDefs.PackManifest.from_dict(manifest)
 
 	var s1 := {"id": "core", "display_name": "Core", "ring": 1, "starts_neutral": false,
