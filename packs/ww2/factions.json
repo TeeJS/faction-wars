@@ -1,0 +1,104 @@
+{
+  "factions": [
+    {
+      "id": "axis",
+      "display_name": "Axis Powers",
+      "color": "#d22a2a",
+      "loyalty_label": "Support for the Axis",
+      "agent_name": "OKW Liaison",
+      "hq": {
+        "kind": "fixed",
+        "planet": "germany"
+      },
+      "occupation_support_policy": "garrison_bonus",
+      "starting_planets": [
+        {
+          "planet": "germany",
+          "support": 100,
+          "explored": true,
+          "garrison": "axis_start_garrison"
+        },
+        {
+          "planet": "italy",
+          "support": 100,
+          "explored": true,
+          "garrison": "axis_start_garrison"
+        },
+        {
+          "planet": "japan",
+          "support": 100,
+          "explored": true,
+          "garrison": "axis_start_garrison"
+        }
+      ],
+      "seed": {
+        "hq_facilities": "axis_hq_facilities",
+        "hq_garrison": "axis_hq_garrison",
+        "fleet": "axis_fleet",
+        "procedural_fleet": "axis_procedural_fleet"
+      },
+      "victory": {
+        "capture_characters": [
+          "churchill",
+          "roosevelt"
+        ]
+      }
+    },
+    {
+      "id": "allies",
+      "display_name": "Allied Powers",
+      "color": "#2a62d2",
+      "loyalty_label": "Support for the Allies",
+      "agent_name": "Combined Staff Liaison",
+      "hq": {
+        "kind": "fixed",
+        "planet": "britain"
+      },
+      "occupation_support_policy": "garrison_bonus",
+      "starting_planets": [
+        {
+          "planet": "britain",
+          "support": 100,
+          "explored": true,
+          "garrison": "allies_start_garrison"
+        },
+        {
+          "planet": "united_states",
+          "support": 100,
+          "explored": true,
+          "garrison": "allies_start_garrison"
+        },
+        {
+          "planet": "russia",
+          "support": 100,
+          "explored": true,
+          "garrison": "allies_start_garrison"
+        },
+        {
+          "planet": "china",
+          "support": 100,
+          "explored": true,
+          "garrison": "allies_start_garrison"
+        },
+        {
+          "planet": "france",
+          "support": 100,
+          "explored": true,
+          "garrison": "allies_start_garrison"
+        }
+      ],
+      "seed": {
+        "hq_facilities": "allies_hq_facilities",
+        "hq_garrison": "allies_hq_garrison",
+        "fleet": "allies_fleet",
+        "procedural_fleet": "allies_procedural_fleet"
+      },
+      "victory": {
+        "capture_characters": [
+          "hitler",
+          "mussolini"
+        ]
+      }
+    }
+  ]
+}
