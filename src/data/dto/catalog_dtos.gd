@@ -64,18 +64,24 @@ class SideRuleData:
 		return o
 
 
-## backend/LogisticsModels.cs - day_zero_logistics.json
+## backend/LogisticsModels.cs - setup.json logistics. What a seeding row places,
+## BY PACK ID (SCHEMA.md section 12 Q1): a `unit` from units.json or a
+## `facility` from facilities.json. The original's FamilyId/AssetId numbers are
+## gone - they were the last place a pack row named a thing by the binary's
+## table position rather than by its id.
 class LogisticsAsset:
-	var FamilyId: int
-	var FamilyName: String
-	var AssetId: int
+	var UnitId: String = ""
+	var FacilityId: String = ""
 
 	static func from_dict(d: Dictionary) -> LogisticsAsset:
 		var o := LogisticsAsset.new()
-		o.FamilyId = JsonUtil.int_or(d, "FamilyId")
-		o.FamilyName = JsonUtil.str_or(d, "FamilyName", "")
-		o.AssetId = JsonUtil.int_or(d, "AssetId")
+		o.UnitId = JsonUtil.str_or(d, "unit", "")
+		o.FacilityId = JsonUtil.str_or(d, "facility", "")
 		return o
+
+	## A "None" row in the original tables - a band that places nothing.
+	func IsEmpty() -> bool:
+		return UnitId.is_empty() and FacilityId.is_empty()
 
 
 class LogisticsEntry:
@@ -98,7 +104,8 @@ class LogisticsEntry:
 		if list != null:
 			var assets: Array[LogisticsAsset] = []
 			for e in list:
-				assets.append(LogisticsAsset.from_dict(e))
+				# null = the original's "None" child: an empty carrier slot.
+				assets.append(LogisticsAsset.from_dict(e) if e is Dictionary else LogisticsAsset.new())
 			o.Assets = assets
 		return o
 

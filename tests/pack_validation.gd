@@ -140,6 +140,16 @@ func _init() -> void:
 	_case("a special-power band with no label",
 		_pack({}, {}, {"gid_ranks_drop": "master"}), "no label for 'master'")
 
+	# Rule 13 - seeding rows name a unit or facility the pack declares.
+	_case("seeding row names a unit units.json never declares",
+		_pack({}, {}, {"setup_asset": {"unit": "ghost_ship"}}), "unit 'ghost_ship' is not declared in units.json")
+	_case("seeding row names a facility facilities.json never declares",
+		_pack({}, {}, {"setup_asset": {"facility": "moisture_farm"}}), "facility 'moisture_farm' is not declared in facilities.json")
+	_case("seeding row still uses the original's FamilyId/AssetId numbers",
+		_pack({}, {}, {"setup_asset": {"FamilyId": 20, "AssetId": 69}}), "names its asset by FamilyId/AssetId")
+	_case("seeding row names nothing",
+		_pack({}, {}, {"setup_asset": {}}), "names neither a 'unit' nor a 'facility'")
+
 	# Rule 9 - the map image.
 	_case("map_image not declared", _pack({}, {}, {"map_image": ""}), "'map_image' is required")
 	_case("map_image names a file the pack does not ship",
@@ -412,6 +422,14 @@ func _pack(sector_over: Dictionary, planet_over: Dictionary, other: Dictionary) 
 				{"min": 0, "label": "Hostile", "flare": "none"}])}]}],
 		"galaxy_display_modes": other.get("gid_alt", ["popular_support"]),
 		"special_power_ranks": ranks})
+
+	# One seeding table with one row, so a row that resolves to nothing is a case.
+	p.Rules = [{"EntryId": 1}]
+	p.Setup = PackDefs.SetupFile.from_dict({
+		"side_lottery": [{"EntryId": 1}],
+		"logistics": {"garrison": {"Type": "CMUN/FACL (Hierarchical)", "Entries": [
+			{"ParentId": 1, "ProbabilityThreshold": 1, "Multiplier": 1,
+			 "Assets": [other.get("setup_asset", {"unit": "scout"})]}]}}})
 	return p
 
 
@@ -426,6 +444,7 @@ func _case(what: String, pack: PackLoader.LoadedPack, expect: String) -> void:
 	PackLoader._validate_display(pack, errors)
 	PackLoader._validate_menu(pack, PACK_DIR, errors)
 	PackLoader._validate_roles(pack, errors)
+	PackLoader._validate_setup(pack, errors)
 	for e in errors:
 		if e.contains(expect):
 			_ok += 1

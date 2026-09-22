@@ -1,0 +1,1214 @@
+{
+  "sectors": [
+    {
+      "id": "british_isles",
+      "display_name": "British Isles",
+      "ring": 1,
+      "starts_neutral": false,
+      "map": {
+        "x": 442,
+        "y": 220
+      },
+      "min_size": "standard",
+      "intel_tier": "live"
+    },
+    {
+      "id": "western_europe",
+      "display_name": "Western Europe",
+      "ring": 1,
+      "starts_neutral": false,
+      "map": {
+        "x": 456,
+        "y": 250
+      },
+      "min_size": "standard",
+      "intel_tier": "live"
+    },
+    {
+      "id": "central_europe",
+      "display_name": "Central Europe",
+      "ring": 1,
+      "starts_neutral": false,
+      "map": {
+        "x": 479,
+        "y": 240
+      },
+      "min_size": "standard",
+      "intel_tier": "live"
+    },
+    {
+      "id": "scandinavia",
+      "display_name": "Scandinavia",
+      "ring": 2,
+      "starts_neutral": false,
+      "map": {
+        "x": 479,
+        "y": 180
+      },
+      "min_size": "large",
+      "intel_tier": "presence"
+    },
+    {
+      "id": "iberia",
+      "display_name": "Iberia",
+      "ring": 2,
+      "starts_neutral": true,
+      "map": {
+        "x": 440,
+        "y": 290
+      },
+      "min_size": "large",
+      "intel_tier": "presence"
+    },
+    {
+      "id": "italian_peninsula",
+      "display_name": "Italian Peninsula",
+      "ring": 1,
+      "starts_neutral": false,
+      "map": {
+        "x": 475,
+        "y": 280
+      },
+      "min_size": "standard",
+      "intel_tier": "live"
+    },
+    {
+      "id": "balkans",
+      "display_name": "Balkans",
+      "ring": 2,
+      "starts_neutral": false,
+      "map": {
+        "x": 493,
+        "y": 280
+      },
+      "min_size": "large",
+      "intel_tier": "presence"
+    },
+    {
+      "id": "eastern_front",
+      "display_name": "Eastern Front",
+      "ring": 1,
+      "starts_neutral": false,
+      "map": {
+        "x": 504,
+        "y": 230
+      },
+      "min_size": "standard",
+      "intel_tier": "live"
+    },
+    {
+      "id": "caucasus_urals",
+      "display_name": "Caucasus and Urals",
+      "ring": 2,
+      "starts_neutral": false,
+      "map": {
+        "x": 547,
+        "y": 230
+      },
+      "min_size": "huge",
+      "intel_tier": "presence"
+    },
+    {
+      "id": "north_africa",
+      "display_name": "North Africa",
+      "ring": 2,
+      "starts_neutral": false,
+      "map": {
+        "x": 479,
+        "y": 340
+      },
+      "min_size": "standard",
+      "intel_tier": "presence"
+    },
+    {
+      "id": "middle_east",
+      "display_name": "Middle East",
+      "ring": 2,
+      "starts_neutral": true,
+      "map": {
+        "x": 528,
+        "y": 320
+      },
+      "min_size": "large",
+      "intel_tier": "presence"
+    },
+    {
+      "id": "north_atlantic",
+      "display_name": "North Atlantic",
+      "ring": 2,
+      "starts_neutral": false,
+      "map": {
+        "x": 392,
+        "y": 200
+      },
+      "min_size": "standard",
+      "intel_tier": "presence"
+    },
+    {
+      "id": "north_america",
+      "display_name": "North America",
+      "ring": 2,
+      "starts_neutral": false,
+      "map": {
+        "x": 265,
+        "y": 280
+      },
+      "min_size": "standard",
+      "intel_tier": "presence"
+    },
+    {
+      "id": "east_asia",
+      "display_name": "East Asia",
+      "ring": 2,
+      "starts_neutral": false,
+      "map": {
+        "x": 693,
+        "y": 300
+      },
+      "min_size": "standard",
+      "intel_tier": "presence"
+    },
+    {
+      "id": "southeast_asia",
+      "display_name": "Southeast Asia",
+      "ring": 3,
+      "starts_neutral": false,
+      "map": {
+        "x": 654,
+        "y": 430
+      },
+      "min_size": "large",
+      "intel_tier": "presence"
+    },
+    {
+      "id": "south_asia",
+      "display_name": "South Asia",
+      "ring": 3,
+      "starts_neutral": false,
+      "map": {
+        "x": 602,
+        "y": 380
+      },
+      "min_size": "huge",
+      "intel_tier": "presence"
+    },
+    {
+      "id": "central_pacific",
+      "display_name": "Central Pacific",
+      "ring": 3,
+      "starts_neutral": false,
+      "map": {
+        "x": 110,
+        "y": 415
+      },
+      "min_size": "standard",
+      "intel_tier": "presence"
+    },
+    {
+      "id": "south_pacific",
+      "display_name": "South Pacific",
+      "ring": 3,
+      "starts_neutral": false,
+      "map": {
+        "x": 751,
+        "y": 565
+      },
+      "min_size": "large",
+      "intel_tier": "presence"
+    },
+    {
+      "id": "south_america",
+      "display_name": "South America",
+      "ring": 3,
+      "starts_neutral": true,
+      "map": {
+        "x": 333,
+        "y": 565
+      },
+      "min_size": "huge",
+      "intel_tier": "presence"
+    },
+    {
+      "id": "sub_saharan_africa",
+      "display_name": "Sub-Saharan Africa",
+      "ring": 3,
+      "starts_neutral": false,
+      "map": {
+        "x": 489,
+        "y": 515
+      },
+      "min_size": "huge",
+      "intel_tier": "presence"
+    }
+  ],
+  "planets": [
+    {
+      "id": "britain",
+      "display_name": "Britain",
+      "sector": "british_isles",
+      "starts_inhabited": true,
+      "map": {
+        "x": 447,
+        "y": 228
+      },
+      "artwork_id": 1
+    },
+    {
+      "id": "ireland",
+      "display_name": "Ireland",
+      "sector": "british_isles",
+      "starts_inhabited": true,
+      "map": {
+        "x": 434,
+        "y": 224
+      },
+      "artwork_id": 2
+    },
+    {
+      "id": "france",
+      "display_name": "France",
+      "sector": "western_europe",
+      "starts_inhabited": true,
+      "map": {
+        "x": 454,
+        "y": 255
+      },
+      "artwork_id": 3
+    },
+    {
+      "id": "belgium",
+      "display_name": "Belgium",
+      "sector": "western_europe",
+      "starts_inhabited": true,
+      "map": {
+        "x": 459,
+        "y": 236
+      },
+      "artwork_id": 4
+    },
+    {
+      "id": "netherlands",
+      "display_name": "Netherlands",
+      "sector": "western_europe",
+      "starts_inhabited": true,
+      "map": {
+        "x": 460,
+        "y": 228
+      },
+      "artwork_id": 5
+    },
+    {
+      "id": "switzerland",
+      "display_name": "Switzerland",
+      "sector": "western_europe",
+      "starts_inhabited": true,
+      "map": {
+        "x": 466,
+        "y": 256
+      },
+      "artwork_id": 6
+    },
+    {
+      "id": "germany",
+      "display_name": "Germany",
+      "sector": "central_europe",
+      "starts_inhabited": true,
+      "map": {
+        "x": 470,
+        "y": 232
+      },
+      "artwork_id": 7
+    },
+    {
+      "id": "austria",
+      "display_name": "Austria",
+      "sector": "central_europe",
+      "starts_inhabited": true,
+      "map": {
+        "x": 478,
+        "y": 252
+      },
+      "artwork_id": 8
+    },
+    {
+      "id": "czechoslovakia",
+      "display_name": "Czechoslovakia",
+      "sector": "central_europe",
+      "starts_inhabited": true,
+      "map": {
+        "x": 481,
+        "y": 242
+      },
+      "artwork_id": 9
+    },
+    {
+      "id": "hungary",
+      "display_name": "Hungary",
+      "sector": "central_europe",
+      "starts_inhabited": true,
+      "map": {
+        "x": 488,
+        "y": 255
+      },
+      "artwork_id": 10
+    },
+    {
+      "id": "norway",
+      "display_name": "Norway",
+      "sector": "scandinavia",
+      "starts_inhabited": true,
+      "map": {
+        "x": 468,
+        "y": 185
+      },
+      "artwork_id": 11
+    },
+    {
+      "id": "sweden",
+      "display_name": "Sweden",
+      "sector": "scandinavia",
+      "starts_inhabited": true,
+      "map": {
+        "x": 481,
+        "y": 188
+      },
+      "artwork_id": 12
+    },
+    {
+      "id": "denmark",
+      "display_name": "Denmark",
+      "sector": "scandinavia",
+      "starts_inhabited": true,
+      "map": {
+        "x": 469,
+        "y": 210
+      },
+      "artwork_id": 13
+    },
+    {
+      "id": "finland",
+      "display_name": "Finland",
+      "sector": "scandinavia",
+      "starts_inhabited": true,
+      "map": {
+        "x": 501,
+        "y": 178
+      },
+      "artwork_id": 14
+    },
+    {
+      "id": "spain",
+      "display_name": "Spain",
+      "sector": "iberia",
+      "starts_inhabited": true,
+      "map": {
+        "x": 443,
+        "y": 290
+      },
+      "artwork_id": 15
+    },
+    {
+      "id": "portugal",
+      "display_name": "Portugal",
+      "sector": "iberia",
+      "starts_inhabited": true,
+      "map": {
+        "x": 434,
+        "y": 292
+      },
+      "artwork_id": 16
+    },
+    {
+      "id": "gibraltar",
+      "display_name": "Gibraltar",
+      "sector": "iberia",
+      "starts_inhabited": true,
+      "map": {
+        "x": 440,
+        "y": 310
+      },
+      "artwork_id": 17
+    },
+    {
+      "id": "italy",
+      "display_name": "Italy",
+      "sector": "italian_peninsula",
+      "starts_inhabited": true,
+      "map": {
+        "x": 474,
+        "y": 278
+      },
+      "artwork_id": 18
+    },
+    {
+      "id": "sicily",
+      "display_name": "Sicily",
+      "sector": "italian_peninsula",
+      "starts_inhabited": true,
+      "map": {
+        "x": 477,
+        "y": 302
+      },
+      "artwork_id": 19
+    },
+    {
+      "id": "sardinia",
+      "display_name": "Sardinia",
+      "sector": "italian_peninsula",
+      "starts_inhabited": true,
+      "map": {
+        "x": 468,
+        "y": 290
+      },
+      "artwork_id": 20
+    },
+    {
+      "id": "yugoslavia",
+      "display_name": "Yugoslavia",
+      "sector": "balkans",
+      "starts_inhabited": true,
+      "map": {
+        "x": 488,
+        "y": 270
+      },
+      "artwork_id": 21
+    },
+    {
+      "id": "greece",
+      "display_name": "Greece",
+      "sector": "balkans",
+      "starts_inhabited": true,
+      "map": {
+        "x": 494,
+        "y": 295
+      },
+      "artwork_id": 22
+    },
+    {
+      "id": "romania",
+      "display_name": "Romania",
+      "sector": "balkans",
+      "starts_inhabited": true,
+      "map": {
+        "x": 499,
+        "y": 262
+      },
+      "artwork_id": 23
+    },
+    {
+      "id": "bulgaria",
+      "display_name": "Bulgaria",
+      "sector": "balkans",
+      "starts_inhabited": true,
+      "map": {
+        "x": 500,
+        "y": 276
+      },
+      "artwork_id": 24
+    },
+    {
+      "id": "crete",
+      "display_name": "Crete",
+      "sector": "balkans",
+      "starts_inhabited": true,
+      "map": {
+        "x": 499,
+        "y": 314
+      },
+      "artwork_id": 25
+    },
+    {
+      "id": "poland",
+      "display_name": "Poland",
+      "sector": "eastern_front",
+      "starts_inhabited": true,
+      "map": {
+        "x": 489,
+        "y": 230
+      },
+      "artwork_id": 26
+    },
+    {
+      "id": "baltic_states",
+      "display_name": "Baltic States",
+      "sector": "eastern_front",
+      "starts_inhabited": true,
+      "map": {
+        "x": 499,
+        "y": 205
+      },
+      "artwork_id": 27
+    },
+    {
+      "id": "belarus",
+      "display_name": "Belarus",
+      "sector": "eastern_front",
+      "starts_inhabited": true,
+      "map": {
+        "x": 504,
+        "y": 222
+      },
+      "artwork_id": 28
+    },
+    {
+      "id": "ukraine",
+      "display_name": "Ukraine",
+      "sector": "eastern_front",
+      "starts_inhabited": true,
+      "map": {
+        "x": 512,
+        "y": 245
+      },
+      "artwork_id": 29
+    },
+    {
+      "id": "russia",
+      "display_name": "Russia",
+      "sector": "eastern_front",
+      "starts_inhabited": true,
+      "map": {
+        "x": 523,
+        "y": 211
+      },
+      "artwork_id": 30
+    },
+    {
+      "id": "caucasus",
+      "display_name": "Caucasus",
+      "sector": "caucasus_urals",
+      "starts_inhabited": true,
+      "map": {
+        "x": 536,
+        "y": 278
+      },
+      "artwork_id": 31
+    },
+    {
+      "id": "urals",
+      "display_name": "Urals",
+      "sector": "caucasus_urals",
+      "starts_inhabited": true,
+      "map": {
+        "x": 567,
+        "y": 205
+      },
+      "artwork_id": 32
+    },
+    {
+      "id": "kazakhstan",
+      "display_name": "Kazakhstan",
+      "sector": "caucasus_urals",
+      "starts_inhabited": true,
+      "map": {
+        "x": 582,
+        "y": 250
+      },
+      "artwork_id": 33
+    },
+    {
+      "id": "siberia",
+      "display_name": "Siberia",
+      "sector": "caucasus_urals",
+      "starts_inhabited": true,
+      "map": {
+        "x": 625,
+        "y": 180
+      },
+      "artwork_id": 34
+    },
+    {
+      "id": "morocco",
+      "display_name": "Morocco",
+      "sector": "north_africa",
+      "starts_inhabited": true,
+      "map": {
+        "x": 438,
+        "y": 330
+      },
+      "artwork_id": 35
+    },
+    {
+      "id": "algeria",
+      "display_name": "Algeria",
+      "sector": "north_africa",
+      "starts_inhabited": true,
+      "map": {
+        "x": 456,
+        "y": 330
+      },
+      "artwork_id": 36
+    },
+    {
+      "id": "tunisia",
+      "display_name": "Tunisia",
+      "sector": "north_africa",
+      "starts_inhabited": true,
+      "map": {
+        "x": 468,
+        "y": 320
+      },
+      "artwork_id": 37
+    },
+    {
+      "id": "libya",
+      "display_name": "Libya",
+      "sector": "north_africa",
+      "starts_inhabited": true,
+      "map": {
+        "x": 483,
+        "y": 345
+      },
+      "artwork_id": 38
+    },
+    {
+      "id": "egypt",
+      "display_name": "Egypt",
+      "sector": "north_africa",
+      "starts_inhabited": true,
+      "map": {
+        "x": 508,
+        "y": 355
+      },
+      "artwork_id": 39
+    },
+    {
+      "id": "malta",
+      "display_name": "Malta",
+      "sector": "north_africa",
+      "starts_inhabited": true,
+      "map": {
+        "x": 478,
+        "y": 310
+      },
+      "artwork_id": 40
+    },
+    {
+      "id": "turkey",
+      "display_name": "Turkey",
+      "sector": "middle_east",
+      "starts_inhabited": true,
+      "map": {
+        "x": 518,
+        "y": 295
+      },
+      "artwork_id": 41
+    },
+    {
+      "id": "syria",
+      "display_name": "Syria and Lebanon",
+      "sector": "middle_east",
+      "starts_inhabited": true,
+      "map": {
+        "x": 522,
+        "y": 318
+      },
+      "artwork_id": 42
+    },
+    {
+      "id": "palestine",
+      "display_name": "Palestine",
+      "sector": "middle_east",
+      "starts_inhabited": true,
+      "map": {
+        "x": 518,
+        "y": 331
+      },
+      "artwork_id": 43
+    },
+    {
+      "id": "iraq",
+      "display_name": "Iraq",
+      "sector": "middle_east",
+      "starts_inhabited": true,
+      "map": {
+        "x": 536,
+        "y": 325
+      },
+      "artwork_id": 44
+    },
+    {
+      "id": "persia",
+      "display_name": "Persia",
+      "sector": "middle_east",
+      "starts_inhabited": true,
+      "map": {
+        "x": 553,
+        "y": 328
+      },
+      "artwork_id": 45
+    },
+    {
+      "id": "iceland",
+      "display_name": "Iceland",
+      "sector": "north_atlantic",
+      "starts_inhabited": true,
+      "map": {
+        "x": 413,
+        "y": 165
+      },
+      "artwork_id": 46
+    },
+    {
+      "id": "greenland",
+      "display_name": "Greenland",
+      "sector": "north_atlantic",
+      "starts_inhabited": false,
+      "map": {
+        "x": 368,
+        "y": 160
+      },
+      "artwork_id": 47
+    },
+    {
+      "id": "azores",
+      "display_name": "Azores",
+      "sector": "north_atlantic",
+      "starts_inhabited": true,
+      "map": {
+        "x": 396,
+        "y": 298
+      },
+      "artwork_id": 48
+    },
+    {
+      "id": "newfoundland",
+      "display_name": "Newfoundland",
+      "sector": "north_atlantic",
+      "starts_inhabited": true,
+      "map": {
+        "x": 341,
+        "y": 245
+      },
+      "artwork_id": 49
+    },
+    {
+      "id": "united_states",
+      "display_name": "United States",
+      "sector": "north_america",
+      "starts_inhabited": true,
+      "map": {
+        "x": 259,
+        "y": 295
+      },
+      "artwork_id": 50
+    },
+    {
+      "id": "canada",
+      "display_name": "Canada",
+      "sector": "north_america",
+      "starts_inhabited": true,
+      "map": {
+        "x": 256,
+        "y": 215
+      },
+      "artwork_id": 51
+    },
+    {
+      "id": "alaska",
+      "display_name": "Alaska",
+      "sector": "north_america",
+      "starts_inhabited": true,
+      "map": {
+        "x": 158,
+        "y": 170
+      },
+      "artwork_id": 52
+    },
+    {
+      "id": "mexico",
+      "display_name": "Mexico",
+      "sector": "north_america",
+      "starts_inhabited": true,
+      "map": {
+        "x": 252,
+        "y": 372
+      },
+      "artwork_id": 53
+    },
+    {
+      "id": "panama",
+      "display_name": "Panama",
+      "sector": "north_america",
+      "starts_inhabited": true,
+      "map": {
+        "x": 294,
+        "y": 445
+      },
+      "artwork_id": 54
+    },
+    {
+      "id": "japan",
+      "display_name": "Japan",
+      "sector": "east_asia",
+      "starts_inhabited": true,
+      "map": {
+        "x": 718,
+        "y": 308
+      },
+      "artwork_id": 55
+    },
+    {
+      "id": "korea",
+      "display_name": "Korea",
+      "sector": "east_asia",
+      "starts_inhabited": true,
+      "map": {
+        "x": 698,
+        "y": 302
+      },
+      "artwork_id": 56
+    },
+    {
+      "id": "manchuria",
+      "display_name": "Manchuria",
+      "sector": "east_asia",
+      "starts_inhabited": true,
+      "map": {
+        "x": 693,
+        "y": 270
+      },
+      "artwork_id": 57
+    },
+    {
+      "id": "china",
+      "display_name": "China",
+      "sector": "east_asia",
+      "starts_inhabited": true,
+      "map": {
+        "x": 668,
+        "y": 325
+      },
+      "artwork_id": 58
+    },
+    {
+      "id": "formosa",
+      "display_name": "Formosa",
+      "sector": "east_asia",
+      "starts_inhabited": true,
+      "map": {
+        "x": 685,
+        "y": 372
+      },
+      "artwork_id": 59
+    },
+    {
+      "id": "indochina",
+      "display_name": "Indochina",
+      "sector": "southeast_asia",
+      "starts_inhabited": true,
+      "map": {
+        "x": 656,
+        "y": 415
+      },
+      "artwork_id": 60
+    },
+    {
+      "id": "siam",
+      "display_name": "Siam",
+      "sector": "southeast_asia",
+      "starts_inhabited": true,
+      "map": {
+        "x": 645,
+        "y": 412
+      },
+      "artwork_id": 61
+    },
+    {
+      "id": "burma",
+      "display_name": "Burma",
+      "sector": "southeast_asia",
+      "starts_inhabited": true,
+      "map": {
+        "x": 637,
+        "y": 390
+      },
+      "artwork_id": 62
+    },
+    {
+      "id": "malaya",
+      "display_name": "Malaya",
+      "sector": "southeast_asia",
+      "starts_inhabited": true,
+      "map": {
+        "x": 648,
+        "y": 472
+      },
+      "artwork_id": 63
+    },
+    {
+      "id": "philippines",
+      "display_name": "Philippines",
+      "sector": "southeast_asia",
+      "starts_inhabited": true,
+      "map": {
+        "x": 687,
+        "y": 425
+      },
+      "artwork_id": 64
+    },
+    {
+      "id": "dutch_east_indies",
+      "display_name": "Dutch East Indies",
+      "sector": "southeast_asia",
+      "starts_inhabited": true,
+      "map": {
+        "x": 664,
+        "y": 500
+      },
+      "artwork_id": 65
+    },
+    {
+      "id": "india",
+      "display_name": "India",
+      "sector": "south_asia",
+      "starts_inhabited": true,
+      "map": {
+        "x": 602,
+        "y": 380
+      },
+      "artwork_id": 66
+    },
+    {
+      "id": "ceylon",
+      "display_name": "Ceylon",
+      "sector": "south_asia",
+      "starts_inhabited": true,
+      "map": {
+        "x": 607,
+        "y": 452
+      },
+      "artwork_id": 67
+    },
+    {
+      "id": "afghanistan",
+      "display_name": "Afghanistan",
+      "sector": "south_asia",
+      "starts_inhabited": true,
+      "map": {
+        "x": 578,
+        "y": 320
+      },
+      "artwork_id": 68
+    },
+    {
+      "id": "hawaii",
+      "display_name": "Hawaii",
+      "sector": "central_pacific",
+      "starts_inhabited": true,
+      "map": {
+        "x": 143,
+        "y": 384
+      },
+      "artwork_id": 69
+    },
+    {
+      "id": "midway",
+      "display_name": "Midway",
+      "sector": "central_pacific",
+      "starts_inhabited": false,
+      "map": {
+        "x": 105,
+        "y": 349
+      },
+      "artwork_id": 70
+    },
+    {
+      "id": "wake_island",
+      "display_name": "Wake Island",
+      "sector": "central_pacific",
+      "starts_inhabited": false,
+      "map": {
+        "x": 774,
+        "y": 394
+      },
+      "artwork_id": 71
+    },
+    {
+      "id": "marshall_islands",
+      "display_name": "Marshall Islands",
+      "sector": "central_pacific",
+      "starts_inhabited": true,
+      "map": {
+        "x": 779,
+        "y": 455
+      },
+      "artwork_id": 72
+    },
+    {
+      "id": "marianas",
+      "display_name": "Marianas",
+      "sector": "central_pacific",
+      "starts_inhabited": true,
+      "map": {
+        "x": 733,
+        "y": 414
+      },
+      "artwork_id": 73
+    },
+    {
+      "id": "gilbert_islands",
+      "display_name": "Gilbert Islands",
+      "sector": "central_pacific",
+      "starts_inhabited": true,
+      "map": {
+        "x": 786,
+        "y": 485
+      },
+      "artwork_id": 74
+    },
+    {
+      "id": "new_guinea",
+      "display_name": "New Guinea",
+      "sector": "south_pacific",
+      "starts_inhabited": true,
+      "map": {
+        "x": 732,
+        "y": 520
+      },
+      "artwork_id": 75
+    },
+    {
+      "id": "solomon_islands",
+      "display_name": "Solomon Islands",
+      "sector": "south_pacific",
+      "starts_inhabited": true,
+      "map": {
+        "x": 761,
+        "y": 535
+      },
+      "artwork_id": 76
+    },
+    {
+      "id": "australia",
+      "display_name": "Australia",
+      "sector": "south_pacific",
+      "starts_inhabited": true,
+      "map": {
+        "x": 711,
+        "y": 615
+      },
+      "artwork_id": 77
+    },
+    {
+      "id": "new_zealand",
+      "display_name": "New Zealand",
+      "sector": "south_pacific",
+      "starts_inhabited": true,
+      "map": {
+        "x": 784,
+        "y": 695
+      },
+      "artwork_id": 78
+    },
+    {
+      "id": "fiji",
+      "display_name": "Fiji",
+      "sector": "south_pacific",
+      "starts_inhabited": true,
+      "map": {
+        "x": 796,
+        "y": 580
+      },
+      "artwork_id": 79
+    },
+    {
+      "id": "brazil",
+      "display_name": "Brazil",
+      "sector": "south_america",
+      "starts_inhabited": true,
+      "map": {
+        "x": 357,
+        "y": 540
+      },
+      "artwork_id": 80
+    },
+    {
+      "id": "argentina",
+      "display_name": "Argentina",
+      "sector": "south_america",
+      "starts_inhabited": true,
+      "map": {
+        "x": 326,
+        "y": 660
+      },
+      "artwork_id": 81
+    },
+    {
+      "id": "chile",
+      "display_name": "Chile",
+      "sector": "south_america",
+      "starts_inhabited": true,
+      "map": {
+        "x": 312,
+        "y": 655
+      },
+      "artwork_id": 82
+    },
+    {
+      "id": "venezuela",
+      "display_name": "Venezuela",
+      "sector": "south_america",
+      "starts_inhabited": true,
+      "map": {
+        "x": 322,
+        "y": 450
+      },
+      "artwork_id": 83
+    },
+    {
+      "id": "west_africa",
+      "display_name": "West Africa",
+      "sector": "sub_saharan_africa",
+      "starts_inhabited": true,
+      "map": {
+        "x": 440,
+        "y": 440
+      },
+      "artwork_id": 84
+    },
+    {
+      "id": "congo",
+      "display_name": "Congo",
+      "sector": "sub_saharan_africa",
+      "starts_inhabited": true,
+      "map": {
+        "x": 495,
+        "y": 505
+      },
+      "artwork_id": 85
+    },
+    {
+      "id": "east_africa",
+      "display_name": "East Africa",
+      "sector": "sub_saharan_africa",
+      "starts_inhabited": true,
+      "map": {
+        "x": 524,
+        "y": 465
+      },
+      "artwork_id": 86
+    },
+    {
+      "id": "south_africa",
+      "display_name": "South Africa",
+      "sector": "sub_saharan_africa",
+      "starts_inhabited": true,
+      "map": {
+        "x": 499,
+        "y": 635
+      },
+      "artwork_id": 87
+    },
+    {
+      "id": "madagascar",
+      "display_name": "Madagascar",
+      "sector": "sub_saharan_africa",
+      "starts_inhabited": true,
+      "map": {
+        "x": 541,
+        "y": 585
+      },
+      "artwork_id": 88
+    }
+  ]
+}

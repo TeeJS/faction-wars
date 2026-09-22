@@ -38,9 +38,10 @@ static func CanBombard(fleet: Fleet, target: Planet) -> bool:
 		and fleet.Ships.size() > 0 and target.ControllingFaction != fleet.Faction
 
 
-## "...have the DEATH STAR IN YOUR FLEET" (p122) - family 24.
+## "...have the DEATH STAR IN YOUR FLEET" (p122) - the unit the pack marks
+## `superweapon` (units.json roles).
 static func CanDestroySystem(fleet: Fleet) -> bool:
-	return fleet != null and Lq.any(fleet.Ships, func(s): return s.FamilyId == 24)
+	return fleet != null and Lq.any(fleet.Ships, func(s): return s.HasRole("superweapon"))
 
 
 static func Bombard(fleet: Fleet, target: Planet, mode: int, rng: Prng, day: int) -> BombardmentReport:
@@ -138,10 +139,10 @@ static func Bombard(fleet: Fleet, target: Planet, mode: int, rng: Prng, day: int
 	return report
 
 
-## The four defensive families, 34 to 37.
+## The four defensive families (the original's 34 to 37), by role.
 static func IsMilitary(f: Facility) -> bool:
 	return f.HasRole("shield") or f.HasRole("anti_ship") \
-		or f.HasRole("disable") or f.Family() == "death_star_shield"
+		or f.HasRole("disable") or f.HasRole("superweapon_shield")
 
 
 ## 0x58E186: `through` shots, each a random surviving target against

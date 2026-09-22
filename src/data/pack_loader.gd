@@ -13,7 +13,7 @@ const KNOWN_COMMAND_RANKS := ["admiral", "commander", "general"]
 ## facility that no system ever asks for.
 const KNOWN_FACILITY_ROLES := ["headquarters", "extracts_raw", "refines",
 	"produces_unit", "produces_troop", "produces_facility", "planet_defense",
-	"shield", "disable", "anti_ship"]
+	"shield", "disable", "anti_ship", "superweapon_shield"]
 ## SCHEMA.md section 6. What a weapon DOES; the tactical engine branches on
 ## these and on nothing else about a weapon.
 const KNOWN_WEAPON_ROLES := ["fighter_accuracy_scaled", "no_fighter_effect",
@@ -329,8 +329,9 @@ static func _validate_display(pack: LoadedPack, errors: Array[String]) -> void:
 			errors.append("display.json: special_power_ranks has no label for '%s'." % key)
 
 
-## SCHEMA.md section 11 rule 3 for setup: every logistics table a faction names
-## must exist, or day zero seeds that side with nothing and says nothing.
+## SCHEMA.md section 11 rules 3 and 13 for setup: every logistics table a faction
+## names must exist, and every row in every table must name a unit or facility
+## the pack declares - or day zero seeds that side with nothing and says nothing.
 static func _validate_setup(pack: LoadedPack, errors: Array[String]) -> void:
 	if pack.Rules.is_empty():
 		errors.append("rules.json: no rule entries.")
@@ -351,6 +352,55 @@ static func _validate_setup(pack: LoadedPack, errors: Array[String]) -> void:
 		for id in named:
 			if not pack.Setup.Logistics.has(id):
 				errors.append("factions.json[%s]: names logistics table '%s', which setup.json does not declare." % [f.Id, id])
+
+	# Rule 13: every seeding asset names a declared unit or facility BY ID. A
+	# row the engine cannot resolve would seed nothing and say nothing - that is
+	# how the WWII pack's first soak opened with "0 Fleets containing 0 Capital
+	# Ships". The original's FamilyId/AssetId numbers are refused outright.
+	var unit_ids := {}
+	for u in pack.Units:
+		unit_ids[u.Id] = true
+	var facility_ids := {}
+	for fd in pack.Facilities:
+		facility_ids[fd.Id] = true
+	for table_id in pack.Setup.Logistics:
+		var table: Variant = pack.Setup.Logistics[table_id]
+		if not (table is Dictionary):
+			continue
+		var entries: Variant = JsonUtil.get_ci(table, "Entries")
+		if not (entries is Array):
+			continue
+		for i in entries.size():
+			var e: Variant = entries[i]
+			if not (e is Dictionary):
+				continue
+			var assets: Array = []
+			var one: Variant = JsonUtil.get_ci(e, "Asset")
+			if one != null:
+				assets.append(one)
+			var many: Variant = JsonUtil.get_ci(e, "Assets")
+			if many is Array:
+				assets.append_array(many)
+			for a in assets:
+				var ctx := "setup.json logistics[%s] entry %d" % [table_id, i + 1]
+				if a == null:
+					continue   # the original's "None" row: an empty carrier slot, places nothing
+				if not (a is Dictionary):
+					errors.append("%s: asset is not an object." % ctx)
+					continue
+				if a.has("FamilyId") or a.has("AssetId"):
+					errors.append("%s: names its asset by FamilyId/AssetId; seeding rows name a 'unit' or 'facility' id (SCHEMA.md section 12 Q1)." % ctx)
+					continue
+				var uid: String = JsonUtil.str_or(a, "unit", "")
+				var fid: String = JsonUtil.str_or(a, "facility", "")
+				if uid.is_empty() and fid.is_empty():
+					errors.append("%s: asset names neither a 'unit' nor a 'facility'." % ctx)
+				elif not uid.is_empty() and not fid.is_empty():
+					errors.append("%s: asset names both a unit and a facility; one per row." % ctx)
+				elif not uid.is_empty() and not unit_ids.has(uid):
+					errors.append("%s: unit '%s' is not declared in units.json." % [ctx, uid])
+				elif not fid.is_empty() and not facility_ids.has(fid):
+					errors.append("%s: facility '%s' is not declared in facilities.json." % [ctx, fid])
 
 
 ## SCHEMA.md section 11 rules 3 and 5 for the mission catalog.
