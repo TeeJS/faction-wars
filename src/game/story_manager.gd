@@ -14,10 +14,10 @@ static var _palace_rolls_from: int = -1
 
 ## ⚠ THE FOUR PAIRINGS ARE ALL THERE ARE: [aggressor role, antagonist role, scale id, min id]
 const Pairings := [
-	["pilgrim", "dark_lord",   RuleId.LukeVsVaderGainScale,   RuleId.LukeVsVaderGainMin],
-	["pilgrim", "dark_master", RuleId.LukeVsEmperorGainScale, RuleId.LukeVsEmperorGainMin],
-	["heir",    "dark_lord",   RuleId.LeiaVsVaderGainScale,   RuleId.LeiaVsVaderGainMin],
-	["heir",    "dark_master", RuleId.LeiaVsEmperorGainScale, RuleId.LeiaVsEmperorGainMin],
+	["pilgrim", "dark_lord",   RuleId.PilgrimVsDarkLordGainScale,   RuleId.PilgrimVsDarkLordGainMin],
+	["pilgrim", "dark_master", RuleId.PilgrimVsDarkMasterGainScale, RuleId.PilgrimVsDarkMasterGainMin],
+	["heir",    "dark_lord",   RuleId.HeirVsDarkLordGainScale,   RuleId.HeirVsDarkLordGainMin],
+	["heir",    "dark_master", RuleId.HeirVsDarkMasterGainScale, RuleId.HeirVsDarkMasterGainMin],
 ]
 
 
@@ -78,7 +78,7 @@ static func ResolveEncounter(a: Character, b: Character, p: Array, day: int, rng
 	a.KnowsHeritage = true
 
 	var hurt := false
-	if a.SpecialPowerLevel < RuleManager.Get(RuleId.DagobahInjuryCeiling, a.Faction):
+	if a.SpecialPowerLevel < RuleManager.Get(RuleId.PilgrimageInjuryCeiling, a.Faction):
 		hurt = true
 		MissionManager.Injure(a, rng, RuleId.HeritageInjuryBase, RuleId.HeritageInjurySpread)
 
@@ -256,7 +256,7 @@ static func ProcessFinalBattle(day: int, rng: Prng) -> void:
 		return
 
 	if not luke.FinalBattleReady and luke.KnowsHeritage \
-			and luke.SpecialPowerLevel >= RuleManager.Get(RuleId.LukeKnowsHeritageThresh, luke.Faction):
+			and luke.SpecialPowerLevel >= RuleManager.Get(RuleId.PilgrimKnowsHeritageThresh, luke.Faction):
 		luke.FinalBattleReady = true
 		print("[Story] %s is ready for the final confrontation (Force %d)." % [luke.Name, luke.SpecialPowerLevel])
 
