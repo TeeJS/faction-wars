@@ -188,6 +188,8 @@ static func _propose_missions(ctx: AIContext, plan: AIObjectives.Plan) -> Array:
 		if not (op.Attached is Planet):
 			continue
 		for type in MissionManager.PerformableBy([op]):
+			if not _leader_may_run(op, type):
+				continue
 			var pick = _best_mission_target(ctx, type, op, counter_intel)
 			if pick == null:
 				continue
@@ -207,11 +209,24 @@ static func _team_for(ctx: AIContext, type: int, op) -> Array:
 		return team
 	var here = op.Attached
 	for other in (ctx.FreeCharacters + ctx.FreeSpecForces):
-		if other == op or other.Attached != here:
+		if other == op or other.Attached != here or not _leader_may_run(other, type):
 			continue
 		if MissionManager.TeamCanPerform([op, other], type):
 			return [op, other]
 	return team
+
+
+## The head of state - the character the pack starts at the headquarters
+## (`starts_at_hq`: the Emperor, Mon Mothma, Hitler, Churchill) - runs only
+## Diplomacy and Recruitment for the AI, never the missions a foil can seize
+## them on. The manual lets any character run any mission and a foiled runner
+## be captured (Abduction row, GAMEPLAY.md); this is the AI's own restraint
+## (OURS, TeeJ 2026-09-22), after the Star Wars soaks sent the Emperor on 90
+## sabotage runs and the WWII pack sent Hitler to Britain to be caught.
+static func _leader_may_run(op, type: int) -> bool:
+	if not (op is Character) or not (op as Character).HasRole("starts_at_hq"):
+		return true
+	return type == Enums.MissionType.Diplomacy or type == Enums.MissionType.Recruitment
 
 
 static func _is_high_value(type: int) -> bool:
