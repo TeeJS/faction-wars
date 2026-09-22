@@ -581,3 +581,48 @@ class MissionsFile:
 			for e in list:
 				o.Missions.append(MissionDefPack.from_dict(e))
 		return o
+
+
+## SCHEMA.md section 9. A mission outcome table: an ascending STEP FUNCTION.
+class MissionTableEntryDef:
+	var Threshold: int
+	var Value: int
+
+	static func from_dict(d: Dictionary) -> MissionTableEntryDef:
+		var o := MissionTableEntryDef.new()
+		o.Threshold = JsonUtil.int_or(d, "Threshold")
+		o.Value = JsonUtil.int_or(d, "Value")
+		return o
+
+
+class MissionTableDef:
+	var Id: String
+	## The original .DAT this came from - traceability only, never load-bearing
+	## (SCHEMA section 12 Q2).
+	var SourceFile: String
+	var Description: String
+	var Entries: Array[MissionTableEntryDef] = []
+
+	static func from_dict(id: String, d: Dictionary) -> MissionTableDef:
+		var o := MissionTableDef.new()
+		o.Id = id
+		o.SourceFile = JsonUtil.str_or(d, "source_file", "")
+		o.Description = JsonUtil.str_or(d, "description", "")
+		var list: Variant = JsonUtil.get_ci(d, "entries")
+		if list != null:
+			for e in list:
+				o.Entries.append(MissionTableEntryDef.from_dict(e))
+		return o
+
+
+class MissionTablesFile:
+	## table id -> MissionTableDef
+	var Tables: Dictionary = {}
+
+	static func from_dict(d: Dictionary) -> MissionTablesFile:
+		var o := MissionTablesFile.new()
+		var t: Variant = JsonUtil.get_ci(d, "tables")
+		if t is Dictionary:
+			for k in t.keys():
+				o.Tables[str(k)] = MissionTableDef.from_dict(str(k), t[k])
+		return o

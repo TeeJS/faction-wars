@@ -166,7 +166,7 @@ static func TakeToPalace(han: Character, day: int, rng: Prng) -> void:
 	han.Destination = null
 	han.DaysToDestination = 0
 
-	_palace_rolls_from = day + MissionCatalog.RollLengthById(MissionCatalog.Palace, rng, 0)
+	_palace_rolls_from = day + MissionCatalog.RollLengthById(MissionCatalog.PalaceId, rng, 0)
 
 	ForceManager.InterruptDagobah()
 

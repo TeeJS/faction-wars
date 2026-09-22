@@ -31,6 +31,7 @@ class LoadedPack:
 	var Units: Array[PackDefs.UnitDef] = []
 	var Weapons: Array[PackDefs.WeaponDef] = []
 	var Missions: Array[PackDefs.MissionDefPack] = []
+	var MissionTables: Dictionary = {}   # table id -> PackDefs.MissionTableDef
 
 
 ## Returns the pack, or null with `errors` populated. Never throws on bad pack
@@ -44,7 +45,8 @@ static func Load(pack_dir: String, errors: Array[String]) -> LoadedPack:
 	var units_d: Variant = _read_json("%s/units.json" % pack_dir, errors)
 	var weapons_d: Variant = _read_json("%s/weapons.json" % pack_dir, errors)
 	var missions_d: Variant = _read_json("%s/missions.json" % pack_dir, errors)
-	for d in [manifest_d, factions_d, map_d, chars_d, facil_d, units_d, weapons_d, missions_d]:
+	var mtables_d: Variant = _read_json("%s/mission_tables.json" % pack_dir, errors)
+	for d in [manifest_d, factions_d, map_d, chars_d, facil_d, units_d, weapons_d, missions_d, mtables_d]:
 		if d == null:
 			return null
 	var pack := LoadedPack.new()
@@ -56,6 +58,7 @@ static func Load(pack_dir: String, errors: Array[String]) -> LoadedPack:
 	pack.Units = PackDefs.UnitsFile.from_dict(units_d).Units
 	pack.Weapons = PackDefs.WeaponsFile.from_dict(weapons_d).Weapons
 	pack.Missions = PackDefs.MissionsFile.from_dict(missions_d).Missions
+	pack.MissionTables = PackDefs.MissionTablesFile.from_dict(mtables_d).Tables
 	_validate(pack, pack_dir, errors)
 	return pack if errors.is_empty() else null
 

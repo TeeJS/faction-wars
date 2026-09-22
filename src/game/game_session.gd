@@ -13,13 +13,13 @@ const DATA := "res://data"
 static func load_catalogs() -> void:
 	FactionRegistry.EnsureLoaded()
 	RuleManager.LoadRules("%s/game_rules.json" % DATA)
-	MissionTableManager.Load("%s/mission_tables.json" % DATA)
-	MissionCatalog.Load("%s/missions.json" % DATA)
 	UprisingTable.Load("%s/uprising_start.json" % DATA)
 	SideLotteryManager.LoadRules("%s/side_lottery.json" % DATA)
 	SeedManager.Load("%s/day_zero_logistics.json" % DATA, "%s/defensive_facilities.json" % DATA, "%s/military_units.json" % DATA)
 	FacilityCatalog.LoadFromPack(FactionRegistry.Pack)
 	MilitaryCatalog.LoadFromPack(FactionRegistry.Pack)
+	MissionCatalog.LoadFromPack(FactionRegistry.Pack)
+	MissionTableManager.LoadFromPack(FactionRegistry.Pack)
 
 
 ## Every per-game static, cleared - the source's Reset() calls plus the ones it

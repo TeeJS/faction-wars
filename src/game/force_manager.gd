@@ -25,7 +25,7 @@ static func Reset() -> void:
 
 ## MISSNSD's own length for Dagobah: 100 base, 0 spread.
 static func DagobahStayDays(rng: Prng) -> int:
-	return MissionCatalog.RollLengthById(MissionCatalog.Dagobah, rng, 100)
+	return MissionCatalog.RollLengthById(MissionCatalog.DagobahId, rng, 100)
 
 
 ## Called by StoryManager when the hunters take Han. Ends the course there and then.
