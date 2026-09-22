@@ -21,7 +21,7 @@ func _init() -> void:
 		var map: GalaxyMap = main.get_node("GalaxyMap")
 		for c in map.get_children():
 			if c is Button and not (c as Button).text.is_empty():
-				(c as Button).add_theme_color_override("font_color", GalaxyMap.TitleColor)
+				(c as Button).mouse_entered.emit()
 		for _i in 3:
 			await process_frame
 	var img: Image = root.get_viewport().get_texture().get_image()

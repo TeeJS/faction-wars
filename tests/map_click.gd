@@ -64,6 +64,19 @@ func _init() -> void:
 			opened = true
 	_check(opened, "pressing it opened the '%s' theatre window" % sector0.Name)
 
+	# Theatre names are drawn only while hovered - text AND outline.
+	var theatre_btn: Button = null
+	for c in map.get_children():
+		if c is Button and not hits.values().has(c) and not (c as Button).text.is_empty():
+			theatre_btn = c
+			break
+	_check(theatre_btn != null and not GalaxyMap.TitleShown(theatre_btn) and theatre_btn.get_theme_color("font_color").a == 0.0,
+		"a theatre's name is hidden (no outline, transparent text) when not hovered")
+	theatre_btn.mouse_entered.emit()
+	_check(GalaxyMap.TitleShown(theatre_btn) and theatre_btn.get_theme_color("font_color").a == 1.0, "hovering shows it, dark with an outline")
+	theatre_btn.mouse_exited.emit()
+	_check(not GalaxyMap.TitleShown(theatre_btn), "leaving hides it again")
+
 	# The padding: theatre boxes are their regions plus SectorPadding a side.
 	var eu_overlaps := 0
 	var eu_pairs := 0
