@@ -33,6 +33,14 @@ const SPECIAL_POWER_RANK_KEYS := ["none", "novice", "trainee", "student", "knigh
 const KNOWN_MENU_ACTIONS := ["difficulty", "galaxy_size", "start", "load_game",
 	"credits", "hq_only_victory", "multiplayer", "exit"]
 const KNOWN_DIFFICULTIES := ["easy", "medium", "hard"]
+## SCHEMA.md section 7. Day-zero placement and the story parts. Each story
+## part is ONE character - the set-pieces are written for one pilgrim, one
+## heir, and so on.
+const KNOWN_CHARACTER_ROLES := ["starts_at_first_world", "starts_at_hq", "starts_at_random_holding",
+	"pilgrim", "heir", "dark_lord", "dark_master", "smuggler", "companion"]
+const SINGLETON_CHARACTER_ROLES := ["pilgrim", "heir", "dark_lord", "dark_master", "smuggler", "companion"]
+## SCHEMA.md section 6. The engine's special cases for a unit.
+const KNOWN_UNIT_ROLES := ["superweapon", "garrison_troop"]
 
 
 class LoadedPack:
@@ -161,6 +169,40 @@ static func _validate(pack: LoadedPack, pack_dir: String, errors: Array[String])
 	_validate_setup(pack, errors)
 	_validate_display(pack, errors)
 	_validate_menu(pack, pack_dir, errors)
+	_validate_roles(pack, errors)
+
+
+## Rule 12: character roles, unit roles and mission behaviours are in the
+## engine's vocabulary; each story part and each behaviour is declared once.
+static func _validate_roles(pack: LoadedPack, errors: Array[String]) -> void:
+	var story_count: Dictionary = {}
+	for c in pack.Characters:
+		var ctx := "characters.json[%s]" % (c.Id if not c.Id.is_empty() else "?")
+		for r in c.Roles:
+			if not KNOWN_CHARACTER_ROLES.has(r):
+				errors.append("%s: unknown role '%s'. Known: %s." % [ctx, r, ", ".join(KNOWN_CHARACTER_ROLES)])
+			elif SINGLETON_CHARACTER_ROLES.has(r):
+				story_count[r] = story_count.get(r, 0) + 1
+	for r in story_count:
+		if story_count[r] > 1:
+			errors.append("characters.json: %d characters carry the story role '%s'; the set-pieces are written for one." % [story_count[r], r])
+	for u in pack.Units:
+		var ctx := "units.json[%s]" % (u.Id if not u.Id.is_empty() else "?")
+		for r in u.Roles:
+			if not KNOWN_UNIT_ROLES.has(r):
+				errors.append("%s: unknown role '%s'. Known: %s." % [ctx, r, ", ".join(KNOWN_UNIT_ROLES)])
+	var known := MissionCatalog.KnownBehaviours()
+	var seen: Dictionary = {}
+	for m in pack.Missions:
+		if m.Behaviour.is_empty():
+			continue
+		var ctx := "missions.json[%s]" % (m.Id if not m.Id.is_empty() else "?")
+		if not known.has(m.Behaviour):
+			errors.append("%s: unknown behaviour '%s'. Known: %s." % [ctx, m.Behaviour, ", ".join(known)])
+		elif seen.has(m.Behaviour):
+			errors.append("%s: behaviour '%s' is already '%s' - one mission per engine behaviour." % [ctx, m.Behaviour, seen[m.Behaviour]])
+		else:
+			seen[m.Behaviour] = m.Id
 
 
 ## Rule 11: the Cockpit picture, when a pack has one, reaches every menu function

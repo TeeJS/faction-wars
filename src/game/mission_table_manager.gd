@@ -6,18 +6,9 @@ extends RefCounted
 
 ## THE TABLE IDS ARE PACK DATA (SCHEMA.md section 9). These were the original
 ## .DAT filenames; the pack names each table for what it DOES and keeps the
-## filename as `source_file`. The comment carries the id the original registers
-## the table by at REBEXE.EXE 0x58B420.
-const Diplomacy          := "diplomacy"            # id 20
-const Rescue             := "rescue"               # id 21
-const Sabotage           := "sabotage"             # id 22
-const Espionage          := "espionage"            # id 23
-const Recruitment        := "recruitment"          # id 24
-const Abduction          := "abduction"            # id 25
-const InciteUprising     := "incite_uprising"      # id 26
-const SuperweaponSabotage := "death_star_sabotage" # id 27 - the PACK's flavour
-const SubdueUprising     := "subdue_uprising"      # id 28
-const Assassination      := "assassination"        # id 29
+## filename as `source_file`. A MISSION's outcome table shares the mission's id
+## (MissionManager.TableFor), so no mission table is named here. The comment
+## carries the id the original registers the table by at REBEXE.EXE 0x58B420.
 
 ## NOT MISSION TYPES - the contests a mission passes THROUGH.
 const Foil               := "foil"                 # id 12

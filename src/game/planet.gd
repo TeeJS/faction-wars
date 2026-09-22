@@ -739,16 +739,14 @@ func CancelCurrentBuild(producer_role: String) -> void:
 
 func AddFacility(family: String, tier: int = 1) -> void:
 	var new_fac := Facility.Make(family, tier)
-	# A defensive structure carries authentic combat stats; asked by ROLE, so a
-	# pack that adds one gets them without this line naming it.
-	if new_fac.HasRole("planet_defense"):
-		var key := "%s|%d" % [family, tier]
-		if SeedManager.DefenseStats.has(key):
-			var stats: CatalogDtos.DefenseStatRule = SeedManager.DefenseStats[key]
-			new_fac.ConstructionCost = stats.ConstructionCost
-			new_fac.MaintenanceCost = stats.MaintenanceCost
-			new_fac.WeaponRating = stats.WeaponRating
-			new_fac.ShieldStrength = stats.ShieldStrength
+	# A defensive structure carries its combat stats from the pack's
+	# facilities.json; asked by ROLE, so a pack that adds one gets them without
+	# this line naming it.
+	if new_fac.HasRole("planet_defense") and new_fac.Def != null:
+		new_fac.ConstructionCost = new_fac.Def.ConstructionCost
+		new_fac.MaintenanceCost = new_fac.Def.MaintenanceCost
+		new_fac.WeaponRating = new_fac.Def.stat("weapon_rating")
+		new_fac.ShieldStrength = new_fac.Def.stat("shield_strength")
 	new_fac.BombardmentDefense = new_fac.Def.stat("bombardment_defense") if new_fac.Def != null else 0
 	new_fac.Attached = self
 	Facilities.append(new_fac)

@@ -28,6 +28,16 @@ func _init() -> void:
 
 var AssetId: int
 var FamilyId: int
+## The pack's id for this unit (units.json; for a Character, characters.json).
+## Engine code that must know WHICH unit this is compares this, never Name -
+## names are display strings (SCHEMA.md section 12 Q1).
+var PackId: String = ""
+
+
+## Does the pack give this unit the role? The engine's special cases ask this
+## (SCHEMA.md section 6); a Character answers from characters.json instead.
+func HasRole(role: String) -> bool:
+	return MilitaryCatalog.RolesOf(PackId).has(role)
 
 var Faction: Faction
 ## VIRTUAL in C#: a Character reacts to being moved (leaving the fleet or system it

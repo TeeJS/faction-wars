@@ -183,38 +183,48 @@ static func InitializeGalaxyState(galaxy: Array, human_faction: Faction, difficu
 	if side_a_start == null:
 		side_a_start = side_a_hq
 
-	for char_name in ["Luke Skywalker", "Leia Organa", "Han Solo", "Chewbacca", "Jan Dodonna", "Wedge Antilles"]:
-		var c: Character = Lq.first_or_null(unassigned_alliance, func(x): return x.Name == char_name)
-		if c != null:
-			c.Attached = side_a_start
-			c.Status = Enums.Status.AwaitingOrders
-			unassigned_alliance.erase(c)
-
-	var mothma: Character = Lq.first_or_null(unassigned_alliance, func(x): return x.Name == "Mon Mothma")
-	if mothma != null:
-		mothma.Attached = side_a_hq
-		unassigned_alliance.erase(mothma)
-
-	var palpatine: Character = Lq.first_or_null(unassigned_empire, func(x): return x.Name == "Emperor Palpatine")
-	if palpatine != null:
-		palpatine.Attached = side_b_hq
-		unassigned_empire.erase(palpatine)
-
-	# "located on a randomly selected Imperial-controlled system or fleet"
-	var imperial_planets: Array = planets_of[side_b] if side_b != null else []
-	var imperial_fleets: Array = []
-	for p in imperial_planets:
-		for f in p.OrbitingFleets:
-			imperial_fleets.append(f)
-	for char_name in ["Darth Vader", "Jerjerrod", "Ozzel", "Piett", "Veers", "Needa"]:
-		var c: Character = Lq.first_or_null(unassigned_empire, func(x): return x.Name == char_name)
-		if c != null and imperial_planets.size() > 0:
-			if imperial_fleets.size() > 0 and rng.NextRange(0, 2) == 0:
-				c.Attached = imperial_fleets[rng.NextMax(imperial_fleets.size())]
+	# WHO STARTS WHERE is a ROLE on the character (characters.json `roles`,
+	# SCHEMA.md section 7): starts_at_first_world, starts_at_hq,
+	# starts_at_random_holding - the original's named lists, by part. Each side
+	# is processed in that order; only the random placement draws on the PRNG,
+	# and it walks the roster in pack order, as the named list did.
+	var side_b_start: Planet = null
+	if side_b != null and not side_b.StartingPlanets.is_empty():
+		var first_b: String = side_b.StartingPlanets[0].Planet
+		side_b_start = Lq.first_or_null(all_planets, func(x): return x.PackId == first_b)
+	if side_b_start == null:
+		side_b_start = side_b_hq
+	for side_info in [[side_a, unassigned_alliance, side_a_start, side_a_hq], [side_b, unassigned_empire, side_b_start, side_b_hq]]:
+		var side: Faction = side_info[0]
+		if side == null:
+			continue
+		var pool: Array = side_info[1]
+		var start: Planet = side_info[2]
+		var hq: Planet = side_info[3]
+		for c in pool.duplicate():
+			if c.HasRole("starts_at_first_world"):
+				c.Attached = start
+				c.Status = Enums.Status.AwaitingOrders
+				pool.erase(c)
+		for c in pool.duplicate():
+			if c.HasRole("starts_at_hq"):
+				c.Attached = hq
+				pool.erase(c)
+		# "located on a randomly selected Imperial-controlled system or fleet"
+		var holdings: Array = planets_of[side] if planets_of.has(side) else []
+		var fleets: Array = []
+		for p in holdings:
+			for f in p.OrbitingFleets:
+				fleets.append(f)
+		for c in pool.duplicate():
+			if not c.HasRole("starts_at_random_holding") or holdings.size() == 0:
+				continue
+			if fleets.size() > 0 and rng.NextRange(0, 2) == 0:
+				c.Attached = fleets[rng.NextMax(fleets.size())]
 			else:
-				c.Attached = imperial_planets[rng.NextMax(imperial_planets.size())]
+				c.Attached = holdings[rng.NextMax(holdings.size())]
 			c.Status = Enums.Status.AwaitingOrders
-			unassigned_empire.erase(c)
+			pool.erase(c)
 
 	var extra_characters: int
 	match GameSettings.SelectedSize:

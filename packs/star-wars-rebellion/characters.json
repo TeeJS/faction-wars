@@ -41,6 +41,9 @@
       },
       "can_command": [],
       "wont_betray": true,
+      "roles": [
+        "starts_at_hq"
+      ],
       "special_power": {
         "probability": 0,
         "is_known_user": false,
@@ -94,6 +97,10 @@
       },
       "can_command": [],
       "wont_betray": true,
+      "roles": [
+        "starts_at_first_world",
+        "heir"
+      ],
       "special_power": {
         "probability": 100,
         "is_known_user": false,
@@ -151,6 +158,10 @@
         "general"
       ],
       "wont_betray": true,
+      "roles": [
+        "starts_at_first_world",
+        "pilgrim"
+      ],
       "special_power": {
         "probability": 100,
         "is_known_user": true,
@@ -208,6 +219,10 @@
         "general"
       ],
       "wont_betray": true,
+      "roles": [
+        "starts_at_first_world",
+        "smuggler"
+      ],
       "special_power": {
         "probability": 0,
         "is_known_user": false,
@@ -261,6 +276,10 @@
       },
       "can_command": [],
       "wont_betray": true,
+      "roles": [
+        "starts_at_hq",
+        "dark_master"
+      ],
       "special_power": {
         "probability": 100,
         "is_known_user": true,
@@ -318,6 +337,10 @@
         "general"
       ],
       "wont_betray": true,
+      "roles": [
+        "starts_at_random_holding",
+        "dark_lord"
+      ],
       "special_power": {
         "probability": 100,
         "is_known_user": true,
@@ -431,6 +454,9 @@
         "general"
       ],
       "wont_betray": true,
+      "roles": [
+        "starts_at_first_world"
+      ],
       "special_power": {
         "probability": 10,
         "is_known_user": false,
@@ -541,6 +567,10 @@
       },
       "can_command": [],
       "wont_betray": true,
+      "roles": [
+        "starts_at_first_world",
+        "companion"
+      ],
       "special_power": {
         "probability": 10,
         "is_known_user": false,
@@ -597,6 +627,9 @@
         "general"
       ],
       "wont_betray": false,
+      "roles": [
+        "starts_at_first_world"
+      ],
       "special_power": {
         "probability": 10,
         "is_known_user": false,
@@ -1812,6 +1845,9 @@
         "general"
       ],
       "wont_betray": false,
+      "roles": [
+        "starts_at_random_holding"
+      ],
       "special_power": {
         "probability": 10,
         "is_known_user": false,
@@ -1868,6 +1904,9 @@
         "general"
       ],
       "wont_betray": false,
+      "roles": [
+        "starts_at_random_holding"
+      ],
       "special_power": {
         "probability": 10,
         "is_known_user": false,
@@ -1925,6 +1964,9 @@
         "general"
       ],
       "wont_betray": false,
+      "roles": [
+        "starts_at_random_holding"
+      ],
       "special_power": {
         "probability": 10,
         "is_known_user": false,
@@ -1980,6 +2022,9 @@
         "general"
       ],
       "wont_betray": false,
+      "roles": [
+        "starts_at_random_holding"
+      ],
       "special_power": {
         "probability": 10,
         "is_known_user": false,
@@ -2481,6 +2526,9 @@
         "general"
       ],
       "wont_betray": false,
+      "roles": [
+        "starts_at_random_holding"
+      ],
       "special_power": {
         "probability": 10,
         "is_known_user": false,

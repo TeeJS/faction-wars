@@ -207,6 +207,13 @@ const UNIT_SKIP := ["Hangar", "Attached", "Destination", "Faction", "Damage", "C
 static func _hydrate_unit_fields(u: Unit, ud: Dictionary) -> void:
 	JsonUtil.hydrate(u, ud, u._enum_fields(), {}, UNIT_SKIP)
 	u.Faction = _faction(ud.get("Faction"))
+	# The C# snapshot predates pack ids: it names units by display name. Map
+	# that onto the pack here, at the format boundary, so nothing downstream
+	# has to match a name.
+	if u.PackId.is_empty():
+		var def: Variant = Lq.first_or_null(MilitaryCatalog.All(), func(d): return d.DisplayName == u.Name)
+		if def != null:
+			u.PackId = def.Id
 
 
 static func _unit(ud: Dictionary, deferred: Array) -> Unit:

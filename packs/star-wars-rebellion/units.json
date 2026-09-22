@@ -1155,6 +1155,9 @@
       "id": "death_star",
       "display_name": "Death Star",
       "kind": "capital_ship",
+      "roles": [
+        "superweapon"
+      ],
       "buildable_by": [
         "empire"
       ],
@@ -1921,6 +1924,9 @@
       "id": "stormtrooper_regiment",
       "display_name": "Stormtrooper Regiment",
       "kind": "troop",
+      "roles": [
+        "garrison_troop"
+      ],
       "buildable_by": [
         "empire"
       ],

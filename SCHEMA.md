@@ -149,6 +149,7 @@ with the extraction tooling, not shipped in a pack.
 | `hq.kind` | `fixed` — a known capital (`planet`, a **planet id**), captured when taken. `hidden` — placed at `placement` (a **planet id** or the `random_rim` sentinel), unknown to other factions until located, optionally `movable`, destroyed rather than captured. |
 | `occupation_support_policy` | `garrison_bonus` (troops raise support over time) or `occupation_penalty` (first occupation lowers it). Asymmetry as a flag. |
 | `loyalty_label` | Display string for the GID loyalty mode. |
+| `agent_name` | What the side's agent droid / adviser is called (manual p030, Fig. 2.16; C-3PO and IMP-22). Optional; "Agent" when absent. Was an id branch in engine code. |
 | `starting_planets[]` | `{planet, support, explored, garrison}`. `planet` is a **planet id** (`map.json`); `garrison` a logistics table id (`setup.json`). |
 | `seed` | Which day-zero logistics table seeds this side's HQ, garrison and fleets — **table ids** from `setup.json` (§12 Q2). |
 | `victory.capture_characters` | **Character ids** (`characters.json`) this side must hold captive to win. The Objectives window looks the display name up (`FactionRegistry.CharacterNameOf`). |
@@ -280,6 +281,7 @@ exactly what an open `stats` map absorbs.
 |---|---|
 | `roles` | The engine's selection vocabulary. v1 role set: `headquarters`, `extracts_raw`, `refines`, `produces_unit`, `produces_troop`, `produces_facility`, `planet_defense`, `shield`, `disable`, `anti_ship`. The loader rejects unknown roles so a typo cannot silently create an inert facility. |
 | `buildable_by` | A list of faction ids; absent means all. **Already migrated** in the real data. |
+| `roles` | **★ APPROVED (TeeJ, 2026-09-22).** The engine's special cases for a unit, so no rule names one: `superweapon` (the Death Star — Superweapon Sabotage's target, and what plain Sabotage refuses), `garrison_troop` (the regiment the mission score's garrison term counts). Unknown roles are a load error. |
 | `stats` | Open map. The engine has no built-in stat vocabulary; consumers read named stats declared by the pack. Absorbs the production/defensive column split. |
 
 ---
@@ -475,6 +477,26 @@ needs its own go-ahead before it lands.
 
 ---
 
+### Roles — the story parts and day-zero placement
+
+**★ APPROVED (TeeJ, 2026-09-22).** `roles` on a character, so the engine never
+names one:
+
+| Role | What the engine does with it |
+|---|---|
+| `starts_at_first_world` | Day zero places them on the side's first `starting_planets` entry, awaiting orders (Luke, Leia, Han, Chewbacca, Dodonna, Wedge). |
+| `starts_at_hq` | Day zero places them at the side's headquarters (Mon Mothma, the Emperor). |
+| `starts_at_random_holding` | Day zero places them on a random world or fleet the side holds, in roster order (Vader and the five Imperial officers). |
+| `pilgrim` | The Force encounter aggressor, the Dagobah pilgrimage, the Final Battle (Luke). |
+| `heir` | The second encounter aggressor; exempt from latent-power discovery; learns from the pilgrim (Leia). |
+| `dark_lord` / `dark_master` | The encounter antagonists and the Final Battle's opponents; the `dark_master` cannot be trained (Vader, the Emperor). |
+| `smuggler` | The bounty hunters' target and Jabba's palace; the Millennium Falcon travel effect (Han). |
+| `companion` | Joins the palace rescue party with the pilgrim and the heir (Chewbacca). |
+
+Each story role is **one character** (validation rule 12); a pack that casts
+nobody in a part simply never fires that set-piece. Unknown roles are a load
+error.
+
 ## 8. `rules.json` and `setup.json` — the faction-keyed migration
 
 **⚠ The original draft described this as pending. It is done.** Both files are
@@ -555,6 +577,14 @@ last un-migrated instance.
 *(Values above are shape illustration, not transcribed from the table.)*
 
 - `available_to` replaces the `Alliance` / `Empire` integer pair.
+- `behaviour` **★ APPROVED (TeeJ, 2026-09-22)** names the ENGINE behaviour this
+  row is the pack's flavour of — `Enums.MissionType` in snake_case
+  (`superweapon_sabotage`, `special_power_training`, …) plus the two scripted
+  stays `dagobah` and `palace`. This is the join; the engine no longer knows the
+  ids `death_star_sabotage` or `jedi_training`. One mission per behaviour;
+  rows without one (the unnamed tables) are content the engine has no code for.
+  **A mission's outcome table in `mission_tables.json` shares the mission's
+  id** — that is how `MissionManager.TableFor` finds it.
 - `spec_forces` is a list of **display names** in the raw data
   (`"Bothan Spies"`); it **becomes a list of unit ids** (§12 Q1, decided).
 - **⚠ CORRECTION — `Enums.MissionType` is NOT the `FacilityType` case, and this
@@ -809,3 +839,5 @@ What changed from the source repo's 2026-07-25 draft, and why.
 | 27 | **§6 data built.** `units.json` (57) and `weapons.json` (4 classes) generated, loaded and validated; nothing reads them yet. The three derived summary columns are DROPPED, and the generator re-proves on every build that each is exactly the sum of its arcs | The tactical engine still reads the flat unit fields. Swapping it is the next step |
 | 26 | **§5 built and live.** `Enums.FacilityType` is **deleted**; facilities are pack data selected by role. 154 call sites across 24 files. The game signature now carries the family id, so the soak gate is re-baselined | Proven behaviour-identical first by emitting the old ordinals: 1004/1004. Five silent bugs found on the way — see the commit |
 | 37 | **§2 `menu`** — the Shuttle Cockpit picture with a region per function, `setup.galaxy_size_default`, validation rule 11 (every function reachable, one region each). The Star Wars pack ships `cockpit.png` mapped from Fig. 2.2; a pack without `menu` keeps the button menu | TeeJ, 2026-09-22: packs own their main-menu picture. The manual labels every control of Fig. 2.2, so the region vocabulary is exactly that list |
+| 38 | **Phase 5, mechanical batch.** `Unit.PackId`; the SpecForce mission roster is `missions.json` `spec_forces` inverted (`MissionCatalog.SpecForceMissions`), Assassination side-lock is `available_to`; the loyalty capital is any fixed-HQ world; `factions.json` `agent_name`; `SeedManager` reads defence stats from `facilities.json`, not `data/`; replay defaults to the first playable faction; the Galaxy Overview counts units by id | The 2026-09-22 audit (BACKLOG #14-#24). No new role vocabulary; every change proven identical on the Star Wars pack by the soak gate and `tests/spec_force_missions.gd` |
+| 39 | **Roles and behaviours (TeeJ approved 2026-09-22).** `characters.json` `roles` (placement + story parts), `units.json` `roles` (`superweapon`, `garrison_troop`), `missions.json` `behaviour`; validation rule 12. Day zero, the story, Force and order managers, MissionManager and MissionTableManager select on these; the fourteen character names, the Death Star family number, "Stormtrooper Regiment", `death_star_sabotage` / `jedi_training` / `dagobah` / `palace` are gone from engine code | BACKLOG #25–#32. Soak gate green — the pack's roster order matches the old named lists, so the PRNG walk is unchanged |

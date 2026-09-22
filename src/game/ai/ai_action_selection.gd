@@ -339,7 +339,7 @@ static func _fog_estimate(ctx: AIContext, type: int, team: Array, target: Planet
 				defence = max(defence, facts.support_for(f))
 	var garrison := 0
 	for reg in facts.regiments:
-		if str((reg as Dictionary).get("name", "")) == "Stormtrooper Regiment":   # MissionManager.GarrisonTerm
+		if MilitaryCatalog.RolesOf(str((reg as Dictionary).get("id", ""))).has("garrison_troop"):   # MissionManager.GarrisonTerm
 			garrison += 1
 	var score := rating - defence
 	match type:

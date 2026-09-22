@@ -18,10 +18,12 @@ static var _all: Array = []
 ## arcs are summed in, so it must be the file's order, not a hash map's.
 static var _weapons: Array = []
 static var _weapon_by_id: Dictionary = {}
+static var _by_id: Dictionary = {}          # unit id -> UnitDef
 
 
 static func LoadFromPack(pack: PackLoader.LoadedPack) -> void:
 	_by_source.clear()
+	_by_id.clear()
 	_all.clear()
 	_weapons.clear()
 	_weapon_by_id.clear()
@@ -33,6 +35,7 @@ static func LoadFromPack(pack: PackLoader.LoadedPack) -> void:
 		_weapon_by_id[w.Id] = w
 	for def in pack.Units:
 		_all.append(def)
+		_by_id[def.Id] = def
 		_by_source[Vector2i(def.SourceFamilyId, def.SourceId)] = def
 	print("[MilitaryCatalog] Loaded %d units and %d weapon classes from the pack." % [_all.size(), _weapons.size()])
 
@@ -43,6 +46,16 @@ static func WeaponOrder() -> Array:
 
 static func WeaponById(id: String) -> PackDefs.WeaponDef:
 	return _weapon_by_id.get(id)
+
+
+static func ById(id: String) -> PackDefs.UnitDef:
+	return _by_id.get(id)
+
+
+## The roles units.json gives this unit (SCHEMA.md section 6).
+static func RolesOf(id: String) -> Array:
+	var d: PackDefs.UnitDef = _by_id.get(id)
+	return d.Roles if d != null else []
 
 
 static func BySource(key: Vector2i) -> PackDefs.UnitDef:
@@ -119,6 +132,7 @@ static func Create(def: PackDefs.UnitDef, faction: Faction, at: Location) -> Uni
 	u.Type = t if t != null else Enums.UnitType.Troop
 	u.AssetId = def.SourceId
 	u.FamilyId = def.SourceFamilyId
+	u.PackId = def.Id
 	u.Faction = faction
 	u.Attached = at
 

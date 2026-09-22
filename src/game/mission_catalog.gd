@@ -18,35 +18,50 @@ extends RefCounted
 
 static var _by_id: Dictionary = {}          # source id -> PackDefs.MissionDefPack
 static var _by_pack_id: Dictionary = {}     # pack id   -> PackDefs.MissionDefPack
+## WHAT EACH SPECFORCE MAY BE SENT TO DO (manual p098): unit pack id -> the
+## engine behaviours whose pack mission lists it under `spec_forces`. This is
+## the pack's own roster read the other way round; nothing here names a unit.
+static var _spec_force_missions: Dictionary = {}   # unit id -> Array[int]
 
-## Pack mission ids this codebase needs by name but has no MissionType for.
-const DagobahId := "dagobah"
-const PalaceId := "palace"
 
-const _pack_ids := {
-	Enums.MissionType.Diplomacy:              "diplomacy",
-	Enums.MissionType.Rescue:                 "rescue",
-	Enums.MissionType.Sabotage:               "sabotage",
-	Enums.MissionType.Espionage:              "espionage",
-	Enums.MissionType.Reconnaissance:         "reconnaissance",
-	Enums.MissionType.Recruitment:            "recruitment",
-	Enums.MissionType.Abduction:              "abduction",
-	Enums.MissionType.ShipDesignResearch:     "ship_design_research",
-	Enums.MissionType.FacilityDesignResearch: "facility_design_research",
-	Enums.MissionType.TroopTrainingResearch:  "troop_training_research",
-	Enums.MissionType.InciteUprising:         "incite_uprising",
-	# The engine behaviour is generic; the PACK names its own flavour of it.
-	Enums.MissionType.SuperweaponSabotage:    "death_star_sabotage",
-	Enums.MissionType.SpecialPowerTraining:   "jedi_training",
-	Enums.MissionType.SubdueUprising:         "subdue_uprising",
-	Enums.MissionType.Assassination:          "assassination",
-}
+## THE ENGINE'S NAMES FOR ITS BEHAVIOURS: Enums.MissionType members in
+## snake_case, plus the two scripted stays the engine drives without a
+## MissionType (Dagobah and Jabba's palace). missions.json joins its rows to
+## these with `behaviour`; nothing here names a pack mission.
+const EXTRA_BEHAVIOURS := ["dagobah", "palace"]
+static var _by_behaviour: Dictionary = {}   # behaviour -> PackDefs.MissionDefPack
+
+
+static func BehaviourName(type: int) -> String:
+	return _snake(JsonUtil.enum_name(Enums.MissionType, type))
+
+
+static func KnownBehaviours() -> Array:
+	var out: Array = []
+	for member in Enums.MissionType.keys():
+		out.append(_snake(member))
+	out.append_array(EXTRA_BEHAVIOURS)
+	return out
+
+
+static func _snake(camel: String) -> String:
+	var out := ""
+	for i in camel.length():
+		var ch := camel[i]
+		if i > 0 and ch == ch.to_upper() and ch != ch.to_lower():
+			out += "_"
+		out += ch.to_lower()
+	return out
+
+
+## The pack mission implementing a behaviour the engine has no MissionType for.
+static func ByBehaviour(behaviour: String) -> PackDefs.MissionDefPack:
+	return _by_behaviour.get(behaviour)
 
 
 ## The pack's mission for an engine behaviour, or null when this pack offers none.
 static func DefFor(type: int) -> PackDefs.MissionDefPack:
-	var pid: Variant = _pack_ids.get(type)
-	return null if pid == null else _by_pack_id.get(pid)
+	return _by_behaviour.get(BehaviourName(type))
 
 
 static func ById(pack_id: String) -> PackDefs.MissionDefPack:
@@ -65,8 +80,8 @@ static func IdFor(type: int) -> int:
 
 
 static func RollLength(type: int, rng: Prng, fallback: int) -> int:
-	var pid: Variant = _pack_ids.get(type)
-	return fallback if pid == null else RollLengthById(str(pid), rng, fallback)
+	var d := DefFor(type)
+	return fallback if d == null else RollLengthById(d.Id, rng, fallback)
 
 
 ## "Do you wish the mission to continue?" Null when the pack declares no such
@@ -80,13 +95,41 @@ static func CanContinue(type: int) -> Variant:
 static func LoadFromPack(pack: PackLoader.LoadedPack) -> void:
 	_by_id.clear()
 	_by_pack_id.clear()
+	_by_behaviour.clear()
 	if pack == null:
 		push_error("[MissionCatalog] no pack loaded!")
 		return
 	for d in pack.Missions:
 		_by_id[d.SourceId] = d
 		_by_pack_id[d.Id] = d
+		if not d.Behaviour.is_empty():
+			_by_behaviour[d.Behaviour] = d
+	_spec_force_missions.clear()
+	for type in Enums.MissionType.values():
+		var d: PackDefs.MissionDefPack = DefFor(type)
+		if d == null:
+			continue
+		for unit_id in d.SpecForces:
+			if not _spec_force_missions.has(unit_id):
+				_spec_force_missions[unit_id] = []
+			_spec_force_missions[unit_id].append(type)
 	print("Successfully loaded %d mission definitions from the pack." % _by_id.size())
+
+
+## The engine behaviours this SpecForce unit (by pack id) may be sent on.
+static func SpecForceMissions(unit_pack_id: String) -> Array:
+	return _spec_force_missions.get(unit_pack_id, [])
+
+
+static func SpecForceCanRun(unit_pack_id: String, type: int) -> bool:
+	return SpecForceMissions(unit_pack_id).has(type)
+
+
+## May this side run this mission at all? `available_to` in missions.json; a
+## mission the pack does not declare is available to nobody.
+static func AvailableTo(type: int, f: Faction) -> bool:
+	var d := DefFor(type)
+	return d != null and f != null and d.AvailableTo.has(f.Id)
 
 
 static func Get(mission_id: int) -> PackDefs.MissionDefPack:
