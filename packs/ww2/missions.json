@@ -1,0 +1,574 @@
+{
+  "missions": [
+    {
+      "id": "diplomacy",
+      "display_name": "Diplomacy",
+      "behaviour": "diplomacy",
+      "available_to": [
+        "allies",
+        "axis"
+      ],
+      "spec_forces": [],
+      "length": {
+        "base": 5,
+        "spread": 10
+      },
+      "flags": {
+        "can_continue": true,
+        "scripted": false,
+        "return_on_abort": true,
+        "target_known_required": true,
+        "abort_on_blockade": true,
+        "can_escape": false,
+        "can_kill": false
+      },
+      "targets": {
+        "friendly": true,
+        "neutral": true,
+        "hostile": false
+      },
+      "spec_force_mask": 0,
+      "unknown_columns": {
+        "Unknown9": 65536,
+        "Unknown14": 1,
+        "Unknown15": 1,
+        "Unknown17": 1,
+        "Unknown19": 1,
+        "Unknown20": 1,
+        "Unknown24": 0
+      },
+      "template": "diplomacy"
+    },
+    {
+      "id": "rescue",
+      "display_name": "Rescue",
+      "behaviour": "rescue",
+      "available_to": [
+        "allies",
+        "axis"
+      ],
+      "spec_forces": [
+        "commandos",
+        "kempeitai_operatives"
+      ],
+      "length": {
+        "base": 1,
+        "spread": 6
+      },
+      "flags": {
+        "can_continue": false,
+        "scripted": false,
+        "return_on_abort": true,
+        "target_known_required": true,
+        "abort_on_blockade": false,
+        "can_escape": true,
+        "can_kill": false
+      },
+      "targets": {
+        "friendly": false,
+        "neutral": false,
+        "hostile": true
+      },
+      "spec_force_mask": 2050,
+      "unknown_columns": {
+        "Unknown9": 65536,
+        "Unknown14": 1,
+        "Unknown15": 1,
+        "Unknown17": 0,
+        "Unknown19": 0,
+        "Unknown20": 1,
+        "Unknown24": 0
+      },
+      "template": "rescue"
+    },
+    {
+      "id": "sabotage",
+      "display_name": "Sabotage",
+      "behaviour": "sabotage",
+      "available_to": [
+        "allies",
+        "axis"
+      ],
+      "spec_forces": [
+        "brandenburgers",
+        "commandos"
+      ],
+      "length": {
+        "base": 1,
+        "spread": 2
+      },
+      "flags": {
+        "can_continue": false,
+        "scripted": false,
+        "return_on_abort": true,
+        "target_known_required": true,
+        "abort_on_blockade": false,
+        "can_escape": false,
+        "can_kill": false
+      },
+      "targets": {
+        "friendly": false,
+        "neutral": true,
+        "hostile": true
+      },
+      "spec_force_mask": 1026,
+      "unknown_columns": {
+        "Unknown9": 65536,
+        "Unknown14": 1,
+        "Unknown15": 1,
+        "Unknown17": 0,
+        "Unknown19": 0,
+        "Unknown20": 1,
+        "Unknown24": 0
+      },
+      "template": "sabotage"
+    },
+    {
+      "id": "espionage",
+      "display_name": "Espionage",
+      "behaviour": "espionage",
+      "available_to": [
+        "allies",
+        "axis"
+      ],
+      "spec_forces": [
+        "sd_intelligence_cell",
+        "soe_agents"
+      ],
+      "length": {
+        "base": 1,
+        "spread": 20
+      },
+      "flags": {
+        "can_continue": false,
+        "scripted": false,
+        "return_on_abort": true,
+        "target_known_required": true,
+        "abort_on_blockade": true,
+        "can_escape": false,
+        "can_kill": false
+      },
+      "targets": {
+        "friendly": true,
+        "neutral": true,
+        "hostile": true
+      },
+      "spec_force_mask": 520,
+      "unknown_columns": {
+        "Unknown9": 65536,
+        "Unknown14": 1,
+        "Unknown15": 1,
+        "Unknown17": 0,
+        "Unknown19": 0,
+        "Unknown20": 0,
+        "Unknown24": 1
+      },
+      "template": "espionage"
+    },
+    {
+      "id": "reconnaissance",
+      "display_name": "Reconnaissance",
+      "behaviour": "reconnaissance",
+      "available_to": [
+        "allies",
+        "axis"
+      ],
+      "spec_forces": [
+        "abwehr_agents",
+        "photo_reconnaissance_flight"
+      ],
+      "length": {
+        "base": 1,
+        "spread": 5
+      },
+      "flags": {
+        "can_continue": false,
+        "scripted": false,
+        "return_on_abort": true,
+        "target_known_required": false,
+        "abort_on_blockade": true,
+        "can_escape": false,
+        "can_kill": false
+      },
+      "targets": {
+        "friendly": false,
+        "neutral": true,
+        "hostile": true
+      },
+      "spec_force_mask": 260,
+      "unknown_columns": {
+        "Unknown9": 0,
+        "Unknown14": 1,
+        "Unknown15": 1,
+        "Unknown17": 0,
+        "Unknown19": 0,
+        "Unknown20": 0,
+        "Unknown24": 1
+      },
+      "template": "reconnaissance"
+    },
+    {
+      "id": "recruitment",
+      "display_name": "Recruitment",
+      "behaviour": "recruitment",
+      "available_to": [
+        "allies",
+        "axis"
+      ],
+      "spec_forces": [],
+      "length": {
+        "base": 5,
+        "spread": 20
+      },
+      "flags": {
+        "can_continue": false,
+        "scripted": false,
+        "return_on_abort": true,
+        "target_known_required": true,
+        "abort_on_blockade": true,
+        "can_escape": false,
+        "can_kill": false
+      },
+      "targets": {
+        "friendly": true,
+        "neutral": false,
+        "hostile": false
+      },
+      "spec_force_mask": 0,
+      "unknown_columns": {
+        "Unknown9": 65536,
+        "Unknown14": 1,
+        "Unknown15": 1,
+        "Unknown17": 1,
+        "Unknown19": 1,
+        "Unknown20": 1,
+        "Unknown24": 1
+      },
+      "template": "recruitment"
+    },
+    {
+      "id": "abduction",
+      "display_name": "Abduction",
+      "behaviour": "abduction",
+      "available_to": [
+        "allies",
+        "axis"
+      ],
+      "spec_forces": [
+        "commandos",
+        "kempeitai_operatives"
+      ],
+      "length": {
+        "base": 1,
+        "spread": 2
+      },
+      "flags": {
+        "can_continue": false,
+        "scripted": false,
+        "return_on_abort": true,
+        "target_known_required": true,
+        "abort_on_blockade": false,
+        "can_escape": false,
+        "can_kill": true
+      },
+      "targets": {
+        "friendly": false,
+        "neutral": false,
+        "hostile": true
+      },
+      "spec_force_mask": 2050,
+      "unknown_columns": {
+        "Unknown9": 65536,
+        "Unknown14": 1,
+        "Unknown15": 1,
+        "Unknown17": 0,
+        "Unknown19": 0,
+        "Unknown20": 1,
+        "Unknown24": 0
+      },
+      "template": "abduction"
+    },
+    {
+      "id": "ship_design_research",
+      "display_name": "Naval Design Research",
+      "behaviour": "ship_design_research",
+      "available_to": [
+        "allies",
+        "axis"
+      ],
+      "spec_forces": [],
+      "length": {
+        "base": 10,
+        "spread": 10
+      },
+      "flags": {
+        "can_continue": true,
+        "scripted": false,
+        "return_on_abort": true,
+        "target_known_required": true,
+        "abort_on_blockade": true,
+        "can_escape": false,
+        "can_kill": false
+      },
+      "targets": {
+        "friendly": true,
+        "neutral": false,
+        "hostile": false
+      },
+      "spec_force_mask": 0,
+      "unknown_columns": {
+        "Unknown9": 65536,
+        "Unknown14": 1,
+        "Unknown15": 1,
+        "Unknown17": 1,
+        "Unknown19": 0,
+        "Unknown20": 1,
+        "Unknown24": 1
+      },
+      "template": "ship_design_research"
+    },
+    {
+      "id": "facility_design_research",
+      "display_name": "Fortification Design Research",
+      "behaviour": "facility_design_research",
+      "available_to": [
+        "allies",
+        "axis"
+      ],
+      "spec_forces": [],
+      "length": {
+        "base": 10,
+        "spread": 10
+      },
+      "flags": {
+        "can_continue": true,
+        "scripted": false,
+        "return_on_abort": true,
+        "target_known_required": true,
+        "abort_on_blockade": true,
+        "can_escape": false,
+        "can_kill": false
+      },
+      "targets": {
+        "friendly": true,
+        "neutral": false,
+        "hostile": false
+      },
+      "spec_force_mask": 0,
+      "unknown_columns": {
+        "Unknown9": 65536,
+        "Unknown14": 1,
+        "Unknown15": 1,
+        "Unknown17": 1,
+        "Unknown19": 0,
+        "Unknown20": 1,
+        "Unknown24": 1
+      },
+      "template": "facility_design_research"
+    },
+    {
+      "id": "troop_training_research",
+      "display_name": "Army Doctrine Research",
+      "behaviour": "troop_training_research",
+      "available_to": [
+        "allies",
+        "axis"
+      ],
+      "spec_forces": [],
+      "length": {
+        "base": 10,
+        "spread": 10
+      },
+      "flags": {
+        "can_continue": true,
+        "scripted": false,
+        "return_on_abort": true,
+        "target_known_required": true,
+        "abort_on_blockade": true,
+        "can_escape": false,
+        "can_kill": false
+      },
+      "targets": {
+        "friendly": true,
+        "neutral": false,
+        "hostile": false
+      },
+      "spec_force_mask": 0,
+      "unknown_columns": {
+        "Unknown9": 65536,
+        "Unknown14": 1,
+        "Unknown15": 1,
+        "Unknown17": 1,
+        "Unknown19": 0,
+        "Unknown20": 1,
+        "Unknown24": 1
+      },
+      "template": "troop_training_research"
+    },
+    {
+      "id": "incite_uprising",
+      "display_name": "Foment Resistance",
+      "behaviour": "incite_uprising",
+      "available_to": [
+        "allies",
+        "axis"
+      ],
+      "spec_forces": [
+        "brandenburgers",
+        "resistance_cell"
+      ],
+      "length": {
+        "base": 2,
+        "spread": 10
+      },
+      "flags": {
+        "can_continue": true,
+        "scripted": false,
+        "return_on_abort": true,
+        "target_known_required": true,
+        "abort_on_blockade": true,
+        "can_escape": false,
+        "can_kill": false
+      },
+      "targets": {
+        "friendly": false,
+        "neutral": false,
+        "hostile": true
+      },
+      "spec_force_mask": 1025,
+      "unknown_columns": {
+        "Unknown9": 65536,
+        "Unknown14": 1,
+        "Unknown15": 1,
+        "Unknown17": 1,
+        "Unknown19": 1,
+        "Unknown20": 1,
+        "Unknown24": 1
+      },
+      "template": "incite_uprising"
+    },
+    {
+      "id": "sabotage_atomic_program",
+      "display_name": "Sabotage Atomic Program",
+      "behaviour": "superweapon_sabotage",
+      "available_to": [
+        "axis"
+      ],
+      "spec_forces": [
+        "commandos"
+      ],
+      "length": {
+        "base": 1,
+        "spread": 1
+      },
+      "flags": {
+        "can_continue": false,
+        "scripted": false,
+        "return_on_abort": true,
+        "target_known_required": true,
+        "abort_on_blockade": false,
+        "can_escape": false,
+        "can_kill": false
+      },
+      "targets": {
+        "friendly": false,
+        "neutral": false,
+        "hostile": true
+      },
+      "spec_force_mask": 2,
+      "unknown_columns": {
+        "Unknown9": 65536,
+        "Unknown14": 1,
+        "Unknown15": 1,
+        "Unknown17": 0,
+        "Unknown19": 0,
+        "Unknown20": 1,
+        "Unknown24": 0
+      },
+      "template": "death_star_sabotage"
+    },
+    {
+      "id": "subdue_uprising",
+      "display_name": "Suppress Resistance",
+      "behaviour": "subdue_uprising",
+      "available_to": [
+        "allies",
+        "axis"
+      ],
+      "spec_forces": [
+        "brandenburgers",
+        "resistance_cell"
+      ],
+      "length": {
+        "base": 2,
+        "spread": 10
+      },
+      "flags": {
+        "can_continue": true,
+        "scripted": false,
+        "return_on_abort": true,
+        "target_known_required": true,
+        "abort_on_blockade": false,
+        "can_escape": false,
+        "can_kill": false
+      },
+      "targets": {
+        "friendly": true,
+        "neutral": false,
+        "hostile": false
+      },
+      "spec_force_mask": 1025,
+      "unknown_columns": {
+        "Unknown9": 65536,
+        "Unknown14": 1,
+        "Unknown15": 1,
+        "Unknown17": 1,
+        "Unknown19": 1,
+        "Unknown20": 1,
+        "Unknown24": 1
+      },
+      "template": "subdue_uprising"
+    },
+    {
+      "id": "assassination",
+      "display_name": "Assassination",
+      "behaviour": "assassination",
+      "available_to": [
+        "axis",
+        "allies"
+      ],
+      "spec_forces": [
+        "kempeitai_operatives"
+      ],
+      "length": {
+        "base": 1,
+        "spread": 1
+      },
+      "flags": {
+        "can_continue": false,
+        "scripted": false,
+        "return_on_abort": true,
+        "target_known_required": true,
+        "abort_on_blockade": false,
+        "can_escape": false,
+        "can_kill": true
+      },
+      "targets": {
+        "friendly": false,
+        "neutral": false,
+        "hostile": true
+      },
+      "spec_force_mask": 2048,
+      "unknown_columns": {
+        "Unknown9": 65536,
+        "Unknown14": 1,
+        "Unknown15": 1,
+        "Unknown17": 0,
+        "Unknown19": 0,
+        "Unknown20": 1,
+        "Unknown24": 0
+      },
+      "template": "assassination"
+    }
+  ]
+}

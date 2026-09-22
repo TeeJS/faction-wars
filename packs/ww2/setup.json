@@ -1,0 +1,2276 @@
+{
+  "side_lottery": [
+    {
+      "EntryId": 1,
+      "Name": "Loyalty Drift Divisor",
+      "GroupId": 2560,
+      "by_faction": {
+        "allies": {
+          "easy": {
+            "allies": 50,
+            "axis": 50
+          },
+          "medium": {
+            "allies": 50,
+            "axis": 50
+          },
+          "hard": {
+            "allies": 50,
+            "axis": 50
+          }
+        },
+        "axis": {
+          "easy": {
+            "allies": 50,
+            "axis": 50
+          },
+          "medium": {
+            "allies": 50,
+            "axis": 50
+          },
+          "hard": {
+            "allies": 50,
+            "axis": 50
+          }
+        }
+      },
+      "dev": {
+        "allies": 50,
+        "axis": 50
+      },
+      "mp": {
+        "allies": 50,
+        "axis": 50
+      }
+    },
+    {
+      "EntryId": 2,
+      "Name": "Incoming Side Loyalty Shift: Random Spread",
+      "GroupId": 2561,
+      "by_faction": {
+        "allies": {
+          "easy": {
+            "allies": 5,
+            "axis": 5
+          },
+          "medium": {
+            "allies": 5,
+            "axis": 5
+          },
+          "hard": {
+            "allies": 5,
+            "axis": 5
+          }
+        },
+        "axis": {
+          "easy": {
+            "allies": 5,
+            "axis": 5
+          },
+          "medium": {
+            "allies": 5,
+            "axis": 5
+          },
+          "hard": {
+            "allies": 5,
+            "axis": 5
+          }
+        }
+      },
+      "dev": {
+        "allies": 5,
+        "axis": 5
+      },
+      "mp": {
+        "allies": 5,
+        "axis": 5
+      }
+    },
+    {
+      "EntryId": 3,
+      "Name": "Incoming Side Loyalty Shift: Base Amount",
+      "GroupId": 2562,
+      "by_faction": {
+        "allies": {
+          "easy": {
+            "allies": 0,
+            "axis": 0
+          },
+          "medium": {
+            "allies": 0,
+            "axis": 0
+          },
+          "hard": {
+            "allies": 0,
+            "axis": 0
+          }
+        },
+        "axis": {
+          "easy": {
+            "allies": 0,
+            "axis": 0
+          },
+          "medium": {
+            "allies": 0,
+            "axis": 0
+          },
+          "hard": {
+            "allies": 0,
+            "axis": 0
+          }
+        }
+      },
+      "dev": {
+        "allies": 0,
+        "axis": 0
+      },
+      "mp": {
+        "allies": 0,
+        "axis": 0
+      }
+    },
+    {
+      "EntryId": 4,
+      "Name": "Startup Minor Characters in Standard Galaxy = 7 + ?",
+      "GroupId": 5120,
+      "by_faction": {
+        "allies": {
+          "easy": {
+            "allies": 1,
+            "axis": 1
+          },
+          "medium": {
+            "allies": 1,
+            "axis": 1
+          },
+          "hard": {
+            "allies": 1,
+            "axis": 1
+          }
+        },
+        "axis": {
+          "easy": {
+            "allies": 1,
+            "axis": 1
+          },
+          "medium": {
+            "allies": 1,
+            "axis": 1
+          },
+          "hard": {
+            "allies": 1,
+            "axis": 1
+          }
+        }
+      },
+      "dev": {
+        "allies": 1,
+        "axis": 1
+      },
+      "mp": {
+        "allies": 1,
+        "axis": 1
+      }
+    },
+    {
+      "EntryId": 5,
+      "Name": "Startup Minor Characters in Large Galaxy = 7 + ?",
+      "GroupId": 5121,
+      "by_faction": {
+        "allies": {
+          "easy": {
+            "allies": 2,
+            "axis": 2
+          },
+          "medium": {
+            "allies": 2,
+            "axis": 2
+          },
+          "hard": {
+            "allies": 2,
+            "axis": 2
+          }
+        },
+        "axis": {
+          "easy": {
+            "allies": 2,
+            "axis": 2
+          },
+          "medium": {
+            "allies": 2,
+            "axis": 2
+          },
+          "hard": {
+            "allies": 2,
+            "axis": 2
+          }
+        }
+      },
+      "dev": {
+        "allies": 2,
+        "axis": 2
+      },
+      "mp": {
+        "allies": 2,
+        "axis": 2
+      }
+    },
+    {
+      "EntryId": 6,
+      "Name": "Startup Minor Characters in Huge Galaxy = 7 + ?",
+      "GroupId": 5122,
+      "by_faction": {
+        "allies": {
+          "easy": {
+            "allies": 4,
+            "axis": 4
+          },
+          "medium": {
+            "allies": 4,
+            "axis": 4
+          },
+          "hard": {
+            "allies": 4,
+            "axis": 4
+          }
+        },
+        "axis": {
+          "easy": {
+            "allies": 4,
+            "axis": 4
+          },
+          "medium": {
+            "allies": 4,
+            "axis": 4
+          },
+          "hard": {
+            "allies": 4,
+            "axis": 4
+          }
+        }
+      },
+      "dev": {
+        "allies": 4,
+        "axis": 4
+      },
+      "mp": {
+        "allies": 4,
+        "axis": 4
+      }
+    },
+    {
+      "EntryId": 7,
+      "Name": "Local Direct System Support Shift Amount",
+      "GroupId": 5128,
+      "by_faction": {
+        "allies": {
+          "easy": {
+            "allies": -2,
+            "axis": -1
+          },
+          "medium": {
+            "allies": -2,
+            "axis": -1
+          },
+          "hard": {
+            "allies": -2,
+            "axis": -1
+          }
+        },
+        "axis": {
+          "easy": {
+            "allies": -2,
+            "axis": -1
+          },
+          "medium": {
+            "allies": -2,
+            "axis": -1
+          },
+          "hard": {
+            "allies": -2,
+            "axis": -1
+          }
+        }
+      },
+      "dev": {
+        "allies": -2,
+        "axis": -1
+      },
+      "mp": {
+        "allies": -2,
+        "axis": -1
+      }
+    },
+    {
+      "EntryId": 8,
+      "Name": "Local Direct System Support Threshold",
+      "GroupId": 5129,
+      "by_faction": {
+        "allies": {
+          "easy": {
+            "allies": 101,
+            "axis": 101
+          },
+          "medium": {
+            "allies": 101,
+            "axis": 101
+          },
+          "hard": {
+            "allies": 101,
+            "axis": 101
+          }
+        },
+        "axis": {
+          "easy": {
+            "allies": 101,
+            "axis": 101
+          },
+          "medium": {
+            "allies": 101,
+            "axis": 101
+          },
+          "hard": {
+            "allies": 101,
+            "axis": 101
+          }
+        }
+      },
+      "dev": {
+        "allies": 101,
+        "axis": 101
+      },
+      "mp": {
+        "allies": 101,
+        "axis": 101
+      }
+    },
+    {
+      "EntryId": 9,
+      "Name": "Local Sector Scan Support Shift Amount",
+      "GroupId": 5130,
+      "by_faction": {
+        "allies": {
+          "easy": {
+            "allies": -4,
+            "axis": -3
+          },
+          "medium": {
+            "allies": -4,
+            "axis": -3
+          },
+          "hard": {
+            "allies": -4,
+            "axis": -3
+          }
+        },
+        "axis": {
+          "easy": {
+            "allies": -4,
+            "axis": -3
+          },
+          "medium": {
+            "allies": -4,
+            "axis": -3
+          },
+          "hard": {
+            "allies": -4,
+            "axis": -3
+          }
+        }
+      },
+      "dev": {
+        "allies": -4,
+        "axis": -3
+      },
+      "mp": {
+        "allies": -4,
+        "axis": -3
+      }
+    },
+    {
+      "EntryId": 10,
+      "Name": "Local Sector Scan Support Threshold",
+      "GroupId": 5131,
+      "by_faction": {
+        "allies": {
+          "easy": {
+            "allies": 101,
+            "axis": 101
+          },
+          "medium": {
+            "allies": 101,
+            "axis": 101
+          },
+          "hard": {
+            "allies": 101,
+            "axis": 101
+          }
+        },
+        "axis": {
+          "easy": {
+            "allies": 101,
+            "axis": 101
+          },
+          "medium": {
+            "allies": 101,
+            "axis": 101
+          },
+          "hard": {
+            "allies": 101,
+            "axis": 101
+          }
+        }
+      },
+      "dev": {
+        "allies": 101,
+        "axis": 101
+      },
+      "mp": {
+        "allies": 101,
+        "axis": 101
+      }
+    },
+    {
+      "EntryId": 11,
+      "Name": "Startup Balance: Counterpart Support Threshold",
+      "GroupId": 5136,
+      "by_faction": {
+        "allies": {
+          "easy": {
+            "allies": 101,
+            "axis": 101
+          },
+          "medium": {
+            "allies": 101,
+            "axis": 101
+          },
+          "hard": {
+            "allies": 101,
+            "axis": 101
+          }
+        },
+        "axis": {
+          "easy": {
+            "allies": 101,
+            "axis": 101
+          },
+          "medium": {
+            "allies": 101,
+            "axis": 101
+          },
+          "hard": {
+            "allies": 101,
+            "axis": 101
+          }
+        }
+      },
+      "dev": {
+        "allies": 101,
+        "axis": 101
+      },
+      "mp": {
+        "allies": 101,
+        "axis": 101
+      }
+    },
+    {
+      "EntryId": 12,
+      "Name": "Startup Balance: Payload Magnitude Cap",
+      "GroupId": 5137,
+      "by_faction": {
+        "allies": {
+          "easy": {
+            "allies": 20,
+            "axis": 20
+          },
+          "medium": {
+            "allies": 20,
+            "axis": 20
+          },
+          "hard": {
+            "allies": 20,
+            "axis": 20
+          }
+        },
+        "axis": {
+          "easy": {
+            "allies": 20,
+            "axis": 20
+          },
+          "medium": {
+            "allies": 20,
+            "axis": 20
+          },
+          "hard": {
+            "allies": 20,
+            "axis": 20
+          }
+        }
+      },
+      "dev": {
+        "allies": 20,
+        "axis": 20
+      },
+      "mp": {
+        "allies": 20,
+        "axis": 20
+      }
+    },
+    {
+      "EntryId": 13,
+      "Name": "Startup Balance: Leading Branch Flat Base",
+      "GroupId": 5138,
+      "by_faction": {
+        "allies": {
+          "easy": {
+            "allies": 100,
+            "axis": 100
+          },
+          "medium": {
+            "allies": 100,
+            "axis": 100
+          },
+          "hard": {
+            "allies": 100,
+            "axis": 100
+          }
+        },
+        "axis": {
+          "easy": {
+            "allies": 100,
+            "axis": 100
+          },
+          "medium": {
+            "allies": 100,
+            "axis": 100
+          },
+          "hard": {
+            "allies": 100,
+            "axis": 100
+          }
+        }
+      },
+      "dev": {
+        "allies": 100,
+        "axis": 100
+      },
+      "mp": {
+        "allies": 100,
+        "axis": 100
+      }
+    },
+    {
+      "EntryId": 14,
+      "Name": "Startup Balance: Leading Branch Gap Scale (%)",
+      "GroupId": 5139,
+      "by_faction": {
+        "allies": {
+          "easy": {
+            "allies": 400,
+            "axis": 200
+          },
+          "medium": {
+            "allies": 400,
+            "axis": 150
+          },
+          "hard": {
+            "allies": 400,
+            "axis": 100
+          }
+        },
+        "axis": {
+          "easy": {
+            "allies": 200,
+            "axis": 400
+          },
+          "medium": {
+            "allies": 150,
+            "axis": 400
+          },
+          "hard": {
+            "allies": 100,
+            "axis": 400
+          }
+        }
+      },
+      "dev": {
+        "allies": 400,
+        "axis": 400
+      },
+      "mp": {
+        "allies": 400,
+        "axis": 400
+      }
+    },
+    {
+      "EntryId": 15,
+      "Name": "Startup Balance: Trailing Branch Flat Base",
+      "GroupId": 5140,
+      "by_faction": {
+        "allies": {
+          "easy": {
+            "allies": 0,
+            "axis": 0
+          },
+          "medium": {
+            "allies": 0,
+            "axis": 0
+          },
+          "hard": {
+            "allies": 0,
+            "axis": 0
+          }
+        },
+        "axis": {
+          "easy": {
+            "allies": 0,
+            "axis": 0
+          },
+          "medium": {
+            "allies": 0,
+            "axis": 0
+          },
+          "hard": {
+            "allies": 0,
+            "axis": 0
+          }
+        }
+      },
+      "dev": {
+        "allies": 0,
+        "axis": 0
+      },
+      "mp": {
+        "allies": 0,
+        "axis": 0
+      }
+    },
+    {
+      "EntryId": 16,
+      "Name": "Startup Balance: Trailing Branch Gap Scale (%)",
+      "GroupId": 5141,
+      "by_faction": {
+        "allies": {
+          "easy": {
+            "allies": 100,
+            "axis": 100
+          },
+          "medium": {
+            "allies": 100,
+            "axis": 100
+          },
+          "hard": {
+            "allies": 100,
+            "axis": 100
+          }
+        },
+        "axis": {
+          "easy": {
+            "allies": 100,
+            "axis": 100
+          },
+          "medium": {
+            "allies": 100,
+            "axis": 100
+          },
+          "hard": {
+            "allies": 100,
+            "axis": 100
+          }
+        }
+      },
+      "dev": {
+        "allies": 100,
+        "axis": 100
+      },
+      "mp": {
+        "allies": 100,
+        "axis": 100
+      }
+    },
+    {
+      "EntryId": 17,
+      "Name": "Peaceful Control Change: Payload Offset",
+      "GroupId": 5152,
+      "by_faction": {
+        "allies": {
+          "easy": {
+            "allies": 1,
+            "axis": 1
+          },
+          "medium": {
+            "allies": 1,
+            "axis": 1
+          },
+          "hard": {
+            "allies": 1,
+            "axis": 1
+          }
+        },
+        "axis": {
+          "easy": {
+            "allies": 1,
+            "axis": 1
+          },
+          "medium": {
+            "allies": 1,
+            "axis": 1
+          },
+          "hard": {
+            "allies": 1,
+            "axis": 1
+          }
+        }
+      },
+      "dev": {
+        "allies": 1,
+        "axis": 1
+      },
+      "mp": {
+        "allies": 1,
+        "axis": 1
+      }
+    },
+    {
+      "EntryId": 18,
+      "Name": "Peaceful Control Change: Event Row",
+      "GroupId": 5153,
+      "by_faction": {
+        "allies": {
+          "easy": {
+            "allies": 100,
+            "axis": 100
+          },
+          "medium": {
+            "allies": 100,
+            "axis": 100
+          },
+          "hard": {
+            "allies": 100,
+            "axis": 100
+          }
+        },
+        "axis": {
+          "easy": {
+            "allies": 100,
+            "axis": 100
+          },
+          "medium": {
+            "allies": 100,
+            "axis": 100
+          },
+          "hard": {
+            "allies": 100,
+            "axis": 100
+          }
+        }
+      },
+      "dev": {
+        "allies": 100,
+        "axis": 100
+      },
+      "mp": {
+        "allies": 100,
+        "axis": 100
+      }
+    },
+    {
+      "EntryId": 19,
+      "Name": "Alternate Control Change: Payload Offset",
+      "GroupId": 5154,
+      "by_faction": {
+        "allies": {
+          "easy": {
+            "allies": 10,
+            "axis": 5
+          },
+          "medium": {
+            "allies": 10,
+            "axis": 5
+          },
+          "hard": {
+            "allies": 10,
+            "axis": 5
+          }
+        },
+        "axis": {
+          "easy": {
+            "allies": 10,
+            "axis": 5
+          },
+          "medium": {
+            "allies": 10,
+            "axis": 5
+          },
+          "hard": {
+            "allies": 10,
+            "axis": 5
+          }
+        }
+      },
+      "dev": {
+        "allies": 10,
+        "axis": 5
+      },
+      "mp": {
+        "allies": 10,
+        "axis": 5
+      }
+    },
+    {
+      "EntryId": 20,
+      "Name": "Alternate Control Change: Event Row",
+      "GroupId": 5155,
+      "by_faction": {
+        "allies": {
+          "easy": {
+            "allies": 100,
+            "axis": 90
+          },
+          "medium": {
+            "allies": 100,
+            "axis": 90
+          },
+          "hard": {
+            "allies": 100,
+            "axis": 90
+          }
+        },
+        "axis": {
+          "easy": {
+            "allies": 100,
+            "axis": 90
+          },
+          "medium": {
+            "allies": 100,
+            "axis": 90
+          },
+          "hard": {
+            "allies": 100,
+            "axis": 90
+          }
+        }
+      },
+      "dev": {
+        "allies": 100,
+        "axis": 90
+      },
+      "mp": {
+        "allies": 100,
+        "axis": 90
+      }
+    },
+    {
+      "EntryId": 21,
+      "Name": "% of Maintenance to deploy Random Units at Day 0 (Standard Galaxy)",
+      "GroupId": 5168,
+      "by_faction": {
+        "allies": {
+          "easy": {
+            "allies": 33,
+            "axis": 33
+          },
+          "medium": {
+            "allies": 25,
+            "axis": 38
+          },
+          "hard": {
+            "allies": 25,
+            "axis": 38
+          }
+        },
+        "axis": {
+          "easy": {
+            "allies": 33,
+            "axis": 33
+          },
+          "medium": {
+            "allies": 38,
+            "axis": 25
+          },
+          "hard": {
+            "allies": 38,
+            "axis": 25
+          }
+        }
+      },
+      "dev": {
+        "allies": 33,
+        "axis": 33
+      },
+      "mp": {
+        "allies": 28,
+        "axis": 28
+      }
+    },
+    {
+      "EntryId": 22,
+      "Name": "% of Maintenance to deploy Random Units at Day 0 (Large Galaxy)",
+      "GroupId": 5169,
+      "by_faction": {
+        "allies": {
+          "easy": {
+            "allies": 25,
+            "axis": 25
+          },
+          "medium": {
+            "allies": 20,
+            "axis": 30
+          },
+          "hard": {
+            "allies": 20,
+            "axis": 30
+          }
+        },
+        "axis": {
+          "easy": {
+            "allies": 25,
+            "axis": 25
+          },
+          "medium": {
+            "allies": 30,
+            "axis": 20
+          },
+          "hard": {
+            "allies": 30,
+            "axis": 20
+          }
+        }
+      },
+      "dev": {
+        "allies": 25,
+        "axis": 25
+      },
+      "mp": {
+        "allies": 20,
+        "axis": 20
+      }
+    },
+    {
+      "EntryId": 23,
+      "Name": "% of Maintenance to deploy Random Units at Day 0 (Huge Galaxy)",
+      "GroupId": 5170,
+      "by_faction": {
+        "allies": {
+          "easy": {
+            "allies": 20,
+            "axis": 20
+          },
+          "medium": {
+            "allies": 15,
+            "axis": 25
+          },
+          "hard": {
+            "allies": 15,
+            "axis": 25
+          }
+        },
+        "axis": {
+          "easy": {
+            "allies": 20,
+            "axis": 20
+          },
+          "medium": {
+            "allies": 25,
+            "axis": 15
+          },
+          "hard": {
+            "allies": 25,
+            "axis": 15
+          }
+        }
+      },
+      "dev": {
+        "allies": 20,
+        "axis": 20
+      },
+      "mp": {
+        "allies": 15,
+        "axis": 15
+      }
+    },
+    {
+      "EntryId": 24,
+      "Name": "Troop Arrival Control Change: Payload",
+      "GroupId": 5184,
+      "by_faction": {
+        "allies": {
+          "easy": {
+            "allies": 0,
+            "axis": 0
+          },
+          "medium": {
+            "allies": 0,
+            "axis": 0
+          },
+          "hard": {
+            "allies": 0,
+            "axis": 0
+          }
+        },
+        "axis": {
+          "easy": {
+            "allies": 0,
+            "axis": 0
+          },
+          "medium": {
+            "allies": 0,
+            "axis": 0
+          },
+          "hard": {
+            "allies": 0,
+            "axis": 0
+          }
+        }
+      },
+      "dev": {
+        "allies": 0,
+        "axis": 0
+      },
+      "mp": {
+        "allies": 0,
+        "axis": 0
+      }
+    },
+    {
+      "EntryId": 25,
+      "Name": "Troop Arrival Control Change: Event Row",
+      "GroupId": 5185,
+      "by_faction": {
+        "allies": {
+          "easy": {
+            "allies": 101,
+            "axis": 101
+          },
+          "medium": {
+            "allies": 101,
+            "axis": 101
+          },
+          "hard": {
+            "allies": 101,
+            "axis": 101
+          }
+        },
+        "axis": {
+          "easy": {
+            "allies": 101,
+            "axis": 101
+          },
+          "medium": {
+            "allies": 101,
+            "axis": 101
+          },
+          "hard": {
+            "allies": 101,
+            "axis": 101
+          }
+        }
+      },
+      "dev": {
+        "allies": 101,
+        "axis": 101
+      },
+      "mp": {
+        "allies": 101,
+        "axis": 101
+      }
+    },
+    {
+      "EntryId": 26,
+      "Name": "Troop Withdrawal Control Change: Payload",
+      "GroupId": 5186,
+      "by_faction": {
+        "allies": {
+          "easy": {
+            "allies": 10,
+            "axis": 10
+          },
+          "medium": {
+            "allies": 10,
+            "axis": 10
+          },
+          "hard": {
+            "allies": 10,
+            "axis": 10
+          }
+        },
+        "axis": {
+          "easy": {
+            "allies": 10,
+            "axis": 10
+          },
+          "medium": {
+            "allies": 10,
+            "axis": 10
+          },
+          "hard": {
+            "allies": 10,
+            "axis": 10
+          }
+        }
+      },
+      "dev": {
+        "allies": 10,
+        "axis": 10
+      },
+      "mp": {
+        "allies": 10,
+        "axis": 10
+      }
+    },
+    {
+      "EntryId": 27,
+      "Name": "Troop Withdrawal Control Change: Event Row",
+      "GroupId": 5187,
+      "by_faction": {
+        "allies": {
+          "easy": {
+            "allies": 101,
+            "axis": 101
+          },
+          "medium": {
+            "allies": 101,
+            "axis": 101
+          },
+          "hard": {
+            "allies": 101,
+            "axis": 101
+          }
+        },
+        "axis": {
+          "easy": {
+            "allies": 101,
+            "axis": 101
+          },
+          "medium": {
+            "allies": 101,
+            "axis": 101
+          },
+          "hard": {
+            "allies": 101,
+            "axis": 101
+          }
+        }
+      },
+      "dev": {
+        "allies": 101,
+        "axis": 101
+      },
+      "mp": {
+        "allies": 101,
+        "axis": 101
+      }
+    },
+    {
+      "EntryId": 28,
+      "Name": "Contested Troop Presence Control Change: Payload",
+      "GroupId": 5188,
+      "by_faction": {
+        "allies": {
+          "easy": {
+            "allies": 0,
+            "axis": 0
+          },
+          "medium": {
+            "allies": 0,
+            "axis": 0
+          },
+          "hard": {
+            "allies": 0,
+            "axis": 0
+          }
+        },
+        "axis": {
+          "easy": {
+            "allies": 0,
+            "axis": 0
+          },
+          "medium": {
+            "allies": 0,
+            "axis": 0
+          },
+          "hard": {
+            "allies": 0,
+            "axis": 0
+          }
+        }
+      },
+      "dev": {
+        "allies": 0,
+        "axis": 0
+      },
+      "mp": {
+        "allies": 0,
+        "axis": 0
+      }
+    },
+    {
+      "EntryId": 29,
+      "Name": "Contested Troop Presence Control Change: Event Row",
+      "GroupId": 5189,
+      "by_faction": {
+        "allies": {
+          "easy": {
+            "allies": 101,
+            "axis": 101
+          },
+          "medium": {
+            "allies": 101,
+            "axis": 101
+          },
+          "hard": {
+            "allies": 101,
+            "axis": 101
+          }
+        },
+        "axis": {
+          "easy": {
+            "allies": 101,
+            "axis": 101
+          },
+          "medium": {
+            "allies": 101,
+            "axis": 101
+          },
+          "hard": {
+            "allies": 101,
+            "axis": 101
+          }
+        }
+      },
+      "dev": {
+        "allies": 101,
+        "axis": 101
+      },
+      "mp": {
+        "allies": 101,
+        "axis": 101
+      }
+    },
+    {
+      "EntryId": 30,
+      "Name": "Core Sector Owned Systems with support",
+      "GroupId": 7680,
+      "by_faction": {
+        "allies": {
+          "easy": {
+            "allies": 10,
+            "axis": 10
+          },
+          "medium": {
+            "allies": 20,
+            "axis": 25
+          },
+          "hard": {
+            "allies": 15,
+            "axis": 30
+          }
+        },
+        "axis": {
+          "easy": {
+            "allies": 10,
+            "axis": 10
+          },
+          "medium": {
+            "allies": 35,
+            "axis": 10
+          },
+          "hard": {
+            "allies": 40,
+            "axis": 10
+          }
+        }
+      },
+      "dev": {
+        "allies": 20,
+        "axis": 25
+      },
+      "mp": {
+        "allies": 10,
+        "axis": 10
+      }
+    },
+    {
+      "EntryId": 31,
+      "Name": "Core Sector Owned Systems without support",
+      "GroupId": 7681,
+      "by_faction": {
+        "allies": {
+          "easy": {
+            "allies": 0,
+            "axis": 4
+          },
+          "medium": {
+            "allies": 0,
+            "axis": 10
+          },
+          "hard": {
+            "allies": 0,
+            "axis": 10
+          }
+        },
+        "axis": {
+          "easy": {
+            "allies": 0,
+            "axis": 4
+          },
+          "medium": {
+            "allies": 0,
+            "axis": 10
+          },
+          "hard": {
+            "allies": 0,
+            "axis": 5
+          }
+        }
+      },
+      "dev": {
+        "allies": 0,
+        "axis": 10
+      },
+      "mp": {
+        "allies": 0,
+        "axis": 4
+      }
+    },
+    {
+      "EntryId": 32,
+      "Name": "Core Sector Owned Systems with support Popularity: Base (%)",
+      "GroupId": 7682,
+      "by_faction": {
+        "allies": {
+          "easy": {
+            "allies": 60,
+            "axis": 60
+          },
+          "medium": {
+            "allies": 60,
+            "axis": 60
+          },
+          "hard": {
+            "allies": 60,
+            "axis": 60
+          }
+        },
+        "axis": {
+          "easy": {
+            "allies": 60,
+            "axis": 60
+          },
+          "medium": {
+            "allies": 60,
+            "axis": 60
+          },
+          "hard": {
+            "allies": 60,
+            "axis": 60
+          }
+        }
+      },
+      "dev": {
+        "allies": 60,
+        "axis": 60
+      },
+      "mp": {
+        "allies": 60,
+        "axis": 60
+      }
+    },
+    {
+      "EntryId": 33,
+      "Name": "Core Sector Owned Systems with support Popularity: Max Random Extra (%)",
+      "GroupId": 7683,
+      "by_faction": {
+        "allies": {
+          "easy": {
+            "allies": 30,
+            "axis": 30
+          },
+          "medium": {
+            "allies": 30,
+            "axis": 30
+          },
+          "hard": {
+            "allies": 30,
+            "axis": 30
+          }
+        },
+        "axis": {
+          "easy": {
+            "allies": 30,
+            "axis": 30
+          },
+          "medium": {
+            "allies": 30,
+            "axis": 30
+          },
+          "hard": {
+            "allies": 30,
+            "axis": 30
+          }
+        }
+      },
+      "dev": {
+        "allies": 30,
+        "axis": 30
+      },
+      "mp": {
+        "allies": 30,
+        "axis": 30
+      }
+    },
+    {
+      "EntryId": 34,
+      "Name": "Core Sector Owned Systems without support Popularity: Base (%)",
+      "GroupId": 7684,
+      "by_faction": {
+        "allies": {
+          "easy": {
+            "allies": 20,
+            "axis": 20
+          },
+          "medium": {
+            "allies": 20,
+            "axis": 20
+          },
+          "hard": {
+            "allies": 20,
+            "axis": 20
+          }
+        },
+        "axis": {
+          "easy": {
+            "allies": 20,
+            "axis": 20
+          },
+          "medium": {
+            "allies": 20,
+            "axis": 20
+          },
+          "hard": {
+            "allies": 20,
+            "axis": 20
+          }
+        }
+      },
+      "dev": {
+        "allies": 20,
+        "axis": 20
+      },
+      "mp": {
+        "allies": 20,
+        "axis": 20
+      }
+    },
+    {
+      "EntryId": 35,
+      "Name": "Core Sector Owned Systems without support Popularity: Max Random Extra (%)",
+      "GroupId": 7685,
+      "by_faction": {
+        "allies": {
+          "easy": {
+            "allies": 30,
+            "axis": 30
+          },
+          "medium": {
+            "allies": 30,
+            "axis": 30
+          },
+          "hard": {
+            "allies": 30,
+            "axis": 30
+          }
+        },
+        "axis": {
+          "easy": {
+            "allies": 30,
+            "axis": 30
+          },
+          "medium": {
+            "allies": 30,
+            "axis": 30
+          },
+          "hard": {
+            "allies": 30,
+            "axis": 30
+          }
+        }
+      },
+      "dev": {
+        "allies": 30,
+        "axis": 30
+      },
+      "mp": {
+        "allies": 30,
+        "axis": 30
+      }
+    }
+  ],
+  "logistics": {
+    "core_system_facilities": {
+      "Type": "SYFC (Flat)",
+      "Description": "SeedTableEntry",
+      "Entries": [
+        {
+          "ParentId": 1,
+          "ProbabilityThreshold": 0,
+          "SpawnChancePercent": 0,
+          "Asset": null
+        },
+        {
+          "ParentId": 2,
+          "ProbabilityThreshold": 36,
+          "SpawnChancePercent": 64,
+          "Asset": {
+            "facility": "refinery"
+          }
+        },
+        {
+          "ParentId": 3,
+          "ProbabilityThreshold": 79,
+          "SpawnChancePercent": 21,
+          "Asset": {
+            "facility": "shipyard"
+          }
+        },
+        {
+          "ParentId": 4,
+          "ProbabilityThreshold": 82,
+          "SpawnChancePercent": 18,
+          "Asset": {
+            "facility": "training_facility"
+          }
+        },
+        {
+          "ParentId": 5,
+          "ProbabilityThreshold": 85,
+          "SpawnChancePercent": 15,
+          "Asset": {
+            "facility": "construction_yard"
+          }
+        },
+        {
+          "ParentId": 6,
+          "ProbabilityThreshold": 88,
+          "SpawnChancePercent": 12,
+          "Asset": {
+            "facility": "fortifications"
+          }
+        },
+        {
+          "ParentId": 7,
+          "ProbabilityThreshold": 96,
+          "SpawnChancePercent": 4,
+          "Asset": {
+            "facility": "coastal_battery"
+          }
+        },
+        {
+          "ParentId": 8,
+          "ProbabilityThreshold": 99,
+          "SpawnChancePercent": 1,
+          "Asset": {
+            "facility": "minefield"
+          }
+        }
+      ]
+    },
+    "rim_system_facilities": {
+      "Type": "SYFC (Flat)",
+      "Description": "SeedTableEntry",
+      "Entries": [
+        {
+          "ParentId": 1,
+          "ProbabilityThreshold": 0,
+          "SpawnChancePercent": 0,
+          "Asset": null
+        },
+        {
+          "ParentId": 2,
+          "ProbabilityThreshold": 91,
+          "SpawnChancePercent": 9,
+          "Asset": {
+            "facility": "refinery"
+          }
+        },
+        {
+          "ParentId": 3,
+          "ProbabilityThreshold": 96,
+          "SpawnChancePercent": 4,
+          "Asset": {
+            "facility": "shipyard"
+          }
+        },
+        {
+          "ParentId": 4,
+          "ProbabilityThreshold": 97,
+          "SpawnChancePercent": 3,
+          "Asset": {
+            "facility": "training_facility"
+          }
+        },
+        {
+          "ParentId": 5,
+          "ProbabilityThreshold": 98,
+          "SpawnChancePercent": 2,
+          "Asset": {
+            "facility": "construction_yard"
+          }
+        },
+        {
+          "ParentId": 6,
+          "ProbabilityThreshold": 99,
+          "SpawnChancePercent": 1,
+          "Asset": {
+            "facility": "fortifications"
+          }
+        },
+        {
+          "ParentId": 7,
+          "ProbabilityThreshold": 100,
+          "SpawnChancePercent": 0,
+          "Asset": {
+            "facility": "coastal_battery"
+          }
+        }
+      ]
+    },
+    "allies_fleet": {
+      "Type": "CMUN/FACL (Hierarchical)",
+      "Description": "SeedFamilyTableEntry",
+      "Entries": [
+        {
+          "ParentId": 1,
+          "ProbabilityThreshold": 1,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "unit": "tribal_class_destroyer_flotilla"
+            }
+          ]
+        },
+        {
+          "ParentId": 2,
+          "ProbabilityThreshold": 2,
+          "Multiplier": 1,
+          "ChildrenCount": 3,
+          "Assets": [
+            {
+              "unit": "liberty_ship_convoy"
+            },
+            {
+              "unit": "royal_marines_brigade"
+            },
+            {
+              "unit": "royal_marines_brigade"
+            }
+          ]
+        }
+      ],
+      "fixed_range": [
+        90,
+        91
+      ]
+    },
+    "axis_fleet": {
+      "Type": "CMUN/FACL (Hierarchical)",
+      "Description": "SeedFamilyTableEntry",
+      "Entries": [
+        {
+          "ParentId": 1,
+          "ProbabilityThreshold": 1,
+          "Multiplier": 1,
+          "ChildrenCount": 10,
+          "Assets": [
+            {
+              "unit": "bismarck_class_battleship"
+            },
+            {
+              "unit": "bf_109_squadron"
+            },
+            {
+              "unit": "bf_109_squadron"
+            },
+            {
+              "unit": "bf_109_squadron"
+            },
+            {
+              "unit": "bf_109_squadron"
+            },
+            {
+              "unit": "bf_109_squadron"
+            },
+            {
+              "unit": "bf_109_squadron"
+            },
+            {
+              "unit": "waffen_ss_division"
+            },
+            {
+              "unit": "waffen_ss_division"
+            },
+            {
+              "unit": "waffen_ss_division"
+            }
+          ]
+        }
+      ],
+      "fixed_range": [
+        92,
+        93
+      ]
+    },
+    "allies_procedural_fleet": {
+      "Type": "CMUN/FACL (Hierarchical)",
+      "Description": "SeedFamilyTableEntry",
+      "Entries": [
+        {
+          "ParentId": 1,
+          "ProbabilityThreshold": 1,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "unit": "town_class_cruiser"
+            }
+          ]
+        },
+        {
+          "ParentId": 2,
+          "ProbabilityThreshold": 9,
+          "Multiplier": 1,
+          "ChildrenCount": 3,
+          "Assets": [
+            {
+              "unit": "illustrious_class_carrier"
+            },
+            {
+              "unit": "p_51_mustang_squadron"
+            },
+            {
+              "unit": "sbd_dauntless_squadron"
+            }
+          ]
+        },
+        {
+          "ParentId": 3,
+          "ProbabilityThreshold": 13,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "unit": "tribal_class_destroyer_flotilla"
+            }
+          ]
+        },
+        {
+          "ParentId": 4,
+          "ProbabilityThreshold": 27,
+          "Multiplier": 1,
+          "ChildrenCount": 3,
+          "Assets": [
+            {
+              "unit": "liberty_ship_convoy"
+            },
+            {
+              "unit": "british_infantry_division"
+            },
+            {
+              "unit": "british_infantry_division"
+            }
+          ]
+        },
+        {
+          "ParentId": 5,
+          "ProbabilityThreshold": 36,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "unit": "p_51_mustang_squadron"
+            }
+          ]
+        },
+        {
+          "ParentId": 6,
+          "ProbabilityThreshold": 40,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "unit": "sbd_dauntless_squadron"
+            }
+          ]
+        },
+        {
+          "ParentId": 7,
+          "ProbabilityThreshold": 54,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "unit": "royal_marines_brigade"
+            }
+          ]
+        },
+        {
+          "ParentId": 8,
+          "ProbabilityThreshold": 58,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "unit": "british_infantry_division"
+            }
+          ]
+        },
+        {
+          "ParentId": 9,
+          "ProbabilityThreshold": 89,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "unit": "resistance_cell"
+            }
+          ]
+        },
+        {
+          "ParentId": 10,
+          "ProbabilityThreshold": 90,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "unit": "commandos"
+            }
+          ]
+        },
+        {
+          "ParentId": 11,
+          "ProbabilityThreshold": 93,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "unit": "photo_reconnaissance_flight"
+            }
+          ]
+        },
+        {
+          "ParentId": 12,
+          "ProbabilityThreshold": 97,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "unit": "soe_agents"
+            }
+          ]
+        }
+      ]
+    },
+    "axis_procedural_fleet": {
+      "Type": "CMUN/FACL (Hierarchical)",
+      "Description": "SeedFamilyTableEntry",
+      "Entries": [
+        {
+          "ParentId": 1,
+          "ProbabilityThreshold": 1,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "unit": "hipper_class_heavy_cruiser"
+            }
+          ]
+        },
+        {
+          "ParentId": 2,
+          "ProbabilityThreshold": 9,
+          "Multiplier": 1,
+          "ChildrenCount": 3,
+          "Assets": [
+            {
+              "unit": "scharnhorst_class_battlecruiser"
+            },
+            {
+              "unit": "kriegsmarine_marine_battalion"
+            },
+            {
+              "unit": "bf_109_squadron"
+            }
+          ]
+        },
+        {
+          "ParentId": 3,
+          "ProbabilityThreshold": 20,
+          "Multiplier": 1,
+          "ChildrenCount": 5,
+          "Assets": [
+            {
+              "unit": "bismarck_class_battleship"
+            },
+            {
+              "unit": "waffen_ss_division"
+            },
+            {
+              "unit": "waffen_ss_division"
+            },
+            {
+              "unit": "bf_109_squadron"
+            },
+            {
+              "unit": "bf_109_squadron"
+            }
+          ]
+        },
+        {
+          "ParentId": 4,
+          "ProbabilityThreshold": 24,
+          "Multiplier": 1,
+          "ChildrenCount": 3,
+          "Assets": [
+            {
+              "unit": "takao_class_heavy_cruiser"
+            },
+            {
+              "unit": "kriegsmarine_marine_battalion"
+            },
+            {
+              "unit": "bf_109_squadron"
+            }
+          ]
+        },
+        {
+          "ParentId": 5,
+          "ProbabilityThreshold": 29,
+          "Multiplier": 1,
+          "ChildrenCount": 3,
+          "Assets": [
+            {
+              "unit": "axis_supply_convoy"
+            },
+            {
+              "unit": "kriegsmarine_marine_battalion"
+            },
+            {
+              "unit": "kriegsmarine_marine_battalion"
+            }
+          ]
+        },
+        {
+          "ParentId": 6,
+          "ProbabilityThreshold": 39,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "unit": "bf_109_squadron"
+            }
+          ]
+        },
+        {
+          "ParentId": 7,
+          "ProbabilityThreshold": 61,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "unit": "waffen_ss_division"
+            }
+          ]
+        },
+        {
+          "ParentId": 8,
+          "ProbabilityThreshold": 69,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "unit": "wehrmacht_infantry_division"
+            }
+          ]
+        },
+        {
+          "ParentId": 9,
+          "ProbabilityThreshold": 84,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "unit": "abwehr_agents"
+            }
+          ]
+        },
+        {
+          "ParentId": 10,
+          "ProbabilityThreshold": 89,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "unit": "sd_intelligence_cell"
+            }
+          ]
+        },
+        {
+          "ParentId": 11,
+          "ProbabilityThreshold": 94,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "unit": "brandenburgers"
+            }
+          ]
+        },
+        {
+          "ParentId": 12,
+          "ProbabilityThreshold": 98,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "unit": "kempeitai_operatives"
+            }
+          ]
+        }
+      ]
+    },
+    "axis_hq_garrison": {
+      "Type": "CMUN/FACL (Hierarchical)",
+      "Description": "SeedFamilyTableEntry",
+      "Entries": [
+        {
+          "ParentId": 1,
+          "ProbabilityThreshold": 1,
+          "Multiplier": 1,
+          "ChildrenCount": 16,
+          "Assets": [
+            {
+              "unit": "waffen_ss_division"
+            },
+            {
+              "unit": "waffen_ss_division"
+            },
+            {
+              "unit": "waffen_ss_division"
+            },
+            {
+              "unit": "waffen_ss_division"
+            },
+            {
+              "unit": "waffen_ss_division"
+            },
+            {
+              "unit": "waffen_ss_division"
+            },
+            {
+              "unit": "bf_109_squadron"
+            },
+            {
+              "unit": "bf_109_squadron"
+            },
+            {
+              "unit": "bf_109_squadron"
+            },
+            {
+              "unit": "bf_109_squadron"
+            },
+            {
+              "unit": "bf_109_squadron"
+            },
+            {
+              "unit": "bf_109_squadron"
+            },
+            {
+              "unit": "bf_109_squadron"
+            },
+            {
+              "unit": "bf_109_squadron"
+            },
+            {
+              "unit": "bf_109_squadron"
+            },
+            {
+              "unit": "bf_109_squadron"
+            }
+          ]
+        }
+      ],
+      "fixed_range": [
+        88,
+        89
+      ]
+    },
+    "allies_hq_garrison": {
+      "Type": "CMUN/FACL (Hierarchical)",
+      "Description": "SeedFamilyTableEntry",
+      "Entries": [
+        {
+          "ParentId": 1,
+          "ProbabilityThreshold": 1,
+          "Multiplier": 1,
+          "ChildrenCount": 9,
+          "Assets": [
+            {
+              "unit": "british_infantry_division"
+            },
+            {
+              "unit": "british_infantry_division"
+            },
+            {
+              "unit": "royal_marines_brigade"
+            },
+            {
+              "unit": "p_51_mustang_squadron"
+            },
+            {
+              "unit": "p_51_mustang_squadron"
+            },
+            {
+              "unit": "p_51_mustang_squadron"
+            },
+            {
+              "unit": "p_51_mustang_squadron"
+            },
+            {
+              "unit": "sbd_dauntless_squadron"
+            },
+            {
+              "unit": "sbd_dauntless_squadron"
+            }
+          ]
+        }
+      ],
+      "fixed_range": [
+        86,
+        87
+      ]
+    },
+    "allies_start_garrison": {
+      "Type": "CMUN/FACL (Hierarchical)",
+      "Description": "SeedFamilyTableEntry",
+      "Entries": [
+        {
+          "ParentId": 1,
+          "ProbabilityThreshold": 1,
+          "Multiplier": 1,
+          "ChildrenCount": 4,
+          "Assets": [
+            {
+              "unit": "british_infantry_division"
+            },
+            {
+              "unit": "british_infantry_division"
+            },
+            {
+              "unit": "p_51_mustang_squadron"
+            },
+            {
+              "unit": "sbd_dauntless_squadron"
+            }
+          ]
+        }
+      ],
+      "fixed_range": [
+        84,
+        85
+      ]
+    },
+    "allies_hq_facilities": {
+      "Type": "CMUN/FACL (Hierarchical)",
+      "Description": "SeedFamilyTableEntry",
+      "Entries": [
+        {
+          "ParentId": 1,
+          "ProbabilityThreshold": 1,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "facility": "headquarters"
+            }
+          ]
+        },
+        {
+          "ParentId": 2,
+          "ProbabilityThreshold": 2,
+          "Multiplier": 1,
+          "ChildrenCount": 4,
+          "Assets": [
+            {
+              "facility": "mine"
+            },
+            {
+              "facility": "refinery"
+            },
+            {
+              "facility": "construction_yard"
+            },
+            {
+              "facility": "fortifications"
+            }
+          ]
+        }
+      ],
+      "fixed_range": [
+        94,
+        95
+      ]
+    },
+    "axis_hq_facilities": {
+      "Type": "CMUN/FACL (Hierarchical)",
+      "Description": "SeedFamilyTableEntry",
+      "Entries": [
+        {
+          "ParentId": 1,
+          "ProbabilityThreshold": 1,
+          "Multiplier": 1,
+          "ChildrenCount": 1,
+          "Assets": [
+            {
+              "facility": "construction_yard"
+            }
+          ]
+        }
+      ],
+      "fixed_range": [
+        96,
+        97
+      ]
+    },
+    "axis_start_garrison": {
+      "Type": "CMUN/FACL (Hierarchical)",
+      "Description": "SeedFamilyTableEntry",
+      "Entries": [
+        {
+          "ParentId": 1,
+          "ProbabilityThreshold": 1,
+          "Multiplier": 1,
+          "ChildrenCount": 4,
+          "Assets": [
+            {
+              "unit": "british_infantry_division"
+            },
+            {
+              "unit": "british_infantry_division"
+            },
+            {
+              "unit": "p_51_mustang_squadron"
+            },
+            {
+              "unit": "sbd_dauntless_squadron"
+            }
+          ]
+        }
+      ],
+      "fixed_range": [
+        84,
+        85
+      ]
+    }
+  }
+}
