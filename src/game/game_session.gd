@@ -11,15 +11,17 @@ const DATA := "res://data"
 
 ## Everything GameManager loads before day zero, in its order.
 static func load_catalogs() -> void:
+	# ORDER IS THE SOURCE'S. Kept deliberately: this used to read a pile of
+	# data/*.json and now reads the pack, but the sequence is unchanged.
 	FactionRegistry.EnsureLoaded()
-	RuleManager.LoadRules("%s/game_rules.json" % DATA)
+	RuleManager.LoadFromPack(FactionRegistry.Pack)
+	MissionTableManager.LoadFromPack(FactionRegistry.Pack)
+	MissionCatalog.LoadFromPack(FactionRegistry.Pack)
 	UprisingTable.Load("%s/uprising_start.json" % DATA)
-	SideLotteryManager.LoadRules("%s/side_lottery.json" % DATA)
-	SeedManager.Load("%s/day_zero_logistics.json" % DATA, "%s/defensive_facilities.json" % DATA, "%s/military_units.json" % DATA)
+	SideLotteryManager.LoadFromPack(FactionRegistry.Pack)
+	SeedManager.Load(FactionRegistry.Pack, "%s/defensive_facilities.json" % DATA, "%s/military_units.json" % DATA)
 	FacilityCatalog.LoadFromPack(FactionRegistry.Pack)
 	MilitaryCatalog.LoadFromPack(FactionRegistry.Pack)
-	MissionCatalog.LoadFromPack(FactionRegistry.Pack)
-	MissionTableManager.LoadFromPack(FactionRegistry.Pack)
 
 
 ## Every per-game static, cleared - the source's Reset() calls plus the ones it

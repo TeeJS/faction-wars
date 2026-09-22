@@ -386,12 +386,19 @@ class LogisticsFile:
 	var Type: String                     # a CATEGORY, not a name
 	var Description: String
 	var Entries: Variant = null          # List<LogisticsEntry>, no initialiser -> null
+	## The two GNPRTB entry ids bounding this table's FIXED LIST, [first, max],
+	## or empty for a table drawn by random band. Pack data (setup.json) - it
+	## used to be decided by matching the .DAT filename in DayZeroGenerator.
+	var FixedRange: Array[int] = []
 
 	static func from_dict(d: Dictionary) -> LogisticsFile:
 		var o := LogisticsFile.new()
 		o.Name = JsonUtil.str_or(d, "Name", "")
 		o.Type = JsonUtil.str_or(d, "Type", "")
 		o.Description = JsonUtil.str_or(d, "Description", "")
+		var fr: Variant = JsonUtil.get_ci(d, "fixed_range")
+		if fr is Array and fr.size() == 2:
+			o.FixedRange = [int(fr[0]), int(fr[1])]
 		var list: Variant = JsonUtil.get_ci(d, "Entries")
 		if list != null:
 			var entries: Array[LogisticsEntry] = []

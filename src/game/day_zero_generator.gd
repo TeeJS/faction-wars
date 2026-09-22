@@ -162,7 +162,7 @@ static func InitializeGalaxyState(galaxy: Array, human_faction: Faction, difficu
 			elif seed != null and not seed.ProceduralFleet.is_empty():
 				ApplyLogistics(planet, SeedManager.Logistics[seed.ProceduralFleet], rng)
 
-			var syfc_file := "SYFCCRTB.DAT" if is_core else "SYFCRMTB.DAT"
+			var syfc_file := "core_system_facilities" if is_core else "rim_system_facilities"
 			ApplyLogistics(planet, SeedManager.Logistics[syfc_file], rng, is_core)
 
 	# --- CHARACTER SPAWNING ---
@@ -295,7 +295,10 @@ static func ApplyLogistics(planet: Planet, file: CatalogDtos.LogisticsFile, rng:
 		return
 
 	var chosen: Array = []
-	var range_ids := FixedListRange(file.Name)
+	# The table says whether it is a fixed list and which rule entries bound it
+	# (setup.json fixed_range). This used to be decided by matching the .DAT
+	# FILENAME, which the pack's role ids silently stopped matching.
+	var range_ids: Array = file.FixedRange if file.FixedRange.size() == 2 else [0, 0]
 	if range_ids[0] != 0:
 		var first: int = maxi(1, RuleManager.GetShared(range_ids[0]))
 		var max_v: int = maxi(first, RuleManager.GetShared(range_ids[1]))
@@ -332,17 +335,6 @@ static func ApplyLogistics(planet: Planet, file: CatalogDtos.LogisticsFile, rng:
 
 
 ## Which GNPRTB first/max pair governs a seed file, or [0, 0] for a random table.
-static func FixedListRange(type: String) -> Array:
-	if type.contains("CMUNYVTB"): return [RuleId.SeedYavinFirst, RuleId.SeedYavinMax]
-	if type.contains("CMUNHQTB"): return [RuleId.SeedAllianceHqFirst, RuleId.SeedAllianceHqMax]
-	if type.contains("CMUNCRTB"): return [RuleId.SeedCoruscantFirst, RuleId.SeedCoruscantMax]
-	if type.contains("CMUNAFTB"): return [RuleId.SeedAllianceFleetFirst, RuleId.SeedAllianceFleetMax]
-	if type.contains("CMUNEFTB"): return [RuleId.SeedEmpireFleetFirst, RuleId.SeedEmpireFleetMax]
-	if type.contains("FACLHQTB"): return [RuleId.SeedHqFacilitiesFirst, RuleId.SeedHqFacilitiesMax]
-	if type.contains("FACLCRTB"): return [RuleId.SeedCoruscantFacilitiesFirst, RuleId.SeedCoruscantFacilitiesMax]
-	return [0, 0]
-
-
 static func AssignUnitToPlanet(planet: Planet, unit: Unit) -> void:
 	if unit == null:
 		return

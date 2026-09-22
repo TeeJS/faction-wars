@@ -626,3 +626,25 @@ class MissionTablesFile:
 			for k in t.keys():
 				o.Tables[str(k)] = MissionTableDef.from_dict(str(k), t[k])
 		return o
+
+
+## SCHEMA.md section 8. rules.json and setup.json are carried as RAW rows: the
+## engine's own catalogs (RuleManager, SideLotteryManager, SeedManager) already
+## hydrate these shapes, and Q6 kept the integer EntryId, so re-typing them here
+## would buy nothing and risk a transcription error.
+class SetupFile:
+	## The raw side-lottery rows, as SideLotteryManager reads them.
+	var SideLottery: Array = []
+	## logistics table id -> the raw table, with `source_file` alongside.
+	var Logistics: Dictionary = {}
+
+	static func from_dict(d: Dictionary) -> SetupFile:
+		var o := SetupFile.new()
+		var sl: Variant = JsonUtil.get_ci(d, "side_lottery")
+		if sl is Array:
+			o.SideLottery = sl
+		var lg: Variant = JsonUtil.get_ci(d, "logistics")
+		if lg is Dictionary:
+			for k in lg.keys():
+				o.Logistics[str(k)] = lg[k]
+		return o

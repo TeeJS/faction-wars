@@ -32,6 +32,9 @@ class LoadedPack:
 	var Weapons: Array[PackDefs.WeaponDef] = []
 	var Missions: Array[PackDefs.MissionDefPack] = []
 	var MissionTables: Dictionary = {}   # table id -> PackDefs.MissionTableDef
+	## Raw rows - see PackDefs.SetupFile.
+	var Rules: Array = []
+	var Setup: PackDefs.SetupFile
 
 
 ## Returns the pack, or null with `errors` populated. Never throws on bad pack
@@ -46,7 +49,9 @@ static func Load(pack_dir: String, errors: Array[String]) -> LoadedPack:
 	var weapons_d: Variant = _read_json("%s/weapons.json" % pack_dir, errors)
 	var missions_d: Variant = _read_json("%s/missions.json" % pack_dir, errors)
 	var mtables_d: Variant = _read_json("%s/mission_tables.json" % pack_dir, errors)
-	for d in [manifest_d, factions_d, map_d, chars_d, facil_d, units_d, weapons_d, missions_d, mtables_d]:
+	var rules_d: Variant = _read_json("%s/rules.json" % pack_dir, errors)
+	var setup_d: Variant = _read_json("%s/setup.json" % pack_dir, errors)
+	for d in [manifest_d, factions_d, map_d, chars_d, facil_d, units_d, weapons_d, missions_d, mtables_d, rules_d, setup_d]:
 		if d == null:
 			return null
 	var pack := LoadedPack.new()
@@ -59,6 +64,8 @@ static func Load(pack_dir: String, errors: Array[String]) -> LoadedPack:
 	pack.Weapons = PackDefs.WeaponsFile.from_dict(weapons_d).Weapons
 	pack.Missions = PackDefs.MissionsFile.from_dict(missions_d).Missions
 	pack.MissionTables = PackDefs.MissionTablesFile.from_dict(mtables_d).Tables
+	pack.Rules = rules_d if rules_d is Array else []
+	pack.Setup = PackDefs.SetupFile.from_dict(setup_d)
 	_validate(pack, pack_dir, errors)
 	return pack if errors.is_empty() else null
 
@@ -135,6 +142,31 @@ static func _validate(pack: LoadedPack, pack_dir: String, errors: Array[String])
 	_validate_facilities(pack, errors)
 	_validate_units(pack, errors)
 	_validate_missions(pack, errors)
+	_validate_setup(pack, errors)
+
+
+## SCHEMA.md section 11 rule 3 for setup: every logistics table a faction names
+## must exist, or day zero seeds that side with nothing and says nothing.
+static func _validate_setup(pack: LoadedPack, errors: Array[String]) -> void:
+	if pack.Rules.is_empty():
+		errors.append("rules.json: no rule entries.")
+	if pack.Setup == null:
+		errors.append("setup.json: unreadable.")
+		return
+	if pack.Setup.SideLottery.is_empty():
+		errors.append("setup.json: 'side_lottery' is empty.")
+	for f in pack.Factions:
+		var named: Array[String] = []
+		if f.Seed != null:
+			for v in [f.Seed.HqFacilities, f.Seed.HqGarrison, f.Seed.Fleet, f.Seed.ProceduralFleet]:
+				if not v.is_empty():
+					named.append(v)
+		for sp in f.StartingPlanets:
+			if not sp.Garrison.is_empty():
+				named.append(sp.Garrison)
+		for id in named:
+			if not pack.Setup.Logistics.has(id):
+				errors.append("factions.json[%s]: names logistics table '%s', which setup.json does not declare." % [f.Id, id])
 
 
 ## SCHEMA.md section 11 rules 3 and 5 for the mission catalog.
