@@ -12,6 +12,15 @@ var _bar: GidBar   # the selector overlay + active-mode label
 # Every planet draws as two stacked glyphs: a faction-colored dot that always
 # marks the world, and a "+" flare BEHIND it whose size is the planet's tier.
 var _planetStars: Dictionary = {}    # Planet -> Label
+## THE PACK'S MAP PICTURE (pack.json map_image), drawn behind everything at
+## origin, scaled to fit Frame. map.json coordinates are PIXELS OF THAT PICTURE
+## at its native size (SCHEMA.md section 4), so every marker is placed at
+## coordinate * _scale and lines up with the picture whatever its size.
+var _backdrop: Sprite2D = null
+var _scale: float = 1.0
+## The map area on screen, in this node's space: the rectangle the scene used
+## to give the Star Wars picture (Main.tscn, 1070.67 x 803 at 150,99).
+const Frame := Vector2(1070.6666, 803.0)
 var _planetFlares: Dictionary = {}   # Planet -> Label
 # The Alliance HQ, highlighted for an Alliance player only; drawn in _draw().
 var _hqPlanet: Planet = null
@@ -39,6 +48,9 @@ func InitializeMap(galaxyData: Array, uiManager: UIManager) -> void:
 	_planetStars.clear()
 	_planetFlares.clear()
 	_hqPlanet = null
+	_backdrop = null
+	_scale = 1.0
+	_load_backdrop()
 
 	print("\n--- DRAWING GALAXY: %d Sectors Loaded ---" % galaxyData.size())
 
@@ -57,7 +69,7 @@ func InitializeMap(galaxyData: Array, uiManager: UIManager) -> void:
 		var localSector: Sector = sector
 		sectorButton.pressed.connect(func() -> void: _uiManager.OnSectorClicked(localSector))
 
-		var scaleFactor := 1.0
+		var scaleFactor := _scale
 		sector.MinX = INF
 		sector.MinY = INF
 		sector.MaxX = -INF
@@ -223,12 +235,50 @@ func RefreshVisuals() -> void:
 	queue_redraw()   # repaint the HQ highlight
 
 
+## Where a map.json coordinate lands in this node's space.
+func MapPos(x: float, y: float) -> Vector2:
+	return Vector2(x, y) * _scale
+
+
+## The picture's scale on screen, for anything else that places by coordinate.
+func MapScale() -> float:
+	return _scale
+
+
+func Backdrop() -> Sprite2D:
+	return _backdrop
+
+
+## The pack's map picture, fitted into Frame from the top-left corner. A pack
+## whose picture is missing draws nothing and places markers unscaled.
+func _load_backdrop() -> void:
+	var pack := FactionRegistry.Pack
+	if pack == null or pack.Manifest.MapImage.is_empty():
+		return
+	var tex: Texture2D = load("%s/%s/%s" % [FactionRegistry.PACKS_ROOT, pack.Manifest.Id, pack.Manifest.MapImage])
+	if tex == null:
+		push_error("[GalaxyMap] map_image '%s' could not be loaded." % pack.Manifest.MapImage)
+		return
+	var size := tex.get_size()
+	if size.x <= 0.0 or size.y <= 0.0:
+		return
+	_scale = minf(Frame.x / size.x, Frame.y / size.y)
+	_backdrop = Sprite2D.new()
+	_backdrop.name = "Backdrop"
+	_backdrop.texture = tex
+	_backdrop.centered = false
+	_backdrop.scale = Vector2(_scale, _scale)
+	_backdrop.z_index = -10
+	_backdrop.z_as_relative = false
+	add_child(_backdrop)
+
+
 ## The Alliance HQ highlight: a thin white 8-point burst centered exactly on
 ## the planet's point, painted before any child Label.
 func _draw() -> void:
 	if _hqPlanet == null:
 		return
-	var c := Vector2(_hqPlanet.MapX, _hqPlanet.MapY)
+	var c := MapPos(_hqPlanet.MapX, _hqPlanet.MapY)
 	var half: float = Gid.HaloSpan / 2.0
 	var t: float = Gid.HaloThickness
 	var d: float = half * Gid.HaloDiagonal
@@ -244,7 +294,8 @@ func _draw() -> void:
 
 
 ## Center a glyph precisely on the planet's point. An empty glyph hides the label.
-static func Place(lbl: Label, glyph: String, size_: int, color: Color, planet: Planet) -> void:
+## An instance method since the point is coordinate * this map's picture scale.
+func Place(lbl: Label, glyph: String, size_: int, color: Color, planet: Planet) -> void:
 	if glyph.is_empty() or size_ <= 0:
 		lbl.visible = false
 		return
@@ -256,7 +307,7 @@ static func Place(lbl: Label, glyph: String, size_: int, color: Color, planet: P
 	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	lbl.size = Vector2(size_ * 2, size_ * 2)
-	lbl.position = Vector2(planet.MapX - size_, planet.MapY - size_)
+	lbl.position = MapPos(planet.MapX, planet.MapY) - Vector2(size_, size_)
 
 
 func NewDayUpdate() -> void:
