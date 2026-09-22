@@ -392,12 +392,13 @@ static func Render(p: Planet, section: int) -> Array:
 					continue
 				lines.append(c.Name if c.Rank == Enums.Rank.None else "%s %s" % [JsonUtil.enum_name(Enums.Rank, c.Rank), c.Name])
 		Enums.IntelSection.Manufacturing:
+			# Each queue is named after the facility the pack builds to feed it.
 			for t in p.BuildingQueue:
-				lines.append(DescribeTask(t, "construction", p))
+				lines.append(DescribeTask(t, _producer_word("produces_facility", "construction"), p))
 			for t in p.ShipyardQueue:
-				lines.append(DescribeTask(t, "shipyard", p))
+				lines.append(DescribeTask(t, _producer_word("produces_unit", "shipyard"), p))
 			for t in p.TrainingQueue:
-				lines.append(DescribeTask(t, "training", p))
+				lines.append(DescribeTask(t, _producer_word("produces_troop", "training"), p))
 	return lines
 
 
@@ -409,6 +410,13 @@ static func IsDefensive(f: Facility) -> bool:
 
 static func Describe(f: Facility) -> String:
 	return "Advanced %s" % f.Name() if f.Tier > 1 else f.Name()
+
+
+## The pack's tier-1 name for the facility carrying a producer role, in prose
+## case ("shipyard", "training facility"); `fallback` when the pack has none.
+static func _producer_word(role: String, fallback: String) -> String:
+	var family := FacilityCatalog.FamilyForRole(role)
+	return Facility.NameOf(family, 1).to_lower() if not family.is_empty() else fallback
 
 
 static func DescribeTask(t: ConstructionTask, where: String, home: Planet = null) -> String:

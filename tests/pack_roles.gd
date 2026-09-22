@@ -104,5 +104,15 @@ func _init() -> void:
 	if emperor != null:
 		_check(not MissionManager.CanBeSpecialPowerStudent(emperor), "the dark_master is not a student")
 
+	# --- the economy's facilities, by role (BACKLOG #37) ---
+	_check(FacilityCatalog.FamilyForRole("extracts_raw") == "mine", "the extractor is the mine (got '%s')" % FacilityCatalog.FamilyForRole("extracts_raw"))
+	_check(FacilityCatalog.FamilyForRole("refines") == "refinery", "the refiner is the refinery (got '%s')" % FacilityCatalog.FamilyForRole("refines"))
+	_check(FacilityCatalog.FamilyForRole("produces_unit") == "shipyard", "the unit producer is the shipyard")
+	_check(FacilityCatalog.ProcessingRateForRole("extracts_raw") == FacilityCatalog.ProcessingRate("mine"), "the extractor's rate is the mine's")
+	_check(FacilityCatalog.ProcessingRateForRole("refines") == FacilityCatalog.ProcessingRate("refinery"), "the refiner's rate is the refinery's")
+	_check(FacilityCatalog.FamilyForRole("no_such_role").is_empty(), "an unknown role has no family")
+	_check(IntelManager._producer_word("produces_unit", "x") == "shipyard", "the intel queue word is 'shipyard'")
+	_check(IntelManager._producer_word("produces_troop", "x") == "training facility", "the intel queue word is 'training facility'")
+
 	print("[pack_roles] %d checks, %d failed: %s" % [_checks, _fails, "PASS" if _fails == 0 else "FAIL"])
 	quit(1 if _fails > 0 else 0)
