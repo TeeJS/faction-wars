@@ -30,6 +30,7 @@ class LoadedPack:
 	var Facilities: Array[PackDefs.FacilityDef] = []
 	var Units: Array[PackDefs.UnitDef] = []
 	var Weapons: Array[PackDefs.WeaponDef] = []
+	var Missions: Array[PackDefs.MissionDefPack] = []
 
 
 ## Returns the pack, or null with `errors` populated. Never throws on bad pack
@@ -42,7 +43,8 @@ static func Load(pack_dir: String, errors: Array[String]) -> LoadedPack:
 	var facil_d: Variant = _read_json("%s/facilities.json" % pack_dir, errors)
 	var units_d: Variant = _read_json("%s/units.json" % pack_dir, errors)
 	var weapons_d: Variant = _read_json("%s/weapons.json" % pack_dir, errors)
-	for d in [manifest_d, factions_d, map_d, chars_d, facil_d, units_d, weapons_d]:
+	var missions_d: Variant = _read_json("%s/missions.json" % pack_dir, errors)
+	for d in [manifest_d, factions_d, map_d, chars_d, facil_d, units_d, weapons_d, missions_d]:
 		if d == null:
 			return null
 	var pack := LoadedPack.new()
@@ -53,6 +55,7 @@ static func Load(pack_dir: String, errors: Array[String]) -> LoadedPack:
 	pack.Facilities = PackDefs.FacilitiesFile.from_dict(facil_d).Facilities
 	pack.Units = PackDefs.UnitsFile.from_dict(units_d).Units
 	pack.Weapons = PackDefs.WeaponsFile.from_dict(weapons_d).Weapons
+	pack.Missions = PackDefs.MissionsFile.from_dict(missions_d).Missions
 	_validate(pack, pack_dir, errors)
 	return pack if errors.is_empty() else null
 
@@ -128,6 +131,36 @@ static func _validate(pack: LoadedPack, pack_dir: String, errors: Array[String])
 	_validate_characters(pack, errors)
 	_validate_facilities(pack, errors)
 	_validate_units(pack, errors)
+	_validate_missions(pack, errors)
+
+
+## SCHEMA.md section 11 rules 3 and 5 for the mission catalog.
+static func _validate_missions(pack: LoadedPack, errors: Array[String]) -> void:
+	var faction_ids := {}
+	for f in pack.Factions:
+		faction_ids[f.Id] = true
+	var unit_ids := {}
+	for u in pack.Units:
+		unit_ids[u.Id] = true
+
+	var ids := {}
+	for m in pack.Missions:
+		var ctx := "missions.json[%s]" % (m.Id if not m.Id.is_empty() else "?")
+		if m.Id.strip_edges().is_empty():
+			errors.append("%s: missing id." % ctx)
+		elif ids.has(m.Id):
+			errors.append("%s: duplicate id." % ctx)
+		else:
+			ids[m.Id] = true
+		if m.DisplayName.strip_edges().is_empty():
+			errors.append("%s: missing display_name." % ctx)
+		for who in m.AvailableTo:
+			if not faction_ids.has(who):
+				errors.append("%s: available_to '%s' is not a declared faction." % [ctx, who])
+		# Rule 3: a SpecForce nobody can field can never run the mission.
+		for uid in m.SpecForces:
+			if not unit_ids.has(uid):
+				errors.append("%s: spec_forces names '%s', which units.json does not declare." % [ctx, uid])
 
 
 ## SCHEMA.md section 11 rules 3, 4 and 5 for units and their weapons.
