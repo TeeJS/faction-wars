@@ -19,7 +19,7 @@ modularity proof: **a second, deliberately alien pack on an unchanged binary.**
 |---|---|
 | 2–4 factions; the side lottery is N×N | **Two factions, `axis` and `allies`.** Nations are flavour: unit names, `buildable_by`, character nationality, map regions. |
 | `Enums.GalaxySize` has three members indexing `setup.galaxy_sizes` | Three sizes, named `standard` / `large` / `huge` like the original. Every starting world is in `standard`. |
-| Stat keys (`shield`, `hull`, `hyperdrive`, …) are read by name in `military_catalog.gd` | Kept as-is. Display wording for them is a Phase C item. |
+| Stat keys (`shield`, `hull`, `hyperdrive`, …) are read by name in `military_catalog.gd` | Kept as-is: the keys are engine vocabulary. **The words are this pack's** — `display.json` `terms` (SCHEMA.md section 10, 2026-09-22): Armour, Hull, Cruising Speed (between regions) / Flank Speed (in a battle), Industry, War Materiel, Air Squadrons, Divisions, fortifications, coastal batteries, "at sea". |
 | Every mission table id is read by the engine (`escape`, `foil`, `uprising_start`, …) | Tables are copied under their ids; only `death_star_sabotage` is renamed, to match the mission it belongs to. |
 
 ## How the numbers were made
