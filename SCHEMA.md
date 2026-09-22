@@ -51,8 +51,8 @@ accounted for below — that is what this reconciliation was for.
 | `characters.json` | Named characters | `major_characters.json` (6) + `minor_characters.json` (54) | ✅ |
 | `rules.json` | Tunable rule table, keyed by faction + difficulty | `game_rules.json` (213) | ⚠ re-keyed, not moved |
 | `setup.json` | Day-zero seeding: side lottery + logistics tables | `side_lottery.json` (35) + `day_zero_logistics.json` (11 tables) | ⚠ re-keyed, not moved |
-| `missions.json` | The mission catalog | `missions.json` (25) | ❌ |
-| `mission_tables.json` | Per-mission outcome tables | `mission_tables.json` (12 tables) | ❌ |
+| `missions.json` | The mission catalog | `missions.json` (25) | ⚠ data + validation; `Enums.MissionType` not yet opened |
+| `mission_tables.json` | Per-mission outcome tables | `mission_tables.json` (**20** tables) | ⚠ data + validation; `MissionTableManager` not yet swapped |
 | `display.json` | The Galactic Information Display catalog | `src/ui/gid.gd` (currently code) | ❌ |
 | `uprising.json` | Uprising thresholds `[later]` | `uprising_start.json`, `uprising_end.json` | ❌ |
 
@@ -552,9 +552,13 @@ last un-migrated instance.
 
 Outcome tables, keyed by original `.DAT` filename (`ABDCMSTB.DAT`,
 `ASSNMSTB.DAT`, …), each `{field1, entries_count, info, entries, description}`.
-**Keys become role ids with `source_file` kept alongside** (§12 Q2, decided) —
-but five of the twelve have no obvious mission counterpart and must be read
-before they are named.
+**Keys are role ids with `source_file` kept alongside** (§12 Q2, decided).
+
+**★ RESOLVED — nothing had to be guessed.** There are **20** tables, not 12, and
+every one carries its own `description` field. Sixteen already had a readable
+constant in `mission_table_manager.gd` carrying the id the original registers
+them by; the other four are named from their descriptions: `character_search`,
+`resource_event`, `uprising_start`, `uprising_end`.
 
 ---
 
@@ -659,13 +663,11 @@ but *refiled* — it is a Phase 3 vocabulary item now, tracked in §6.
    "hq_facilities": { "source_file": "FACLHQTB.DAT", "entries": [ ... ] }
    ```
 
-   **One pass is still needed to name them.** The 11 logistics tables map
-   cleanly onto roles that `factions.json.seed` already uses
-   (`hq_facilities`, `hq_garrison`, `fleet`, `procedural_fleet`) plus the two
-   system-infrastructure tables (core / rim). The 12 mission tables are **not
-   all 1:1 with a mission** — `ESCAPETB`, `FOILTB`, `INFORMTB`, `FDECOYTB` and
-   `CSCRHTTB` have no obvious mission counterpart and must be read before they
-   are named. Do not guess them.
+   **The mission tables are named — nothing was guessed.** All 20 carry a
+   `description`, and 16 already had a constant in `mission_table_manager.gd`.
+   Done in §9. The 11 **logistics** tables still need their pass; they map onto
+   roles `factions.json.seed` already uses (`hq_facilities`, `hq_garrison`,
+   `fleet`, `procedural_fleet`) plus the two system-infrastructure tables.
 
 3. ~~**The map bitmap.**~~ **★ DECIDED (TeeJ, 2026-09-21) — named in `pack.json`.**
    `map_image` is a required manifest field holding a filename relative to the
@@ -753,6 +755,7 @@ What changed from the source repo's 2026-07-25 draft, and why.
 | 23 | **§4 built.** `map.json` generated, loaded and live; the bitmap moved into the pack; validation rules 3 (map half), 7, 9, 10 implemented and negative-tested | The hardcoded sector list is gone from `galaxy_factory.gd`. Soak gate 1004/1004 |
 | 24 | **§7 built.** `characters.json` generated, loaded and live: one file, `is_major` flag, lower-case faction ids, `ratings` map, `can_command` list, `special_power` block. Validation rules 3 and 5 for the roster | The two-file major/minor split is gone. Soak gate 1004/1004 |
 | 25 | **§12 Q5 landed.** The character aptitude fields and `Enums.SpecialPowerRank` renamed across 11 files | Enum MEMBERS and `MissionType.JediTraining` deliberately held back — see §7 |
+| 29 | **§9 data built.** `missions.json` (25) and `mission_tables.json` (20) generated, loaded and validated; nothing reads them yet. `Alliance`/`Empire` became `available_to` — the last instance of the pattern the charter forbids. SpecForces resolve to unit ids (Q1) | Q2's "five tables must be read before naming" is **resolved**: the tables self-describe |
 | 28 | **§6 live.** `MilitaryCatalog` and the tactical engine read the pack; the four weapon names are gone from engine code. **No re-baseline** — byte-identical | Weapon DECLARATION ORDER in `weapons.json` is now load-bearing: the damage sum rounds to f32 per weapon |
 | 27 | **§6 data built.** `units.json` (57) and `weapons.json` (4 classes) generated, loaded and validated; nothing reads them yet. The three derived summary columns are DROPPED, and the generator re-proves on every build that each is exactly the sum of its arcs | The tactical engine still reads the flat unit fields. Swapping it is the next step |
 | 26 | **§5 built and live.** `Enums.FacilityType` is **deleted**; facilities are pack data selected by role. 154 call sites across 24 files. The game signature now carries the family id, so the soak gate is re-baselined | Proven behaviour-identical first by emitting the old ordinals: 1004/1004. Five silent bugs found on the way — see the commit |

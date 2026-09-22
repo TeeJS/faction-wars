@@ -72,6 +72,12 @@ func _init() -> void:
 	_case("unknown weapon role",
 		_pack({}, {}, {"weapon_roles": ["vaporises"]}), "unknown role 'vaporises'")
 
+	# Rules 3 / 5 - the mission catalog.
+	_case("mission available to an undeclared faction",
+		_pack({}, {}, {"mission_to": ["hutts"]}), "available_to 'hutts' is not a declared faction")
+	_case("mission needs a SpecForce no unit provides",
+		_pack({}, {}, {"mission_spec": ["ghosts"]}), "units.json does not declare")
+
 	# Rule 9 - the map image.
 	_case("map_image not declared", _pack({}, {}, {"map_image": ""}), "'map_image' is required")
 	_case("map_image names a file the pack does not ship",
@@ -94,9 +100,9 @@ func _real_pack_passes() -> void:
 		for e in errors:
 			print("    %s" % e)
 	else:
-		print("[pack_validation] ok   the shipping pack validates (%d sectors, %d planets, %d characters, %d facilities, %d units, %d weapons)"
+		print("[pack_validation] ok   the shipping pack validates (%d sectors, %d planets, %d characters, %d facilities, %d units, %d weapons, %d missions)"
 			% [pack.Map.Sectors.size(), pack.Map.Planets.size(), pack.Characters.size(),
-			   pack.Facilities.size(), pack.Units.size(), pack.Weapons.size()])
+			   pack.Facilities.size(), pack.Units.size(), pack.Weapons.size(), pack.Missions.size()])
 
 
 ## A minimal two-sector, two-planet pack, with one field bent per call.
@@ -175,6 +181,13 @@ func _pack(sector_over: Dictionary, planet_over: Dictionary, other: Dictionary) 
 		 "construction_cost": 5, "maintenance_cost": 1,
 		 "weapons": {other.get("unit_weapon", "laser"): {"arcs": {"fore": 8}, "range": 17}},
 		 "stats": {"hull": 10}}]}).Units
+	p.Missions = PackDefs.MissionsFile.from_dict({"missions": [
+		{"id": "recon", "display_name": "Recon",
+		 "available_to": other.get("mission_to", ["test_side"]),
+		 "spec_forces": other.get("mission_spec", ["scout"]),
+		 "length": {"base": 7, "spread": 3},
+		 "flags": {"can_continue": true}, "targets": {"hostile": true},
+		 "source_id": 21}]}).Missions
 	return p
 
 
@@ -184,6 +197,7 @@ func _case(what: String, pack: PackLoader.LoadedPack, expect: String) -> void:
 	PackLoader._validate_characters(pack, errors)
 	PackLoader._validate_facilities(pack, errors)
 	PackLoader._validate_units(pack, errors)
+	PackLoader._validate_missions(pack, errors)
 	for e in errors:
 		if e.contains(expect):
 			print("[pack_validation] ok   %s" % what)
