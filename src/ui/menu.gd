@@ -13,6 +13,10 @@ extends Control
 ## _difficultyId / _sizeId / _hqOnly, the button form in the toggle groups.
 
 const DIFFICULTY_IDS := {"easy": Enums.Difficulty.Easy, "medium": Enums.Difficulty.Medium, "hard": Enums.Difficulty.Hard}
+## By path, not by class_name: an editor whose global class cache predates
+## pack_picker.gd (a pull with the editor open, 2026-09-22) failed to compile
+## this script on the bare name, and the whole Cockpit went dead.
+const Picker := preload("res://src/ui/pack_picker.gd")
 
 var _difficultyGroup: ButtonGroup
 var _sizeGroup: ButtonGroup
@@ -79,8 +83,8 @@ func _ready() -> void:
 
 	# Exit leaves the Cockpit for the pack picker (TeeJ, 2026-09-22); quitting
 	# the game is the picker's button.
-	btnExit.pressed.connect(func() -> void: PackPicker.ExitToPicker(get_tree()))
-	btnExit.text = "Exit to Faction Picker" if PackPicker.CanReturn() else "Exit to Desktop"
+	btnExit.pressed.connect(func() -> void: Picker.ExitToPicker(get_tree()))
+	btnExit.text = "Exit to Faction Picker" if Picker.CanReturn() else "Exit to Desktop"
 
 	var has_picture: bool = FactionRegistry.Pack != null and FactionRegistry.Pack.Manifest.Menu != null
 
@@ -426,7 +430,7 @@ func _on_region(r: PackDefs.MenuRegionDef) -> void:
 		"multiplayer":
 			OpenMultiplayer()
 		"exit":
-			PackPicker.ExitToPicker(get_tree())
+			Picker.ExitToPicker(get_tree())
 
 
 ## A light square (off) and the same square with a tick (on), drawn at start,
