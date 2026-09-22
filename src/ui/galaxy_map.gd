@@ -18,6 +18,16 @@ var _planetStars: Dictionary = {}    # Planet -> Label
 ## coordinate * _scale and lines up with the picture whatever its size.
 var _backdrop: Sprite2D = null
 var _scale: float = 1.0
+## One invisible button per region, centred on its dot: a click opens the
+## region's THEATRE (the sector window), so a crowded theatre is reachable
+## through any of its regions even where theatre boxes overlap. Added after
+## every theatre button so they sit on top for input.
+var _regionHits: Dictionary = {}     # Planet -> Button
+## Padding around a theatre's regions for its click box. Was 30: with the WWII
+## pack's Europe, eight theatre boxes 60 px larger than their regions stacked
+## on top of each other and only the topmost took the click.
+const SectorPadding := 8.0
+const RegionHitSize := 18.0
 ## The map area on screen, in this node's space: the rectangle the scene used
 ## to give the Star Wars picture (Main.tscn, 1070.67 x 803 at 150,99).
 const Frame := Vector2(1070.6666, 803.0)
@@ -47,6 +57,7 @@ func InitializeMap(galaxyData: Array, uiManager: UIManager) -> void:
 		child.queue_free()
 	_planetStars.clear()
 	_planetFlares.clear()
+	_regionHits.clear()
 	_hqPlanet = null
 	_backdrop = null
 	_scale = 1.0
@@ -99,7 +110,7 @@ func InitializeMap(galaxyData: Array, uiManager: UIManager) -> void:
 			if planet.MapY > sector.MaxY:
 				sector.MaxY = planet.MapY
 
-		var padding := 30.0
+		var padding := SectorPadding
 
 		if is_inf(sector.MinX):
 			sectorButton.position = Vector2(sector.MapX * scaleFactor, sector.MapY * scaleFactor)
@@ -112,6 +123,20 @@ func InitializeMap(galaxyData: Array, uiManager: UIManager) -> void:
 
 		add_child(sectorButton)
 		print("Spawned [%s] at X:%s, Y:%s (Planets: %d)" % [sectorButton.text, str(sector.MapX * scaleFactor), str(sector.MapY * scaleFactor), sector.Planets.size()])
+
+	# Region hit buttons last, so every one is above every theatre box for input.
+	for sector in galaxyData:
+		var localSector: Sector = sector
+		for planet in sector.Planets:
+			var hit := Button.new()
+			hit.flat = true
+			hit.tooltip_text = "%s - %s" % [planet.Name, sector.Name]
+			hit.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+			hit.size = Vector2(RegionHitSize, RegionHitSize)
+			hit.position = MapPos(planet.MapX, planet.MapY) - Vector2(RegionHitSize, RegionHitSize) / 2.0
+			hit.pressed.connect(func() -> void: _uiManager.OnSectorClicked(localSector))
+			add_child(hit)
+			_regionHits[planet] = hit
 
 	# Attach the Galactic Information Display selector + active-mode label.
 	_bar = GidBar.new()
@@ -247,6 +272,11 @@ func MapScale() -> float:
 
 func Backdrop() -> Sprite2D:
 	return _backdrop
+
+
+## Planet -> the invisible button on its dot (opens its theatre).
+func RegionButtons() -> Dictionary:
+	return _regionHits
 
 
 ## The pack's map picture, fitted into Frame from the top-left corner. A pack
