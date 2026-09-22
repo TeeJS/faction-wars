@@ -19,7 +19,7 @@ mutation entry points (grep of `src/ui/*.gd`).
 | **The one thing** | Two people, one the Alliance and one the Empire, play one game against each other from two browsers, with the head-to-head features the manual names: chat through the message system, a shared game speed, a pause the opponent sees, and a host-only save. |
 | **Wrong if shipped without it** | **The two machines must hold the same game.** Any drift - a fleet here that is not there - makes the game meaningless. The port's proven determinism (same seed, same orders → same hashes) is the whole basis of this plan, and every step below is gated on hashes matching across two clients. |
 | **Off-limits workarounds** | (a) One client runs the game and streams the screen or a state dump to the other - that is not two players, it is one player and a viewer, and it doubles bandwidth for nothing. (b) Silently dropping a manual feature: the manual's head-to-head chapter lists chat, shared speed, opponent-visible pause, host save. Each is built or its absence is written down here with TeeJ's initials. (c) Inventing rules the manual does not state (who wins a tie, what happens on disconnect) without saying so. |
-| **Deployment target** | Static web build (already exporting) on any static host, plus one small relay service on the Unraid box behind NPM Plus with TLS (e.g. `wars-relay.schmitzplex.com`). Backup: everything is in git (schmitz-wars on GitHub; the relay in its own repo). No new listener on any workstation. |
+| **Deployment target** | Static web build (already exporting) on any static host, plus one small relay service on the Unraid box behind NPM Plus with TLS (e.g. `wars-relay.schmitzplex.com`). Backup: everything is in git (faction-wars on GitHub; the relay in its own repo). No new listener on any workstation. |
 | **How we verify it is done** | 1. Two headless clients joined through the relay play 200 scripted days and print identical day hashes. 2. Two browsers on two machines play a game start to finish; chat, speed, pause and save behave as manual p162–p163 describe. 3. Kill one browser mid-game, rejoin, and the rejoined client's hash equals the other's. 4. Every screen in Figs 5.1–5.11 re-checked element by element (rule 0). |
 
 ---
@@ -169,13 +169,13 @@ estimates, not commitments.
 Facts that drive the choice: the build is `index.wasm` 39.5 MB (9.6 MB gzip,
 7.5 MB brotli) plus a 1.2 MB pack and a few small files; a browser caches it
 after the first load, so per-player traffic is one download per version. The
-schmitz-wars repo on GitHub is already **public**, so nothing in the pack is
+faction-wars repo on GitHub is already **public**, so nothing in the pack is
 more exposed by any option below. The relay runs on Unraid in every option.
 
 | Option | Pros | Cons |
 |---|---|---|
 | **A. Unraid, same origin as the relay** - one container serves the static build and the WebSocket relay at `wars.schmitzplex.com` behind NPM Plus | One hostname, one NPM Plus entry, TLS already there; **same origin** so no cross-origin allowances; Authelia can gate it if you ever want the game private; brotli/gzip on by nginx; the files are static, so moving them elsewhere later is a copy. | First load per player rides your home upload (7.5-10 MB, then cached); the game is up only while Unraid is; one more container to run (or the relay serves the files itself, which is ~20 lines). |
-| **B. GitHub Pages** from the schmitz-wars repo, published by an Actions workflow that runs the export | Free CDN, no home bandwidth, a public link anyone can open; limits (1 GB site, 100 GB/month soft) are far above need. | Public to everyone, no Authelia; the build must be produced in CI (the export templates are a 1.2 GB download per run unless cached) or committed as a 40 MB binary per version; cross-origin to the relay, so the relay must allow the Pages origin; two places to keep in step. |
+| **B. GitHub Pages** from the faction-wars repo, published by an Actions workflow that runs the export | Free CDN, no home bandwidth, a public link anyone can open; limits (1 GB site, 100 GB/month soft) are far above need. | Public to everyone, no Authelia; the build must be produced in CI (the export templates are a 1.2 GB download per run unless cached) or committed as a 40 MB binary per version; cross-origin to the relay, so the relay must allow the Pages origin; two places to keep in step. |
 | **C. Cloudflare R2 public bucket + custom domain** (Cloudflare Pages is ruled out: its per-file limit is 25 MiB and the wasm is 39.5 MB) | CDN and Cloudflare Access for auth; no home bandwidth for the files. | A third platform and an upload step per version; still cross-origin to the relay; the most moving parts for two players. |
 
 **Recommendation: A for dev and v1.** Same origin, one host entry, nothing new

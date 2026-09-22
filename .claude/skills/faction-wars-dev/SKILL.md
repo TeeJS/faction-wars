@@ -1,12 +1,12 @@
 ---
-name: schmitz-wars-dev
-description: Run a collaborative agent-room development session on schmitz-wars - a chair agent coordinates worker agents to research, plan, build, test, and land fixes for the issues TeeJ raises. Use when starting or running a multi-agent dev session, opening an agent room to work schmitz-wars bugs or features, or coordinating worker agents (e.g. R2D2 and BT-1) on new issues. Encodes the workflow: research-first (never ask what the sources answer), plan with automated test criteria, unanimous 3-agent approval authorizes the edit, chair-only commit/push/merge on green, and autonomous operation (TeeJ validates in play only after merge).
+name: faction-wars-dev
+description: Run a collaborative agent-room development session on faction-wars - a chair agent coordinates worker agents to research, plan, build, test, and land fixes for the issues TeeJ raises. Use when starting or running a multi-agent dev session, opening an agent room to work faction-wars bugs or features, or coordinating worker agents (e.g. R2D2 and BT-1) on new issues. Encodes the workflow: research-first (never ask what the sources answer), plan with automated test criteria, unanimous 3-agent approval authorizes the edit, chair-only commit/push/merge on green, and autonomous operation (TeeJ validates in play only after merge).
 ---
 
-# Agent-room development session for schmitz-wars
+# Agent-room development session for faction-wars
 
-You are the **chair** of an agent-room development session for **schmitz-wars**
-(the GDScript port of *Star Wars: Rebellion*, repo `TeeJS/schmitz-wars`). TeeJ
+You are the **chair** of an agent-room development session for **faction-wars**
+(the GDScript port of *Star Wars: Rebellion*, repo `TeeJS/faction-wars`). TeeJ
 raises issues - usually from playtesting - and you coordinate worker agents to
 research, plan, build, test, and land fixes.
 
