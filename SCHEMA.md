@@ -497,6 +497,18 @@ names one:
 | `smuggler` | The bounty hunters' target and Jabba's palace; the Millennium Falcon travel effect (Han). |
 | `companion` | Joins the palace rescue party with the pilgrim and the heir (Chewbacca). |
 
+### `starts_at` — a declared opening world
+
+**★ DECIDED (TeeJ, 2026-09-22).** `"starts_at": "<planet id>"` on a character
+puts them on that world at day zero, awaiting orders, and wins over the
+placement roles above. Optional. The world must be one the character's own
+side holds at day zero — one of its `starting_planets` or its fixed `hq`
+planet — or the loader refuses it (rule 15). It draws nothing from the PRNG,
+so a pack that declares none (Star Wars) is placed exactly as before. The WWII
+pack uses it so Churchill opens in Britain, Eisenhower in the United States,
+de Gaulle in France, Stalin in Russia, Chiang in China, Mussolini in Italy and
+Tojo in Japan, instead of every Allied leader at Britain.
+
 Each story role is **one character** (validation rule 12); a pack that casts
 nobody in a part simply never fires that set-piece. Unknown roles are a load
 error.
@@ -715,6 +727,8 @@ passes.
 
 14. ✅ Every `display.json` `terms` key is one of the engine's known terms and
     its label is non-empty.
+15. ✅ A character's `starts_at` names a planet on the map that its side holds at
+    day zero (a `starting_planets` entry or its fixed `hq` planet).
 
 ## 12. Open questions for sign-off
 
@@ -885,3 +899,4 @@ What changed from the source repo's 2026-07-25 draft, and why.
 | 51 | **The pack picker.** `PackPicker.tscn` is the first scene: one card per pack under `packs/` (name, `summary`, the sides in their colours, `map_image`), Play loads it and goes on to its Cockpit; skipped when `--pack=` is given, a pack is already loaded, or only one is installed; a pack that fails validation is listed with its problems and no Play. `pack.json` `summary` (§2) | TeeJ, 2026-09-22: a setting has to be chosen before the Cockpit, which is pack content. The plumbing (PR #71) made the choice a load-by-id |
 | 52 | **Exit returns to the picker.** The Cockpit's Exit (button and picture region) goes back to `PackPicker.tscn`, which unloads the pack (`FactionRegistry.Unload`, its only caller) and offers the cards again; the picker's own **Exit Game** quits (hidden on the web). With one pack, or `--pack=` forcing one, the Cockpit's Exit quits. The GID catalog remembers which pack built it. `tests/pack_switch.gd` proves a game after a switch hashes exactly like a fresh process | TeeJ, 2026-09-22: "make the cockpit exit to the pack picker, and have an exit game option in the picker" |
 | 53 | **The map picture comes from the pack.** `GalaxyMap` loads `map_image`, places it by `map_image_rect` in the pack's map space, fits that to its frame and scales every marker with it; the Star Wars picture baked into `Main.tscn` is gone. **Coordinates are untouched: they are travel time** (`Planet.DistanceTo`) - a first draft converted Star Wars's to picture pixels and the soak gate diverged on day 2 | TeeJ, 2026-09-22: the WWII pack played over the Star Wars galaxy; a pack's own map has to show |
+| 54 | **`starts_at`** on a character (§7): a declared opening world, winning over the placement roles; validation rule 15; day zero places it before the roles with no PRNG draw | TeeJ, 2026-09-22: every Allied leader opened at Britain because it was both first world and HQ |

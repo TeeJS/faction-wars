@@ -585,6 +585,29 @@ static func _validate_characters(pack: LoadedPack, errors: Array[String]) -> voi
 		for rank in c.CanCommand:
 			if not KNOWN_COMMAND_RANKS.has(rank):
 				errors.append("%s: unknown can_command entry '%s'. Known: %s." % [ctx, rank, ", ".join(KNOWN_COMMAND_RANKS)])
+		# Rule 15: a declared start is a world the character's own side holds at
+		# day zero - one of its starting_planets or its fixed HQ - so nobody opens
+		# on enemy or empty ground.
+		if not c.StartsAt.is_empty():
+			var side: PackDefs.FactionDef = null
+			for f in pack.Factions:
+				if f.Id == c.FactionId:
+					side = f
+			var held: Array[String] = []
+			if side != null:
+				for sp in side.StartingPlanets:
+					held.append(sp.Planet)
+				if side.Hq != null and side.Hq.Kind == "fixed" and not side.Hq.Planet.is_empty():
+					held.append(side.Hq.Planet)
+			var on_map := false
+			if pack.Map != null:
+				for p in pack.Map.Planets:
+					if p.Id == c.StartsAt:
+						on_map = true
+			if not on_map:
+				errors.append("%s: starts_at '%s' is not a planet id in map.json." % [ctx, c.StartsAt])
+			elif not held.has(c.StartsAt):
+				errors.append("%s: starts_at '%s' is not a world %s holds at day zero (its starting_planets or fixed hq)." % [ctx, c.StartsAt, c.FactionId])
 
 	# Rule 3: a victory condition that names nobody can never be met. By ID (Q1).
 	for f in pack.Factions:
