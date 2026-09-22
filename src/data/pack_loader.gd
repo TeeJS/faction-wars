@@ -664,6 +664,9 @@ static func _validate_map(pack: LoadedPack, pack_dir: String, errors: Array[Stri
 	# follows the remap; FileAccess still covers a raw file in the editor.
 	if pack.Manifest.MapImage.strip_edges().is_empty():
 		errors.append("pack.json: 'map_image' is required - name the galaxy backdrop shipped with the pack.")
+	var rect := pack.Manifest.MapImageRect
+	if rect != Rect2() and (rect.size.x <= 0.0 or rect.size.y <= 0.0):
+		errors.append("pack.json: map_image_rect must be [x, y, w, h] with w and h > 0.")
 	else:
 		var image_path := "%s/%s" % [pack_dir, pack.Manifest.MapImage]
 		if not (ResourceLoader.exists(image_path) or FileAccess.file_exists(image_path)):

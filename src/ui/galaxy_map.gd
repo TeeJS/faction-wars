@@ -12,6 +12,28 @@ var _bar: GidBar   # the selector overlay + active-mode label
 # Every planet draws as two stacked glyphs: a faction-colored dot that always
 # marks the world, and a "+" flare BEHIND it whose size is the planet's tier.
 var _planetStars: Dictionary = {}    # Planet -> Label
+## THE PACK'S MAP PICTURE (pack.json map_image), drawn behind everything where
+## pack.json's map_image_rect puts it in the pack's MAP COORDINATE SPACE
+## (SCHEMA.md section 4; the picture's own pixels when no rect is given). The
+## map space is scaled so that rect fills Frame, and every marker is placed at
+## coordinate * _scale, so picture and regions line up whatever the picture's
+## size. Coordinates are never rescaled to the picture: Planet.DistanceTo
+## reads them, so they are travel time.
+var _backdrop: Sprite2D = null
+var _scale: float = 1.0
+## One invisible button per region, centred on its dot: a click opens the
+## region's THEATRE (the sector window), so a crowded theatre is reachable
+## through any of its regions even where theatre boxes overlap. Added after
+## every theatre button so they sit on top for input.
+var _regionHits: Dictionary = {}     # Planet -> Button
+## Padding around a theatre's regions for its click box. Was 30: with the WWII
+## pack's Europe, eight theatre boxes 60 px larger than their regions stacked
+## on top of each other and only the topmost took the click.
+const SectorPadding := 8.0
+const RegionHitSize := 18.0
+## The map area on screen, in this node's space: the rectangle the scene used
+## to give the Star Wars picture (Main.tscn, 1070.67 x 803 at 150,99).
+const Frame := Vector2(1070.6666, 803.0)
 var _planetFlares: Dictionary = {}   # Planet -> Label
 # The Alliance HQ, highlighted for an Alliance player only; drawn in _draw().
 var _hqPlanet: Planet = null
@@ -38,7 +60,11 @@ func InitializeMap(galaxyData: Array, uiManager: UIManager) -> void:
 		child.queue_free()
 	_planetStars.clear()
 	_planetFlares.clear()
+	_regionHits.clear()
 	_hqPlanet = null
+	_backdrop = null
+	_scale = 1.0
+	_load_backdrop()
 
 	print("\n--- DRAWING GALAXY: %d Sectors Loaded ---" % galaxyData.size())
 
@@ -57,7 +83,7 @@ func InitializeMap(galaxyData: Array, uiManager: UIManager) -> void:
 		var localSector: Sector = sector
 		sectorButton.pressed.connect(func() -> void: _uiManager.OnSectorClicked(localSector))
 
-		var scaleFactor := 1.0
+		var scaleFactor := _scale
 		sector.MinX = INF
 		sector.MinY = INF
 		sector.MaxX = -INF
@@ -87,7 +113,7 @@ func InitializeMap(galaxyData: Array, uiManager: UIManager) -> void:
 			if planet.MapY > sector.MaxY:
 				sector.MaxY = planet.MapY
 
-		var padding := 30.0
+		var padding := SectorPadding
 
 		if is_inf(sector.MinX):
 			sectorButton.position = Vector2(sector.MapX * scaleFactor, sector.MapY * scaleFactor)
@@ -100,6 +126,20 @@ func InitializeMap(galaxyData: Array, uiManager: UIManager) -> void:
 
 		add_child(sectorButton)
 		print("Spawned [%s] at X:%s, Y:%s (Planets: %d)" % [sectorButton.text, str(sector.MapX * scaleFactor), str(sector.MapY * scaleFactor), sector.Planets.size()])
+
+	# Region hit buttons last, so every one is above every theatre box for input.
+	for sector in galaxyData:
+		var localSector: Sector = sector
+		for planet in sector.Planets:
+			var hit := Button.new()
+			hit.flat = true
+			hit.tooltip_text = "%s - %s" % [planet.Name, sector.Name]
+			hit.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+			hit.size = Vector2(RegionHitSize, RegionHitSize)
+			hit.position = MapPos(planet.MapX, planet.MapY) - Vector2(RegionHitSize, RegionHitSize) / 2.0
+			hit.pressed.connect(func() -> void: _uiManager.OnSectorClicked(localSector))
+			add_child(hit)
+			_regionHits[planet] = hit
 
 	# Attach the Galactic Information Display selector + active-mode label.
 	_bar = GidBar.new()
@@ -223,12 +263,59 @@ func RefreshVisuals() -> void:
 	queue_redraw()   # repaint the HQ highlight
 
 
+## Where a map.json coordinate lands in this node's space.
+func MapPos(x: float, y: float) -> Vector2:
+	return Vector2(x, y) * _scale
+
+
+## The picture's scale on screen, for anything else that places by coordinate.
+func MapScale() -> float:
+	return _scale
+
+
+func Backdrop() -> Sprite2D:
+	return _backdrop
+
+
+## Planet -> the invisible button on its dot (opens its theatre).
+func RegionButtons() -> Dictionary:
+	return _regionHits
+
+
+## The pack's map picture, fitted into Frame from the top-left corner. A pack
+## whose picture is missing draws nothing and places markers unscaled.
+func _load_backdrop() -> void:
+	var pack := FactionRegistry.Pack
+	if pack == null or pack.Manifest.MapImage.is_empty():
+		return
+	var tex: Texture2D = load("%s/%s/%s" % [FactionRegistry.PACKS_ROOT, pack.Manifest.Id, pack.Manifest.MapImage])
+	if tex == null:
+		push_error("[GalaxyMap] map_image '%s' could not be loaded." % pack.Manifest.MapImage)
+		return
+	var size := tex.get_size()
+	if size.x <= 0.0 or size.y <= 0.0:
+		return
+	var rect := pack.Manifest.MapImageRect
+	if rect.size.x <= 0.0 or rect.size.y <= 0.0:
+		rect = Rect2(Vector2.ZERO, size)   # no rect: coordinates are picture pixels
+	_scale = minf(Frame.x / rect.size.x, Frame.y / rect.size.y)
+	_backdrop = Sprite2D.new()
+	_backdrop.name = "Backdrop"
+	_backdrop.texture = tex
+	_backdrop.centered = false
+	_backdrop.position = rect.position * _scale
+	_backdrop.scale = rect.size * _scale / size
+	_backdrop.z_index = -10
+	_backdrop.z_as_relative = false
+	add_child(_backdrop)
+
+
 ## The Alliance HQ highlight: a thin white 8-point burst centered exactly on
 ## the planet's point, painted before any child Label.
 func _draw() -> void:
 	if _hqPlanet == null:
 		return
-	var c := Vector2(_hqPlanet.MapX, _hqPlanet.MapY)
+	var c := MapPos(_hqPlanet.MapX, _hqPlanet.MapY)
 	var half: float = Gid.HaloSpan / 2.0
 	var t: float = Gid.HaloThickness
 	var d: float = half * Gid.HaloDiagonal
@@ -244,7 +331,8 @@ func _draw() -> void:
 
 
 ## Center a glyph precisely on the planet's point. An empty glyph hides the label.
-static func Place(lbl: Label, glyph: String, size_: int, color: Color, planet: Planet) -> void:
+## An instance method since the point is coordinate * this map's picture scale.
+func Place(lbl: Label, glyph: String, size_: int, color: Color, planet: Planet) -> void:
 	if glyph.is_empty() or size_ <= 0:
 		lbl.visible = false
 		return
@@ -256,7 +344,7 @@ static func Place(lbl: Label, glyph: String, size_: int, color: Color, planet: P
 	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	lbl.size = Vector2(size_ * 2, size_ * 2)
-	lbl.position = Vector2(planet.MapX - size_, planet.MapY - size_)
+	lbl.position = MapPos(planet.MapX, planet.MapY) - Vector2(size_, size_)
 
 
 func NewDayUpdate() -> void:

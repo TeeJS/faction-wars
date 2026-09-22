@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://coyngign8jrf5"
-path="res://.godot/imported/world.png-1a89434c1561684292264b23e24a3d96.ctex"
+uid="uid://csbuyxrj5v5yj"
+path="res://.godot/imported/world_1941.jpg-81fc9259241c6bfb67ea475cb25bf18a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://packs/ww2/world.png"
-dest_files=["res://.godot/imported/world.png-1a89434c1561684292264b23e24a3d96.ctex"]
+source_file="res://packs/ww2/world_1941.jpg"
+dest_files=["res://.godot/imported/world_1941.jpg-81fc9259241c6bfb67ea475cb25bf18a.ctex"]
 
 [params]
 
