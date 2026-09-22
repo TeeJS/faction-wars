@@ -46,7 +46,7 @@ func _PopulateLive(planet: Planet, player: Faction, _status: Label, _resources: 
 
 	_status.text = ("Held by: %s  |  %s%s" % [holder.DisplayName, mine, theirs]) \
 		+ ("   [IN UPRISING]" if planet.IsInUprising else "")
-	_resources.text = "Energy: %d | Materials: %d" % [planet.BaseEnergy, planet.BaseRawMaterials]
+	_resources.text = "%s: %d | %s: %d" % [Terms.label("energy"), planet.BaseEnergy, Terms.label("raw_materials"), planet.BaseRawMaterials]
 
 	for facility in planet.Facilities:
 		# The player's own MOVABLE headquarters carries the Fig 3.82 menu
@@ -84,7 +84,7 @@ func _PopulateFromIntel(planet: Planet, player: Faction, _status: Label, _resour
 
 	_status.text = ("Held by: %s  |  %s%s" % [heldName, mine, theirs]) \
 		+ ("   [IN UPRISING]" if bool(d.get("uprising", false)) else "")
-	_resources.text = "Energy: %d | Materials: %d" % [int(d.get("energy", 0)), int(d.get("materials", 0))]
+	_resources.text = "%s: %d | %s: %d" % [Terms.label("energy"), int(d.get("energy", 0)), Terms.label("raw_materials"), int(d.get("materials", 0))]
 
 	# The facility list is a sighting too: production and defensive facilities as
 	# they were last seen (a scouted HQ shows, an unscouted one does not).
