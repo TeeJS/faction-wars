@@ -45,5 +45,12 @@ settings -> Change visibility), or Unraid cannot pull it without a login.
 
 ## Limits
 
-64 KB per line, 2 clients per room, 100 rooms. In `LIMITS` at the top of
-`server.ts`.
+64 KB per line, 2 clients per room, 100 rooms. A ping to every open socket
+every 25 s, and a socket that sends nothing for 120 s is closed. All in
+`LIMITS` at the top of `server.ts`.
+
+The ping is for whatever sits between the relay and the game: nginx closes a
+proxied connection that is quiet for 60 s (`proxy_read_timeout`'s default -
+NPM Plus is nginx), Cloudflare drops a silent WebSocket at about 100 s, and
+Bun's own automatic ping only goes out at 104 s. The client needs nothing:
+browsers and Godot's `WebSocketPeer` answer a ping by themselves.
