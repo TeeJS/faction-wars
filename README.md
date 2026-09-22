@@ -6,8 +6,7 @@ factions, characters, planets, units, missions and rules - is data under
 `packs/`, and the engine selects on role tags, never on a name. It runs in the
 browser, single-player against the built-in AI or head-to-head over a relay.
 
-**Play it:** https://faction-wars.com (also https://wars.schmitzplex.com - a
-second relay with its own games).
+**Play it:** https://faction-wars.com.
 
 ## What is here
 
