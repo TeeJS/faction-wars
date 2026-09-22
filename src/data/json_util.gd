@@ -83,9 +83,15 @@ static func str_or(d: Dictionary, key: String, default: Variant = null) -> Varia
 ## `= new()`, null where there is no initialiser.
 static func str_list(d: Dictionary, key: String, default: Variant = null) -> Variant:
 	var v: Variant = get_ci(d, key)
-	if v == null:
-		return default
 	var out: Array[String] = []
+	if v == null:
+		# A missing key with an Array default still yields a TYPED array, so a
+		# DTO's `Array[String]` field can take it (an untyped [] cannot be
+		# assigned to one - it raised at load for every character without roles).
+		if default is Array:
+			out.assign(default)
+			return out
+		return default
 	for x in v:
 		out.append(str(x))
 	return out

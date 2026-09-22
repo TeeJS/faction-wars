@@ -372,6 +372,11 @@ class CharacterDef:
 	var CanCommand: Array[String] = []
 	var WontBetray: bool
 	var SpecialPower: SpecialPowerDef
+	## SCHEMA.md section 7, roles: day-zero placement (starts_at_first_world,
+	## starts_at_hq, starts_at_random_holding) and the story parts (pilgrim,
+	## heir, dark_lord, dark_master, smuggler, companion). Engine code selects
+	## on these; it never names a character.
+	var Roles: Array[String] = []
 	var SourceId: int
 	var StringId: int
 
@@ -388,6 +393,7 @@ class CharacterDef:
 		o.CanCommand = JsonUtil.str_list(d, "can_command", [])
 		o.WontBetray = JsonUtil.bool_or(d, "wont_betray")
 		o.SpecialPower = SpecialPowerDef.from_dict(JsonUtil.get_ci(d, "special_power"))
+		o.Roles = JsonUtil.str_list(d, "roles", [])
 		o.SourceId = JsonUtil.int_or(d, "source_id")
 		o.StringId = JsonUtil.int_or(d, "string_id")
 		return o
@@ -556,6 +562,9 @@ class UnitDef:
 	## "capital_ship" | "fighter" | "troop" | "spec_force". Which producer and
 	## which queue a unit uses is engine structure, so this stays a small set.
 	var Kind: String
+	## SCHEMA.md section 6, roles: superweapon, garrison_troop. What a unit IS
+	## to the engine's special cases, so no rule names a unit.
+	var Roles: Array[String] = []
 	var BuildableBy: Array[String] = []
 	var ConstructionCost: int
 	var MaintenanceCost: int
@@ -572,6 +581,7 @@ class UnitDef:
 		o.Id = JsonUtil.str_or(d, "id", "")
 		o.DisplayName = JsonUtil.str_or(d, "display_name", "")
 		o.Kind = JsonUtil.str_or(d, "kind", "")
+		o.Roles = JsonUtil.str_list(d, "roles", [])
 		o.BuildableBy = JsonUtil.str_list(d, "buildable_by", [])
 		o.ConstructionCost = JsonUtil.int_or(d, "construction_cost")
 		o.MaintenanceCost = JsonUtil.int_or(d, "maintenance_cost")
@@ -621,6 +631,10 @@ class MissionDefPack:
 	## Replaces the raw table's `Alliance` / `Empire` integer pair - the exact
 	## pattern the charter forbids, and the last instance of it.
 	var AvailableTo: Array[String] = []
+	## SCHEMA.md section 9: the ENGINE behaviour this mission is the pack's
+	## flavour of (MissionCatalog.KnownBehaviours()). Empty for a mission the
+	## engine has no behaviour for (the unnamed rows).
+	var Behaviour: String
 	## Unit ids (SCHEMA section 12 Q1); the raw table lists display names.
 	var SpecForces: Array[String] = []
 	var LengthBase: int
@@ -634,6 +648,7 @@ class MissionDefPack:
 		o.Id = JsonUtil.str_or(d, "id", "")
 		o.DisplayName = JsonUtil.str_or(d, "display_name", "")
 		o.AvailableTo = JsonUtil.str_list(d, "available_to", [])
+		o.Behaviour = JsonUtil.str_or(d, "behaviour", "")
 		o.SpecForces = JsonUtil.str_list(d, "spec_forces", [])
 		var l: Variant = JsonUtil.get_ci(d, "length")
 		if l is Dictionary:

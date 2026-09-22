@@ -47,6 +47,18 @@ func _init() -> void:
 	_case("galaxy_size_default not offered",
 		_pack({}, {}, {"size_default": "enormous"}), "galaxy_size_default 'enormous' is not one of")
 
+	# Rule 12 - roles and behaviours (SCHEMA.md sections 6, 7, 9).
+	_case("character with an unknown role",
+		_pack({}, {}, {"char_roles": ["chosen_one"]}), "unknown role 'chosen_one'")
+	_case("two characters cast as the pilgrim",
+		_pack({}, {}, {"char_roles": ["pilgrim"], "char2_roles": ["pilgrim"]}), "2 characters carry the story role 'pilgrim'")
+	_case("unit with an unknown role",
+		_pack({}, {}, {"unit_roles": ["planet_killer"]}), "unknown role 'planet_killer'")
+	_case("mission with an unknown behaviour",
+		_pack({}, {}, {"mission_behaviour": "heist"}), "unknown behaviour 'heist'")
+	_case("two missions for one behaviour",
+		_pack({}, {}, {"mission2_behaviour": "reconnaissance"}), "behaviour 'reconnaissance' is already 'recon'")
+
 	# Rule 3 - cross-references and identity.
 	_case("planet points at an undeclared sector",
 		_pack({}, {"sector": "nowhere"}, {}), "sector 'nowhere' is not declared")
@@ -329,11 +341,13 @@ func _pack(sector_over: Dictionary, planet_over: Dictionary, other: Dictionary) 
 		"ratings": {"diplomacy": {"base": 10, "var": 0}},
 		"can_command": other.get("char_command", ["general"]),
 		"wont_betray": true,
+		"roles": other.get("char_roles", ["pilgrim"]),
 		"special_power": {"probability": 0, "is_known_user": false,
 			"level": {"base": 0, "var": 0}, "can_train": false}}
 	var c2 := {"id": "second_person", "display_name": "Second Person",
 		"faction": "test_side", "is_major": false, "ratings": {},
-		"can_command": [], "wont_betray": false}
+		"can_command": [], "wont_betray": false,
+		"roles": other.get("char2_roles", [])}
 	p.Characters = PackDefs.CharactersFile.from_dict({"characters": [c1, c2]}).Characters
 
 	# A mine (the bent one) plus a headquarters, so "no HQ" is its own case.
@@ -356,17 +370,25 @@ func _pack(sector_over: Dictionary, planet_over: Dictionary, other: Dictionary) 
 		 "roles": other.get("weapon_roles", ["fighter_accuracy_scaled"]), "arcs": true}]}).Weapons
 	p.Units = PackDefs.UnitsFile.from_dict({"units": [
 		{"id": "scout", "display_name": "Scout", "kind": other.get("unit_kind", "fighter"),
+		 "roles": other.get("unit_roles", []),
 		 "buildable_by": other.get("unit_build", ["test_side"]),
 		 "construction_cost": 5, "maintenance_cost": 1,
 		 "weapons": {other.get("unit_weapon", "laser"): {"arcs": {"fore": 8}, "range": 17}},
 		 "stats": {"hull": 10}}]}).Units
-	p.Missions = PackDefs.MissionsFile.from_dict({"missions": [
+	var missions: Array = [
 		{"id": "recon", "display_name": "Recon",
+		 "behaviour": other.get("mission_behaviour", "reconnaissance"),
 		 "available_to": other.get("mission_to", ["test_side"]),
 		 "spec_forces": other.get("mission_spec", ["scout"]),
 		 "length": {"base": 7, "spread": 3},
 		 "flags": {"can_continue": true}, "targets": {"hostile": true},
-		 "source_id": 21}]}).Missions
+		 "source_id": 21}]
+	if other.has("mission2_behaviour"):
+		missions.append({"id": "second", "display_name": "Second",
+			"behaviour": other["mission2_behaviour"], "available_to": ["test_side"],
+			"spec_forces": [], "length": {"base": 1, "spread": 0}, "flags": {}, "targets": {},
+			"source_id": 22})
+	p.Missions = PackDefs.MissionsFile.from_dict({"missions": missions}).Missions
 
 	# One category, one mode, the full rank label set - each bendable.
 	var ranks := {"none": "None", "novice": "Novice", "trainee": "Trainee",
@@ -395,6 +417,7 @@ func _case(what: String, pack: PackLoader.LoadedPack, expect: String) -> void:
 	PackLoader._validate_missions(pack, errors)
 	PackLoader._validate_display(pack, errors)
 	PackLoader._validate_menu(pack, PACK_DIR, errors)
+	PackLoader._validate_roles(pack, errors)
 	for e in errors:
 		if e.contains(expect):
 			_ok += 1

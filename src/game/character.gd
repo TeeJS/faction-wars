@@ -71,6 +71,12 @@ var TroopTraining: int
 var FacilityDesign: int
 
 
+## characters.json `roles` (SCHEMA.md section 7): the story parts and day-zero
+## placement. Every set-piece finds its people by THIS, never by name.
+func HasRole(role: String) -> bool:
+	return FactionRegistry.CharacterRoles(PackId).has(role)
+
+
 func IsInjured() -> bool:
 	return Injury > 0
 

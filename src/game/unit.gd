@@ -33,6 +33,12 @@ var FamilyId: int
 ## names are display strings (SCHEMA.md section 12 Q1).
 var PackId: String = ""
 
+
+## Does the pack give this unit the role? The engine's special cases ask this
+## (SCHEMA.md section 6); a Character answers from characters.json instead.
+func HasRole(role: String) -> bool:
+	return MilitaryCatalog.RolesOf(PackId).has(role)
+
 var Faction: Faction
 ## VIRTUAL in C#: a Character reacts to being moved (leaving the fleet or system it
 ## commands relieves it of the rank). Character overrides set_Attached.
