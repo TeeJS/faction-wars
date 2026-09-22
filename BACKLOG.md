@@ -70,7 +70,18 @@ SCHEMA.md §1 ("names are never behaviour") and would break a second pack.
 | 21 | Military Data Editor reads `res://data/military_units.json` directly | `src/ui/military_data_editor.gd:37` | edit the pack's `units.json` |
 | 22 | Legacy `data/` folder (15 JSON files) still shipped; `tests/dto_parity.gd` reads it | `data/`, `src/data/loaders.gd` | delete once #20/#21 land; retarget the parity test at the pack |
 | 23 | Rule-id constants carry setting names (`SeedCoruscantFirst`, `EspionageRevealCoruscantFloor`) | `src/game/rule_id.gd:93`, `src/game/mission_manager.gd:189` | naming only — rename to `SeedCapitalFirst` etc. when #14 lands |
-| 24 | **Modularity proof** — a second, deliberately alien pack runs on an unchanged binary | source repo `PROJECT.md` Phase 5 | last; proves #14–#23 |
+| 24 | **Modularity proof** — a second, deliberately alien pack runs on an unchanged binary | source repo `PROJECT.md` Phase 5 | last; proves #14–#23 and #25–#34 |
+| 25 | Day-zero character placement by display name: six to the first world, Mon Mothma to the HQ, Palpatine to the HQ, six Imperials to a random holding | `src/game/day_zero_generator.gd:186-217` | a `start` placement field per character in `characters.json` |
+| 26 | Story set-pieces keyed on names — the four Luke/Leia vs Vader/Emperor pairings, Han, Chewbacca | `src/game/story_manager.gd:7-27` | character story-role tags (needs vocabulary sign-off) |
+| 27 | Force pilgrimage and heir by name (Luke, Leia) | `src/game/force_manager.gd:8-9` | character role tags |
+| 28 | Millennium Falcon effect keyed on "Han Solo" | `src/game/order_manager.gd:38` | character role or flag |
+| 29 | Emperor excluded from special-power training by name | `src/game/mission_manager.gd:93` | character role |
+| 30 | Death Star: family 24 literal, `u.Name == "Death Star"`, `DeathStarAt` | `src/game/mission_manager.gd:53,175,512` | unit role `superweapon` |
+| 31 | Garrison score term counts "Stormtrooper Regiment" by name | `src/game/mission_manager.gd:216` | unit role |
+| 32 | Engine joins its behaviours to the pack ids `death_star_sabotage` / `jedi_training` | `src/game/mission_catalog.gd:39-40` | `missions.json` names its engine behaviour |
+| 33 | Snapshot import maps the C# snapshot's facility names (legacy format) | `src/data/snapshot_loader.gd:13-19` | goes with #22 |
+| 34 | Rule-id constants named for the setting (`SeedYavin*`, `SeedAllianceHq*`, `LukeVsVader*`, `DeathStarSabotage*`) | `src/game/rule_id.gd` | rename with #23 |
+| — | `_is_empire` also gates "only the Empire can sabotage a headquarters" (manual p108) | `src/game/mission_manager.gd:479` | needs a faction field; part of #17 |
 
 ## Backlog (lower priority, not blocking play)
 
