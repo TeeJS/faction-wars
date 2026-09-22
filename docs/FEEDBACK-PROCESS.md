@@ -14,4 +14,12 @@ every fix that comes from a report on his review of a plan.
 | 7 | Claude | fixed: the report's files move to the `completed` folder (`POST /feedback/<id>/complete` moves `<id>.json` and `<id>.jsonl` into `feedback/completed/`; the listing then hides it, `GET /feedback?all=1` shows everything). Still broken: a new plan, back to 4. |
 
 Reports live on the box under `/mnt/user/appdata/wars-relay/data/feedback/`;
-the relay serves them at `https://wars.schmitzplex.com/feedback`.
+the relay serves them at `https://wars.schmitzplex.com/feedback`, and since
+the Fly deploy also at `https://faction-wars.com/feedback` (a separate relay
+with its own reports).
+
+Steps 3, 5 and 7 send `Authorization: Bearer <FEEDBACK_TOKEN>` - the relay's
+`FEEDBACK_TOKEN` (relay/README.md, "The feedback token"). The workstation
+keeps it in the user environment variable `WARS_FEEDBACK_TOKEN`, so in a
+session: `curl -H "Authorization: Bearer $env:WARS_FEEDBACK_TOKEN" https://faction-wars.com/feedback`.
+Step 1 needs no token; the game's submission is open.

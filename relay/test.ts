@@ -88,9 +88,14 @@ host2.send({ t: "saves", player: "Lando" });
 const sv2 = await host2.next();
 check(sv2.saves.length === 0, "a player not in the game has no save of it");
 
+// relay was started without a FEEDBACK_TOKEN: the reports cannot be read at all.
+const closed = await fetch(`http://127.0.0.1:${relay.port}/feedback`);
+check(closed.status === 401, "with no FEEDBACK_TOKEN on the relay the reports are closed to everyone");
+
 // The relay restarted: the room and its log come back from disk.
 relay.stop(); await new Promise((r) => setTimeout(r, 50));
-const relay2 = startRelay({ port: 0, dataDir, heartbeatMs: 40 });
+const relay2 = startRelay({ port: 0, dataDir, heartbeatMs: 40, feedbackToken: "the-token" });
+const auth = { Authorization: "Bearer the-token" };
 const url2 = `ws://127.0.0.1:${relay2.port}/ws`;
 const ws3 = new WebSocket(url2); const inbox3: any[] = [];
 await new Promise<void>((res) => { ws3.onopen = () => res(); });
@@ -115,22 +120,26 @@ check(fb.status === 200 && fbReply.ok === true && /Han_Solo$/.test(fbReply.id), 
 const { readFileSync: rf, existsSync: ex } = await import("node:fs");
 const fbJson = JSON.parse(rf(join(dataDir, "feedback", fbReply.id + ".json"), "utf8"));
 check(fbJson.message === "cannot target the shield" && fbJson.day === 12 && fbJson.log_lines === 2 && ex(join(dataDir, "feedback", fbReply.id + ".jsonl")), "the report and its session log are written under feedback/");
+const noAuth = await fetch(`${fbBase}/feedback`);
+const wrongAuth = await fetch(`${fbBase}/feedback/${fbReply.id}.jsonl`, { headers: { Authorization: "Bearer not-the-token" } });
+const noAuthDone = await fetch(`${fbBase}/feedback/${fbReply.id}/complete`, { method: "POST" });
+check(noAuth.status === 401 && wrongAuth.status === 401 && noAuthDone.status === 401 && noAuth.headers.get("www-authenticate") === "Bearer", "the listing, a report's files and complete all refuse a missing or wrong token");
 const bad = await fetch(`${fbBase}/feedback`, { method: "POST", body: "{" });
 check(bad.status === 400, "junk feedback is refused");
 const empty = await fetch(`${fbBase}/feedback`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message: "   " }) });
 check(empty.status === 400, "an empty note is refused");
-const listing: any = await (await fetch(`${fbBase}/feedback`)).json();
+const listing: any = await (await fetch(`${fbBase}/feedback`, { headers: auth })).json();
 check(listing.count === 1 && listing.feedback[0].id === fbReply.id && listing.feedback[0].message === "cannot target the shield" && listing.feedback[0].log_lines === 2 && !("log" in listing.feedback[0]), "GET /feedback lists the reports without their logs");
-const oneLog = await fetch(`${fbBase}/feedback/${fbReply.id}.jsonl`);
+const oneLog = await fetch(`${fbBase}/feedback/${fbReply.id}.jsonl`, { headers: auth });
 const oneLogText = await oneLog.text();
 check(oneLog.status === 200 && oneLogText.split("\n").filter((l) => l).length === 2, "GET /feedback/<id>.jsonl returns the report's session log");
-const oneJson: any = await (await fetch(`${fbBase}/feedback/${fbReply.id}.json`)).json();
+const oneJson: any = await (await fetch(`${fbBase}/feedback/${fbReply.id}.json`, { headers: auth })).json();
 check(oneJson.message === "cannot target the shield", "GET /feedback/<id>.json returns the report");
-const escape = await fetch(`${fbBase}/feedback/..%2Fserver.json`);
+const escape = await fetch(`${fbBase}/feedback/..%2Fserver.json`, { headers: auth });
 check(escape.status === 404, "a report id cannot reach outside feedback/");
-const completed: any = await (await fetch(`${fbBase}/feedback/${fbReply.id}/complete`, { method: "POST" })).json();
-const open: any = await (await fetch(`${fbBase}/feedback`)).json();
-const all: any = await (await fetch(`${fbBase}/feedback?all=1`)).json();
+const completed: any = await (await fetch(`${fbBase}/feedback/${fbReply.id}/complete`, { method: "POST", headers: auth })).json();
+const open: any = await (await fetch(`${fbBase}/feedback`, { headers: auth })).json();
+const all: any = await (await fetch(`${fbBase}/feedback?all=1`, { headers: auth })).json();
 check(completed.ok === true && completed.moved === 2 && open.count === 0 && all.count === 1 && all.feedback[0].completed === true, "a completed report moves to feedback/completed/ and leaves the open listing");
 
 console.log(failures === 0 ? "[relay test] PASS" : `[relay test] ${failures} FAILED`);
