@@ -81,6 +81,24 @@ func _init() -> void:
 	for type in [Enums.MissionType.Reconnaissance, Enums.MissionType.ShipDesignResearch, Enums.MissionType.SpecialPowerTraining]:
 		_check(MissionManager.TableFor(type) == null, "%s rolls on no table" % MissionCatalog.BehaviourName(type))
 
+	# --- HQ sabotage follows hq.kind (manual p108) ---
+	var hidden_hq: Planet = null
+	var fixed_hq: Planet = null
+	for p in GameState.AllPlanets():
+		for f in p.Facilities:
+			if f.HasRole("headquarters"):
+				if p.ControllingFaction == alliance and hidden_hq == null:
+					hidden_hq = p
+				elif p.ControllingFaction == empire and fixed_hq == null:
+					fixed_hq = p
+	_check(hidden_hq != null and fixed_hq != null, "both headquarters stand on day zero")
+	if hidden_hq != null and fixed_hq != null:
+		var hidden_fac: Facility = Lq.first_or_null(hidden_hq.Facilities, func(f): return f.HasRole("headquarters"))
+		var fixed_fac: Facility = Lq.first_or_null(fixed_hq.Facilities, func(f): return f.HasRole("headquarters"))
+		_check(MissionManager.CanSabotage(empire, hidden_fac, hidden_hq).ok, "the hidden (Alliance) HQ can be sabotaged")
+		var r2 := MissionManager.CanSabotage(alliance, fixed_fac, fixed_hq)
+		_check(not r2.ok, "the fixed (Imperial) HQ cannot (%s)" % r2.error)
+
 	# --- the Emperor cannot be trained ---
 	var emperor := StoryManager.WhoHas("dark_master")
 	if emperor != null:

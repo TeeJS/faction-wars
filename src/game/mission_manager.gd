@@ -465,12 +465,13 @@ static func NeedsObjectTarget(type: int) -> bool:
 	return type == Enums.MissionType.Sabotage
 
 
-## ⚠ PHASE 5 LEAK (BACKLOG #17): "the Empire can sabotage the Alliance
-## headquarters" (manual p108, GAMEPLAY.md) is a faction asymmetry the pack has
-## no field for yet. Selecting on the id is wrong for a second pack; it stays
-## until the field is signed off.
-static func _is_empire(actor: Faction) -> bool:
-	return actor != null and actor.Id.to_lower() == "empire"
+## "The Empire can sabotage the Alliance headquarters" (manual p108) - and never
+## the other way round. The asymmetry is the HQ's KIND (factions.json hq.kind,
+## SCHEMA.md section 3): a hidden HQ is destroyed, never captured, so sabotage
+## can destroy it; a fixed HQ is captured, never destroyed, so it cannot.
+## Decided by TeeJ 2026-09-22 (derive from hq.kind, no new field).
+static func HqCanBeSabotaged(holder: Faction) -> bool:
+	return holder != null and holder.HasHiddenHq()
 
 
 ## IS THIS A LEGAL SABOTAGE TARGET? Manual p108. `target` is a Facility or a Unit.
@@ -481,8 +482,8 @@ static func CanSabotage(actor: Faction, target: Variant, where: Planet) -> Resul
 			return Result.fail("That facility is not there.")
 		if where.ControllingFaction == actor:
 			return Result.fail("The %s is ours." % f.Name())
-		if f.HasRole("headquarters") and not _is_empire(actor):
-			return Result.fail("Only the Empire can sabotage a headquarters.")
+		if f.HasRole("headquarters") and not HqCanBeSabotaged(where.ControllingFaction):
+			return Result.fail("The %s headquarters is taken, not sabotaged." % where.ControllingFaction.DisplayName)
 		return Result.success()
 	if target is Unit:
 		var u := target as Unit

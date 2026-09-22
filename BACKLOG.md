@@ -63,7 +63,7 @@ SCHEMA.md §1 ("names are never behaviour") and would break a second pack.
 | 14 | Capital-change loyalty shock keyed on `p.Name == "Coruscant"` | `src/game/loyalty_manager.gd:85` | **PR #48** — every fixed-HQ world in `factions.json` |
 | 15 | Day zero finds `"Emperor Palpatine"` by name | `src/game/day_zero_generator.gd:198` | **PR #49** — `starts_at_hq` role |
 | 16 | Droid unit display names map to mission types ("Imperial Probe Droid" …) | `src/game/mission_manager.gd:24-26` | **PR #48** — `missions.json` `spec_forces` inverted |
-| 17 | `actor.Id == "empire"` branches; agent droid names IMP-22 / C-3PO | `src/game/mission_manager.gd:490`, `src/game/agent_droid.gd:41` | **PR #48** — `agent_name` and Assassination `available_to` done; the HQ-sabotage branch **remains** (needs a faction field, not yet approved) |
+| 17 | `actor.Id == "empire"` branches; agent droid names IMP-22 / C-3PO | `src/game/mission_manager.gd:490`, `src/game/agent_droid.gd:41` | **Done** — PR #48 (`agent_name`, Assassination `available_to`); HQ sabotage derived from `hq.kind` (hidden = destroyable, fixed = captured), TeeJ 2026-09-22 |
 | 18 | Replay header defaults the local side to `"alliance"` | `src/command/replayer.gd:22` | **PR #48** |
 | 19 | `death_star_shield` / `death_star_sabotage` ids in engine | `src/game/bombardment_manager.gd:144`, `src/game/mission_table_manager.gd:18`, `src/game/mission_catalog.gd:39`, `src/data/snapshot_loader.gd:18` | facility role (`superweapon_shield`) and mission role tags |
 | 20 | `SeedManager` still loads legacy defensive/military JSON through `Loaders`, family ids 34/35/36 → `ion_cannon` etc. | `src/game/seed_manager.gd:23-38` | **PR #48** — `Facility.Def` carries the stats |
@@ -81,7 +81,6 @@ SCHEMA.md §1 ("names are never behaviour") and would break a second pack.
 | 32 | Engine joins its behaviours to the pack ids `death_star_sabotage` / `jedi_training` (and `dagobah` / `palace`, and the ten mission-table ids) | `src/game/mission_catalog.gd:39-40` | **PR #49** — `behaviour`; a mission's table shares its id |
 | 33 | Snapshot import maps the C# snapshot's facility names (legacy format) | `src/data/snapshot_loader.gd:13-19` | goes with #22 |
 | 34 | Rule-id constants named for the setting (`SeedYavin*`, `SeedAllianceHq*`, `LukeVsVader*`, `DeathStarSabotage*`) | `src/game/rule_id.gd` | rename with #23 |
-| — | `_is_empire` also gates "only the Empire can sabotage a headquarters" (manual p108) | `src/game/mission_manager.gd:479` | needs a faction field; part of #17 |
 | 35 | Multiplayer Options win-condition tooltips are the manual's p162 text with Star Wars names (pinned verbatim by `tests/mp_screens.gd:134`) | `src/ui/mp/multiplayer_options.gd:11-12` | UI string only, selects nothing; a pack string when the p162 wording is allowed to vary |
 
 ## Backlog (lower priority, not blocking play)
