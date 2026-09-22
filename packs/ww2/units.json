@@ -148,8 +148,8 @@
       "template": "carrack_light_cruiser"
     },
     {
-      "id": "german_destroyer_flotilla",
-      "display_name": "German Destroyer Flotilla",
+      "id": "axis_destroyer_flotilla",
+      "display_name": "Axis Destroyer Flotilla",
       "kind": "capital_ship",
       "buildable_by": [
         "axis"
@@ -751,8 +751,8 @@
       "template": "bulk_cruiser"
     },
     {
-      "id": "tribal_class_destroyer_flotilla",
-      "display_name": "Tribal-class Destroyer Flotilla",
+      "id": "allied_destroyer_flotilla",
+      "display_name": "Allied Destroyer Flotilla",
       "kind": "capital_ship",
       "buildable_by": [
         "allies"
@@ -1706,8 +1706,8 @@
       ]
     },
     {
-      "id": "kriegsmarine_marine_battalion",
-      "display_name": "Kriegsmarine Marine Battalion",
+      "id": "axis_naval_infantry_battalion",
+      "display_name": "Axis Naval Infantry Battalion",
       "kind": "troop",
       "buildable_by": [
         "axis"
@@ -2052,6 +2052,633 @@
         "leadership_rating": 0
       },
       "template": "bothan_spies"
+    },
+    {
+      "id": "macchi_c202_squadron",
+      "display_name": "Macchi C.202 Squadron",
+      "kind": "fighter",
+      "buildable_by": [
+        "axis"
+      ],
+      "construction_cost": 3,
+      "maintenance_cost": 3,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {
+        "light_guns": {
+          "arcs": {
+            "fore": 5,
+            "aft": 0,
+            "starboard": 0,
+            "port": 0
+          }
+        }
+      },
+      "stats": {
+        "detection": 12,
+        "shield": 0,
+        "sublight": 9,
+        "maneuverability": 5,
+        "hyperdrive": 0,
+        "hyperdrive_damaged": 0,
+        "bombardment": 0,
+        "squadron_size": 12
+      },
+      "template": "tie_fighter"
+    },
+    {
+      "id": "ki_43_oscar_squadron",
+      "display_name": "Ki-43 Oscar Squadron",
+      "kind": "fighter",
+      "buildable_by": [
+        "axis"
+      ],
+      "construction_cost": 3,
+      "maintenance_cost": 3,
+      "research_order": 3,
+      "research_cost": 24,
+      "weapons": {
+        "light_guns": {
+          "arcs": {
+            "fore": 8,
+            "aft": 0,
+            "starboard": 0,
+            "port": 0
+          }
+        }
+      },
+      "stats": {
+        "detection": 20,
+        "shield": 0,
+        "sublight": 10,
+        "maneuverability": 8,
+        "hyperdrive": 0,
+        "hyperdrive_damaged": 0,
+        "bombardment": 0,
+        "squadron_size": 12
+      },
+      "template": "tie_interceptor"
+    },
+    {
+      "id": "d3a_val_squadron",
+      "display_name": "D3A Val Squadron",
+      "kind": "fighter",
+      "buildable_by": [
+        "axis"
+      ],
+      "construction_cost": 3,
+      "maintenance_cost": 3,
+      "research_order": 1,
+      "research_cost": 8,
+      "weapons": {
+        "torpedoes": {
+          "arcs": {
+            "fore": 3,
+            "aft": 0,
+            "starboard": 0,
+            "port": 0
+          }
+        },
+        "light_guns": {
+          "arcs": {
+            "fore": 5,
+            "aft": 0,
+            "starboard": 0,
+            "port": 0
+          }
+        },
+        "bombs": {
+          "amount": 8,
+          "range": 7
+        }
+      },
+      "stats": {
+        "detection": 12,
+        "shield": 0,
+        "sublight": 7,
+        "maneuverability": 4,
+        "hyperdrive": 0,
+        "hyperdrive_damaged": 0,
+        "bombardment": 2,
+        "squadron_size": 12
+      },
+      "template": "tie_bomber"
+    },
+    {
+      "id": "italian_infantry_division",
+      "display_name": "Italian Infantry Division",
+      "kind": "troop",
+      "buildable_by": [
+        "axis"
+      ],
+      "construction_cost": 6,
+      "maintenance_cost": 3,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {},
+      "stats": {
+        "detection": 15,
+        "bombardment_defense": 5,
+        "attack": 3,
+        "defense": 5
+      },
+      "template": "imperial_army_regiment"
+    },
+    {
+      "id": "alpini_division",
+      "display_name": "Alpini Division",
+      "kind": "troop",
+      "buildable_by": [
+        "axis"
+      ],
+      "construction_cost": 7,
+      "maintenance_cost": 5,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {},
+      "stats": {
+        "detection": 20,
+        "bombardment_defense": 2,
+        "attack": 5,
+        "defense": 3
+      },
+      "template": "imperial_fleet_regiment"
+    },
+    {
+      "id": "japanese_infantry_division",
+      "display_name": "Japanese Infantry Division",
+      "kind": "troop",
+      "buildable_by": [
+        "axis"
+      ],
+      "construction_cost": 6,
+      "maintenance_cost": 3,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {},
+      "stats": {
+        "detection": 15,
+        "bombardment_defense": 5,
+        "attack": 3,
+        "defense": 5
+      },
+      "template": "imperial_army_regiment"
+    },
+    {
+      "id": "snlf_brigade",
+      "display_name": "Special Naval Landing Force Brigade",
+      "kind": "troop",
+      "buildable_by": [
+        "axis"
+      ],
+      "construction_cost": 7,
+      "maintenance_cost": 5,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {},
+      "stats": {
+        "detection": 20,
+        "bombardment_defense": 2,
+        "attack": 5,
+        "defense": 3
+      },
+      "template": "imperial_fleet_regiment"
+    },
+    {
+      "id": "hurricane_squadron",
+      "display_name": "Hurricane Squadron",
+      "kind": "fighter",
+      "buildable_by": [
+        "allies"
+      ],
+      "construction_cost": 5,
+      "maintenance_cost": 4,
+      "research_order": 3,
+      "research_cost": 24,
+      "weapons": {
+        "light_guns": {
+          "arcs": {
+            "fore": 5,
+            "aft": 0,
+            "starboard": 0,
+            "port": 0
+          }
+        }
+      },
+      "stats": {
+        "detection": 15,
+        "shield": 5,
+        "sublight": 11,
+        "maneuverability": 8,
+        "hyperdrive": 60,
+        "hyperdrive_damaged": 0,
+        "bombardment": 0,
+        "squadron_size": 12
+      },
+      "template": "a_wing"
+    },
+    {
+      "id": "f4f_wildcat_squadron",
+      "display_name": "F4F Wildcat Squadron",
+      "kind": "fighter",
+      "buildable_by": [
+        "allies"
+      ],
+      "construction_cost": 5,
+      "maintenance_cost": 4,
+      "research_order": 3,
+      "research_cost": 24,
+      "weapons": {
+        "light_guns": {
+          "arcs": {
+            "fore": 5,
+            "aft": 0,
+            "starboard": 0,
+            "port": 0
+          }
+        }
+      },
+      "stats": {
+        "detection": 15,
+        "shield": 5,
+        "sublight": 11,
+        "maneuverability": 8,
+        "hyperdrive": 60,
+        "hyperdrive_damaged": 0,
+        "bombardment": 0,
+        "squadron_size": 12
+      },
+      "template": "a_wing"
+    },
+    {
+      "id": "f6f_hellcat_squadron",
+      "display_name": "F6F Hellcat Squadron",
+      "kind": "fighter",
+      "buildable_by": [
+        "allies"
+      ],
+      "construction_cost": 5,
+      "maintenance_cost": 4,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {
+        "light_guns": {
+          "arcs": {
+            "fore": 8,
+            "aft": 0,
+            "starboard": 0,
+            "port": 0
+          }
+        },
+        "bombs": {
+          "amount": 4,
+          "range": 7
+        }
+      },
+      "stats": {
+        "detection": 15,
+        "shield": 5,
+        "sublight": 8,
+        "maneuverability": 5,
+        "hyperdrive": 60,
+        "hyperdrive_damaged": 0,
+        "bombardment": 1,
+        "squadron_size": 12
+      },
+      "template": "x_wing"
+    },
+    {
+      "id": "tbf_avenger_squadron",
+      "display_name": "TBF Avenger Squadron",
+      "kind": "fighter",
+      "buildable_by": [
+        "allies"
+      ],
+      "construction_cost": 7,
+      "maintenance_cost": 8,
+      "research_order": 5,
+      "research_cost": 50,
+      "weapons": {
+        "torpedoes": {
+          "arcs": {
+            "fore": 6,
+            "aft": 0,
+            "starboard": 0,
+            "port": 0
+          }
+        },
+        "light_guns": {
+          "arcs": {
+            "fore": 8,
+            "aft": 0,
+            "starboard": 0,
+            "port": 0
+          }
+        },
+        "bombs": {
+          "amount": 12,
+          "range": 7
+        }
+      },
+      "stats": {
+        "detection": 15,
+        "shield": 9,
+        "sublight": 7,
+        "maneuverability": 3,
+        "hyperdrive": 60,
+        "hyperdrive_damaged": 0,
+        "bombardment": 2,
+        "squadron_size": 12
+      },
+      "template": "b_wing"
+    },
+    {
+      "id": "yak_9_squadron",
+      "display_name": "Yak-9 Squadron",
+      "kind": "fighter",
+      "buildable_by": [
+        "allies"
+      ],
+      "construction_cost": 5,
+      "maintenance_cost": 4,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {
+        "light_guns": {
+          "arcs": {
+            "fore": 8,
+            "aft": 0,
+            "starboard": 0,
+            "port": 0
+          }
+        },
+        "bombs": {
+          "amount": 4,
+          "range": 7
+        }
+      },
+      "stats": {
+        "detection": 15,
+        "shield": 5,
+        "sublight": 8,
+        "maneuverability": 5,
+        "hyperdrive": 60,
+        "hyperdrive_damaged": 0,
+        "bombardment": 1,
+        "squadron_size": 12
+      },
+      "template": "x_wing"
+    },
+    {
+      "id": "il_2_sturmovik_squadron",
+      "display_name": "Il-2 Sturmovik Squadron",
+      "kind": "fighter",
+      "buildable_by": [
+        "allies"
+      ],
+      "construction_cost": 5,
+      "maintenance_cost": 4,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {
+        "torpedoes": {
+          "arcs": {
+            "fore": 3,
+            "aft": 0,
+            "starboard": 0,
+            "port": 0
+          }
+        },
+        "light_guns": {
+          "arcs": {
+            "fore": 5,
+            "aft": 0,
+            "starboard": 0,
+            "port": 0
+          }
+        },
+        "bombs": {
+          "amount": 8,
+          "range": 7
+        }
+      },
+      "stats": {
+        "detection": 12,
+        "shield": 5,
+        "sublight": 8,
+        "maneuverability": 4,
+        "hyperdrive": 60,
+        "hyperdrive_damaged": 0,
+        "bombardment": 2,
+        "squadron_size": 12
+      },
+      "template": "y_wing"
+    },
+    {
+      "id": "p_40_warhawk_squadron",
+      "display_name": "P-40 Warhawk Squadron",
+      "kind": "fighter",
+      "buildable_by": [
+        "allies"
+      ],
+      "construction_cost": 5,
+      "maintenance_cost": 4,
+      "research_order": 3,
+      "research_cost": 24,
+      "weapons": {
+        "light_guns": {
+          "arcs": {
+            "fore": 5,
+            "aft": 0,
+            "starboard": 0,
+            "port": 0
+          }
+        }
+      },
+      "stats": {
+        "detection": 15,
+        "shield": 5,
+        "sublight": 11,
+        "maneuverability": 8,
+        "hyperdrive": 60,
+        "hyperdrive_damaged": 0,
+        "bombardment": 0,
+        "squadron_size": 12
+      },
+      "template": "a_wing"
+    },
+    {
+      "id": "dewoitine_d520_squadron",
+      "display_name": "Dewoitine D.520 Squadron",
+      "kind": "fighter",
+      "buildable_by": [
+        "allies"
+      ],
+      "construction_cost": 5,
+      "maintenance_cost": 4,
+      "research_order": 3,
+      "research_cost": 24,
+      "weapons": {
+        "light_guns": {
+          "arcs": {
+            "fore": 5,
+            "aft": 0,
+            "starboard": 0,
+            "port": 0
+          }
+        }
+      },
+      "stats": {
+        "detection": 15,
+        "shield": 5,
+        "sublight": 11,
+        "maneuverability": 8,
+        "hyperdrive": 60,
+        "hyperdrive_damaged": 0,
+        "bombardment": 0,
+        "squadron_size": 12
+      },
+      "template": "a_wing"
+    },
+    {
+      "id": "allied_naval_infantry_battalion",
+      "display_name": "Allied Naval Infantry Battalion",
+      "kind": "troop",
+      "buildable_by": [
+        "allies"
+      ],
+      "construction_cost": 8,
+      "maintenance_cost": 6,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {},
+      "stats": {
+        "detection": 15,
+        "bombardment_defense": 5,
+        "attack": 6,
+        "defense": 3
+      },
+      "template": "alliance_fleet_regiment"
+    },
+    {
+      "id": "us_infantry_division",
+      "display_name": "US Infantry Division",
+      "kind": "troop",
+      "buildable_by": [
+        "allies"
+      ],
+      "construction_cost": 6,
+      "maintenance_cost": 3,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {},
+      "stats": {
+        "detection": 10,
+        "bombardment_defense": 5,
+        "attack": 3,
+        "defense": 5
+      },
+      "template": "alliance_army_regiment"
+    },
+    {
+      "id": "us_armored_division",
+      "display_name": "US Armored Division",
+      "kind": "troop",
+      "buildable_by": [
+        "allies"
+      ],
+      "construction_cost": 10,
+      "maintenance_cost": 8,
+      "research_order": 3,
+      "research_cost": 60,
+      "weapons": {},
+      "stats": {
+        "detection": 20,
+        "bombardment_defense": 4,
+        "attack": 8,
+        "defense": 4
+      },
+      "template": "wookiee_regiment"
+    },
+    {
+      "id": "soviet_rifle_division",
+      "display_name": "Soviet Rifle Division",
+      "kind": "troop",
+      "buildable_by": [
+        "allies"
+      ],
+      "construction_cost": 6,
+      "maintenance_cost": 3,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {},
+      "stats": {
+        "detection": 10,
+        "bombardment_defense": 5,
+        "attack": 3,
+        "defense": 5
+      },
+      "template": "alliance_army_regiment"
+    },
+    {
+      "id": "guards_tank_corps",
+      "display_name": "Guards Tank Corps",
+      "kind": "troop",
+      "buildable_by": [
+        "allies"
+      ],
+      "construction_cost": 10,
+      "maintenance_cost": 8,
+      "research_order": 3,
+      "research_cost": 60,
+      "weapons": {},
+      "stats": {
+        "detection": 20,
+        "bombardment_defense": 4,
+        "attack": 8,
+        "defense": 4
+      },
+      "template": "wookiee_regiment"
+    },
+    {
+      "id": "french_infantry_division",
+      "display_name": "French Infantry Division",
+      "kind": "troop",
+      "buildable_by": [
+        "allies"
+      ],
+      "construction_cost": 6,
+      "maintenance_cost": 3,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {},
+      "stats": {
+        "detection": 10,
+        "bombardment_defense": 5,
+        "attack": 3,
+        "defense": 5
+      },
+      "template": "alliance_army_regiment"
+    },
+    {
+      "id": "commonwealth_division",
+      "display_name": "Commonwealth Division",
+      "kind": "troop",
+      "buildable_by": [
+        "allies"
+      ],
+      "construction_cost": 6,
+      "maintenance_cost": 3,
+      "research_order": 0,
+      "research_cost": 0,
+      "weapons": {},
+      "stats": {
+        "detection": 10,
+        "bombardment_defense": 5,
+        "attack": 3,
+        "defense": 5
+      },
+      "template": "alliance_army_regiment"
     }
   ]
 }

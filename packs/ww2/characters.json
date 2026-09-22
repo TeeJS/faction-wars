@@ -2383,6 +2383,1460 @@
         },
         "can_train": false
       }
+    },
+    {
+      "id": "model",
+      "display_name": "Walter Model",
+      "faction": "axis",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 25,
+          "var": 10
+        },
+        "espionage": {
+          "base": 25,
+          "var": 10
+        },
+        "combat": {
+          "base": 80,
+          "var": 10
+        },
+        "leadership": {
+          "base": 85,
+          "var": 10
+        },
+        "loyalty": {
+          "base": 90,
+          "var": 10
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "general"
+      ],
+      "wont_betray": false,
+      "roles": [],
+      "special_power": {
+        "probability": 0,
+        "is_known_user": false,
+        "level": {
+          "base": 0,
+          "var": 0
+        },
+        "can_train": false
+      }
+    },
+    {
+      "id": "rundstedt",
+      "display_name": "Gerd von Rundstedt",
+      "faction": "axis",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 45,
+          "var": 10
+        },
+        "espionage": {
+          "base": 20,
+          "var": 10
+        },
+        "combat": {
+          "base": 65,
+          "var": 10
+        },
+        "leadership": {
+          "base": 85,
+          "var": 10
+        },
+        "loyalty": {
+          "base": 80,
+          "var": 10
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "general"
+      ],
+      "wont_betray": false,
+      "roles": [],
+      "special_power": {
+        "probability": 0,
+        "is_known_user": false,
+        "level": {
+          "base": 0,
+          "var": 0
+        },
+        "can_train": false
+      }
+    },
+    {
+      "id": "student",
+      "display_name": "Kurt Student",
+      "faction": "axis",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 30,
+          "var": 10
+        },
+        "espionage": {
+          "base": 35,
+          "var": 10
+        },
+        "combat": {
+          "base": 80,
+          "var": 10
+        },
+        "leadership": {
+          "base": 75,
+          "var": 10
+        },
+        "loyalty": {
+          "base": 85,
+          "var": 10
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 70,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "general"
+      ],
+      "wont_betray": false,
+      "roles": [],
+      "special_power": {
+        "probability": 0,
+        "is_known_user": false,
+        "level": {
+          "base": 0,
+          "var": 0
+        },
+        "can_train": false
+      }
+    },
+    {
+      "id": "galland",
+      "display_name": "Adolf Galland",
+      "faction": "axis",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 35,
+          "var": 10
+        },
+        "espionage": {
+          "base": 20,
+          "var": 10
+        },
+        "combat": {
+          "base": 85,
+          "var": 10
+        },
+        "leadership": {
+          "base": 70,
+          "var": 10
+        },
+        "loyalty": {
+          "base": 80,
+          "var": 10
+        },
+        "ship_research": {
+          "base": 60,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "commander"
+      ],
+      "wont_betray": false,
+      "roles": [],
+      "special_power": {
+        "probability": 0,
+        "is_known_user": false,
+        "level": {
+          "base": 0,
+          "var": 0
+        },
+        "can_train": false
+      }
+    },
+    {
+      "id": "lutjens",
+      "display_name": "Günther Lütjens",
+      "faction": "axis",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 30,
+          "var": 10
+        },
+        "espionage": {
+          "base": 25,
+          "var": 10
+        },
+        "combat": {
+          "base": 75,
+          "var": 10
+        },
+        "leadership": {
+          "base": 70,
+          "var": 10
+        },
+        "loyalty": {
+          "base": 90,
+          "var": 10
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "admiral"
+      ],
+      "wont_betray": false,
+      "roles": [],
+      "special_power": {
+        "probability": 0,
+        "is_known_user": false,
+        "level": {
+          "base": 0,
+          "var": 0
+        },
+        "can_train": false
+      }
+    },
+    {
+      "id": "ozawa",
+      "display_name": "Jisaburo Ozawa",
+      "faction": "axis",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 40,
+          "var": 10
+        },
+        "espionage": {
+          "base": 30,
+          "var": 10
+        },
+        "combat": {
+          "base": 80,
+          "var": 10
+        },
+        "leadership": {
+          "base": 85,
+          "var": 10
+        },
+        "loyalty": {
+          "base": 95,
+          "var": 10
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "admiral"
+      ],
+      "wont_betray": false,
+      "roles": [],
+      "special_power": {
+        "probability": 0,
+        "is_known_user": false,
+        "level": {
+          "base": 0,
+          "var": 0
+        },
+        "can_train": false
+      }
+    },
+    {
+      "id": "homma",
+      "display_name": "Masaharu Homma",
+      "faction": "axis",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 50,
+          "var": 10
+        },
+        "espionage": {
+          "base": 25,
+          "var": 10
+        },
+        "combat": {
+          "base": 65,
+          "var": 10
+        },
+        "leadership": {
+          "base": 65,
+          "var": 10
+        },
+        "loyalty": {
+          "base": 85,
+          "var": 10
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "general"
+      ],
+      "wont_betray": false,
+      "roles": [],
+      "special_power": {
+        "probability": 0,
+        "is_known_user": false,
+        "level": {
+          "base": 0,
+          "var": 0
+        },
+        "can_train": false
+      }
+    },
+    {
+      "id": "balbo",
+      "display_name": "Italo Balbo",
+      "faction": "axis",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 60,
+          "var": 10
+        },
+        "espionage": {
+          "base": 25,
+          "var": 10
+        },
+        "combat": {
+          "base": 60,
+          "var": 10
+        },
+        "leadership": {
+          "base": 70,
+          "var": 10
+        },
+        "loyalty": {
+          "base": 75,
+          "var": 10
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "commander"
+      ],
+      "wont_betray": false,
+      "roles": [],
+      "special_power": {
+        "probability": 0,
+        "is_known_user": false,
+        "level": {
+          "base": 0,
+          "var": 0
+        },
+        "can_train": false
+      }
+    },
+    {
+      "id": "messe",
+      "display_name": "Giovanni Messe",
+      "faction": "axis",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 45,
+          "var": 10
+        },
+        "espionage": {
+          "base": 20,
+          "var": 10
+        },
+        "combat": {
+          "base": 75,
+          "var": 10
+        },
+        "leadership": {
+          "base": 80,
+          "var": 10
+        },
+        "loyalty": {
+          "base": 80,
+          "var": 10
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "general"
+      ],
+      "wont_betray": false,
+      "roles": [],
+      "special_power": {
+        "probability": 0,
+        "is_known_user": false,
+        "level": {
+          "base": 0,
+          "var": 0
+        },
+        "can_train": false
+      }
+    },
+    {
+      "id": "kurusu",
+      "display_name": "Saburo Kurusu",
+      "faction": "axis",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 85,
+          "var": 10
+        },
+        "espionage": {
+          "base": 55,
+          "var": 10
+        },
+        "combat": {
+          "base": 5,
+          "var": 10
+        },
+        "leadership": {
+          "base": 40,
+          "var": 10
+        },
+        "loyalty": {
+          "base": 80,
+          "var": 10
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [],
+      "wont_betray": false,
+      "roles": [],
+      "special_power": {
+        "probability": 0,
+        "is_known_user": false,
+        "level": {
+          "base": 0,
+          "var": 0
+        },
+        "can_train": false
+      }
+    },
+    {
+      "id": "marshall",
+      "display_name": "George C. Marshall",
+      "faction": "allies",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 80,
+          "var": 10
+        },
+        "espionage": {
+          "base": 30,
+          "var": 10
+        },
+        "combat": {
+          "base": 45,
+          "var": 10
+        },
+        "leadership": {
+          "base": 95,
+          "var": 10
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 50,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 40,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "general"
+      ],
+      "wont_betray": true,
+      "roles": [],
+      "special_power": {
+        "probability": 0,
+        "is_known_user": false,
+        "level": {
+          "base": 0,
+          "var": 0
+        },
+        "can_train": false
+      }
+    },
+    {
+      "id": "king",
+      "display_name": "Ernest King",
+      "faction": "allies",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 25,
+          "var": 10
+        },
+        "espionage": {
+          "base": 30,
+          "var": 10
+        },
+        "combat": {
+          "base": 80,
+          "var": 10
+        },
+        "leadership": {
+          "base": 85,
+          "var": 10
+        },
+        "loyalty": {
+          "base": 95,
+          "var": 10
+        },
+        "ship_research": {
+          "base": 70,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "admiral"
+      ],
+      "wont_betray": false,
+      "roles": [],
+      "special_power": {
+        "probability": 0,
+        "is_known_user": false,
+        "level": {
+          "base": 0,
+          "var": 0
+        },
+        "can_train": false
+      }
+    },
+    {
+      "id": "arnold",
+      "display_name": "Henry H. Arnold",
+      "faction": "allies",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 55,
+          "var": 10
+        },
+        "espionage": {
+          "base": 25,
+          "var": 10
+        },
+        "combat": {
+          "base": 60,
+          "var": 10
+        },
+        "leadership": {
+          "base": 80,
+          "var": 10
+        },
+        "loyalty": {
+          "base": 95,
+          "var": 10
+        },
+        "ship_research": {
+          "base": 50,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 30,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "commander"
+      ],
+      "wont_betray": false,
+      "roles": [],
+      "special_power": {
+        "probability": 0,
+        "is_known_user": false,
+        "level": {
+          "base": 0,
+          "var": 0
+        },
+        "can_train": false
+      }
+    },
+    {
+      "id": "harris",
+      "display_name": "Arthur Harris",
+      "faction": "allies",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 20,
+          "var": 10
+        },
+        "espionage": {
+          "base": 20,
+          "var": 10
+        },
+        "combat": {
+          "base": 85,
+          "var": 10
+        },
+        "leadership": {
+          "base": 70,
+          "var": 10
+        },
+        "loyalty": {
+          "base": 90,
+          "var": 10
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "commander"
+      ],
+      "wont_betray": false,
+      "roles": [],
+      "special_power": {
+        "probability": 0,
+        "is_known_user": false,
+        "level": {
+          "base": 0,
+          "var": 0
+        },
+        "can_train": false
+      }
+    },
+    {
+      "id": "tedder",
+      "display_name": "Arthur Tedder",
+      "faction": "allies",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 65,
+          "var": 10
+        },
+        "espionage": {
+          "base": 30,
+          "var": 10
+        },
+        "combat": {
+          "base": 65,
+          "var": 10
+        },
+        "leadership": {
+          "base": 85,
+          "var": 10
+        },
+        "loyalty": {
+          "base": 95,
+          "var": 10
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "commander"
+      ],
+      "wont_betray": false,
+      "roles": [],
+      "special_power": {
+        "probability": 0,
+        "is_known_user": false,
+        "level": {
+          "base": 0,
+          "var": 0
+        },
+        "can_train": false
+      }
+    },
+    {
+      "id": "wavell",
+      "display_name": "Archibald Wavell",
+      "faction": "allies",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 60,
+          "var": 10
+        },
+        "espionage": {
+          "base": 35,
+          "var": 10
+        },
+        "combat": {
+          "base": 60,
+          "var": 10
+        },
+        "leadership": {
+          "base": 75,
+          "var": 10
+        },
+        "loyalty": {
+          "base": 90,
+          "var": 10
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "general"
+      ],
+      "wont_betray": false,
+      "roles": [],
+      "special_power": {
+        "probability": 0,
+        "is_known_user": false,
+        "level": {
+          "base": 0,
+          "var": 0
+        },
+        "can_train": false
+      }
+    },
+    {
+      "id": "auchinleck",
+      "display_name": "Claude Auchinleck",
+      "faction": "allies",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 45,
+          "var": 10
+        },
+        "espionage": {
+          "base": 25,
+          "var": 10
+        },
+        "combat": {
+          "base": 70,
+          "var": 10
+        },
+        "leadership": {
+          "base": 75,
+          "var": 10
+        },
+        "loyalty": {
+          "base": 90,
+          "var": 10
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "general"
+      ],
+      "wont_betray": false,
+      "roles": [],
+      "special_power": {
+        "probability": 0,
+        "is_known_user": false,
+        "level": {
+          "base": 0,
+          "var": 0
+        },
+        "can_train": false
+      }
+    },
+    {
+      "id": "rokossovsky",
+      "display_name": "Konstantin Rokossovsky",
+      "faction": "allies",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 35,
+          "var": 10
+        },
+        "espionage": {
+          "base": 25,
+          "var": 10
+        },
+        "combat": {
+          "base": 85,
+          "var": 10
+        },
+        "leadership": {
+          "base": 90,
+          "var": 10
+        },
+        "loyalty": {
+          "base": 75,
+          "var": 10
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "general"
+      ],
+      "wont_betray": false,
+      "roles": [],
+      "special_power": {
+        "probability": 0,
+        "is_known_user": false,
+        "level": {
+          "base": 0,
+          "var": 0
+        },
+        "can_train": false
+      }
+    },
+    {
+      "id": "vasilevsky",
+      "display_name": "Aleksandr Vasilevsky",
+      "faction": "allies",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 50,
+          "var": 10
+        },
+        "espionage": {
+          "base": 35,
+          "var": 10
+        },
+        "combat": {
+          "base": 70,
+          "var": 10
+        },
+        "leadership": {
+          "base": 90,
+          "var": 10
+        },
+        "loyalty": {
+          "base": 90,
+          "var": 10
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "general"
+      ],
+      "wont_betray": false,
+      "roles": [],
+      "special_power": {
+        "probability": 0,
+        "is_known_user": false,
+        "level": {
+          "base": 0,
+          "var": 0
+        },
+        "can_train": false
+      }
+    },
+    {
+      "id": "chuikov",
+      "display_name": "Vasily Chuikov",
+      "faction": "allies",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 20,
+          "var": 10
+        },
+        "espionage": {
+          "base": 20,
+          "var": 10
+        },
+        "combat": {
+          "base": 90,
+          "var": 10
+        },
+        "leadership": {
+          "base": 80,
+          "var": 10
+        },
+        "loyalty": {
+          "base": 85,
+          "var": 10
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "general"
+      ],
+      "wont_betray": false,
+      "roles": [],
+      "special_power": {
+        "probability": 0,
+        "is_known_user": false,
+        "level": {
+          "base": 0,
+          "var": 0
+        },
+        "can_train": false
+      }
+    },
+    {
+      "id": "spruance",
+      "display_name": "Raymond Spruance",
+      "faction": "allies",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 40,
+          "var": 10
+        },
+        "espionage": {
+          "base": 35,
+          "var": 10
+        },
+        "combat": {
+          "base": 85,
+          "var": 10
+        },
+        "leadership": {
+          "base": 90,
+          "var": 10
+        },
+        "loyalty": {
+          "base": 95,
+          "var": 10
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "admiral"
+      ],
+      "wont_betray": false,
+      "roles": [],
+      "special_power": {
+        "probability": 0,
+        "is_known_user": false,
+        "level": {
+          "base": 0,
+          "var": 0
+        },
+        "can_train": false
+      }
+    },
+    {
+      "id": "clark",
+      "display_name": "Mark Clark",
+      "faction": "allies",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 55,
+          "var": 10
+        },
+        "espionage": {
+          "base": 25,
+          "var": 10
+        },
+        "combat": {
+          "base": 65,
+          "var": 10
+        },
+        "leadership": {
+          "base": 70,
+          "var": 10
+        },
+        "loyalty": {
+          "base": 85,
+          "var": 10
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "general"
+      ],
+      "wont_betray": false,
+      "roles": [],
+      "special_power": {
+        "probability": 0,
+        "is_known_user": false,
+        "level": {
+          "base": 0,
+          "var": 0
+        },
+        "can_train": false
+      }
+    },
+    {
+      "id": "juin",
+      "display_name": "Alphonse Juin",
+      "faction": "allies",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 45,
+          "var": 10
+        },
+        "espionage": {
+          "base": 25,
+          "var": 10
+        },
+        "combat": {
+          "base": 80,
+          "var": 10
+        },
+        "leadership": {
+          "base": 80,
+          "var": 10
+        },
+        "loyalty": {
+          "base": 90,
+          "var": 10
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "general"
+      ],
+      "wont_betray": false,
+      "roles": [],
+      "special_power": {
+        "probability": 0,
+        "is_known_user": false,
+        "level": {
+          "base": 0,
+          "var": 0
+        },
+        "can_train": false
+      }
+    },
+    {
+      "id": "wingate",
+      "display_name": "Orde Wingate",
+      "faction": "allies",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 15,
+          "var": 10
+        },
+        "espionage": {
+          "base": 70,
+          "var": 10
+        },
+        "combat": {
+          "base": 85,
+          "var": 10
+        },
+        "leadership": {
+          "base": 60,
+          "var": 10
+        },
+        "loyalty": {
+          "base": 80,
+          "var": 10
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "general"
+      ],
+      "wont_betray": false,
+      "roles": [],
+      "special_power": {
+        "probability": 0,
+        "is_known_user": false,
+        "level": {
+          "base": 0,
+          "var": 0
+        },
+        "can_train": false
+      }
+    },
+    {
+      "id": "chennault",
+      "display_name": "Claire Chennault",
+      "faction": "allies",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 40,
+          "var": 10
+        },
+        "espionage": {
+          "base": 35,
+          "var": 10
+        },
+        "combat": {
+          "base": 80,
+          "var": 10
+        },
+        "leadership": {
+          "base": 70,
+          "var": 10
+        },
+        "loyalty": {
+          "base": 90,
+          "var": 10
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "commander"
+      ],
+      "wont_betray": false,
+      "roles": [],
+      "special_power": {
+        "probability": 0,
+        "is_known_user": false,
+        "level": {
+          "base": 0,
+          "var": 0
+        },
+        "can_train": false
+      }
+    },
+    {
+      "id": "zhu_de",
+      "display_name": "Zhu De",
+      "faction": "allies",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 40,
+          "var": 10
+        },
+        "espionage": {
+          "base": 45,
+          "var": 10
+        },
+        "combat": {
+          "base": 75,
+          "var": 10
+        },
+        "leadership": {
+          "base": 85,
+          "var": 10
+        },
+        "loyalty": {
+          "base": 70,
+          "var": 10
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [
+        "general"
+      ],
+      "wont_betray": false,
+      "roles": [],
+      "special_power": {
+        "probability": 0,
+        "is_known_user": false,
+        "level": {
+          "base": 0,
+          "var": 0
+        },
+        "can_train": false
+      }
+    },
+    {
+      "id": "menzies",
+      "display_name": "Stewart Menzies",
+      "faction": "allies",
+      "is_major": false,
+      "ratings": {
+        "diplomacy": {
+          "base": 55,
+          "var": 10
+        },
+        "espionage": {
+          "base": 95,
+          "var": 10
+        },
+        "combat": {
+          "base": 20,
+          "var": 10
+        },
+        "leadership": {
+          "base": 55,
+          "var": 10
+        },
+        "loyalty": {
+          "base": 100,
+          "var": 0
+        },
+        "ship_research": {
+          "base": 0,
+          "var": 0
+        },
+        "troop_research": {
+          "base": 0,
+          "var": 0
+        },
+        "facility_research": {
+          "base": 0,
+          "var": 0
+        }
+      },
+      "can_command": [],
+      "wont_betray": true,
+      "roles": [],
+      "special_power": {
+        "probability": 0,
+        "is_known_user": false,
+        "level": {
+          "base": 0,
+          "var": 0
+        },
+        "can_train": false
+      }
     }
   ]
 }

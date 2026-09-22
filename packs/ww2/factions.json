@@ -16,19 +16,19 @@
           "planet": "germany",
           "support": 100,
           "explored": true,
-          "garrison": "axis_start_garrison"
+          "garrison": "germany_start_garrison"
         },
         {
           "planet": "italy",
           "support": 100,
           "explored": true,
-          "garrison": "axis_start_garrison"
+          "garrison": "italy_start_garrison"
         },
         {
           "planet": "japan",
           "support": 100,
           "explored": true,
-          "garrison": "axis_start_garrison"
+          "garrison": "japan_start_garrison"
         }
       ],
       "seed": {
@@ -60,31 +60,31 @@
           "planet": "britain",
           "support": 100,
           "explored": true,
-          "garrison": "allies_start_garrison"
+          "garrison": "britain_start_garrison"
         },
         {
           "planet": "united_states",
           "support": 100,
           "explored": true,
-          "garrison": "allies_start_garrison"
+          "garrison": "united_states_start_garrison"
         },
         {
           "planet": "russia",
           "support": 100,
           "explored": true,
-          "garrison": "allies_start_garrison"
+          "garrison": "russia_start_garrison"
         },
         {
           "planet": "china",
           "support": 100,
           "explored": true,
-          "garrison": "allies_start_garrison"
+          "garrison": "china_start_garrison"
         },
         {
           "planet": "france",
           "support": 100,
           "explored": true,
-          "garrison": "allies_start_garrison"
+          "garrison": "france_start_garrison"
         }
       ],
       "seed": {
