@@ -37,7 +37,7 @@ const SectorPadding := 8.0
 const RegionHitSize := 18.0
 ## The theatre name on hover (TeeJ, 2026-09-22: "larger and darker", but not
 ## so big it spills far past its theatre). Only the hovered one shows.
-const TitleFontSize := 20
+const TitleFontSize := 17   # 20 less 15% (TeeJ, 2026-09-22)
 const TitleColor := Color(0.12, 0.08, 0.05, 1)
 const TitleOutline := Color(1, 0.97, 0.88, 0.95)
 const TitleOutlineSize := 4
@@ -64,6 +64,7 @@ func InitializeMap(galaxyData: Array, uiManager: UIManager) -> void:
 	_uiManager = uiManager
 	# Register this map with the UIManager so it can send layer change commands.
 	_uiManager.ActiveGalaxyMap = self
+	_uiManager.PinSectors(galaxyData)
 
 	# Clear out any old debug nodes and references.
 	for child in get_children():

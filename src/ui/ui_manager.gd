@@ -33,6 +33,12 @@ var ActiveGalaxyMap: GalaxyMap
 # Track open windows, and which windows currently have a taskbar button.
 var _openWindows: Dictionary = {}        # String -> DraggableWindow
 var _taskbarButtons: Dictionary = {}     # DraggableWindow -> Button
+## THE THEATRES ARE PINNED (TeeJ, 2026-09-22): every sector has a permanent
+## button on the side panel from the start of the game, and its window always
+## comes back to that button - minimised or closed - instead of gaining a
+## second entry or vanishing. Other windows minimise to the panel or close as
+## before. Sector name -> Button.
+var _pinnedSectors: Dictionary = {}
 
 var _taskbarList: VBoxContainer
 
@@ -259,6 +265,39 @@ func OpenCharacterStatusWindow(character: Character) -> void:
 # --- TASKBAR LOGIC ---
 ## THE TASKBAR, FOR THINGS THAT ARE NOT DraggableWindows (the GID key).
 ## Returns the button so the caller can hand it back to RemoveFromTaskbar.
+## One permanent side-panel button per sector, at the top of the panel, in
+## map order. Pressing it opens the sector window, or brings it back when
+## minimised. Called by GalaxyMap.InitializeMap, so a loaded game pins too.
+func PinSectors(galaxy: Array) -> void:
+	for name in _pinnedSectors.keys():
+		var old: Button = _pinnedSectors[name]
+		if is_instance_valid(old):
+			_taskbarList.remove_child(old)
+			old.queue_free()
+	_pinnedSectors.clear()
+	# At the top, in map order. The GID key docks itself later and takes index
+	# 0 (AddToTaskbar), so the panel reads: key, the theatres, then whatever
+	# windows are minimised.
+	var index := 0
+	for sector in galaxy:
+		var local: Sector = sector
+		var btn := Button.new()
+		btn.text = local.Name
+		btn.clip_text = true
+		btn.add_theme_font_size_override("font_size", 14)
+		btn.tooltip_text = local.Name
+		btn.pressed.connect(func() -> void: OnSectorClicked(local))
+		_taskbarList.add_child(btn)
+		_taskbarList.move_child(btn, index)
+		index += 1
+		_pinnedSectors[local.Name] = btn
+
+
+## The permanent sector buttons, by sector name.
+func PinnedSectors() -> Dictionary:
+	return _pinnedSectors
+
+
 func AddToTaskbar(title: String, onRestore: Callable) -> Button:
 	var btn := Button.new()
 	btn.text = title
@@ -266,6 +305,8 @@ func AddToTaskbar(title: String, onRestore: Callable) -> Button:
 		if onRestore.is_valid():
 			onRestore.call())
 	_taskbarList.add_child(btn)
+	# The docked GID key is the panel's first item, above the pinned theatres.
+	_taskbarList.move_child(btn, 0)
 	return btn
 
 
@@ -277,6 +318,9 @@ func RemoveFromTaskbar(btn: Button) -> void:
 func _AddWindowToTaskbar(window: DraggableWindow) -> void:
 	# Don't add a button if one already exists.
 	if _taskbarButtons.has(window):
+		return
+	# A pinned theatre already has its permanent button; nothing to add.
+	if _pinnedSectors.has(window.WindowTitle):
 		return
 	var taskbarBtn := Button.new()
 	taskbarBtn.text = window.WindowTitle
