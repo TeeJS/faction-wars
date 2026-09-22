@@ -131,12 +131,10 @@ func SetMode(mode: Gid.GidMode) -> void:
 	EventBus.BroadcastChanged()
 
 
-static func FindMode(label: String) -> Gid.GidMode:
-	for cat in Gid.Categories:
-		for mode in cat.Modes:
-			if mode.LabelText == label:
-				return mode
-	return Gid.Default()
+## By pack mode id (display.json). Falls back to the default mode.
+static func FindMode(id: String) -> Gid.GidMode:
+	var m := Gid.ModeById(id)
+	return m if m != null else Gid.Default()
 
 
 ## Back-compat shim: the old "Galaxy Map Layers" MenuButton still calls this
@@ -146,12 +144,12 @@ func SetLayer(layerIndex: int) -> void:
 		return
 	var m: Gid.GidMode
 	match layerIndex:
-		MapLayer.PopularSupport:        m = FindMode("Popular Support")
-		MapLayer.IdlePersonnel:         m = FindMode("Idle Personnel")
-		MapLayer.IdleConstructionYards: m = FindMode("Construction Yards")
-		MapLayer.IdleTroopTraining:     m = FindMode("Training Facilities")
-		MapLayer.IdleShipyards:         m = FindMode("Shipyards")
-		MapLayer.Fleets:                m = FindMode("Idle Fleets")
+		MapLayer.PopularSupport:        m = FindMode("popular_support")
+		MapLayer.IdlePersonnel:         m = FindMode("idle_personnel")
+		MapLayer.IdleConstructionYards: m = FindMode("construction_yards")
+		MapLayer.IdleTroopTraining:     m = FindMode("training_facilities")
+		MapLayer.IdleShipyards:         m = FindMode("shipyards")
+		MapLayer.Fleets:                m = FindMode("idle_fleets")
 		_:                              m = Gid.Default()
 	SetMode(m)
 

@@ -20,6 +20,13 @@ const KNOWN_WEAPON_ROLES := ["fighter_accuracy_scaled", "no_fighter_effect",
 	"requires_shields_down", "squadron_only"]
 ## Which producer and queue a unit uses is engine structure, not pack vocabulary.
 const KNOWN_UNIT_KINDS := ["capital_ship", "fighter", "troop", "spec_force"]
+## SCHEMA.md section 10. The quantities the engine can compute for a GID mode -
+## measured from the catalog it replaced, one per distinct magnitude reader.
+const KNOWN_GID_KINDS := ["support", "uprising", "my_fleets", "personnel",
+	"status_figure", "facility_count", "idle_producer", "defence_figure",
+	"intel_line_count", "constant_zero"]
+const KNOWN_GID_FLARES := ["big", "mid", "low", "none"]
+const SPECIAL_POWER_RANK_KEYS := ["none", "novice", "trainee", "student", "knight", "master"]
 
 
 class LoadedPack:
@@ -35,6 +42,7 @@ class LoadedPack:
 	## Raw rows - see PackDefs.SetupFile.
 	var Rules: Array = []
 	var Setup: PackDefs.SetupFile
+	var Display: PackDefs.DisplayDef
 
 
 ## Returns the pack, or null with `errors` populated. Never throws on bad pack
@@ -51,7 +59,8 @@ static func Load(pack_dir: String, errors: Array[String]) -> LoadedPack:
 	var mtables_d: Variant = _read_json("%s/mission_tables.json" % pack_dir, errors)
 	var rules_d: Variant = _read_json("%s/rules.json" % pack_dir, errors)
 	var setup_d: Variant = _read_json("%s/setup.json" % pack_dir, errors)
-	for d in [manifest_d, factions_d, map_d, chars_d, facil_d, units_d, weapons_d, missions_d, mtables_d, rules_d, setup_d]:
+	var display_d: Variant = _read_json("%s/display.json" % pack_dir, errors)
+	for d in [manifest_d, factions_d, map_d, chars_d, facil_d, units_d, weapons_d, missions_d, mtables_d, rules_d, setup_d, display_d]:
 		if d == null:
 			return null
 	var pack := LoadedPack.new()
@@ -66,6 +75,7 @@ static func Load(pack_dir: String, errors: Array[String]) -> LoadedPack:
 	pack.MissionTables = PackDefs.MissionTablesFile.from_dict(mtables_d).Tables
 	pack.Rules = rules_d if rules_d is Array else []
 	pack.Setup = PackDefs.SetupFile.from_dict(setup_d)
+	pack.Display = PackDefs.DisplayDef.from_dict(display_d)
 	_validate(pack, pack_dir, errors)
 	return pack if errors.is_empty() else null
 
@@ -143,6 +153,54 @@ static func _validate(pack: LoadedPack, pack_dir: String, errors: Array[String])
 	_validate_units(pack, errors)
 	_validate_missions(pack, errors)
 	_validate_setup(pack, errors)
+	_validate_display(pack, errors)
+
+
+## SCHEMA.md section 11 rules 4 and 8 for the display catalog.
+static func _validate_display(pack: LoadedPack, errors: Array[String]) -> void:
+	var d := pack.Display
+	if d == null:
+		errors.append("display.json: unreadable.")
+		return
+	var mode_ids := {}
+	for c in d.Categories:
+		var cctx := "display.json categories[%s]" % (c.Id if not c.Id.is_empty() else "?")
+		if c.Id.strip_edges().is_empty():
+			errors.append("%s: missing id." % cctx)
+		if c.Modes.is_empty():
+			errors.append("%s: declares no modes." % cctx)
+		for m in c.Modes:
+			var ctx := "display.json modes[%s]" % (m.Id if not m.Id.is_empty() else "?")
+			if m.Id.strip_edges().is_empty():
+				errors.append("%s: missing id." % ctx)
+			elif mode_ids.has(m.Id):
+				errors.append("%s: duplicate id." % ctx)
+			else:
+				mode_ids[m.Id] = true
+			if m.LabelText.strip_edges().is_empty():
+				errors.append("%s: missing label." % ctx)
+			# Rule 4: an unknown kind is a mode the engine cannot compute.
+			if not KNOWN_GID_KINDS.has(m.Kind):
+				errors.append("%s: unknown quantity.kind '%s'. Known: %s." % [ctx, m.Kind, ", ".join(KNOWN_GID_KINDS)])
+			# Rule 8: tiers descend and end at a min-0 bare-dot tier.
+			if m.Tiers.is_empty():
+				errors.append("%s: declares no tiers." % ctx)
+			else:
+				var prev := INF
+				for t in m.Tiers:
+					if t.Min > prev:
+						errors.append("%s: tiers must be ordered descending by min (%s after %s)." % [ctx, str(t.Min), str(prev)])
+					prev = t.Min
+					if not KNOWN_GID_FLARES.has(t.Flare):
+						errors.append("%s: unknown flare '%s'. Known: %s." % [ctx, t.Flare, ", ".join(KNOWN_GID_FLARES)])
+				if m.Tiers[m.Tiers.size() - 1].Min != 0.0:
+					errors.append("%s: the last tier must have min 0 - it is the bare dot every world falls into." % ctx)
+	for id in d.GalaxyDisplayModes:
+		if not mode_ids.has(id):
+			errors.append("display.json: galaxy_display_modes names '%s', which no category declares." % id)
+	for key in SPECIAL_POWER_RANK_KEYS:
+		if not d.SpecialPowerRanks.has(key):
+			errors.append("display.json: special_power_ranks has no label for '%s'." % key)
 
 
 ## SCHEMA.md section 11 rule 3 for setup: every logistics table a faction names

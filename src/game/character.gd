@@ -144,12 +144,32 @@ func IsTraitorous() -> bool:
 ## The five bands: Novice 10 · Trainee 20 · Jedi Student 80 · Jedi Knight 100 ·
 ## Master 120 (recovered; see the source for the corroboration).
 func SpecialPowerRankOf() -> int:
-	if SpecialPowerLevel >= 120: return Enums.SpecialPowerRank.JediMaster
-	if SpecialPowerLevel >= 100: return Enums.SpecialPowerRank.JediKnight
-	if SpecialPowerLevel >= 80:  return Enums.SpecialPowerRank.JediStudent
+	if SpecialPowerLevel >= 120: return Enums.SpecialPowerRank.Master
+	if SpecialPowerLevel >= 100: return Enums.SpecialPowerRank.Knight
+	if SpecialPowerLevel >= 80:  return Enums.SpecialPowerRank.Student
 	if SpecialPowerLevel >= 20:  return Enums.SpecialPowerRank.Trainee
 	if SpecialPowerLevel >= 10:  return Enums.SpecialPowerRank.Novice
 	return Enums.SpecialPowerRank.None
+
+
+## THE ONLY WAY A BAND IS NAMED TO THE PLAYER. The pack decides the wording
+## (display.json special_power_ranks); the enum member is never shown.
+const _RANK_KEYS := {
+	Enums.SpecialPowerRank.None: "none",
+	Enums.SpecialPowerRank.Novice: "novice",
+	Enums.SpecialPowerRank.Trainee: "trainee",
+	Enums.SpecialPowerRank.Student: "student",
+	Enums.SpecialPowerRank.Knight: "knight",
+	Enums.SpecialPowerRank.Master: "master",
+}
+
+
+static func RankLabel(rank: int) -> String:
+	var key: String = _RANK_KEYS.get(rank, "none")
+	var pack := FactionRegistry.Pack
+	if pack != null and pack.Display != null:
+		return pack.Display.RankLabel(key)
+	return key
 
 
 ## "Strong enough" is entry 21, "Fast Heal: Force Rank Threshold" = 80.

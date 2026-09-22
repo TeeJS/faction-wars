@@ -53,7 +53,7 @@ func Populate(character: Character) -> void:
 	if character.SpecialPowerProbability > 0:
 		# GD.Print($"Known Jedi: {character.IsKnownSpecialPowerUser}, Jedi Level: ");
 		# Print the rank and the integer level
-		forceText = "%s" % JsonUtil.enum_name(Enums.SpecialPowerRank, character.SpecialPowerRankOf())
+		forceText = "%s" % Character.RankLabel(character.SpecialPowerRankOf())
 	else:
 		forceText = "None"
 	(get_node("%ValForce") as Label).text = forceText

@@ -238,12 +238,9 @@ static func SuccessPercent(m: Mission, rating: int) -> int:
 	return MissionTableManager.Lookup(table, ScoreFor(m, rating))
 
 
+## The band's player-facing name - the PACK's wording (display.json).
 static func Pretty(r: int) -> String:
-	match r:
-		Enums.SpecialPowerRank.JediStudent: return "Jedi Student"
-		Enums.SpecialPowerRank.JediKnight:  return "Jedi Knight"
-		Enums.SpecialPowerRank.JediMaster:  return "Jedi Master"
-	return JsonUtil.enum_name(Enums.SpecialPowerRank, r)
+	return Character.RankLabel(r)
 
 
 ## Does this unit go on missions at all? (manual p045, p047, p098)
@@ -284,7 +281,7 @@ static func AwardForceForSuccess(m: Mission, day: int) -> void:
 		c.SpecialPowerLevel += reward
 		if c.SpecialPowerRankOf() == before:
 			continue
-		print("[Force] %s has advanced to %s (level %d)." % [c.Name, JsonUtil.enum_name(Enums.SpecialPowerRank, c.SpecialPowerRankOf()), c.SpecialPowerLevel])
+		print("[Force] %s has advanced to %s (level %d)." % [c.Name, Character.RankLabel(c.SpecialPowerRankOf()), c.SpecialPowerLevel])
 		if not GameSettings.IsHuman(m.Faction):
 			continue
 		EventBus.Tell(m.Faction, GameMessage.new(

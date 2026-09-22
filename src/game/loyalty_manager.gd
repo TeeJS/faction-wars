@@ -131,7 +131,7 @@ static func FerretOutTraitors(team: Array) -> Array:
 	if team == null:
 		return found
 	var people := Lq.of_type_character(team)
-	var strong := Lq.any(people, func(c): return c.SpecialPowerRankOf() == Enums.SpecialPowerRank.JediKnight or c.SpecialPowerRankOf() == Enums.SpecialPowerRank.JediMaster)
+	var strong := Lq.any(people, func(c): return c.SpecialPowerRankOf() == Enums.SpecialPowerRank.Knight or c.SpecialPowerRankOf() == Enums.SpecialPowerRank.Master)
 	if not strong:
 		return found
 	for c in people:

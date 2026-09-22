@@ -648,3 +648,91 @@ class SetupFile:
 			for k in lg.keys():
 				o.Logistics[str(k)] = lg[k]
 		return o
+
+
+## SCHEMA.md section 10 - the Galactic Information Display catalog. The ENGINE
+## implements each quantity kind (Gid._magnitude_for); the PACK decides which
+## modes exist, what they are called, and how a magnitude buckets into tiers.
+class GidTierDef:
+	var Min: float
+	var LabelText: String   # "Label" would shadow the native Control class
+	var Flare: String   # "big" | "mid" | "low" | "none" - sizes are engine constants
+
+	static func from_dict(d: Dictionary) -> GidTierDef:
+		var o := GidTierDef.new()
+		o.Min = JsonUtil.float_or(d, "min")
+		o.LabelText = JsonUtil.str_or(d, "label", "")
+		o.Flare = JsonUtil.str_or(d, "flare", "none")
+		return o
+
+
+class GidModeDef:
+	var Id: String
+	var LabelText: String   # "Label" would shadow the native Control class
+	var Title: String          # explicit key-panel title; empty -> the label
+	var TitleFrom: String      # "loyalty_label" -> the player's faction's loyalty label
+	var Kind: String           # quantity.kind
+	var Args: Dictionary = {}  # the rest of quantity
+	var Tiers: Array[GidTierDef] = []
+
+	static func from_dict(d: Dictionary) -> GidModeDef:
+		var o := GidModeDef.new()
+		o.Id = JsonUtil.str_or(d, "id", "")
+		o.LabelText = JsonUtil.str_or(d, "label", "")
+		o.Title = JsonUtil.str_or(d, "title", "")
+		o.TitleFrom = JsonUtil.str_or(d, "title_from", "")
+		var q: Variant = JsonUtil.get_ci(d, "quantity")
+		if q is Dictionary:
+			o.Kind = JsonUtil.str_or(q, "kind", "")
+			for k in q.keys():
+				if str(k) != "kind":
+					o.Args[str(k)] = q[k]
+		var t: Variant = JsonUtil.get_ci(d, "tiers")
+		if t != null:
+			for e in t:
+				o.Tiers.append(GidTierDef.from_dict(e))
+		return o
+
+
+class GidCategoryDef:
+	var Id: String
+	var DisplayName: String
+	var Modes: Array[GidModeDef] = []
+
+	static func from_dict(d: Dictionary) -> GidCategoryDef:
+		var o := GidCategoryDef.new()
+		o.Id = JsonUtil.str_or(d, "id", "")
+		o.DisplayName = JsonUtil.str_or(d, "display_name", "")
+		var m: Variant = JsonUtil.get_ci(d, "modes")
+		if m != null:
+			for e in m:
+				o.Modes.append(GidModeDef.from_dict(e))
+		return o
+
+
+class DisplayDef:
+	var Categories: Array[GidCategoryDef] = []
+	## Mode ids in the original's Alt+1..9 order.
+	var GalaxyDisplayModes: Array[String] = []
+	## The five special-power bands' PLAYER-FACING labels (SCHEMA section 12 Q5):
+	## none, novice, trainee, student, knight, master. The engine holds the
+	## thresholds; what a band is CALLED is this pack's business.
+	var SpecialPowerRanks: Dictionary = {}
+
+	static func from_dict(d: Dictionary) -> DisplayDef:
+		var o := DisplayDef.new()
+		var c: Variant = JsonUtil.get_ci(d, "categories")
+		if c != null:
+			for e in c:
+				o.Categories.append(GidCategoryDef.from_dict(e))
+		o.GalaxyDisplayModes = JsonUtil.str_list(d, "galaxy_display_modes", [])
+		var r: Variant = JsonUtil.get_ci(d, "special_power_ranks")
+		if r is Dictionary:
+			for k in r.keys():
+				o.SpecialPowerRanks[str(k)] = str(r[k])
+		return o
+
+	## The label for a band key; the key itself when the pack names none, so a
+	## missing label is visible rather than blank.
+	func RankLabel(key: String) -> String:
+		return SpecialPowerRanks.get(key, key)
