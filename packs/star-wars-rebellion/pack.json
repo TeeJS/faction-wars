@@ -1,6 +1,7 @@
 {
   "id": "star-wars-rebellion",
   "display_name": "Star Wars: Rebellion",
+  "summary": "The Galactic Civil War: the Rebel Alliance's hidden headquarters against the Empire's Coruscant, across a galaxy of 200 systems, with the original game's units, characters, missions and rules.",
   "schema_version": 1,
   "faction_count": 2,
   "neutral": {

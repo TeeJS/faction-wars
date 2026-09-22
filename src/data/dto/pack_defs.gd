@@ -238,6 +238,9 @@ class PackManifest:
 	## SCHEMA.md section 2 (Q3, decided): the galaxy backdrop, relative to the
 	## pack folder. Declared here so the engine never assumes a filename.
 	var MapImage: String
+	## SCHEMA.md section 2: one sentence on what the setting is, for the pack
+	## picker's card. Optional; blank when absent.
+	var Summary: String
 	var Setup: PackSetupDef
 	## SCHEMA.md section 2: the Cockpit picture and its regions. Null = button menu.
 	var Menu: MenuDef
@@ -253,6 +256,7 @@ class PackManifest:
 		o.Neutral = NeutralDef.from_dict(JsonUtil.get_ci(d, "neutral"))
 		o.UnexploredColor = JsonUtil.str_or(d, "unexplored_color", "")
 		o.MapImage = JsonUtil.str_or(d, "map_image", "")
+		o.Summary = JsonUtil.str_or(d, "summary", "")
 		o.Setup = PackSetupDef.from_dict(JsonUtil.get_ci(d, "setup"))
 		o.Menu = MenuDef.from_dict(JsonUtil.get_ci(d, "menu"))
 		o.VictoryTips = VictoryTipsDef.from_dict(JsonUtil.get_ci(d, "victory_tips"))

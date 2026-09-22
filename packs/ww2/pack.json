@@ -1,6 +1,7 @@
 {
   "id": "ww2",
   "display_name": "World War II",
+  "summary": "The Axis and the Allies, 1939 to 1945, on a strategic board of twenty theatres: eight nations as starting worlds, real-world fleets, divisions and squadrons, and the war's commanders.",
   "schema_version": 1,
   "faction_count": 2,
   "neutral": {
