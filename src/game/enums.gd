@@ -36,11 +36,11 @@ enum MissionType {
 	Assassination,
 	Rescue,
 	Sabotage,
-	DeathStarSabotage,
+	SuperweaponSabotage,
 	ShipDesignResearch,
 	TroopTrainingResearch,
 	FacilityDesignResearch,
-	JediTraining,
+	SpecialPowerTraining,
 }
 
 ## backend/GameMessage.cs - the TABS on the message index (TEXTSTRA.DLL's own strip).

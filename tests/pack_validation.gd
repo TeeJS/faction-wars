@@ -83,6 +83,8 @@ func _init() -> void:
 	_case("map_image names a file the pack does not ship",
 		_pack({}, {}, {"map_image": "no-such-file.bmp"}), "is not in res://packs")
 
+	_mission_join_resolves()
+
 	if _failed == 0:
 		print("[pack_validation] every case behaved as specified; PASS")
 	else:
@@ -103,6 +105,36 @@ func _real_pack_passes() -> void:
 		print("[pack_validation] ok   the shipping pack validates (%d sectors, %d planets, %d characters, %d facilities, %d units, %d weapons, %d missions)"
 			% [pack.Map.Sectors.size(), pack.Map.Planets.size(), pack.Characters.size(),
 			   pack.Facilities.size(), pack.Units.size(), pack.Weapons.size(), pack.Missions.size()])
+
+
+## EVERY engine mission behaviour must resolve to a pack mission, a display name
+## and an outcome table. The soak fixtures never run Superweapon Sabotage or
+## Special Power Training, so the rename of those two members is checked HERE or
+## nowhere.
+func _mission_join_resolves() -> void:
+	var errors: Array[String] = []
+	var pack := PackLoader.Load(PACK_DIR, errors)
+	if pack == null:
+		return
+	MissionCatalog.LoadFromPack(pack)
+	MissionTableManager.LoadFromPack(pack)
+	for t in Enums.MissionType.values():
+		var name := JsonUtil.enum_name(Enums.MissionType, t)
+		var def := MissionCatalog.DefFor(t)
+		if def == null:
+			print("[pack_validation] ok   %s: this pack offers no such mission" % name)
+			continue
+		var shown := MissionCatalog.DisplayNameFor(t)
+		# The wording must be the PACK's. For a single-word mission that happens
+		# to equal the enum name, which is fine - what matters is the source.
+		if shown != def.DisplayName:
+			_failed += 1
+			print("[pack_validation] FAIL %s: shown '%s' is not the pack's '%s'" % [name, shown, def.DisplayName])
+		elif MissionCatalog.IdFor(t) <= 0:
+			_failed += 1
+			print("[pack_validation] FAIL %s: no source id" % name)
+		else:
+			print("[pack_validation] ok   %s -> '%s' (pack id %s, source 0x%x)" % [name, shown, def.Id, def.SourceId])
 
 
 ## A minimal two-sector, two-planet pack, with one field bent per call.

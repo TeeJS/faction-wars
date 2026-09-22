@@ -51,8 +51,8 @@ accounted for below — that is what this reconciliation was for.
 | `characters.json` | Named characters | `major_characters.json` (6) + `minor_characters.json` (54) | ✅ |
 | `rules.json` | Tunable rule table, keyed by faction + difficulty | `game_rules.json` (213) | ⚠ re-keyed, not moved |
 | `setup.json` | Day-zero seeding: side lottery + logistics tables | `side_lottery.json` (35) + `day_zero_logistics.json` (11 tables) | ⚠ re-keyed, not moved |
-| `missions.json` | The mission catalog | `missions.json` (25) | ⚠ data + validation; `Enums.MissionType` not yet opened |
-| `mission_tables.json` | Per-mission outcome tables | `mission_tables.json` (**20** tables) | ⚠ data + validation; `MissionTableManager` not yet swapped |
+| `missions.json` | The mission catalog | `missions.json` (25) | ✅ |
+| `mission_tables.json` | Per-mission outcome tables | `mission_tables.json` (**20** tables) | ✅ |
 | `display.json` | The Galactic Information Display catalog | `src/ui/gid.gd` (currently code) | ❌ |
 | `uprising.json` | Uprising thresholds `[later]` | `uprising_start.json`, `uprising_end.json` | ❌ |
 
@@ -542,9 +542,21 @@ last un-migrated instance.
 - `available_to` replaces the `Alliance` / `Empire` integer pair.
 - `spec_forces` is a list of **display names** in the raw data
   (`"Bothan Spies"`); it **becomes a list of unit ids** (§12 Q1, decided).
-- `Enums.MissionType` ([enums.gd:35](src/game/enums.gd:35)) contains
-  `JediTraining` and `DeathStarSabotage`. Like `FacilityType`, it is a closed
-  setting vocabulary in engine code and this file must replace it.
+- **⚠ CORRECTION — `Enums.MissionType` is NOT the `FacilityType` case, and this
+  file does not replace it.** A facility's behaviour reduced entirely to role
+  tags and stats, so the enum was pure vocabulary and could go. A mission's
+  does not: each kind is a block of bespoke code in `mission_manager.gd` (1160
+  lines) with its own scoring terms, rating gains and resolution. A pack cannot
+  add a mission kind without code, and inventing a generic mission-scripting
+  model to pretend otherwise would be inventing mechanics. **`MissionType` is
+  the engine's list of behaviours it implements**; which of them a setting
+  offers, what they are called, who may run them, their lengths, flags, teams
+  and outcome tables are pack data and live here.
+
+  What WAS wrong and is fixed: two members were IP-named. They are now
+  `SuperweaponSabotage` and `SpecialPowerTraining`, joined to the pack's
+  `death_star_sabotage` and `jedi_training` by id. The engine name is generic;
+  the player still reads the pack's wording.
 - Seven `UnknownN` columns remain undecoded. They stay as-is; a pack author
   never sets them.
 
@@ -755,6 +767,7 @@ What changed from the source repo's 2026-07-25 draft, and why.
 | 23 | **§4 built.** `map.json` generated, loaded and live; the bitmap moved into the pack; validation rules 3 (map half), 7, 9, 10 implemented and negative-tested | The hardcoded sector list is gone from `galaxy_factory.gd`. Soak gate 1004/1004 |
 | 24 | **§7 built.** `characters.json` generated, loaded and live: one file, `is_major` flag, lower-case faction ids, `ratings` map, `can_command` list, `special_power` block. Validation rules 3 and 5 for the roster | The two-file major/minor split is gone. Soak gate 1004/1004 |
 | 25 | **§12 Q5 landed.** The character aptitude fields and `Enums.SpecialPowerRank` renamed across 11 files | Enum MEMBERS and `MissionType.JediTraining` deliberately held back — see §7 |
+| 30 | **§9 live.** `MissionCatalog` and `MissionTableManager` read the pack; the hardcoded MISSNSD numbers and `.DAT` filenames are gone. Two IP-named members renamed. **No re-baseline** — byte-identical | §9's claim that this file "must replace" `Enums.MissionType` is **corrected**: mission behaviour is engine, not content |
 | 29 | **§9 data built.** `missions.json` (25) and `mission_tables.json` (20) generated, loaded and validated; nothing reads them yet. `Alliance`/`Empire` became `available_to` — the last instance of the pattern the charter forbids. SpecForces resolve to unit ids (Q1) | Q2's "five tables must be read before naming" is **resolved**: the tables self-describe |
 | 28 | **§6 live.** `MilitaryCatalog` and the tactical engine read the pack; the four weapon names are gone from engine code. **No re-baseline** — byte-identical | Weapon DECLARATION ORDER in `weapons.json` is now load-bearing: the damage sum rounds to f32 per weapon |
 | 27 | **§6 data built.** `units.json` (57) and `weapons.json` (4 classes) generated, loaded and validated; nothing reads them yet. The three derived summary columns are DROPPED, and the generator re-proves on every build that each is exactly the sum of its arcs | The tactical engine still reads the flat unit fields. Swapping it is the next step |
