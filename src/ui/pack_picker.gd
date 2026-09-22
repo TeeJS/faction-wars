@@ -33,7 +33,7 @@ func _ready() -> void:
 	var ids := FactionRegistry.ListPackIds()
 	if _returning:
 		_returning = false
-		if ids.size() <= 1 or not _cmdline_pack().is_empty():
+		if not CanReturn():
 			# Nothing else to choose: the Cockpit's Exit means quit here.
 			get_tree().quit()
 			if not OS.has_feature("web"):
@@ -49,6 +49,12 @@ func _ready() -> void:
 		Choose(ids[0])
 		return
 	_build(ids)
+
+
+## Whether the Cockpit's Exit has anywhere to go: more than one pack, and
+## none forced by --pack=. Otherwise that Exit quits, and says so.
+static func CanReturn() -> bool:
+	return FactionRegistry.ListPackIds().size() > 1 and _cmdline_pack().is_empty()
 
 
 ## The Cockpit's Exit: back to this screen to choose again. Remembers the
