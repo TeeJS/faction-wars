@@ -234,9 +234,12 @@ func OpenCreateMission(team: Array, origin: Planet, target: Planet, picked: Vari
 		if thing != null and not sab.ok:
 			why = sab.error
 		elif thing == null and victim == null and MissionManager.TeamCanPerform(team, Enums.MissionType.Sabotage):
-			why = "Sabotage needs a specific target, not the system: open the " \
-				+ "system's Defenses or Manufacturing window and put the crosshair on " \
-				+ "the shield, battery, regiment, squadron or facility itself, or on a ship in a fleet."
+			# The targets are named in the PACK's words (display.json terms): a
+			# setting without shields or squadrons lists what it does have.
+			why = ("Sabotage needs a specific target, not the system: open the "
+				+ "system's Defenses or Manufacturing window and put the crosshair on "
+				+ "the %s, %s, %s, %s or facility itself, or on a ship in a fleet.") \
+				% [Terms.lower("planetary_shields"), Terms.lower("orbital_batteries"), Terms.lower("trooper_regiment"), Terms.lower("fighter_squadron")]
 		elif elsewhere.is_empty():
 			why = "%s cannot perform any mission this game has implemented yet." \
 				% ", ".join(Lq.select(team, func(u: Unit) -> String: return u.Name))
