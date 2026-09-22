@@ -16,6 +16,24 @@ bun run relay/test.ts                # two fake clients on a random port
 tester's report (the game's feedback box); `GET /feedback` lists the reports,
 newest first, without their logs. Everything else is the WebSocket at `/ws`.
 
+## The feedback token
+
+A report carries the tester's name, seed, settings and session log, so reading
+them is not public. `GET /feedback`, `GET /feedback/<id>.json|.jsonl` and
+`POST /feedback/<id>/complete` all need
+
+```
+Authorization: Bearer <FEEDBACK_TOKEN>
+```
+
+where `FEEDBACK_TOKEN` is an environment variable on the relay. Without one
+those three answer 401 to everybody - closed, not open. `POST /feedback`
+itself takes no token: the game runs in a browser, which cannot keep one.
+
+On Fly: `flyctl secrets set FEEDBACK_TOKEN=<value> -a wars-relay`. On Unraid:
+the masked `FEEDBACK_TOKEN` variable on the template. Locally:
+`FEEDBACK_TOKEN=x bun run relay/server.ts`, or `startRelay({ feedbackToken })`.
+
 ## The image
 
 `ghcr.io/teejs/wars-relay:latest` - Bun, `server.ts`, and the exported web game
