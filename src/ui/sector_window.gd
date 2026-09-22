@@ -62,8 +62,11 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 
 	# Slightly increased padding to make room for text at the bottom edges
 	var padding: float = 60.0
+	# The three bars and the name below the lowest system need more room
+	# under it than the top row needs above it (BarsTop + the bars + the name).
+	var paddingBottom: float = 92.0
 	var usableWidth: float = mapSize.x - (padding * 2)
-	var usableHeight: float = mapSize.y - (padding * 2)
+	var usableHeight: float = mapSize.y - padding - paddingBottom
 
 	for planet in sector.Planets:
 		var normalizedX: float = (planet.MapX - minX) / sectorWidth
@@ -304,17 +307,167 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 						print("Opened Window type %s for %s" % [cornerLabels[actionIndex], planet.Name]))
 				sectorMap.add_child(cornerBtn)
 
+		# --- THE THREE BARS (manual p025 Fig 2.9) --- explored systems only:
+		# "you'll see the familiar white/blue and yellow/red bars under the
+		# system" once a Longprobe reports (p049). They sit between the lower
+		# corner icons and the name, so the name moves down to make room.
+		var nameY: float = finalY + 30
+		if planet.IsExplored:
+			nameY = finalY + BarsTop + AddResourceBars(sectorMap, planet, finalX, finalY + BarsTop)
+
 		# --- 3. PLANET NAME LABEL ---
 		var nameLabel := Label.new()
 		nameLabel.text = planet.Name
 		nameLabel.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		nameLabel.size = Vector2(100, 20)
 		# Shift down further to clear the bottom corner buttons (20 -> 30)
-		nameLabel.position = Vector2(finalX - 50, finalY + 30)
+		nameLabel.position = Vector2(finalX - 50, nameY)
 		nameLabel.add_theme_font_size_override("font_size", 15)
 		nameLabel.add_theme_color_override("font_color", Color(0.8, 0.8, 0.8, 0.9))
 
 		sectorMap.add_child(nameLabel)
+
+
+# ---- THE THREE BARS UNDER A SYSTEM (manual p025 Fig 2.9, p084 Fig 3.26) ----
+#
+# Row 1  energy:    white square = used slot, blue square = available slot
+#                   ("each facility you build changes a blue square to white", p084)
+# Row 2  materials: yellow square = built mine, red square = raw material ready
+#                   to be mined (p084 NOTE; the "Raw Materials 3/9" hover of Fig 2.12)
+# Row 3  loyalty:   one bar, each side's share in that side's colour ("percent
+#                   loyal to the Empire (green) / to the Alliance (red)", p025)
+#
+# What is drawn is what this side KNOWS (IntelManager.StatusSeen: live on a
+# world we hold or a Core world's support, else the last sighting) - the same
+# readers the GID uses, so the map and the bars never disagree. A world with
+# no population has no loyalty bar (p049: "no facilities, defenses, or
+# loyalty indicators ... means the system is unpopulated").
+#
+# ⚠ OURS: the square size (the original's are ~5 px on a 640x480 screen), the
+# slightly rounded corners (TeeJ, 2026-09-22: the sharp ones "feel too sharp")
+# and the energy hover wording, mirrored from the sourced materials one.
+# The sides' order on the loyalty bar is the pack's `loyalty_bar` (SCHEMA §10):
+# the Star Wars pack puts the Empire on the left, as Fig 2.9 has it.
+const BarsTop: float = 38.0        # clear of the lower corner icons (22 + 8, plus a gap; +2 for icons to come, TeeJ 2026-09-22)
+const SquareSize: float = 6.0
+const SquareGap: float = 1.0
+const RowGap: float = 2.0
+const LoyaltyHeight: float = 4.0
+const BarMinWidth: float = 30.0
+const CornerRadius: int = 2
+const CEnergyUsed := Color.WHITE
+const CEnergyFree := Color(0.3, 0.55, 1.0)
+const CMineBuilt := Color(1.0, 0.9, 0.2)
+const CMineFree := Color(0.9, 0.15, 0.1)
+
+
+## Draws the rows at (centerX, top) and returns the height used, so the name
+## label can sit under them. Rows whose figures are unknown are skipped.
+static func AddResourceBars(sectorMap: Control, planet: Planet, centerX: float, top: float) -> float:
+	var viewer: Faction = GameSettings.PlayerFaction
+	var seen: Dictionary = IntelManager.StatusSeen(viewer, planet)
+	if seen.is_empty():
+		return 0.0
+	var y: float = top
+	var widest: float = BarMinWidth
+	if seen.has("energy"):
+		var total: int = int(seen["energy"])
+		var used: int = int(seen.get("energy_used", 0))
+		var tip := "%s %d/%d" % [Terms.label("energy"), used, total]
+		y += _AddSquareRow(sectorMap, "energy", centerX, y, total, used, CEnergyUsed, CEnergyFree, tip) + RowGap
+		widest = maxf(widest, _RowWidth(total))
+	if seen.has("materials"):
+		var total: int = int(seen["materials"])
+		var built: int = int(seen.get("mines", 0))
+		var tip := "%s %d/%d" % [Terms.label("raw_materials"), built, total]
+		y += _AddSquareRow(sectorMap, "materials", centerX, y, total, built, CMineBuilt, CMineFree, tip) + RowGap
+		widest = maxf(widest, _RowWidth(total))
+	if seen.has("support") and bool(seen.get("inhabited", true)):
+		y += _AddLoyaltyBar(sectorMap, centerX, y, seen["support"], widest) + RowGap
+	return y - top
+
+
+static func _RowWidth(total: int) -> float:
+	return maxf(0.0, total * SquareSize + (total - 1) * SquareGap)
+
+
+## One row of `total` squares, the first `filled` in colour A, the rest in B,
+## centred on centerX. Returns the row height.
+static func _AddSquareRow(sectorMap: Control, kind: String, centerX: float, y: float, total: int, filled: int,
+		filledColor: Color, freeColor: Color, tip: String) -> float:
+	var row := Control.new()
+	row.name = "Bars_%s" % kind
+	row.set_meta("bar_row", kind)
+	row.set_meta("total", total)
+	row.set_meta("filled", filled)
+	var width: float = _RowWidth(total)
+	row.size = Vector2(maxf(width, 1.0), SquareSize)
+	row.position = Vector2(centerX - width / 2.0, y)
+	row.tooltip_text = tip
+	row.mouse_filter = Control.MOUSE_FILTER_PASS
+	for i in total:
+		var sq := _Block(filledColor if i < mini(filled, total) else freeColor, Vector2(SquareSize, SquareSize), true, true)
+		sq.position = Vector2(i * (SquareSize + SquareGap), 0)
+		row.add_child(sq)
+	sectorMap.add_child(row)
+	return SquareSize
+
+
+## One coloured block with rounded corners - on the left end, the right end,
+## or both - so a bar's segments read as one rounded bar.
+static func _Block(color: Color, size: Vector2, round_left: bool, round_right: bool) -> Panel:
+	var style := StyleBoxFlat.new()
+	style.bg_color = color
+	style.corner_radius_top_left = CornerRadius if round_left else 0
+	style.corner_radius_bottom_left = CornerRadius if round_left else 0
+	style.corner_radius_top_right = CornerRadius if round_right else 0
+	style.corner_radius_bottom_right = CornerRadius if round_right else 0
+	var block := Panel.new()
+	block.add_theme_stylebox_override("panel", style)
+	block.size = size
+	block.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return block
+
+
+## The colour a block was drawn in (for the tests).
+static func BlockColor(block: Control) -> Color:
+	var style: StyleBox = block.get_theme_stylebox("panel")
+	return (style as StyleBoxFlat).bg_color if style is StyleBoxFlat else Color.TRANSPARENT
+
+
+## The loyalty bar: one segment per playable side, in that side's colour,
+## its width the side's share of the population. Returns the bar height.
+## `width` is the widest square row above it, so the three read as a block.
+static func _AddLoyaltyBar(sectorMap: Control, centerX: float, y: float, support: Dictionary, width: float) -> float:
+	var sides: Array[Faction] = FactionRegistry.LoyaltyBarOrder()
+	var bar := Control.new()
+	bar.name = "Bars_loyalty"
+	bar.set_meta("bar_row", "loyalty")
+	bar.set_meta("support", support.duplicate())
+	bar.size = Vector2(width, LoyaltyHeight)
+	bar.position = Vector2(centerX - width / 2.0, y)
+	bar.mouse_filter = Control.MOUSE_FILTER_PASS
+	var words: PackedStringArray = PackedStringArray()
+	var x: float = 0.0
+	var drawn: int = 0
+	var to_draw: int = 0
+	for side in sides:
+		if int(support.get(side.Id, 0)) > 0:
+			to_draw += 1
+	for side in sides:
+		var pct: int = int(support.get(side.Id, 0))
+		words.append("%s %d%%" % [side.DisplayName, pct])
+		var w: float = width * pct / 100.0
+		if w <= 0.0:
+			continue
+		var seg := _Block(side.FactionColor, Vector2(w, LoyaltyHeight), drawn == 0, drawn == to_draw - 1)
+		seg.position = Vector2(x, 0)
+		bar.add_child(seg)
+		x += w
+		drawn += 1
+	bar.tooltip_text = "Loyalty: %s" % ", ".join(words)
+	sectorMap.add_child(bar)
+	return LoyaltyHeight
 
 
 # The mission icon's right-click menu (manual p109, fig 3.50).

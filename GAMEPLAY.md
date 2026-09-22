@@ -3550,8 +3550,8 @@ maintenance figure is an order of magnitude larger, consistent with a
 
 Fig. 3.33 labels a single system in the Sector window with exactly four things:
 **Manufacturing icon**, **Energy available**, **Raw materials**, **Mines** — the
-three bars plus the icon, which is the sector-window feature still outstanding in
-[GID-NOTES.md](GID-NOTES.md).
+three bars plus the icon. The three bars are drawn by `SectorWindow.AddResourceBars`
+(2026-09-22) from the same fogged readers the GID uses.
 
 ### Build Facilities from the agent *(PDF p085 / manual p087)*
 

@@ -598,6 +598,7 @@
       ]
     }
   ],
+  "loyalty_bar": ["empire", "alliance"],
   "galaxy_display_modes": [
     "popular_support",
     "uprisings",
