@@ -49,9 +49,16 @@ func _close(node: Node) -> void:
 
 func _menu() -> void:
 	var m := await _open("res://Menu.tscn")
-	var b: Button = m.get_node_or_null("%BtnMultiplayer")
-	_check(b != null and b.text == "Multiplayer", "Fig 5.1: the Cockpit has the Multiplayer control")
-	_check(b != null and b.anchor_top == 1.0 and b.offset_left < 100.0, "Fig 5.1: it sits at the lower left")
+	var region: Button = m.get_node_or_null("Regions/Region_multiplayer")
+	if region != null:
+		# The pack's picture: the panel is a region, placed where the pack says.
+		var frame: Rect2 = m.call("_picture_frame")
+		_check(region.visible and region.size.x > 0, "Fig 5.1: the Cockpit picture has the Multiplayer panel")
+		_check(region.position.x < frame.position.x + frame.size.x * 0.3 and region.position.y > frame.position.y + frame.size.y * 0.6, "Fig 5.1: it sits at the lower left")
+	else:
+		var b: Button = m.get_node_or_null("%BtnMultiplayer")
+		_check(b != null and b.text == "Multiplayer", "Fig 5.1: the Cockpit has the Multiplayer control")
+		_check(b != null and b.anchor_top == 1.0 and b.offset_left < 100.0, "Fig 5.1: it sits at the lower left")
 	var ver: Label = m.get_node_or_null("BuildVersion")
 	_check(ver != null and ver.text == BuildInfo.version() and ver.anchor_left == 1.0, "addition: the build version bottom right of the Cockpit (%s)" % BuildInfo.version())
 	await _close(m)

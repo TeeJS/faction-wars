@@ -1,10 +1,32 @@
 class_name Menu
 extends Control
-## Menu.cs - the root main menu (manual PDF p20, fig 2.2): difficulty, galaxy
-## size, Headquarters Only Victory, and the side to play.
+## Menu.cs - the root main menu, the manual's SHUTTLE COCKPIT (manual PDF p20,
+## fig 2.2): difficulty, galaxy size, Headquarters Only Victory, load a saved
+## game, view credits, head-to-head, exit, and the side to play.
+##
+## Two forms of the same screen:
+##   - a pack that declares `menu` in pack.json (SCHEMA.md section 2) gets ITS
+##     PICTURE, with one clickable region per function laid over it exactly
+##     where the pack says - the cockpit the manual labels;
+##   - a pack without one gets the labelled buttons in Menu.tscn.
+## Both drive the same StartGame; the picture form keeps its choices in
+## _difficultyId / _sizeId / _hqOnly, the button form in the toggle groups.
+
+const DIFFICULTY_IDS := {"easy": Enums.Difficulty.Easy, "medium": Enums.Difficulty.Medium, "hard": Enums.Difficulty.Hard}
 
 var _difficultyGroup: ButtonGroup
 var _sizeGroup: ButtonGroup
+
+# The picture form. _cockpit stays null in the button form.
+var _cockpit: PackDefs.MenuDef = null
+var _difficultyId: String = "medium"
+var _sizeId: String = ""
+var _hqOnly: bool = false
+var _picture: TextureRect
+var _regions: Control                 # the region buttons, laid over the picture
+var _regionButtons: Dictionary = {}   # "action" or "action:value" -> Button
+var _readout: Label
+var _marks: Control                   # draws the selection brackets
 
 
 func _ready() -> void:
@@ -54,19 +76,21 @@ func _ready() -> void:
 
 	btnExit.pressed.connect(func() -> void: get_tree().quit())
 
+	var has_picture: bool = FactionRegistry.Pack != null and FactionRegistry.Pack.Manifest.Menu != null
+
 	# "Load Game" - restore a saved single-player game (issue #6, manual
 	# p073-077). Added in code (bottom-left of the Cockpit); opens a slot picker.
-	var btnLoad := Button.new()
-	btnLoad.text = "Load Game"
-	btnLoad.pressed.connect(func() -> void:
-		if get_node_or_null("LoadGameWindow") == null:
-			add_child(LoadGameWindow.new()))
-	add_child(btnLoad)
-	btnLoad.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
-	btnLoad.offset_left = 10.0
-	btnLoad.offset_top = -40.0
-	btnLoad.offset_right = 140.0
-	btnLoad.offset_bottom = -10.0
+	# The picture form has the manual's own region for it instead.
+	if not has_picture:
+		var btnLoad := Button.new()
+		btnLoad.text = "Load Game"
+		btnLoad.pressed.connect(OpenLoadGame)
+		add_child(btnLoad)
+		btnLoad.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
+		btnLoad.offset_left = 10.0
+		btnLoad.offset_top = -40.0
+		btnLoad.offset_right = 140.0
+		btnLoad.offset_bottom = -10.0
 
 	# The build version, bottom right of the Cockpit (TeeJ, room #106).
 	var ver := BuildInfo.label()
@@ -87,7 +111,8 @@ func _ready() -> void:
 
 	# THE MULTIPLAYER PANEL (manual p156, Fig 5.1): "the small panel at the lower
 	# left that depicts a Rebel soldier and an Imperial stormtrooper facing off".
-	# No artwork - a labelled button at the lower left, like every other control.
+	# Button form: a labelled button at the lower left, like every other control.
+	# Picture form: the pack's own panel, as a region.
 	MpSetup.reset()
 	# "Provide feedback" (TeeJ, room #80): remembered across sessions.
 	MpSetup.load_names()
@@ -96,8 +121,7 @@ func _ready() -> void:
 	chkFeedback.toggled.connect(func(on: bool) -> void:
 		GameSettings.ProvideFeedback = on
 		MpSetup.remember_names())
-	(get_node("%BtnMultiplayer") as Button).pressed.connect(func() -> void:
-		get_tree().change_scene_to_file("res://src/ui/mp/MultiplayerConfiguration.tscn"))
+	(get_node("%BtnMultiplayer") as Button).pressed.connect(OpenMultiplayer)
 
 	# EDITOR ONLY. The Military Data Editor writes military_units.json back to
 	# disk, and an exported build's data lives inside the read-only .pck.
@@ -106,31 +130,67 @@ func _ready() -> void:
 	else:
 		milData.visible = false
 
+	if has_picture:
+		_build_cockpit(FactionRegistry.Pack.Manifest.Menu)
+
 
 func SetupToggleButton(btn: Button, group: ButtonGroup) -> void:
 	btn.toggle_mode = true
 	btn.button_group = group
 
 
+func OpenLoadGame() -> void:
+	if get_node_or_null("LoadGameWindow") == null:
+		add_child(LoadGameWindow.new())
+
+
+func OpenMultiplayer() -> void:
+	get_tree().change_scene_to_file("res://src/ui/mp/MultiplayerConfiguration.tscn")
+
+
+func OpenCredits() -> void:
+	if get_node_or_null("CreditsWindow") == null:
+		var lines: Array[String] = _cockpit.Credits if _cockpit != null else []
+		add_child(CreditsWindow.new(FactionRegistry.Pack.Manifest.DisplayName, lines))
+
+
+## The picture form's choices, for tests and the log. The button form reads its
+## toggle groups instead.
+func SelectedSettings() -> Dictionary:
+	return {"difficulty": _difficultyId, "size": _sizeId, "hq_only": _hqOnly}
+
+
 func StartGame(chosenFaction: Faction) -> void:
-	# Parse Difficulty
-	var selectedDifficultyBtn: BaseButton = _difficultyGroup.get_pressed_button()
 	var difficultyLevel: int = Enums.Difficulty.Medium   # Fallback
-	if selectedDifficultyBtn.name == "BtnEasy":
-		difficultyLevel = Enums.Difficulty.Easy
-	if selectedDifficultyBtn.name == "BtnHard":
-		difficultyLevel = Enums.Difficulty.Hard
+	var sizeLevel: int = Enums.GalaxySize.Large          # Fallback
+	var isHqOnly: bool = false
 
-	# Parse Galaxy Size
-	var selectedSizeBtn: BaseButton = _sizeGroup.get_pressed_button()
-	var sizeLevel: int = Enums.GalaxySize.Large   # Fallback
-	if selectedSizeBtn.name == "BtnSmall":
-		sizeLevel = Enums.GalaxySize.Standard
-	if selectedSizeBtn.name == "BtnLarge":
-		sizeLevel = Enums.GalaxySize.Huge
+	if _cockpit != null:
+		difficultyLevel = DIFFICULTY_IDS.get(_difficultyId, Enums.Difficulty.Medium)
+		# Sizes rank by their position in setup.galaxy_sizes; Enums.GalaxySize
+		# indexes that same list (GalaxyFactory).
+		var sizes: Array[String] = FactionRegistry.Pack.Manifest.Setup.GalaxySizes
+		var idx := sizes.find(_sizeId)
+		if idx >= 0:
+			sizeLevel = idx
+		isHqOnly = _hqOnly
+	else:
+		# Parse Difficulty
+		var selectedDifficultyBtn: BaseButton = _difficultyGroup.get_pressed_button()
+		if selectedDifficultyBtn.name == "BtnEasy":
+			difficultyLevel = Enums.Difficulty.Easy
+		if selectedDifficultyBtn.name == "BtnHard":
+			difficultyLevel = Enums.Difficulty.Hard
 
-	# Parse Victory Condition
-	var isHqOnly: bool = get_node("%ChkHQOnly").button_pressed
+		# Parse Galaxy Size
+		var selectedSizeBtn: BaseButton = _sizeGroup.get_pressed_button()
+		if selectedSizeBtn.name == "BtnSmall":
+			sizeLevel = Enums.GalaxySize.Standard
+		if selectedSizeBtn.name == "BtnLarge":
+			sizeLevel = Enums.GalaxySize.Huge
+
+		# Parse Victory Condition
+		isHqOnly = get_node("%ChkHQOnly").button_pressed
 
 	# Save to our static context
 	GameSettings.SelectedDifficulty = difficultyLevel
@@ -142,6 +202,209 @@ func StartGame(chosenFaction: Faction) -> void:
 
 	# Launch the Main scene
 	get_tree().change_scene_to_file("res://Main.tscn")
+
+
+# ---------------------------------------------------------------------------
+# THE PICTURE FORM - manual p021, Fig. 2.2, from the pack's `menu`.
+# ---------------------------------------------------------------------------
+
+func _build_cockpit(menu: PackDefs.MenuDef) -> void:
+	_cockpit = menu
+	var setup := FactionRegistry.Pack.Manifest.Setup
+	var sizes: Array[String] = setup.GalaxySizes if setup != null else []
+	_difficultyId = setup.DifficultyDefault if setup != null and DIFFICULTY_IDS.has(setup.DifficultyDefault) else "medium"
+	_sizeId = setup.GalaxySizeDefault if setup != null and sizes.has(setup.GalaxySizeDefault) else (sizes[0] if not sizes.is_empty() else "")
+	_hqOnly = false
+
+	# The button form's controls give way to the picture; the ones the manual's
+	# screen does not have (feedback, the editor tool) move to the corners.
+	(get_node("CenterContainer") as Control).visible = false
+	(get_node("Background") as ColorRect).color = Color.BLACK
+	(get_node("%BtnMultiplayer") as Button).visible = false
+	_to_corner(get_node("%ChkFeedback"), Control.PRESET_BOTTOM_RIGHT, Vector2(-240, -60), Vector2(-10, -34))
+	var milData: Button = get_node("%BtnMilitaryDataEditor")
+	if milData.visible:
+		_to_corner(milData, Control.PRESET_TOP_RIGHT, Vector2(-170, 10), Vector2(-10, 40))
+
+	_picture = TextureRect.new()
+	_picture.name = "Cockpit"
+	_picture.texture = load("%s/%s/%s" % [FactionRegistry.PACKS_ROOT, FactionRegistry.Pack.Manifest.Id, menu.ImageFile])
+	_picture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_picture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_picture.set_anchors_preset(Control.PRESET_FULL_RECT)
+	add_child(_picture)
+	move_child(_picture, 1)   # over the Background, under everything else
+
+	_regions = Control.new()
+	_regions.name = "Regions"
+	_regions.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_regions.set_anchors_preset(Control.PRESET_FULL_RECT)
+	add_child(_regions)
+	move_child(_regions, 2)
+
+	for r in menu.Regions:
+		var b := Button.new()
+		var key := _region_key(r)
+		b.name = "Region_" + key.replace(":", "_")
+		b.flat = true
+		b.text = ""
+		b.tooltip_text = r.Tooltip
+		b.focus_mode = Control.FOCUS_NONE
+		b.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+		b.add_theme_stylebox_override("normal", StyleBoxEmpty.new())
+		b.add_theme_stylebox_override("pressed", StyleBoxEmpty.new())
+		b.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+		var hover := StyleBoxFlat.new()
+		hover.bg_color = Color(1, 1, 1, 0.12)
+		b.add_theme_stylebox_override("hover", hover)
+		b.set_meta("cockpit_region", true)
+		b.set_meta("rect", r.rect2())
+		b.pressed.connect(_on_region.bind(r))
+		if r.Action == "exit":
+			b.visible = not OS.has_feature("web")
+		_regions.add_child(b)
+		_regionButtons[key] = b
+
+	# The readout under the victory-condition screen.
+	_readout = Label.new()
+	_readout.name = "Readout"
+	_readout.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_readout.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_readout.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_readout.clip_text = true
+	var bg := StyleBoxFlat.new()
+	bg.bg_color = Color.BLACK
+	_readout.add_theme_stylebox_override("normal", bg)
+	_readout.add_theme_color_override("font_color", FactionRegistry.ParseColor(menu.Readout.ColorHex))
+	_regions.add_child(_readout)
+
+	# The selection brackets, drawn over the chosen regions.
+	_marks = Control.new()
+	_marks.name = "Marks"
+	_marks.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_marks.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_marks.draw.connect(_draw_marks)
+	_regions.add_child(_marks)
+
+	resized.connect(_layout_cockpit)
+	_layout_cockpit()
+
+
+static func _region_key(r: PackDefs.MenuRegionDef) -> String:
+	return r.Action if r.Value.is_empty() else "%s:%s" % [r.Action, r.Value]
+
+
+func _to_corner(c: Control, preset: int, from: Vector2, to: Vector2) -> void:
+	c.get_parent().remove_child(c)
+	add_child(c)
+	c.set_anchors_preset(preset)
+	c.offset_left = from.x
+	c.offset_top = from.y
+	c.offset_right = to.x
+	c.offset_bottom = to.y
+
+
+## Where the picture actually lands inside this control (kept aspect, centred),
+## and the scale from picture pixels to screen pixels.
+func _picture_frame() -> Rect2:
+	if _picture == null or _picture.texture == null:
+		return Rect2(Vector2.ZERO, size)
+	var tex: Vector2 = _picture.texture.get_size()
+	if tex.x <= 0 or tex.y <= 0:
+		return Rect2(Vector2.ZERO, size)
+	var scale := minf(size.x / tex.x, size.y / tex.y)
+	var drawn := tex * scale
+	return Rect2((size - drawn) * 0.5, drawn)
+
+
+func _scaled(r: Rect2) -> Rect2:
+	var frame := _picture_frame()
+	var tex: Vector2 = _picture.texture.get_size() if _picture != null and _picture.texture != null else Vector2.ONE
+	var scale := frame.size.x / tex.x
+	return Rect2(frame.position + r.position * scale, r.size * scale)
+
+
+func _layout_cockpit() -> void:
+	if _cockpit == null:
+		return
+	for key in _regionButtons:
+		var b: Button = _regionButtons[key]
+		var sr := _scaled(b.get_meta("rect"))
+		b.position = sr.position
+		b.size = sr.size
+	if _cockpit.Readout != null:
+		var rr := _scaled(_cockpit.Readout.rect2())
+		_readout.position = rr.position
+		_readout.size = rr.size
+		_readout.add_theme_font_size_override("font_size", maxi(8, int(rr.size.y * 0.6)))
+	_refresh_readout()
+	_marks.queue_redraw()
+
+
+func _refresh_readout() -> void:
+	if _cockpit == null or _cockpit.Readout == null:
+		return
+	_readout.text = _cockpit.Readout.HqOnly if _hqOnly else _cockpit.Readout.Standard
+
+
+func _draw_marks() -> void:
+	if _cockpit == null:
+		return
+	var color := FactionRegistry.ParseColor(_cockpit.SelectedColorHex)
+	var chosen: Array[String] = ["difficulty:%s" % _difficultyId, "galaxy_size:%s" % _sizeId]
+	if _hqOnly:
+		chosen.append("hq_only_victory")
+	for key in chosen:
+		if not _regionButtons.has(key):
+			continue
+		var b: Button = _regionButtons[key]
+		_bracket(Rect2(b.position, b.size), color)
+
+
+## Corner brackets, the original's selection mark (the screenshot's red corners
+## on the chosen difficulty, yellow on the chosen galaxy size).
+func _bracket(r: Rect2, color: Color) -> void:
+	var l := minf(r.size.x, r.size.y) * 0.25
+	var w := 3.0
+	var tl := r.position
+	var tr := r.position + Vector2(r.size.x, 0)
+	var bl := r.position + Vector2(0, r.size.y)
+	var br := r.end
+	_marks.draw_line(tl, tl + Vector2(l, 0), color, w)
+	_marks.draw_line(tl, tl + Vector2(0, l), color, w)
+	_marks.draw_line(tr, tr + Vector2(-l, 0), color, w)
+	_marks.draw_line(tr, tr + Vector2(0, l), color, w)
+	_marks.draw_line(bl, bl + Vector2(l, 0), color, w)
+	_marks.draw_line(bl, bl + Vector2(0, -l), color, w)
+	_marks.draw_line(br, br + Vector2(-l, 0), color, w)
+	_marks.draw_line(br, br + Vector2(0, -l), color, w)
+
+
+func _on_region(r: PackDefs.MenuRegionDef) -> void:
+	match r.Action:
+		"difficulty":
+			_difficultyId = r.Value
+			_marks.queue_redraw()
+		"galaxy_size":
+			_sizeId = r.Value
+			_marks.queue_redraw()
+		"hq_only_victory":
+			_hqOnly = not _hqOnly
+			_refresh_readout()
+			_marks.queue_redraw()
+		"start":
+			var f := FactionRegistry.ById(r.Value)
+			if f != null:
+				StartGame(f)
+		"load_game":
+			OpenLoadGame()
+		"credits":
+			OpenCredits()
+		"multiplayer":
+			OpenMultiplayer()
+		"exit":
+			get_tree().quit()
 
 
 ## A light square (off) and the same square with a tick (on), drawn at start,
