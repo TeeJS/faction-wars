@@ -90,9 +90,22 @@ tables still emits `FamilyId` / `AssetId`; it must be re-keyed the same way
 before the next regeneration (SCHEMA.md §8's standing warning), and that is a
 source-repo change on `tschmitz-dev` with its own go-ahead.
 
-## Phase C — content
+## Phase C — content (done, branch `pack-ww2-content`)
 
-Real orders of battle, a real world map with coordinates (`world.png` is a
-placeholder grid; positions are lon/lat projected into the Star Wars
-coordinate range), artwork, display wording for shields / hyperdrive / energy,
-an optional Cockpit-style `menu` picture.
+| Item | What shipped |
+|---|---|
+| **Map layout** | A **board, not a projection**: each theatre has a hand-placed box on the Star Wars map's 100–800 canvas and its regions sit inside by relative lat/lon. A plain projection put ten European theatres and 45 regions in a 100×175 px patch; the board gives Europe the room. Boxes are checked non-overlapping. |
+| **Backdrop** | `world.png` redrawn at 900×900 **in the same coordinate space as `map.json`**, so if the map view ever draws the backdrop it lines up 1:1. Note: **no map view draws `map_image` today** — the loader validates it, nothing renders it (grep: only `pack_loader.gd` / `pack_defs.gd` read it). A painted world map would be invisible; the board is what the coordinates already say. |
+| **Starting forces** | One garrison table per starting nation (`germany_start_garrison` … `france_start_garrison`, Yavin-sized to HQ-sized, the original's `fixed_range`), nation-flavoured: Panzer and Wehrmacht divisions with Bf 109s at Germany, Zeros and the Special Naval Landing Force at Japan, Spitfires and Royal Marines at Britain, Guards and Il-2s in Russia… The seeded **fleet** is placed at the HQ *and* every starting world (engine behaviour), so it carries only faction-generic hulls and naval infantry. |
+| **Roster** | 77 units (+22): Italian and Japanese squadrons and divisions, Hurricane, Wildcat, Hellcat, Avenger, Yak-9, Il-2, P-40, D.520, US and Soviet and French divisions. Every one still copies a Star Wars template's numbers. |
+| **Characters** | 71 (+27): Model, Rundstedt, Student, Galland, Ozawa, Marshall, King, Harris, Tedder, Rokossovsky, Chuikov, Spruance, Wingate, Chennault, Zhu De, Menzies… |
+
+**Verified:** both packs validate; a 60-day soak as the Axis on the huge map completes with 10 fleets and 15 capital ships at day zero.
+
+### Left open — needs a decision, not more content
+
+| Item | Why it is not just pack data |
+|---|---|
+| **Stat wording** ("Shield", "Hyperdrive", "Sublight", "Energy", "Raw Materials", "Turbolaser"…) | **103 UI sites** across `fleet_status_window.gd`, `unit_status_window.gd`, `planet_window.gd`, `game_manager.gd` hard-code the Star Wars words. Fixing it means a pack **terms table** (`display.json` `terms: {"shield": "Armour", "hyperdrive": "Cruising Speed", "energy": "Industry", …}`) read through one helper, the same pattern as `special_power_ranks`. That is a schema field plus an engine sweep — TeeJ's call. |
+| **Cockpit-style `menu` picture** | Optional per SCHEMA.md §2; the button menu is used. Needs artwork. |
+| **`artwork_id`** | Not read by the engine today; the field is filled sequentially. |
