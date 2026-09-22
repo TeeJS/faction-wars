@@ -12,10 +12,13 @@ var _bar: GidBar   # the selector overlay + active-mode label
 # Every planet draws as two stacked glyphs: a faction-colored dot that always
 # marks the world, and a "+" flare BEHIND it whose size is the planet's tier.
 var _planetStars: Dictionary = {}    # Planet -> Label
-## THE PACK'S MAP PICTURE (pack.json map_image), drawn behind everything at
-## origin, scaled to fit Frame. map.json coordinates are PIXELS OF THAT PICTURE
-## at its native size (SCHEMA.md section 4), so every marker is placed at
-## coordinate * _scale and lines up with the picture whatever its size.
+## THE PACK'S MAP PICTURE (pack.json map_image), drawn behind everything where
+## pack.json's map_image_rect puts it in the pack's MAP COORDINATE SPACE
+## (SCHEMA.md section 4; the picture's own pixels when no rect is given). The
+## map space is scaled so that rect fills Frame, and every marker is placed at
+## coordinate * _scale, so picture and regions line up whatever the picture's
+## size. Coordinates are never rescaled to the picture: Planet.DistanceTo
+## reads them, so they are travel time.
 var _backdrop: Sprite2D = null
 var _scale: float = 1.0
 ## One invisible button per region, centred on its dot: a click opens the
@@ -292,12 +295,16 @@ func _load_backdrop() -> void:
 	var size := tex.get_size()
 	if size.x <= 0.0 or size.y <= 0.0:
 		return
-	_scale = minf(Frame.x / size.x, Frame.y / size.y)
+	var rect := pack.Manifest.MapImageRect
+	if rect.size.x <= 0.0 or rect.size.y <= 0.0:
+		rect = Rect2(Vector2.ZERO, size)   # no rect: coordinates are picture pixels
+	_scale = minf(Frame.x / rect.size.x, Frame.y / rect.size.y)
 	_backdrop = Sprite2D.new()
 	_backdrop.name = "Backdrop"
 	_backdrop.texture = tex
 	_backdrop.centered = false
-	_backdrop.scale = Vector2(_scale, _scale)
+	_backdrop.position = rect.position * _scale
+	_backdrop.scale = rect.size * _scale / size
 	_backdrop.z_index = -10
 	_backdrop.z_as_relative = false
 	add_child(_backdrop)
