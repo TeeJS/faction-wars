@@ -452,11 +452,17 @@ static func _validate_map(pack: LoadedPack, pack_dir: String, errors: Array[Stri
 		if f.Hq != null and f.Hq.Kind == "hidden" and f.Hq.Placement != "random_rim" and not planet_ids.has(f.Hq.Placement):
 			errors.append("factions.json[%s]: hq.placement '%s' is neither 'random_rim' nor a planet id in map.json." % [f.Id, f.Hq.Placement])
 
-	# Rule 9: the pack declares its map image and ships it.
+	# Rule 9: the pack declares its map image and ships it. An export ships an
+	# imported texture as its .import remap plus the .ctex, never the source
+	# file, so FileAccess alone says "missing" in every exported build (that
+	# stopped the web game at the faction buttons, 2026-09-22). ResourceLoader
+	# follows the remap; FileAccess still covers a raw file in the editor.
 	if pack.Manifest.MapImage.strip_edges().is_empty():
 		errors.append("pack.json: 'map_image' is required - name the galaxy backdrop shipped with the pack.")
-	elif not FileAccess.file_exists("%s/%s" % [pack_dir, pack.Manifest.MapImage]):
-		errors.append("pack.json: map_image '%s' is not in %s." % [pack.Manifest.MapImage, pack_dir])
+	else:
+		var image_path := "%s/%s" % [pack_dir, pack.Manifest.MapImage]
+		if not (ResourceLoader.exists(image_path) or FileAccess.file_exists(image_path)):
+			errors.append("pack.json: map_image '%s' is not in %s." % [pack.Manifest.MapImage, pack_dir])
 
 
 static func _require_color(value: String, ctx: String, errors: Array[String]) -> void:
