@@ -85,13 +85,16 @@ func Populate(fleet: Fleet) -> void:
 	var personnel: int  = Lq.count(GameState.ActiveRoster, func(c: Character) -> bool: return c.Attached == fleet) \
 		if GameState.ActiveRoster != null else 0
 
+	# The unit kinds are the PACK's words (display.json terms, SCHEMA.md section 10).
+	var fighters_word := "   %s:" % Terms.label("fighter_squadrons")
+	var troops_word := "   %s:" % Terms.label("trooper_regiments")
 	Header(body, "Capacity")
-	Row(body, "   Fighter Squadrons:", str(fighterCap))
-	Row(body, "   Trooper Regiments:", str(troopCap))
+	Row(body, fighters_word, str(fighterCap))
+	Row(body, troops_word, str(troopCap))
 
 	Header(body, "Embarked")
-	Row(body, "   Fighter Squadrons:", "%d" % fighters, Color.INDIAN_RED if fighters > fighterCap else Color.WHITE)
-	Row(body, "   Trooper Regiments:", "%d" % troops, Color.INDIAN_RED if troops > troopCap else Color.WHITE)
+	Row(body, fighters_word, "%d" % fighters, Color.INDIAN_RED if fighters > fighterCap else Color.WHITE)
+	Row(body, troops_word, "%d" % troops, Color.INDIAN_RED if troops > troopCap else Color.WHITE)
 	Row(body, "   Personnel:", str(personnel))
 
 	Gap(body)
@@ -101,7 +104,7 @@ func Populate(fleet: Fleet) -> void:
 	# number: the number belongs to a ship, and what matters for a fleet is
 	# whether it can make the jump at all (manual p055).
 	Row(body, "Damaged Ships:", str(Lq.count(fleet.Ships, func(s: Unit) -> bool: return s.Hull > 0 and s.Shield < 0)))
-	Row(body, "Hyperdrive Rating:", "Yes" if fleet.HyperdriveRating() > 0 else "No")
+	Row(body, Terms.field("hyperdrive"), "Yes" if fleet.HyperdriveRating() > 0 else "No")
 
 
 static func Header(into: VBoxContainer, text: String) -> void:
