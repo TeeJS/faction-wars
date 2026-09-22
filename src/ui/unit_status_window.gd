@@ -13,9 +13,11 @@ func _ready() -> void:
 func Populate(unit: Unit) -> void:
 	_associatedUnit = unit
 
+	# The kind names and stat labels are the PACK's words (display.json terms,
+	# SCHEMA.md section 10); the engine only knows the concepts.
 	var titleType: String = "Ship" if unit.Type == Enums.UnitType.CapitalShip else \
-		("Fighter Squadron" if unit.Type == Enums.UnitType.Fighter else \
-		("SpecForces" if unit.Type == Enums.UnitType.SpecForce else "Trooper Regiment"))
+		(Terms.label("fighter_squadron") if unit.Type == Enums.UnitType.Fighter else \
+		("SpecForces" if unit.Type == Enums.UnitType.SpecForce else Terms.label("trooper_regiment")))
 
 	(get_node("%TitleBarLabel") as Label).text = " %s Status" % titleType
 	(get_node("%UnitNameLabel") as Label).text = unit.Name
@@ -33,7 +35,7 @@ func Populate(unit: Unit) -> void:
 	else:
 		AddStatRow(grid, "Status:", JsonUtil.enum_name(Enums.Status, unit.Status))
 
-	AddStatRow(grid, "Maintenance Cost:", str(unit.MaintenanceCost))
+	AddStatRow(grid, Terms.field("maintenance"), str(unit.MaintenanceCost))
 
 	# --- DYNAMIC MILITARY STATS ---
 	if unit.Type == Enums.UnitType.Troop or unit.Type == Enums.UnitType.SpecForce:
@@ -44,18 +46,18 @@ func Populate(unit: Unit) -> void:
 		else:
 			AddStatRow(grid, "Attack Strength:", str(unit.Attack))
 			AddStatRow(grid, "Defense Strength:", str(unit.Defense))
-			AddStatRow(grid, "Bombardment Defense:", str(unit.BombardmentDefense))
+			AddStatRow(grid, Terms.field("bombardment_defense"), str(unit.BombardmentDefense))
 			AddStatRow(grid, "Detection Value:", str(unit.Detection))
 	elif unit.Type == Enums.UnitType.Fighter:
-		AddStatRow(grid, "Squadron Size:", "12:12")
-		AddStatRow(grid, "Hyperdrive Rating:", str(unit.Hyperdrive))
-		AddStatRow(grid, "Maximum Shield Strength:", "%d:%d" % [unit.Shield, unit.Shield])
-		AddStatRow(grid, "Sub-Light Engine Rating:", str(unit.Sublight))
+		AddStatRow(grid, Terms.field("squadron_size"), "12:12")
+		AddStatRow(grid, Terms.field("hyperdrive"), str(unit.Hyperdrive))
+		AddStatRow(grid, "Maximum %s:" % Terms.label("shield"), "%d:%d" % [unit.Shield, unit.Shield])
+		AddStatRow(grid, Terms.field("sublight"), str(unit.Sublight))
 		# fake maneuverability stat based on sublight speed
 		AddStatRow(grid, "Maneuverability:", str(maxi(1, unit.Sublight - 3)))
-		AddStatRow(grid, "Detection Rating:", str(unit.Detection))
-		AddStatRow(grid, "Bombardment Value:", "%d:%d" % [unit.Bombardment, unit.Bombardment])
-		AddStatRow(grid, "Weapons Rating:", "")
+		AddStatRow(grid, Terms.field("detection"), str(unit.Detection))
+		AddStatRow(grid, Terms.field("bombardment"), "%d:%d" % [unit.Bombardment, unit.Bombardment])
+		AddStatRow(grid, Terms.field("weapons"), "")
 		# Whatever the pack fitted, named by the pack (SCHEMA.md section 6).
 		for w in MilitaryCatalog.WeaponOrder():
 			var fitted: PackDefs.UnitWeaponDef = unit.Weapon(w.Id)
@@ -63,13 +65,13 @@ func Populate(unit: Unit) -> void:
 				continue
 			AddStatRow(grid, "  %s:" % w.DisplayName, "%d:%d" % [fitted.total(), fitted.total()])
 	elif unit.Type == Enums.UnitType.CapitalShip:
-		AddStatRow(grid, "Hyperdrive Rating:", str(unit.Hyperdrive))
-		AddStatRow(grid, "Sub-Light Engine Rating:", str(unit.Sublight))
-		AddStatRow(grid, "Hull Value:", str(unit.Hull))
-		AddStatRow(grid, "Shield Strength:", str(unit.Shield))
-		AddStatRow(grid, "Bombardment Modifier:", str(unit.Bombardment))
-		if unit.FighterCapacity > 0: AddStatRow(grid, "Fighter Capacity:", str(unit.FighterCapacity))
-		if unit.TroopCapacity > 0: AddStatRow(grid, "Troop Capacity:", str(unit.TroopCapacity))
+		AddStatRow(grid, Terms.field("hyperdrive"), str(unit.Hyperdrive))
+		AddStatRow(grid, Terms.field("sublight"), str(unit.Sublight))
+		AddStatRow(grid, Terms.field("hull"), str(unit.Hull))
+		AddStatRow(grid, Terms.field("shield"), str(unit.Shield))
+		AddStatRow(grid, Terms.field("bombardment_modifier"), str(unit.Bombardment))
+		if unit.FighterCapacity > 0: AddStatRow(grid, Terms.field("fighter_capacity"), str(unit.FighterCapacity))
+		if unit.TroopCapacity > 0: AddStatRow(grid, Terms.field("troop_capacity"), str(unit.TroopCapacity))
 
 
 func AddStatRow(grid: GridContainer, labelText: String, valueText: String) -> void:

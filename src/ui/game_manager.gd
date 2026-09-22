@@ -495,7 +495,7 @@ func RefreshStatusBar() -> void:
 
 	_dayLabel.text = ("Day: %d" % currentDay) if waiting.is_empty() \
 		else "Day: %d    ✉ %s" % [currentDay, ", ".join(waiting)]
-	_availMines.text = "Raw: %d  (%d mines)" % [econ.RawMaterials, Economy.TotalMines(player)]
-	_availRefineries.text = "Refined: %d  (%d refineries)" % [econ.RefinedMaterials, Economy.TotalRefineries(player)]
+	_availMines.text = "Raw: %d  (%d %s)" % [econ.RawMaterials, Economy.TotalMines(player), Terms.label("mines")]
+	_availRefineries.text = "Refined: %d  (%d %s)" % [econ.RefinedMaterials, Economy.TotalRefineries(player), Terms.label("refineries")]
 	# Maintenance is a pool, so it reads as remaining/total rather than a rate.
 	_availMaintenence.text = "Maint: %d/%d" % [Economy.MaintenanceAvailable(player), Economy.MaintenanceCapacity(player)]
