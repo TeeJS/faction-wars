@@ -6,6 +6,7 @@
 # Imports the project first when the class cache is missing (class_name lookup
 # needs it). Never opens a window. Prints the script's output and exits with
 # its exit code; a hang is killed after -Seconds and reported as exit 124.
+# Raw output lands in $env:TEMP\gd-<repo folder>-<pid>-<script>.txt (+ .err).
 
 param(
     [Parameter(Mandatory = $true, Position = 0)][string]$Script,
@@ -17,7 +18,10 @@ param(
 $ErrorActionPreference = 'Stop'
 $port = Split-Path -Parent $PSScriptRoot
 if (-not (Test-Path $Godot)) { throw "Godot console binary not found: $Godot" }
-$out = Join-Path $env:TEMP ('gd-' + [IO.Path]::GetFileNameWithoutExtension($Script) + '.txt')
+# One log per repo folder AND process: two runs of the same script - two
+# agents' worktrees, or a soak beside the gate - used to clobber one file.
+$tag = (Split-Path -Leaf $port) + '-' + $PID
+$out = Join-Path $env:TEMP ('gd-' + $tag + '-' + [IO.Path]::GetFileNameWithoutExtension($Script) + '.txt')
 
 function Invoke-Godot([string[]]$GodotArgs, [string]$Log, [int]$Timeout) {
     Remove-Item $Log, ($Log + '.err') -ErrorAction SilentlyContinue
@@ -38,7 +42,7 @@ if (-not $stale) {
 }
 if ($stale) {
     Write-Host "run-gd: importing the project (class cache stale)"
-    Invoke-Godot @('--headless', '--path', $port, '--import') (Join-Path $env:TEMP 'gd-import.txt') 300 | Out-Null
+    Invoke-Godot @('--headless', '--path', $port, '--import') (Join-Path $env:TEMP ('gd-' + $tag + '-import.txt')) 300 | Out-Null
 }
 
 $args = @('--headless', '--path', $port, '-s', $Script)

@@ -1,10 +1,21 @@
 class_name FactionRegistry
 extends RefCounted
 ## backend/Packs/FactionRegistry.cs - the sides in the loaded pack. Which pack to
-## load is CONFIG, not code: packs/active.json names it. The engine holds no
-## default pack id.
+## load is CONFIG, not code: a caller names it (the pack picker, a save's header,
+## a multiplayer room), else the `--pack=<id>` command-line argument, else
+## packs/active.json. The engine holds no default pack id.
+##
+## ONE PACK PER PROCESS. Every catalog is static state filled from the pack, so
+## a second, different load is refused rather than half-applied. The picker
+## chooses before the Cockpit; a game never changes pack mid-process.
 
 const PACKS_ROOT := "res://packs"
+## The files a pack is made of - what PackLoader.Load reads and what the
+## content hash covers, so two clients on the same pack id but different
+## content are told so instead of desyncing (BACKLOG #13).
+const PACK_FILES := ["pack.json", "factions.json", "map.json", "characters.json",
+	"facilities.json", "units.json", "weapons.json", "missions.json",
+	"mission_tables.json", "rules.json", "setup.json", "display.json"]
 
 ## THE LOADED PACK. Held here because this is what loads it, and the map, the
 ## rules and the catalogs all need it after the factions are built.
@@ -14,31 +25,109 @@ static var Neutral: Faction = null
 static var Unknown: Faction = null
 static var _by_id: Dictionary = {}
 static var _character_roles: Dictionary = {}   # character id -> Array[String]
+## SHA-256 over PACK_FILES of the loaded pack, hex. Travels in the command-log
+## header and the multiplayer room settings.
+static var PackHash: String = ""
 
 
 static func IsLoaded() -> bool:
 	return Playable.size() > 0
 
 
-static func EnsureLoaded() -> void:
-	if IsLoaded():
-		return
+## The loaded pack's id, or "" before any load.
+static func LoadedId() -> String:
+	return Pack.Manifest.Id if Pack != null else ""
+
+
+## Which pack to load when nobody names one: `--pack=<id>` on the command line
+## (headless tests, the soak gate), else packs/active.json.
+static func DefaultPackId() -> String:
+	for a in OS.get_cmdline_user_args() + OS.get_cmdline_args():
+		if a.begins_with("--pack="):
+			return a.substr("--pack=".length())
 	var active: Variant = JsonUtil.parse("%s/active.json" % PACKS_ROOT)
 	if active == null:
 		push_error("%s/active.json is missing; it must name the pack to load." % PACKS_ROOT)
-		assert(false)
-		return
-	var pack_id: String = str(JsonUtil.get_ci(active, "pack"))
+		return ""
+	return str(JsonUtil.get_ci(active, "pack"))
+
+
+## Every folder under packs/ that carries a pack.json, sorted - the picker's list.
+static func ListPackIds() -> Array[String]:
+	var out: Array[String] = []
+	var dir := DirAccess.open(PACKS_ROOT)
+	if dir == null:
+		return out
+	dir.list_dir_begin()
+	var name := dir.get_next()
+	while name != "":
+		if dir.current_is_dir() and not name.begins_with(".") \
+				and FileAccess.file_exists("%s/%s/pack.json" % [PACKS_ROOT, name]):
+			out.append(name)
+		name = dir.get_next()
+	dir.list_dir_end()
+	out.sort()
+	return out
+
+
+## Load `pack_id`, or the default when it is empty. Loading the pack that is
+## already loaded is a no-op; asking for a DIFFERENT one is an error (one pack
+## per process). Returns false on any failure, after reporting it.
+static func EnsureLoaded(pack_id: String = "") -> bool:
+	if IsLoaded():
+		# No id means "whatever is loaded" - the default is only consulted when
+		# nothing is, or a save opened from another pack would trip every later
+		# bare EnsureLoaded() call on the active.json name.
+		if pack_id.is_empty() or pack_id == LoadedId():
+			return true
+		push_error("[Pack] '%s' is loaded; cannot switch to '%s' in the same process." % [LoadedId(), pack_id])
+		return false
+	if pack_id.is_empty():
+		pack_id = DefaultPackId()
+	if pack_id.is_empty():
+		push_error("[Pack] nothing names a pack to load (no caller id, no --pack=, no packs/active.json).")
+		return false
 	var errors: Array[String] = []
-	var pack := PackLoader.Load("%s/%s" % [PACKS_ROOT, pack_id], errors)
+	var dir := "%s/%s" % [PACKS_ROOT, pack_id]
+	var pack := PackLoader.Load(dir, errors)
 	if pack == null:
 		push_error("[Pack] '%s' failed to load - %d problem(s):" % [pack_id, errors.size()])
 		for e in errors:
 			push_error("[Pack]   %s" % e)
 		assert(false)
-		return
+		return false
 	Load(pack)
-	print("[Pack] '%s' loaded from %s/%s." % [pack.Manifest.DisplayName, PACKS_ROOT, pack_id])
+	PackHash = ContentHash(dir)
+	print("[Pack] '%s' loaded from %s (hash %s)." % [pack.Manifest.DisplayName, dir, PackHash.substr(0, 12)])
+	return true
+
+
+## SHA-256 over the pack's JSON files, in PACK_FILES order. JSON only: an
+## exported build ships images as .import remaps, so the bytes of a picture are
+## not the same file on every client, and a picture never touches the simulation.
+static func ContentHash(pack_dir: String) -> String:
+	var ctx := HashingContext.new()
+	ctx.start(HashingContext.HASH_SHA256)
+	for f in PACK_FILES:
+		var path := "%s/%s" % [pack_dir, f]
+		if FileAccess.file_exists(path):
+			ctx.update(FileAccess.get_file_as_bytes(path))
+	return ctx.finish().hex_encode()
+
+
+## Why a saved game / replay / snapshot recorded under `header` cannot run on
+## the loaded pack, or "" when it can. No `pack` key means "whatever is loaded"
+## (the pre-plumbing headers). The id is what refuses; a content-hash
+## difference is the multiplayer hello's business.
+static func HeaderMismatch(header: Dictionary) -> String:
+	var want := str(header.get("pack", ""))
+	if want.is_empty():
+		return ""
+	if IsLoaded() and want != LoadedId():
+		return "recorded on pack '%s'; '%s' is loaded" % [want, LoadedId()]
+	if not IsLoaded() and not ListPackIds().has(want):
+		return "recorded on pack '%s', which is not installed" % want
+	return ""
 
 
 static func Load(pack: PackLoader.LoadedPack) -> void:
