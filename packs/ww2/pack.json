@@ -10,7 +10,7 @@
     "color": "#9a9a9a"
   },
   "unexplored_color": "#cccccc",
-  "map_image": "world.png",
+  "map_image": "world_1941.jpg",
   "setup": {
     "difficulty_default": "easy",
     "galaxy_sizes": [
@@ -28,6 +28,7 @@
   "credits": [
     "World War II faction pack for the Faction Wars engine.",
     "Unit, facility and seeding numbers are the Star Wars: Rebellion tables re-skinned; balance is measured, not invented.",
-    "Faction Wars engine: TeeJS."
+    "Faction Wars engine: TeeJS.",
+    "Map: 'Political map of the world', a 1941 atlas page, public domain (publicdomainpictures.net, image 510694), cropped to the map."
   ]
 }
