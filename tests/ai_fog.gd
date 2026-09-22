@@ -79,7 +79,7 @@ func _init() -> void:
 
 	# --- 3. + 8. PEOPLE (_enemy_target_characters, AIObjectives._target_located) -------
 	var names: Array = VictoryManager.CaptureTargets(empire)
-	var victim: Character = _first_char(func(c): return c.Faction == alliance and names.has(c.Name) and c.Status != Enums.Status.Dead)
+	var victim: Character = _first_char(func(c): return c.Faction == alliance and names.has(c.PackId) and c.Status != Enums.Status.Dead)
 	_check(victim != null, "a Rebel the Empire must capture exists")
 	if victim != null:
 		var elsewhere: Planet = _first(func(p): return p != world and p.ControllingFaction == alliance and not p.HasHeadquarters())
@@ -92,11 +92,11 @@ func _init() -> void:
 		_check(IntelManager.Knows(empire, world, Enums.IntelSection.Characters), "we have seen who is on %s" % world.Name)
 		_check(not AIActionSelection._enemy_target_characters(ctx, Enums.MissionType.Abduction).has(victim),
 			"%s arrived AFTER we looked: not an abduction target" % victim.Name)
-		_check(not AIObjectives._target_located(ctx, victim.Name), "...and not 'located' to the objectives stage")
+		_check(not AIObjectives._target_located(ctx, victim.PackId), "...and not 'located' to the objectives stage")
 		IntelManager.Capture(empire, world, today, IntelManager.EspionageCategories)
 		ctx = _ctx(empire)
 		_check(AIActionSelection._enemy_target_characters(ctx, Enums.MissionType.Abduction).has(victim), "we look again and see them: now a target")
-		_check(AIObjectives._target_located(ctx, victim.Name), "...and located")
+		_check(AIObjectives._target_located(ctx, victim.PackId), "...and located")
 		# Seen there, then GONE: not offered at the old address (and not at the new one).
 		MilitaryCatalog.Relocate(victim, elsewhere if elsewhere != null else seat)
 		ctx = _ctx(empire)

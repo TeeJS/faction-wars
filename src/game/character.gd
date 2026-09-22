@@ -6,6 +6,9 @@ extends Unit
 
 ## Major or minor - set from which file the character was loaded out of, not JSON.
 var IsMajor: bool
+## The pack's id (characters.json). Victory targets and every other pack
+## reference resolve on THIS, never on Name (SCHEMA.md section 12 Q1).
+var PackId: String
 
 var Rank: Enums.Rank = Enums.Rank.None
 var Commanding: Location   # a planet or a fleet
@@ -222,6 +225,7 @@ static func from_dict(d: Dictionary) -> Character:
 ## says so.
 static func FromPack(def: PackDefs.CharacterDef) -> Character:
 	var c := Character.new()
+	c.PackId = def.Id
 	c.Name = def.DisplayName
 	c.Faction = FactionRegistry.ById(def.FactionId)
 	c.IsMajor = def.IsMajor

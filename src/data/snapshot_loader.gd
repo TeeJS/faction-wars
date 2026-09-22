@@ -107,6 +107,26 @@ static func _resolve_location(ref: Variant) -> Location:
 	return null
 
 
+## The snapshot is the C# writer's format and names worlds and people by DISPLAY
+## NAME. The pack references them by id, so each is looked up once here.
+static func _planet_id_for(display_name: String) -> String:
+	var pack := FactionRegistry.Pack
+	if pack != null and pack.Map != null:
+		for pd in pack.Map.Planets:
+			if pd.DisplayName == display_name:
+				return pd.Id
+	return ""
+
+
+static func _character_id_for(display_name: String) -> String:
+	var pack := FactionRegistry.Pack
+	if pack != null:
+		for cd in pack.Characters:
+			if cd.DisplayName == display_name:
+				return cd.Id
+	return ""
+
+
 static func _faction(v: Variant) -> Faction:
 	return null if v == null else FactionRegistry.ById(str(v))
 
@@ -114,6 +134,7 @@ static func _faction(v: Variant) -> Faction:
 static func _planet(pd: Dictionary, deferred: Array) -> Planet:
 	var p := Planet.new()
 	p.Name = str(pd.get("Name", ""))
+	p.PackId = _planet_id_for(p.Name)
 	p.MapX = float(pd.get("MapX", 0))
 	p.MapY = float(pd.get("MapY", 0))
 	p.StartsInhabited = bool(pd.get("StartsInhabited", false))
@@ -218,6 +239,7 @@ const LEGACY_POWER_FIELDS := {
 static func _character(cd: Dictionary, deferred: Array) -> Character:
 	var c := Character.new()
 	_hydrate_unit_fields(c, cd)
+	c.PackId = _character_id_for(c.Name)
 	for legacy in LEGACY_POWER_FIELDS:
 		if cd.has(legacy):
 			c.set(LEGACY_POWER_FIELDS[legacy], cd[legacy])

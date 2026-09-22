@@ -13,7 +13,7 @@
       "occupation_support_policy": "occupation_penalty",
       "starting_planets": [
         {
-          "planet": "Yavin",
+          "planet": "yavin",
           "support": 100,
           "explored": true,
           "garrison": "alliance_start_garrison"
@@ -27,8 +27,8 @@
       },
       "victory": {
         "capture_characters": [
-          "Emperor Palpatine",
-          "Darth Vader"
+          "emperor_palpatine",
+          "darth_vader"
         ]
       }
     },
@@ -39,7 +39,7 @@
       "loyalty_label": "Loyalty to the Empire",
       "hq": {
         "kind": "fixed",
-        "planet": "Coruscant"
+        "planet": "coruscant"
       },
       "occupation_support_policy": "garrison_bonus",
       "starting_planets": [],
@@ -51,8 +51,8 @@
       },
       "victory": {
         "capture_characters": [
-          "Luke Skywalker",
-          "Mon Mothma"
+          "luke_skywalker",
+          "mon_mothma"
         ]
       }
     }
