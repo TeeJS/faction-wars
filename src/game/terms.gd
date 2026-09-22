@@ -52,6 +52,9 @@ const DEFAULTS := {
 	"system_tractor":         "Tractor Power",
 	"system_engines":         "Combat Engines",
 	"system_hyperdrive":      "Transit Drive",
+	# a standing defence's state tag in the Defenses window
+	"shield_active":          "Shielding Up",
+	"weapon_armed":           "Armed",
 }
 
 

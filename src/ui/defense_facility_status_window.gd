@@ -13,13 +13,10 @@ func _ready() -> void:
 func Populate(facility: Facility) -> void:
 	_associatedFacility = facility
 
-	# Title bar
-	var facilityType: String
-	match facility.Family():
-		"planetary_shield": facilityType = "Planetary Shield"
-		"turbolaser_battery": facilityType = "Turbolaser Battery"
-		"ion_cannon": facilityType = "Ion Cannon"
-		_: facilityType = "Defense Facility"
+	# Title bar: the KIND of defence, which is the pack's tier-1 name for the
+	# family ("Planetary Shield Status" for both shield tiers; "Coastal Battery
+	# Status" on a pack that has no turbolasers). Never a family id in code.
+	var facilityType: String = Facility.NameOf(facility.Family(), 1)
 	(get_node("%TitleBarLabel") as Label).text = "%s Status" % facilityType
 
 	# Location
@@ -76,12 +73,10 @@ func Populate(facility: Facility) -> void:
 			weaponKey.text = "Std Processing Rate:"
 		weaponVal.text = ("%d days per refined point" % rate) if rate > 0 else "0 (does not refine)"
 
-	# Shield Strength (only for shields)
-	var shieldText: String
-	match facility.Family():
-		"planetary_shield": shieldText = "%d HP" % facility.ShieldStrength
-		_: shieldText = "N/A"
-	(get_node("%ValShieldStrength") as Label).text = shieldText
+	# Shield strength (only for a facility with the shield role), under the
+	# pack's word for the stat ("Shield Strength:" / "Armour:").
+	(get_node("%LblShieldStrength") as Label).text = Terms.field("shield")
+	(get_node("%ValShieldStrength") as Label).text = ("%d HP" % facility.ShieldStrength) if facility.HasRole("shield") else "N/A"
 
 	# "BOMBARDMENT VALUE" (manual p085, fig 3.28) - how much bombarding
 	# firepower it takes to destroy this, straight from the binary tables.
@@ -98,21 +93,18 @@ func Populate(facility: Facility) -> void:
 	(get_node("%ValTier") as Label).text = "Level %d" % facility.Tier
 
 	(get_node("%ValTier") as Label).text = "Tier %d" % facility.Tier
-	var typeText: String
-	match facility.Family():
-		"planetary_shield": typeText = "Planetary Shield"
-		"turbolaser_battery": typeText = "Turbolaser Battery"
-		"ion_cannon": typeText = "Ion Cannon"
-		_: typeText = "Defense Facility"
-	(get_node("%ValType") as Label).text = typeText
+	(get_node("%ValType") as Label).text = facilityType
 
-	# Also update portrait icon to reflect type
+	# The portrait glyph follows the ROLE - what the thing does - not its name.
 	var iconLabel: Label = get_node("%IconLabel")
-	match facility.Family():
-		"planetary_shield": iconLabel.text = "🛡️"   # Shield
-		"turbolaser_battery": iconLabel.text = "💥"   # Weapon
-		"ion_cannon": iconLabel.text = "⚡"           # Ion
-		_: iconLabel.text = "🛰️"
+	if facility.HasRole("shield"):
+		iconLabel.text = "🛡️"
+	elif facility.HasRole("disable"):
+		iconLabel.text = "⚡"
+	elif facility.HasRole("anti_ship"):
+		iconLabel.text = "💥"
+	else:
+		iconLabel.text = "🛰️"
 
 
 func Refresh() -> void:
