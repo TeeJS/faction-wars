@@ -88,6 +88,11 @@ func _init() -> void:
 		_pack({}, {}, {"char_id": "second_person"}), "duplicate id")
 	_case("unknown can_command rank",
 		_pack({}, {}, {"char_command": ["warlord"]}), "unknown can_command entry 'warlord'")
+	# Rule 15 - a declared start is a world the side holds at day zero.
+	_case("starts_at names a planet not on the map",
+		_pack({}, {}, {"char_starts_at": "nowhere"}), "starts_at 'nowhere' is not a planet id")
+	_case("starts_at names a world the side does not hold at day zero",
+		_pack({}, {}, {"char_starts_at": "rim_world"}), "is not a world test_side holds at day zero")
 	_case("victory target who is not a character",
 		_pack({}, {}, {"victory": "nobody_at_all"}), "victory target 'nobody_at_all' is not a character id")
 	_case("a display name used where a character id belongs",
@@ -366,6 +371,7 @@ func _pack(sector_over: Dictionary, planet_over: Dictionary, other: Dictionary) 
 		"can_command": other.get("char_command", ["general"]),
 		"wont_betray": true,
 		"roles": other.get("char_roles", ["pilgrim"]),
+		"starts_at": other.get("char_starts_at", ""),
 		"special_power": {"probability": 0, "is_known_user": false,
 			"level": {"base": 0, "var": 0}, "can_train": false}}
 	var c2 := {"id": "second_person", "display_name": "Second Person",

@@ -51,6 +51,7 @@
         "LevelVar": 0,
         "Probability": 0
       },
+      "StartsAt": "",
       "StringId": 10304,
       "WontBetray": true
     },
@@ -106,6 +107,7 @@
         "LevelVar": 0,
         "Probability": 100
       },
+      "StartsAt": "",
       "StringId": 10305,
       "WontBetray": true
     },
@@ -165,6 +167,7 @@
         "LevelVar": 0,
         "Probability": 100
       },
+      "StartsAt": "",
       "StringId": 10306,
       "WontBetray": true
     },
@@ -224,6 +227,7 @@
         "LevelVar": 0,
         "Probability": 0
       },
+      "StartsAt": "",
       "StringId": 10307,
       "WontBetray": true
     },
@@ -279,6 +283,7 @@
         "LevelVar": 0,
         "Probability": 100
       },
+      "StartsAt": "",
       "StringId": 10368,
       "WontBetray": true
     },
@@ -338,6 +343,7 @@
         "LevelVar": 0,
         "Probability": 100
       },
+      "StartsAt": "",
       "StringId": 10369,
       "WontBetray": true
     },
@@ -393,6 +399,7 @@
         "LevelVar": 40,
         "Probability": 10
       },
+      "StartsAt": "",
       "StringId": 10816,
       "WontBetray": true
     },
@@ -451,6 +458,7 @@
         "LevelVar": 40,
         "Probability": 10
       },
+      "StartsAt": "",
       "StringId": 10817,
       "WontBetray": true
     },
@@ -507,6 +515,7 @@
         "LevelVar": 40,
         "Probability": 10
       },
+      "StartsAt": "",
       "StringId": 10818,
       "WontBetray": false
     },
@@ -562,6 +571,7 @@
         "LevelVar": 40,
         "Probability": 10
       },
+      "StartsAt": "",
       "StringId": 10819,
       "WontBetray": true
     },
@@ -619,6 +629,7 @@
         "LevelVar": 40,
         "Probability": 10
       },
+      "StartsAt": "",
       "StringId": 10820,
       "WontBetray": false
     },
@@ -673,6 +684,7 @@
         "LevelVar": 40,
         "Probability": 20
       },
+      "StartsAt": "",
       "StringId": 10821,
       "WontBetray": false
     },
@@ -727,6 +739,7 @@
         "LevelVar": 40,
         "Probability": 20
       },
+      "StartsAt": "",
       "StringId": 10822,
       "WontBetray": false
     },
@@ -783,6 +796,7 @@
         "LevelVar": 30,
         "Probability": 20
       },
+      "StartsAt": "",
       "StringId": 10823,
       "WontBetray": false
     },
@@ -838,6 +852,7 @@
         "LevelVar": 40,
         "Probability": 20
       },
+      "StartsAt": "",
       "StringId": 10824,
       "WontBetray": false
     },
@@ -890,6 +905,7 @@
         "LevelVar": 40,
         "Probability": 20
       },
+      "StartsAt": "",
       "StringId": 10825,
       "WontBetray": false
     },
@@ -942,6 +958,7 @@
         "LevelVar": 30,
         "Probability": 20
       },
+      "StartsAt": "",
       "StringId": 10826,
       "WontBetray": false
     },
@@ -997,6 +1014,7 @@
         "LevelVar": 40,
         "Probability": 20
       },
+      "StartsAt": "",
       "StringId": 10827,
       "WontBetray": false
     },
@@ -1052,6 +1070,7 @@
         "LevelVar": 40,
         "Probability": 20
       },
+      "StartsAt": "",
       "StringId": 10828,
       "WontBetray": false
     },
@@ -1108,6 +1127,7 @@
         "LevelVar": 40,
         "Probability": 20
       },
+      "StartsAt": "",
       "StringId": 10829,
       "WontBetray": false
     },
@@ -1163,6 +1183,7 @@
         "LevelVar": 40,
         "Probability": 20
       },
+      "StartsAt": "",
       "StringId": 10830,
       "WontBetray": false
     },
@@ -1218,6 +1239,7 @@
         "LevelVar": 40,
         "Probability": 20
       },
+      "StartsAt": "",
       "StringId": 10831,
       "WontBetray": false
     },
@@ -1270,6 +1292,7 @@
         "LevelVar": 40,
         "Probability": 20
       },
+      "StartsAt": "",
       "StringId": 10832,
       "WontBetray": false
     },
@@ -1325,6 +1348,7 @@
         "LevelVar": 20,
         "Probability": 20
       },
+      "StartsAt": "",
       "StringId": 10833,
       "WontBetray": false
     },
@@ -1381,6 +1405,7 @@
         "LevelVar": 40,
         "Probability": 10
       },
+      "StartsAt": "",
       "StringId": 10834,
       "WontBetray": false
     },
@@ -1436,6 +1461,7 @@
         "LevelVar": 40,
         "Probability": 20
       },
+      "StartsAt": "",
       "StringId": 10835,
       "WontBetray": false
     },
@@ -1491,6 +1517,7 @@
         "LevelVar": 40,
         "Probability": 20
       },
+      "StartsAt": "",
       "StringId": 10836,
       "WontBetray": false
     },
@@ -1546,6 +1573,7 @@
         "LevelVar": 40,
         "Probability": 20
       },
+      "StartsAt": "",
       "StringId": 10837,
       "WontBetray": false
     },
@@ -1600,6 +1628,7 @@
         "LevelVar": 20,
         "Probability": 20
       },
+      "StartsAt": "",
       "StringId": 10838,
       "WontBetray": false
     },
@@ -1652,6 +1681,7 @@
         "LevelVar": 40,
         "Probability": 20
       },
+      "StartsAt": "",
       "StringId": 10839,
       "WontBetray": false
     },
@@ -1704,6 +1734,7 @@
         "LevelVar": 40,
         "Probability": 20
       },
+      "StartsAt": "",
       "StringId": 10840,
       "WontBetray": false
     },
@@ -1756,6 +1787,7 @@
         "LevelVar": 40,
         "Probability": 20
       },
+      "StartsAt": "",
       "StringId": 10841,
       "WontBetray": false
     },
@@ -1814,6 +1846,7 @@
         "LevelVar": 40,
         "Probability": 10
       },
+      "StartsAt": "",
       "StringId": 10880,
       "WontBetray": false
     },
@@ -1871,6 +1904,7 @@
         "LevelVar": 40,
         "Probability": 10
       },
+      "StartsAt": "",
       "StringId": 10881,
       "WontBetray": false
     },
@@ -1929,6 +1963,7 @@
         "LevelVar": 40,
         "Probability": 10
       },
+      "StartsAt": "",
       "StringId": 10882,
       "WontBetray": false
     },
@@ -1985,6 +2020,7 @@
         "LevelVar": 40,
         "Probability": 10
       },
+      "StartsAt": "",
       "StringId": 10883,
       "WontBetray": false
     },
@@ -2041,6 +2077,7 @@
         "LevelVar": 40,
         "Probability": 10
       },
+      "StartsAt": "",
       "StringId": 10884,
       "WontBetray": false
     },
@@ -2095,6 +2132,7 @@
         "LevelVar": 40,
         "Probability": 10
       },
+      "StartsAt": "",
       "StringId": 10885,
       "WontBetray": false
     },
@@ -2151,6 +2189,7 @@
         "LevelVar": 40,
         "Probability": 10
       },
+      "StartsAt": "",
       "StringId": 10886,
       "WontBetray": false
     },
@@ -2203,6 +2242,7 @@
         "LevelVar": 40,
         "Probability": 10
       },
+      "StartsAt": "",
       "StringId": 10887,
       "WontBetray": false
     },
@@ -2255,6 +2295,7 @@
         "LevelVar": 40,
         "Probability": 20
       },
+      "StartsAt": "",
       "StringId": 10888,
       "WontBetray": false
     },
@@ -2311,6 +2352,7 @@
         "LevelVar": 40,
         "Probability": 10
       },
+      "StartsAt": "",
       "StringId": 10889,
       "WontBetray": false
     },
@@ -2366,6 +2408,7 @@
         "LevelVar": 40,
         "Probability": 10
       },
+      "StartsAt": "",
       "StringId": 10890,
       "WontBetray": false
     },
@@ -2421,6 +2464,7 @@
         "LevelVar": 40,
         "Probability": 10
       },
+      "StartsAt": "",
       "StringId": 10891,
       "WontBetray": false
     },
@@ -2479,6 +2523,7 @@
         "LevelVar": 40,
         "Probability": 10
       },
+      "StartsAt": "",
       "StringId": 10892,
       "WontBetray": false
     },
@@ -2535,6 +2580,7 @@
         "LevelVar": 40,
         "Probability": 10
       },
+      "StartsAt": "",
       "StringId": 10893,
       "WontBetray": false
     },
@@ -2589,6 +2635,7 @@
         "LevelVar": 40,
         "Probability": 10
       },
+      "StartsAt": "",
       "StringId": 10894,
       "WontBetray": false
     },
@@ -2645,6 +2692,7 @@
         "LevelVar": 40,
         "Probability": 10
       },
+      "StartsAt": "",
       "StringId": 10895,
       "WontBetray": false
     },
@@ -2701,6 +2749,7 @@
         "LevelVar": 40,
         "Probability": 10
       },
+      "StartsAt": "",
       "StringId": 10896,
       "WontBetray": false
     },
@@ -2757,6 +2806,7 @@
         "LevelVar": 0,
         "Probability": 0
       },
+      "StartsAt": "",
       "StringId": 10897,
       "WontBetray": false
     },
@@ -2813,6 +2863,7 @@
         "LevelVar": 40,
         "Probability": 10
       },
+      "StartsAt": "",
       "StringId": 10898,
       "WontBetray": false
     },
@@ -2869,6 +2920,7 @@
         "LevelVar": 40,
         "Probability": 10
       },
+      "StartsAt": "",
       "StringId": 10899,
       "WontBetray": false
     },
@@ -2925,6 +2977,7 @@
         "LevelVar": 40,
         "Probability": 10
       },
+      "StartsAt": "",
       "StringId": 10900,
       "WontBetray": false
     },
@@ -2977,6 +3030,7 @@
         "LevelVar": 40,
         "Probability": 10
       },
+      "StartsAt": "",
       "StringId": 10901,
       "WontBetray": false
     },
@@ -3029,6 +3083,7 @@
         "LevelVar": 40,
         "Probability": 10
       },
+      "StartsAt": "",
       "StringId": 10902,
       "WontBetray": false
     },
@@ -3081,6 +3136,7 @@
         "LevelVar": 20,
         "Probability": 10
       },
+      "StartsAt": "",
       "StringId": 10903,
       "WontBetray": false
     },
@@ -3133,6 +3189,7 @@
         "LevelVar": 40,
         "Probability": 10
       },
+      "StartsAt": "",
       "StringId": 10904,
       "WontBetray": false
     },
@@ -3185,6 +3242,7 @@
         "LevelVar": 40,
         "Probability": 10
       },
+      "StartsAt": "",
       "StringId": 10905,
       "WontBetray": false
     },
@@ -3237,6 +3295,7 @@
         "LevelVar": 40,
         "Probability": 10
       },
+      "StartsAt": "",
       "StringId": 10906,
       "WontBetray": false
     },
@@ -3289,6 +3348,7 @@
         "LevelVar": 40,
         "Probability": 10
       },
+      "StartsAt": "",
       "StringId": 10907,
       "WontBetray": false
     }

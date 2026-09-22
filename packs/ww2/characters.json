@@ -44,6 +44,7 @@
       "roles": [
         "starts_at_hq"
       ],
+      "starts_at": "germany",
       "special_power": {
         "probability": 0,
         "is_known_user": false,
@@ -100,6 +101,7 @@
       "roles": [
         "starts_at_first_world"
       ],
+      "starts_at": "italy",
       "special_power": {
         "probability": 0,
         "is_known_user": false,
@@ -154,6 +156,7 @@
       ],
       "wont_betray": true,
       "roles": [],
+      "starts_at": "japan",
       "special_power": {
         "probability": 0,
         "is_known_user": false,
@@ -208,6 +211,7 @@
       ],
       "wont_betray": false,
       "roles": [],
+      "starts_at": "germany",
       "special_power": {
         "probability": 0,
         "is_known_user": false,
@@ -530,6 +534,7 @@
       "roles": [
         "starts_at_random_holding"
       ],
+      "starts_at": "germany",
       "special_power": {
         "probability": 0,
         "is_known_user": false,
@@ -697,6 +702,7 @@
       "roles": [
         "starts_at_random_holding"
       ],
+      "starts_at": "germany",
       "special_power": {
         "probability": 0,
         "is_known_user": false,
@@ -861,6 +867,7 @@
       "roles": [
         "starts_at_random_holding"
       ],
+      "starts_at": "japan",
       "special_power": {
         "probability": 0,
         "is_known_user": false,
@@ -915,6 +922,7 @@
       ],
       "wont_betray": false,
       "roles": [],
+      "starts_at": "japan",
       "special_power": {
         "probability": 0,
         "is_known_user": false,
@@ -1023,6 +1031,7 @@
       ],
       "wont_betray": false,
       "roles": [],
+      "starts_at": "italy",
       "special_power": {
         "probability": 0,
         "is_known_user": false,
@@ -1075,6 +1084,7 @@
       "can_command": [],
       "wont_betray": false,
       "roles": [],
+      "starts_at": "italy",
       "special_power": {
         "probability": 0,
         "is_known_user": false,
@@ -1129,6 +1139,7 @@
       "roles": [
         "starts_at_hq"
       ],
+      "starts_at": "britain",
       "special_power": {
         "probability": 0,
         "is_known_user": false,
@@ -1181,6 +1192,7 @@
       "can_command": [],
       "wont_betray": true,
       "roles": [],
+      "starts_at": "united_states",
       "special_power": {
         "probability": 0,
         "is_known_user": false,
@@ -1233,6 +1245,7 @@
       "can_command": [],
       "wont_betray": true,
       "roles": [],
+      "starts_at": "russia",
       "special_power": {
         "probability": 0,
         "is_known_user": false,
@@ -1287,6 +1300,7 @@
       ],
       "wont_betray": true,
       "roles": [],
+      "starts_at": "china",
       "special_power": {
         "probability": 0,
         "is_known_user": false,
@@ -1343,6 +1357,7 @@
       "roles": [
         "starts_at_first_world"
       ],
+      "starts_at": "france",
       "special_power": {
         "probability": 0,
         "is_known_user": false,
@@ -1400,6 +1415,7 @@
       "roles": [
         "starts_at_first_world"
       ],
+      "starts_at": "united_states",
       "special_power": {
         "probability": 0,
         "is_known_user": false,
@@ -1456,6 +1472,7 @@
       "roles": [
         "starts_at_first_world"
       ],
+      "starts_at": "britain",
       "special_power": {
         "probability": 0,
         "is_known_user": false,
@@ -1564,6 +1581,7 @@
       ],
       "wont_betray": false,
       "roles": [],
+      "starts_at": "russia",
       "special_power": {
         "probability": 0,
         "is_known_user": false,
@@ -1673,6 +1691,7 @@
       ],
       "wont_betray": true,
       "roles": [],
+      "starts_at": "united_states",
       "special_power": {
         "probability": 0,
         "is_known_user": false,
@@ -1783,6 +1802,7 @@
       "roles": [
         "starts_at_first_world"
       ],
+      "starts_at": "britain",
       "special_power": {
         "probability": 0,
         "is_known_user": false,
@@ -1839,6 +1859,7 @@
       "roles": [
         "starts_at_first_world"
       ],
+      "starts_at": "britain",
       "special_power": {
         "probability": 0,
         "is_known_user": false,
@@ -1893,6 +1914,7 @@
       ],
       "wont_betray": false,
       "roles": [],
+      "starts_at": "britain",
       "special_power": {
         "probability": 0,
         "is_known_user": false,
@@ -2374,6 +2396,7 @@
       ],
       "wont_betray": false,
       "roles": [],
+      "starts_at": "france",
       "special_power": {
         "probability": 0,
         "is_known_user": false,
@@ -2966,6 +2989,7 @@
       ],
       "wont_betray": true,
       "roles": [],
+      "starts_at": "united_states",
       "special_power": {
         "probability": 0,
         "is_known_user": false,
