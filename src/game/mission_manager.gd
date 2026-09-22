@@ -19,7 +19,7 @@ const SpecForceMissions := {
 	"Longprobe Y-wing Recon Team": [Enums.MissionType.Reconnaissance],
 	"Bothan Spies":                [Enums.MissionType.Espionage],
 	"Guerrillas":                  [Enums.MissionType.InciteUprising, Enums.MissionType.SubdueUprising],
-	"Infiltrators":                [Enums.MissionType.Abduction, Enums.MissionType.Rescue, Enums.MissionType.Sabotage, Enums.MissionType.DeathStarSabotage],
+	"Infiltrators":                [Enums.MissionType.Abduction, Enums.MissionType.Rescue, Enums.MissionType.Sabotage, Enums.MissionType.SuperweaponSabotage],
 	# --- Empire ---
 	"Imperial Probe Droid":        [Enums.MissionType.Reconnaissance],
 	"Imperial Espionage Droid":    [Enums.MissionType.Espionage],
@@ -60,8 +60,8 @@ static func Clear() -> void:
 static func CanPerform(u: Unit, type: int) -> bool:
 	if u == null:
 		return false
-	if type == Enums.MissionType.JediTraining:
-		return CanTeachJedi(u) or CanBeJediStudent(u)
+	if type == Enums.MissionType.SpecialPowerTraining:
+		return CanTeachSpecialPower(u) or CanBeSpecialPowerStudent(u)
 	if type == Enums.MissionType.ShipDesignResearch or type == Enums.MissionType.TroopTrainingResearch or type == Enums.MissionType.FacilityDesignResearch:
 		if not (u is Character):
 			return false
@@ -86,30 +86,30 @@ static func TeamCanPerform(team: Array, type: int) -> bool:
 
 ## A FORCE USER IS ONE WHO KNOWS IT (manual p094).
 static func IsForceAware(u: Unit) -> bool:
-	return u is Character and (u as Character).IsKnownJedi and (u as Character).JediLevel > 0
+	return u is Character and (u as Character).IsKnownSpecialPowerUser and (u as Character).SpecialPowerLevel > 0
 
 
-static func CanBeJediStudent(u: Unit) -> bool:
-	return IsForceAware(u) and u is Character and not (u as Character).CanTrainJedi and (u as Character).Name != EmperorName
+static func CanBeSpecialPowerStudent(u: Unit) -> bool:
+	return IsForceAware(u) and u is Character and not (u as Character).CanTrainSpecialPower and (u as Character).Name != EmperorName
 
 
-## WHO MAY TEACH: CanTrainJedi AND Jedi Knight - entry 42 "Force Qualified
+## WHO MAY TEACH: CanTrainSpecialPower AND Jedi Knight - entry 42 "Force Qualified
 ## Character Threshold" = 100.
-static func CanTeachJedi(u: Unit) -> bool:
+static func CanTeachSpecialPower(u: Unit) -> bool:
 	if not (u is Character):
 		return false
 	var t := u as Character
-	return t.CanTrainJedi and t.JediLevel >= RuleManager.Get(RuleId.ForceQualifiedThresh, t.Faction)
+	return t.CanTrainSpecialPower and t.SpecialPowerLevel >= RuleManager.Get(RuleId.ForceQualifiedThresh, t.Faction)
 
 
 ## RULES A PER-MEMBER TEST CANNOT EXPRESS: Jedi Training needs a teacher and
 ## somebody else Force-aware (Encyclopedia; manual mission table; character tables).
 static func TeamMeetsExtraRule(team: Array, type: int) -> Result:
-	if type != Enums.MissionType.JediTraining:
+	if type != Enums.MissionType.SpecialPowerTraining:
 		return Result.success()
-	if not Lq.any(team, CanTeachJedi):
+	if not Lq.any(team, CanTeachSpecialPower):
 		return Result.fail("Only Luke Skywalker or Darth Vader can lead a Jedi Training mission.")
-	if not Lq.any(team, CanBeJediStudent):
+	if not Lq.any(team, CanBeSpecialPowerStudent):
 		return Result.fail("There is no Force-aware character here to train.")
 	return Result.success()
 
@@ -129,7 +129,7 @@ static func TableFor(type: int) -> Variant:
 		Enums.MissionType.Diplomacy:         return MissionTableManager.Diplomacy
 		Enums.MissionType.Rescue:            return MissionTableManager.Rescue
 		Enums.MissionType.Sabotage:          return MissionTableManager.Sabotage
-		Enums.MissionType.DeathStarSabotage: return MissionTableManager.DeathStarSabotage
+		Enums.MissionType.SuperweaponSabotage: return MissionTableManager.SuperweaponSabotage
 		Enums.MissionType.Espionage:         return MissionTableManager.Espionage
 		Enums.MissionType.Recruitment:       return MissionTableManager.Recruitment
 		Enums.MissionType.Abduction:         return MissionTableManager.Abduction
@@ -221,7 +221,7 @@ static func ScoreFor(m: Mission, rating: int) -> int:
 	match m.Type:
 		Enums.MissionType.Espionage, Enums.MissionType.Rescue:
 			return rating
-		Enums.MissionType.Sabotage, Enums.MissionType.DeathStarSabotage:
+		Enums.MissionType.Sabotage, Enums.MissionType.SuperweaponSabotage:
 			return rating
 		Enums.MissionType.Diplomacy, Enums.MissionType.SubdueUprising:
 			return rating + GarrisonTerm(m) - DefenceTerm(m)
@@ -238,12 +238,9 @@ static func SuccessPercent(m: Mission, rating: int) -> int:
 	return MissionTableManager.Lookup(table, ScoreFor(m, rating))
 
 
+## The band's player-facing name - the PACK's wording (display.json).
 static func Pretty(r: int) -> String:
-	match r:
-		Enums.ForceRanking.JediStudent: return "Jedi Student"
-		Enums.ForceRanking.JediKnight:  return "Jedi Knight"
-		Enums.ForceRanking.JediMaster:  return "Jedi Master"
-	return JsonUtil.enum_name(Enums.ForceRanking, r)
+	return Character.RankLabel(r)
 
 
 ## Does this unit go on missions at all? (manual p045, p047, p098)
@@ -278,26 +275,26 @@ static func AwardForceForSuccess(m: Mission, day: int) -> void:
 	if reward <= 0:
 		return
 	for c in Lq.of_type_character(m.Team):
-		if not c.IsKnownJedi or c.JediLevel <= 0:
+		if not c.IsKnownSpecialPowerUser or c.SpecialPowerLevel <= 0:
 			continue
-		var before: int = c.ForceRank()
-		c.JediLevel += reward
-		if c.ForceRank() == before:
+		var before: int = c.SpecialPowerRankOf()
+		c.SpecialPowerLevel += reward
+		if c.SpecialPowerRankOf() == before:
 			continue
-		print("[Force] %s has advanced to %s (level %d)." % [c.Name, JsonUtil.enum_name(Enums.ForceRanking, c.ForceRank()), c.JediLevel])
+		print("[Force] %s has advanced to %s (level %d)." % [c.Name, Character.RankLabel(c.SpecialPowerRankOf()), c.SpecialPowerLevel])
 		if not GameSettings.IsHuman(m.Faction):
 			continue
 		EventBus.Tell(m.Faction, GameMessage.new(
-			"%s is now a %s" % [c.Name, Pretty(c.ForceRank())],
-			"%s's command of the Force has deepened through service. They stand at %s." % [c.Name, Pretty(c.ForceRank())],
+			"%s is now a %s" % [c.Name, Pretty(c.SpecialPowerRankOf())],
+			"%s's command of the Force has deepened through service. They stand at %s." % [c.Name, Pretty(c.SpecialPowerRankOf())],
 			Enums.MessageCategory.Missions, day, m.Target, c))
 
 
 ## Characters improve the skill their mission exercised, on success (guide p094-095;
 ## "SPECIAL FORCES CANNOT IMPROVE"). Lq.of_type_character filters SpecForce units out,
-## which honours that rule and matches the AwardForceForSuccess / DeathStarSabotage
+## which honours that rule and matches the AwardForceForSuccess / SuperweaponSabotage
 ## precedent. Magnitudes are shipped gnprtb entries 111,112,114-121 (each 1), read via
-## RuleManager - never invented. DeathStarSabotage grants its own 122/123 in the success
+## RuleManager - never invented. SuperweaponSabotage grants its own 122/123 in the success
 ## block, so it is excluded here; the three Research types grow faction research, not a
 ## character rating, and are left out (entry 113's rating target is unconfirmed).
 static func AwardSkillForSuccess(m: Mission) -> void:
@@ -403,22 +400,24 @@ static func CanTarget(type: int, actor: Faction, target: Planet) -> Result:
 			return Result.success()
 		Enums.MissionType.Sabotage:
 			return Result.success()   # the OBJECT carries every qualifier (see source)
-		Enums.MissionType.DeathStarSabotage:
+		Enums.MissionType.SuperweaponSabotage:
 			return CanSabotageDeathStar(actor, target)
-		Enums.MissionType.JediTraining:
+		Enums.MissionType.SpecialPowerTraining:
 			if target.ControllingFaction != actor:
 				return Result.fail("%s is not ours." % target.Name)
 			return Result.success()
 		Enums.MissionType.ShipDesignResearch, Enums.MissionType.TroopTrainingResearch, Enums.MissionType.FacilityDesignResearch:
 			if target.ControllingFaction != actor:
 				return Result.fail("%s is not ours." % target.Name)
-			var needed: int
+			# Which PRODUCER the research needs, by role.
+			var needed: String
 			match type:
-				Enums.MissionType.ShipDesignResearch:    needed = Enums.FacilityType.Shipyard
-				Enums.MissionType.TroopTrainingResearch: needed = Enums.FacilityType.TrainingFacility
-				_:                                       needed = Enums.FacilityType.ConstructionYard
-			if target.CountOf(needed) == 0:
-				return Result.fail("%s has no %s." % [target.Name, JsonUtil.enum_name(Enums.FacilityType, needed)])
+				Enums.MissionType.ShipDesignResearch:    needed = "produces_unit"
+				Enums.MissionType.TroopTrainingResearch: needed = "produces_troop"
+				_:                                       needed = "produces_facility"
+			if target.CountByRole(needed) == 0:
+				var example := FacilityCatalog.FirstWithRole(needed)
+				return Result.fail("%s has no %s." % [target.Name, example.DisplayName if example != null else needed])
 			return Result.success()
 	return Result.fail("Unknown mission type.")
 
@@ -499,7 +498,7 @@ static func CanSabotage(actor: Faction, target: Variant, where: Planet) -> Resul
 			return Result.fail("That facility is not there.")
 		if where.ControllingFaction == actor:
 			return Result.fail("The %s is ours." % f.Name())
-		if f.Type == Enums.FacilityType.Headquarters and not _is_empire(actor):
+		if f.HasRole("headquarters") and not _is_empire(actor):
 			return Result.fail("Only the Empire can sabotage a headquarters.")
 		return Result.success()
 	if target is Unit:
@@ -583,12 +582,12 @@ static func Launch(type: int, team: Array, from: Planet, target: Planet, decoys:
 		print("[Mission] %s is in no condition to go." % unfit.Name)
 		return null
 
-	if type == Enums.MissionType.JediTraining:
+	if type == Enums.MissionType.SpecialPowerTraining:
 		var people := Lq.of_type_character(team)
-		if not Lq.any(people, CanTeachJedi):
+		if not Lq.any(people, CanTeachSpecialPower):
 			print("[Mission] Jedi Training needs Luke Skywalker or Darth Vader.")
 			return null
-		if not Lq.any(people, CanBeJediStudent):
+		if not Lq.any(people, CanBeSpecialPowerStudent):
 			print("[Mission] Jedi Training needs at least one Force-aware student.")
 			return null
 
@@ -647,7 +646,7 @@ static func ProcessDay(rng: Prng, day: int) -> void:
 
 		# ✅ THE TRAINING ABORT, FROM THE ENCYCLOPEDIA: "OR CONTROL PASSES OVER TO
 		# THE ENEMY, the training mission is considered FOILED."
-		if m.Type == Enums.MissionType.JediTraining and m.Arrived() and m.Target.ControllingFaction != m.Faction:
+		if m.Type == Enums.MissionType.SpecialPowerTraining and m.Arrived() and m.Target.ControllingFaction != m.Faction:
 			var lost := SeizeFoiledTeam(m, rng)
 			Report(m, day, "Jedi Training foiled at %s" % m.Target.Name,
 				"%s is no longer ours. The training was broken off.\n\n%s" % [m.Target.Name, lost])
@@ -1045,7 +1044,7 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 					"%s at %s was destroyed by enemy sabotage." % [what, m.Target.Name])
 				m.Finished = true
 
-		Enums.MissionType.DeathStarSabotage:
+		Enums.MissionType.SuperweaponSabotage:
 			var station := DeathStarAt(m.Target)
 			if station == null:
 				Report(m, day, "The Death Star has gone", "My team reached %s to find the Death Star no longer there." % m.Target.Name)
@@ -1066,21 +1065,21 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 				m.Finished = true
 				EventBus.BroadcastChanged()
 
-		Enums.MissionType.JediTraining:
+		Enums.MissionType.SpecialPowerTraining:
 			var people := Lq.of_type_character(m.Team)
-			var teacher: Character = Lq.first_or_null(people, CanTeachJedi)
-			var students := Lq.where(people, CanBeJediStudent)
+			var teacher: Character = Lq.first_or_null(people, CanTeachSpecialPower)
+			var students := Lq.where(people, CanBeSpecialPowerStudent)
 			if teacher == null or students.is_empty():
 				m.Finished = true
 			else:
-				var gain: int = maxi(1, teacher.JediLevel / JediTrainingDivisor)
+				var gain: int = maxi(1, teacher.SpecialPowerLevel / JediTrainingDivisor)
 				var risen := []
 				for s in students:
-					var was: int = s.ForceRank()
-					s.IsKnownJedi = true
-					s.JediLevel += gain
-					if s.ForceRank() != was:
-						risen.append("%s is now a %s" % [s.Name, Pretty(s.ForceRank())])
+					var was: int = s.SpecialPowerRankOf()
+					s.IsKnownSpecialPowerUser = true
+					s.SpecialPowerLevel += gain
+					if s.SpecialPowerRankOf() != was:
+						risen.append("%s is now a %s" % [s.Name, Pretty(s.SpecialPowerRankOf())])
 				print("[Mission] Jedi Training at %s: +%d to %s" % [m.Target.Name, gain, Lq.join(Lq.select(students, func(s): return s.Name))])
 				Report(m, day, "Jedi Training at %s" % m.Target.Name,
 					(".\n".join(risen) + ".\n\n" if not risen.is_empty() else "") + "%s has completed a course of training." % teacher.Name)
@@ -1150,9 +1149,9 @@ static func AttributeFor(type: int, u: Unit) -> int:
 		Enums.MissionType.Rescue:         return u.CombatRating
 		# The mean, truncating toward zero (0x55C8D0).
 		Enums.MissionType.Sabotage:          return (u.CombatRating + u.EspionageRating) / 2
-		Enums.MissionType.DeathStarSabotage: return (u.CombatRating + u.EspionageRating) / 2
+		Enums.MissionType.SuperweaponSabotage: return (u.CombatRating + u.EspionageRating) / 2
 		Enums.MissionType.ShipDesignResearch:     return (u as Character).ShipDesign if u is Character else 0
 		Enums.MissionType.TroopTrainingResearch:  return (u as Character).TroopTraining if u is Character else 0
 		Enums.MissionType.FacilityDesignResearch: return (u as Character).FacilityDesign if u is Character else 0
-		Enums.MissionType.JediTraining:           return (u as Character).JediLevel if u is Character else 0
+		Enums.MissionType.SpecialPowerTraining:           return (u as Character).SpecialPowerLevel if u is Character else 0
 	return 0

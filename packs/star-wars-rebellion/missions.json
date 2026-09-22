@@ -1,0 +1,1060 @@
+{
+  "missions": [
+    {
+      "id": "unnamed_01",
+      "display_name": "Unnamed 0x01",
+      "available_to": [
+        "alliance",
+        "empire"
+      ],
+      "spec_forces": [
+        "bothan_spies",
+        "guerrillas",
+        "imperial_commandos",
+        "imperial_espionage_droid",
+        "imperial_probe_droid",
+        "infiltrators",
+        "longprobe_y_wing_recon_team",
+        "noghri_death_commandos"
+      ],
+      "length": {
+        "base": 0,
+        "spread": 0
+      },
+      "flags": {
+        "can_continue": false,
+        "scripted": true,
+        "return_on_abort": false,
+        "target_known_required": true,
+        "abort_on_blockade": false,
+        "can_escape": false,
+        "can_kill": false
+      },
+      "targets": {
+        "friendly": true,
+        "neutral": false,
+        "hostile": false
+      },
+      "source_id": 1,
+      "source_family_id": 65,
+      "string_id": 11265,
+      "spec_force_mask": 3855,
+      "unknown_columns": {
+        "Unknown9": 65536,
+        "Unknown14": 1,
+        "Unknown15": 0,
+        "Unknown17": 1,
+        "Unknown19": 0,
+        "Unknown20": 1,
+        "Unknown24": 0
+      }
+    },
+    {
+      "id": "unnamed_02",
+      "display_name": "Unnamed 0x02",
+      "available_to": [
+        "alliance",
+        "empire"
+      ],
+      "spec_forces": [
+        "bothan_spies",
+        "bounty_hunters",
+        "guerrillas",
+        "imperial_commandos",
+        "imperial_espionage_droid",
+        "imperial_probe_droid",
+        "infiltrators",
+        "longprobe_y_wing_recon_team",
+        "noghri_death_commandos"
+      ],
+      "length": {
+        "base": 0,
+        "spread": 0
+      },
+      "flags": {
+        "can_continue": false,
+        "scripted": true,
+        "return_on_abort": false,
+        "target_known_required": true,
+        "abort_on_blockade": false,
+        "can_escape": false,
+        "can_kill": false
+      },
+      "targets": {
+        "friendly": true,
+        "neutral": false,
+        "hostile": false
+      },
+      "source_id": 2,
+      "source_family_id": 66,
+      "string_id": 11266,
+      "spec_force_mask": 7951,
+      "unknown_columns": {
+        "Unknown9": 65536,
+        "Unknown14": 1,
+        "Unknown15": 0,
+        "Unknown17": 1,
+        "Unknown19": 0,
+        "Unknown20": 1,
+        "Unknown24": 0
+      }
+    },
+    {
+      "id": "unnamed_03",
+      "display_name": "Unnamed 0x03",
+      "available_to": [
+        "alliance",
+        "empire"
+      ],
+      "spec_forces": [
+        "bothan_spies",
+        "guerrillas",
+        "imperial_commandos",
+        "imperial_espionage_droid",
+        "imperial_probe_droid",
+        "infiltrators",
+        "longprobe_y_wing_recon_team",
+        "noghri_death_commandos"
+      ],
+      "length": {
+        "base": 0,
+        "spread": 0
+      },
+      "flags": {
+        "can_continue": false,
+        "scripted": true,
+        "return_on_abort": false,
+        "target_known_required": true,
+        "abort_on_blockade": false,
+        "can_escape": false,
+        "can_kill": false
+      },
+      "targets": {
+        "friendly": true,
+        "neutral": false,
+        "hostile": false
+      },
+      "source_id": 3,
+      "source_family_id": 67,
+      "string_id": 11267,
+      "spec_force_mask": 3855,
+      "unknown_columns": {
+        "Unknown9": 65536,
+        "Unknown14": 1,
+        "Unknown15": 0,
+        "Unknown17": 1,
+        "Unknown19": 0,
+        "Unknown20": 1,
+        "Unknown24": 0
+      }
+    },
+    {
+      "id": "unnamed_04",
+      "display_name": "Unnamed 0x04",
+      "available_to": [
+        "alliance",
+        "empire"
+      ],
+      "spec_forces": [
+        "bothan_spies",
+        "guerrillas",
+        "imperial_commandos",
+        "imperial_espionage_droid",
+        "imperial_probe_droid",
+        "infiltrators",
+        "longprobe_y_wing_recon_team",
+        "noghri_death_commandos"
+      ],
+      "length": {
+        "base": 0,
+        "spread": 0
+      },
+      "flags": {
+        "can_continue": false,
+        "scripted": true,
+        "return_on_abort": false,
+        "target_known_required": true,
+        "abort_on_blockade": false,
+        "can_escape": false,
+        "can_kill": false
+      },
+      "targets": {
+        "friendly": true,
+        "neutral": false,
+        "hostile": false
+      },
+      "source_id": 4,
+      "source_family_id": 68,
+      "string_id": 11268,
+      "spec_force_mask": 3855,
+      "unknown_columns": {
+        "Unknown9": 65536,
+        "Unknown14": 1,
+        "Unknown15": 0,
+        "Unknown17": 1,
+        "Unknown19": 0,
+        "Unknown20": 1,
+        "Unknown24": 0
+      }
+    },
+    {
+      "id": "diplomacy",
+      "display_name": "Diplomacy",
+      "available_to": [
+        "alliance",
+        "empire"
+      ],
+      "spec_forces": [],
+      "length": {
+        "base": 5,
+        "spread": 10
+      },
+      "flags": {
+        "can_continue": true,
+        "scripted": false,
+        "return_on_abort": true,
+        "target_known_required": true,
+        "abort_on_blockade": true,
+        "can_escape": false,
+        "can_kill": false
+      },
+      "targets": {
+        "friendly": true,
+        "neutral": true,
+        "hostile": false
+      },
+      "source_id": 16,
+      "source_family_id": 81,
+      "string_id": 11280,
+      "spec_force_mask": 0,
+      "unknown_columns": {
+        "Unknown9": 65536,
+        "Unknown14": 1,
+        "Unknown15": 1,
+        "Unknown17": 1,
+        "Unknown19": 1,
+        "Unknown20": 1,
+        "Unknown24": 0
+      }
+    },
+    {
+      "id": "rescue",
+      "display_name": "Rescue",
+      "available_to": [
+        "alliance",
+        "empire"
+      ],
+      "spec_forces": [
+        "infiltrators",
+        "noghri_death_commandos"
+      ],
+      "length": {
+        "base": 1,
+        "spread": 6
+      },
+      "flags": {
+        "can_continue": false,
+        "scripted": false,
+        "return_on_abort": true,
+        "target_known_required": true,
+        "abort_on_blockade": false,
+        "can_escape": true,
+        "can_kill": false
+      },
+      "targets": {
+        "friendly": false,
+        "neutral": false,
+        "hostile": true
+      },
+      "source_id": 17,
+      "source_family_id": 97,
+      "string_id": 11281,
+      "spec_force_mask": 2050,
+      "unknown_columns": {
+        "Unknown9": 65536,
+        "Unknown14": 1,
+        "Unknown15": 1,
+        "Unknown17": 0,
+        "Unknown19": 0,
+        "Unknown20": 1,
+        "Unknown24": 0
+      }
+    },
+    {
+      "id": "sabotage",
+      "display_name": "Sabotage",
+      "available_to": [
+        "alliance",
+        "empire"
+      ],
+      "spec_forces": [
+        "imperial_commandos",
+        "infiltrators"
+      ],
+      "length": {
+        "base": 1,
+        "spread": 2
+      },
+      "flags": {
+        "can_continue": false,
+        "scripted": false,
+        "return_on_abort": true,
+        "target_known_required": true,
+        "abort_on_blockade": false,
+        "can_escape": false,
+        "can_kill": false
+      },
+      "targets": {
+        "friendly": false,
+        "neutral": true,
+        "hostile": true
+      },
+      "source_id": 18,
+      "source_family_id": 105,
+      "string_id": 11282,
+      "spec_force_mask": 1026,
+      "unknown_columns": {
+        "Unknown9": 65536,
+        "Unknown14": 1,
+        "Unknown15": 1,
+        "Unknown17": 0,
+        "Unknown19": 0,
+        "Unknown20": 1,
+        "Unknown24": 0
+      }
+    },
+    {
+      "id": "espionage",
+      "display_name": "Espionage",
+      "available_to": [
+        "alliance",
+        "empire"
+      ],
+      "spec_forces": [
+        "bothan_spies",
+        "imperial_espionage_droid"
+      ],
+      "length": {
+        "base": 1,
+        "spread": 20
+      },
+      "flags": {
+        "can_continue": false,
+        "scripted": false,
+        "return_on_abort": true,
+        "target_known_required": true,
+        "abort_on_blockade": true,
+        "can_escape": false,
+        "can_kill": false
+      },
+      "targets": {
+        "friendly": true,
+        "neutral": true,
+        "hostile": true
+      },
+      "source_id": 19,
+      "source_family_id": 82,
+      "string_id": 11283,
+      "spec_force_mask": 520,
+      "unknown_columns": {
+        "Unknown9": 65536,
+        "Unknown14": 1,
+        "Unknown15": 1,
+        "Unknown17": 0,
+        "Unknown19": 0,
+        "Unknown20": 0,
+        "Unknown24": 1
+      }
+    },
+    {
+      "id": "reconnaissance",
+      "display_name": "Reconnaissance",
+      "available_to": [
+        "alliance",
+        "empire"
+      ],
+      "spec_forces": [
+        "imperial_probe_droid",
+        "longprobe_y_wing_recon_team"
+      ],
+      "length": {
+        "base": 1,
+        "spread": 5
+      },
+      "flags": {
+        "can_continue": false,
+        "scripted": false,
+        "return_on_abort": true,
+        "target_known_required": false,
+        "abort_on_blockade": true,
+        "can_escape": false,
+        "can_kill": false
+      },
+      "targets": {
+        "friendly": false,
+        "neutral": true,
+        "hostile": true
+      },
+      "source_id": 21,
+      "source_family_id": 84,
+      "string_id": 11285,
+      "spec_force_mask": 260,
+      "unknown_columns": {
+        "Unknown9": 0,
+        "Unknown14": 1,
+        "Unknown15": 1,
+        "Unknown17": 0,
+        "Unknown19": 0,
+        "Unknown20": 0,
+        "Unknown24": 1
+      }
+    },
+    {
+      "id": "recruitment",
+      "display_name": "Recruitment",
+      "available_to": [
+        "alliance",
+        "empire"
+      ],
+      "spec_forces": [],
+      "length": {
+        "base": 5,
+        "spread": 20
+      },
+      "flags": {
+        "can_continue": false,
+        "scripted": false,
+        "return_on_abort": true,
+        "target_known_required": true,
+        "abort_on_blockade": true,
+        "can_escape": false,
+        "can_kill": false
+      },
+      "targets": {
+        "friendly": true,
+        "neutral": false,
+        "hostile": false
+      },
+      "source_id": 22,
+      "source_family_id": 85,
+      "string_id": 11286,
+      "spec_force_mask": 0,
+      "unknown_columns": {
+        "Unknown9": 65536,
+        "Unknown14": 1,
+        "Unknown15": 1,
+        "Unknown17": 1,
+        "Unknown19": 1,
+        "Unknown20": 1,
+        "Unknown24": 1
+      }
+    },
+    {
+      "id": "abduction",
+      "display_name": "Abduction",
+      "available_to": [
+        "alliance",
+        "empire"
+      ],
+      "spec_forces": [
+        "infiltrators",
+        "noghri_death_commandos"
+      ],
+      "length": {
+        "base": 1,
+        "spread": 2
+      },
+      "flags": {
+        "can_continue": false,
+        "scripted": false,
+        "return_on_abort": true,
+        "target_known_required": true,
+        "abort_on_blockade": false,
+        "can_escape": false,
+        "can_kill": true
+      },
+      "targets": {
+        "friendly": false,
+        "neutral": false,
+        "hostile": true
+      },
+      "source_id": 23,
+      "source_family_id": 98,
+      "string_id": 11287,
+      "spec_force_mask": 2050,
+      "unknown_columns": {
+        "Unknown9": 65536,
+        "Unknown14": 1,
+        "Unknown15": 1,
+        "Unknown17": 0,
+        "Unknown19": 0,
+        "Unknown20": 1,
+        "Unknown24": 0
+      }
+    },
+    {
+      "id": "ship_design_research",
+      "display_name": "Ship Design Research",
+      "available_to": [
+        "alliance",
+        "empire"
+      ],
+      "spec_forces": [],
+      "length": {
+        "base": 10,
+        "spread": 10
+      },
+      "flags": {
+        "can_continue": true,
+        "scripted": false,
+        "return_on_abort": true,
+        "target_known_required": true,
+        "abort_on_blockade": true,
+        "can_escape": false,
+        "can_kill": false
+      },
+      "targets": {
+        "friendly": true,
+        "neutral": false,
+        "hostile": false
+      },
+      "source_id": 32,
+      "source_family_id": 83,
+      "string_id": 11296,
+      "spec_force_mask": 0,
+      "unknown_columns": {
+        "Unknown9": 65536,
+        "Unknown14": 1,
+        "Unknown15": 1,
+        "Unknown17": 1,
+        "Unknown19": 0,
+        "Unknown20": 1,
+        "Unknown24": 1
+      }
+    },
+    {
+      "id": "facility_design_research",
+      "display_name": "Facility Design Research",
+      "available_to": [
+        "alliance",
+        "empire"
+      ],
+      "spec_forces": [],
+      "length": {
+        "base": 10,
+        "spread": 10
+      },
+      "flags": {
+        "can_continue": true,
+        "scripted": false,
+        "return_on_abort": true,
+        "target_known_required": true,
+        "abort_on_blockade": true,
+        "can_escape": false,
+        "can_kill": false
+      },
+      "targets": {
+        "friendly": true,
+        "neutral": false,
+        "hostile": false
+      },
+      "source_id": 33,
+      "source_family_id": 83,
+      "string_id": 11297,
+      "spec_force_mask": 0,
+      "unknown_columns": {
+        "Unknown9": 65536,
+        "Unknown14": 1,
+        "Unknown15": 1,
+        "Unknown17": 1,
+        "Unknown19": 0,
+        "Unknown20": 1,
+        "Unknown24": 1
+      }
+    },
+    {
+      "id": "troop_training_research",
+      "display_name": "Troop Training Research",
+      "available_to": [
+        "alliance",
+        "empire"
+      ],
+      "spec_forces": [],
+      "length": {
+        "base": 10,
+        "spread": 10
+      },
+      "flags": {
+        "can_continue": true,
+        "scripted": false,
+        "return_on_abort": true,
+        "target_known_required": true,
+        "abort_on_blockade": true,
+        "can_escape": false,
+        "can_kill": false
+      },
+      "targets": {
+        "friendly": true,
+        "neutral": false,
+        "hostile": false
+      },
+      "source_id": 34,
+      "source_family_id": 83,
+      "string_id": 11298,
+      "spec_force_mask": 0,
+      "unknown_columns": {
+        "Unknown9": 65536,
+        "Unknown14": 1,
+        "Unknown15": 1,
+        "Unknown17": 1,
+        "Unknown19": 0,
+        "Unknown20": 1,
+        "Unknown24": 1
+      }
+    },
+    {
+      "id": "incite_uprising",
+      "display_name": "Incite Uprising",
+      "available_to": [
+        "alliance",
+        "empire"
+      ],
+      "spec_forces": [
+        "guerrillas",
+        "imperial_commandos"
+      ],
+      "length": {
+        "base": 2,
+        "spread": 10
+      },
+      "flags": {
+        "can_continue": true,
+        "scripted": false,
+        "return_on_abort": true,
+        "target_known_required": true,
+        "abort_on_blockade": true,
+        "can_escape": false,
+        "can_kill": false
+      },
+      "targets": {
+        "friendly": false,
+        "neutral": false,
+        "hostile": true
+      },
+      "source_id": 64,
+      "source_family_id": 86,
+      "string_id": 11328,
+      "spec_force_mask": 1025,
+      "unknown_columns": {
+        "Unknown9": 65536,
+        "Unknown14": 1,
+        "Unknown15": 1,
+        "Unknown17": 1,
+        "Unknown19": 1,
+        "Unknown20": 1,
+        "Unknown24": 1
+      }
+    },
+    {
+      "id": "death_star_sabotage",
+      "display_name": "Death Star Sabotage",
+      "available_to": [
+        "alliance"
+      ],
+      "spec_forces": [
+        "infiltrators"
+      ],
+      "length": {
+        "base": 1,
+        "spread": 1
+      },
+      "flags": {
+        "can_continue": false,
+        "scripted": false,
+        "return_on_abort": true,
+        "target_known_required": true,
+        "abort_on_blockade": false,
+        "can_escape": false,
+        "can_kill": false
+      },
+      "targets": {
+        "friendly": false,
+        "neutral": false,
+        "hostile": true
+      },
+      "source_id": 65,
+      "source_family_id": 106,
+      "string_id": 11329,
+      "spec_force_mask": 2,
+      "unknown_columns": {
+        "Unknown9": 65536,
+        "Unknown14": 1,
+        "Unknown15": 1,
+        "Unknown17": 0,
+        "Unknown19": 0,
+        "Unknown20": 1,
+        "Unknown24": 0
+      }
+    },
+    {
+      "id": "jedi_training",
+      "display_name": "Jedi Training",
+      "available_to": [
+        "alliance",
+        "empire"
+      ],
+      "spec_forces": [],
+      "length": {
+        "base": 60,
+        "spread": 30
+      },
+      "flags": {
+        "can_continue": false,
+        "scripted": false,
+        "return_on_abort": true,
+        "target_known_required": true,
+        "abort_on_blockade": true,
+        "can_escape": false,
+        "can_kill": false
+      },
+      "targets": {
+        "friendly": true,
+        "neutral": false,
+        "hostile": false
+      },
+      "source_id": 66,
+      "source_family_id": 88,
+      "string_id": 11330,
+      "spec_force_mask": 0,
+      "unknown_columns": {
+        "Unknown9": 65536,
+        "Unknown14": 1,
+        "Unknown15": 1,
+        "Unknown17": 1,
+        "Unknown19": 0,
+        "Unknown20": 1,
+        "Unknown24": 1
+      }
+    },
+    {
+      "id": "dagobah",
+      "display_name": "Dagobah",
+      "available_to": [
+        "alliance"
+      ],
+      "spec_forces": [],
+      "length": {
+        "base": 100,
+        "spread": 0
+      },
+      "flags": {
+        "can_continue": false,
+        "scripted": true,
+        "return_on_abort": true,
+        "target_known_required": false,
+        "abort_on_blockade": false,
+        "can_escape": false,
+        "can_kill": false
+      },
+      "targets": {
+        "friendly": false,
+        "neutral": true,
+        "hostile": false
+      },
+      "source_id": 67,
+      "source_family_id": 113,
+      "string_id": 11331,
+      "spec_force_mask": 0,
+      "unknown_columns": {
+        "Unknown9": 65536,
+        "Unknown14": 1,
+        "Unknown15": 0,
+        "Unknown17": 1,
+        "Unknown19": 0,
+        "Unknown20": 1,
+        "Unknown24": 0
+      }
+    },
+    {
+      "id": "palace",
+      "display_name": "Palace",
+      "available_to": [
+        "alliance"
+      ],
+      "spec_forces": [],
+      "length": {
+        "base": 5,
+        "spread": 10
+      },
+      "flags": {
+        "can_continue": false,
+        "scripted": true,
+        "return_on_abort": true,
+        "target_known_required": false,
+        "abort_on_blockade": false,
+        "can_escape": true,
+        "can_kill": false
+      },
+      "targets": {
+        "friendly": false,
+        "neutral": false,
+        "hostile": true
+      },
+      "source_id": 68,
+      "source_family_id": 100,
+      "string_id": 11332,
+      "spec_force_mask": 0,
+      "unknown_columns": {
+        "Unknown9": 65536,
+        "Unknown14": 1,
+        "Unknown15": 0,
+        "Unknown17": 1,
+        "Unknown19": 0,
+        "Unknown20": 1,
+        "Unknown24": 0
+      }
+    },
+    {
+      "id": "vacation",
+      "display_name": "Vacation",
+      "available_to": [
+        "alliance"
+      ],
+      "spec_forces": [],
+      "length": {
+        "base": 60,
+        "spread": 0
+      },
+      "flags": {
+        "can_continue": false,
+        "scripted": true,
+        "return_on_abort": true,
+        "target_known_required": false,
+        "abort_on_blockade": false,
+        "can_escape": false,
+        "can_kill": false
+      },
+      "targets": {
+        "friendly": false,
+        "neutral": true,
+        "hostile": false
+      },
+      "source_id": 69,
+      "source_family_id": 114,
+      "string_id": 11333,
+      "spec_force_mask": 0,
+      "unknown_columns": {
+        "Unknown9": 65536,
+        "Unknown14": 1,
+        "Unknown15": 0,
+        "Unknown17": 1,
+        "Unknown19": 0,
+        "Unknown20": 1,
+        "Unknown24": 0
+      }
+    },
+    {
+      "id": "sabbatical",
+      "display_name": "Sabbatical",
+      "available_to": [
+        "alliance"
+      ],
+      "spec_forces": [],
+      "length": {
+        "base": 1000,
+        "spread": 0
+      },
+      "flags": {
+        "can_continue": false,
+        "scripted": true,
+        "return_on_abort": true,
+        "target_known_required": false,
+        "abort_on_blockade": false,
+        "can_escape": false,
+        "can_kill": false
+      },
+      "targets": {
+        "friendly": false,
+        "neutral": true,
+        "hostile": false
+      },
+      "source_id": 70,
+      "source_family_id": 114,
+      "string_id": 11334,
+      "spec_force_mask": 0,
+      "unknown_columns": {
+        "Unknown9": 65536,
+        "Unknown14": 1,
+        "Unknown15": 0,
+        "Unknown17": 1,
+        "Unknown19": 0,
+        "Unknown20": 1,
+        "Unknown24": 0
+      }
+    },
+    {
+      "id": "subdue_uprising",
+      "display_name": "Subdue Uprising",
+      "available_to": [
+        "alliance",
+        "empire"
+      ],
+      "spec_forces": [
+        "guerrillas",
+        "imperial_commandos"
+      ],
+      "length": {
+        "base": 2,
+        "spread": 10
+      },
+      "flags": {
+        "can_continue": true,
+        "scripted": false,
+        "return_on_abort": true,
+        "target_known_required": true,
+        "abort_on_blockade": false,
+        "can_escape": false,
+        "can_kill": false
+      },
+      "targets": {
+        "friendly": true,
+        "neutral": false,
+        "hostile": false
+      },
+      "source_id": 128,
+      "source_family_id": 87,
+      "string_id": 11392,
+      "spec_force_mask": 1025,
+      "unknown_columns": {
+        "Unknown9": 65536,
+        "Unknown14": 1,
+        "Unknown15": 1,
+        "Unknown17": 1,
+        "Unknown19": 1,
+        "Unknown20": 1,
+        "Unknown24": 1
+      }
+    },
+    {
+      "id": "assassination",
+      "display_name": "Assassination",
+      "available_to": [
+        "empire"
+      ],
+      "spec_forces": [
+        "noghri_death_commandos"
+      ],
+      "length": {
+        "base": 1,
+        "spread": 1
+      },
+      "flags": {
+        "can_continue": false,
+        "scripted": false,
+        "return_on_abort": true,
+        "target_known_required": true,
+        "abort_on_blockade": false,
+        "can_escape": false,
+        "can_kill": true
+      },
+      "targets": {
+        "friendly": false,
+        "neutral": false,
+        "hostile": true
+      },
+      "source_id": 129,
+      "source_family_id": 99,
+      "string_id": 11393,
+      "spec_force_mask": 2048,
+      "unknown_columns": {
+        "Unknown9": 65536,
+        "Unknown14": 1,
+        "Unknown15": 1,
+        "Unknown17": 0,
+        "Unknown19": 0,
+        "Unknown20": 1,
+        "Unknown24": 0
+      }
+    },
+    {
+      "id": "pickup",
+      "display_name": "Pickup",
+      "available_to": [
+        "empire"
+      ],
+      "spec_forces": [],
+      "length": {
+        "base": 0,
+        "spread": 0
+      },
+      "flags": {
+        "can_continue": false,
+        "scripted": true,
+        "return_on_abort": true,
+        "target_known_required": false,
+        "abort_on_blockade": false,
+        "can_escape": false,
+        "can_kill": false
+      },
+      "targets": {
+        "friendly": true,
+        "neutral": false,
+        "hostile": false
+      },
+      "source_id": 130,
+      "source_family_id": 115,
+      "string_id": 11394,
+      "spec_force_mask": 0,
+      "unknown_columns": {
+        "Unknown9": 65536,
+        "Unknown14": 1,
+        "Unknown15": 0,
+        "Unknown17": 1,
+        "Unknown19": 0,
+        "Unknown20": 1,
+        "Unknown24": 0
+      }
+    },
+    {
+      "id": "bounty",
+      "display_name": "Bounty",
+      "available_to": [
+        "empire"
+      ],
+      "spec_forces": [
+        "bounty_hunters"
+      ],
+      "length": {
+        "base": 0,
+        "spread": 0
+      },
+      "flags": {
+        "can_continue": false,
+        "scripted": true,
+        "return_on_abort": true,
+        "target_known_required": true,
+        "abort_on_blockade": false,
+        "can_escape": false,
+        "can_kill": true
+      },
+      "targets": {
+        "friendly": false,
+        "neutral": false,
+        "hostile": true
+      },
+      "source_id": 131,
+      "source_family_id": 101,
+      "string_id": 11395,
+      "spec_force_mask": 4096,
+      "unknown_columns": {
+        "Unknown9": 65536,
+        "Unknown14": 0,
+        "Unknown15": 0,
+        "Unknown17": 0,
+        "Unknown19": 0,
+        "Unknown20": 1,
+        "Unknown24": 0
+      }
+    }
+  ]
+}

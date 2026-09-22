@@ -181,10 +181,10 @@ func _orders(day: int, us: Faction, them: Faction) -> int:
 			CommandBus.issue("move_fleets", { "fleets": [f.Name], "destination": enemy.Name })
 			n += 1
 	if day % 5 == 2:
-		var rule = Lq.first_or_null(MilitaryCatalog.All(), func(r) -> bool: return r.Type == "Troop" and MilitaryCatalog.CanBeBuiltBy(r, us))
+		var rule = Lq.first_or_null(MilitaryCatalog.All(), func(r) -> bool: return r.Kind == "troop" and MilitaryCatalog.CanBeBuiltBy(r, us))
 		var yard: Planet = Lq.first_or_null(ours, func(p: Planet) -> bool: return p.TrainingFacilities() > 0)
 		if rule != null and yard != null:
-			CommandBus.issue("queue_units", { "planet": yard.Name, "rule": rule.Name, "destination": yard.Name, "count": 1 })
+			CommandBus.issue("queue_units", { "planet": yard.Name, "rule": rule.DisplayName, "destination": yard.Name, "count": 1 })
 			n += 1
 	if day % 11 == 3:
 		var agent: Character = Lq.first_or_null(GameState.ActiveRoster, func(c: Character) -> bool:

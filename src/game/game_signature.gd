@@ -29,8 +29,13 @@ static func ForPlanet(p: Planet) -> String:
 		sb.append(",")
 	sb.append(":")
 
+	# Was the Enums.FacilityType ORDINAL. The pack owns the vocabulary now, so the
+	# signature carries the family id - stable across engine changes, and a pack
+	# that adds a facility gets a signature for it without a code change. This
+	# CHANGES THE HASH against pre-2026-09-21 fixtures; the gate is re-baselined
+	# in the same commit.
 	for f in p.Facilities:
-		sb.append(str(int(f.Type)))
+		sb.append(f.Family())
 		sb.append(".")
 		sb.append(str(f.Tier))
 		sb.append(",")

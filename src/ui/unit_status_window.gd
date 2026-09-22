@@ -56,9 +56,12 @@ func Populate(unit: Unit) -> void:
 		AddStatRow(grid, "Detection Rating:", str(unit.Detection))
 		AddStatRow(grid, "Bombardment Value:", "%d:%d" % [unit.Bombardment, unit.Bombardment])
 		AddStatRow(grid, "Weapons Rating:", "")
-		AddStatRow(grid, "  Laser Rating:", "%d:%d" % [unit.LaserRating, unit.LaserRating])
-		AddStatRow(grid, "  Ion Cannon:", "%d:%d" % [unit.IonCannon, unit.IonCannon])
-		AddStatRow(grid, "  Torpedoes:", "%d:%d" % [unit.Torpedoes, unit.Torpedoes])
+		# Whatever the pack fitted, named by the pack (SCHEMA.md section 6).
+		for w in MilitaryCatalog.WeaponOrder():
+			var fitted: PackDefs.UnitWeaponDef = unit.Weapon(w.Id)
+			if fitted == null:
+				continue
+			AddStatRow(grid, "  %s:" % w.DisplayName, "%d:%d" % [fitted.total(), fitted.total()])
 	elif unit.Type == Enums.UnitType.CapitalShip:
 		AddStatRow(grid, "Hyperdrive Rating:", str(unit.Hyperdrive))
 		AddStatRow(grid, "Sub-Light Engine Rating:", str(unit.Sublight))

@@ -25,7 +25,7 @@ static func Reset() -> void:
 
 ## MISSNSD's own length for Dagobah: 100 base, 0 spread.
 static func DagobahStayDays(rng: Prng) -> int:
-	return MissionCatalog.RollLengthById(MissionCatalog.Dagobah, rng, 100)
+	return MissionCatalog.RollLengthById(MissionCatalog.DagobahId, rng, 100)
 
 
 ## Called by StoryManager when the hunters take Han. Ends the course there and then.
@@ -41,13 +41,13 @@ static func InterruptDagobah() -> void:
 ## REBEXE.EXE 0x575216: completed -> rank + pct(rank, entry 129); interrupted ->
 ## rank + pct(rank, daysTrained / entry 130).
 static func ConcludeDagobah(luke: Character, day: int, completed: bool) -> void:
-	var before := luke.JediLevel
+	var before := luke.SpecialPowerLevel
 	var percent: int
 	if completed:
 		percent = RuleManager.Get(RuleId.DagobahBonusPercent, luke.Faction)
 	else:
 		percent = max(0, day - _departed_on) / max(1, RuleManager.Get(RuleId.DagobahPartialDivisor, luke.Faction))
-	luke.JediLevel = before + before * percent / 100
+	luke.SpecialPowerLevel = before + before * percent / 100
 
 	luke.AtDagobah = false
 	luke.Attached = _return_to
@@ -55,9 +55,9 @@ static func ConcludeDagobah(luke: Character, day: int, completed: bool) -> void:
 	_completed = true
 
 	var served: int = maxi(0, day - _departed_on)
-	var rank_name := JsonUtil.enum_name(Enums.ForceRanking, luke.ForceRank())
+	var rank_name := Character.RankLabel(luke.SpecialPowerRankOf())
 	print("[Force] %s has returned from Dagobah after %d day(s) (%s, +%d%%): Force %d -> %d (%s)." % [
-		luke.Name, served, "completed" if completed else "interrupted", percent, before, luke.JediLevel, rank_name])
+		luke.Name, served, "completed" if completed else "interrupted", percent, before, luke.SpecialPowerLevel, rank_name])
 
 	if not GameSettings.IsHuman(luke.Faction):
 		return
@@ -130,9 +130,9 @@ static func LeiaLearnsFromLuke(roster: Array, day: int) -> void:
 		return
 
 	leia.KnowsHeritage = true
-	leia.IsKnownJedi = true
-	var rank_name := JsonUtil.enum_name(Enums.ForceRanking, leia.ForceRank())
-	print("[Force] %s has told %s what she is (%s, level %d)." % [luke.Name, leia.Name, rank_name, leia.JediLevel])
+	leia.IsKnownSpecialPowerUser = true
+	var rank_name := Character.RankLabel(leia.SpecialPowerRankOf())
+	print("[Force] %s has told %s what she is (%s, level %d)." % [luke.Name, leia.Name, rank_name, leia.SpecialPowerLevel])
 
 	if not GameSettings.IsHuman(leia.Faction):
 		return
@@ -149,8 +149,8 @@ static func ProcessDay(day: int) -> void:
 	LeiaLearnsFromLuke(roster, day)
 
 	var detectors := Lq.where(roster, func(c):
-		return c.IsKnownJedi and c.Status != Enums.Status.Dead and not c.IsCaptured() \
-			and c.Attached != null and c.JediLevel >= RuleManager.Get(RuleId.DiscoverForceUserThresh, c.Faction))
+		return c.IsKnownSpecialPowerUser and c.Status != Enums.Status.Dead and not c.IsCaptured() \
+			and c.Attached != null and c.SpecialPowerLevel >= RuleManager.Get(RuleId.DiscoverForceUserThresh, c.Faction))
 	if detectors.is_empty():
 		return
 
@@ -159,7 +159,7 @@ static func ProcessDay(day: int) -> void:
 			# ⛔ LEIA IS EXEMPT FROM THIS ENTIRE ROUTINE (p094).
 			if latent.Name == HeirName:
 				continue
-			if latent.IsKnownJedi or latent.JediLevel <= 0:
+			if latent.IsKnownSpecialPowerUser or latent.SpecialPowerLevel <= 0:
 				continue
 			if latent.Status == Enums.Status.Dead or latent.IsCaptured():
 				continue
@@ -168,10 +168,10 @@ static func ProcessDay(day: int) -> void:
 			if latent.Attached == null or latent.Attached != seer.Attached:
 				continue
 
-			latent.IsKnownJedi = true
+			latent.IsKnownSpecialPowerUser = true
 			# ⚠ THE STAT BOOST IS NOT IMPLEMENTED - no magnitude in any source.
-			var rank_name := JsonUtil.enum_name(Enums.ForceRanking, latent.ForceRank())
-			print("[Force] %s has sensed the Force in %s (%s, level %d)." % [seer.Name, latent.Name, rank_name, latent.JediLevel])
+			var rank_name := Character.RankLabel(latent.SpecialPowerRankOf())
+			print("[Force] %s has sensed the Force in %s (%s, level %d)." % [seer.Name, latent.Name, rank_name, latent.SpecialPowerLevel])
 
 			if not GameSettings.IsHuman(latent.Faction):
 				continue

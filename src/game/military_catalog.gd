@@ -6,41 +6,88 @@ extends RefCounted
 ## AND Special Forces (manual p097, p113, p129).
 
 
-## UnitType or null for an unrecognised Type string.
-static func TypeOf(rule: CatalogDtos.UnitStatRule) -> Variant:
+## THE PACK IS THE CATALOG (SCHEMA.md section 6). Units and their weapon classes
+## are pack data; the engine asks a weapon what it DOES, never whether it is a
+## turbolaser.
+
+## Vector2i(source family, source id) -> PackDefs.UnitDef - the key a day-zero
+## logistics row names a unit by.
+static var _by_source: Dictionary = {}
+static var _all: Array = []
+## The pack's weapon classes IN DECLARED ORDER. Iteration order decides the order
+## arcs are summed in, so it must be the file's order, not a hash map's.
+static var _weapons: Array = []
+static var _weapon_by_id: Dictionary = {}
+
+
+static func LoadFromPack(pack: PackLoader.LoadedPack) -> void:
+	_by_source.clear()
+	_all.clear()
+	_weapons.clear()
+	_weapon_by_id.clear()
+	if pack == null:
+		push_error("[MilitaryCatalog] no pack loaded!")
+		return
+	for w in pack.Weapons:
+		_weapons.append(w)
+		_weapon_by_id[w.Id] = w
+	for def in pack.Units:
+		_all.append(def)
+		_by_source[Vector2i(def.SourceFamilyId, def.SourceId)] = def
+	print("[MilitaryCatalog] Loaded %d units and %d weapon classes from the pack." % [_all.size(), _weapons.size()])
+
+
+static func WeaponOrder() -> Array:
+	return _weapons
+
+
+static func WeaponById(id: String) -> PackDefs.WeaponDef:
+	return _weapon_by_id.get(id)
+
+
+static func BySource(key: Vector2i) -> PackDefs.UnitDef:
+	return _by_source.get(key)
+
+
+static func HasSource(key: Vector2i) -> bool:
+	return _by_source.has(key)
+
+
+## UnitType or null for an unrecognised kind.
+static func TypeOf(rule: PackDefs.UnitDef) -> Variant:
 	if rule == null:
 		return null
-	match rule.Type:
-		"CapitalShip": return Enums.UnitType.CapitalShip
-		"Fighter":     return Enums.UnitType.Fighter
-		"Troop":       return Enums.UnitType.Troop
-		"SpecForce":   return Enums.UnitType.SpecForce
+	match rule.Kind:
+		"capital_ship": return Enums.UnitType.CapitalShip
+		"fighter":      return Enums.UnitType.Fighter
+		"troop":        return Enums.UnitType.Troop
+		"spec_force":   return Enums.UnitType.SpecForce
 	return null
 
 
-## Which facility builds this kind of unit.
-static func ProducerFor(type: int) -> int:
+## Which facility ROLE builds this kind of unit (SCHEMA.md section 5).
+static func ProducerFor(type: int) -> String:
 	if type == Enums.UnitType.CapitalShip or type == Enums.UnitType.Fighter:
-		return Enums.FacilityType.Shipyard
-	return Enums.FacilityType.TrainingFacility
+		return "produces_unit"
+	return "produces_troop"
 
 
-static func CanBeBuiltBy(rule: CatalogDtos.UnitStatRule, f: Faction) -> bool:
-	return f != null and rule != null and rule.BuildableBy != null and rule.BuildableBy.has(f.Id)
+static func CanBeBuiltBy(rule: PackDefs.UnitDef, f: Faction) -> bool:
+	return rule != null and rule.CanBeBuiltBy(f)
 
 
 ## Every rule, for the research tree to walk.
 static func All() -> Array:
-	return SeedManager.MilitaryStats.values()
+	return _all
 
 
 ## Everything `faction` may build at `producer`, cheapest first. Zero-cost
 ## entries are excluded (the one is "Bounty Hunters", a scripted event); the
 ## tables repeat a name per tier, so one per name.
-static func BuildableAt(producer: int, faction: Faction) -> Array:
+static func BuildableAt(producer: String, faction: Faction) -> Array:
 	var seen := {}
 	var out := []
-	for r in SeedManager.MilitaryStats.values():
+	for r in _all:
 		if r.ConstructionCost <= 0:
 			continue
 		if not ResearchManager.IsUnlockedUnit(faction, r):
@@ -50,9 +97,9 @@ static func BuildableAt(producer: int, faction: Faction) -> Array:
 		var t: Variant = TypeOf(r)
 		if t == null or ProducerFor(t) != producer:
 			continue
-		if seen.has(r.Name):
+		if seen.has(r.DisplayName):
 			continue
-		seen[r.Name] = true
+		seen[r.DisplayName] = true
 		out.append(r)
 	return Lq.order_by(out, func(r): return r.ConstructionCost)
 
@@ -61,63 +108,53 @@ static func _or0(v: Variant) -> int:
 	return 0 if v == null else int(v)
 
 
-## The single place a Unit is built from its stat rule. Stats that do not apply
-## to a unit class are null in the seed data and stand in as 0.
-static func Create(stats: CatalogDtos.UnitStatRule, faction: Faction, at: Location) -> Unit:
-	if stats == null:
+## The single place a Unit is built from its pack definition. A stat the pack
+## does not declare is absent, not null, and stands in as 0.
+static func Create(def: PackDefs.UnitDef, faction: Faction, at: Location) -> Unit:
+	if def == null:
 		return null
 	var u := Unit.new()
-	u.Name = stats.Name
-	var t: Variant = TypeOf(stats)
+	u.Name = def.DisplayName
+	var t: Variant = TypeOf(def)
 	u.Type = t if t != null else Enums.UnitType.Troop
-	u.AssetId = stats.Id
-	u.FamilyId = stats.FamilyId
+	u.AssetId = def.SourceId
+	u.FamilyId = def.SourceFamilyId
 	u.Faction = faction
 	u.Attached = at
 
-	u.ConstructionCost = stats.ConstructionCost
-	u.MaintenanceCost = stats.MaintenanceCost
-	u.Detection = stats.Detection
+	u.ConstructionCost = def.ConstructionCost
+	u.MaintenanceCost = def.MaintenanceCost
 
-	u.BombardmentDefense = _or0(stats.BombardmentDefense)
-	u.Bombardment = _or0(stats.Bombardment)
-	u.Turbolaser = _or0(stats.Turbolaser)
-	u.LaserRating = _or0(stats.LaserRating)
-	u.IonCannon = _or0(stats.IonCannon)
-	u.Torpedoes = _or0(stats.Torpedoes)
-	u.Hull = _or0(stats.Hull)
-	u.Shield = _or0(stats.Shield)
-	u.Attack = _or0(stats.Attack)
-	u.Defense = _or0(stats.Defense)
-	u.Sublight = _or0(stats.Sublight)
-	u.Hyperdrive = _or0(stats.Hyperdrive)
-	u.FighterCapacity = _or0(stats.FighterCapacity)
-	u.TroopCapacity = _or0(stats.TroopCapacity)
+	u.Detection = def.stat("detection")
+	u.BombardmentDefense = def.stat("bombardment_defense")
+	u.Bombardment = def.stat("bombardment")
+	u.Hull = def.stat("hull")
+	u.Shield = def.stat("shield")
+	u.Attack = def.stat("attack")
+	u.Defense = def.stat("defense")
+	u.Sublight = def.stat("sublight")
+	u.Hyperdrive = def.stat("hyperdrive")
+	u.FighterCapacity = def.stat("fighter_capacity")
+	u.TroopCapacity = def.stat("troop_capacity")
+	u.Maneuverability = def.stat("maneuverability")
+	u.HyperdriveDamaged = def.stat("hyperdrive_damaged")
+	u.DamageControl = def.stat("damage_control")
+	u.WeaponRecharge = def.stat("weapon_recharge")
+	u.ShieldRecharge = def.stat("shield_recharge")
+	u.TractorPower = def.stat("tractor_power")
+	u.TractorRange = def.stat("tractor_range")
+	u.GravityWell = def.stat("gravity_well")
+	u.InterdictionStrength = def.stat("interdiction_strength")
+	u.SquadronSize = def.stat("squadron_size")
 
-	u.Maneuverability = _or0(stats.Maneuverability)
-	u.HyperdriveDamaged = _or0(stats.HyperdriveDamaged)
-	u.DamageControl = _or0(stats.DamageControl)
-	u.WeaponRecharge = _or0(stats.WeaponRecharge)
-	u.ShieldRecharge = _or0(stats.ShieldRecharge)
-	u.TractorPower = _or0(stats.TractorPower)
-	u.TractorRange = _or0(stats.TractorRange)
-	u.GravityWell = _or0(stats.GravityWell)
-	u.InterdictionStrength = _or0(stats.InterdictionStrength)
-	u.SquadronSize = _or0(stats.SquadronSize)
-	u.TurbolaserRange = _or0(stats.TurbolaserRange)
-	u.IonCannonRange = _or0(stats.IonCannonRange)
-	u.LaserRange = _or0(stats.LaserRange)
-	u.TorpedoRange = _or0(stats.TorpedoRange)
-
-	u.TurbolaserArc = [_or0(stats.TurbolaserFore), _or0(stats.TurbolaserAft), _or0(stats.TurbolaserStarboard), _or0(stats.TurbolaserPort)]
-	u.IonCannonArc = [_or0(stats.IonCannonFore), _or0(stats.IonCannonAft), _or0(stats.IonCannonStarboard), _or0(stats.IonCannonPort)]
-	u.LaserArc = [_or0(stats.LaserFore), _or0(stats.LaserAft), _or0(stats.LaserStarboard), _or0(stats.LaserPort)]
+	# Whatever the pack fitted, by id. Nothing here names a weapon class.
+	u.Weapons = def.Weapons.duplicate()
 
 	## A SpecForce's mission ratings (manual p101). Zero for everything else.
-	u.DiplomacyRating = _or0(stats.DiplomacyRating)
-	u.EspionageRating = _or0(stats.EspionageRating)
-	u.CombatRating = _or0(stats.CombatRating)
-	u.LeadershipRating = _or0(stats.LeadershipRating)
+	u.DiplomacyRating = def.stat("diplomacy_rating")
+	u.EspionageRating = def.stat("espionage_rating")
+	u.CombatRating = def.stat("combat_rating")
+	u.LeadershipRating = def.stat("leadership_rating")
 	return u
 
 

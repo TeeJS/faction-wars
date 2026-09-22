@@ -101,7 +101,7 @@ func ResearchTrack() -> int:
 
 
 func DisplayName() -> String:
-	return JsonUtil.enum_name(Enums.MissionType, Type)
+	return MissionCatalog.DisplayNameFor(Type)
 
 
 static func _enum_fields() -> Dictionary:

@@ -18,7 +18,7 @@ static func ProcessDay(galaxy: Array, day: int) -> void:
 		return
 	for s in galaxy:
 		for world in s.Planets:
-			var yard := Lq.any(world.Facilities, func(f): return f.Type == Enums.FacilityType.Shipyard)
+			var yard := Lq.any(world.Facilities, func(f): return f.HasRole("produces_unit"))
 			for fleet in world.OrbitingFleets.duplicate():
 				if fleet.Status == Enums.Status.Enroute:
 					continue

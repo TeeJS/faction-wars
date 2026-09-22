@@ -7,12 +7,15 @@ extends RefCounted
 static var _rules: Dictionary = {}   # EntryId -> CatalogDtos.GameRuleData
 
 
-static func LoadRules(json_path: String) -> void:
-	if not FileAccess.file_exists(json_path):
-		push_error("ERROR: Could not find rules at %s!" % json_path)
-		return
+## From the pack (SCHEMA.md section 8). Rows keep their integer EntryId - Q6 -
+## and rule_id.gd stays the way engine code names one.
+static func LoadFromPack(pack: PackLoader.LoadedPack) -> void:
 	_rules.clear()
-	for rule in Loaders._list(json_path, CatalogDtos.GameRuleData.from_dict):
+	if pack == null:
+		push_error("[RuleManager] no pack loaded!")
+		return
+	for row in pack.Rules:
+		var rule := CatalogDtos.GameRuleData.from_dict(row)
 		_rules[rule.EntryId] = rule
 	print("Successfully loaded %d standard RTS rules." % _rules.size())
 

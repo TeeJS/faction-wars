@@ -22,7 +22,7 @@ const StrikePermissionMax       := 11
 const ShieldsToPreventAssault   := 151
 
 # --- injury and healing ---
-const FastHealForceRankThresh   := 21
+const FastHealSpecialPowerThresh   := 21
 const FastHealDelayTicks        := 22
 const NormalHealDelayTicks      := 23
 const FastHealReductionPerTick  := 24
@@ -147,7 +147,7 @@ const ResearchPointsSpread      := 127
 const JediTrainingGainSpread    := 128
 
 # Per-mission skill growth on success (guide p094-095). Each is 1 in the shipped
-# tables. DeathStarSabotage (122/123) is applied in its own success block; the three
+# tables. SuperweaponSabotage (122/123) is applied in its own success block; the three
 # Research types (113) grow faction research, not a character rating, so are omitted.
 const DiplomacySuccessDiplomacyGain       := 111
 const EspionageSuccessEspionageGain       := 112

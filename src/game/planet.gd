@@ -90,22 +90,32 @@ const PercentBase := 100
 
 
 # --- FACILITY COUNTS --- DERIVED from Facilities. Never stored.
-func CountOf(type: int) -> int:
+## By pack FAMILY, when a caller means one specific structure.
+func CountOf(family: String) -> int:
 	var n := 0
 	for f in Facilities:
-		if f.Type == type:
+		if f.Family() == family:
 			n += 1
 	return n
 
-func Mines() -> int:               return CountOf(Enums.FacilityType.Mine)
-func Refineries() -> int:          return CountOf(Enums.FacilityType.Refinery)
-func ConstructionYards() -> int:   return CountOf(Enums.FacilityType.ConstructionYard)
-func Shipyards() -> int:           return CountOf(Enums.FacilityType.Shipyard)
-func TrainingFacilities() -> int:  return CountOf(Enums.FacilityType.TrainingFacility)
-func PlanetaryShields() -> int:    return CountOf(Enums.FacilityType.PlanetaryShield)
-func TurbolaserBatteries() -> int: return CountOf(Enums.FacilityType.TurbolaserBattery)
-func IonCannons() -> int:          return CountOf(Enums.FacilityType.IonCannon)
-func HasHeadquarters() -> bool:    return CountOf(Enums.FacilityType.Headquarters) > 0
+## BY ROLE - what engine code should ask. A pack that adds a second kind of mine
+## is counted here without this file naming it.
+func CountByRole(role: String) -> int:
+	var n := 0
+	for f in Facilities:
+		if f.HasRole(role):
+			n += 1
+	return n
+
+func Mines() -> int:               return CountByRole("extracts_raw")
+func Refineries() -> int:          return CountByRole("refines")
+func ConstructionYards() -> int:   return CountByRole("produces_facility")
+func Shipyards() -> int:           return CountByRole("produces_unit")
+func TrainingFacilities() -> int:  return CountByRole("produces_troop")
+func PlanetaryShields() -> int:    return CountByRole("shield")
+func TurbolaserBatteries() -> int: return CountByRole("anti_ship")
+func IonCannons() -> int:          return CountByRole("disable")
+func HasHeadquarters() -> bool:    return CountByRole("headquarters") > 0
 
 func HasIdleConstructionYards() -> bool: return ConstructionYards() > 0 and BuildingQueue.is_empty()
 func HasIdleShipyards() -> bool:         return Shipyards() > 0 and ShipyardQueue.is_empty()
@@ -120,7 +130,7 @@ func FleetsInOrbit() -> Array:
 
 # --- CAPACITY GAUGES --- energy and raw material are SLOT COUNTS (manual p024, p084).
 func UsedEnergySlots() -> int:
-	return Lq.count(Facilities, func(f): return f.Type != Enums.FacilityType.Headquarters)
+	return Lq.count(Facilities, func(f): return not f.HasRole("headquarters"))
 
 func FreeEnergySlots() -> int:
 	return max(0, BaseEnergy - UsedEnergySlots())
@@ -171,19 +181,23 @@ func ProcessDailyTick() -> int:
 func BestYardRateForUi() -> int:
 	return BestYardRate()
 
-func BestProducerRateForUi(producer: int) -> int:
-	return BestProducerRate(producer)
+func BestProducerRateForUi(producer_role: String) -> int:
+	return BestProducerRate(producer_role)
 
 func BestYardRate() -> int:
-	return BestProducerRate(Enums.FacilityType.ConstructionYard)
+	return BestProducerRate("produces_facility")
 
-## Lowest days-per-unit among this world's facilities of that kind.
-func BestProducerRate(producer: int) -> int:
+## Lowest days-per-unit among this world's facilities carrying that ROLE. A pack
+## that adds a second kind of shipyard competes here without being named.
+func BestProducerRate(producer_role: String) -> int:
 	var best := 0x7FFFFFFF
 	for f in Facilities:
-		if f.Type == producer:
-			best = min(best, FacilityCatalog.ProcessingRate(f.Type, f.Tier))
-	return FacilityCatalog.ProcessingRate(producer) if best == 0x7FFFFFFF else best
+		if f.HasRole(producer_role):
+			best = min(best, FacilityCatalog.ProcessingRate(f.Family(), f.Tier))
+	if best != 0x7FFFFFFF:
+		return best
+	var fallback := FacilityCatalog.FirstWithRole(producer_role)
+	return FacilityCatalog.ProcessingRate(fallback.Family, 1) if fallback != null else 4
 
 
 func ProcessQueueItem(queue: Array, daily_progress: int, _category: String) -> void:
@@ -205,7 +219,7 @@ func FacilitiesOutOfAction() -> Result:
 	return Result.success()
 
 
-func CanQueueFacility(type: int, tier: int, destination: Planet) -> Result:
+func CanQueueFacility(type: String, tier: int, destination: Planet) -> Result:
 	var owner := ControllingFaction
 	if destination == null:
 		destination = self
@@ -219,9 +233,9 @@ func CanQueueFacility(type: int, tier: int, destination: Planet) -> Result:
 
 	var stats := FacilityCatalog.Get(type, tier)
 	if stats == null:
-		return Result.fail("No build data for %s." % JsonUtil.enum_name(Enums.FacilityType, type))
+		return Result.fail("No build data for %s." % Facility.NameOf(type))
 	if not stats.CanBeBuiltBy(owner):
-		return Result.fail("%s cannot be built by %s." % [stats.Name, owner.DisplayName if owner != null else "nobody"])
+		return Result.fail("%s cannot be built by %s." % [stats.DisplayName, owner.DisplayName if owner != null else "nobody"])
 
 	if destination.ControllingFaction != owner:
 		return Result.fail("%s is not under your control." % destination.Name)
@@ -229,7 +243,7 @@ func CanQueueFacility(type: int, tier: int, destination: Planet) -> Result:
 	if destination.FreeEnergySlots() <= 0:
 		return Result.fail("%s has no free energy slots (%d/%d used). Scrap a facility to make room." % [destination.Name, destination.UsedEnergySlots(), destination.BaseEnergy])
 
-	if type == Enums.FacilityType.Mine and destination.FreeMineSlots() <= 0:
+	if type == "mine" and destination.FreeMineSlots() <= 0:
 		return Result.fail("%s has no raw material sites left (%d/%d mined)." % [destination.Name, destination.UsedMineSlots(), destination.BaseRawMaterials])
 
 	if Economy.For(owner).RefinedMaterials < stats.ConstructionCost:
@@ -296,7 +310,7 @@ func DeploymentDaysTo(destination: Planet) -> int:
 
 
 ## "You also choose NUMBER TO BUILD in one order" (manual p045). value = placed.
-func TryQueueMany(type: int, tier: int, destination: Planet, count: int) -> Result:
+func TryQueueMany(type: String, tier: int, destination: Planet, count: int) -> Result:
 	var placed := 0
 	var last := Result.success()
 	for i in max(1, count):
@@ -307,7 +321,7 @@ func TryQueueMany(type: int, tier: int, destination: Planet, count: int) -> Resu
 	return Result.success(placed) if placed > 0 else Result.fail(last.error, 0)
 
 
-func TryQueueManyUnits(rule: CatalogDtos.UnitStatRule, destination: Planet, count: int) -> Result:
+func TryQueueManyUnits(rule: PackDefs.UnitDef, destination: Planet, count: int) -> Result:
 	var placed := 0
 	var last := Result.success()
 	for i in max(1, count):
@@ -318,7 +332,7 @@ func TryQueueManyUnits(rule: CatalogDtos.UnitStatRule, destination: Planet, coun
 	return Result.success(placed) if placed > 0 else Result.fail(last.error, 0)
 
 
-func TryQueueFacility(type: int, tier: int, destination: Planet) -> Result:
+func TryQueueFacility(type: String, tier: int, destination: Planet) -> Result:
 	if destination == null:
 		destination = self
 	var can := CanQueueFacility(type, tier, destination)
@@ -332,7 +346,7 @@ func TryQueueFacility(type: int, tier: int, destination: Planet) -> Result:
 	EventBus.BroadcastChanged()
 
 	var task := ConstructionTask.new()
-	task.Type = type
+	task.Family = type
 	task.Tier = tier
 	task.RefinedCost = stats.ConstructionCost
 	task.MaintenanceCost = stats.MaintenanceCost
@@ -342,12 +356,12 @@ func TryQueueFacility(type: int, tier: int, destination: Planet) -> Result:
 	task.TransportDays = DeploymentDaysTo(destination)
 	BuildingQueue.append(task)
 
-	print("[%s] Queued %s for %s: %d refined, %d maintenance, +%dd transport." % [Name, stats.Name, destination.Name, stats.ConstructionCost, stats.MaintenanceCost, DeploymentDaysTo(destination)])
+	print("[%s] Queued %s for %s: %d refined, %d maintenance, +%dd transport." % [Name, stats.DisplayName, destination.Name, stats.ConstructionCost, stats.MaintenanceCost, DeploymentDaysTo(destination)])
 	return Result.success()
 
 
 ## Ships, fighters, troops and SpecForces: a unit does NOT occupy an energy slot.
-func CanQueueUnit(rule: CatalogDtos.UnitStatRule, destination: Planet) -> Result:
+func CanQueueUnit(rule: PackDefs.UnitDef, destination: Planet) -> Result:
 	var owner := ControllingFaction
 	if destination == null:
 		destination = self
@@ -360,14 +374,14 @@ func CanQueueUnit(rule: CatalogDtos.UnitStatRule, destination: Planet) -> Result
 		return Result.fail("No build data for that unit.")
 	var type: Variant = MilitaryCatalog.TypeOf(rule)
 	if type == null:
-		return Result.fail("%s has an unrecognised unit type '%s'." % [rule.Name, rule.Type])
+		return Result.fail("%s has an unrecognised unit type '%s'." % [rule.DisplayName, rule.Kind])
 	if not MilitaryCatalog.CanBeBuiltBy(rule, owner):
-		return Result.fail("%s cannot be built by %s." % [rule.Name, owner.DisplayName if owner != null else "nobody"])
+		return Result.fail("%s cannot be built by %s." % [rule.DisplayName, owner.DisplayName if owner != null else "nobody"])
 
 	var producer := MilitaryCatalog.ProducerFor(type)
-	var producer_count := Shipyards() if producer == Enums.FacilityType.Shipyard else TrainingFacilities()
+	var producer_count := CountByRole(producer)
 	if producer_count <= 0:
-		var what := "orbital shipyard" if producer == Enums.FacilityType.Shipyard else "training facility"
+		var what := Facility.NameOf(FacilityCatalog.FirstWithRole(producer).Family) if FacilityCatalog.FirstWithRole(producer) != null else producer
 		return Result.fail("%s has no %s - orders must be placed at a world that has one." % [Name, what])
 
 	if destination.ControllingFaction != owner:
@@ -383,7 +397,7 @@ func CanQueueUnit(rule: CatalogDtos.UnitStatRule, destination: Planet) -> Result
 	return Result.success()
 
 
-func TryQueueUnit(rule: CatalogDtos.UnitStatRule, destination: Planet) -> Result:
+func TryQueueUnit(rule: PackDefs.UnitDef, destination: Planet) -> Result:
 	if destination == null:
 		destination = self
 	var can := CanQueueUnit(rule, destination)
@@ -405,12 +419,12 @@ func TryQueueUnit(rule: CatalogDtos.UnitStatRule, destination: Planet) -> Result
 	task.Destination = destination
 	task.TransportDays = DeploymentDaysTo(destination)
 
-	if producer == Enums.FacilityType.Shipyard:
+	if producer == "produces_unit":
 		ShipyardQueue.append(task)
 	else:
 		TrainingQueue.append(task)
 
-	print("[%s] Queued %s for %s: %d refined, %d maintenance, %d work, +%dd transport." % [Name, rule.Name, destination.Name, rule.ConstructionCost, rule.MaintenanceCost, task.TotalWork, task.TransportDays])
+	print("[%s] Queued %s for %s: %d refined, %d maintenance, %d work, +%dd transport." % [Name, rule.DisplayName, destination.Name, rule.ConstructionCost, rule.MaintenanceCost, task.TotalWork, task.TransportDays])
 	return Result.success()
 
 
@@ -580,7 +594,7 @@ func SufferUprisingLosses() -> void:
 		print("[%s] Uprising: %s destroyed by the populace." % [Name, regiment.Name])
 		return
 
-	var fac: Facility = Lq.first_or_null(Facilities, func(f): return f.Type != Enums.FacilityType.Headquarters)
+	var fac: Facility = Lq.first_or_null(Facilities, func(f): return not f.HasRole("headquarters"))
 	if fac != null:
 		Facilities.erase(fac)
 		print("[%s] Uprising: %s destroyed by the populace." % [Name, fac.Name()])
@@ -625,7 +639,7 @@ func StrikeAtPersonnel() -> void:
 
 # --- SCRAPPING --- (manual p086; measured: refined 50%, maintenance 100%)
 func CanScrap(f: Facility) -> bool:
-	return f != null and f.Type != Enums.FacilityType.Headquarters
+	return f != null and not f.HasRole("headquarters")
 
 
 ## DESTROYED, not scrapped: the owner gets nothing back (manual p108).
@@ -677,9 +691,9 @@ func ScrapFacility(f: Facility) -> int:
 	if not CanScrap(f) or not Facilities.has(f):
 		return 0
 	Facilities.erase(f)
-	var refund := FacilityCatalog.ConstructionCost(f.Type, f.Tier) * ScrapRefundPercent / 100
+	var refund := FacilityCatalog.ConstructionCost(f.Family(), f.Tier) * ScrapRefundPercent / 100
 	Economy.For(ControllingFaction).RefinedMaterials += refund
-	print("[%s] Scrapped %s: +%d refined, +%d maintenance, energy slot freed." % [Name, f.Name(), refund, FacilityCatalog.MaintenanceCost(f.Type, f.Tier)])
+	print("[%s] Scrapped %s: +%d refined, +%d maintenance, energy slot freed." % [Name, f.Name(), refund, FacilityCatalog.MaintenanceCost(f.Family(), f.Tier)])
 	return refund
 
 
@@ -698,19 +712,21 @@ func ScrapUnit(u: Unit) -> int:
 
 ## The production queue a given kind of facility feeds (manual p114). Returns
 ## null for anything that is not a producer.
-func QueueFor(producer: int) -> Variant:
-	match producer:
-		Enums.FacilityType.Shipyard:         return ShipyardQueue
-		Enums.FacilityType.TrainingFacility: return TrainingQueue
-		Enums.FacilityType.ConstructionYard: return BuildingQueue
+## The queue a producer ROLE feeds. The three queues are engine structure, not
+## pack vocabulary: a world builds units, troops and facilities.
+func QueueFor(producer_role: String) -> Variant:
+	match producer_role:
+		"produces_unit":     return ShipyardQueue
+		"produces_troop":    return TrainingQueue
+		"produces_facility": return BuildingQueue
 	return null
 
 
 ## "STOP: halt construction of the current item" (manual p114) - the current
 ## item of THAT producer's queue. Refined material comes back; maintenance
 ## releases itself because Economy reads the queue.
-func CancelCurrentBuild(producer: int) -> void:
-	var queue: Variant = QueueFor(producer)
+func CancelCurrentBuild(producer_role: String) -> void:
+	var queue: Variant = QueueFor(producer_role)
 	if queue == null or queue.is_empty():
 		return
 	var job: ConstructionTask = queue.pop_front()
@@ -718,24 +734,22 @@ func CancelCurrentBuild(producer: int) -> void:
 	print("[%s] Cancelled %s, refunded %d refined." % [Name, job.DisplayName(), job.RefinedCost])
 
 
-func AddFacility(type: int, tier: int = 1) -> void:
-	var new_fac := Facility.new()
-	new_fac.Type = type
-	new_fac.Tier = tier
-	# If it's a defensive structure, look up its authentic combat stats.
-	if type == Enums.FacilityType.PlanetaryShield or type == Enums.FacilityType.TurbolaserBattery or type == Enums.FacilityType.IonCannon:
-		var key := Vector2i(type, tier)
+func AddFacility(family: String, tier: int = 1) -> void:
+	var new_fac := Facility.Make(family, tier)
+	# A defensive structure carries authentic combat stats; asked by ROLE, so a
+	# pack that adds one gets them without this line naming it.
+	if new_fac.HasRole("planet_defense"):
+		var key := "%s|%d" % [family, tier]
 		if SeedManager.DefenseStats.has(key):
 			var stats: CatalogDtos.DefenseStatRule = SeedManager.DefenseStats[key]
 			new_fac.ConstructionCost = stats.ConstructionCost
 			new_fac.MaintenanceCost = stats.MaintenanceCost
 			new_fac.WeaponRating = stats.WeaponRating
 			new_fac.ShieldStrength = stats.ShieldStrength
-	var rule := FacilityCatalog.Get(type, tier)
-	new_fac.BombardmentDefense = rule.BombardmentDefense if rule != null else 0
+	new_fac.BombardmentDefense = new_fac.Def.stat("bombardment_defense") if new_fac.Def != null else 0
 	new_fac.Attached = self
 	Facilities.append(new_fac)
-	print("[%s] Added Facility: %s (Tier %d)" % [Name, JsonUtil.enum_name(Enums.FacilityType, type), tier])
+	print("[%s] Added Facility: %s (Tier %d)" % [Name, Facility.NameOf(family, tier), tier])
 
 
 func FinishConstruction(completed_job: ConstructionTask) -> void:
@@ -755,17 +769,17 @@ static func Deliver(job: ConstructionTask, destination: Planet) -> void:
 		ReportDelivery(destination, unit.Name, cat)
 		return
 
-	destination.AddFacility(job.Type, job.Tier)
+	destination.AddFacility(job.Family, job.Tier)
 	var category: int
-	match job.Type:
-		Enums.FacilityType.Mine, Enums.FacilityType.Refinery:
+	match job.Family:
+		"mine", "refinery":
 			category = Enums.MessageCategory.Resources
-		Enums.FacilityType.PlanetaryShield, Enums.FacilityType.TurbolaserBattery, Enums.FacilityType.IonCannon:
+		"planetary_shield", "turbolaser_battery", "ion_cannon":
 			category = Enums.MessageCategory.Defense
 		_:
 			category = Enums.MessageCategory.Manufacturing
-	var rule := FacilityCatalog.Get(job.Type, job.Tier)
-	ReportDelivery(destination, rule.Name if rule != null else JsonUtil.enum_name(Enums.FacilityType, job.Type), category)
+	var rule := FacilityCatalog.Get(job.Family, job.Tier)
+	ReportDelivery(destination, rule.DisplayName if rule != null else Facility.NameOf(job.Family, job.Tier), category)
 
 
 static func ReportDelivery(where: Planet, what: String, category: int) -> void:

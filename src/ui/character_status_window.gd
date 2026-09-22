@@ -49,11 +49,11 @@ func Populate(character: Character) -> void:
 	# --- FORCE RANKING ---
 	var forceText: String = "None"
 
-	# if (character.IsKnownJedi || character.JediLevel != ForceRanking.None)
-	if character.JediProbability > 0:
-		# GD.Print($"Known Jedi: {character.IsKnownJedi}, Jedi Level: ");
+	# if (character.IsKnownSpecialPowerUser || character.SpecialPowerLevel != SpecialPowerRank.None)
+	if character.SpecialPowerProbability > 0:
+		# GD.Print($"Known Jedi: {character.IsKnownSpecialPowerUser}, Jedi Level: ");
 		# Print the rank and the integer level
-		forceText = "%s" % JsonUtil.enum_name(Enums.ForceRanking, character.ForceRank())
+		forceText = "%s" % Character.RankLabel(character.SpecialPowerRankOf())
 	else:
 		forceText = "None"
 	(get_node("%ValForce") as Label).text = forceText

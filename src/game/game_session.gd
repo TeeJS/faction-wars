@@ -11,14 +11,18 @@ const DATA := "res://data"
 
 ## Everything GameManager loads before day zero, in its order.
 static func load_catalogs() -> void:
+	# ORDER IS THE SOURCE'S. Kept deliberately: this used to read a pile of
+	# data/*.json and now reads the pack, but the sequence is unchanged.
 	FactionRegistry.EnsureLoaded()
-	RuleManager.LoadRules("%s/game_rules.json" % DATA)
-	MissionTableManager.Load("%s/mission_tables.json" % DATA)
-	MissionCatalog.Load("%s/missions.json" % DATA)
-	UprisingTable.Load("%s/uprising_start.json" % DATA)
-	SideLotteryManager.LoadRules("%s/side_lottery.json" % DATA)
-	SeedManager.Load("%s/day_zero_logistics.json" % DATA, "%s/defensive_facilities.json" % DATA, "%s/military_units.json" % DATA)
-	FacilityCatalog.Load(["%s/production_facilities.json" % DATA, "%s/defensive_facilities.json" % DATA])
+	RuleManager.LoadFromPack(FactionRegistry.Pack)
+	MissionTableManager.LoadFromPack(FactionRegistry.Pack)
+	MissionCatalog.LoadFromPack(FactionRegistry.Pack)
+	UprisingTable.LoadFromPack(FactionRegistry.Pack)
+	SideLotteryManager.LoadFromPack(FactionRegistry.Pack)
+	SeedManager.Load(FactionRegistry.Pack, "%s/defensive_facilities.json" % DATA, "%s/military_units.json" % DATA)
+	FacilityCatalog.LoadFromPack(FactionRegistry.Pack)
+	MilitaryCatalog.LoadFromPack(FactionRegistry.Pack)
+	Gid.LoadFromPack(FactionRegistry.Pack)
 
 
 ## Every per-game static, cleared - the source's Reset() calls plus the ones it
@@ -56,14 +60,13 @@ static func _seed(seed: int) -> void:
 	print("[Prng] seed=%d" % seed)
 
 
-## The characters, exactly as GameManager loads them: majors flagged, then minors.
+## The characters, from the pack. The two-file major/minor split became an
+## is_major flag; the pack file keeps majors first, which is the order
+## GameManager loaded them in and the order day zero consumes the PRNG in.
 static func load_roster() -> Array[Character]:
 	var roster: Array[Character] = []
-	for c in Loaders.major_characters():
-		c.IsMajor = true
-		roster.append(c)
-	for c in Loaders.minor_characters():
-		roster.append(c)
+	for def in FactionRegistry.Pack.Characters:
+		roster.append(Character.FromPack(def))
 	print("Successfully loaded %d characters from the databanks." % roster.size())
 	return roster
 
@@ -87,7 +90,7 @@ static func new_game(player_faction_id: String, difficulty: int, size: int, seed
 	load_catalogs()
 	print("Initializing Galaxy with -> Faction: %s | Difficulty: %s | Size: %s" % [str(GameSettings.PlayerFaction), JsonUtil.enum_name(Enums.Difficulty, difficulty), JsonUtil.enum_name(Enums.GalaxySize, size)])
 
-	var galaxy := GalaxyFactory.LoadGalaxy("%s/sectors_data.json" % DATA, "%s/planets_data.json" % DATA, size)
+	var galaxy := GalaxyFactory.LoadFromPack(FactionRegistry.Pack, size)
 	var roster := load_roster()
 	GameState.ActiveRoster = roster
 	DayZeroGenerator.InitializeGalaxyState(galaxy, GameSettings.SeedingFaction(), difficulty, roster)

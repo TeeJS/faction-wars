@@ -103,18 +103,18 @@ func _init() -> void:
 		_check(not AIActionSelection._enemy_target_characters(ctx, Enums.MissionType.Abduction).has(victim), "they leave: no longer a target anywhere we have not seen them")
 
 	# --- 4. FACILITIES (_sabotage_targets) ---------------------------------------------
-	var yards_seen: int = world.CountOf(Enums.FacilityType.Shipyard)
-	var shields_seen: int = world.CountOf(Enums.FacilityType.PlanetaryShield)
+	var yards_seen: int = world.CountOf("shipyard")
+	var shields_seen: int = world.CountOf("planetary_shield")
 	IntelManager.Capture(empire, world, today, IntelManager.EspionageCategories)
-	world.AddFacility(Enums.FacilityType.Shipyard)          # both built AFTER we looked
-	world.AddFacility(Enums.FacilityType.PlanetaryShield)
+	world.AddFacility("shipyard")          # both built AFTER we looked
+	world.AddFacility("planetary_shield")
 	ctx = _ctx(empire)
-	_check(_offered(ctx, world, Enums.FacilityType.Shipyard) == yards_seen, "a shipyard built since we looked is not a sabotage target (%d seen, %d offered)" % [yards_seen, _offered(ctx, world, Enums.FacilityType.Shipyard)])
-	_check(_offered(ctx, world, Enums.FacilityType.PlanetaryShield) == shields_seen, "nor is the new shield (%d seen)" % shields_seen)
+	_check(_offered(ctx, world, "shipyard") == yards_seen, "a shipyard built since we looked is not a sabotage target (%d seen, %d offered)" % [yards_seen, _offered(ctx, world, "shipyard")])
+	_check(_offered(ctx, world, "planetary_shield") == shields_seen, "nor is the new shield (%d seen)" % shields_seen)
 	IntelManager.Capture(empire, world, today, IntelManager.EspionageCategories)
 	ctx = _ctx(empire)
-	_check(_offered(ctx, world, Enums.FacilityType.Shipyard) == yards_seen + 1, "we look again: the new shipyard is a target")
-	_check(_offered(ctx, world, Enums.FacilityType.PlanetaryShield) == shields_seen + 1, "...and the new shield")
+	_check(_offered(ctx, world, "shipyard") == yards_seen + 1, "we look again: the new shipyard is a target")
+	_check(_offered(ctx, world, "planetary_shield") == shields_seen + 1, "...and the new shield")
 
 	# --- 5. HULLS (_seen_defending_ships) ----------------------------------------------
 	var hulls_seen: int = AIActionSelection._seen_defending_ships(ctx, world)
@@ -155,8 +155,8 @@ func _live_odds(us: Faction, type: int, op: Unit, target: Planet) -> int:
 	return MissionManager.SuccessPercent(m, MissionManager.AttributeFor(type, op))
 
 
-func _offered(ctx: AIContext, where: Planet, type: int) -> int:
-	return Lq.count(AIActionSelection._sabotage_targets(ctx), func(t: Dictionary): return t["where"] == where and (t["obj"] as Facility).Type == type)
+func _offered(ctx: AIContext, where: Planet, type: String) -> int:
+	return Lq.count(AIActionSelection._sabotage_targets(ctx), func(t: Dictionary): return t["where"] == where and (t["obj"] as Facility).Family() == type)
 
 
 func _first(pred: Callable) -> Planet:

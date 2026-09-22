@@ -18,7 +18,7 @@ extends RefCounted
 const BASE_VALUE := {
 	Enums.MissionType.Abduction: 900,
 	Enums.MissionType.Rescue: 850,
-	Enums.MissionType.DeathStarSabotage: 700,
+	Enums.MissionType.SuperweaponSabotage: 700,
 	Enums.MissionType.Assassination: 600,
 	Enums.MissionType.Sabotage: 520,
 	Enums.MissionType.Espionage: 460,
@@ -30,7 +30,7 @@ const BASE_VALUE := {
 	Enums.MissionType.ShipDesignResearch: 300,
 	Enums.MissionType.TroopTrainingResearch: 300,
 	Enums.MissionType.FacilityDesignResearch: 300,
-	Enums.MissionType.JediTraining: 250,
+	Enums.MissionType.SpecialPowerTraining: 250,
 }
 
 const DEFAULT_SUCCESS := 50   # OURS: estimate when a type has no shipped odds table
@@ -217,7 +217,7 @@ static func _team_for(ctx: AIContext, type: int, op) -> Array:
 static func _is_high_value(type: int) -> bool:
 	return type == Enums.MissionType.Abduction or type == Enums.MissionType.Assassination \
 		or type == Enums.MissionType.Rescue or type == Enums.MissionType.Sabotage \
-		or type == Enums.MissionType.DeathStarSabotage
+		or type == Enums.MissionType.SuperweaponSabotage
 
 
 ## Choose ONE target for (operative, type) by a cheap heuristic, then the candidate
@@ -245,7 +245,7 @@ static func _best_mission_target(ctx: AIContext, type: int, op, counter_intel: b
 			return _wrap(_nearest_legal(type, ctx.Us, from, ctx.Held))
 		Enums.MissionType.ShipDesignResearch, Enums.MissionType.TroopTrainingResearch, Enums.MissionType.FacilityDesignResearch:
 			return _wrap(_nearest_legal(type, ctx.Us, from, ctx.Held))
-		Enums.MissionType.JediTraining:
+		Enums.MissionType.SpecialPowerTraining:
 			return _wrap(_nearest_legal(type, ctx.Us, from, ctx.Held))
 		Enums.MissionType.Abduction, Enums.MissionType.Assassination:
 			var v = _best_enemy_target_character(ctx, type)
@@ -262,7 +262,7 @@ static func _best_mission_target(ctx: AIContext, type: int, op, counter_intel: b
 			if s == null:
 				return null
 			return {"target": s["where"], "victim": null, "sab": s["obj"]}
-		Enums.MissionType.DeathStarSabotage:
+		Enums.MissionType.SuperweaponSabotage:
 			var known := Lq.where(ctx.TheirsWeak + ctx.TheirsStrong, func(p): return MissionManager.CanTarget(type, ctx.Us, p).ok)
 			return _wrap(_nearest_of(from, known))
 	return null
@@ -343,7 +343,7 @@ static func _fog_estimate(ctx: AIContext, type: int, team: Array, target: Planet
 			garrison += 1
 	var score := rating - defence
 	match type:
-		Enums.MissionType.Espionage, Enums.MissionType.Rescue, Enums.MissionType.Sabotage, Enums.MissionType.DeathStarSabotage:
+		Enums.MissionType.Espionage, Enums.MissionType.Rescue, Enums.MissionType.Sabotage, Enums.MissionType.SuperweaponSabotage:
 			score = rating
 		Enums.MissionType.Diplomacy, Enums.MissionType.SubdueUprising:
 			score = rating + garrison - defence
@@ -436,13 +436,13 @@ static func _sabotage_targets(ctx: AIContext) -> Array:
 	var out: Array = []
 	for p in ctx.TheirsWeak + ctx.TheirsStrong:
 		var seen := ctx.Facts(p)
-		var offered: Dictionary = {}   # Enums.FacilityType -> how many of it are already listed
+		var offered: Dictionary = {}   # facility family id -> how many of it are already listed
 		for f in p.Facilities:
-			if int(offered.get(f.Type, 0)) >= seen.facilities_of(f.Type):
+			if int(offered.get(f.Family(), 0)) >= seen.facilities_of(f.Family()):
 				continue
 			if MissionManager.CanSabotage(ctx.Us, f, p).ok:
 				out.append({"where": p, "obj": f})
-				offered[f.Type] = int(offered.get(f.Type, 0)) + 1
+				offered[f.Family()] = int(offered.get(f.Family(), 0)) + 1
 	return out
 
 
@@ -495,18 +495,18 @@ static func _propose_economy(ctx: AIContext, plan: AIObjectives.Plan) -> Array:
 		return out
 	var yard: Planet = by_size[0]
 	var headroom := Economy.MaintenanceAvailable(ctx.Us)
-	var affordable := Lq.where(MilitaryCatalog.All(), func(u): return u.Type == "CapitalShip" and MilitaryCatalog.CanBeBuiltBy(u, ctx.Us) and u.MaintenanceCost <= headroom)
+	var affordable := Lq.where(MilitaryCatalog.All(), func(u): return u.Kind == "capital_ship" and MilitaryCatalog.CanBeBuiltBy(u, ctx.Us) and u.MaintenanceCost <= headroom)
 	var picks := Lq.order_by(affordable, func(u): return u.ConstructionCost, true)
 	if picks.is_empty():
 		return out
 	var pick = picks[0]
 	var c := CandidateAction.new()
 	c.loop = CandidateAction.Loop.Economy
-	c.kind = "build:%s" % pick.Name
+	c.kind = "build:%s" % pick.DisplayName
 	c.budget_key = "ships"
 	c.expected_value = 300   # OURS ranking seed; economy underpins everything
 	c.objective_fit = _objective_fit(plan, c.loop, -1, null)
-	c.justification = "lay down %s at %s (maint %d of %d free)" % [pick.Name, yard.Name, pick.MaintenanceCost, headroom]
+	c.justification = "lay down %s at %s (maint %d of %d free)" % [pick.DisplayName, yard.Name, pick.MaintenanceCost, headroom]
 	c.tb_type = 0
 	c.tb_target = yard.get_instance_id()
 	c.action = func() -> bool:
