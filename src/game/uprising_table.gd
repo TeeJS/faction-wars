@@ -11,15 +11,16 @@ static func IsLoaded() -> bool:
 	return _start.size() > 0
 
 
-static func Load(path: String) -> void:
+## From the pack. UPRIS1TB is one of the mission outcome tables (SCHEMA.md
+## section 9, id `uprising_start`); data/uprising_start.json was a byte-identical
+## second copy of it, so there is no separate uprising.json - the pack already
+## carries the table once.
+static func LoadFromPack(pack: PackLoader.LoadedPack) -> void:
 	_start.clear()
-	if not FileAccess.file_exists(path):
-		push_error("ERROR: Could not find the uprising start table at %s!" % path)
+	if pack == null or not pack.MissionTables.has("uprising_start"):
+		push_error("[Rules] the pack declares no 'uprising_start' table!")
 		return
-	var data: Variant = JsonUtil.parse(path)
-	var table := CatalogDtos.IntTable.from_dict(data) if data != null else null
-	if table == null or table.Entries == null:
-		return
+	var table: PackDefs.MissionTableDef = pack.MissionTables["uprising_start"]
 	for e in Lq.order_by(table.Entries, func(e): return e.Threshold):
 		_start.append([e.Threshold, e.Value])
 	var parts := []
