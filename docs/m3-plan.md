@@ -49,6 +49,11 @@ private room is joined by code only. TLS and the hostname are NPM Plus's job.
   days is archived, not deleted.
 - Limits: 64 KB per line, 2 clients per room, 100 rooms per relay. Enough for
   a household and its friends; the numbers are in one config block.
+- Heartbeat: the relay pings every open socket every 25 s, and closes one
+  that sends nothing for 120 s. nginx's default `proxy_read_timeout` is 60 s
+  and Cloudflare drops a silent WebSocket at ~100 s; Bun's own ping is later
+  than both. Clients answer pings on their own (browser, wslay), so the
+  Godot side has nothing to do.
 - Container: `oven/bun` image, `/data` volume, port 8787 inside; NPM Plus
   proxies `wars.schmitzplex.com` → `relay:8787` with WebSocket support on
   (the "Websockets Support" toggle on the proxy host) and serves the static

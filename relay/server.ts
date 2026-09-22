@@ -16,6 +16,8 @@ const LIMITS = {
   rooms: 100,             // more than a household needs
   feedbackBytes: 4 * 1024 * 1024,   // one report with its session log
   codeLength: 6,
+  heartbeatMs: 25_000,    // a ping to every open socket this often - see startRelay
+  idleSeconds: 120,       // a socket that sends nothing for this long is closed
 };
 
 type Side = "host" | "guest";
@@ -36,7 +38,7 @@ type Data = { room: Room | null; side: Side | null };
 // No look-alikes: 0/O, 1/I, S/5, Z/2, B/8 are all out (TeeJ, room #103).
 const ALPHABET = "ACDEFGHJKLMNPQRTUVWXY34679";
 
-export function startRelay(opts: { port?: number; dataDir?: string; staticDir?: string } = {}) {
+export function startRelay(opts: { port?: number; dataDir?: string; staticDir?: string; heartbeatMs?: number } = {}) {
   const port = opts.port ?? Number(process.env.PORT ?? 8787);
   const dataDir = opts.dataDir ?? process.env.DATA_DIR ?? "./data";
   const staticDir = opts.staticDir ?? process.env.STATIC_DIR ?? "";
@@ -46,6 +48,20 @@ export function startRelay(opts: { port?: number; dataDir?: string; staticDir?: 
   mkdirSync(feedbackDir, { recursive: true });
 
   const rooms = new Map<string, Room>();
+
+  // Every open socket gets a ping every heartbeatMs, so nothing between the
+  // relay and the game ever sees a quiet connection: nginx closes a proxied
+  // connection after 60 s without a byte from upstream (proxy_read_timeout's
+  // default - NPM Plus on the Unraid box is nginx), Cloudflare drops a silent
+  // WebSocket at about 100 s, and Bun's own automatic ping only goes out at
+  // idleSeconds - 16. Browsers and Godot's WebSocketPeer (wslay) answer with a
+  // pong by themselves; those pongs are what keep Bun's idle timer from
+  // closing a live socket, so a dead one is still gone within idleSeconds.
+  const sockets = new Set<any>();
+  let pongs = 0;
+  const heartbeat = setInterval(() => {
+    for (const ws of sockets) { try { ws.ping(); } catch { sockets.delete(ws); } }
+  }, opts.heartbeatMs ?? LIMITS.heartbeatMs);
 
   // --- persistence: meta.json + log.jsonl per room ---
   const roomDir = (code: string) => join(roomsDir, code);
@@ -199,7 +215,10 @@ export function startRelay(opts: { port?: number; dataDir?: string; staticDir?: 
     },
     websocket: {
       maxPayloadLength: LIMITS.lineBytes,
-      open(ws) { /* nothing until the first line */ },
+      idleTimeout: LIMITS.idleSeconds,
+      sendPings: true,   // Bun's default, written down: it also answers a client's ping
+      open(ws) { sockets.add(ws); },
+      pong() { pongs += 1; },
       message(ws, raw) {
         const line = typeof raw === "string" ? raw : new TextDecoder().decode(raw);
         if (line.length > LIMITS.lineBytes) { send(ws, { t: "error", error: "line too long" }); return; }
@@ -270,6 +289,7 @@ export function startRelay(opts: { port?: number; dataDir?: string; staticDir?: 
         }
       },
       close(ws) {
+        sockets.delete(ws);
         const d = ws.data; const r = d.room; if (!r || !d.side) return;
         const me = d.side === "host" ? r.host : r.guest;
         if (me && me.ws === ws) me.ws = null;
@@ -278,7 +298,7 @@ export function startRelay(opts: { port?: number; dataDir?: string; staticDir?: 
       },
     },
   });
-  return { server, port: server.port, rooms, stop: () => server.stop(true) };
+  return { server, port: server.port, rooms, pongs: () => pongs, stop: () => { clearInterval(heartbeat); server.stop(true); } };
 }
 
 if (import.meta.main) {
