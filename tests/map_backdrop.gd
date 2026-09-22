@@ -45,9 +45,9 @@ func _init() -> void:
 		rect = Rect2(Vector2.ZERO, expected.get_size())
 	var want_scale := minf(GalaxyMap.Frame.x / rect.size.x, GalaxyMap.Frame.y / rect.size.y)
 	_check(absf(map.MapScale() - want_scale) < 0.0001, "the map space is fitted into the frame by the picture's rect (scale %.4f)" % map.MapScale())
-	_check(backdrop != null and backdrop.position.is_equal_approx(rect.position * want_scale)
+	_check(backdrop != null and backdrop.position == Vector2.ZERO
 		and backdrop.scale.is_equal_approx(rect.size * want_scale / expected.get_size()),
-		"the backdrop is drawn where map_image_rect puts it, at that scale")
+		"the backdrop fills the frame from its top-left, at that scale")
 	_check(backdrop != null and backdrop.z_index < 0, "the backdrop is behind every marker")
 
 	# A marker lands at coordinate * scale - the picture and the regions agree.
@@ -67,10 +67,13 @@ func _init() -> void:
 		"%s's marker is at its coordinate x scale (%s)" % [planet.Name, str(centre)])
 	_check(map.MapPos(planet.MapX, planet.MapY).x <= GalaxyMap.Frame.x + 1 and map.MapPos(planet.MapX, planet.MapY).y <= GalaxyMap.Frame.y + 1,
 		"and inside the frame")
-	# The Star Wars picture lands exactly where Main.tscn used to bake it.
+	# Star Wars: everything lands exactly where the old scene put it - the
+	# picture at screen (150,99), markers at (155 + x, -11 + y), unscaled.
 	if pack.Manifest.Id == "star-wars-rebellion":
-		_check(backdrop.position.is_equal_approx(Vector2(-5, 110)) and absf(map.MapScale() - 1.0) < 0.0001,
-			"Star Wars: coordinates unscaled and the picture at (-5,110), as the baked scene had it")
+		_check(absf(map.MapScale() - 1.0) < 0.0001, "Star Wars: coordinates unscaled")
+		_check((map.position + backdrop.position).is_equal_approx(Vector2(150, 99)), "Star Wars: the picture at screen (150,99) as Main.tscn baked it")
+		_check((map.position + map.MapPos(planet.MapX, planet.MapY)).is_equal_approx(Vector2(155 + planet.MapX, -11 + planet.MapY)),
+			"Star Wars: %s at screen (155+x, -11+y) as the old map node placed it" % planet.Name)
 
 	print("[map_backdrop] %d checks, %d failed" % [_checks, _fails])
 	quit(1 if _fails > 0 else 0)

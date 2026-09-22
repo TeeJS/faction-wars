@@ -21,6 +21,10 @@ var _planetStars: Dictionary = {}    # Planet -> Label
 ## reads them, so they are travel time.
 var _backdrop: Sprite2D = null
 var _scale: float = 1.0
+## The map-space point at the frame's top-left corner (map_image_rect's x, y).
+## Star Wars: (-5, 110), so its unscaled coordinates land exactly where the
+## old scene put them; WWII: (0, 0).
+var _origin: Vector2 = Vector2.ZERO
 ## One invisible button per region, centred on its dot: a click opens the
 ## region's THEATRE (the sector window), so a crowded theatre is reachable
 ## through any of its regions even where theatre boxes overlap. Added after
@@ -31,6 +35,12 @@ var _regionHits: Dictionary = {}     # Planet -> Button
 ## on top of each other and only the topmost took the click.
 const SectorPadding := 8.0
 const RegionHitSize := 18.0
+## The theatre name on hover (TeeJ, 2026-09-22: "larger and darker", but not
+## so big it spills far past its theatre). Only the hovered one shows.
+const TitleFontSize := 20
+const TitleColor := Color(0.12, 0.08, 0.05, 1)
+const TitleOutline := Color(1, 0.97, 0.88, 0.95)
+const TitleOutlineSize := 4
 ## The map area on screen, in this node's space: the rectangle the scene used
 ## to give the Star Wars picture (Main.tscn, 1070.67 x 803 at 150,99).
 const Frame := Vector2(1070.6666, 803.0)
@@ -64,6 +74,7 @@ func InitializeMap(galaxyData: Array, uiManager: UIManager) -> void:
 	_hqPlanet = null
 	_backdrop = null
 	_scale = 1.0
+	_origin = Vector2.ZERO
 	_load_backdrop()
 
 	print("\n--- DRAWING GALAXY: %d Sectors Loaded ---" % galaxyData.size())
@@ -76,9 +87,15 @@ func InitializeMap(galaxyData: Array, uiManager: UIManager) -> void:
 		var sectorButton := Button.new()
 		sectorButton.text = ("Sector %d" % sector.SectorId) if sector.Name.is_empty() else sector.Name
 		sectorButton.flat = true
+		# The theatre's name shows on hover. Large, dark, with a light outline, so
+		# it reads on a paper map (WWII) as well as on a starfield (Star Wars);
+		# the old plain white default-size text vanished on the paper.
 		sectorButton.add_theme_color_override("font_color", Color(1, 1, 1, 0))
-		sectorButton.add_theme_color_override("font_hover_color", Color(1, 1, 1, 1))
-		sectorButton.add_theme_color_override("font_pressed_color", Color(0.8, 0.8, 0.8, 1))
+		sectorButton.add_theme_color_override("font_hover_color", TitleColor)
+		sectorButton.add_theme_color_override("font_pressed_color", TitleColor.darkened(0.3))
+		sectorButton.add_theme_color_override("font_outline_color", TitleOutline)
+		sectorButton.add_theme_constant_override("outline_size", TitleOutlineSize)
+		sectorButton.add_theme_font_size_override("font_size", TitleFontSize)
 
 		var localSector: Sector = sector
 		sectorButton.pressed.connect(func() -> void: _uiManager.OnSectorClicked(localSector))
@@ -116,13 +133,13 @@ func InitializeMap(galaxyData: Array, uiManager: UIManager) -> void:
 		var padding := SectorPadding
 
 		if is_inf(sector.MinX):
-			sectorButton.position = Vector2(sector.MapX * scaleFactor, sector.MapY * scaleFactor)
+			sectorButton.position = MapPos(sector.MapX, sector.MapY)
 			sectorButton.size = Vector2(100, 100)
 		else:
 			var width: float = (sector.MaxX - sector.MinX) * scaleFactor + (padding * 2)
 			var height: float = (sector.MaxY - sector.MinY) * scaleFactor + (padding * 2)
 			sectorButton.size = Vector2(width, height)
-			sectorButton.position = Vector2((sector.MinX * scaleFactor) - padding, (sector.MinY * scaleFactor) - padding)
+			sectorButton.position = MapPos(sector.MinX, sector.MinY) - Vector2(padding, padding)
 
 		add_child(sectorButton)
 		print("Spawned [%s] at X:%s, Y:%s (Planets: %d)" % [sectorButton.text, str(sector.MapX * scaleFactor), str(sector.MapY * scaleFactor), sector.Planets.size()])
@@ -263,9 +280,10 @@ func RefreshVisuals() -> void:
 	queue_redraw()   # repaint the HQ highlight
 
 
-## Where a map.json coordinate lands in this node's space.
+## Where a map.json coordinate lands in this node's space: the frame's
+## top-left is map_image_rect's (x, y), and the space is scaled to the frame.
 func MapPos(x: float, y: float) -> Vector2:
-	return Vector2(x, y) * _scale
+	return (Vector2(x, y) - _origin) * _scale
 
 
 ## The picture's scale on screen, for anything else that places by coordinate.
@@ -299,11 +317,12 @@ func _load_backdrop() -> void:
 	if rect.size.x <= 0.0 or rect.size.y <= 0.0:
 		rect = Rect2(Vector2.ZERO, size)   # no rect: coordinates are picture pixels
 	_scale = minf(Frame.x / rect.size.x, Frame.y / rect.size.y)
+	_origin = rect.position
 	_backdrop = Sprite2D.new()
 	_backdrop.name = "Backdrop"
 	_backdrop.texture = tex
 	_backdrop.centered = false
-	_backdrop.position = rect.position * _scale
+	_backdrop.position = Vector2.ZERO   # the frame's top-left IS the picture's
 	_backdrop.scale = rect.size * _scale / size
 	_backdrop.z_index = -10
 	_backdrop.z_as_relative = false
