@@ -7,6 +7,12 @@ extends RefCounted
 
 static var _active: Array[Mission] = []
 
+## Why the last Launch returned null, in the player's words - the command
+## applier hands it back so the Create Mission window can say it (TeeJ,
+## 2026-09-22: a refused Recruitment used to print to the console and nothing
+## else, and the operative simply stayed put).
+static var LastRefusal: String = ""
+
 
 static func Active() -> Array:
 	return _active
@@ -90,6 +96,16 @@ static func CanTeachSpecialPower(u: Unit) -> bool:
 ## RULES A PER-MEMBER TEST CANNOT EXPRESS: Jedi Training needs a teacher and
 ## somebody else Force-aware (Encyclopedia; manual mission table; character tables).
 static func TeamMeetsExtraRule(team: Array, type: int) -> Result:
+	# "Only a major character can perform it" (GAMEPLAY.md mission table,
+	# manual p105-p108): Recruitment is not offered to a team without one.
+	if type == Enums.MissionType.Recruitment:
+		if Lq.any(Lq.of_type_character(team), func(c): return c.IsMajor):
+			return Result.success()
+		var side: Faction = team[0].Faction
+		var majors := Lq.select(Lq.where(GameState.ActiveRoster,
+			func(c): return c.Faction == side and c.IsMajor and c.Status != Enums.Status.Dead), func(c): return c.Name)
+		return Result.fail("Only a major character can lead a %s mission%s." % [MissionCatalog.DisplayNameFor(Enums.MissionType.Recruitment),
+			"" if majors.is_empty() else " - " + ", ".join(majors)])
 	if type != Enums.MissionType.SpecialPowerTraining:
 		return Result.success()
 	if not Lq.any(team, CanTeachSpecialPower):
@@ -536,60 +552,54 @@ static func CanTargetPerson(type: int, actor: Faction, victim: Character) -> Res
 	return Result.success()
 
 
+## A refused launch: printed, and kept for the player (LastRefusal).
+static func _refuse(why: String) -> Mission:
+	LastRefusal = why
+	print("[Mission] %s" % why)
+	return null
+
+
 static func Launch(type: int, team: Array, from: Planet, target: Planet, decoys: Variant = null,
 		victim: Character = null, saboteur_target: Variant = null) -> Mission:
+	LastRefusal = ""
 	if team == null or team.is_empty() or from == null:
-		return null
+		return _refuse("A mission needs a team and a starting system.")
 	var actor: Faction = team[0].Faction
 	if actor == null or Lq.any(team, func(c): return c.Faction != actor):
-		print("[Mission] A mission team must all belong to the same faction.")
-		return null
+		return _refuse("A mission team must all belong to the same faction.")
 
 	var why := CanTarget(type, actor, target)
 	if not why.ok:
-		print("[Mission] %s" % why.error)
-		return null
+		return _refuse(why.error)
 	var party := TeamMeetsExtraRule(team, type)
 	if not party.ok:
-		print("[Mission] %s" % party.error)
-		return null
+		return _refuse(party.error)
 	var who := CanTargetPerson(type, actor, victim)
 	if not who.ok:
-		print("[Mission] %s" % who.error)
-		return null
+		return _refuse(who.error)
 	if NeedsObjectTarget(type):
 		var what := CanSabotage(actor, saboteur_target, target)
 		if not what.ok:
-			print("[Mission] %s" % what.error)
-			return null
+			return _refuse(what.error)
 
 	var unable: Unit = Lq.first_or_null(team, func(u): return not CanPerform(u, type))
 	if unable != null:
-		print("[Mission] %s cannot perform %s." % [unable.Name, JsonUtil.enum_name(Enums.MissionType, type)])
-		return null
+		return _refuse("%s cannot perform %s." % [unable.Name, MissionCatalog.DisplayNameFor(type)])
 
 	var unfit: Unit = Lq.first_or_null(team, func(u): return u is Character and not (u as Character).CanTakeOrders())
 	if unfit != null:
-		print("[Mission] %s is in no condition to go." % unfit.Name)
-		return null
+		return _refuse("%s is in no condition to go." % unfit.Name)
 
 	if type == Enums.MissionType.SpecialPowerTraining:
 		var people := Lq.of_type_character(team)
 		if not Lq.any(people, CanTeachSpecialPower):
-			print("[Mission] %s needs a qualified teacher." % MissionCatalog.DisplayNameFor(Enums.MissionType.SpecialPowerTraining))
-			return null
+			return _refuse("%s needs a qualified teacher." % MissionCatalog.DisplayNameFor(Enums.MissionType.SpecialPowerTraining))
 		if not Lq.any(people, CanBeSpecialPowerStudent):
-			print("[Mission] Jedi Training needs at least one Force-aware student.")
-			return null
+			return _refuse("%s needs at least one Force-aware student." % MissionCatalog.DisplayNameFor(Enums.MissionType.SpecialPowerTraining))
 
 	var busy: Unit = Lq.first_or_null(team, IsOnMissionTeam)
 	if busy != null:
-		print("[Mission] %s is already on a mission." % busy.Name)
-		return null
-
-	if type == Enums.MissionType.Recruitment and not Lq.any(Lq.of_type_character(team), func(c): return c.IsMajor):
-		print("[Mission] Recruitment requires a major character on the team.")
-		return null
+		return _refuse("%s is already on a mission." % busy.Name)
 
 	var mission := Mission.new()
 	mission.Type = type

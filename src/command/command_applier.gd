@@ -102,8 +102,10 @@ static func apply(c: Command) -> Result:
 			var target: Planet = EntityIndex.planet(str(a.get("target", "")))
 			if team.is_empty() or origin == null or target == null:
 				return Result.fail("Unknown team or world.")
-			MissionManager.Launch(int(a.get("type", 0)), team, origin, target, decoys,
+			var m: Mission = MissionManager.Launch(int(a.get("type", 0)), team, origin, target, decoys,
 				EntityIndex.character(str(a.get("victim", ""))), EntityIndex.target_object(a))
+			if m == null:
+				return Result.fail(MissionManager.LastRefusal if not MissionManager.LastRefusal.is_empty() else "The mission could not be launched.")
 			return Result.success()
 		"abort_mission":
 			var m: Mission = EntityIndex.mission(int(a.get("mission", 0)))
