@@ -87,15 +87,15 @@ func InitializeMap(galaxyData: Array, uiManager: UIManager) -> void:
 		var sectorButton := Button.new()
 		sectorButton.text = ("Sector %d" % sector.SectorId) if sector.Name.is_empty() else sector.Name
 		sectorButton.flat = true
-		# The theatre's name shows on hover. Large, dark, with a light outline, so
-		# it reads on a paper map (WWII) as well as on a starfield (Star Wars);
-		# the old plain white default-size text vanished on the paper.
-		sectorButton.add_theme_color_override("font_color", Color(1, 1, 1, 0))
-		sectorButton.add_theme_color_override("font_hover_color", TitleColor)
-		sectorButton.add_theme_color_override("font_pressed_color", TitleColor.darkened(0.3))
-		sectorButton.add_theme_color_override("font_outline_color", TitleOutline)
-		sectorButton.add_theme_constant_override("outline_size", TitleOutlineSize)
+		# The theatre's name shows ONLY while hovered: dark, with a light outline,
+		# so it reads on a paper map (WWII) as well as on a starfield (Star Wars).
+		# A theme outline draws even on transparent text, which put every name on
+		# screen at once; so the outline is switched on and off with the mouse.
 		sectorButton.add_theme_font_size_override("font_size", TitleFontSize)
+		sectorButton.add_theme_color_override("font_outline_color", TitleOutline)
+		_title_visible(sectorButton, false)
+		sectorButton.mouse_entered.connect(_title_visible.bind(sectorButton, true))
+		sectorButton.mouse_exited.connect(_title_visible.bind(sectorButton, false))
 
 		var localSector: Sector = sector
 		sectorButton.pressed.connect(func() -> void: _uiManager.OnSectorClicked(localSector))
@@ -278,6 +278,22 @@ func RefreshVisuals() -> void:
 			Place(flare, "", 0, faction, planet)
 
 	queue_redraw()   # repaint the HQ highlight
+
+
+## Show or hide a theatre's name: text and outline together, so nothing of it
+## is drawn while the mouse is elsewhere.
+static func _title_visible(b: Button, on: bool) -> void:
+	var c := TitleColor if on else Color(TitleColor, 0.0)
+	b.add_theme_color_override("font_color", c)
+	b.add_theme_color_override("font_hover_color", c)
+	b.add_theme_color_override("font_pressed_color", c.darkened(0.3) if on else c)
+	b.add_theme_color_override("font_focus_color", c)
+	b.add_theme_constant_override("outline_size", TitleOutlineSize if on else 0)
+
+
+## Whether a theatre's name is currently drawn (its outline is on).
+static func TitleShown(b: Button) -> bool:
+	return b.get_theme_constant("outline_size") > 0
 
 
 ## Where a map.json coordinate lands in this node's space: the frame's
