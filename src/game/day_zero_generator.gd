@@ -201,6 +201,18 @@ static func InitializeGalaxyState(galaxy: Array, human_faction: Faction, difficu
 		var pool: Array = side_info[1]
 		var start: Planet = side_info[2]
 		var hq: Planet = side_info[3]
+		# A declared start (characters.json `starts_at`) wins over the roles.
+		# No PRNG draw, so a pack without any is placed exactly as before.
+		for c in pool.duplicate():
+			var at_id: String = FactionRegistry.CharacterStartsAt(c.PackId)
+			if at_id.is_empty():
+				continue
+			var at: Planet = Lq.first_or_null(all_planets, func(x): return x.PackId == at_id)
+			if at == null:
+				continue   # the loader refuses this; belt and braces
+			c.Attached = at
+			c.Status = Enums.Status.AwaitingOrders
+			pool.erase(c)
 		for c in pool.duplicate():
 			if c.HasRole("starts_at_first_world"):
 				c.Attached = start

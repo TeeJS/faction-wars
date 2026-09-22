@@ -400,6 +400,10 @@ class CharacterDef:
 	var DisplayName: String
 	var FactionId: String
 	var IsMajor: bool
+	## SCHEMA.md section 7: the planet id this character opens on. Optional;
+	## when set it wins over the placement roles. Must be a world the
+	## character's side holds at day zero (validation rule 15).
+	var StartsAt: String = ""
 	var Ratings: Dictionary = {}      # rating id -> RatingDef
 	var CanCommand: Array[String] = []
 	var WontBetray: bool
@@ -426,6 +430,7 @@ class CharacterDef:
 		o.WontBetray = JsonUtil.bool_or(d, "wont_betray")
 		o.SpecialPower = SpecialPowerDef.from_dict(JsonUtil.get_ci(d, "special_power"))
 		o.Roles = JsonUtil.str_list(d, "roles", [])
+		o.StartsAt = JsonUtil.str_or(d, "starts_at", "")
 		o.SourceId = JsonUtil.int_or(d, "source_id")
 		o.StringId = JsonUtil.int_or(d, "string_id")
 		return o
