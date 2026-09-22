@@ -1646,7 +1646,7 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "unit": "tribal_class_destroyer_flotilla"
+              "unit": "allied_destroyer_flotilla"
             }
           ]
         },
@@ -1660,10 +1660,10 @@
               "unit": "liberty_ship_convoy"
             },
             {
-              "unit": "royal_marines_brigade"
+              "unit": "allied_naval_infantry_battalion"
             },
             {
-              "unit": "royal_marines_brigade"
+              "unit": "allied_naval_infantry_battalion"
             }
           ]
         }
@@ -1681,37 +1681,27 @@
           "ParentId": 1,
           "ProbabilityThreshold": 1,
           "Multiplier": 1,
-          "ChildrenCount": 10,
+          "ChildrenCount": 1,
           "Assets": [
             {
-              "unit": "bismarck_class_battleship"
+              "unit": "axis_destroyer_flotilla"
+            }
+          ]
+        },
+        {
+          "ParentId": 2,
+          "ProbabilityThreshold": 2,
+          "Multiplier": 1,
+          "ChildrenCount": 3,
+          "Assets": [
+            {
+              "unit": "axis_transport_convoy"
             },
             {
-              "unit": "bf_109_squadron"
+              "unit": "axis_naval_infantry_battalion"
             },
             {
-              "unit": "bf_109_squadron"
-            },
-            {
-              "unit": "bf_109_squadron"
-            },
-            {
-              "unit": "bf_109_squadron"
-            },
-            {
-              "unit": "bf_109_squadron"
-            },
-            {
-              "unit": "bf_109_squadron"
-            },
-            {
-              "unit": "waffen_ss_division"
-            },
-            {
-              "unit": "waffen_ss_division"
-            },
-            {
-              "unit": "waffen_ss_division"
+              "unit": "axis_naval_infantry_battalion"
             }
           ]
         }
@@ -1760,7 +1750,7 @@
           "ChildrenCount": 1,
           "Assets": [
             {
-              "unit": "tribal_class_destroyer_flotilla"
+              "unit": "allied_destroyer_flotilla"
             }
           ]
         },
@@ -1896,7 +1886,7 @@
               "unit": "scharnhorst_class_battlecruiser"
             },
             {
-              "unit": "kriegsmarine_marine_battalion"
+              "unit": "axis_naval_infantry_battalion"
             },
             {
               "unit": "bf_109_squadron"
@@ -1936,7 +1926,7 @@
               "unit": "takao_class_heavy_cruiser"
             },
             {
-              "unit": "kriegsmarine_marine_battalion"
+              "unit": "axis_naval_infantry_battalion"
             },
             {
               "unit": "bf_109_squadron"
@@ -1953,10 +1943,10 @@
               "unit": "axis_supply_convoy"
             },
             {
-              "unit": "kriegsmarine_marine_battalion"
+              "unit": "axis_naval_infantry_battalion"
             },
             {
-              "unit": "kriegsmarine_marine_battalion"
+              "unit": "axis_naval_infantry_battalion"
             }
           ]
         },
@@ -2047,7 +2037,7 @@
           "ParentId": 1,
           "ProbabilityThreshold": 1,
           "Multiplier": 1,
-          "ChildrenCount": 17,
+          "ChildrenCount": 11,
           "Assets": [
             null,
             {
@@ -2060,13 +2050,7 @@
               "unit": "waffen_ss_division"
             },
             {
-              "unit": "waffen_ss_division"
-            },
-            {
-              "unit": "waffen_ss_division"
-            },
-            {
-              "unit": "waffen_ss_division"
+              "unit": "fallschirmjager_division"
             },
             {
               "unit": "bf_109_squadron"
@@ -2081,22 +2065,10 @@
               "unit": "bf_109_squadron"
             },
             {
-              "unit": "bf_109_squadron"
+              "unit": "fw_190_squadron"
             },
             {
-              "unit": "bf_109_squadron"
-            },
-            {
-              "unit": "bf_109_squadron"
-            },
-            {
-              "unit": "bf_109_squadron"
-            },
-            {
-              "unit": "bf_109_squadron"
-            },
-            {
-              "unit": "bf_109_squadron"
+              "unit": "fw_190_squadron"
             }
           ]
         }
@@ -2114,7 +2086,7 @@
           "ParentId": 1,
           "ProbabilityThreshold": 1,
           "Multiplier": 1,
-          "ChildrenCount": 10,
+          "ChildrenCount": 9,
           "Assets": [
             null,
             {
@@ -2127,22 +2099,19 @@
               "unit": "royal_marines_brigade"
             },
             {
-              "unit": "p_51_mustang_squadron"
+              "unit": "spitfire_squadron"
             },
             {
-              "unit": "p_51_mustang_squadron"
+              "unit": "spitfire_squadron"
             },
             {
-              "unit": "p_51_mustang_squadron"
+              "unit": "spitfire_squadron"
             },
             {
-              "unit": "p_51_mustang_squadron"
+              "unit": "lancaster_squadron"
             },
             {
-              "unit": "sbd_dauntless_squadron"
-            },
-            {
-              "unit": "sbd_dauntless_squadron"
+              "unit": "lancaster_squadron"
             }
           ]
         }
@@ -2150,37 +2119,6 @@
       "fixed_range": [
         86,
         87
-      ]
-    },
-    "allies_start_garrison": {
-      "Type": "CMUN/FACL (Hierarchical)",
-      "Description": "SeedFamilyTableEntry",
-      "Entries": [
-        {
-          "ParentId": 1,
-          "ProbabilityThreshold": 1,
-          "Multiplier": 1,
-          "ChildrenCount": 5,
-          "Assets": [
-            null,
-            {
-              "unit": "british_infantry_division"
-            },
-            {
-              "unit": "british_infantry_division"
-            },
-            {
-              "unit": "p_51_mustang_squadron"
-            },
-            {
-              "unit": "sbd_dauntless_squadron"
-            }
-          ]
-        }
-      ],
-      "fixed_range": [
-        84,
-        85
       ]
     },
     "allies_hq_facilities": {
@@ -2248,7 +2186,47 @@
         97
       ]
     },
-    "axis_start_garrison": {
+    "germany_start_garrison": {
+      "Type": "CMUN/FACL (Hierarchical)",
+      "Description": "SeedFamilyTableEntry",
+      "Entries": [
+        {
+          "ParentId": 1,
+          "ProbabilityThreshold": 1,
+          "Multiplier": 1,
+          "ChildrenCount": 8,
+          "Assets": [
+            null,
+            {
+              "unit": "panzer_division"
+            },
+            {
+              "unit": "panzer_division"
+            },
+            {
+              "unit": "wehrmacht_infantry_division"
+            },
+            {
+              "unit": "wehrmacht_infantry_division"
+            },
+            {
+              "unit": "bf_109_squadron"
+            },
+            {
+              "unit": "bf_109_squadron"
+            },
+            {
+              "unit": "ju_87_stuka_squadron"
+            }
+          ]
+        }
+      ],
+      "fixed_range": [
+        84,
+        85
+      ]
+    },
+    "italy_start_garrison": {
       "Type": "CMUN/FACL (Hierarchical)",
       "Description": "SeedFamilyTableEntry",
       "Entries": [
@@ -2260,16 +2238,214 @@
           "Assets": [
             null,
             {
+              "unit": "italian_infantry_division"
+            },
+            {
+              "unit": "italian_infantry_division"
+            },
+            {
+              "unit": "alpini_division"
+            },
+            {
+              "unit": "macchi_c202_squadron"
+            }
+          ]
+        }
+      ],
+      "fixed_range": [
+        84,
+        85
+      ]
+    },
+    "japan_start_garrison": {
+      "Type": "CMUN/FACL (Hierarchical)",
+      "Description": "SeedFamilyTableEntry",
+      "Entries": [
+        {
+          "ParentId": 1,
+          "ProbabilityThreshold": 1,
+          "Multiplier": 1,
+          "ChildrenCount": 6,
+          "Assets": [
+            null,
+            {
+              "unit": "japanese_infantry_division"
+            },
+            {
+              "unit": "japanese_infantry_division"
+            },
+            {
+              "unit": "snlf_brigade"
+            },
+            {
+              "unit": "a6m_zero_squadron"
+            },
+            {
+              "unit": "a6m_zero_squadron"
+            }
+          ]
+        }
+      ],
+      "fixed_range": [
+        84,
+        85
+      ]
+    },
+    "britain_start_garrison": {
+      "Type": "CMUN/FACL (Hierarchical)",
+      "Description": "SeedFamilyTableEntry",
+      "Entries": [
+        {
+          "ParentId": 1,
+          "ProbabilityThreshold": 1,
+          "Multiplier": 1,
+          "ChildrenCount": 7,
+          "Assets": [
+            null,
+            {
               "unit": "british_infantry_division"
             },
             {
               "unit": "british_infantry_division"
+            },
+            {
+              "unit": "royal_marines_brigade"
+            },
+            {
+              "unit": "spitfire_squadron"
+            },
+            {
+              "unit": "spitfire_squadron"
+            },
+            {
+              "unit": "hurricane_squadron"
+            }
+          ]
+        }
+      ],
+      "fixed_range": [
+        84,
+        85
+      ]
+    },
+    "united_states_start_garrison": {
+      "Type": "CMUN/FACL (Hierarchical)",
+      "Description": "SeedFamilyTableEntry",
+      "Entries": [
+        {
+          "ParentId": 1,
+          "ProbabilityThreshold": 1,
+          "Multiplier": 1,
+          "ChildrenCount": 6,
+          "Assets": [
+            null,
+            {
+              "unit": "us_infantry_division"
+            },
+            {
+              "unit": "us_armored_division"
+            },
+            {
+              "unit": "us_marine_division"
             },
             {
               "unit": "p_51_mustang_squadron"
             },
             {
-              "unit": "sbd_dauntless_squadron"
+              "unit": "f4f_wildcat_squadron"
+            }
+          ]
+        }
+      ],
+      "fixed_range": [
+        84,
+        85
+      ]
+    },
+    "russia_start_garrison": {
+      "Type": "CMUN/FACL (Hierarchical)",
+      "Description": "SeedFamilyTableEntry",
+      "Entries": [
+        {
+          "ParentId": 1,
+          "ProbabilityThreshold": 1,
+          "Multiplier": 1,
+          "ChildrenCount": 7,
+          "Assets": [
+            null,
+            {
+              "unit": "soviet_rifle_division"
+            },
+            {
+              "unit": "soviet_rifle_division"
+            },
+            {
+              "unit": "soviet_guards_rifle_division"
+            },
+            {
+              "unit": "guards_tank_corps"
+            },
+            {
+              "unit": "yak_9_squadron"
+            },
+            {
+              "unit": "il_2_sturmovik_squadron"
+            }
+          ]
+        }
+      ],
+      "fixed_range": [
+        84,
+        85
+      ]
+    },
+    "china_start_garrison": {
+      "Type": "CMUN/FACL (Hierarchical)",
+      "Description": "SeedFamilyTableEntry",
+      "Entries": [
+        {
+          "ParentId": 1,
+          "ProbabilityThreshold": 1,
+          "Multiplier": 1,
+          "ChildrenCount": 4,
+          "Assets": [
+            null,
+            {
+              "unit": "chinese_infantry_division"
+            },
+            {
+              "unit": "chinese_infantry_division"
+            },
+            {
+              "unit": "p_40_warhawk_squadron"
+            }
+          ]
+        }
+      ],
+      "fixed_range": [
+        84,
+        85
+      ]
+    },
+    "france_start_garrison": {
+      "Type": "CMUN/FACL (Hierarchical)",
+      "Description": "SeedFamilyTableEntry",
+      "Entries": [
+        {
+          "ParentId": 1,
+          "ProbabilityThreshold": 1,
+          "Multiplier": 1,
+          "ChildrenCount": 4,
+          "Assets": [
+            null,
+            {
+              "unit": "french_infantry_division"
+            },
+            {
+              "unit": "french_infantry_division"
+            },
+            {
+              "unit": "dewoitine_d520_squadron"
             }
           ]
         }
