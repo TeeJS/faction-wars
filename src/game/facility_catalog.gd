@@ -76,6 +76,19 @@ static func ProcessingRate(family: String, tier: int = 1) -> int:
 	return max(1, r.stat("processing_rate", 4) if r != null else 4)
 
 
+## The tier-1 rate of the facility carrying `role` (extracts_raw, refines);
+## the fallback when the pack declares none for the role.
+static func ProcessingRateForRole(role: String) -> int:
+	var r := FirstWithRole(role)
+	return ProcessingRate(r.Family, 1) if r != null else 4
+
+
+## The family the pack builds for `role` at tier 1, or "" when it has none.
+static func FamilyForRole(role: String) -> String:
+	var r := FirstWithRole(role)
+	return r.Family if r != null else ""
+
+
 ## Every profile, for the research tree to walk.
 static func All() -> Array:
 	return _by_id.values()

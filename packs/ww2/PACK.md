@@ -80,11 +80,9 @@ carrying `FamilyId`. Four negative cases in `tests/pack_validation.gd`.
 9 fleets, 14 capital ships and 14 refineries; the Star Wars soak gate is
 byte-identical (four soaks, `tools\soak-gate.ps1`).
 
-**Still named by family in engine code, all display-side** (BACKLOG #37): the
-generic `mine` / `refinery` / `shipyard` ids in `economy.gd`, `agent_droid.gd`
-and one intel line — the same ids in both packs, so not a blocker for this one.
-(The Defense Facility Status window selects by role and names by the pack
-since 2026-09-22.)
+**No facility is named by family in engine code any more** (BACKLOG #37, closed
+2026-09-22): the Defense Facility Status window, the economy rates, the agent
+droid's build orders and the intel queue words all select by role.
 
 **Out of scope here:** the source repo's `.DAT` extractor for the logistics
 tables still emits `FamilyId` / `AssetId`; it must be re-keyed the same way
