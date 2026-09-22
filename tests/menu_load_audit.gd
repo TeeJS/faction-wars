@@ -16,8 +16,10 @@ func _check(cond: bool, what: String) -> void:
 		print("  FAIL %s" % what)
 
 
+## By label on the button menu, or by region name on the Cockpit picture
+## ("Load Game" is Region_load_game there - the picture carries the label).
 func _find_button(node: Node, text: String) -> Button:
-	if node is Button and (node as Button).text == text:
+	if node is Button and ((node as Button).text == text or node.name == "Region_" + text.to_lower().replace(" ", "_")):
 		return node
 	for c in node.get_children():
 		var found := _find_button(c, text)

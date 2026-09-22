@@ -16,6 +16,168 @@
       "standard",
       "large",
       "huge"
+    ],
+    "galaxy_size_default": "large"
+  },
+  "menu": {
+    "_comment": "The Shuttle Cockpit (manual p021, Fig. 2.2). rect = [x, y, w, h] in the picture's pixels.",
+    "image": "cockpit.png",
+    "selected_color": "#ffd23c",
+    "readout": {
+      "rect": [
+        609,
+        842,
+        244,
+        34
+      ],
+      "standard": "Standard Game",
+      "hq_only": "Headquarters Only Victory",
+      "color": "#40ff40"
+    },
+    "regions": [
+      {
+        "action": "difficulty",
+        "value": "easy",
+        "rect": [
+          133,
+          82,
+          120,
+          110
+        ],
+        "tooltip": "Set game difficulty to easy."
+      },
+      {
+        "action": "difficulty",
+        "value": "medium",
+        "rect": [
+          273,
+          82,
+          120,
+          110
+        ],
+        "tooltip": "Set game difficulty to medium."
+      },
+      {
+        "action": "difficulty",
+        "value": "hard",
+        "rect": [
+          413,
+          82,
+          120,
+          110
+        ],
+        "tooltip": "Set game difficulty to hard."
+      },
+      {
+        "action": "galaxy_size",
+        "value": "standard",
+        "rect": [
+          649,
+          652,
+          64,
+          64
+        ],
+        "tooltip": "Set the size of the galaxy: standard."
+      },
+      {
+        "action": "galaxy_size",
+        "value": "large",
+        "rect": [
+          727,
+          652,
+          64,
+          64
+        ],
+        "tooltip": "Set the size of the galaxy: large."
+      },
+      {
+        "action": "galaxy_size",
+        "value": "huge",
+        "rect": [
+          805,
+          652,
+          64,
+          64
+        ],
+        "tooltip": "Set the size of the galaxy: huge."
+      },
+      {
+        "action": "load_game",
+        "rect": [
+          923,
+          518,
+          90,
+          94
+        ],
+        "tooltip": "Load a saved game."
+      },
+      {
+        "action": "credits",
+        "rect": [
+          1029,
+          542,
+          80,
+          74
+        ],
+        "tooltip": "View credits."
+      },
+      {
+        "action": "start",
+        "value": "empire",
+        "rect": [
+          333,
+          680,
+          170,
+          150
+        ],
+        "tooltip": "Start the game as the Empire."
+      },
+      {
+        "action": "start",
+        "value": "alliance",
+        "rect": [
+          969,
+          680,
+          164,
+          150
+        ],
+        "tooltip": "Start the game as the Alliance."
+      },
+      {
+        "action": "hq_only_victory",
+        "rect": [
+          689,
+          748,
+          96,
+          74
+        ],
+        "tooltip": "Headquarters Only Victory: winner is the first to capture the opponent's headquarters. This makes the game shorter than fulfilling all the victory conditions."
+      },
+      {
+        "action": "multiplayer",
+        "rect": [
+          141,
+          872,
+          136,
+          142
+        ],
+        "tooltip": "Play the game across the network with a human opponent (head-to-head)."
+      },
+      {
+        "action": "exit",
+        "rect": [
+          1237,
+          884,
+          126,
+          126
+        ],
+        "tooltip": "Exit."
+      }
+    ],
+    "credits": [
+      "Star Wars: Rebellion (1998) - LucasArts Entertainment Company / Coolhand Interactive.",
+      "This faction pack: unit, facility, character, mission and map tables from the original GData files; rules and screens from the manual.",
+      "Faction Wars engine: TeeJS."
     ]
   }
 }

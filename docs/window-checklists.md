@@ -333,7 +333,8 @@ Manual passage: PDF p. 20 (manual p. 21), fig. 2.2; save/options elaboration PDF
 | Head-to-head / two-player choice | **Missing.** |
 | Load game / six save slots | **Missing.** |
 | Exit | **Present.** |
-| Shuttle Cockpit artwork and original side/difficulty controls | **Missing.** The scene is a generic “New Game” menu. |
+| Shuttle Cockpit artwork and original side/difficulty controls | **Present (2026-09-22).** The pack's `menu` picture with one clickable region per Fig. 2.2 label (`packs/<id>/pack.json`, `src/ui/menu.gd`); selection shown as corner brackets, the victory readout painted under the centre screen. A pack without a picture keeps the labelled buttons. |
+| “View credits” | **Present (2026-09-22).** A region on the picture; the lines are the pack's `menu.credits`. |
 | “View Military Data” | **Extra/non-manual.** Developer-tool entry. |
 
 Confidence: **high**.

@@ -27,6 +27,26 @@ func _init() -> void:
 	_case("sector missing min_size",
 		_pack({"min_size": ""}, {}, {}), "missing min_size")
 
+	# Rule 11 - the Cockpit picture reaches every function (SCHEMA.md section 2).
+	_case("menu region with an unknown action",
+		_pack({}, {}, {"menu": _menu({"bad_action": true})}), "action 'launch' is not one of")
+	_case("menu start region for a faction the pack does not have",
+		_pack({}, {}, {"menu": _menu({"start_value": "nobody"})}), "start value 'nobody' is not a faction id")
+	_case("menu with no exit region",
+		_pack({}, {}, {"menu": _menu({"drop": "exit"})}), "no region for 'exit'")
+	_case("menu with no region for an offered galaxy size",
+		_pack({}, {}, {"menu": _menu({"drop": "galaxy_size:huge"})}), "no region for 'galaxy_size:huge'")
+	_case("menu with two regions for one difficulty",
+		_pack({}, {}, {"menu": _menu({"dup": "difficulty:easy"})}), "'difficulty:easy' has 2 regions")
+	_case("menu image the pack does not ship",
+		_pack({}, {}, {"menu": _menu({"image": "no-such-cockpit.png"})}), "is not in res://packs")
+	_case("menu region rect with no height",
+		_pack({}, {}, {"menu": _menu({"flat_rect": true})}), "rect must be [x, y, w, h]")
+	_case("menu with no readout",
+		_pack({}, {}, {"menu": _menu({"no_readout": true})}), "'readout' is required")
+	_case("galaxy_size_default not offered",
+		_pack({}, {}, {"size_default": "enormous"}), "galaxy_size_default 'enormous' is not one of")
+
 	# Rule 3 - cross-references and identity.
 	_case("planet points at an undeclared sector",
 		_pack({}, {"sector": "nowhere"}, {}), "sector 'nowhere' is not declared")
@@ -219,6 +239,48 @@ func _rank_labels_resolve() -> void:
 		_ok += 1
 
 
+## A complete Cockpit picture for the test pack (one faction, three sizes),
+## with one thing bent per call.
+func _menu(over: Dictionary) -> Dictionary:
+	var regions: Array = [
+		{"action": "difficulty", "value": "easy", "rect": [0, 0, 10, 10]},
+		{"action": "difficulty", "value": "medium", "rect": [10, 0, 10, 10]},
+		{"action": "difficulty", "value": "hard", "rect": [20, 0, 10, 10]},
+		{"action": "galaxy_size", "value": "standard", "rect": [0, 10, 10, 10]},
+		{"action": "galaxy_size", "value": "large", "rect": [10, 10, 10, 10]},
+		{"action": "galaxy_size", "value": "huge", "rect": [20, 10, 10, 10]},
+		{"action": "start", "value": over.get("start_value", "test_side"), "rect": [0, 20, 10, 10]},
+		{"action": "load_game", "rect": [10, 20, 10, 10]},
+		{"action": "credits", "rect": [20, 20, 10, 10]},
+		{"action": "hq_only_victory", "rect": [0, 30, 10, 10]},
+		{"action": "multiplayer", "rect": [10, 30, 10, 10]},
+		{"action": "exit", "rect": [20, 30, 10, 10]},
+	]
+	if over.has("bad_action"):
+		regions.append({"action": "launch", "rect": [0, 40, 10, 10]})
+	if over.has("drop"):
+		var parts: PackedStringArray = str(over["drop"]).split(":")
+		for i in range(regions.size() - 1, -1, -1):
+			var r: Dictionary = regions[i]
+			if r["action"] == parts[0] and (parts.size() == 1 or r.get("value", "") == parts[1]):
+				regions.remove_at(i)
+	if over.has("dup"):
+		var parts: PackedStringArray = str(over["dup"]).split(":")
+		regions.append({"action": parts[0], "value": parts[1], "rect": [0, 50, 10, 10]})
+	if over.has("flat_rect"):
+		regions[0]["rect"] = [0, 0, 10, 0]
+	var m := {
+		"image": over.get("image", "galaxyShaded.bmp"),
+		"selected_color": "#ffd23c",
+		"readout": {"rect": [0, 60, 30, 10], "standard": "Standard Game", "hq_only": "Headquarters Only", "color": "#40ff40"},
+		"regions": regions,
+		"credits": ["A line."],
+	}
+	if over.has("no_readout"):
+		m.erase("readout")
+	return m
+
+
 ## A minimal two-sector, two-planet pack, with one field bent per call.
 func _pack(sector_over: Dictionary, planet_over: Dictionary, other: Dictionary) -> PackLoader.LoadedPack:
 	var p := PackLoader.LoadedPack.new()
@@ -228,8 +290,11 @@ func _pack(sector_over: Dictionary, planet_over: Dictionary, other: Dictionary) 
 		"neutral": {"id": "neutral", "display_name": "Neutral", "color": "#5499ff"},
 		"unexplored_color": "#cccccc",
 		"map_image": other.get("map_image", "galaxyShaded.bmp"),
-		"setup": {"difficulty_default": "medium", "galaxy_sizes": ["standard", "large", "huge"]},
+		"setup": {"difficulty_default": "medium", "galaxy_sizes": ["standard", "large", "huge"],
+			"galaxy_size_default": other.get("size_default", "standard")},
 	}
+	if other.has("menu"):
+		manifest["menu"] = other["menu"]
 	p.Manifest = PackDefs.PackManifest.from_dict(manifest)
 
 	var s1 := {"id": "core", "display_name": "Core", "ring": 1, "starts_neutral": false,
@@ -329,6 +394,7 @@ func _case(what: String, pack: PackLoader.LoadedPack, expect: String) -> void:
 	PackLoader._validate_units(pack, errors)
 	PackLoader._validate_missions(pack, errors)
 	PackLoader._validate_display(pack, errors)
+	PackLoader._validate_menu(pack, PACK_DIR, errors)
 	for e in errors:
 		if e.contains(expect):
 			_ok += 1
