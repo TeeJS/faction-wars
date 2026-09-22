@@ -69,7 +69,7 @@ SCHEMA.md §1 ("names are never behaviour") and would break a second pack.
 | 20 | `SeedManager` still loads legacy defensive/military JSON through `Loaders`, family ids 34/35/36 → `ion_cannon` etc. | `src/game/seed_manager.gd:23-38` | **PR #48** — `Facility.Def` carries the stats |
 | 21 | Military Data Editor reads `res://data/military_units.json` directly | `src/ui/military_data_editor.gd:37` | **Done** — editor removed with its data (TeeJ, 2026-09-22) |
 | 22 | Legacy `data/` folder (15 JSON files) still shipped; `tests/dto_parity.gd` reads it | `data/`, `src/data/loaders.gd` | **Done** — folder, `Loaders` and eleven DTOs deleted; `dto_parity` compares the loaded pack with `tests/fixtures/dto-pack.json` |
-| 23 | Rule-id constants carry setting names (`SeedCoruscantFirst`, `EspionageRevealCoruscantFloor`) | `src/game/rule_id.gd:93`, `src/game/mission_manager.gd:189` | naming only — rename to `SeedCapitalFirst` etc. when #14 lands |
+| 23 | Rule-id constants carry setting names (`SeedCoruscantFirst`, `EspionageRevealCoruscantFloor`) | `src/game/rule_id.gd:93`, `src/game/mission_manager.gd:189` | **Done** — 32 constants renamed to their role, old name kept as a trailing comment (TeeJ, 2026-09-22) |
 | 24 | **Modularity proof** — a second, deliberately alien pack runs on an unchanged binary | source repo `PROJECT.md` Phase 5 | **In progress, branch `pack-ww2`** — `packs/ww2` (WWII, Axis vs Allies) loads, seeds and soaks; `tests/pack_loads.gd` validates every pack. Charter and leak list: `packs/ww2/PACK.md` |
 | 35 | Day-zero seeding resolved assets by the original's family numbers (`32 → headquarters`, `16 → Troop` …), so a second pack seeded nothing | `src/game/day_zero_generator.gd:388` (was) | **Done** on `pack-ww2` — `setup.json` rows name a `unit` / `facility` id; validation rule 13 |
 | 36 | Defence look-ups by family name (`planetary_shield`, `turbolaser_battery`, `ion_cannon`); `CanDestroySystem` by family 24 | `assault_manager.gd:31`, `intel_manager.gd:246`, `intel_facts.gd:110`, `planet.gd:778`, `bombardment_manager.gd:43` (were) | **Done** on `pack-ww2` — roles `shield` / `anti_ship` / `disable` / `superweapon` |
@@ -83,8 +83,8 @@ SCHEMA.md §1 ("names are never behaviour") and would break a second pack.
 | 31 | Garrison score term counts "Stormtrooper Regiment" by name | `src/game/mission_manager.gd:216` | **PR #49** — `garrison_troop` (engine and the AI mirror) |
 | 32 | Engine joins its behaviours to the pack ids `death_star_sabotage` / `jedi_training` (and `dagobah` / `palace`, and the ten mission-table ids) | `src/game/mission_catalog.gd:39-40` | **PR #49** — `behaviour`; a mission's table shares its id |
 | 33 | Snapshot import maps the C# snapshot's facility names (legacy format) | `src/data/snapshot_loader.gd:13-19` | **Kept** — `tests/fixtures/snapshot-seed12345.json` is still the bench/soak day-zero fixture; the map is the format boundary for that external file |
-| 34 | Rule-id constants named for the setting (`SeedYavin*`, `SeedAllianceHq*`, `LukeVsVader*`, `DeathStarSabotage*`) | `src/game/rule_id.gd` | rename with #23 |
-| 35 | Multiplayer Options win-condition tooltips are the manual's p162 text with Star Wars names (pinned verbatim by `tests/mp_screens.gd:134`) | `src/ui/mp/multiplayer_options.gd:11-12` | UI string only, selects nothing; a pack string when the p162 wording is allowed to vary |
+| 34 | Rule-id constants named for the setting (`SeedYavin*`, `SeedAllianceHq*`, `LukeVsVader*`, `DeathStarSabotage*`) | `src/game/rule_id.gd` | **Done** with #23 |
+| 35 | Multiplayer Options win-condition tooltips are the manual's p162 text with Star Wars names (pinned verbatim by `tests/mp_screens.gd:134`) | `src/ui/mp/multiplayer_options.gd:11-12` | **Done** — `pack.json` `victory_tips` (TeeJ, 2026-09-22); the test still pins the manual's words for this pack |
 
 ## Backlog (lower priority, not blocking play)
 

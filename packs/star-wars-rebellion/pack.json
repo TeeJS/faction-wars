@@ -19,6 +19,11 @@
     ],
     "galaxy_size_default": "standard"
   },
+  "victory_tips": {
+    "_comment": "The Multiplayer Options tooltips, manual p162, verbatim.",
+    "standard": "Rebel Win Conditions: Capture Coruscant and capture Emperor Palpatine and Darth Vader.\nImperial Win Conditions: Destroy the Rebel headquarters and capture President Mon Mothma and Luke Skywalker.",
+    "hq_only": "Rebel Win Conditions: Capture Coruscant.\nImperial Win Conditions: Destroy the Rebel headquarters."
+  },
   "menu": {
     "_comment": "The Shuttle Cockpit (manual p021, Fig. 2.2). rect = [x, y, w, h] in the picture's pixels.",
     "image": "cockpit.png",
