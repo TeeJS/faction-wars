@@ -215,6 +215,9 @@ static func _validate_menu(pack: LoadedPack, pack_dir: String, errors: Array[Str
 		errors.append("pack.json: setup.galaxy_size_default '%s' is not one of setup.galaxy_sizes (%s)." % [setup.GalaxySizeDefault, ", ".join(sizes)])
 	if setup != null and not setup.DifficultyDefault.is_empty() and not KNOWN_DIFFICULTIES.has(setup.DifficultyDefault):
 		errors.append("pack.json: setup.difficulty_default '%s' is not one of %s." % [setup.DifficultyDefault, ", ".join(KNOWN_DIFFICULTIES)])
+	var tips := pack.Manifest.VictoryTips
+	if tips != null and (tips.Standard.strip_edges().is_empty() or tips.HqOnly.strip_edges().is_empty()):
+		errors.append("pack.json victory_tips: 'standard' and 'hq_only' texts are both required (manual p162).")
 	var menu := pack.Manifest.Menu
 	if menu == null:
 		return

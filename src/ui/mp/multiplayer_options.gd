@@ -8,8 +8,14 @@ extends MpScreen
 ## how the guest learns the settings. The checkmark starts the game (host only).
 
 const SizeNames: Array[String] = ["Standard", "Large", "Huge"]
-const StandardGameTip := "Rebel Win Conditions: Capture Coruscant and capture Emperor Palpatine and Darth Vader.\nImperial Win Conditions: Destroy the Rebel headquarters and capture President Mon Mothma and Luke Skywalker."
-const HQOnlyTip := "Rebel Win Conditions: Capture Coruscant.\nImperial Win Conditions: Destroy the Rebel headquarters."
+## The win-condition tooltips are the PACK's words (pack.json victory_tips,
+## manual p162 for the Star Wars pack) - the last setting text engine code
+## carried. A pack without them shows no tooltip.
+static func _victory_tip(hq_only: bool) -> String:
+	var tips: PackDefs.VictoryTipsDef = FactionRegistry.Pack.Manifest.VictoryTips if FactionRegistry.Pack != null else null
+	if tips == null:
+		return ""
+	return tips.HqOnly if hq_only else tips.Standard
 
 var _lobby: RelayClient
 var _host: bool = false
@@ -102,8 +108,8 @@ func _ready() -> void:
 	_victory_group = ButtonGroup.new()
 	var std: Button = get_node("%BtnStandardGame")
 	var hq: Button = get_node("%BtnHQOnlyVictory")
-	std.tooltip_text = StandardGameTip
-	hq.tooltip_text = HQOnlyTip
+	std.tooltip_text = _victory_tip(false)
+	hq.tooltip_text = _victory_tip(true)
 	for b in [std, hq]:
 		b.toggle_mode = true
 		b.button_group = _victory_group

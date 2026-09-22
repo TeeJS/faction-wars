@@ -213,6 +213,21 @@ class MenuDef:
 		return o
 
 
+## The win-condition tooltips on the Multiplayer Options screen (manual p162):
+## the pack's own wording, per victory mode.
+class VictoryTipsDef:
+	var Standard: String
+	var HqOnly: String
+
+	static func from_dict(d: Variant) -> VictoryTipsDef:
+		if d == null:
+			return null
+		var o := VictoryTipsDef.new()
+		o.Standard = JsonUtil.str_or(d, "standard", "")
+		o.HqOnly = JsonUtil.str_or(d, "hq_only", "")
+		return o
+
+
 class PackManifest:
 	var Id: String
 	var DisplayName: String
@@ -226,6 +241,8 @@ class PackManifest:
 	var Setup: PackSetupDef
 	## SCHEMA.md section 2: the Cockpit picture and its regions. Null = button menu.
 	var Menu: MenuDef
+	## SCHEMA.md section 2: the p162 win-condition tooltips. Null = no tooltip.
+	var VictoryTips: VictoryTipsDef
 
 	static func from_dict(d: Dictionary) -> PackManifest:
 		var o := PackManifest.new()
@@ -238,6 +255,7 @@ class PackManifest:
 		o.MapImage = JsonUtil.str_or(d, "map_image", "")
 		o.Setup = PackSetupDef.from_dict(JsonUtil.get_ci(d, "setup"))
 		o.Menu = MenuDef.from_dict(JsonUtil.get_ci(d, "menu"))
+		o.VictoryTips = VictoryTipsDef.from_dict(JsonUtil.get_ci(d, "victory_tips"))
 		return o
 
 

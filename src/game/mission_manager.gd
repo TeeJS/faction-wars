@@ -165,8 +165,8 @@ static func LeakExtraSystems(m: Mission, rng: Prng) -> String:
 	if GameState.ActiveGalaxy.is_empty():
 		return ""
 	var capital := Lq.any(FactionRegistry.Playable, func(f): return f.Hq != null and not f.Hq.Planet.is_empty() and f.Hq.Planet == m.Target.PackId)
-	var floor_id := RuleId.EspionageRevealCoruscantFloor if capital else RuleId.EspionageRevealFloor
-	var spread_id := RuleId.EspionageRevealCoruscantSpread if capital else RuleId.EspionageRevealSpread
+	var floor_id := RuleId.EspionageRevealCapitalFloor if capital else RuleId.EspionageRevealFloor
+	var spread_id := RuleId.EspionageRevealCapitalSpread if capital else RuleId.EspionageRevealSpread
 	var count := RuleManager.Roll(floor_id, spread_id, rng, m.Faction)
 	if count <= 0:
 		return ""
@@ -1044,8 +1044,8 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 				print("[Mission] DEATH STAR DESTROYED at %s." % m.Target.Name)
 				# Entries 122 and 123, both 1.
 				for agent in Lq.of_type_character(m.Team):
-					agent.EspionageRating += RuleManager.Get(RuleId.DeathStarSabotageEspionageGain, m.Faction)
-					agent.CombatRating += RuleManager.Get(RuleId.DeathStarSabotageCombatGain, m.Faction)
+					agent.EspionageRating += RuleManager.Get(RuleId.SuperweaponSabotageEspionageGain, m.Faction)
+					agent.CombatRating += RuleManager.Get(RuleId.SuperweaponSabotageCombatGain, m.Faction)
 				Report(m, day, "Death Star Sabotaged", "The %s has sabotaged the Death Star at %s.\n\nIt is destroyed." % [m.Faction.DisplayName, m.Target.Name])
 				m.Finished = true
 				EventBus.BroadcastChanged()
