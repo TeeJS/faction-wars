@@ -616,5 +616,31 @@
     "student": "Jedi Student",
     "knight": "Jedi Knight",
     "master": "Jedi Master"
+  },
+  "terms": {
+    "_comment": "What this setting calls the engine's concepts on screen (SCHEMA.md section 10). The manual's words.",
+    "hyperdrive": "Hyperdrive Rating",
+    "sublight": "Sub-Light Engine Rating",
+    "shield": "Shield Strength",
+    "hull": "Hull Value",
+    "detection": "Detection Rating",
+    "weapons": "Weapons Rating",
+    "bombardment": "Bombardment Value",
+    "bombardment_defense": "Bombardment Defense",
+    "bombardment_modifier": "Bombardment Modifier",
+    "maintenance": "Maintenance Cost",
+    "squadron_size": "Squadron Size",
+    "fighter_capacity": "Fighter Capacity",
+    "troop_capacity": "Troop Capacity",
+    "energy": "Energy",
+    "raw_materials": "Raw Materials",
+    "refined_materials": "Refined Materials",
+    "mines": "mines",
+    "refineries": "refineries",
+    "fighter_squadron": "Fighter Squadron",
+    "fighter_squadrons": "Fighter Squadrons",
+    "trooper_regiment": "Trooper Regiment",
+    "trooper_regiments": "Trooper Regiments",
+    "in_transit": "in hyperspace"
   }
 }

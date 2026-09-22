@@ -3946,6 +3946,31 @@
       "novice": "Novice",
       "student": "Jedi Student",
       "trainee": "Trainee"
+    },
+    "Terms": {
+      "bombardment": "Bombardment Value",
+      "bombardment_defense": "Bombardment Defense",
+      "bombardment_modifier": "Bombardment Modifier",
+      "detection": "Detection Rating",
+      "energy": "Energy",
+      "fighter_capacity": "Fighter Capacity",
+      "fighter_squadron": "Fighter Squadron",
+      "fighter_squadrons": "Fighter Squadrons",
+      "hull": "Hull Value",
+      "hyperdrive": "Hyperdrive Rating",
+      "in_transit": "in hyperspace",
+      "maintenance": "Maintenance Cost",
+      "mines": "mines",
+      "raw_materials": "Raw Materials",
+      "refined_materials": "Refined Materials",
+      "refineries": "refineries",
+      "shield": "Shield Strength",
+      "squadron_size": "Squadron Size",
+      "sublight": "Sub-Light Engine Rating",
+      "troop_capacity": "Troop Capacity",
+      "trooper_regiment": "Trooper Regiment",
+      "trooper_regiments": "Trooper Regiments",
+      "weapons": "Weapons Rating"
     }
   },
   "facilities": [
