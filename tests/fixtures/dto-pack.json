@@ -3969,6 +3969,7 @@
       "refineries": "refineries",
       "refinery": "refinery",
       "shield": "Shield Strength",
+      "shield_active": "Active Shielding",
       "squadron_size": "Squadron Size",
       "sublight": "Sub-Light Engine Rating",
       "system_engines": "Sub-Light Engine",
@@ -3979,6 +3980,7 @@
       "troop_capacity": "Troop Capacity",
       "trooper_regiment": "Trooper Regiment",
       "trooper_regiments": "Trooper Regiments",
+      "weapon_armed": "Weapon Armed",
       "weapons": "Weapons Rating"
     }
   },
