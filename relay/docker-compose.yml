@@ -1,4 +1,4 @@
-# The schmitz-wars relay on the Unraid box (docs/m3-plan.md section 5).
+# The faction-wars relay on the Unraid box (docs/m3-plan.md section 5).
 #   docker compose up -d
 # Then an NPM Plus proxy host: wars.schmitzplex.com -> http://wars-relay:8787,
 # Websockets Support ON, SSL like the others, no Authelia on this host.

@@ -3,7 +3,7 @@
 # Dumps every data file as the C# source deserialises it, hydrates the same files
 # with the GDScript port, and compares the two canonical dumps field by field.
 #
-# Usage (non-admin PowerShell, from schmitz-wars, after `dotnet build` in the
+# Usage (non-admin PowerShell, from faction-wars, after `dotnet build` in the
 # source repo):
 #   .\tools\dto-parity.ps1
 #

@@ -1,4 +1,4 @@
-# The schmitz-wars relay image: Bun, the one-file relay, and the exported web
+# The faction-wars relay image: Bun, the one-file relay, and the exported web
 # game baked in, so a host pulls one image and mounts only /data.
 # Built and published by .github/workflows/relay-image.yml as
 # ghcr.io/teejs/wars-relay. Build context is the repo root, after the web
