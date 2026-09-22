@@ -231,8 +231,23 @@ func OpenCreateMission(team: Array, origin: Planet, target: Planet, picked: Vari
 		var elsewhere: Array = MissionManager.PerformableBy(team)
 		var why: String = ""
 		var sab: Result = MissionManager.CanSabotage(actor, thing, target) if thing != null else null
+		# A mission this team could run here but for a team rule (Recruitment
+		# without a major character) - name the rule.
+		var ruled_out: String = ""
+		if thing == null and victim == null:
+			for t in Enums.MissionType.values():
+				if MissionManager.NeedsCharacterTarget(t) or MissionManager.NeedsObjectTarget(t):
+					continue
+				if not MissionManager.CanTarget(t, actor, target).ok or not Lq.all(team, func(u: Unit) -> bool: return MissionManager.CanPerform(u, t)):
+					continue
+				var rule: Result = MissionManager.TeamMeetsExtraRule(team, t)
+				if not rule.ok:
+					ruled_out = rule.error
+					break
 		if thing != null and not sab.ok:
 			why = sab.error
+		elif not ruled_out.is_empty():
+			why = ruled_out
 		elif thing == null and victim == null and MissionManager.TeamCanPerform(team, Enums.MissionType.Sabotage):
 			# The targets are named in the PACK's words (display.json terms): a
 			# setting without shields or squadrons lists what it does have.
@@ -350,7 +365,9 @@ func OpenCreateMission(team: Array, origin: Planet, target: Planet, picked: Vari
 			args["facility"] = thing.Serial
 		elif thing is Unit:
 			args["unit"] = thing.Serial
-		CommandBus.issue("launch_mission", args)
+		var r: Result = CommandBus.issue("launch_mission", args)
+		if not r.ok:
+			ShowRefusal("Mission Refused", r.error)
 		dialog.queue_free())
 	dialog.canceled.connect(dialog.queue_free)
 
@@ -359,6 +376,19 @@ func OpenCreateMission(team: Array, origin: Planet, target: Planet, picked: Vari
 
 	add_child(dialog)
 	dialog.popup_centered(Vector2i(ContentWidth + 24, contentHeight))
+
+
+## An order the engine turned down, in front of the player rather than on
+## the console (TeeJ, 2026-09-22).
+func ShowRefusal(title: String, text: String) -> void:
+	var box := AcceptDialog.new()
+	box.title = title
+	box.dialog_text = text
+	box.exclusive = true
+	add_child(box)
+	box.popup_centered()
+	box.confirmed.connect(box.queue_free)
+	box.canceled.connect(box.queue_free)
 
 
 func CreateEmptyLabel(list: VBoxContainer, text: String, color: Color) -> void:
