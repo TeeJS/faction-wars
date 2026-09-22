@@ -10,17 +10,19 @@ extends RefCounted
 const TraitorThreshold := 15
 
 ## The shocks p094 lists by name. ⚠ fitted.
-const ShockCoruscantChangedHands := 25
+const ShockCapitalChangedHands := 25
 const ShockRebelHqDestroyed := 40
 const ShockCombatLosses := 5
 
-static var _coruscant_held_by: Faction = null
-static var _seen_coruscant: bool = false
+## Who held each capital last time we looked: planet pack id -> Faction (or
+## null for nobody). A capital is a world some faction's FIXED headquarters
+## sits on (factions.json `hq.kind: fixed`) - Coruscant in the Star Wars pack.
+## MissionManager.LeakExtraSystems defines "capital" the same way.
+static var _capital_held_by: Dictionary = {}
 
 
 static func Reset() -> void:
-	_coruscant_held_by = null
-	_seen_coruscant = false
+	_capital_held_by.clear()
 
 
 ## Entries 48 and 47: base 0, spread -5, magnitude only.
@@ -34,7 +36,7 @@ static func DriftStep(f: Faction, rng: Prng) -> int:
 static func ProcessDay(galaxy: Array) -> void:
 	if GameState.ActiveRoster == null or galaxy == null:
 		return
-	WatchCoruscant(galaxy)
+	WatchCapitals(galaxy)
 	var rng := Prng.Session
 	for f in FactionRegistry.Playable:
 		var target := GalaxySupportFor(f, galaxy)
@@ -77,30 +79,35 @@ static func AverageSupport(f: Faction, galaxy: Array) -> int:
 	return 50 if count == 0 else total / count
 
 
-## "The Empire GAINING OR LOSING CONTROL OF CORUSCANT" - either direction, both sides.
-static func WatchCoruscant(galaxy: Array) -> void:
-	var coruscant: Planet = null
-	for s in galaxy:
-		for p in s.Planets:
-			if p.Name == "Coruscant":
-				coruscant = p
+## "The Empire GAINING OR LOSING CONTROL OF CORUSCANT" (p094) - either direction,
+## both sides. Generalised to every capital the pack declares (a fixed HQ world);
+## the Star Wars pack has exactly one, so this is the same rule.
+static func WatchCapitals(galaxy: Array) -> void:
+	for f in FactionRegistry.Playable:
+		if f.Hq == null or f.Hq.Kind != "fixed" or f.Hq.Planet.is_empty():
+			continue
+		var capital: Planet = null
+		for s in galaxy:
+			for p in s.Planets:
+				if p.PackId == f.Hq.Planet:
+					capital = p
+					break
+			if capital != null:
 				break
-		if coruscant != null:
-			break
-	if coruscant == null:
-		return
-	if not _seen_coruscant:
-		_coruscant_held_by = coruscant.ControllingFaction
-		_seen_coruscant = true
-		return
-	if coruscant.ControllingFaction == _coruscant_held_by:
-		return
-	var gained := coruscant.ControllingFaction
-	var lost := _coruscant_held_by
-	_coruscant_held_by = gained
-	print("[Loyalty] Coruscant changed hands: %s -> %s." % [lost.DisplayName if lost != null else "nobody", gained.DisplayName if gained != null else "nobody"])
-	Shock(lost, -ShockCoruscantChangedHands)
-	Shock(gained, ShockCoruscantChangedHands)
+		if capital == null:
+			continue
+		if not _capital_held_by.has(capital.PackId):
+			_capital_held_by[capital.PackId] = capital.ControllingFaction
+			continue
+		var last: Faction = _capital_held_by[capital.PackId]
+		if capital.ControllingFaction == last:
+			continue
+		var gained := capital.ControllingFaction
+		var lost := last
+		_capital_held_by[capital.PackId] = gained
+		print("[Loyalty] %s changed hands: %s -> %s." % [capital.Name, lost.DisplayName if lost != null else "nobody", gained.DisplayName if gained != null else "nobody"])
+		Shock(lost, -ShockCapitalChangedHands)
+		Shock(gained, ShockCapitalChangedHands)
 
 
 static func RebelHeadquartersDestroyed(owner: Faction) -> void:

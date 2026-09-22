@@ -17,6 +17,8 @@ var LoyaltyLabel: String
 var StartingPlanets: Array[PackDefs.StartingPlanetDef] = []
 var Seed: PackDefs.FactionSeedDef
 var Victory: PackDefs.VictoryDef
+## The side's agent droid / adviser, as the pack names it (manual p030, Fig. 2.16).
+var AgentName: String = ""
 
 
 static func FromPack(def: PackDefs.FactionDef) -> Faction:
@@ -30,6 +32,7 @@ static func FromPack(def: PackDefs.FactionDef) -> Faction:
 	f.StartingPlanets = def.StartingPlanets if def.StartingPlanets != null else []
 	f.Seed = def.Seed
 	f.Victory = def.Victory
+	f.AgentName = def.AgentName
 	return f
 
 

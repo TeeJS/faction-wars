@@ -118,7 +118,7 @@ func Units(worlds: Array, us: Faction, kind: String) -> void:
 
 	var rules: Array = Lq.where(MilitaryCatalog.All(), func(r) -> bool: return r.Kind == kind and MilitaryCatalog.CanBeBuiltBy(r, us))
 	for rule in Lq.order_by(rules, func(r) -> String: return r.DisplayName):
-		var held: int = Lq.count(all, func(u: Unit) -> bool: return u.Name == rule.DisplayName and u.Faction == us)
+		var held: int = Lq.count(all, func(u: Unit) -> bool: return u.PackId == rule.Id and u.Faction == us)
 		Row(rule.DisplayName, held, held * rule.MaintenanceCost)
 
 

@@ -119,6 +119,7 @@ static func Create(def: PackDefs.UnitDef, faction: Faction, at: Location) -> Uni
 	u.Type = t if t != null else Enums.UnitType.Troop
 	u.AssetId = def.SourceId
 	u.FamilyId = def.SourceFamilyId
+	u.PackId = def.Id
 	u.Faction = faction
 	u.Attached = at
 

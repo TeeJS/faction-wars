@@ -6,9 +6,8 @@ extends Unit
 
 ## Major or minor - set from which file the character was loaded out of, not JSON.
 var IsMajor: bool
-## The pack's id (characters.json). Victory targets and every other pack
-## reference resolve on THIS, never on Name (SCHEMA.md section 12 Q1).
-var PackId: String
+## PackId (characters.json) is declared on Unit: victory targets and every
+## other pack reference resolve on it, never on Name (SCHEMA.md section 12 Q1).
 
 var Rank: Enums.Rank = Enums.Rank.None
 var Commanding: Location   # a planet or a fleet
