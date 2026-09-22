@@ -13,7 +13,7 @@ browser, single-player against the built-in AI or head-to-head over a relay.
 | Path | What it is |
 |---|---|
 | `src/` | the game: `core`, `game` (the simulation), `command` (every player order as a logged command), `net` (lockstep session, relay client, transports), `ui`, `data` (pack loading and validation) |
-| `packs/` | the faction packs. `active.json` names the one the engine loads; `star-wars-rebellion/` and `ww2/`. **The pack files are hand-edited; they are the contract.** Each row keeps `source_family_id` / `source_id` as its trail back to the original tables |
+| `packs/` | the faction packs, `star-wars-rebellion/` and `ww2/`. The game opens on a picker with one card per pack (`PackPicker.tscn`); `active.json` is the headless default, and `--pack=<id>` overrides both. **The pack files are hand-edited; they are the contract.** Each row keeps `source_family_id` / `source_id` as its trail back to the original tables |
 | `SCHEMA.md` | the contract between the engine and a pack - the live copy; every pack file is validated against it on load |
 | `GAMEPLAY.md` | how the original game works, read from the manual page by page, with citations. The rulebook this port is measured against |
 | `relay/` | the multiplayer relay: one Bun file, an append-only log per game, a Dockerfile, the Unraid template and the Fly config. See `relay/README.md` |
@@ -40,7 +40,7 @@ The repository was `schmitz-wars` until 2026-09-22.
 ## Running it
 
 - **Godot 4.7.1**, the non-Mono build, GL Compatibility renderer. Open
-  `project.godot`; the main scene is `Menu.tscn`.
+  `project.godot`; the main scene is `PackPicker.tscn`, which loads the chosen pack and goes on to its Cockpit, `Menu.tscn`.
 - **A headless test:** `.\tools\run-gd.ps1 tests\<name>.gd` (imports the project
   first if needed, hard timeout, never opens a window).
 - **The AI gate:** `.\tools\soak-gate.ps1` - four headless soaks whose day
