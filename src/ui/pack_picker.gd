@@ -9,8 +9,12 @@ extends Control
 ##
 ## Skipped straight through to the Cockpit when the choice is already made:
 ## `--pack=<id>` on the command line, a pack already loaded (a scene coming
-## back here), or exactly one pack installed. ONE PACK PER PROCESS
-## (FactionRegistry): there is no way back here from the Cockpit.
+## back here mid-flow), or exactly one pack installed.
+##
+## The Cockpit's Exit comes BACK here (ExitToPicker): the loaded pack is
+## unloaded - the one place that happens - and another can be chosen. With
+## nothing to choose (one pack, or --pack= forcing it) that Exit quits
+## instead. Exit Game is this screen's own button, hidden on the web.
 ##
 ## The last choice is remembered in user://pack.cfg and pre-focused next time;
 ## packs/active.json stays the headless default.
@@ -21,18 +25,39 @@ const LastFile := "user://pack.cfg"
 ## pack id -> the Play button, for the test and the keyboard.
 var _play: Dictionary = {}
 var _cards: HBoxContainer
+## Set by ExitToPicker: the next picker is a return from the Cockpit.
+static var _returning: bool = false
 
 
 func _ready() -> void:
+	var ids := FactionRegistry.ListPackIds()
+	if _returning:
+		_returning = false
+		if ids.size() <= 1 or not _cmdline_pack().is_empty():
+			# Nothing else to choose: the Cockpit's Exit means quit here.
+			get_tree().quit()
+			if not OS.has_feature("web"):
+				return
+		FactionRegistry.Unload()
+		_build(ids)
+		return
 	if FactionRegistry.IsLoaded() or not _cmdline_pack().is_empty():
 		FactionRegistry.EnsureLoaded()
 		_go()
 		return
-	var ids := FactionRegistry.ListPackIds()
 	if ids.size() == 1:
 		Choose(ids[0])
 		return
 	_build(ids)
+
+
+## The Cockpit's Exit: back to this screen to choose again. Remembers the
+## pack being left so its card is the focused one.
+static func ExitToPicker(tree: SceneTree) -> void:
+	_returning = true
+	if FactionRegistry.IsLoaded():
+		_remember(FactionRegistry.LoadedId())
+	tree.change_scene_to_file("res://PackPicker.tscn")
 
 
 ## Load `pack_id` and go on to its Cockpit. False when it cannot load.
@@ -109,13 +134,15 @@ func _build(ids: Array[String]) -> void:
 	if focus_first != null and not focus_first.disabled:
 		focus_first.grab_focus()
 
-	var exit := Button.new()
-	exit.text = "Exit"
-	exit.custom_minimum_size = Vector2(160, 40)
-	exit.pressed.connect(func() -> void: get_tree().quit())
-	var foot := CenterContainer.new()
-	foot.add_child(exit)
-	column.add_child(foot)
+	# A browser tab has no desktop to quit to (TeeJ, room #97).
+	if not OS.has_feature("web"):
+		var quit := Button.new()
+		quit.text = "Exit Game"
+		quit.custom_minimum_size = Vector2(160, 40)
+		quit.pressed.connect(func() -> void: get_tree().quit())
+		var foot := CenterContainer.new()
+		foot.add_child(quit)
+		column.add_child(foot)
 
 
 ## One pack's card. A pack that fails validation still gets a card, with its
