@@ -215,6 +215,9 @@ static func _CountUnits(units: Array, p: Planet, busy: bool, requireAvailable: b
 ## the loaded pack if something asks first.
 static var Categories: Array = []
 static var _by_id: Dictionary = {}
+## Which pack the catalog was built from, so a pack switch (the picker, after
+## the Cockpit exits) rebuilds it instead of serving the old pack's modes.
+static var _built_for: String = ""
 
 
 static func LoadFromPack(pack: PackLoader.LoadedPack) -> void:
@@ -241,11 +244,12 @@ static func LoadFromPack(pack: PackLoader.LoadedPack) -> void:
 			modes.append(m)
 			_by_id[md.Id] = m
 		Categories.append(GidCategory.new(cd.DisplayName, modes, cd.Id))
+	_built_for = pack.Manifest.Id
 	print("[GID] catalog from the pack: %d categories, %d modes." % [Categories.size(), _by_id.size()])
 
 
 static func _EnsureBuilt() -> void:
-	if Categories.is_empty() and FactionRegistry.Pack != null:
+	if FactionRegistry.Pack != null and (Categories.is_empty() or _built_for != FactionRegistry.Pack.Manifest.Id):
 		LoadFromPack(FactionRegistry.Pack)
 
 
