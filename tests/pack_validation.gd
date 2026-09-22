@@ -42,6 +42,8 @@ func _init() -> void:
 		_pack({}, {}, {"menu": _menu({"image": "no-such-cockpit.png"})}), "is not in res://packs")
 	_case("menu region rect with no height",
 		_pack({}, {}, {"menu": _menu({"flat_rect": true})}), "rect must be [x, y, w, h]")
+	_case("menu region with a bad selected_color",
+		_pack({}, {}, {"menu": _menu({"bad_color": true})}), "selected_color: 'red' is not a #rrggbb color")
 	_case("menu with no readout",
 		_pack({}, {}, {"menu": _menu({"no_readout": true})}), "'readout' is required")
 	_case("galaxy_size_default not offered",
@@ -281,6 +283,8 @@ func _menu(over: Dictionary) -> Dictionary:
 		regions.append({"action": parts[0], "value": parts[1], "rect": [0, 50, 10, 10]})
 	if over.has("flat_rect"):
 		regions[0]["rect"] = [0, 0, 10, 0]
+	if over.has("bad_color"):
+		regions[0]["selected_color"] = "red"
 	var m := {
 		"image": over.get("image", "galaxyShaded.bmp"),
 		"selected_color": "#ffd23c",

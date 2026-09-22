@@ -29,6 +29,10 @@ func _init() -> void:
 	var menu: Control = load("res://Menu.tscn").instantiate()
 	root.add_child(menu)
 	await process_frame
+	# A headless window is tiny; lay the Cockpit out at a real screen size so
+	# the fit checks below mean something.
+	menu.size = Vector2(1440, 1080)
+	await process_frame
 	await process_frame
 
 	var picture: TextureRect = menu.get_node_or_null("Cockpit")
@@ -77,12 +81,24 @@ func _init() -> void:
 	_check(sel["difficulty"] == "hard", "pressing the hard screen sets difficulty hard")
 	_check(sel["size"] == sizes[sizes.size() - 1], "pressing the last galaxy screen sets that size")
 
+	# A region's own bracket colour rides on the button for the marks pass.
+	var easy_btn: Button = regions.get_node("Region_difficulty_easy")
+	var easy_def: PackDefs.MenuRegionDef = null
+	for r in menu_def.Regions:
+		if r.Action == "difficulty" and r.Value == "easy":
+			easy_def = r
+	_check(easy_def != null and str(easy_btn.get_meta("color", "")) == easy_def.SelectedColorHex, "the easy region carries its selected_color (%s)" % str(easy_btn.get_meta("color", "")))
+
 	# The readout follows the victory toggle.
 	var readout: Label = regions.get_node_or_null("Readout")
 	_check(readout != null and readout.text == menu_def.Readout.Standard, "the readout starts at '%s'" % menu_def.Readout.Standard)
 	(regions.get_node("Region_hq_only_victory") as Button).pressed.emit()
 	sel = menu.call("SelectedSettings")
 	_check(sel["hq_only"] == true, "pressing the victory screen turns Headquarters Only on")
+	if readout != null:
+		var fs: int = readout.get_theme_font_size("font_size")
+		var w: float = readout.get_theme_font("font").get_string_size(readout.text, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x
+		_check(w <= readout.size.x, "'%s' fits the readout panel (%.0f of %.0f px at %d)" % [readout.text, w, readout.size.x, fs])
 	_check(readout != null and readout.text == menu_def.Readout.HqOnly, "the readout says '%s'" % menu_def.Readout.HqOnly)
 	(regions.get_node("Region_hq_only_victory") as Button).pressed.emit()
 	sel = menu.call("SelectedSettings")

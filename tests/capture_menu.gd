@@ -5,7 +5,7 @@ extends SceneTree
 ##   Godot_console.exe --path . --resolution 1440x1080 -s tests/capture_menu.gd -- --out=C:/tmp/menu.png [--hover]
 ##
 ## --hover marks every region with a translucent box so the layout can be read
-## off the capture.
+## off the capture; --hq toggles Headquarters Only Victory first.
 
 func _init() -> void:
 	await process_frame
@@ -14,6 +14,10 @@ func _init() -> void:
 	root.add_child(menu)
 	await process_frame
 	await process_frame
+	if OS.get_cmdline_user_args().has("--hq"):
+		var hq: Button = menu.get_node_or_null("Regions/Region_hq_only_victory")
+		if hq != null:
+			hq.pressed.emit()
 	if OS.get_cmdline_user_args().has("--hover"):
 		var regions: Node = menu.get_node_or_null("Regions")
 		if regions != null:
