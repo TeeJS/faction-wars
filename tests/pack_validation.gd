@@ -38,9 +38,12 @@ func _init() -> void:
 
 	# Rule 7 - a faction's named worlds exist.
 	_case("starting planet absent from the map",
-		_pack({}, {}, {"starting": "Dantooine"}), "starting planet 'Dantooine' is not in map.json")
+		_pack({}, {}, {"starting": "dantooine"}), "starting planet 'dantooine' is not a planet id")
 	_case("fixed HQ on a planet absent from the map",
-		_pack({}, {}, {"hq": "Byss"}), "hq.planet 'Byss' is not in map.json")
+		_pack({}, {}, {"hq": "byss"}), "hq.planet 'byss' is not a planet id")
+	# A DISPLAY NAME where an id belongs is exactly the mistake Q1 exists to catch.
+	_case("a display name used where a planet id belongs",
+		_pack({}, {}, {"starting": "Core World"}), "starting planet 'Core World' is not a planet id")
 
 	# Rule 5 / 3 - the roster.
 	_case("character on an undeclared faction",
@@ -50,7 +53,9 @@ func _init() -> void:
 	_case("unknown can_command rank",
 		_pack({}, {}, {"char_command": ["warlord"]}), "unknown can_command entry 'warlord'")
 	_case("victory target who is not a character",
-		_pack({}, {}, {"victory": "Nobody At All"}), "victory target 'Nobody At All' is not a character")
+		_pack({}, {}, {"victory": "nobody_at_all"}), "victory target 'nobody_at_all' is not a character id")
+	_case("a display name used where a character id belongs",
+		_pack({}, {}, {"victory": "Second Person"}), "victory target 'Second Person' is not a character id")
 
 	# Rules 3 / 4 / 5 - the facility catalog.
 	_case("unknown facility role",
@@ -246,10 +251,10 @@ func _pack(sector_over: Dictionary, planet_over: Dictionary, other: Dictionary) 
 	var faction := {
 		"id": "test_side", "display_name": "Test Side", "color": "#ff0000",
 		"loyalty_label": "Loyalty", "occupation_support_policy": "garrison_bonus",
-		"hq": {"kind": "fixed", "planet": other.get("hq", "Core World")},
-		"starting_planets": [{"planet": other.get("starting", "Core World"),
+		"hq": {"kind": "fixed", "planet": other.get("hq", "core_world")},
+		"starting_planets": [{"planet": other.get("starting", "core_world"),
 			"support": 100, "explored": true, "garrison": ""}],
-		"victory": {"capture_characters": [other.get("victory", "Second Person")]},
+		"victory": {"capture_characters": [other.get("victory", "second_person")]},
 	}
 	p.Factions = [PackDefs.FactionDef.from_dict(faction)]
 

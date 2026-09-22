@@ -109,3 +109,21 @@ static func Opponents(f: Faction) -> Array[Faction]:
 
 static func ParseColor(hex: String) -> Color:
 	return Color.html(hex)
+
+
+## The display name behind a pack planet id, for text shown to the player. The
+## id itself when the pack declares no such planet - visible, never blank.
+static func PlanetNameOf(id: String) -> String:
+	if Pack != null and Pack.Map != null:
+		for pd in Pack.Map.Planets:
+			if pd.Id == id:
+				return pd.DisplayName
+	return id
+
+
+static func CharacterNameOf(id: String) -> String:
+	if Pack != null:
+		for cd in Pack.Characters:
+			if cd.Id == id:
+				return cd.DisplayName
+	return id

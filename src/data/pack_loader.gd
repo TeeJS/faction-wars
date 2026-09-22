@@ -381,13 +381,13 @@ static func _validate_characters(pack: LoadedPack, errors: Array[String]) -> voi
 			if not KNOWN_COMMAND_RANKS.has(rank):
 				errors.append("%s: unknown can_command entry '%s'. Known: %s." % [ctx, rank, ", ".join(KNOWN_COMMAND_RANKS)])
 
-	# Rule 3: a victory condition that names nobody can never be met.
+	# Rule 3: a victory condition that names nobody can never be met. By ID (Q1).
 	for f in pack.Factions:
 		if f.Victory == null:
 			continue
 		for n in f.Victory.CaptureCharacters:
-			if not names.has(n):
-				errors.append("factions.json[%s]: victory target '%s' is not a character in characters.json." % [f.Id, n])
+			if not ids.has(n):
+				errors.append("factions.json[%s]: victory target '%s' is not a character id in characters.json." % [f.Id, n])
 
 
 ## SCHEMA.md section 11 rules 3, 7, 9 and 10. The map is pack-loaded now, so the
@@ -441,15 +441,16 @@ static func _validate_map(pack: LoadedPack, pack_dir: String, errors: Array[Stri
 		if not sector_ids.has(p.Sector):
 			errors.append("%s: sector '%s' is not declared in map.json." % [ctx, p.Sector])
 
-	# Rule 7: a faction's named worlds exist. factions.json still names them by
-	# DISPLAY NAME; SCHEMA.md section 12 Q1 moves it to ids, and this check moves
-	# with it. Until then, match what the engine actually resolves on.
+	# Rule 7: a faction's named worlds exist - BY ID (SCHEMA.md section 12 Q1).
+	# A hidden HQ's placement is either the random_rim sentinel or a planet id.
 	for f in pack.Factions:
 		for sp in f.StartingPlanets:
-			if not sp.Planet.is_empty() and not planet_names.has(sp.Planet):
-				errors.append("factions.json[%s]: starting planet '%s' is not in map.json." % [f.Id, sp.Planet])
-		if f.Hq != null and f.Hq.Kind == "fixed" and not f.Hq.Planet.is_empty() and not planet_names.has(f.Hq.Planet):
-			errors.append("factions.json[%s]: hq.planet '%s' is not in map.json." % [f.Id, f.Hq.Planet])
+			if not sp.Planet.is_empty() and not planet_ids.has(sp.Planet):
+				errors.append("factions.json[%s]: starting planet '%s' is not a planet id in map.json." % [f.Id, sp.Planet])
+		if f.Hq != null and f.Hq.Kind == "fixed" and not f.Hq.Planet.is_empty() and not planet_ids.has(f.Hq.Planet):
+			errors.append("factions.json[%s]: hq.planet '%s' is not a planet id in map.json." % [f.Id, f.Hq.Planet])
+		if f.Hq != null and f.Hq.Kind == "hidden" and f.Hq.Placement != "random_rim" and not planet_ids.has(f.Hq.Placement):
+			errors.append("factions.json[%s]: hq.placement '%s' is neither 'random_rim' nor a planet id in map.json." % [f.Id, f.Hq.Placement])
 
 	# Rule 9: the pack declares its map image and ships it.
 	if pack.Manifest.MapImage.strip_edges().is_empty():

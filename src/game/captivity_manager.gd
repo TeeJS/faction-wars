@@ -76,5 +76,5 @@ static func HomeFor(f: Faction, galaxy: Array) -> Location:
 	if worlds.is_empty():
 		return null
 	var seat: String = f.Hq.Planet if f.Hq != null else ""
-	var at_seat: Planet = Lq.first_or_null(worlds, func(p): return p.Name == seat)
+	var at_seat: Planet = Lq.first_or_null(worlds, func(p): return p.PackId == seat)
 	return at_seat if at_seat != null else worlds[0]

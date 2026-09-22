@@ -51,6 +51,7 @@ static func LoadFromPack(pack: PackLoader.LoadedPack, size: int) -> Array[Sector
 		if not sector_map.has(pd.Sector):
 			continue
 		var p := Planet.new()
+		p.PackId = pd.Id
 		p.Name = pd.DisplayName
 		p.StartsInhabited = pd.StartsInhabited
 		p.IsInhabited = pd.StartsInhabited
