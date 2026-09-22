@@ -13,13 +13,12 @@ browser, single-player against the built-in AI or head-to-head over a relay.
 | Path | What it is |
 |---|---|
 | `src/` | the game: `core`, `game` (the simulation), `command` (every player order as a logged command), `net` (lockstep session, relay client, transports), `ui`, `data` (pack loading and validation) |
-| `packs/` | the faction packs. `active.json` names the one the engine loads; `star-wars-rebellion/` is the only pack so far |
+| `packs/` | the faction packs. `active.json` names the one the engine loads; `star-wars-rebellion/` and `ww2/`. **The pack files are hand-edited; they are the contract.** Each row keeps `source_family_id` / `source_id` as its trail back to the original tables |
 | `SCHEMA.md` | the contract between the engine and a pack - the live copy; every pack file is validated against it on load |
-| `data/` | the original game's binary tables (`GData/*.DAT`) as JSON - the source the Star Wars pack is built from by `tools/build-*-json.py` |
 | `GAMEPLAY.md` | how the original game works, read from the manual page by page, with citations. The rulebook this port is measured against |
 | `relay/` | the multiplayer relay: one Bun file, an append-only log per game, a Dockerfile, the Unraid template and the Fly config. See `relay/README.md` |
 | `tests/` | headless GDScript tests and the fixtures they compare against |
-| `tools/` | the runners: `run-gd.ps1` (one headless test), `soak-gate.ps1` (the AI gate), `lockstep-local.ps1` and `mp-flow-local.ps1` (multiplayer through a local relay), `feedback-local.ps1`, and the pack builders |
+| `tools/` | the runners: `run-gd.ps1` (one headless test), `soak-gate.ps1` (the AI gate), `lockstep-local.ps1` and `mp-flow-local.ps1` (multiplayer through a local relay), `feedback-local.ps1`, `dto-parity.ps1` (the pack hydration regression) |
 | `docs/` | the plans and audits: multiplayer (`m0`-`m3-plan.md`, `multiplayer-plan.md`, `multiplayer-ui-design.md`), the AI framework (`ai-framework/`), `window-checklists.md`, `FEEDBACK-PROCESS.md`, `BACKPORT-LOG.md` |
 | `BACKLOG.md` | the single tracker: done, in progress, missing features, backlog, known bugs |
 | `HANDOFF.md` | how the port came to be, and its status line |
