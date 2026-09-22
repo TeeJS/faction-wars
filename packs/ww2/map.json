@@ -6,8 +6,8 @@
       "ring": 1,
       "starts_neutral": false,
       "map": {
-        "x": 340,
-        "y": 305
+        "x": 338,
+        "y": 127
       },
       "min_size": "standard",
       "intel_tier": "live"
@@ -18,8 +18,8 @@
       "ring": 1,
       "starts_neutral": false,
       "map": {
-        "x": 430,
-        "y": 350
+        "x": 355,
+        "y": 136
       },
       "min_size": "standard",
       "intel_tier": "live"
@@ -30,8 +30,8 @@
       "ring": 1,
       "starts_neutral": false,
       "map": {
-        "x": 540,
-        "y": 300
+        "x": 372,
+        "y": 137
       },
       "min_size": "standard",
       "intel_tier": "live"
@@ -42,8 +42,8 @@
       "ring": 2,
       "starts_neutral": false,
       "map": {
-        "x": 480,
-        "y": 165
+        "x": 371,
+        "y": 107
       },
       "min_size": "large",
       "intel_tier": "presence"
@@ -54,8 +54,8 @@
       "ring": 2,
       "starts_neutral": true,
       "map": {
-        "x": 330,
-        "y": 505
+        "x": 336,
+        "y": 162
       },
       "min_size": "large",
       "intel_tier": "presence"
@@ -66,8 +66,8 @@
       "ring": 1,
       "starts_neutral": false,
       "map": {
-        "x": 460,
-        "y": 475
+        "x": 368,
+        "y": 158
       },
       "min_size": "standard",
       "intel_tier": "live"
@@ -78,8 +78,8 @@
       "ring": 2,
       "starts_neutral": false,
       "map": {
-        "x": 560,
-        "y": 440
+        "x": 388,
+        "y": 155
       },
       "min_size": "large",
       "intel_tier": "presence"
@@ -90,8 +90,8 @@
       "ring": 1,
       "starts_neutral": false,
       "map": {
-        "x": 650,
-        "y": 255
+        "x": 395,
+        "y": 124
       },
       "min_size": "standard",
       "intel_tier": "live"
@@ -102,8 +102,8 @@
       "ring": 2,
       "starts_neutral": false,
       "map": {
-        "x": 655,
-        "y": 405
+        "x": 458,
+        "y": 124
       },
       "min_size": "huge",
       "intel_tier": "presence"
@@ -114,8 +114,8 @@
       "ring": 2,
       "starts_neutral": false,
       "map": {
-        "x": 430,
-        "y": 615
+        "x": 367,
+        "y": 176
       },
       "min_size": "standard",
       "intel_tier": "presence"
@@ -126,8 +126,8 @@
       "ring": 2,
       "starts_neutral": true,
       "map": {
-        "x": 650,
-        "y": 535
+        "x": 420,
+        "y": 170
       },
       "min_size": "large",
       "intel_tier": "presence"
@@ -138,8 +138,8 @@
       "ring": 2,
       "starts_neutral": false,
       "map": {
-        "x": 340,
-        "y": 170
+        "x": 285,
+        "y": 119
       },
       "min_size": "standard",
       "intel_tier": "presence"
@@ -150,8 +150,8 @@
       "ring": 2,
       "starts_neutral": false,
       "map": {
-        "x": 180,
-        "y": 225
+        "x": 168,
+        "y": 149
       },
       "min_size": "standard",
       "intel_tier": "presence"
@@ -162,8 +162,8 @@
       "ring": 2,
       "starts_neutral": false,
       "map": {
-        "x": 755,
-        "y": 175
+        "x": 566,
+        "y": 160
       },
       "min_size": "standard",
       "intel_tier": "presence"
@@ -174,8 +174,8 @@
       "ring": 3,
       "starts_neutral": false,
       "map": {
-        "x": 755,
-        "y": 460
+        "x": 542,
+        "y": 211
       },
       "min_size": "large",
       "intel_tier": "presence"
@@ -186,8 +186,8 @@
       "ring": 3,
       "starts_neutral": false,
       "map": {
-        "x": 645,
-        "y": 660
+        "x": 484,
+        "y": 193
       },
       "min_size": "huge",
       "intel_tier": "presence"
@@ -198,8 +198,8 @@
       "ring": 3,
       "starts_neutral": false,
       "map": {
-        "x": 755,
-        "y": 320
+        "x": 652,
+        "y": 197
       },
       "min_size": "standard",
       "intel_tier": "presence"
@@ -210,8 +210,8 @@
       "ring": 3,
       "starts_neutral": false,
       "map": {
-        "x": 755,
-        "y": 630
+        "x": 632,
+        "y": 275
       },
       "min_size": "large",
       "intel_tier": "presence"
@@ -222,8 +222,8 @@
       "ring": 3,
       "starts_neutral": true,
       "map": {
-        "x": 170,
-        "y": 680
+        "x": 237,
+        "y": 269
       },
       "min_size": "huge",
       "intel_tier": "presence"
@@ -234,8 +234,8 @@
       "ring": 3,
       "starts_neutral": false,
       "map": {
-        "x": 445,
-        "y": 740
+        "x": 398,
+        "y": 248
       },
       "min_size": "huge",
       "intel_tier": "presence"
@@ -248,8 +248,8 @@
       "sector": "british_isles",
       "starts_inhabited": true,
       "map": {
-        "x": 368,
-        "y": 328
+        "x": 344,
+        "y": 128
       },
       "artwork_id": 1
     },
@@ -259,8 +259,8 @@
       "sector": "british_isles",
       "starts_inhabited": true,
       "map": {
-        "x": 312,
-        "y": 282
+        "x": 332,
+        "y": 126
       },
       "artwork_id": 2
     },
@@ -270,8 +270,8 @@
       "sector": "western_europe",
       "starts_inhabited": true,
       "map": {
-        "x": 402,
-        "y": 385
+        "x": 350,
+        "y": 142
       },
       "artwork_id": 3
     },
@@ -281,8 +281,8 @@
       "sector": "western_europe",
       "starts_inhabited": true,
       "map": {
-        "x": 425,
-        "y": 334
+        "x": 354,
+        "y": 132
       },
       "artwork_id": 4
     },
@@ -292,8 +292,8 @@
       "sector": "western_europe",
       "starts_inhabited": true,
       "map": {
-        "x": 430,
-        "y": 312
+        "x": 355,
+        "y": 128
       },
       "artwork_id": 5
     },
@@ -303,8 +303,8 @@
       "sector": "western_europe",
       "starts_inhabited": true,
       "map": {
-        "x": 458,
-        "y": 388
+        "x": 361,
+        "y": 142
       },
       "artwork_id": 6
     },
@@ -314,8 +314,8 @@
       "sector": "central_europe",
       "starts_inhabited": true,
       "map": {
-        "x": 502,
-        "y": 262
+        "x": 364,
+        "y": 130
       },
       "artwork_id": 7
     },
@@ -325,8 +325,8 @@
       "sector": "central_europe",
       "starts_inhabited": true,
       "map": {
-        "x": 536,
-        "y": 328
+        "x": 372,
+        "y": 140
       },
       "artwork_id": 8
     },
@@ -336,8 +336,8 @@
       "sector": "central_europe",
       "starts_inhabited": true,
       "map": {
-        "x": 548,
-        "y": 295
+        "x": 374,
+        "y": 135
       },
       "artwork_id": 9
     },
@@ -347,8 +347,8 @@
       "sector": "central_europe",
       "starts_inhabited": true,
       "map": {
-        "x": 578,
-        "y": 338
+        "x": 380,
+        "y": 142
       },
       "artwork_id": 10
     },
@@ -358,8 +358,8 @@
       "sector": "scandinavia",
       "starts_inhabited": true,
       "map": {
-        "x": 432,
-        "y": 141
+        "x": 361,
+        "y": 104
       },
       "artwork_id": 11
     },
@@ -369,8 +369,8 @@
       "sector": "scandinavia",
       "starts_inhabited": true,
       "map": {
-        "x": 470,
-        "y": 149
+        "x": 372,
+        "y": 106
       },
       "artwork_id": 12
     },
@@ -380,8 +380,8 @@
       "sector": "scandinavia",
       "starts_inhabited": true,
       "map": {
-        "x": 435,
-        "y": 208
+        "x": 362,
+        "y": 118
       },
       "artwork_id": 13
     },
@@ -391,8 +391,8 @@
       "sector": "scandinavia",
       "starts_inhabited": true,
       "map": {
-        "x": 528,
-        "y": 122
+        "x": 389,
+        "y": 99
       },
       "artwork_id": 14
     },
@@ -402,8 +402,8 @@
       "sector": "iberia",
       "starts_inhabited": true,
       "map": {
-        "x": 358,
-        "y": 482
+        "x": 340,
+        "y": 159
       },
       "artwork_id": 15
     },
@@ -413,8 +413,8 @@
       "sector": "iberia",
       "starts_inhabited": true,
       "map": {
-        "x": 302,
-        "y": 487
+        "x": 332,
+        "y": 160
       },
       "artwork_id": 16
     },
@@ -424,8 +424,8 @@
       "sector": "iberia",
       "starts_inhabited": true,
       "map": {
-        "x": 339,
-        "y": 528
+        "x": 338,
+        "y": 168
       },
       "artwork_id": 17
     },
@@ -435,8 +435,8 @@
       "sector": "italian_peninsula",
       "starts_inhabited": true,
       "map": {
-        "x": 469,
-        "y": 442
+        "x": 368,
+        "y": 153
       },
       "artwork_id": 18
     },
@@ -446,8 +446,8 @@
       "sector": "italian_peninsula",
       "starts_inhabited": true,
       "map": {
-        "x": 488,
-        "y": 508
+        "x": 372,
+        "y": 164
       },
       "artwork_id": 19
     },
@@ -457,8 +457,8 @@
       "sector": "italian_peninsula",
       "starts_inhabited": true,
       "map": {
-        "x": 432,
-        "y": 475
+        "x": 363,
+        "y": 158
       },
       "artwork_id": 20
     },
@@ -468,8 +468,8 @@
       "sector": "balkans",
       "starts_inhabited": true,
       "map": {
-        "x": 532,
-        "y": 421
+        "x": 381,
+        "y": 149
       },
       "artwork_id": 21
     },
@@ -479,8 +479,8 @@
       "sector": "balkans",
       "starts_inhabited": true,
       "map": {
-        "x": 560,
-        "y": 448
+        "x": 387,
+        "y": 160
       },
       "artwork_id": 22
     },
@@ -490,8 +490,8 @@
       "sector": "balkans",
       "starts_inhabited": true,
       "map": {
-        "x": 583,
-        "y": 412
+        "x": 391,
+        "y": 145
       },
       "artwork_id": 23
     },
@@ -501,8 +501,8 @@
       "sector": "balkans",
       "starts_inhabited": true,
       "map": {
-        "x": 588,
-        "y": 427
+        "x": 392,
+        "y": 152
       },
       "artwork_id": 24
     },
@@ -512,8 +512,8 @@
       "sector": "balkans",
       "starts_inhabited": true,
       "map": {
-        "x": 583,
-        "y": 468
+        "x": 392,
+        "y": 168
       },
       "artwork_id": 25
     },
@@ -523,8 +523,8 @@
       "sector": "eastern_front",
       "starts_inhabited": true,
       "map": {
-        "x": 622,
-        "y": 271
+        "x": 381,
+        "y": 129
       },
       "artwork_id": 26
     },
@@ -534,8 +534,8 @@
       "sector": "eastern_front",
       "starts_inhabited": true,
       "map": {
-        "x": 638,
-        "y": 192
+        "x": 389,
+        "y": 115
       },
       "artwork_id": 27
     },
@@ -545,8 +545,8 @@
       "sector": "eastern_front",
       "starts_inhabited": true,
       "map": {
-        "x": 647,
-        "y": 246
+        "x": 394,
+        "y": 124
       },
       "artwork_id": 28
     },
@@ -556,8 +556,8 @@
       "sector": "eastern_front",
       "starts_inhabited": true,
       "map": {
-        "x": 660,
-        "y": 318
+        "x": 402,
+        "y": 136
       },
       "artwork_id": 29
     },
@@ -567,8 +567,8 @@
       "sector": "eastern_front",
       "starts_inhabited": true,
       "map": {
-        "x": 678,
-        "y": 211
+        "x": 410,
+        "y": 118
       },
       "artwork_id": 30
     },
@@ -578,8 +578,8 @@
       "sector": "caucasus_urals",
       "starts_inhabited": true,
       "map": {
-        "x": 632,
-        "y": 438
+        "x": 425,
+        "y": 152
       },
       "artwork_id": 31
     },
@@ -589,8 +589,8 @@
       "sector": "caucasus_urals",
       "starts_inhabited": true,
       "map": {
-        "x": 648,
-        "y": 389
+        "x": 448,
+        "y": 113
       },
       "artwork_id": 32
     },
@@ -600,8 +600,8 @@
       "sector": "caucasus_urals",
       "starts_inhabited": true,
       "map": {
-        "x": 656,
-        "y": 419
+        "x": 464,
+        "y": 136
       },
       "artwork_id": 33
     },
@@ -611,8 +611,8 @@
       "sector": "caucasus_urals",
       "starts_inhabited": true,
       "map": {
-        "x": 678,
-        "y": 372
+        "x": 494,
+        "y": 94
       },
       "artwork_id": 34
     },
@@ -622,8 +622,8 @@
       "sector": "north_africa",
       "starts_inhabited": true,
       "map": {
-        "x": 312,
-        "y": 612
+        "x": 336,
+        "y": 176
       },
       "artwork_id": 35
     },
@@ -633,8 +633,8 @@
       "sector": "north_africa",
       "starts_inhabited": true,
       "map": {
-        "x": 373,
-        "y": 612
+        "x": 353,
+        "y": 176
       },
       "artwork_id": 36
     },
@@ -644,8 +644,8 @@
       "sector": "north_africa",
       "starts_inhabited": true,
       "map": {
-        "x": 413,
-        "y": 602
+        "x": 364,
+        "y": 172
       },
       "artwork_id": 37
     },
@@ -655,8 +655,8 @@
       "sector": "north_africa",
       "starts_inhabited": true,
       "map": {
-        "x": 464,
-        "y": 628
+        "x": 378,
+        "y": 182
       },
       "artwork_id": 38
     },
@@ -666,8 +666,8 @@
       "sector": "north_africa",
       "starts_inhabited": true,
       "map": {
-        "x": 548,
-        "y": 638
+        "x": 402,
+        "y": 185
       },
       "artwork_id": 39
     },
@@ -677,8 +677,8 @@
       "sector": "north_africa",
       "starts_inhabited": true,
       "map": {
-        "x": 447,
-        "y": 592
+        "x": 373,
+        "y": 167
       },
       "artwork_id": 40
     },
@@ -688,8 +688,8 @@
       "sector": "middle_east",
       "starts_inhabited": true,
       "map": {
-        "x": 622,
-        "y": 512
+        "x": 409,
+        "y": 160
       },
       "artwork_id": 41
     },
@@ -699,8 +699,8 @@
       "sector": "middle_east",
       "starts_inhabited": true,
       "map": {
-        "x": 628,
-        "y": 541
+        "x": 414,
+        "y": 170
       },
       "artwork_id": 42
     },
@@ -710,8 +710,8 @@
       "sector": "middle_east",
       "starts_inhabited": true,
       "map": {
-        "x": 622,
-        "y": 558
+        "x": 410,
+        "y": 175
       },
       "artwork_id": 43
     },
@@ -721,8 +721,8 @@
       "sector": "middle_east",
       "starts_inhabited": true,
       "map": {
-        "x": 651,
-        "y": 550
+        "x": 427,
+        "y": 172
       },
       "artwork_id": 44
     },
@@ -732,8 +732,8 @@
       "sector": "middle_east",
       "starts_inhabited": true,
       "map": {
-        "x": 678,
-        "y": 554
+        "x": 442,
+        "y": 173
       },
       "artwork_id": 45
     },
@@ -743,8 +743,8 @@
       "sector": "north_atlantic",
       "starts_inhabited": true,
       "map": {
-        "x": 388,
-        "y": 125
+        "x": 314,
+        "y": 92
       },
       "artwork_id": 46
     },
@@ -754,8 +754,8 @@
       "sector": "north_atlantic",
       "starts_inhabited": false,
       "map": {
-        "x": 328,
-        "y": 122
+        "x": 277,
+        "y": 87
       },
       "artwork_id": 47
     },
@@ -765,8 +765,8 @@
       "sector": "north_atlantic",
       "starts_inhabited": true,
       "map": {
-        "x": 365,
-        "y": 218
+        "x": 298,
+        "y": 162
       },
       "artwork_id": 48
     },
@@ -776,8 +776,8 @@
       "sector": "north_atlantic",
       "starts_inhabited": true,
       "map": {
-        "x": 292,
-        "y": 181
+        "x": 250,
+        "y": 135
       },
       "artwork_id": 49
     },
@@ -787,8 +787,8 @@
       "sector": "north_america",
       "starts_inhabited": true,
       "map": {
-        "x": 213,
-        "y": 217
+        "x": 177,
+        "y": 155
       },
       "artwork_id": 50
     },
@@ -798,8 +798,8 @@
       "sector": "north_america",
       "starts_inhabited": true,
       "map": {
-        "x": 210,
-        "y": 162
+        "x": 182,
+        "y": 112
       },
       "artwork_id": 51
     },
@@ -809,8 +809,8 @@
       "sector": "north_america",
       "starts_inhabited": true,
       "map": {
-        "x": 112,
-        "y": 132
+        "x": 114,
+        "y": 71
       },
       "artwork_id": 52
     },
@@ -820,8 +820,8 @@
       "sector": "north_america",
       "starts_inhabited": true,
       "map": {
-        "x": 206,
-        "y": 269
+        "x": 166,
+        "y": 188
       },
       "artwork_id": 53
     },
@@ -831,8 +831,8 @@
       "sector": "north_america",
       "starts_inhabited": true,
       "map": {
-        "x": 248,
-        "y": 318
+        "x": 202,
+        "y": 218
       },
       "artwork_id": 54
     },
@@ -842,8 +842,8 @@
       "sector": "east_asia",
       "starts_inhabited": true,
       "map": {
-        "x": 788,
-        "y": 161
+        "x": 587,
+        "y": 155
       },
       "artwork_id": 55
     },
@@ -853,8 +853,8 @@
       "sector": "east_asia",
       "starts_inhabited": true,
       "map": {
-        "x": 762,
-        "y": 155
+        "x": 570,
+        "y": 154
       },
       "artwork_id": 56
     },
@@ -864,8 +864,8 @@
       "sector": "east_asia",
       "starts_inhabited": true,
       "map": {
-        "x": 755,
-        "y": 122
+        "x": 562,
+        "y": 138
       },
       "artwork_id": 57
     },
@@ -875,8 +875,8 @@
       "sector": "east_asia",
       "starts_inhabited": true,
       "map": {
-        "x": 722,
-        "y": 179
+        "x": 546,
+        "y": 166
       },
       "artwork_id": 58
     },
@@ -886,8 +886,8 @@
       "sector": "east_asia",
       "starts_inhabited": true,
       "map": {
-        "x": 744,
-        "y": 228
+        "x": 565,
+        "y": 185
       },
       "artwork_id": 59
     },
@@ -897,8 +897,8 @@
       "sector": "southeast_asia",
       "starts_inhabited": true,
       "map": {
-        "x": 747,
-        "y": 434
+        "x": 542,
+        "y": 204
       },
       "artwork_id": 60
     },
@@ -908,8 +908,8 @@
       "sector": "southeast_asia",
       "starts_inhabited": true,
       "map": {
-        "x": 733,
-        "y": 445
+        "x": 531,
+        "y": 203
       },
       "artwork_id": 61
     },
@@ -919,8 +919,8 @@
       "sector": "southeast_asia",
       "starts_inhabited": true,
       "map": {
-        "x": 722,
-        "y": 412
+        "x": 523,
+        "y": 194
       },
       "artwork_id": 62
     },
@@ -930,8 +930,8 @@
       "sector": "southeast_asia",
       "starts_inhabited": true,
       "map": {
-        "x": 737,
-        "y": 484
+        "x": 536,
+        "y": 226
       },
       "artwork_id": 63
     },
@@ -941,8 +941,8 @@
       "sector": "southeast_asia",
       "starts_inhabited": true,
       "map": {
-        "x": 788,
-        "y": 443
+        "x": 570,
+        "y": 206
       },
       "artwork_id": 64
     },
@@ -952,8 +952,8 @@
       "sector": "southeast_asia",
       "starts_inhabited": true,
       "map": {
-        "x": 758,
-        "y": 508
+        "x": 552,
+        "y": 236
       },
       "artwork_id": 65
     },
@@ -963,8 +963,8 @@
       "sector": "south_asia",
       "starts_inhabited": true,
       "map": {
-        "x": 667,
-        "y": 657
+        "x": 490,
+        "y": 192
       },
       "artwork_id": 66
     },
@@ -974,8 +974,8 @@
       "sector": "south_asia",
       "starts_inhabited": true,
       "map": {
-        "x": 678,
-        "y": 688
+        "x": 498,
+        "y": 219
       },
       "artwork_id": 67
     },
@@ -985,8 +985,8 @@
       "sector": "south_asia",
       "starts_inhabited": true,
       "map": {
-        "x": 612,
-        "y": 632
+        "x": 465,
+        "y": 168
       },
       "artwork_id": 68
     },
@@ -996,8 +996,8 @@
       "sector": "central_pacific",
       "starts_inhabited": true,
       "map": {
-        "x": 788,
-        "y": 297
+        "x": 695,
+        "y": 181
       },
       "artwork_id": 69
     },
@@ -1007,8 +1007,8 @@
       "sector": "central_pacific",
       "starts_inhabited": false,
       "map": {
-        "x": 765,
-        "y": 272
+        "x": 662,
+        "y": 167
       },
       "artwork_id": 70
     },
@@ -1018,8 +1018,8 @@
       "sector": "central_pacific",
       "starts_inhabited": false,
       "map": {
-        "x": 747,
-        "y": 304
+        "x": 642,
+        "y": 190
       },
       "artwork_id": 71
     },
@@ -1029,8 +1029,8 @@
       "sector": "central_pacific",
       "starts_inhabited": true,
       "map": {
-        "x": 750,
-        "y": 347
+        "x": 650,
+        "y": 216
       },
       "artwork_id": 72
     },
@@ -1040,8 +1040,8 @@
       "sector": "central_pacific",
       "starts_inhabited": true,
       "map": {
-        "x": 722,
-        "y": 318
+        "x": 609,
+        "y": 200
       },
       "artwork_id": 73
     },
@@ -1051,8 +1051,8 @@
       "sector": "central_pacific",
       "starts_inhabited": true,
       "map": {
-        "x": 754,
-        "y": 368
+        "x": 657,
+        "y": 228
       },
       "artwork_id": 74
     },
@@ -1062,8 +1062,8 @@
       "sector": "south_pacific",
       "starts_inhabited": true,
       "map": {
-        "x": 738,
-        "y": 572
+        "x": 612,
+        "y": 243
       },
       "artwork_id": 75
     },
@@ -1073,8 +1073,8 @@
       "sector": "south_pacific",
       "starts_inhabited": true,
       "map": {
-        "x": 761,
-        "y": 582
+        "x": 637,
+        "y": 250
       },
       "artwork_id": 76
     },
@@ -1084,8 +1084,8 @@
       "sector": "south_pacific",
       "starts_inhabited": true,
       "map": {
-        "x": 722,
-        "y": 635
+        "x": 594,
+        "y": 284
       },
       "artwork_id": 77
     },
@@ -1095,8 +1095,8 @@
       "sector": "south_pacific",
       "starts_inhabited": true,
       "map": {
-        "x": 779,
-        "y": 688
+        "x": 650,
+        "y": 330
       },
       "artwork_id": 78
     },
@@ -1106,8 +1106,8 @@
       "sector": "south_pacific",
       "starts_inhabited": true,
       "map": {
-        "x": 788,
-        "y": 612
+        "x": 666,
+        "y": 270
       },
       "artwork_id": 79
     },
@@ -1117,8 +1117,8 @@
       "sector": "south_america",
       "starts_inhabited": true,
       "map": {
-        "x": 228,
-        "y": 665
+        "x": 261,
+        "y": 253
       },
       "artwork_id": 80
     },
@@ -1128,8 +1128,8 @@
       "sector": "south_america",
       "starts_inhabited": true,
       "map": {
-        "x": 148,
-        "y": 788
+        "x": 237,
+        "y": 302
       },
       "artwork_id": 81
     },
@@ -1139,8 +1139,8 @@
       "sector": "south_america",
       "starts_inhabited": true,
       "map": {
-        "x": 112,
-        "y": 783
+        "x": 224,
+        "y": 300
       },
       "artwork_id": 82
     },
@@ -1150,8 +1150,8 @@
       "sector": "south_america",
       "starts_inhabited": true,
       "map": {
-        "x": 138,
-        "y": 572
+        "x": 227,
+        "y": 220
       },
       "artwork_id": 83
     },
@@ -1161,8 +1161,8 @@
       "sector": "sub_saharan_africa",
       "starts_inhabited": true,
       "map": {
-        "x": 362,
-        "y": 692
+        "x": 339,
+        "y": 217
       },
       "artwork_id": 84
     },
@@ -1172,8 +1172,8 @@
       "sector": "sub_saharan_africa",
       "starts_inhabited": true,
       "map": {
-        "x": 452,
-        "y": 724
+        "x": 393,
+        "y": 240
       },
       "artwork_id": 85
     },
@@ -1183,8 +1183,8 @@
       "sector": "sub_saharan_africa",
       "starts_inhabited": true,
       "map": {
-        "x": 500,
-        "y": 704
+        "x": 420,
+        "y": 225
       },
       "artwork_id": 86
     },
@@ -1194,8 +1194,8 @@
       "sector": "sub_saharan_africa",
       "starts_inhabited": true,
       "map": {
-        "x": 459,
-        "y": 788
+        "x": 399,
+        "y": 290
       },
       "artwork_id": 87
     },
@@ -1205,8 +1205,8 @@
       "sector": "sub_saharan_africa",
       "starts_inhabited": true,
       "map": {
-        "x": 528,
-        "y": 763
+        "x": 438,
+        "y": 269
       },
       "artwork_id": 88
     }

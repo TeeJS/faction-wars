@@ -8327,6 +8327,7 @@
     "FactionCount": 2,
     "Id": "star-wars-rebellion",
     "MapImage": "galaxyShaded.bmp",
+    "MapImageRect": "[P: (-5.0, 110.0), S: (1070.667, 803.0)]",
     "Menu": {
       "Credits": [
         "Star Wars: Rebellion (1998) - LucasArts Entertainment Company / Coolhand Interactive.",
@@ -8520,6 +8521,7 @@
         "huge"
       ]
     },
+    "Summary": "The Galactic Civil War: the Rebel Alliance's hidden headquarters against the Empire's Coruscant, across a galaxy of 200 systems, with the original game's units, characters, missions and rules.",
     "UnexploredColor": "#cccccc",
     "VictoryTips": {
       "HqOnly": "Rebel Win Conditions: Capture Coruscant.\nImperial Win Conditions: Destroy the Rebel headquarters.",

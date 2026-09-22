@@ -1,7 +1,6 @@
 [gd_scene format=3 uid="uid://b2snkopk5igwb"]
 
 [ext_resource type="Script" path="res://src/ui/game_manager.gd" id="1_gm"]
-[ext_resource type="Texture2D" uid="uid://yqyss122muny" path="res://packs/star-wars-rebellion/galaxyShaded.bmp" id="2_c2ibq"]
 [ext_resource type="Script" path="res://src/ui/galaxy_map.gd" id="2_map"]
 [ext_resource type="Script" path="res://src/ui/ui_manager.gd" id="3_ui"]
 [ext_resource type="PackedScene" uid="uid://co3lfm7s0kqaq" path="res://src/ui/SectorWindow.tscn" id="4_sec"]
@@ -31,17 +30,6 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("1_gm")
 
-[node name="TextureRect" type="TextureRect" parent="." unique_id=873423187]
-show_behind_parent = true
-z_index = -10
-z_as_relative = false
-layout_mode = 0
-offset_left = 150.0
-offset_top = 99.0
-offset_right = 1220.6666
-offset_bottom = 902.0
-texture = ExtResource("2_c2ibq")
-
 [node name="Background" type="ColorRect" parent="." unique_id=1230449942]
 visible = false
 layout_mode = 1
@@ -57,7 +45,7 @@ color = Color(0, 0, 0, 0.7529412)
 
 [node name="GalaxyMap" type="Node2D" parent="." unique_id=10578291]
 unique_name_in_owner = true
-position = Vector2(155, -11)
+position = Vector2(150, 99)
 script = ExtResource("2_map")
 
 [node name="UIManager" type="CanvasLayer" parent="." unique_id=13202509]
