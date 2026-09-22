@@ -80,6 +80,7 @@ func _ready() -> void:
 	# Exit leaves the Cockpit for the pack picker (TeeJ, 2026-09-22); quitting
 	# the game is the picker's button.
 	btnExit.pressed.connect(func() -> void: PackPicker.ExitToPicker(get_tree()))
+	btnExit.text = "Exit to Faction Picker" if PackPicker.CanReturn() else "Exit to Desktop"
 
 	var has_picture: bool = FactionRegistry.Pack != null and FactionRegistry.Pack.Manifest.Menu != null
 
