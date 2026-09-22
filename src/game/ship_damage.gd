@@ -131,11 +131,13 @@ func SystemUnderRepair() -> Variant:
 	return null
 
 
+## The pack's words for the five systems (display.json terms, SCHEMA.md
+## section 10); the manual's are the Star Wars pack's.
 static func DisplayName(s: int) -> String:
 	match s:
-		Enums.ShipSystem.ShieldRecharge: return "Shield Recharge"
-		Enums.ShipSystem.WeaponRecharge: return "Weapon Recharge"
-		Enums.ShipSystem.TractorPower:   return "Tractor Beam Power"
-		Enums.ShipSystem.Engines:        return "Sub-Light Engine"
-		Enums.ShipSystem.Hyperdrive:     return "Hyper-drive"
+		Enums.ShipSystem.ShieldRecharge: return Terms.label("system_shield_recharge")
+		Enums.ShipSystem.WeaponRecharge: return Terms.label("system_weapon_recharge")
+		Enums.ShipSystem.TractorPower:   return Terms.label("system_tractor")
+		Enums.ShipSystem.Engines:        return Terms.label("system_engines")
+		Enums.ShipSystem.Hyperdrive:     return Terms.label("system_hyperdrive")
 	return JsonUtil.enum_name(Enums.ShipSystem, s)

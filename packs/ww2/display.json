@@ -661,6 +661,11 @@
     "fighter_squadrons": "Air Squadrons",
     "trooper_regiment": "Division",
     "trooper_regiments": "Divisions",
-    "in_transit": "at sea"
+    "in_transit": "at sea",
+    "system_shield_recharge": "Damage Control",
+    "system_weapon_recharge": "Reload Rate",
+    "system_tractor": "Pursuit Gear",
+    "system_engines": "Main Engines",
+    "system_hyperdrive": "Cruising Engines"
   }
 }

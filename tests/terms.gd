@@ -40,6 +40,7 @@ func _init() -> void:
 	_check(Terms.lower("trooper_regiments") == "trooper regiments", "lower() for prose (got '%s')" % Terms.lower("trooper_regiments"))
 	_check(Terms.cap("in_transit") == "In hyperspace", "cap() for a sentence start (got '%s')" % Terms.cap("in_transit"))
 	_check(Terms.lower("planetary_shields") == "planetary shields" and Terms.lower("mine") == "mine", "the prose nouns come through")
+	_check(ShipDamage.DisplayName(Enums.ShipSystem.Engines) == "Sub-Light Engine" and ShipDamage.DisplayName(Enums.ShipSystem.Hyperdrive) == "Hyper-drive", "the tactical ship systems keep the manual's names (%s / %s)" % [ShipDamage.DisplayName(Enums.ShipSystem.Engines), ShipDamage.DisplayName(Enums.ShipSystem.Hyperdrive)])
 
 	# A key the pack leaves out falls back to the default; a pack word wins.
 	var saved: Dictionary = pack.Display.Terms.duplicate()
