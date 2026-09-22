@@ -12,25 +12,13 @@ static func Active() -> Array:
 	return _active
 
 
-## WHAT EACH SPECFORCE MAY BE SENT TO DO - manual p098's roster, entire.
-## Name-matched because nothing in the unit tables flags capability.
-const SpecForceMissions := {
-	# --- Alliance ---
-	"Longprobe Y-wing Recon Team": [Enums.MissionType.Reconnaissance],
-	"Bothan Spies":                [Enums.MissionType.Espionage],
-	"Guerrillas":                  [Enums.MissionType.InciteUprising, Enums.MissionType.SubdueUprising],
-	"Infiltrators":                [Enums.MissionType.Abduction, Enums.MissionType.Rescue, Enums.MissionType.Sabotage, Enums.MissionType.SuperweaponSabotage],
-	# --- Empire ---
-	"Imperial Probe Droid":        [Enums.MissionType.Reconnaissance],
-	"Imperial Espionage Droid":    [Enums.MissionType.Espionage],
-	"Imperial Commandos":          [Enums.MissionType.SubdueUprising, Enums.MissionType.InciteUprising, Enums.MissionType.Sabotage],
-	"Noghri Death Commandos":      [Enums.MissionType.Abduction, Enums.MissionType.Assassination, Enums.MissionType.Rescue],
-	# Not player-buildable - a scripted event.
-	"Bounty Hunters":              [],
-}
+## WHAT EACH SPECFORCE MAY BE SENT TO DO - manual p098's roster. It used to be
+## a literal table of nine unit NAMES here; it is the pack's `spec_forces` lists
+## in missions.json now, read by MissionCatalog.SpecForceMissions (and proven
+## identical to the old table by tests/spec_force_missions.gd).
 
-## ⚠ THE EMPEROR IS EXCLUDED BY THE PROJECT COORDINATOR'S RULING, NOT BY A SOURCE.
-const EmperorName := "Emperor Palpatine"
+## ⚠ THE EMPEROR (the pack's `dark_master`) IS EXCLUDED FROM TRAINING BY THE
+## PROJECT COORDINATOR'S RULING, NOT BY A SOURCE.
 
 ## ⚠ THE OLD FITTED SUCCESS CURVE - only for the four missions the original has no
 ## outcome table for (the three R&D missions and Jedi Training).
@@ -48,8 +36,7 @@ const JediTrainingDivisor := 12
 const FoiledSeizeKilledPercent := 20   # of those seized
 const FoiledEscapeInjuryPercent := 35
 
-## Family 24 in CAPSHPSD.DAT, and the only member of it.
-const DeathStarFamily := 24
+## The Death Star is the unit the pack marks `superweapon` (units.json roles).
 
 
 static func Clear() -> void:
@@ -73,9 +60,7 @@ static func CanPerform(u: Unit, type: int) -> bool:
 	# "ONLY Longprobe Y-wing Recon Teams and Imperial Probe Droids may perform it" (p107).
 	if u is Character:
 		return type != Enums.MissionType.Reconnaissance
-	if not SpecForceMissions.has(u.Name):
-		return false
-	return SpecForceMissions[u.Name].has(type)
+	return MissionCatalog.SpecForceCanRun(u.PackId, type)
 
 
 ## EVERY member has to be able to do the job, decoys included (p102-p103).
@@ -90,7 +75,7 @@ static func IsForceAware(u: Unit) -> bool:
 
 
 static func CanBeSpecialPowerStudent(u: Unit) -> bool:
-	return IsForceAware(u) and u is Character and not (u as Character).CanTrainSpecialPower and (u as Character).Name != EmperorName
+	return IsForceAware(u) and u is Character and not (u as Character).CanTrainSpecialPower and not (u as Character).HasRole("dark_master")
 
 
 ## WHO MAY TEACH: CanTrainSpecialPower AND Jedi Knight - entry 42 "Force Qualified
@@ -108,7 +93,7 @@ static func TeamMeetsExtraRule(team: Array, type: int) -> Result:
 	if type != Enums.MissionType.SpecialPowerTraining:
 		return Result.success()
 	if not Lq.any(team, CanTeachSpecialPower):
-		return Result.fail("Only Luke Skywalker or Darth Vader can lead a Jedi Training mission.")
+		return Result.fail("Only a qualified teacher can lead a %s mission." % MissionCatalog.DisplayNameFor(Enums.MissionType.SpecialPowerTraining))
 	if not Lq.any(team, CanBeSpecialPowerStudent):
 		return Result.fail("There is no Force-aware character here to train.")
 	return Result.success()
@@ -123,20 +108,14 @@ static func PerformableBy(team: Array) -> Array:
 	return out
 
 
-## Which shipped table each mission rolls against (REBEXE.EXE 0x58B420).
+## Which shipped table each mission rolls against (REBEXE.EXE 0x58B420). A
+## mission's outcome table shares the mission's id in mission_tables.json
+## (SCHEMA.md section 9); null when the pack ships none for it.
 static func TableFor(type: int) -> Variant:
-	match type:
-		Enums.MissionType.Diplomacy:         return MissionTableManager.Diplomacy
-		Enums.MissionType.Rescue:            return MissionTableManager.Rescue
-		Enums.MissionType.Sabotage:          return MissionTableManager.Sabotage
-		Enums.MissionType.SuperweaponSabotage: return MissionTableManager.SuperweaponSabotage
-		Enums.MissionType.Espionage:         return MissionTableManager.Espionage
-		Enums.MissionType.Recruitment:       return MissionTableManager.Recruitment
-		Enums.MissionType.Abduction:         return MissionTableManager.Abduction
-		Enums.MissionType.InciteUprising:    return MissionTableManager.InciteUprising
-		Enums.MissionType.SubdueUprising:    return MissionTableManager.SubdueUprising
-		Enums.MissionType.Assassination:     return MissionTableManager.Assassination
-	return null
+	var d := MissionCatalog.DefFor(type)
+	if d == null or not MissionTableManager.Has(d.Id):
+		return null
+	return d.Id
 
 
 ## THE DEFENCE TERM, "a2": against a named person their own rating in the same
@@ -175,7 +154,7 @@ static func DeathStarAt(where: Planet) -> Unit:
 		return null
 	for f in where.OrbitingFleets:
 		for s in f.Ships:
-			if s.FamilyId == DeathStarFamily:
+			if s.HasRole("superweapon"):
 				return s
 	return null
 
@@ -209,11 +188,11 @@ static func LeakExtraSystems(m: Mission, rng: Prng) -> String:
 
 
 ## THE THIRD SCORE TERM, "a3": the number of STORMTROOPER REGIMENTS on the target
-## (the original hardcodes the unit; matched by name).
+## (the original hardcodes the unit; the pack marks it `garrison_troop`).
 static func GarrisonTerm(m: Mission) -> int:
 	if m.Target == null or m.Target.Garrison == null:
 		return 0
-	return Lq.count(m.Target.Garrison, func(u): return u.Type == Enums.UnitType.Troop and u.Name == "Stormtrooper Regiment")
+	return Lq.count(m.Target.Garrison, func(u): return u.Type == Enums.UnitType.Troop and u.HasRole("garrison_troop"))
 
 
 ## The score that indexes the table (REBEXE.EXE 0x55C680-0x55C8D0).
@@ -245,7 +224,7 @@ static func Pretty(r: int) -> String:
 
 ## Does this unit go on missions at all? (manual p045, p047, p098)
 static func CanEverPerformMissions(u: Unit) -> bool:
-	return u is Character or (u != null and SpecForceMissions.has(u.Name))
+	return u is Character or (u != null and u.Type == Enums.UnitType.SpecForce)
 
 
 ## The cross on a mission report (manual p109). The team is released HERE.
@@ -486,6 +465,10 @@ static func NeedsObjectTarget(type: int) -> bool:
 	return type == Enums.MissionType.Sabotage
 
 
+## ⚠ PHASE 5 LEAK (BACKLOG #17): "the Empire can sabotage the Alliance
+## headquarters" (manual p108, GAMEPLAY.md) is a faction asymmetry the pack has
+## no field for yet. Selecting on the id is wrong for a second pack; it stays
+## until the field is signed off.
 static func _is_empire(actor: Faction) -> bool:
 	return actor != null and actor.Id.to_lower() == "empire"
 
@@ -509,8 +492,8 @@ static func CanSabotage(actor: Faction, target: Variant, where: Planet) -> Resul
 			return Result.fail("%s is in hyperspace." % u.Name)
 		if u is Character:
 			return Result.fail("People are not sabotaged - use Abduction or Assassination.")
-		if u.Name == "Death Star":
-			return Result.fail("A Death Star needs a Death Star Sabotage mission.")
+		if u.HasRole("superweapon"):
+			return Result.fail("%s needs a %s mission." % [u.Name, MissionCatalog.DisplayNameFor(Enums.MissionType.SuperweaponSabotage)])
 		return Result.success()
 	return Result.fail("That cannot be sabotaged.")
 
@@ -533,8 +516,9 @@ static func CanTargetPerson(type: int, actor: Faction, victim: Character) -> Res
 				return Result.fail("%s is one of yours." % victim.Name)
 			if victim.IsCaptured():
 				return Result.fail("%s is already captured." % victim.Name)
-			if type == Enums.MissionType.Assassination and not _is_empire(actor):
-				return Result.fail("Only the Empire carries out assassinations.")
+			# Side-locked by the pack: missions.json `available_to` (manual p106).
+			if type == Enums.MissionType.Assassination and not MissionCatalog.AvailableTo(type, actor):
+				return Result.fail("%s does not carry out assassinations." % actor.DisplayName)
 			return Result.success()
 		Enums.MissionType.Rescue:
 			if not victim.IsCaptured():
@@ -585,7 +569,7 @@ static func Launch(type: int, team: Array, from: Planet, target: Planet, decoys:
 	if type == Enums.MissionType.SpecialPowerTraining:
 		var people := Lq.of_type_character(team)
 		if not Lq.any(people, CanTeachSpecialPower):
-			print("[Mission] Jedi Training needs Luke Skywalker or Darth Vader.")
+			print("[Mission] %s needs a qualified teacher." % MissionCatalog.DisplayNameFor(Enums.MissionType.SpecialPowerTraining))
 			return null
 		if not Lq.any(people, CanBeSpecialPowerStudent):
 			print("[Mission] Jedi Training needs at least one Force-aware student.")

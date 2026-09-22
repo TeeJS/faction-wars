@@ -35,7 +35,7 @@ static func UnitTravelDays(units: Array, from: Location, to: Planet) -> int:
 ## "MILLENNIUM FALCON EFFECT: Han travelling alone or with characters, not aboard
 ## a ship - travels twice as fast" (manual p094).
 static func CharacterTravelDays(characters: Array, from: Planet, to: Planet) -> int:
-	var falcon := Lq.any(characters, func(c): return c.Name == "Han Solo") \
+	var falcon := Lq.any(characters, func(c): return c.HasRole("smuggler")) \
 		and Lq.all(characters, func(c): return c is Character)
 	var travelling: Faction = characters[0].Faction if not characters.is_empty() else null
 	var speed := Planet.HanSoloTravelSpeed(travelling) if falcon else Planet.StandardTravelSpeed(travelling)

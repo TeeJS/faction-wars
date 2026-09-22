@@ -6,9 +6,6 @@ extends RefCounted
 ## snapshot. The managers stay `class_name` statics (a straight translation of
 ## the source's static classes); this is where their lifecycle is owned.
 
-const DATA := "res://data"
-
-
 ## Everything GameManager loads before day zero, in its order.
 static func load_catalogs() -> void:
 	# ORDER IS THE SOURCE'S. Kept deliberately: this used to read a pile of
@@ -19,7 +16,7 @@ static func load_catalogs() -> void:
 	MissionCatalog.LoadFromPack(FactionRegistry.Pack)
 	UprisingTable.LoadFromPack(FactionRegistry.Pack)
 	SideLotteryManager.LoadFromPack(FactionRegistry.Pack)
-	SeedManager.Load(FactionRegistry.Pack, "%s/defensive_facilities.json" % DATA, "%s/military_units.json" % DATA)
+	SeedManager.Load(FactionRegistry.Pack)
 	FacilityCatalog.LoadFromPack(FactionRegistry.Pack)
 	MilitaryCatalog.LoadFromPack(FactionRegistry.Pack)
 	Gid.LoadFromPack(FactionRegistry.Pack)
