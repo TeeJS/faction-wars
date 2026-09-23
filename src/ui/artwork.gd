@@ -196,6 +196,36 @@ static func Description(kind: String, id: String) -> String:
 	return str(section.get(id, "")) if section is Dictionary else ""
 
 
+## The original's mouse pointers (REBEXE.EXE; see the importer): "pointer"
+## and "crosshair" - original/cursors/<name>.png - and each one's hotspot,
+## from cursors/hotspots.json.
+static func CursorPicture(name: String) -> Texture2D:
+	return _texture("cursors/%s.png" % name)
+
+
+static func CursorHotspot(name: String) -> Vector2:
+	var spots: Variant = _json("cursors/hotspots.json")
+	var at: Variant = spots.get(name) if spots is Dictionary else null
+	return Vector2(float(at[0]), float(at[1])) if at is Array and at.size() == 2 else Vector2.ZERO
+
+
+## A JSON file from the imported folder (the project's, else user://), or null.
+static func _json(rel: String) -> Variant:
+	var pack_id: String = FactionRegistry.Pack.Manifest.Id if FactionRegistry.Pack != null else ""
+	var roots: Array[String] = ["user://original/%s" % pack_id]
+	if not IgnoreProjectFolder:
+		roots.push_front("%s/%s/original" % [FactionRegistry.PACKS_ROOT, pack_id])
+	for base in roots:
+		var path := "%s/%s" % [base, rel]
+		if FileAccess.file_exists(path):
+			return JSON.parse_string(FileAccess.get_file_as_string(path))
+		if ResourceLoader.exists(path):
+			var res: Variant = load(path)   # an export packs the JSON as a resource
+			if res != null and "data" in res:
+				return res.data
+	return null
+
+
 ## Forget everything loaded (a new pack, or a test that wrote files).
 static func Reset() -> void:
 	_cache.clear()

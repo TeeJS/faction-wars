@@ -5,11 +5,12 @@ namespace RebellionArtImporter;
 /// <summary>
 /// Reads the resource table of a Win32 DLL straight from its bytes - no
 /// LoadLibrary, so nothing from the game ever executes and a 32-bit DLL reads
-/// fine from a 64-bit process. Only what the Encyclopedia needs: RT_STRING
-/// tables and RT_RCDATA blobs.
+/// fine from a 64-bit process. What the importer needs: RT_STRING tables,
+/// RT_RCDATA blobs, RT_BITMAP pictures and RT_CURSOR pointers.
 /// </summary>
 public sealed class PeResources
 {
+    private const int RtCursor = 1;
     private const int RtBitmap = 2;
     private const int RtString = 6;
     private const int RtRcData = 10;
@@ -23,6 +24,9 @@ public sealed class PeResources
 
     /// <summary>id -> (offset, size) for every RT_BITMAP entry (a DIB: BITMAPINFOHEADER + palette + pixels, no file header).</summary>
     public IReadOnlyDictionary<int, (int Offset, int Size)> Bitmaps { get; }
+
+    /// <summary>id -> (offset, size) for every RT_CURSOR entry (hotspot, then a DIB twice as tall: colours over the AND mask).</summary>
+    public IReadOnlyDictionary<int, (int Offset, int Size)> Cursors { get; }
 
     /// <summary>String table entries by string id, as the game reads them.</summary>
     public IReadOnlyDictionary<int, string> Strings { get; }
@@ -50,12 +54,13 @@ public sealed class PeResources
         var rcdata = new Dictionary<int, (int, int)>();
         var bitmaps = new Dictionary<int, (int, int)>();
         var strings = new Dictionary<int, string>();
+        var cursors = new Dictionary<int, (int, int)>();
         if (_resourceRva != 0)
         {
             int root = RvaToOffset(_resourceRva);
             foreach (var (typeId, typeDir) in Entries(root))
             {
-                if (typeId != RtString && typeId != RtRcData && typeId != RtBitmap) continue;
+                if (typeId != RtString && typeId != RtRcData && typeId != RtBitmap && typeId != RtCursor) continue;
                 foreach (var (nameId, nameDir) in Entries(typeDir))
                 {
                     foreach (var (_, dataEntry) in Entries(nameDir, leaf: true))
@@ -67,6 +72,8 @@ public sealed class PeResources
                             rcdata[nameId] = (offset, size);
                         else if (typeId == RtBitmap)
                             bitmaps[nameId] = (offset, size);
+                        else if (typeId == RtCursor)
+                            cursors[nameId] = (offset, size);
                         else
                             ReadStringBlock(nameId, offset, size, strings);
                         break;   // first language only
@@ -77,6 +84,49 @@ public sealed class PeResources
         RcData = rcdata;
         Bitmaps = bitmaps;
         Strings = strings;
+        Cursors = cursors;
+    }
+
+    /// <summary>
+    /// An RT_CURSOR as its hotspot and top-down ARGB pixels: the colour image,
+    /// transparent where the AND mask is set. (The game's cursors are black,
+    /// white and clear only - no screen-inverting pixels.)
+    /// </summary>
+    public (int HotX, int HotY, int Width, int Height, int[] Argb) Cursor(int id)
+    {
+        var (o, _) = Cursors[id];
+        int hotX = ReadUInt16(o), hotY = ReadUInt16(o + 2);
+        int dib = o + 4;
+        int headerSize = ReadInt32(dib);
+        int w = ReadInt32(dib + 4);
+        int h = ReadInt32(dib + 8) / 2;
+        int bpp = ReadUInt16(dib + 14);
+        int colours = ReadInt32(dib + 32);
+        if (colours == 0 && bpp <= 8) colours = 1 << bpp;
+        int palette = dib + headerSize;
+        int xorBits = palette + colours * 4;
+        int xorStride = (w * bpp + 31) / 32 * 4;
+        int andBits = xorBits + xorStride * h;
+        int andStride = (w + 31) / 32 * 4;
+        var argb = new int[w * h];
+        for (int y = 0; y < h; y++)
+        {
+            int row = h - 1 - y;   // bottom-up
+            for (int x = 0; x < w; x++)
+            {
+                int index = bpp switch
+                {
+                    1 => (_bytes[xorBits + row * xorStride + x / 8] >> (7 - x % 8)) & 1,
+                    4 => (_bytes[xorBits + row * xorStride + x / 2] >> (x % 2 == 0 ? 4 : 0)) & 0xF,
+                    8 => _bytes[xorBits + row * xorStride + x],
+                    _ => 0,
+                };
+                bool clear = ((_bytes[andBits + row * andStride + x / 8] >> (7 - x % 8)) & 1) == 1;
+                int b = _bytes[palette + index * 4], g = _bytes[palette + index * 4 + 1], r = _bytes[palette + index * 4 + 2];
+                argb[y * w + x] = clear ? 0 : unchecked((int)0xFF000000) | (r << 16) | (g << 8) | b;
+            }
+        }
+        return (hotX, hotY, w, h, argb);
     }
 
     /// <summary>

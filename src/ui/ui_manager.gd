@@ -62,6 +62,7 @@ func IsTargetingObject() -> bool:
 
 
 func _ready() -> void:
+	ApplyOriginalCursors()
 	_taskbarList = get_node("%TaskbarList")
 	var menuButton: Button = get_node_or_null("../MenuButton")
 	if menuButton == null:
@@ -386,6 +387,26 @@ func EncyclopediaPosition(window: Control) -> Vector2:
 	var frame := Rect2(150, 99, 1070, get_viewport().get_visible_rect().size.y - 99)
 	var size: Vector2 = window.get_combined_minimum_size()
 	return (frame.get_center() - size / 2.0).floor().max(Vector2(150, 99))
+
+
+## THE ORIGINAL'S MOUSE POINTERS (TeeJ, 2026-09-23: "we need the cursor to
+## match"): its arrow everywhere, and its crosshair while a target is being
+## picked (targeting switches the shape to CURSOR_CROSS), drawn 2x like the
+## rest of the original's art, each at its own hotspot. Without the imported
+## art (or on another pack) the system's pointers come back.
+func ApplyOriginalCursors() -> void:
+	var pointer: Texture2D = Art.CursorPicture("pointer")
+	var cross: Texture2D = Art.CursorPicture("crosshair")
+	var k: int = 2
+	for shape in [Input.CURSOR_ARROW, Input.CURSOR_POINTING_HAND]:
+		if pointer != null:
+			Input.set_custom_mouse_cursor(Art.Scaled(pointer, k), shape, Art.CursorHotspot("pointer") * k)
+		else:
+			Input.set_custom_mouse_cursor(null, shape)
+	if cross != null:
+		Input.set_custom_mouse_cursor(Art.Scaled(cross, k), Input.CURSOR_CROSS, Art.CursorHotspot("crosshair") * k)
+	else:
+		Input.set_custom_mouse_cursor(null, Input.CURSOR_CROSS)
 
 
 ## THE CREATE MISSION WINDOW as the original draws it (manual p042 Fig 2.34,
