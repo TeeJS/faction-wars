@@ -141,6 +141,9 @@ public sealed class Importer
         // the frame's right strip, and the plate under a read message (p080
         // Fig 3.19, the band across its top - not yet on a screenshot).
         ("msgindex_side.alliance", 10820), ("msgsummary_plate", 10823),
+        // The Alliance's three-socket column down the Encyclopedia's right
+        // edge (58x330), drawn whole (its one blue pixel shows).
+        ("ency_side.alliance", 10585),
         // Build Selection (p045, p112 Fig 3.58): the 210x261 plate - the frame,
         // the picture box, the two cost boxes with their icons, the times box
         // and the number box (TeeJ's screenshot of the original, Empire).
@@ -198,6 +201,16 @@ public sealed class Importer
     // Defenses set from the second.
     private static readonly (string Name, string Faction, int Normal, int Current, int Grey)[] TabIcons =
     {
+        // The Encyclopedia's seven database tabs (p073 Fig 3.10), 49x41 drawn
+        // (the Personnel pictures are 57 tall; the original draws the top 41),
+        // normal and current. Measured on TeeJ's Alliance screenshots (All
+        // Databases, Personnel); the Empire's are its twins, not yet seen.
+        ("ency_tab_all", "", 10340, 10339, 0), ("ency_tab_system", "", 10350, 10349, 0),
+        ("ency_tab_ship", "alliance", 10348, 10347, 0), ("ency_tab_ship", "empire", 10360, 10359, 0),
+        ("ency_tab_facilities", "alliance", 10344, 10343, 0), ("ency_tab_facilities", "empire", 10356, 10355, 0),
+        ("ency_tab_missions", "alliance", 11616, 11615, 0), ("ency_tab_missions", "empire", 11618, 11617, 0),
+        ("ency_tab_troop", "alliance", 10352, 10351, 0), ("ency_tab_troop", "empire", 10362, 10361, 0),
+        ("ency_tab_personnel", "alliance", 10346, 10345, 0), ("ency_tab_personnel", "empire", 10358, 10357, 0),
         // Manufacturing (p084 Fig 3.27), 36x33, in the window's order.
         ("manufacturing", "alliance", 10312, 10311, 10313), ("manufacturing", "empire", 10315, 10314, 10316),
         ("manufacturing", "neutral", 10318, 10317, 10319),
@@ -293,7 +306,7 @@ public sealed class Importer
     // Bitmaps the original draws WHOLE, pure blue included: the Create Mission
     // plates' blue line under the tabs and the tabs' blue edges are on TeeJ's
     // screenshot of the original, pixel for pixel (2026-09-23).
-    private static readonly HashSet<int> DrawnWhole = new() { 10598, 11125, 11126, 11100, 11101, 11103, 11104, 11105, 11106, 11107, 11108, 11109, 11110,
+    private static readonly HashSet<int> DrawnWhole = new() { 10585, 10598, 11125, 11126, 11100, 11101, 11103, 11104, 11105, 11106, 11107, 11108, 11109, 11110,
         // The Status plates are opaque; the pressed Encyclopedia button keeps its blue face.
         11554, 11558, 11553,
         // Build Selection's plate is opaque; so are the Scrap pictures.

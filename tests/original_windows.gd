@@ -215,6 +215,28 @@ func _init() -> void:
 	var frame: TextureRect = enc.find_child("Frame", true, false)
 	_check(frame != null and frame.texture.get_size() == Vector2(470, 331) * K, "in the side's 470x331 frame")
 	var iplate: TextureRect = enc._indexView.get_node_or_null("Plate")
+	# The Index view as the original's (TeeJ's Alliance screenshots).
+	var tabXs: Array = []
+	for t in enc._tabs:
+		tabXs.append(int((t as Control).position.x / K))
+	_check(tabXs == [36, 88, 140, 192, 244, 296, 348] and int((enc._tabs[0] as Control).position.y / K) == 78
+		and (enc._tabs[6] as Control).size == Vector2(49, 41) * K, "the seven database tabs, 49x41 at x 36 + 52i, y 78 %s" % str(tabXs))
+	enc.ShowIndex(0)
+	var allNames: Array = []
+	for i in enc._index.item_count:
+		allNames.append(enc._index.get_item_text(i))
+	var sortedAll: Array = allNames.duplicate()
+	sortedAll.sort_custom(func(a: String, b: String) -> bool: return a.naturalnocasecmp_to(b) < 0)
+	_check(allNames == sortedAll and enc._index.get_selected_items() == PackedInt32Array([0]),
+		"All Databases: one alphabetical list, the first entry picked")
+	enc.ShowIndex(6)
+	var persNames: Array = []
+	for i in enc._index.item_count:
+		persNames.append(enc._index.get_item_text(i))
+	_check(persNames.has("Bothan Spies") and (enc._indexHeader as Label).text == "Personnel Database",
+		"the Personnel Database lists the special forces too (Bothan Spies)")
+	var ebar: Control = enc._indexView.get_node_or_null("ScrollBar")
+	_check(ebar != null and ebar.position == Vector2(374, 137) * K, "the scroll bar at (374, 137)")
 	_check(iplate != null and iplate.position == Vector2(12, 13) * K, "the Index plate at (12, 13)")
 	_check(enc._tabs.size() == 7, "seven database tabs")
 	var ch: PackDefs.CharacterDef = FactionRegistry.Pack.Characters[0]
