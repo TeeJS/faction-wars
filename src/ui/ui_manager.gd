@@ -111,6 +111,8 @@ func _ready() -> void:
 
 	# THE HIGHLIGHT IS DERIVED, NOT TOGGLED: read off the unread count.
 	EventBus.OnStateChanged.append(RefreshCommsHighlights)
+	# Painted once at start too, so imported alert icons show before any mail moves.
+	call_deferred("RefreshCommsHighlights")
 	# The tester's feedback box, bottom of the left column (TeeJ, room #80).
 	if GameSettings.ProvideFeedback:
 		add_child(FeedbackPanel.new())
@@ -138,15 +140,43 @@ func _exit_tree() -> void:
 
 
 ## Paints each category button from what is actually unread in it.
+## The Message Alert bar (manual p022, p081): a category's original icon when
+## the player imported it - the lit one while that category has unread mail,
+## the dim one otherwise - else the text button, yellow when mail waits.
+const Art := preload("res://src/ui/artwork.gd")
+const AlertIconScale := 2.0   # the original's 27x22 icons on a 640-wide screen; ours is 1440
+
+
 func RefreshCommsHighlights() -> void:
 	var commsList: VBoxContainer = get_node_or_null("CommsPanel/Margin/CommsList")
 	if commsList == null:
 		return
+	var side: String = GameSettings.PlayerFaction.Id if GameSettings.PlayerFaction != null else ""
 	for btn in commsList.get_children():
 		if not (btn is Button):
 			continue
 		var waiting: bool = Enums.MessageCategory.has(btn.name) \
 			and EventBus.UnreadCount(Enums.MessageCategory[btn.name]) > 0
+		var icon: Texture2D = Art.AlertIcon(side, btn.name, waiting) if btn.name != "All" else null
+		if icon != null:
+			if not btn.has_meta("alert_icon"):
+				btn.set_meta("alert_icon", true)
+				btn.set_meta("label", btn.text)
+				btn.tooltip_text = btn.text
+				btn.text = ""
+				btn.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+				btn.expand_icon = true
+				btn.custom_minimum_size = Vector2(0, 22 * AlertIconScale + 6)
+			btn.icon = icon
+			btn.remove_theme_color_override("font_color")
+			btn.modulate = Color.WHITE
+			continue
+		if btn.has_meta("alert_icon"):
+			btn.remove_meta("alert_icon")
+			btn.icon = null
+			btn.text = btn.get_meta("label")
+			btn.expand_icon = false
+			btn.custom_minimum_size = Vector2.ZERO
 		if waiting:
 			btn.add_theme_color_override("font_color", Color.YELLOW)
 			btn.modulate = Color(1.5, 1.5, 0.5)

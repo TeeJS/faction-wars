@@ -30,6 +30,12 @@ static func CornerIcon(glyph: String, faction_id: String, hover: bool = false) -
 	return _texture("icons/%s%s%s.png" % [glyph, side, ".hover" if hover else ""])
 
 
+## A Message Alert bar icon for a side and a category (the enum name in lower
+## case), dim or lit: original/alerts/<faction id>.<category>[.lit].png.
+static func AlertIcon(faction_id: String, category: String, lit: bool) -> Texture2D:
+	return _texture("alerts/%s.%s%s.png" % [faction_id, category.to_lower(), ".lit" if lit else ""])
+
+
 ## The GID star for a side and a tier (big / mid / low / none):
 ## original/gid/<faction id>.<tier>.png; "unexplored" is a side of its own.
 static func GidStar(faction_id: String, tier: String) -> Texture2D:
