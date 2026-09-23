@@ -60,7 +60,9 @@ func _init() -> void:
 		quit(0)
 		return
 
-	var expected := FileAccess.get_file_as_string(FIXTURE)
+	# The fixture is LF in git; a Windows checkout (core.autocrlf) has it CRLF
+	# on disk, which failed this test at line 1 on every such machine.
+	var expected := FileAccess.get_file_as_string(FIXTURE).replace("\r\n", "\n")
 	if expected.is_empty():
 		push_error("[dto_parity] no fixture at %s - run with --rebaseline once" % FIXTURE)
 		quit(2)
