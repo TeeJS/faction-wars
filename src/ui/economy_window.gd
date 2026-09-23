@@ -4,10 +4,36 @@ extends DraggableWindow
 ## p083-p086): the three queues with their progress bars and Destination lines,
 ## one management tab per facility kind, the Build Selection window (p045) and
 ## the Build / Stop / Destination menu (p084).
+##
+## With the original's art imported it IS the original's window (TeeJ,
+## 2026-09-23, from his screenshots of Chandrila, Duros and Mon Calamari):
+## the 226x304 plate, the six tab pictures on its dark band, the left column
+## of three pictures over their ratio boxes, the three row frames with the
+## side's header bars, and each facility tab a caption over a grid of cards.
 
 var _associatedPlanet: Planet
 
 var _tabbedFor: Planet
+
+# THE ORIGINAL'S LAYOUT, in its own pixels (drawn OUI.K times as large).
+const PlateW := 226
+const PlateH := 304
+const PagesTop := 53
+const TabNames := ["manufacturing", "shipyards", "training_facilities", "construction_yards", "refineries", "mines"]
+const TabXs := [0, 39, 77, 115, 152, 190]
+const TabY := 20
+## The Manufacturing page, in page pixels (the plate's y less PagesTop): the
+## left column (10298) and its ratio boxes, the three row frames (10290).
+const ColumnX := 6
+const ColumnY := 18
+const RatioYs := [66, 147, 227]
+const RowX := 55
+const RowYs := [4, 85, 166]
+const RowHeaders := ["Ship Construction", "Troops in Training", "Facilities Under Construction"]
+const RowKeys := ["Ship", "Troop", "Fac"]
+const QueuePaths := ["%ShipQueueLabel", "%TroopQueueLabel", "%FacQueueLabel"]
+
+var _original: bool = false
 
 
 func Populate(planet: Planet) -> void:
@@ -15,25 +41,11 @@ func Populate(planet: Planet) -> void:
 	_tabbedFor = planet
 
 	_associatedPlanet = planet
-	# The original titles the window with the system's name and its sprite
-	# (Fig 3.24), puts the three row pictures left of their queues, and shows
-	# its tabs as pictures (Fig 3.27).
-	(get_node("%TitleBarLabel") as Label).text = " %s" % planet.Name
-	SetTitleIcon(planet)
-	_RowPicture("%ShipCapLabel", "ship_construction")
-	_RowPicture("%TroopCapLabel", "troops_in_training")
-	_RowPicture("%FacCapLabel", "facilities_under_construction")
+	var original: bool = _BuildOriginal()
+	# The original titles the window with the system's name alone.
+	(get_node("%TitleBarLabel") as Label).text = planet.Name if original else " %s Economy" % planet.Name
 
 	var tabs: TabContainer = get_node("%EconomyTabs")
-	var side: String = GameSettings.PlayerFaction.Id if GameSettings.PlayerFaction != null else ""
-	ApplyTabIcons(tabs, ["manufacturing", "shipyards", "training_facilities", "construction_yards", "refineries", "mines"], side)
-	# The row headers in the viewer's own colour (green on the original's
-	# Imperial window).
-	if GameSettings.PlayerFaction != null:
-		for q in ["ShipQueue", "TroopQueue", "FacQueue"]:
-			var header: ColorRect = tabs.get_node_or_null("Manufacturing/%s/Header" % q)
-			if header != null:
-				header.color = GameSettings.PlayerFaction.FactionColor.darkened(0.3)
 	# Only jump to the first tab when this window is opened on a NEW
 	# subject. A refresh must leave the player where they were: once
 	# repaints moved onto a four-times-a-second poll, resetting here
@@ -132,7 +144,8 @@ func Populate(planet: Planet) -> void:
 		var queues: IntelManager.IntelView = IntelManager.View(viewer, planet, Enums.IntelSection.Manufacturing)
 		var yards: IntelManager.IntelView = IntelManager.View(viewer, planet, Enums.IntelSection.ProductionFacilities)
 
-		var none: String = "Sensors detect no data"
+		# Nothing seen: the rows stay empty (TeeJ: no "Sensors detect no data").
+		var none: String = ""
 
 		(get_node("%ShipCapLabel") as Label).text = "0:0"
 		(get_node("%TroopCapLabel") as Label).text = "0:0"
@@ -173,39 +186,97 @@ func Populate(planet: Planet) -> void:
 		StaleFacilityTab(tabs, "Construction Yards", "construction_yard", yards)
 		StaleFacilityTab(tabs, Terms.cap("refineries"), "refinery", yards)
 		StaleFacilityTab(tabs, Terms.cap("mines"), "mine", yards)
-	RefreshTabIcons(tabs)
+
+		# The original greys what the snapshot shows none of, as it does on
+		# a world of your own.
+		for pair in [["Shipyards", "shipyard"], ["Training Facilities", "training_facility"],
+				["Construction Yards", "construction_yard"], [Terms.cap("refineries"), "refinery"],
+				[Terms.cap("mines"), "mine"]]:
+			var nm: String = Facility.NameOf(pair[1])
+			GreyEmptyTab(tabs, pair[0], Lq.count(yards.Lines, func(l: String) -> bool: return l == nm or l == "Advanced %s" % nm) if yards.Known else 0)
+	OUI.RefreshStrip(tabs)
 
 
-## The row's picture (Fig 3.24: the ship, the walled compound, the hangar,
-## on their starfields) above the yards ratio, left of the queue - when the
-## player imported it. Moves the ratio label into a column under the picture
-## once; a second call finds it moved and does nothing.
-func _RowPicture(capPath: String, name: String) -> void:
-	var cap: Label = get_node_or_null(capPath)
-	if cap == null:
-		return
-	var body: HBoxContainer = cap.get_parent() as HBoxContainer
-	if body == null:
-		return
-	var tex: Texture2D = Art.WindowPicture(name)
-	if tex == null:
-		return
-	var box := VBoxContainer.new()
-	box.name = "PictureBox"
-	box.add_theme_constant_override("separation", 0)
-	var pic := TextureRect.new()
-	pic.name = "Picture"
-	pic.texture = Art.Scaled(tex, 2)
-	pic.custom_minimum_size = pic.texture.get_size()
-	pic.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
-	pic.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	box.add_child(pic)
-	body.add_child(box)
-	body.move_child(box, 0)
-	# reparent(), not remove + add: it keeps the label's owner, so the
-	# scene's %ShipCapLabel lookups still find it.
-	cap.reparent(box, false)
-	cap.custom_minimum_size = Vector2(pic.custom_minimum_size.x, 0)
+# ---- THE ORIGINAL'S WINDOW -------------------------------------------------
+
+## Build the original's window once, when its art is imported: the title
+## bar, the plate, the tab strip and the Manufacturing page - the scene's
+## own labels moved into the original's boxes (reparent() keeps their
+## unique names, so every lookup still finds them). False without the art.
+func _BuildOriginal() -> bool:
+	if _original:
+		return true
+	var side: String = OUI.Side(GameSettings.PlayerFaction)
+	if not OUI.Has(["mfg_background", "mfg_column", "mfg_row", "header.%s" % side]):
+		return false
+	for n in TabNames:
+		if Art.TabIcon(n, side) == null:
+			return false
+	_original = true
+	OUI.TitleBar(self, GameSettings.PlayerFaction)
+	var area: MarginContainer = OUI.Flatten(self)
+	var body: Control = OUI.Canvas(area, PlateW, PlateH)
+	OUI.Place(body, OUI.Pic("mfg_background"), 0, 0, "Plate")
+	var tabs: TabContainer = get_node("%EconomyTabs")
+	tabs.reparent(body, false)
+	tabs.tabs_visible = false
+	tabs.custom_minimum_size = Vector2.ZERO
+	tabs.position = Vector2(0, PagesTop) * OUI.K
+	tabs.size = Vector2(PlateW, PlateH - PagesTop) * OUI.K
+	tabs.add_theme_stylebox_override("panel", StyleBoxEmpty.new())
+	OUI.TabStrip(body, tabs, TabNames, side, TabXs, TabY)
+
+	# The Manufacturing page (Fig 3.24).
+	var page: Control = tabs.get_node("Manufacturing")
+	var mfg := Control.new()
+	mfg.name = "OriginalManufacturing"
+	mfg.custom_minimum_size = Vector2(PlateW, PlateH - PagesTop) * OUI.K
+	mfg.mouse_filter = Control.MOUSE_FILTER_PASS
+	page.add_child(mfg)
+	OUI.Place(mfg, OUI.Pic("mfg_column"), ColumnX, ColumnY, "Column")
+	for i in 3:
+		var y: int = RowYs[i]
+		OUI.Place(mfg, OUI.Pic("mfg_row"), RowX, y, "Row%d" % i)
+		OUI.Place(mfg, OUI.Pic("header.%s" % side), RowX, y, "Header%d" % i)
+		var head := OUI.Text(mfg, RowHeaders[i], RowX + 4, y, 156, 13, 11, Color.BLACK, HORIZONTAL_ALIGNMENT_LEFT, false, "HeaderText%d" % i)
+		head.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		# The progress bar runs in the frame's black track (rows 70-74).
+		var fill := ColorRect.new()
+		fill.name = "Progress%d" % i
+		fill.color = OUI.SideColor(GameSettings.PlayerFaction)
+		fill.position = Vector2(RowX + 1, y + 70) * OUI.K
+		fill.size = Vector2(0, 5) * OUI.K
+		fill.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		mfg.add_child(fill)
+		var q: Label = get_node("%%%sQueueLabel" % RowKeys[i])
+		OUI.Seat(q, mfg, RowX + 4, y + 16, 158, 40)
+		OUI.Style(q, 11, Color.WHITE)
+		q.vertical_alignment = VERTICAL_ALIGNMENT_TOP
+		q.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		var d: Label = get_node("%%%sDestLabel" % RowKeys[i])
+		OUI.Seat(d, mfg, RowX + 4, y + 57, 158, 12)
+		OUI.Style(d, 11, Color.WHITE)
+		d.vertical_alignment = VERTICAL_ALIGNMENT_TOP
+		var c: Label = get_node("%%%sCapLabel" % RowKeys[i])
+		OUI.Seat(c, mfg, ColumnX, RatioYs[i], 46, 16)
+		OUI.Style(c, 12, Color.WHITE)
+		c.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		c.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	for n in ["ShipQueue", "TroopQueue", "FacQueue"]:
+		var shell: Control = page.get_node_or_null(n)
+		if shell != null:
+			shell.visible = false
+	return true
+
+
+## A facility tab's list: the original's caption over its grid of cards, or
+## the plain list.
+func _facility_list(container: Control, tabName: String, second: String = "") -> Container:
+	if _original:
+		return OUI.Page(container, [tabName] if second.is_empty() else [tabName, second], PlateW, PlateH - PagesTop)
+	for child in container.get_children():
+		child.queue_free()
+	return container
 
 
 # The manual's progress bar, under the queue's own line (p084). Shows the
@@ -215,6 +286,18 @@ func _RowPicture(capPath: String, name: String) -> void:
 func QueueBar(labelPath: String, queue: Array, _planet: Planet) -> void:
 	var label: Label = get_node_or_null(labelPath)
 	if label == null:
+		return
+	if _original:
+		# In the row frame's own track, the side's colour (the bar's colour is
+		# not in any reference - single-source: the frame's black band).
+		var fill: ColorRect = get_node_or_null("%%EconomyTabs/Manufacturing/OriginalManufacturing/Progress%d" % QueuePaths.find(labelPath))
+		if fill != null:
+			var pct: int = (queue[0] as ConstructionTask).PercentComplete() if queue.size() > 0 else 0
+			fill.size = Vector2(160.0 * pct / 100.0, 5) * OUI.K
+		if queue.size() > 0:
+			var head0: ConstructionTask = queue[0]
+			label.tooltip_text = "%s - %d%% complete" % [head0.DisplayName(), head0.PercentComplete()] \
+				+ ((", %d more queued" % (queue.size() - 1)) if queue.size() > 1 else "") + "\nRight-click for orders"
 		return
 	var parent: Control = label.get_parent() as Control
 	if parent == null:
@@ -310,20 +393,20 @@ func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, fa
 	if container == null:
 		return
 
-	# Clear existing placeholder label or old entries
-	for child in container.get_children():
-		child.queue_free()
-
-	# Create a styled sub-header
-	var header := Label.new()
-	header.text = "Manage %s" % tabName
-	header.add_theme_font_size_override("font_size", 13)
-	header.add_theme_color_override("font_color", Color(0.6, 0.9, 0.6))
-	container.add_child(header)
+	var list: Container = _facility_list(container, tabName)
+	if not _original:
+		# Create a styled sub-header
+		var header := Label.new()
+		header.text = "Manage %s" % tabName
+		header.add_theme_font_size_override("font_size", 13)
+		header.add_theme_color_override("font_color", Color(0.6, 0.9, 0.6))
+		container.add_child(header)
 
 	var matchingFacilities: Array = Lq.where(planet.Facilities, func(f: Facility) -> bool: return f.Family() == family)
 
 	if matchingFacilities.size() == 0:
+		if _original:
+			return
 		var emptyLabel := Label.new()
 		emptyLabel.text = emptyMsg
 		emptyLabel.add_theme_font_size_override("font_size", 11)
@@ -406,6 +489,14 @@ func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, fa
 		rowBtn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		rowBtn.add_theme_font_size_override("font_size", 12)
 		rowBtn.add_theme_color_override("font_color", Color.WHITE if picked else statusColor)
+
+		if _original:
+			# THE ORIGINAL'S CARD: the facility's miniature over its name; the
+			# tier and what it is doing go to the tooltip.
+			var tip: String = rowBtn.text
+			OUI.Card(rowBtn, fac.Name(), OUI.Mini("facilities", fac.Def.Id if fac.Def != null else fac.Family()),
+				Color.RED if fac.IsDamaged else Color.WHITE, OUI.SideColor(GameSettings.PlayerFaction))
+			rowBtn.tooltip_text = tip
 
 		rowBtn.toggled.connect(func(on: bool) -> void:
 			# CROSSHAIRS UP: this click is naming a sabotage target, not
@@ -525,12 +616,17 @@ func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, fa
 					ConfirmScrap(planet, rowFac.Name(), r, mt, onScrap)
 		menu.id_pressed.connect(onMenuId)
 
-		container.add_child(row)
+		if _original:
+			row.remove_child(rowBtn)
+			row.queue_free()
+			list.add_child(rowBtn)
+		else:
+			container.add_child(row)
 
 	# Say out loud what selecting several of them buys you, because the
 	# speed rule was previously invisible and automatic.
 	var chosen: int = Lq.count(_selected, func(f: Facility) -> bool: return f.Family() == family)
-	if chosen > 1:
+	if chosen > 1 and not _original:
 		var note := Label.new()
 		note.text = "%d selected - they share a job and finish it %dx faster." % [chosen, chosen]
 		note.add_theme_font_size_override("font_size", 11)
@@ -800,21 +896,20 @@ func ConfirmScrap(planet: Planet, what: String, refund: int, maint: int, onConfi
 # whole story.
 func StaleFacilityTab(tabs: TabContainer, tabName: String, family: String, yards: IntelManager.IntelView) -> void:
 	if not yards.Known:
-		ClearFacilityTab(tabs, tabName, "Sensors detect no data.")
+		ClearFacilityTab(tabs, tabName, "")   # nothing seen: an empty page
 		return
 
 	var name: String = Facility.NameOf(family)
 	var seen: Array = Lq.where(yards.Lines, func(l: String) -> bool: return l == name or l == "Advanced %s" % name)
 
 	if seen.size() == 0:
-		ClearFacilityTab(tabs, tabName, "None seen.")
+		ClearFacilityTab(tabs, tabName, "" if _original else "None seen.")
 		return
 
 	var container: VBoxContainer = tabs.get_node_or_null(tabName)
 	if container == null:
 		return
-	for child in container.get_children():
-		child.queue_free()
+	var list: Container = _facility_list(container, tabName, "Last seen day %d" % yards.Day)
 
 	var world: Planet = _associatedPlanet
 	var index: int = 0
@@ -851,7 +946,12 @@ func StaleFacilityTab(tabs: TabContainer, tabName: String, family: String, yards
 
 			ui.ResolveObjectTarget(current))
 
-		container.add_child(row)
+		if _original:
+			var seenDef: PackDefs.FacilityDef = FacilityCatalog.Get(family, 2 if str(line).begins_with("Advanced") else 1)
+			OUI.Card(row, str(line), OUI.Mini("facilities", seenDef.Id if seenDef != null else family),
+				Color.WHITE, OUI.SideColor(GameSettings.PlayerFaction))
+			row.tooltip_text = "%s (seen day %d)" % [line, yards.Day]
+		list.add_child(row)
 
 
 func ClearFacilityTab(tabs: TabContainer, tabName: String, msg: String) -> void:
@@ -859,8 +959,9 @@ func ClearFacilityTab(tabs: TabContainer, tabName: String, msg: String) -> void:
 	if container == null:
 		return
 
-	for child in container.get_children():
-		child.queue_free()
+	_facility_list(container, tabName)
+	if _original or msg.is_empty():
+		return
 	var emptyLabel := Label.new()
 	emptyLabel.text = msg
 	emptyLabel.add_theme_color_override("font_color", Color.GRAY)
