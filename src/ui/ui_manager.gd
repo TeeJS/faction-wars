@@ -111,6 +111,9 @@ func _ready() -> void:
 
 	# THE HIGHLIGHT IS DERIVED, NOT TOGGLED: read off the unread count.
 	EventBus.OnStateChanged.append(RefreshCommsHighlights)
+	# Painted once at start too, so imported alert icons show before any mail moves.
+	call_deferred("RefreshCommsHighlights")
+	call_deferred("DressConsole")
 	# The tester's feedback box, bottom of the left column (TeeJ, room #80).
 	if GameSettings.ProvideFeedback:
 		add_child(FeedbackPanel.new())
@@ -138,15 +141,82 @@ func _exit_tree() -> void:
 
 
 ## Paints each category button from what is actually unread in it.
+## The Message Alert bar (manual p022, p081): a category's original icon when
+## the player imported it - the lit one while that category has unread mail,
+## the dim one otherwise - else the text button, yellow when mail waits.
+const Art := preload("res://src/ui/artwork.gd")
+const AlertIconScale := 2.0   # the original's 27x22 icons on a 640-wide screen; ours is 1440
+
+
+## The bottom bar's buttons wear the original's console screens when the
+## player imported them (manual p022 Fig 2.3: the Control Panel's Finders,
+## the GID state control and the Encyclopedia), the label as the tooltip.
+## Drawn at 2x. Nothing imported -> the text buttons as before.
+const ConsoleButtons := {
+	"PlanetInfo": "system_finder", "ShipInfo": "fleet_finder", "TroopInfo": "troop_finder",
+	"CharInfo": "personnel_finder", "GalaxyMapLayers": "gid", "Encyclopedia": "encyclopedia",
+}
+const ConsoleScale := 2.0
+
+
+func DressConsole() -> void:
+	var bar: HBoxContainer = get_node_or_null("HBoxContainer")
+	if bar == null:
+		return
+	var side: String = GameSettings.PlayerFaction.Id if GameSettings.PlayerFaction != null else ""
+	for name in ConsoleButtons:
+		var btn: Button = bar.get_node_or_null(name)
+		if btn == null:
+			continue
+		var screen: Texture2D = Art.Console(side, ConsoleButtons[name])
+		if screen != null:
+			if not btn.has_meta("console_screen"):
+				btn.set_meta("console_screen", true)
+				btn.set_meta("label", btn.text)
+				btn.tooltip_text = btn.text
+				btn.text = ""
+				btn.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+				btn.expand_icon = true
+				btn.custom_minimum_size = screen.get_size() * ConsoleScale + Vector2(8, 8)
+			btn.icon = screen
+		elif btn.has_meta("console_screen"):
+			btn.remove_meta("console_screen")
+			btn.icon = null
+			btn.text = btn.get_meta("label")
+			btn.expand_icon = false
+			btn.custom_minimum_size = Vector2.ZERO
+
+
 func RefreshCommsHighlights() -> void:
 	var commsList: VBoxContainer = get_node_or_null("CommsPanel/Margin/CommsList")
 	if commsList == null:
 		return
+	var side: String = GameSettings.PlayerFaction.Id if GameSettings.PlayerFaction != null else ""
 	for btn in commsList.get_children():
 		if not (btn is Button):
 			continue
 		var waiting: bool = Enums.MessageCategory.has(btn.name) \
 			and EventBus.UnreadCount(Enums.MessageCategory[btn.name]) > 0
+		var icon: Texture2D = Art.AlertIcon(side, btn.name, waiting) if btn.name != "All" else null
+		if icon != null:
+			if not btn.has_meta("alert_icon"):
+				btn.set_meta("alert_icon", true)
+				btn.set_meta("label", btn.text)
+				btn.tooltip_text = btn.text
+				btn.text = ""
+				btn.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+				btn.expand_icon = true
+				btn.custom_minimum_size = Vector2(0, 22 * AlertIconScale + 6)
+			btn.icon = icon
+			btn.remove_theme_color_override("font_color")
+			btn.modulate = Color.WHITE
+			continue
+		if btn.has_meta("alert_icon"):
+			btn.remove_meta("alert_icon")
+			btn.icon = null
+			btn.text = btn.get_meta("label")
+			btn.expand_icon = false
+			btn.custom_minimum_size = Vector2.ZERO
 		if waiting:
 			btn.add_theme_color_override("font_color", Color.YELLOW)
 			btn.modulate = Color(1.5, 1.5, 0.5)
