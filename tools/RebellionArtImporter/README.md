@@ -8,9 +8,27 @@ is gitignored, and the tool reads only from the folder the player points it at.
 
 ## Use
 
-Double-click `RebellionArtImporter.exe`, check the two folders (the GOG install
-and the pack folder are found automatically when they are where expected), click
+Double-click `RebellionArtImporter.exe`, check the two folders (the game and the
+pack folder are found automatically when they are where expected), click
 **Import**. About 300 pictures and 150 descriptions are written in a few seconds.
+
+Every version of the game has the same folder - the DLLs with `EData` beside
+them - so any of these works as the game folder (`GameFolders.cs` looks in this
+order):
+
+| Version | Game folder |
+|---|---|
+| GOG | `C:\Program Files (x86)\GOG Galaxy\Games\Star Wars - Rebellion` |
+| Steam | `<library>\steamapps\common\Star Wars - Rebellion`, in any library Steam lists in `steamapps\libraryfolders.vdf` |
+| Old CD install | `C:\Program Files\LucasArts\Star Wars Rebellion` (manual p16), or `C:\Program Files (x86)\...` - only when `EData` is in it |
+| The CD | the disc's `REBELLION` folder, e.g. `D:\REBELLION`; a mounted `.iso` works the same |
+
+The CD's `REBELLION` folder holds the same files at the same sizes as the GOG copy
+(checked 2026-09-23 against archive.org's file list of the retail disc; only
+`REBEXE.EXE` differs, and the importer never reads it). The 1998 setup is 16-bit
+and will not run on 64-bit Windows, so CD owners import straight from the disc.
+Installs from the CD usually left `EData` on the disc; if it is missing, pick the
+disc instead.
 
 From a script:
 
