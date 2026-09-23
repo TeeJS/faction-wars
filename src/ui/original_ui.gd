@@ -213,6 +213,82 @@ static func TitleBar(window: Control, f: Faction) -> void:
 		vbox.add_theme_constant_override("separation", 0)
 
 
+## A DIALOG'S FRAME, as the original draws Create Mission: the plate IS the
+## window, with its own 2-pixel bevel round the edge, and the title bar sits
+## inside the bevel - 16 rows of the side's colour, the name in black bold
+## Arial 13 from 4 pixels in, and only the close box, 1 pixel from the end
+## (measured on TeeJ's screenshot of the original, 2026-09-23).
+const DialogBevel := 2
+const DialogBarH := 16
+
+
+static func DialogFrame(window: Control, f: Faction, plate: Texture2D, titlePx: int = 13) -> void:
+	var bar: ColorRect = window.get_node_or_null("%TitleBar")
+	var label: Label = window.get_node_or_null("%TitleBarLabel")
+	if bar == null or label == null:
+		return
+	bar.color = SideColor(f)
+	bar.custom_minimum_size = Vector2(0, DialogBarH * K)
+	Style(label, titlePx, Color.BLACK, true)
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	var hbox: HBoxContainer = label.get_parent() as HBoxContainer
+	if hbox != null and not bar.has_meta("original"):
+		bar.set_meta("original", true)
+		hbox.add_theme_constant_override("separation", 0)
+		hbox.add_child(_gap(4))
+		hbox.move_child(hbox.get_child(hbox.get_child_count() - 1), 0)
+		var mini: Control = window.get_node_or_null("%MinimizeButton")
+		if mini != null:
+			mini.visible = false
+		var close: Button = window.get_node_or_null("%CloseButton")
+		if close != null:
+			_title_button(close, "title_close")
+		hbox.add_child(_gap(1))
+	SetPlate(window, plate)
+	window.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	var vbox: Control = window.get_node_or_null("MainVBox")
+	if vbox != null:
+		vbox.add_theme_constant_override("separation", 0)
+
+
+## The dialog's plate, drawn as the window's own panel (a tab can swap it).
+static func SetPlate(window: Control, plate: Texture2D) -> void:
+	var sb := StyleBoxTexture.new()
+	sb.texture = plate
+	sb.set_content_margin_all(DialogBevel * K)
+	window.add_theme_stylebox_override("panel", sb)
+
+
+## A title-bar button drawn as the original's 14x14 box.
+static func _title_button(b: Button, icon: String) -> void:
+	b.text = ""
+	b.icon = Btn(icon)
+	b.flat = true
+	b.expand_icon = false
+	b.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	b.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	b.custom_minimum_size = Vector2(14, 14) * K
+	b.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	var empty := StyleBoxEmpty.new()
+	for st in ["normal", "hover", "pressed", "focus", "hover_pressed"]:
+		b.add_theme_stylebox_override(st, empty)
+
+
+## A button drawn with the original's (normal, pressed) pictures, at original
+## position (x, y).
+static func PictureButton(parent: Control, name: String, x: float, y: float, tip: String = "") -> TextureButton:
+	var b := TextureButton.new()
+	b.name = name
+	b.texture_normal = Btn(name)
+	b.texture_pressed = Btn(name, "pressed")
+	b.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	b.position = Vector2(x, y) * K
+	b.size = b.texture_normal.get_size() if b.texture_normal != null else Vector2.ZERO
+	b.tooltip_text = tip
+	parent.add_child(b)
+	return b
+
+
 static func _gap(px: int) -> Control:
 	var c := Control.new()
 	c.custom_minimum_size = Vector2(px * K, 0)

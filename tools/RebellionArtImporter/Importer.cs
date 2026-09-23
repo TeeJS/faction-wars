@@ -39,7 +39,8 @@ namespace RebellionArtImporter;
 /// Output, under the pack folder (gitignored - never committed):
 ///   original/characters/&lt;id&gt;.png   original/units/&lt;id&gt;.png
 ///   original/facilities/&lt;id&gt;.png   original/planets/&lt;id&gt;.png
-///   original/missions/&lt;id&gt;.&lt;faction&gt;.png (alliance / empire)
+///   original/missions/&lt;id&gt;.&lt;faction&gt;.png (alliance / empire), and
+///     .small.png: the 130x65 Create Mission picture (GOKRES.DLL)
 ///   original/descriptions.json     { "characters": { id: text }, ... }
 ///   original/portraits/&lt;kind&gt;/&lt;id&gt;.png   original/miniatures/&lt;kind&gt;/&lt;id&gt;.png
 ///   original/icons/&lt;glyph&gt;.&lt;faction&gt;.png (+ .hover.png)   sector-window corners
@@ -114,6 +115,14 @@ public sealed class Importer
         // and the side's grid over one being built.
         ("card_plate", 11500), ("card_enroute", 11505),
         ("card_building.alliance", 11570), ("card_building.empire", 11572),
+        // Create Mission (p042 Fig 2.34, p103 Fig 3.47, p104 Fig 3.48): the
+        // 259x355 plate of the Select Mission tab (the mission box, the Target
+        // brackets) and of the Decoy tab (the agent and decoy columns), the
+        // 200x113 starfield the mission list drops down on, and the columns'
+        // 108x27 heads per side (agents, decoys).
+        ("mission_plate", 11100), ("mission_decoy_plate", 11101), ("mission_list", 11102),
+        ("mission_agents.alliance", 11121), ("mission_decoys.alliance", 11122),
+        ("mission_agents.empire", 11123), ("mission_decoys.empire", 11124),
     };
 
     // STRATEGY.DLL: window tab icons as (name, faction or "", normal, current,
@@ -142,6 +151,9 @@ public sealed class Importer
         ("msg_defense", "", 10856, 10857, 0), ("msg_conflict", "", 10854, 10855, 0),
         ("msg_chat", "", 10850, 10851, 0),
         ("msg_advice", "alliance", 10846, 10847, 0), ("msg_advice", "empire", 10848, 10849, 0),
+        // Create Mission's two tabs, 116x33: Select Mission and Decoy.
+        ("mission_select", "alliance", 11103, 11104, 0), ("mission_select", "empire", 11105, 11106, 0),
+        ("mission_decoy", "alliance", 11107, 11108, 0), ("mission_decoy", "empire", 11109, 11110, 0),
     };
 
     // STRATEGY.DLL: buttons as (name, normal, pressed/current, disabled).
@@ -159,7 +171,36 @@ public sealed class Importer
         // The original's scrollbar (13 wide): arrows and the thumb's three parts.
         ("scroll_up", 10658, 0, 0), ("scroll_down", 10662, 0, 0),
         ("scroll_thumb_top", 10666, 0, 0), ("scroll_thumb_mid", 10668, 0, 0), ("scroll_thumb_bottom", 10669, 0, 0),
+        // Create Mission's Decoy tab: move the selected to the decoys / agents (16x16).
+        ("mission_to_decoys", 11117, 11118, 0), ("mission_to_agents", 11119, 11120, 0),
     };
+
+    // STRATEGY.DLL: buttons drawn CLIPPED to their control, as (name, normal,
+    // pressed, clip x, y, w, h). Read off TeeJ's screenshot of the original's
+    // Create Mission window (2026-09-23): both pictures are drawn at the same
+    // spot, and the normal one's last columns and row - the room the face moves
+    // into when pressed - never show; nor does the pressed one's first. Both
+    // magenta shades, (255,0,255) and (204,28,205), are keyed.
+    private static readonly (string Name, int Normal, int Pressed, int X, int Y, int W, int H)[] ClippedButtons =
+    {
+        // The Encyclopedia, assign and cancel buttons (66x33 drawn as 64x32).
+        ("mission_encyclopedia", 10592, 10593, 0, 0, 64, 32), ("mission_ok", 10594, 10595, 0, 0, 64, 32),
+        ("mission_cancel", 10596, 10597, 0, 0, 64, 32),
+        // The arrow that drops the mission list down (65x18 drawn as 65x17).
+        ("mission_list_open", 10606, 10607, 0, 1, 65, 17),
+    };
+
+    // GOKRES.DLL: the 130x65 picture of each mission in the Create Mission
+    // window, per side, at the row's string_id less these (Recruitment's
+    // 11286 - 4096 = 7190 matched TeeJ's Imperial screenshot pixel for pixel;
+    // all 21 were checked by eye, the Alliance set 4096 below the Empire's).
+    private const int MissionCardEmpire = 4096;
+    private const int MissionCardAlliance = 8192;
+
+    // Bitmaps the original draws WHOLE, pure blue included: the Create Mission
+    // plates' blue line under the tabs and the tabs' blue edges are on TeeJ's
+    // screenshot of the original, pixel for pixel (2026-09-23).
+    private static readonly HashSet<int> DrawnWhole = new() { 11100, 11101, 11103, 11104, 11105, 11106, 11107, 11108, 11109, 11110 };
 
     public sealed record Result(int Pictures, int Descriptions, List<string> Missing, List<string> Log);
 
@@ -323,7 +364,31 @@ public sealed class Importer
             if (pressed > 0 && SaveSprite(strategy, pressed, Path.Combine(outRoot, "buttons", $"{name}.pressed.png"), true)) pictureCount++;
             if (disabled > 0 && SaveSprite(strategy, disabled, Path.Combine(outRoot, "buttons", $"{name}.disabled.png"), true)) pictureCount++;
         }
+        foreach (var (name, normal, pressed, x, y, w, h) in ClippedButtons)
+        {
+            var clip = new Rectangle(x, y, w, h);
+            if (SaveSprite(strategy, normal, Path.Combine(outRoot, "buttons", $"{name}.png"), true, clip)) { buttons++; pictureCount++; }
+            else missing.Add($"buttons/{name}: no bitmap {normal} in STRATEGY.DLL");
+            if (SaveSprite(strategy, pressed, Path.Combine(outRoot, "buttons", $"{name}.pressed.png"), true, clip)) pictureCount++;
+        }
         Say($"sprites: {icons} corner icons, {sprites} planet sprites, {stars} GID stars, the uprising flame, {alerts} alert icons, {windows} window pictures, {tabs} tab icons, {buttons} buttons.");
+
+        // The Create Mission window's mission pictures: GOKRES.DLL, per side.
+        var cards = new PeResources(Path.Combine(_gameDir, "GOKRES.DLL"));
+        int missionCards = 0;
+        foreach (var row in ReadRows(Path.Combine(_packDir, "missions.json"), "missions"))
+        {
+            string id = row["id"]!.GetValue<string>();
+            if (row["string_id"]?.GetValue<int>() is not int sid)
+                continue;
+            foreach (var (faction, less) in new[] { ("empire", MissionCardEmpire), ("alliance", MissionCardAlliance) })
+            {
+                if (SaveSprite(cards, sid - less, Path.Combine(outRoot, "missions", $"{id}.{faction}.small.png"))) { missionCards++; pictureCount++; }
+                else if (!id.StartsWith("unnamed"))
+                    missing.Add($"missions/{id}.{faction}.small: no bitmap {sid - less} in GOKRES.DLL");
+            }
+        }
+        Say($"mission pictures for Create Mission: {missionCards} (GOKRES.DLL).");
 
         // Portraits and list miniatures: GOKRES.DLL, by the shipped id map.
         var mapPath = Path.Combine(AppContext.BaseDirectory, "gokres_map.json");
@@ -369,20 +434,26 @@ public sealed class Importer
     /// <summary>A STRATEGY.DLL bitmap as a PNG with the blue colour key made transparent.</summary>
     /// <summary>A bitmap as a PNG with the key colour transparent: pure blue
     /// everywhere, and pure magenta too for the window tabs and buttons, whose
-    /// corners the original keys out the same way.</summary>
-    private static bool SaveSprite(PeResources dll, int bitmapId, string outPath, bool keyMagenta = false)
+    /// corners the original keys out the same way.
+    /// A clip rectangle crops the bitmap to the part the original draws; a
+    /// clipped button's second magenta shade (204,28,205) is keyed as well
+    /// (never elsewhere: the Manufacturing tab pictures draw it).</summary>
+    private static bool SaveSprite(PeResources dll, int bitmapId, string outPath, bool keyMagenta = false, Rectangle? clip = null)
     {
         if (!dll.Bitmaps.ContainsKey(bitmapId))
             return false;
         Directory.CreateDirectory(Path.GetDirectoryName(outPath)!);
         using var stream = new MemoryStream(dll.BitmapFile(bitmapId));
         using var bmp = new Bitmap(stream);
-        using var rgba = new Bitmap(bmp.Width, bmp.Height, PixelFormat.Format32bppArgb);
-        for (int y = 0; y < bmp.Height; y++)
-            for (int x = 0; x < bmp.Width; x++)
+        var r = clip ?? new Rectangle(0, 0, bmp.Width, bmp.Height);
+        using var rgba = new Bitmap(r.Width, r.Height, PixelFormat.Format32bppArgb);
+        for (int y = 0; y < r.Height; y++)
+            for (int x = 0; x < r.Width; x++)
             {
-                var c = bmp.GetPixel(x, y);
-                bool key = (c.R == 0 && c.G == 0 && c.B == 255) || (keyMagenta && c.R == 255 && c.G == 0 && c.B == 255);
+                var c = bmp.GetPixel(r.X + x, r.Y + y);
+                bool key = (c.R == 0 && c.G == 0 && c.B == 255 && !DrawnWhole.Contains(bitmapId))
+                    || (keyMagenta && c.R == 255 && c.G == 0 && c.B == 255)
+                    || (clip != null && c.R == 204 && c.G == 28 && c.B == 205);
                 rgba.SetPixel(x, y, key ? Color.Transparent : Color.FromArgb(255, c.R, c.G, c.B));
             }
         rgba.Save(outPath, ImageFormat.Png);
