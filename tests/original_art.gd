@@ -1,9 +1,11 @@
 extends SceneTree
-## The player's own artwork overlay (src/ui/artwork.gd, tools/FactionWarsExporter):
-## when user://original/<pack>/ holds a corner icon or a planet sprite, the
-## sector window draws it - the icon untinted in its own colours, the planet as
-## its sprite with the name in the side's colour - and falls back to the
-## engine's art when the file is gone. Writes and removes its own test files.
+## The player's own art set (src/ui/artwork.gd, tools/FactionWarsExporter):
+## when the imported art set holds a corner icon or a planet sprite, the sector
+## window draws it - the icon untinted in its own colours, the planet as its
+## sprite with the name in the side's colour - and falls back to the engine's
+## art when the file is gone. A pack that declares no art set (WWII) takes
+## nothing from one. Writes and removes its own test files, under a test art
+## root, never the player's own.
 ##
 ##   .\tools\run-gd.ps1 tests/original_art.gd -- --pack=ww2
 ##   .\tools\run-gd.ps1 tests/original_art.gd              (Star Wars)
@@ -26,6 +28,7 @@ func _check(cond: bool, what: String) -> void:
 func _init() -> void:
 	await process_frame
 	Art.IgnoreProjectFolder = true   # only what this test writes counts
+	Art.UserArtRoot = "user://test-original-art"
 	FactionRegistry.EnsureLoaded()
 	MpSetup.reset()
 	GameSettings.SelectedDifficulty = Enums.Difficulty.Medium
@@ -36,7 +39,8 @@ func _init() -> void:
 		await process_frame
 	var ui: UIManager = main.get_node("UIManager")
 	var us: Faction = GameSettings.PlayerFaction
-	var pack_id: String = FactionRegistry.Pack.Manifest.Id
+	var sets: Array = FactionRegistry.Pack.Manifest.ArtSets
+	var side: String = us.ArtSkin
 	var home: Planet = Lq.first_or_null(GameState.AllPlanets(), func(p: Planet) -> bool: return p.ControllingFaction == us)
 	var art_id: int = home.ArtworkId
 	_check(home != null, "%s holds a world (%s, artwork_id %d)" % [us.Id, home.Name, art_id])
@@ -46,19 +50,19 @@ func _init() -> void:
 	var before: Dictionary = await _corners_for(ui, home)
 	_check(before.has("manufacturing") and (before["manufacturing"] as Button).icon.resource_path.begins_with("res://assets/icons/"),
 		"without an overlay the manufacturing corner shows the engine's glyph")
-	_check(Art.CornerIcon("manufacturing", us.Id) == null, "Artwork.CornerIcon is null without a file")
+	_check(Art.CornerIcon("manufacturing", side) == null, "Artwork.CornerIcon is null without a file")
 
-	# Write two test pictures where an exported build's overlay lives.
-	var dir := "user://original/%s" % pack_id
+	# Write two test pictures where an imported art set lives.
+	var dir := "%s/%s" % [Art.UserArtRoot, sets[0] if not sets.is_empty() else "swr-original"]
 	DirAccess.make_dir_recursive_absolute(dir + "/icons")
 	DirAccess.make_dir_recursive_absolute(dir + "/planet_sprites")
 	var icon := Image.create(16, 16, false, Image.FORMAT_RGBA8)
 	icon.fill(Color(0.2, 0.9, 0.3))
-	var icon_path := "%s/icons/manufacturing.%s.png" % [dir, us.Id]
+	var icon_path := "%s/icons/manufacturing.%s.png" % [dir, side]
 	icon.save_png(icon_path)
 	var hover := Image.create(16, 16, false, Image.FORMAT_RGBA8)
 	hover.fill(Color(1, 1, 1))
-	hover.save_png("%s/icons/manufacturing.%s.hover.png" % [dir, us.Id])
+	hover.save_png("%s/icons/manufacturing.%s.hover.png" % [dir, side])
 	var sprite_path := ""
 	if art_id > 0:
 		var sprite := Image.create(37, 37, false, Image.FORMAT_RGBA8)
@@ -67,7 +71,13 @@ func _init() -> void:
 		sprite.save_png(sprite_path)
 	Art.Reset()
 
-	_check(Art.CornerIcon("manufacturing", us.Id) != null, "Artwork.CornerIcon finds the file under user://original")
+	if sets.is_empty():
+		_check(Art.CornerIcon("manufacturing", side) == null, "a pack that declares no art set takes nothing from one")
+		_remove(Art.UserArtRoot)
+		print("[original_art] %d checks, %d failed" % [_checks, _fails])
+		quit(1 if _fails > 0 else 0)
+		return
+	_check(Art.CornerIcon("manufacturing", side) != null, "Artwork.CornerIcon finds the file in the imported art set")
 	var after: Dictionary = await _corners_for(ui, home)
 	var btn: Button = after.get("manufacturing")
 	_check(btn != null and btn.has_meta("original_icon") and not btn.icon.resource_path.begins_with("res://"),
@@ -88,10 +98,7 @@ func _init() -> void:
 		print("[original_art] (this pack declares no artwork_id - planet sprite not exercised)")
 
 	# Remove the files: back to the engine's art.
-	DirAccess.remove_absolute(icon_path)
-	DirAccess.remove_absolute("%s/icons/manufacturing.%s.hover.png" % [dir, us.Id])
-	if not sprite_path.is_empty():
-		DirAccess.remove_absolute(sprite_path)
+	_remove(Art.UserArtRoot)
 	Art.Reset()
 	var gone: Dictionary = await _corners_for(ui, home)
 	_check(gone.has("manufacturing") and (gone["manufacturing"] as Button).icon.resource_path.begins_with("res://assets/icons/"),
@@ -99,6 +106,16 @@ func _init() -> void:
 
 	print("[original_art] %d checks, %d failed" % [_checks, _fails])
 	quit(1 if _fails > 0 else 0)
+
+
+static func _remove(path: String) -> void:
+	if not DirAccess.dir_exists_absolute(path):
+		return
+	for sub in DirAccess.get_directories_at(path):
+		_remove("%s/%s" % [path, sub])
+	for file in DirAccess.get_files_at(path):
+		DirAccess.remove_absolute("%s/%s" % [path, file])
+	DirAccess.remove_absolute(path)
 
 
 func _corners_for(ui: UIManager, planet: Planet) -> Dictionary:

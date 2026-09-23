@@ -31,7 +31,13 @@ static func _near(a: Color, b: Color) -> bool:
 func _init() -> void:
 	await process_frame
 	Art.IgnoreProjectFolder = true
+	Art.UserArtRoot = "user://test-original_alerts-art"   # never the player's own
 	FactionRegistry.EnsureLoaded()
+	if FactionRegistry.Pack.Manifest.ArtSets.is_empty():
+		print("[original_alerts] (this pack declares no art set - the original's pictures do not apply)")
+		print("[original_alerts] 0 checks, 0 failed")
+		quit(0)
+		return
 	MpSetup.reset()
 	GameSettings.SelectedDifficulty = Enums.Difficulty.Medium
 	GameSettings.SelectedSize = Enums.GalaxySize.Standard
@@ -46,11 +52,11 @@ func _init() -> void:
 	var loyalty: Button = list.get_node("Loyalty")
 	_check(loyalty != null and loyalty.text == "Loyalty" and loyalty.icon == null, "without an import the Loyalty button is text")
 
-	var dir := "user://original/%s/tabs" % pack_id
+	var dir := "%s/tabs" % "%s/%s" % [Art.UserArtRoot, FactionRegistry.Pack.Manifest.ArtSets[0]]
 	DirAccess.make_dir_recursive_absolute(dir)
 	var paths: Array[String] = []
 	for spec in [["msg_all", Color(0.2, 0.2, 0.5)], ["msg_all.pressed", Color(0.1, 0.1, 0.9)],
-			["msg_loyalty.%s" % us.Id, Color(0.6, 0.1, 0.1)], ["msg_loyalty.%s.pressed" % us.Id, Color(0.1, 0.2, 0.8)]]:
+			["msg_loyalty.%s" % us.ArtSkin, Color(0.6, 0.1, 0.1)], ["msg_loyalty.%s.pressed" % us.ArtSkin, Color(0.1, 0.2, 0.8)]]:
 		var img := Image.create(36, 41, false, Image.FORMAT_RGBA8)
 		img.fill(spec[1])
 		var path := "%s/%s.png" % [dir, spec[0]]

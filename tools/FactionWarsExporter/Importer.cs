@@ -38,7 +38,7 @@ namespace FactionWarsExporter;
 ///
 /// Output: an ART SET (docs/original-art-plan.md) - these paths, relative to
 /// its root, written through an ArtSink (a .zip, a folder, or hashes only).
-/// The legacy --pack mode writes the same set under &lt;pack&gt;/original/:
+/// (Each path below is shown under original/, the art set's old home.)
 ///   original/characters/&lt;id&gt;.png   original/units/&lt;id&gt;.png
 ///   original/facilities/&lt;id&gt;.png   original/planets/&lt;id&gt;.png
 ///   original/missions/&lt;id&gt;.&lt;faction&gt;.png (alliance / empire), and
