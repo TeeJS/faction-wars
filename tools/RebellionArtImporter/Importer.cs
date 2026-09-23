@@ -242,6 +242,8 @@ public sealed class Importer
         // the tick and cross of a report that asks (51x35, Fig 2.38).
         ("msgsummary_up", 10948, 10949, 10950), ("msgsummary_down", 10919, 10920, 10921),
         ("decision_ok", 10926, 10927, 10928), ("decision_cancel", 10929, 10930, 10931),
+        // The Sector window's "switch window to other side of screen" box (p025 Fig 2.8).
+        ("sector_switch", 10210, 10211, 0),
     };
 
     // STRATEGY.DLL: buttons drawn CLIPPED to their control, as (name, normal,

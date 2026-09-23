@@ -474,18 +474,30 @@ func CommsCategory() -> String:
 
 func OnSectorClicked(sector: Sector) -> void:
 	var targetPos := Vector2(100 + randf() * 50, 100 + randf() * 50)
+	# The original's sector window docks against the map frame's right edge;
+	# its box moves it to the left and back (SectorWindow._SwitchSide).
+	if SectorWindow.CanBuildOriginal():
+		targetPos = SectorWindow.DockPosition(true)
 	OpenWindow(sector.Name, SectorWindowTemplate,
 		func(window) -> void:
 			window.get_node("%Title").text = sector.Name
 			window.Populate(sector, self)
-			# Right-click on the title bar: "Pin to menu" / "Unpin from menu".
-			# Setup runs again on every restore, so wire it once.
-			if not window.has_meta("pin_menu_wired"):
-				window.set_meta("pin_menu_wired", true)
-				(window.get_node("%TitleBar") as Control).gui_input.connect(func(ev: InputEvent) -> void:
-					if ev is InputEventMouseButton and ev.button_index == MOUSE_BUTTON_RIGHT and ev.pressed:
-						ShowPinMenu(sector)),
+			_WireSectorPinMenu(window, sector),
 		targetPos)
+
+
+## Right-click on the title bar: "Pin to menu" / "Unpin from menu". Setup
+## runs again on every restore, so this wires it once. The original's window
+## has no bar: its title takes the right-click.
+func _WireSectorPinMenu(window: Control, sector: Sector) -> void:
+	if window.has_meta("pin_menu_wired"):
+		return
+	window.set_meta("pin_menu_wired", true)
+	for bar in [window.get_node("%TitleBar"), window.get("_originalTitle")]:
+		if bar is Control:
+			(bar as Control).gui_input.connect(func(ev: InputEvent) -> void:
+				if ev is InputEventMouseButton and ev.button_index == MOUSE_BUTTON_RIGHT and ev.pressed:
+					ShowPinMenu(sector))
 
 
 func OnPlanetClicked(planetData: Planet) -> void:
