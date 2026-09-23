@@ -409,6 +409,21 @@ func ApplyOriginalCursors() -> void:
 		Input.set_custom_mouse_cursor(null, Input.CURSOR_CROSS)
 
 
+## THE ORIGINAL'S CONFIRMATION DIALOG (confirm_window.gd), centred over the
+## map frame and modal. Preloaded by path: a new script can lag the class cache.
+const ConfirmScene := preload("res://src/ui/ConfirmWindow.tscn")
+const ConfirmScript := preload("res://src/ui/confirm_window.gd")
+
+
+func OpenConfirmation(f: Faction, picture: Texture2D, text: String, okTip: String, onConfirm: Callable) -> void:
+	var size := Vector2(ConfirmScript.FrameW, ConfirmScript.FrameH) * ConfirmScript.K
+	var frame := Rect2(150, 99, 1070, get_viewport().get_visible_rect().size.y - 99)
+	var at: Vector2 = (frame.get_center() - size / 2.0).floor().max(Vector2(150, 99))
+	OpenWindow("Confirm", ConfirmScene,
+		func(window) -> void: window.Setup(self, f, picture, text, okTip, onConfirm),
+		at)
+
+
 ## THE BUILD SELECTION WINDOW as the original draws it (manual p045, p112 Fig
 ## 3.58), centred and modal like the dialog it replaces. `items` are the
 ## catalogue rows EconomyWindow.OpenBuildChooser prepared.

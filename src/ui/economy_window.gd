@@ -926,6 +926,17 @@ var _selected: Array = []
 # cross. Same shape here, plus what you get back, since scrapping is
 # irreversible and returns only half the refined material.
 func ConfirmScrap(planet: Planet, what: String, refund: int, maint: int, onConfirm: Callable) -> void:
+	var note := "Returns %d %s and %d maintenance capacity, and frees one %s slot on %s." \
+		% [refund, Terms.lower("refined_materials"), maint, Terms.lower("energy"), planet.Name]
+	ConfirmScrapUnits([what], note,
+		func() -> void:
+			onConfirm.call()
+			if is_instance_valid(self):
+				Populate(planet),
+		func() -> void: _PlainConfirmScrap(planet, what, refund, maint, onConfirm))
+
+
+func _PlainConfirmScrap(planet: Planet, what: String, refund: int, maint: int, onConfirm: Callable) -> void:
 	var dialog := ConfirmationDialog.new()
 	dialog.title = "Confirm Scrap"
 	dialog.dialog_text = "Are you sure you want to scrap the following units?\n\n" \
