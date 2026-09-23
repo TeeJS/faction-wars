@@ -2,8 +2,13 @@ class_name DefenseWindow
 extends DraggableWindow
 ## frontend/DefenseWindow.cs - the System Defenses window (manual p126, fig
 ## 3.73): Personnel, Troops, Fighters, Planetary Shield and Planetary Battery
-## tabs - the five the manual lists - as icon tabs with the system's own
-## picture behind them when the player imported the original's art.
+## tabs - the five the manual lists.
+##
+## With the original's art imported it IS the original's window (TeeJ,
+## 2026-09-23, from his screenshots of Chandrila, Coruscant, Yaga Minor,
+## Drall and Ajan Kloss): the 235x304 plate, the five tab pictures centred
+## on its dark band, each page the original's caption over a grid of cards -
+## the miniature, the name under it - and a tab with nothing on it greyed.
 
 var _associatedPlanet: Planet
 
@@ -14,6 +19,19 @@ var SelectedFighters: Array[Unit] = []
 # Special Forces select on the Personnel tab, separately from the trooper
 # regiments they used to be mixed in with (manual p126).
 var SelectedSpecForces: Array[Unit] = []
+
+# THE ORIGINAL'S LAYOUT, in its own pixels (drawn OUI.K times as large).
+const PlateW := 235
+const PlateH := 304
+const PagesTop := 53          # the pages start under the plate's tab band
+const TabNames := ["personnel", "troops", "fighters", "planetary_shield", "planetary_battery"]
+const TabXs := [28, 64, 100, 136, 172]
+const TabY := 20
+## The original's caption over each page (TEXTSTRA.DLL).
+const OriginalCaptions := ["Personnel", "Trooper Regiments", "Fighter Squadrons", "Planetary Shields", "Planetary Batteries"]
+
+var _original: bool = false
+var _subject: Planet = null
 
 # WHAT THIS WINDOW IS ALLOWED TO SHOW - manual p106.
 #
@@ -178,20 +196,21 @@ func Populate(planet: Planet, uiManager: UIManager) -> void:
 
 	var _titleBarLabel: Label = get_node("%TitleBarLabel")
 	var _tabs: TabContainer = get_node("%DefenseTabs")
-	var _personnelList: Container = get_node_or_null("%PersonnelList")
 
-	# The original titles the window with the system's name and its sprite.
-	_titleBarLabel.text = " %s" % planet.Name
-	SetTitleIcon(planet)
-	var side: String = GameSettings.PlayerFaction.Id if GameSettings.PlayerFaction != null else ""
-	ApplyTabIcons(_tabs, ["personnel", "troops", "fighters", "planetary_shield", "planetary_battery"], side)
-	_Backdrop(planet, _tabs)
+	var newSubject: bool = _subject != planet
+	_subject = planet
+	var original: bool = _BuildOriginal()
+	# Looked up after the build: the original's grid takes the list's name.
+	var _personnelList: Container = get_node_or_null("%PersonnelList")
+	# The original titles the window with the system's name alone.
+	_titleBarLabel.text = planet.Name if original else " %s Defenses" % planet.Name
 
 	PopulateOrbitalDefenses(_tabs, planet)
 	PopulateTroops(_tabs, planet, uiManager)
 	PopulateFighters(_tabs, planet, uiManager)
 	if _personnelList != null:
 		for child in _personnelList.get_children():
+			_personnelList.remove_child(child)
 			child.queue_free()
 
 		# THE ONE TAB RECONNAISSANCE CANNOT FILL. "Does not reveal characters
@@ -223,6 +242,10 @@ func Populate(planet: Planet, uiManager: UIManager) -> void:
 			uiManager, SelectedSpecForces)
 
 		var charView: IntelManager.IntelView = IntelManager.View(GameSettings.PlayerFaction, planet, Enums.IntelSection.Characters)
+		if original:
+			var personnelPage: Node = _personnelList.get_parent().get_parent()
+			OUI.Captions(personnelPage, [OriginalCaptions[0]] if charView.Live or not charView.Known \
+				else [OriginalCaptions[0], "Last seen day %d" % charView.Day], PlateW)
 		if charView.Live:
 			# Query the GameManager's static roster for characters on this planet.
 			# OURS ARE ALREADY DRAWN above and unconditionally, so this lists
@@ -271,7 +294,7 @@ func Populate(planet: Planet, uiManager: UIManager) -> void:
 				# way the Troops and Fighter tabs show theirs - there is
 				# nothing to give orders to yet.
 				for pending in specForcesPending:
-					AddUnitToList(_personnelList, null, pending, Color.DARK_GRAY, uiManager, SelectedSpecForces)
+					_pending_row(_personnelList, pending, uiManager, SelectedSpecForces)
 		else:
 			# NOT LIVE: an enemy system seen only through intel. Draw the character
 			# snapshot as clickable, dated ABDUCTION/ASSASSINATION targets (the crosshair
@@ -283,14 +306,140 @@ func Populate(planet: Planet, uiManager: UIManager) -> void:
 			var sf: IntelManager.IntelView = IntelManager.View(GameSettings.PlayerFaction, planet,
 				Enums.IntelSection.SpecForces)
 			if sf.Known and sf.Lines.size() > 0:
-				_personnelList.add_child(HSeparator.new())
-				var head := Label.new()
-				head.text = "Special forces:"
-				head.add_theme_font_size_override("font_size", 10)
-				head.add_theme_color_override("font_color", Color.GOLDENROD)
-				_personnelList.add_child(head)
+				if not IsCardList(_personnelList):
+					_personnelList.add_child(HSeparator.new())
+					var head := Label.new()
+					head.text = "Special forces:"
+					head.add_theme_font_size_override("font_size", 10)
+					head.add_theme_color_override("font_color", Color.GOLDENROD)
+					_personnelList.add_child(head)
 				_draw_intel_units(_personnelList, planet, sf, Enums.IntelSection.SpecForces,
 					"No special forces seen on the system.")
+
+	if original:
+		_GreyEmptyTabs(newSubject)
+
+
+# ---- THE ORIGINAL'S WINDOW -------------------------------------------------
+
+## Build the original's window once, when its art is imported: the title
+## bar, the plate, the tab strip, and the Personnel page's grid (the scene's
+## %PersonnelList, moved so its lookups keep working). False without the art.
+func _BuildOriginal() -> bool:
+	if _original:
+		return true
+	var side: String = OUI.Side(GameSettings.PlayerFaction)
+	if not OUI.Has(["defense_background"]):
+		return false
+	for n in TabNames:
+		if Art.TabIcon(n, side) == null:
+			return false
+	_original = true
+	OUI.TitleBar(self, GameSettings.PlayerFaction)
+	var area: MarginContainer = OUI.Flatten(self)
+	var body: Control = OUI.Canvas(area, PlateW, PlateH)
+	OUI.Place(body, OUI.Pic("defense_background"), 0, 0, "Plate")
+	var tabs: TabContainer = get_node("%DefenseTabs")
+	tabs.reparent(body, false)
+	tabs.tabs_visible = false
+	tabs.custom_minimum_size = Vector2.ZERO
+	tabs.position = Vector2(0, PagesTop) * OUI.K
+	tabs.size = Vector2(PlateW, PlateH - PagesTop) * OUI.K
+	tabs.add_theme_stylebox_override("panel", StyleBoxEmpty.new())
+	OUI.TabStrip(body, tabs, TabNames, side, TabXs, TabY)
+	# Personnel: the page's grid becomes %PersonnelList (the scene's plain
+	# list goes), so every lookup of the list finds the cards.
+	var old: Node = get_node("%PersonnelList")
+	old.unique_name_in_owner = false
+	old.get_parent().remove_child(old)
+	old.queue_free()
+	var grid: HFlowContainer = OUI.Page(tabs.get_node("Personnel"), [OriginalCaptions[0]], PlateW, PlateH - PagesTop)
+	grid.name = "PersonnelList"
+	grid.owner = self
+	grid.unique_name_in_owner = true
+	return true
+
+
+## The grid of a page, for counting what is on it.
+func _grid_of(page: Node) -> Node:
+	if page.name == "Personnel":
+		return get_node_or_null("%PersonnelList")
+	return page.get_node_or_null("OriginalPage/Scroll/Grid")
+
+
+## A tab with nothing on it shows the greyed picture and cannot be picked,
+## as the original's does. A new system opens on its first tab with
+## something on it.
+func _GreyEmptyTabs(newSubject: bool) -> void:
+	var tabs: TabContainer = get_node("%DefenseTabs")
+	var counts: Array = []
+	for i in tabs.get_tab_count():
+		tabs.set_tab_disabled(i, false)
+		var grid: Node = _grid_of(tabs.get_child(i))
+		counts.append(grid.get_child_count() if grid != null else 0)
+	if newSubject:
+		var first: int = 0
+		for i in counts.size():
+			if counts[i] > 0:
+				first = i
+				break
+		tabs.current_tab = first
+	for i in counts.size():
+		tabs.set_tab_disabled(i, counts[i] == 0 and i != tabs.current_tab)
+	OUI.RefreshStrip(tabs)
+
+
+## A page's list: the original's captions over its grid of cards, or the
+## plain list headed by the tab's name. A snapshot's day is the second
+## caption line (the plain rows carry it themselves).
+func _page_list(container: Control, index: int, plainTitle: String, view: IntelManager.IntelView, second: String = "") -> Container:
+	if _original:
+		var lines: Array = [OriginalCaptions[index]]
+		if not second.is_empty():
+			lines.append(second)
+		elif view != null and view.Known and not view.Live:
+			lines.append("Last seen day %d" % view.Day)
+		return OUI.Page(container, lines, PlateW, PlateH - PagesTop)
+	for child in container.get_children():
+		child.queue_free()
+	var list := VBoxContainer.new()
+	container.add_child(list)
+	AddCaption(list, plainTitle)
+	return list
+
+
+## A unit ordered but not yet here: greyed and unselectable.
+func _pending_row(list: Container, pending: String, uiManager: UIManager, selection: Array) -> void:
+	if not IsCardList(list):
+		AddUnitToList(list, null, pending, Color.DARK_GRAY, uiManager, selection)
+		return
+	# Being built shows the side's grid over the picture, in transit the
+	# hyperspace plate - the original's own two states (manual p084).
+	var title: String = pending.get_slice("  (", 0)
+	OUI.StaticCard(list, title, OUI.Mini("units", _unit_id_named(title)), Color.WHITE, pending,
+		"building" if pending.contains("under construction") else "enroute")
+
+
+## A unit type's pack id by its display name ("" when none matches).
+static func _unit_id_named(title: String) -> String:
+	var pack: PackLoader.LoadedPack = FactionRegistry.Pack
+	if pack == null:
+		return ""
+	for u in pack.Units:
+		if u.DisplayName == title:
+			return u.Id
+	return ""
+
+
+## A character's pack id by the name a sighting carries, rank or not.
+static func _character_id_named(title: String) -> String:
+	var pack: PackLoader.LoadedPack = FactionRegistry.Pack
+	if pack == null:
+		return ""
+	for c in pack.Characters:
+		if c.DisplayName == title or title.ends_with(" " + c.DisplayName):
+			return c.Id
+	return ""
 
 
 func AddUnitToList(list: Container, unitData: Unit, text: String, color: Color, uiManager: UIManager, selectionList: Array) -> void:
@@ -307,8 +456,13 @@ func AddUnitToList(list: Container, unitData: Unit, text: String, color: Color, 
 	if mini != null:
 		unitBtn.icon = mini
 		unitBtn.set_meta("miniature", true)
-	if list is HFlowContainer:
-		CardStyle(unitBtn, mini)
+	# THE ORIGINAL'S CARD (Fig 3.73): the miniature over the unit's name; the
+	# status goes to the tooltip.
+	if IsCardList(list):
+		var cardColor: Color = Color.WHITE if unitData.Faction != null and color == unitData.Faction.FactionColor else color
+		OUI.Card(unitBtn, unitData.Name, OUI.Mini("units", unitData.PackId), cardColor,
+			OUI.SideColor(GameSettings.PlayerFaction), "enroute" if unitData.Status == Enums.Status.Enroute else "")
+		unitBtn.tooltip_text = text
 	unitBtn.UnitData = unitData
 	unitBtn.UIManagerRef = uiManager
 	unitBtn.ParentWindow = self
@@ -399,8 +553,8 @@ func _drop_data(_at_position: Vector2, data: Variant) -> void:
 ## batteries protecting the system" (manual p126 Fig 3.73) - two tabs, as the
 ## manual has them, split by the facility's role.
 func PopulateOrbitalDefenses(tabs: TabContainer, planet: Planet) -> void:
-	PopulateDefenceTab(tabs, "Planetary Shield", planet, ["shield"], Terms.lower("planetary_shields"))
-	PopulateDefenceTab(tabs, "Planetary Battery", planet, ["anti_ship", "disable"], Terms.lower("orbital_batteries"))
+	PopulateDefenceTab(tabs, "Planetary Shield", 3, planet, ["shield"], Terms.lower("planetary_shields"))
+	PopulateDefenceTab(tabs, "Planetary Battery", 4, planet, ["anti_ship", "disable"], Terms.lower("orbital_batteries"))
 
 
 static func _HasAnyRole(f: Facility, roles: Array) -> bool:
@@ -423,17 +577,10 @@ static func _LineHasAnyRole(line: String, roles: Array) -> bool:
 	return false
 
 
-func PopulateDefenceTab(tabs: TabContainer, tabName: String, planet: Planet, roles: Array, what: String) -> void:
+func PopulateDefenceTab(tabs: TabContainer, tabName: String, index: int, planet: Planet, roles: Array, what: String) -> void:
 	var container: MarginContainer = tabs.get_node_or_null(tabName)
 	if container == null:
 		return
-
-	for child in container.get_children():
-		child.queue_free()
-
-	var list := VBoxContainer.new()
-	container.add_child(list)
-	AddCaption(list, tabName)
 
 	# ROWS, NOT LABELS - because these are SABOTAGE TARGETS. A shield, battery
 	# or ion cannon is a facility, and "a sabotage mission destroys a facility"
@@ -444,12 +591,9 @@ func PopulateDefenceTab(tabs: TabContainer, tabName: String, planet: Planet, rol
 	# land on (TeeJ, feedback 2026-09-03T23-56-45, room #198). Same shape as
 	# the Manufacturing window's StaleFacilityTab, same approved "small leak".
 	var view: IntelManager.IntelView = IntelManager.View(GameSettings.PlayerFaction, planet, Enums.IntelSection.DefensiveFacilities)
+	var list: Container = _page_list(container, index, tabName, view)
 	if not view.Known:
-		var none := Label.new()
-		none.text = "Sensors detect no data."
-		none.add_theme_color_override("font_color", Color.GRAY)
-		list.add_child(none)
-		return
+		return   # nothing seen: an empty page, as the original shows it
 
 	if view.Live:
 		var defenses: Array = Lq.where(planet.Facilities, func(f: Facility) -> bool: return IntelManager.IsDefensive(f) and _HasAnyRole(f, roles))
@@ -460,7 +604,7 @@ func PopulateDefenceTab(tabs: TabContainer, tabName: String, planet: Planet, rol
 			_defence_row(list, def.Name() + " (Tier %d)" % def.Tier, def.Family(),
 				"[DAMAGED]" if def.IsDamaged else ("[%s]" % Terms.label("shield_active" if def.HasRole("shield") else "weapon_armed")),
 				Color.RED if def.IsDamaged else Color.CYAN,
-				func() -> Facility: return def)
+				func() -> Facility: return def, def.Def.Id if def.Def != null else "")
 		return
 
 	var lines: Array = Lq.where(view.Lines, func(line) -> bool: return _LineHasAnyRole(str(line), roles))
@@ -479,9 +623,10 @@ func PopulateDefenceTab(tabs: TabContainer, tabName: String, planet: Planet, rol
 			continue
 		var nth: int = int(counted.get(type, 0))
 		counted[type] = nth + 1
+		var seenDef: PackDefs.FacilityDef = FacilityCatalog.Get(type, 2 if str(line).begins_with("Advanced") else 1)
 		_defence_row(list, str(line), type, "(day %d)" % view.Day, Color.LIGHT_GRAY, func() -> Facility:
 			var ofType: Array = Lq.where(world.Facilities, func(f: Facility) -> bool: return f.Family() == type)
-			return ofType[nth] if nth < ofType.size() else null)
+			return ofType[nth] if nth < ofType.size() else null, seenDef.Id if seenDef != null else "")
 
 
 static func _defence_type_of(line: String) -> String:
@@ -494,6 +639,8 @@ static func _defence_type_of(line: String) -> String:
 
 
 static func _empty_defences(list: Container, text: String) -> void:
+	if IsCardList(list):
+		return   # the original's grids say nothing when there is nothing
 	var empty := Label.new()
 	empty.text = text
 	empty.add_theme_font_size_override("font_size", 12)
@@ -504,7 +651,7 @@ static func _empty_defences(list: Container, text: String) -> void:
 ## One defence row: a flat button the mission crosshair can land on, with its
 ## status beside it. `resolve` returns the facility to target when clicked
 ## (null when the sighting is stale and nothing stands there any more).
-func _defence_row(list: Container, text: String, family: String, status: String, statusColor: Color, resolve: Callable) -> void:
+func _defence_row(list: Container, text: String, family: String, status: String, statusColor: Color, resolve: Callable, packId: String = "") -> void:
 	var row := HBoxContainer.new()
 	var rowBtn := Button.new()
 	rowBtn.text = text
@@ -513,8 +660,15 @@ func _defence_row(list: Container, text: String, family: String, status: String,
 	rowBtn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	rowBtn.add_theme_font_size_override("font_size", 12)
 	rowBtn.set_meta("defence_type", family)
+	if IsCardList(list):
+		# THE ORIGINAL'S CARD: the facility's miniature over its name
+		# ("LNR Series I" on Yaga Minor); the tier and state go to the tooltip.
+		OUI.Card(rowBtn, text.get_slice(" (Tier", 0), OUI.Mini("facilities", packId if not packId.is_empty() else family),
+			Color.RED if status == "[DAMAGED]" else Color.WHITE, OUI.SideColor(GameSettings.PlayerFaction))
+		rowBtn.tooltip_text = "%s %s" % [text, status]
 	if resolve.is_valid():
-		rowBtn.tooltip_text = "With the mission crosshair up, click to make this the Sabotage target."
+		rowBtn.tooltip_text = (rowBtn.tooltip_text + "\n" if IsCardList(list) else "") \
+			+ "With the mission crosshair up, click to make this the Sabotage target."
 		rowBtn.pressed.connect(func() -> void:
 			# CROSSHAIRS UP: this click names the sabotage target (manual p040).
 			if _uiManager == null or not _uiManager.IsTargetingObject():
@@ -524,6 +678,9 @@ func _defence_row(list: Container, text: String, family: String, status: String,
 				print("[Mission] Nothing answers at that position - the intelligence may be stale.")
 				return
 			_uiManager.ResolveObjectTarget(current))
+	if IsCardList(list):
+		list.add_child(rowBtn)
+		return
 	row.add_child(rowBtn)
 	if not status.is_empty():
 		var statusLbl := Label.new()
@@ -542,7 +699,7 @@ func _defence_row(list: Container, text: String, family: String, status: String,
 ## sighting is stale and it has since moved. The "(seen day N)" marker makes the
 ## snapshot's age plain, so a unit that has moved is not mistaken for being in two
 ## places at once.
-func _intel_target_row(list: Container, text: String, day: int, resolve: Callable) -> void:
+func _intel_target_row(list: Container, text: String, day: int, resolve: Callable, mini: Texture2D = null) -> void:
 	var row := HBoxContainer.new()
 	var rowBtn := Button.new()
 	rowBtn.text = text
@@ -561,6 +718,13 @@ func _intel_target_row(list: Container, text: String, day: int, resolve: Callabl
 			print("[Mission] Nothing answers at that position - the intelligence may be stale.")
 			return
 		_uiManager.ResolveObjectTarget(current))
+	if IsCardList(list):
+		# THE ORIGINAL'S CARD for a sighting; the day it was seen is the
+		# page's second caption line.
+		OUI.Card(rowBtn, text, mini, Color.WHITE, OUI.SideColor(GameSettings.PlayerFaction))
+		rowBtn.tooltip_text = "%s (seen day %d)\n%s" % [text, day, rowBtn.tooltip_text]
+		list.add_child(rowBtn)
+		return
 	row.add_child(rowBtn)
 	var dayLbl := Label.new()
 	dayLbl.text = "(seen day %d)" % day
@@ -597,11 +761,7 @@ static func _enemy_here(planet: Planet, section: int) -> Array:
 ## the Planetary Shield and Battery tabs already give facilities.
 func _draw_intel_units(list: Container, planet: Planet, view: IntelManager.IntelView, section: int, emptyText: String) -> void:
 	if not view.Known:
-		var none := Label.new()
-		none.text = "Sensors detect no data."
-		none.add_theme_color_override("font_color", Color.GRAY)
-		list.add_child(none)
-		return
+		return   # nothing seen: an empty page (TeeJ: no "Sensors detect no data")
 	if view.Lines.size() == 0:
 		_empty_defences(list, emptyText)
 		return
@@ -609,9 +769,12 @@ func _draw_intel_units(list: Container, planet: Planet, view: IntelManager.Intel
 	var i := 0
 	for line in view.Lines:
 		var nth := i
-		_intel_target_row(list, str(line), view.Day, func() -> Variant:
+		var title: String = str(line)
+		var mini: Texture2D = OUI.Mini("characters", _character_id_named(title)) \
+			if section == Enums.IntelSection.Characters else OUI.Mini("units", _unit_id_named(title))
+		_intel_target_row(list, title, view.Day, func() -> Variant:
 			var here: Array = _enemy_here(world, section)
-			return here[nth] if nth < here.size() else null)
+			return here[nth] if nth < here.size() else null, mini)
 		i += 1
 
 
@@ -665,20 +828,26 @@ func PopulateTroops(tabs: TabContainer, planet: Planet, uiManager: UIManager) ->
 	if container == null:
 		return
 
-	for child in container.get_children():
-		child.queue_free()
-
-	var list := VBoxContainer.new()
-	container.add_child(list)
-	AddCaption(list, "Troops")
-
 	# THE GATE IS READ, NOT RETURNED ON. Your own regiments are drawn either
 	# way; only the garrison readout and the opponent's units depend on the
 	# system still being yours.
 	var view: IntelManager.IntelView = IntelManager.View(GameSettings.PlayerFaction, planet, Enums.IntelSection.Troopers)
 	var live: bool = view.Live
 
-	if live:
+	# The original's second caption line: "Garrison Requirement: 0" (Fig 3.73;
+	# TEXTSTRA.DLL). Present, the uprising and the warning go to its tooltip.
+	var list: Container = _page_list(container, 1, "Troops", view,
+		("Garrison Requirement: %d" % planet.GarrisonRequirement()) if live else "")
+	if live and IsCardList(list):
+		var need2: int = planet.GarrisonRequirement()
+		var have2: int = planet.TrooperRegiments()
+		var cap2: Label = list.get_parent().get_parent().get_node_or_null("Caption2")
+		if cap2 != null:
+			cap2.tooltip_text = "Present: %d" % have2 \
+				+ ("\nUPRISING - production and income halted. Needs %d more regiment(s), or a Subdue Uprising mission." % (need2 - have2) if planet.IsInUprising else "") \
+				+ ("\nRemoving a regiment here would trigger an uprising." if need2 > 0 and have2 == need2 else "")
+
+	if live and not IsCardList(list):
 		# "Garrison requirements are stated in the Trooper Regiment tab of the
 		# System Defenses window. A garrison requirement of two means you need
 		# at least two troopers on the system to keep control." (manual p090)
@@ -743,20 +912,13 @@ func PopulateTroops(tabs: TabContainer, planet: Planet, uiManager: UIManager) ->
 	# to give orders to yet, and showing them as live units would invite
 	# exactly that.
 	for p in pending:
-		AddUnitToList(list, null, p, Color.DARK_GRAY, uiManager, SelectedTroops)
+		_pending_row(list, p, uiManager, SelectedTroops)
 
 
 func PopulateFighters(tabs: TabContainer, planet: Planet, uiManager: UIManager) -> void:
 	var container: MarginContainer = tabs.get_node_or_null("Fighters")
 	if container == null:
 		return
-
-	for child in container.get_children():
-		child.queue_free()
-
-	var list := VBoxContainer.new()
-	container.add_child(list)
-	AddCaption(list, "Fighters")
 
 	# THE CLEAREST CASE OF THE LOT. Neither the uprising flip nor an assault
 	# touches FighterSquadrons - the flip counts trooper regiments and the
@@ -765,6 +927,7 @@ func PopulateFighters(tabs: TabContainer, planet: Planet, uiManager: UIManager) 
 	# "Sensors detect no data."
 	var view: IntelManager.IntelView = IntelManager.View(GameSettings.PlayerFaction, planet, Enums.IntelSection.Fighters)
 	var live: bool = view.Live
+	var list: Container = _page_list(container, 2, "Fighters", view)
 
 	var ourFighters: int = DrawOwnUnits(list, planet.FighterSquadrons, uiManager, SelectedFighters)
 
@@ -791,7 +954,7 @@ func PopulateFighters(tabs: TabContainer, planet: Planet, uiManager: UIManager) 
 	# to give orders to yet, and showing them as live units would invite
 	# exactly that.
 	for p in pending:
-		AddUnitToList(list, null, p, Color.DARK_GRAY, uiManager, SelectedFighters)
+		_pending_row(list, p, uiManager, SelectedFighters)
 
 
 func OnUnitMenuAction(actionId: int, units: Array, uiManager: UIManager) -> void:
@@ -870,26 +1033,3 @@ func OnUnitMenuAction(actionId: int, units: Array, uiManager: UIManager) -> void
 
 		_:
 			print("Unhandled unit menu action %d" % actionId)
-
-
-## The system's own picture across the bottom of the window, behind the
-## tabs (Fig 3.73), when imported - and the tab panel goes translucent so it
-## shows through.
-func _Backdrop(planet: Planet, tabs: TabContainer) -> void:
-	var rect: TextureRect = get_node_or_null("%Backdrop")
-	if rect == null:
-		return
-	var tex: Texture2D = Art.Picture("planets", planet.PackId)
-	rect.texture = tex
-	rect.visible = tex != null
-	if tex == null:
-		return
-	var host: Control = get_node_or_null("%BackdropHost")
-	var width: float = maxf(host.size.x if host != null else 0.0, tabs.custom_minimum_size.x)
-	rect.offset_top = -width / 2.0
-	if not tabs.has_meta("translucent"):
-		tabs.set_meta("translucent", true)
-		var sb := StyleBoxFlat.new()
-		sb.bg_color = Color(0.05, 0.07, 0.1, 0.55)
-		sb.set_content_margin_all(4)
-		tabs.add_theme_stylebox_override("panel", sb)

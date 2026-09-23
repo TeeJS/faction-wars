@@ -2658,10 +2658,23 @@ All of it is reached through the **System Defenses window** — double-click the
 This is the window §11 said you must go through to reach a character, and the
 window §3a's Fig. 2.13 showed the Garrison Requirement in.
 
-**Implemented** (`src/ui/defense_window.gd`, five tabs since 2026-09-23): the
-tabs are the original's pictures when imported, the personnel are cards
-(miniature over the name, as Fig 3.73), the system's picture lies behind the
-tabs, and the title is the system's name with its sprite.
+**Implemented** (`src/ui/defense_window.gd`, five tabs). With the player's
+imported art it is **the original's window, composed from its own bitmaps**
+(2026-09-23, placed by template matching on TeeJ's screenshots of Chandrila,
+Coruscant, Yaga Minor, Drall and Ajan Kloss): the 235x304 plate (STRATEGY.DLL
+10577), the five 36x33 tab pictures centred at 36-pixel pitch from x 28, each
+page the original's caption (TEXTSTRA.DLL: Personnel, Trooper Regiments +
+"Garrison Requirement: N", Fighter Squadrons, Planetary Shields, Planetary
+Batteries) over a grid of 70x70 cards at (7, 81): the 61x25 miniature on the
+card plate, the name under it in white, the side's colour and a frame when
+selected. A tab with nothing on it is greyed.
+
+**The card plate carries the unit's state, as p084 says the picture does**
+("the image for these units shows whether the unit is completed, being built,
+or en route"): STRATEGY.DLL 11500 is the grey plate behind a completed one,
+11505 the hyperspace streaks behind one en route, and 11570 / 11572 the red /
+green grid over one being built. Found on the screenshots, confirmed by the
+manual's own three pictures.
 
 ### The defensive layers, and what each one stops *(PDF p124 / manual p126)*
 
@@ -3490,13 +3503,19 @@ Two display details worth copying:
 > **The first number here is the number of construction yards at this site. The
 > second number also includes the construction yard now being built.**
 
-**Implemented** (`src/ui/economy_window.gd`, matched to the original's window
-2026-09-23): the title is the system's name with its sprite; each queue row
-carries the original's picture (the ship, the compound, the hangar) with the
-yards ratio under it and the coloured header beside it; an idle queue reads the
+**Implemented** (`src/ui/economy_window.gd`). With the player's imported art
+it is **the original's window, composed from its own bitmaps** (2026-09-23,
+placed by template matching on TeeJ's screenshots of Chandrila, Duros and Mon
+Calamari): the 226x304 plate (STRATEGY.DLL 10297), the six tab pictures
+(Manufacturing, Shipyards, Training Facilities, Construction Yards, Refineries,
+Mines - the manual's order), the 46x226 left column (10298: three 46x46
+pictures over their ratio boxes), and the three 166x79 row frames (10290) at
+81-pixel pitch under the side's header bar (10292 red, 10294 green). The black
+band in each frame is the progress bar's track. An idle queue reads the
 original's own "No Ships are being built" / "No Troops in training" / "No
-Facilities are being built"; the six tabs show the original's pictures, greyed
-when empty. All of it only when the player imported the art.
+Facilities are being built". The facility tabs are grids of cards, greyed when
+empty. **The progress bar's fill colour is not in any reference** (no
+screenshot shows a queue building); the side's colour is a stand-in.
 
 That is the `1:2` notation §3a flagged: **built : built + under construction**.
 Worth noting against the code, where `ConstructionYards` defaults to 1 for a yard
@@ -4049,7 +4068,14 @@ present in many windows**, which jumps to the entry for the current context.
 **Implemented** (`src/ui/encyclopedia_window.gd`, 2026-09-23): Index view with
 the Topic entry box, the seven database tabs, the list and View Topic / View
 Index / Close; Topic view with the name, the browse arrows, the picture and
-the description, the chosen database persisting. Reached from the bottom-bar
+the description, the chosen database persisting. With the imported art it is
+the original's own: the side's 470x331 frame (STRATEGY.DLL 10335 Alliance,
+10336 Empire), the Index plate (10338) or the Topic plate (10337) inside it at
+(12, 13), the arrows (10382-10387), the 400x200 picture at (12, 31), the text
+box with the original's scrollbar, and the side's buttons down the right (the
+Empire's 44x41, the Alliance's 32x31). **The seven Index-view tab pictures are
+provisional**: no screenshot of the original's Index view yet, so they are the
+Message Index sockets that best match the manual's print of Fig 3.10. Reached from the bottom-bar
 Encyclopedia control, F7, right-click → Encyclopedia on characters, units,
 fleets, facilities, missions and the HQ, and the Create Mission window's
 Encyclopedia button. Pictures and text are the player's imported originals
