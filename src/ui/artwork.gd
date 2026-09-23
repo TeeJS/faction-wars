@@ -40,6 +40,52 @@ static func Picture(kind: String, id: String) -> Texture2D:
 	return _texture("%s/%s.png" % [kind, id])
 
 
+## The original's 80x80 portrait of a character, unit or facility:
+## original/portraits/<kind>/<id>.png (GOKRES.DLL, see the importer's README).
+static func Portrait(kind: String, id: String) -> Texture2D:
+	return _texture("portraits/%s/%s.png" % [kind, id])
+
+
+## The original's 61x25 list miniature: original/miniatures/<kind>/<id>.png.
+static func Miniature(kind: String, id: String) -> Texture2D:
+	return _texture("miniatures/%s/%s.png" % [kind, id])
+
+
+## Put a picture into a window's placeholder rectangle - a TextureRect child
+## named "Picture" that fills it, keeping the picture's aspect (centred, never
+## cropped: a portrait is a portrait) - and hide the placeholder's own label. A null picture removes it and shows the
+## placeholder again, so a window repainted for another item never keeps the
+## last one's face. Returns the TextureRect, or null.
+static func Fill(rect: Control, picture: Texture2D) -> TextureRect:
+	if rect == null:
+		return null
+	var existing: TextureRect = rect.get_node_or_null("Picture")
+	var label: Label = null
+	for c in rect.get_children():
+		if c is Label:
+			label = c
+	if picture == null:
+		if existing != null:
+			rect.remove_child(existing)
+			existing.queue_free()
+		if label != null:
+			label.visible = true
+		return null
+	if existing == null:
+		existing = TextureRect.new()
+		existing.name = "Picture"
+		existing.set_anchors_preset(Control.PRESET_FULL_RECT)
+		existing.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		existing.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		existing.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		existing.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		rect.add_child(existing)
+	existing.texture = picture
+	if label != null:
+		label.visible = false
+	return existing
+
+
 ## Forget everything loaded (a new pack, or a test that wrote files).
 static func Reset() -> void:
 	_cache.clear()

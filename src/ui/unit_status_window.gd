@@ -10,8 +10,14 @@ func _ready() -> void:
 	super()
 
 
+const PortraitPath := "MainVBox/ContentArea/SplitHBox/RightPanel/PortraitRect"
+
+
 func Populate(unit: Unit) -> void:
 	_associatedUnit = unit
+	# The unit's portrait, when the player imported the original's
+	# (original/portraits/units/<id>.png), else the placeholder.
+	Art.Fill(get_node_or_null(PortraitPath), Art.Portrait("units", unit.PackId))
 
 	# The kind names and stat labels are the PACK's words (display.json terms,
 	# SCHEMA.md section 10); the engine only knows the concepts.
