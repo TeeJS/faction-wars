@@ -23,9 +23,17 @@ static var IgnoreProjectFolder: bool = false
 
 
 ## A sector-window corner icon in the side's own colours:
-## original/icons/<glyph>.<faction id>.png, or .hover.png. Null when absent.
+## original/icons/<glyph>.<faction id>.png, or .hover.png. A glyph with no
+## side (the uprising flame) is original/icons/<glyph>.png. Null when absent.
 static func CornerIcon(glyph: String, faction_id: String, hover: bool = false) -> Texture2D:
-	return _texture("icons/%s.%s%s.png" % [glyph, faction_id, ".hover" if hover else ""])
+	var side := "" if faction_id.is_empty() else "." + faction_id
+	return _texture("icons/%s%s%s.png" % [glyph, side, ".hover" if hover else ""])
+
+
+## The GID star for a side and a tier (big / mid / low / none):
+## original/gid/<faction id>.<tier>.png; "unexplored" is a side of its own.
+static func GidStar(faction_id: String, tier: String) -> Texture2D:
+	return _texture("gid/%s.%s.png" % [faction_id, tier])
 
 
 ## The planet sprite for a map.json artwork_id: original/planet_sprites/<n>.png.

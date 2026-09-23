@@ -323,6 +323,7 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 					cornerBtn.set_meta("corner", "uprising")
 					cornerBtn.icon = FactionRegistry.CornerIcon("uprising")
 					_TintIcon(cornerBtn, CUprising)
+					_OriginalIcon(cornerBtn, "uprising", "", 1.0)   # the original's flame, two frames
 					cornerBtn.tooltip_text = ("%s is IN UPRISING - right-click for mission orders" % planet.Name) if missionHere \
 						else ("%s is IN UPRISING" % planet.Name)
 
@@ -623,6 +624,22 @@ static func AddGidStar(sectorMap: Control, planet: Planet, centerX: float, cente
 
 	var scaled: int = maxi(Gid.SectorFlareMin, roundi(size * Gid.SectorFlareScale))
 	color.a = 1.0
+
+	# The original's star bitmap, at its own size, when the player imported it.
+	var known: bool = mode.Reveal.call(planet)
+	var tierName: String = Gid.FlareName(mode.TierFor(mode.Magnitude.call(planet)).FlareSize) if known else "none"
+	var starTex: Texture2D = Art.GidStar(Gid.StarSide(planet, known), tierName)
+	if starTex != null:
+		var pic := TextureRect.new()
+		pic.texture = starTex
+		pic.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		pic.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		pic.set_meta("gid_star", true)
+		pic.size = starTex.get_size()
+		pic.position = Vector2(centerX - StarOffsetX - pic.size.x / 2.0, centerY + StarOffsetY - pic.size.y / 2.0)
+		pic.tooltip_text = "%s: %s" % [Gid.TitleFor(mode), mode.TierFor(mode.Magnitude.call(planet)).LabelText]
+		sectorMap.add_child(pic)
+		return
 
 	var star := Label.new()
 	star.text = "+"

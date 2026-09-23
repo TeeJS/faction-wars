@@ -37,7 +37,7 @@ internal static class Program
         try
         {
             var result = new Importer(gameDir, packDir, _ => { }).Run();
-            File.WriteAllLines(logPath, result.Log.Concat(result.Missing.Select(m => "  - " + m)));
+            File.WriteAllLines(logPath, result.Log.Concat(result.Missing.Select(m => "  - " + m)).Concat(new[] { "", "Done." }));
             return 0;
         }
         catch (Exception ex)
