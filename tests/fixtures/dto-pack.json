@@ -4014,7 +4014,7 @@
     },
     "Terms": {
       "bombardment": "Bombardment Value",
-      "bombardment_defense": "Bombardment Defense",
+      "bombardment_defense": "Bombardment Value",
       "bombardment_modifier": "Bombardment Modifier",
       "detection": "Detection Rating",
       "energy": "Energy",
