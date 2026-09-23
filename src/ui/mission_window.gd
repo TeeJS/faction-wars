@@ -9,6 +9,9 @@ extends DraggableWindow
 
 var _planet: Planet
 
+const MissionPicturePath := "MainVBox/ContentArea/SplitView/LeftPanel/MissionIconRect"
+const PlanetPicturePath := "MainVBox/ContentArea/SplitView/RightPanel/PlanetIconRect"
+
 var _tabbedFor: Planet
 
 
@@ -19,6 +22,8 @@ func Populate(planet: Planet) -> void:
 	_planet = planet
 	(get_node("%TitleBarLabel") as Label).text = " Missions at %s" % planet.Name
 	(get_node("%PlanetName") as Label).text = planet.Name
+	# The target world's picture, when the player imported the original's.
+	Art.Fill(get_node_or_null(PlanetPicturePath), Art.Picture("planets", planet.PackId))
 
 	var tabs: TabContainer = get_node("%MissionTabs")
 	# Only jump to the first tab when this window is opened on a NEW
@@ -54,6 +59,13 @@ func Populate(planet: Planet) -> void:
 		# the active list until the next day tick - without this filter an
 		# aborted mission sits in the window looking as if nothing happened.
 		func(m: Mission) -> bool: return m.Target == planet and m.Faction == GameSettings.PlayerFaction and not m.Finished)
+
+	# The picture of the first mission running here, for our side (the
+	# original has one per side); the placeholder when nothing runs.
+	var lead: Mission = mine[0] if mine.size() > 0 else null
+	var missionDef: PackDefs.MissionDefPack = MissionCatalog.DefFor(lead.Type) if lead != null else null
+	Art.Fill(get_node_or_null(MissionPicturePath),
+		Art.MissionPicture(missionDef.Id, GameSettings.PlayerFaction.Id) if missionDef != null else null)
 
 	if mine.size() == 0:
 		# An unexplored world with nothing of yours running on it is still

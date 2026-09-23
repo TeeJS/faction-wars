@@ -23,6 +23,9 @@ namespace RebellionArtImporter;
 ///                       Ghidra-derived entity catalog; the 60 character
 ///                       portraits were checked by face). Blue = transparent.
 ///   STRATEGY.DLL        RT_BITMAP sprites, blue (0,0,255) = transparent:
+///     10146-10157 the GID stars, 15x15: four sizes (drawn 15/9/7/3 px) in
+///     red (Alliance), green (Empire) and blue (neutral); 10181/10180/10170/
+///     10169 the same in grey (unexplored); 11608/11609 the uprising flame.
 ///     10771-10778 the Alliance sector-window icons (factory, tower, ship,
 ///     crest; each normal then highlighted), 10779-10786 the Imperial set,
 ///     10787-10790 the neutral factory and tower; 10212-10237 the 26 planet
@@ -31,10 +34,12 @@ namespace RebellionArtImporter;
 /// Output, under the pack folder (gitignored - never committed):
 ///   original/characters/&lt;id&gt;.png   original/units/&lt;id&gt;.png
 ///   original/facilities/&lt;id&gt;.png   original/planets/&lt;id&gt;.png
-///   original/missions/&lt;id&gt;.png (+ &lt;id&gt;.empire.png)
+///   original/missions/&lt;id&gt;.&lt;faction&gt;.png (alliance / empire)
 ///   original/descriptions.json     { "characters": { id: text }, ... }
 ///   original/portraits/&lt;kind&gt;/&lt;id&gt;.png   original/miniatures/&lt;kind&gt;/&lt;id&gt;.png
 ///   original/icons/&lt;glyph&gt;.&lt;faction&gt;.png (+ .hover.png)   sector-window corners
+///   original/icons/uprising.png (+ .hover.png)             the flame, two frames
+///   original/gid/&lt;faction&gt;.&lt;tier&gt;.png, gid/unexplored.&lt;tier&gt;.png   the GID stars
 ///   original/planet_sprites/&lt;artwork_id&gt;.png              the map's planets
 /// </summary>
 public sealed class Importer
@@ -43,6 +48,17 @@ public sealed class Importer
     public const int PlanetPictureBase = 11100;
     public const int PlanetSpriteBase = 10212;
     public const int PlanetSpriteCount = 26;
+
+    // STRATEGY.DLL: the GID stars, big / mid / low / none per side (measured
+    // extents 15, 9, 7 and 3 px), and the grey set for unexplored worlds.
+    private static readonly (string Faction, int Big, int Mid, int Low, int None)[] GidStars =
+    {
+        ("alliance", 10146, 10147, 10148, 10149),
+        ("empire", 10153, 10152, 10151, 10150),
+        ("neutral", 10157, 10156, 10155, 10154),
+        ("unexplored", 10181, 10180, 10170, 10169),
+    };
+    private const int UprisingFrame1 = 11608, UprisingFrame2 = 11609;
 
     // STRATEGY.DLL: (glyph, faction id, normal bitmap, highlighted bitmap).
     private static readonly (string Glyph, string Faction, int Normal, int Hover)[] CornerIcons =
@@ -117,15 +133,16 @@ public sealed class Importer
                 else
                     missing.Add($"{kind}/{id}: no description at Encyclopedia id {ency}");
 
-                if (SavePicture(pictures, ency, Path.Combine(outRoot, kind, id + ".png")))
+                // A mission's picture comes per side: the Alliance one at the
+                // Encyclopedia id, the Imperial one at the string id itself.
+                var outName = kind == "missions" ? id + ".alliance.png" : id + ".png";
+                if (SavePicture(pictures, ency, Path.Combine(outRoot, kind, outName)))
                 {
                     pictureCount++;
                     got++;
                 }
                 else
                     missing.Add($"{kind}/{id}: no picture at Encyclopedia id {ency}");
-
-                // Missions carry a second, Imperial picture at the string id itself.
                 if (kind == "missions" && SavePicture(pictures, stringId.Value, Path.Combine(outRoot, kind, id + ".empire.png")))
                     pictureCount++;
             }
@@ -172,7 +189,19 @@ public sealed class Importer
             if (SaveSprite(strategy, PlanetSpriteBase + art - 1, Path.Combine(outRoot, "planet_sprites", $"{art}.png"))) { sprites++; pictureCount++; }
             else missing.Add($"planet_sprites/{art}: no bitmap {PlanetSpriteBase + art - 1} in STRATEGY.DLL");
         }
-        Say($"sprites: {icons} corner icons, {sprites} planet sprites.");
+        int stars = 0;
+        foreach (var (faction, big, mid, low, none) in GidStars)
+        {
+            foreach (var (tier, id) in new[] { ("big", big), ("mid", mid), ("low", low), ("none", none) })
+            {
+                if (SaveSprite(strategy, id, Path.Combine(outRoot, "gid", $"{faction}.{tier}.png"))) { stars++; pictureCount++; }
+                else missing.Add($"gid/{faction}.{tier}: no bitmap {id} in STRATEGY.DLL");
+            }
+        }
+        if (SaveSprite(strategy, UprisingFrame1, Path.Combine(outRoot, "icons", "uprising.png"))) pictureCount++;
+        else missing.Add($"icons/uprising: no bitmap {UprisingFrame1} in STRATEGY.DLL");
+        if (SaveSprite(strategy, UprisingFrame2, Path.Combine(outRoot, "icons", "uprising.hover.png"))) pictureCount++;
+        Say($"sprites: {icons} corner icons, {sprites} planet sprites, {stars} GID stars, the uprising flame.");
 
         // Portraits and list miniatures: GOKRES.DLL, by the shipped id map.
         var mapPath = Path.Combine(AppContext.BaseDirectory, "gokres_map.json");

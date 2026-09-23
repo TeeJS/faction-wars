@@ -23,9 +23,17 @@ static var IgnoreProjectFolder: bool = false
 
 
 ## A sector-window corner icon in the side's own colours:
-## original/icons/<glyph>.<faction id>.png, or .hover.png. Null when absent.
+## original/icons/<glyph>.<faction id>.png, or .hover.png. A glyph with no
+## side (the uprising flame) is original/icons/<glyph>.png. Null when absent.
 static func CornerIcon(glyph: String, faction_id: String, hover: bool = false) -> Texture2D:
-	return _texture("icons/%s.%s%s.png" % [glyph, faction_id, ".hover" if hover else ""])
+	var side := "" if faction_id.is_empty() else "." + faction_id
+	return _texture("icons/%s%s%s.png" % [glyph, side, ".hover" if hover else ""])
+
+
+## The GID star for a side and a tier (big / mid / low / none):
+## original/gid/<faction id>.<tier>.png; "unexplored" is a side of its own.
+static func GidStar(faction_id: String, tier: String) -> Texture2D:
+	return _texture("gid/%s.%s.png" % [faction_id, tier])
 
 
 ## The planet sprite for a map.json artwork_id: original/planet_sprites/<n>.png.
@@ -38,6 +46,13 @@ static func PlanetSprite(artwork_id: int) -> Texture2D:
 ## The Encyclopedia picture for one pack row: original/<kind>/<id>.png.
 static func Picture(kind: String, id: String) -> Texture2D:
 	return _texture("%s/%s.png" % [kind, id])
+
+
+## A mission's picture for a side: original/missions/<mission id>.<faction id>.png,
+## else the side-less original/missions/<mission id>.png.
+static func MissionPicture(mission_id: String, faction_id: String) -> Texture2D:
+	var tex: Texture2D = _texture("missions/%s.%s.png" % [mission_id, faction_id])
+	return tex if tex != null else _texture("missions/%s.png" % mission_id)
 
 
 ## The original's 80x80 portrait of a character, unit or facility:
@@ -76,11 +91,16 @@ static func Fill(rect: Control, picture: Texture2D) -> TextureRect:
 		existing.name = "Picture"
 		existing.set_anchors_preset(Control.PRESET_FULL_RECT)
 		existing.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		existing.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		existing.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		existing.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		rect.add_child(existing)
 	existing.texture = picture
+	# A picture smaller than its box is shown at 1:1 (blowing an 80 px face up
+	# to 180 px is what made the message faces pixelated, TeeJ 2026-09-22);
+	# a larger one is fitted, and filtered smoothly since it is being shrunk.
+	var box := Vector2(maxf(rect.custom_minimum_size.x, rect.size.x), maxf(rect.custom_minimum_size.y, rect.size.y))
+	var fits: bool = picture.get_width() <= box.x and picture.get_height() <= box.y
+	existing.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED if fits else TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	existing.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST if fits else CanvasItem.TEXTURE_FILTER_LINEAR
 	if label != null:
 		label.visible = false
 	return existing

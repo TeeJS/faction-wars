@@ -295,6 +295,11 @@ func AddUnitToList(list: VBoxContainer, unitData: Unit, text: String, color: Col
 	var unitBtn := UnitMenuButton.new()
 	unitBtn.text = text
 	unitBtn.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	# The original's list miniature, when the player imported it.
+	var mini: Texture2D = Art.Miniature("units", unitData.PackId)
+	if mini != null:
+		unitBtn.icon = mini
+		unitBtn.set_meta("miniature", true)
 	unitBtn.UnitData = unitData
 	unitBtn.UIManagerRef = uiManager
 	unitBtn.ParentWindow = self

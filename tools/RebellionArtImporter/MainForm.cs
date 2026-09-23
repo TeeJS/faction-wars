@@ -81,6 +81,9 @@ public sealed class MainForm : Form
             var result = importer.Run();
             foreach (var m in result.Missing)
                 _log.AppendText("  - " + m + Environment.NewLine);
+            _log.AppendText(Environment.NewLine + "Done." + Environment.NewLine);
+            _log.SelectionStart = _log.TextLength;
+            _log.ScrollToCaret();
             _open.Enabled = true;
         }
         catch (Exception ex)

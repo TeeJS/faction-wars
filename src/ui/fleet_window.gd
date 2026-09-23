@@ -718,6 +718,11 @@ func ClearExistingUnitButtons(container: VBoxContainer) -> void:
 func AddUnitButton(unit: Unit, list: VBoxContainer, uiManager: UIManager) -> void:
 	var button := Button.new()
 	button.text = unit.Name
+	# The original's list miniature, when the player imported it.
+	var mini: Texture2D = Art.Miniature("units", unit.PackId)
+	if mini != null:
+		button.icon = mini
+		button.set_meta("miniature", true)
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button.size_flags_vertical = Control.SIZE_EXPAND_FILL
 

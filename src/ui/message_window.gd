@@ -324,7 +324,11 @@ static func MessagePicture(message: GameMessage) -> Texture2D:
 	if message == null:
 		return null
 	if message.AssociatedCharacter != null:
-		var pic: Texture2D = Art.Portrait("characters", message.AssociatedCharacter.PackId)
+		# The original's 400x200 character panel fits this slot; the small
+		# portrait is the fallback, shown 1:1 rather than blown up.
+		var pic: Texture2D = Art.Picture("characters", message.AssociatedCharacter.PackId)
+		if pic == null:
+			pic = Art.Portrait("characters", message.AssociatedCharacter.PackId)
 		if pic != null:
 			return pic
 	if message.AssociatedLocation is Planet:
