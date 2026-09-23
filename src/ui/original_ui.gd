@@ -223,7 +223,7 @@ const DialogBevel := 2
 const DialogBarH := 16
 
 
-static func DialogFrame(window: Control, f: Faction, plate: Texture2D, titlePx: int = 13) -> void:
+static func DialogFrame(window: Control, f: Faction, plate: Texture2D, titlePx: int = 13, titleGap: int = 4, centred: bool = false) -> void:
 	var bar: ColorRect = window.get_node_or_null("%TitleBar")
 	var label: Label = window.get_node_or_null("%TitleBarLabel")
 	if bar == null or label == null:
@@ -232,11 +232,13 @@ static func DialogFrame(window: Control, f: Faction, plate: Texture2D, titlePx: 
 	bar.custom_minimum_size = Vector2(0, DialogBarH * K)
 	Style(label, titlePx, Color.BLACK, true)
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	if centred:
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	var hbox: HBoxContainer = label.get_parent() as HBoxContainer
 	if hbox != null and not bar.has_meta("original"):
 		bar.set_meta("original", true)
 		hbox.add_theme_constant_override("separation", 0)
-		hbox.add_child(_gap(4))
+		hbox.add_child(_gap(titleGap))
 		hbox.move_child(hbox.get_child(hbox.get_child_count() - 1), 0)
 		var mini: Control = window.get_node_or_null("%MinimizeButton")
 		if mini != null:

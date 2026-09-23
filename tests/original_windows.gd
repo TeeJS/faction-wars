@@ -363,6 +363,41 @@ func _init() -> void:
 		for _i in 3:
 			await process_frame
 
+	# ---- Build Selection (manual p045, p112 Fig 3.58) ----
+	ui.OnEconomyClicked(home)
+	for _i in 3:
+		await process_frame
+	var bew: Node = ui._openWindows.get(home.Name + " Economy")
+	var yardsHere: bool = Lq.any(home.Facilities, func(f: Facility) -> bool: return f.HasRole("produces_facility"))
+	if bew != null and yardsHere:
+		bew.OpenBuildChooser(home, "produces_facility")
+		for _i in 3:
+			await process_frame
+		var bs: Control = ui._openWindows.get("Build Selection")
+		_check(bs != null and bs.get("_canvas") != null, "Build Selection is the original's window")
+		if bs != null and bs.get("_canvas") != null:
+			_check(bs.size == Vector2(210, 261) * K and bs.has_meta("modal_blocker"), "the 210x261 plate is the window, modal")
+			var bplaces: Array = []
+			for n in ["build_encyclopedia", "build_ok", "build_cancel", "build_list_open", "build_up", "build_down"]:
+				var bb: TextureButton = bs.find_child(n, true, false)
+				bplaces.append(bb.position / K if bb != null else null)
+			_check(bplaces == [Vector2(5, 224), Vector2(73, 224), Vector2(141, 224), Vector2(79, 90), Vector2(189, 196), Vector2(189, 205)],
+				"its buttons, arrow and spinner at the original's places %s" % str(bplaces))
+			var bn: Label = bs.find_child("Name", true, false)
+			var bp: TextureRect = bs.find_child("Picture", true, false)
+			_check(bn != null and bn.text == str(bs._items[bs._choice].name) and bp.position.y == 28 * K, "the item's picture and name")
+			(bs.find_child("build_up", true, false) as TextureButton).pressed.emit()
+			(bs.find_child("build_up", true, false) as TextureButton).pressed.emit()
+			_check((bs.find_child("Number", true, false) as Label).text == "3", "the spinner counts up")
+			(bs.find_child("build_list_open", true, false) as TextureButton).pressed.emit()
+			_check(bs._list.visible and bs._listRows.size() == bs._items.size(), "the arrow drops the list of %d items" % bs._items.size())
+			(bs.find_child("build_cancel", true, false) as TextureButton).pressed.emit()
+			for _i in 2:
+				await process_frame
+			_check(ui._openWindows.get("Build Selection") == null, "cancel closes it")
+	if bew != null:
+		bew.CloseWindow()
+
 	# ---- the mouse pointers (REBEXE.EXE) ----
 	var pointer: Texture2D = Art.CursorPicture("pointer")
 	var cross: Texture2D = Art.CursorPicture("crosshair")

@@ -134,6 +134,20 @@ public sealed class Importer
         // the frame's right strip, and the plate under a read message (p080
         // Fig 3.19, the band across its top - not yet on a screenshot).
         ("msgindex_side.alliance", 10820), ("msgsummary_plate", 10823),
+        // Build Selection (p045, p112 Fig 3.58): the 210x261 plate - the frame,
+        // the picture box, the two cost boxes with their icons, the times box
+        // and the number box (TeeJ's screenshot of the original, Empire).
+        ("build_plate", 10800),
+    };
+
+    // STRATEGY.DLL: buttons drawn WHOLE with both magenta shades keyed, as
+    // Build Selection draws them (its screenshot shows each 66x33 button's
+    // drop shadow, which Create Mission clips off): (name, normal, pressed,
+    // disabled). The spinner's arrows key blue.
+    private static readonly (string Name, int Normal, int Pressed, int Disabled)[] ShadedButtons =
+    {
+        ("build_encyclopedia", 10592, 10593, 0), ("build_ok", 10594, 10595, 11620), ("build_cancel", 10596, 10597, 0),
+        ("build_list_open", 10606, 10607, 0), ("build_up", 10610, 10611, 0), ("build_down", 10612, 10613, 0),
     };
 
     // STRATEGY.DLL: Message Index parts keyed by BLACK as well as blue, as the
@@ -251,7 +265,9 @@ public sealed class Importer
     // screenshot of the original, pixel for pixel (2026-09-23).
     private static readonly HashSet<int> DrawnWhole = new() { 11100, 11101, 11103, 11104, 11105, 11106, 11107, 11108, 11109, 11110,
         // The Status plates are opaque; the pressed Encyclopedia button keeps its blue face.
-        11554, 11558, 11553 };
+        11554, 11558, 11553,
+        // Build Selection's plate is opaque.
+        10800 };
 
     public sealed record Result(int Pictures, int Descriptions, List<string> Missing, List<string> Log);
 
@@ -415,6 +431,13 @@ public sealed class Importer
             if (pressed > 0 && SaveSprite(strategy, pressed, Path.Combine(outRoot, "buttons", $"{name}.pressed.png"), true)) pictureCount++;
             if (disabled > 0 && SaveSprite(strategy, disabled, Path.Combine(outRoot, "buttons", $"{name}.disabled.png"), true)) pictureCount++;
         }
+        foreach (var (name, normal, pressed, disabled) in ShadedButtons)
+        {
+            if (SaveSprite(strategy, normal, Path.Combine(outRoot, "buttons", $"{name}.png"), true, keyShade: true)) { buttons++; pictureCount++; }
+            else missing.Add($"buttons/{name}: no bitmap {normal} in STRATEGY.DLL");
+            if (pressed > 0 && SaveSprite(strategy, pressed, Path.Combine(outRoot, "buttons", $"{name}.pressed.png"), true, keyShade: true)) pictureCount++;
+            if (disabled > 0 && SaveSprite(strategy, disabled, Path.Combine(outRoot, "buttons", $"{name}.disabled.png"), true, keyShade: true)) pictureCount++;
+        }
         foreach (var (name, id) in BlackKeyed)
         {
             if (SaveSprite(strategy, id, Path.Combine(outRoot, "windows", $"{name}.png"), keyBlack: true)) { windows++; pictureCount++; }
@@ -526,7 +549,7 @@ public sealed class Importer
     /// clipped button's second magenta shade (204,28,205) is keyed as well
     /// (never elsewhere: the Manufacturing tab pictures draw it).</summary>
     private static bool SaveSprite(PeResources dll, int bitmapId, string outPath, bool keyMagenta = false, Rectangle? clip = null,
-        bool keyCorner = false, bool keyBlack = false)
+        bool keyCorner = false, bool keyBlack = false, bool keyShade = false)
     {
         if (!dll.Bitmaps.ContainsKey(bitmapId))
             return false;
@@ -546,7 +569,7 @@ public sealed class Importer
                     (c.R == 0 && c.G == 0 && c.B == 255 && !DrawnWhole.Contains(bitmapId))
                     || (keyMagenta && c.R == 255 && c.G == 0 && c.B == 255)
                     || (keyBlack && c.R == 0 && c.G == 0 && c.B == 0)
-                    || (clip != null && c.R == 204 && c.G == 28 && c.B == 205);
+                    || ((clip != null || keyShade) && c.R == 204 && c.G == 28 && c.B == 205);
                 rgba.SetPixel(x, y, key ? Color.Transparent : Color.FromArgb(255, c.R, c.G, c.B));
             }
         rgba.Save(outPath, ImageFormat.Png);
