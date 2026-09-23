@@ -10,6 +10,7 @@
     "color": "#5499ff"
   },
   "unexplored_color": "#cccccc",
+  "art_sets": ["swr-original"],
   "map_image": "galaxyShaded.bmp",
   "map_image_rect": [
     -5,

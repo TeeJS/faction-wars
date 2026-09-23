@@ -69,9 +69,10 @@ static func Mini(kind: String, id: String) -> Texture2D:
 	return Art.Scaled(Art.Miniature(kind, id), K)
 
 
-## The side as the art files name it.
+## The side as the art files name it: the faction's skin (factions.json), so a
+## side of a custom pack wears the original side it declares.
 static func Side(f: Faction) -> String:
-	return f.Id if f != null else ""
+	return f.ArtSkin if f != null else ""
 
 
 ## The original's colour for a side: its title bars and a selected name -
@@ -79,7 +80,7 @@ static func Side(f: Faction) -> String:
 static func SideColor(f: Faction) -> Color:
 	if f == null:
 		return Color(0.7, 0.7, 0.7)
-	match f.Id:
+	match Side(f):
 		"alliance":
 			return Color(1, 0, 0)
 		"empire":

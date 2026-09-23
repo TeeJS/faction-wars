@@ -64,6 +64,12 @@ const KNOWN_CHARACTER_ROLES := ["starts_at_first_world", "starts_at_hq", "starts
 const SINGLETON_CHARACTER_ROLES := ["pilgrim", "heir", "dark_lord", "dark_master", "smuggler", "companion"]
 ## SCHEMA.md section 6. The engine's special cases for a unit.
 const KNOWN_UNIT_ROLES := ["superweapon", "garrison_troop"]
+## SCHEMA.md section 14. The art sets the engine knows - each one a player's
+## own export (tools/FactionWarsExporter), never shipped - and the side looks
+## (skins) each has.
+const KNOWN_ART_SETS := {"swr-original": ["alliance", "empire"]}
+## The row kinds an `art` reference may name.
+const ART_KINDS := ["characters", "units", "facilities", "missions", "planets"]
 
 
 class LoadedPack:
@@ -194,6 +200,7 @@ static func _validate(pack: LoadedPack, pack_dir: String, errors: Array[String])
 	_validate_menu(pack, pack_dir, errors)
 	_validate_icons(pack, pack_dir, errors)
 	_validate_roles(pack, errors)
+	_validate_art(pack, errors)
 
 
 ## Rule 12: character roles, unit roles and mission behaviours are in the
@@ -266,7 +273,7 @@ static func _validate_menu(pack: LoadedPack, pack_dir: String, errors: Array[Str
 		return
 	if menu.ImageFile.strip_edges().is_empty():
 		errors.append("pack.json menu: 'image' is required - name the Cockpit picture shipped with the pack.")
-	else:
+	elif SplitArtRef(menu.ImageFile)[0].is_empty():
 		var image_path := "%s/%s" % [pack_dir, menu.ImageFile]
 		if not (ResourceLoader.exists(image_path) or FileAccess.file_exists(image_path)):
 			errors.append("pack.json menu: image '%s' is not in %s." % [menu.ImageFile, pack_dir])
@@ -723,10 +730,64 @@ static func _validate_map(pack: LoadedPack, pack_dir: String, errors: Array[Stri
 	var rect := pack.Manifest.MapImageRect
 	if rect != Rect2() and (rect.size.x <= 0.0 or rect.size.y <= 0.0):
 		errors.append("pack.json: map_image_rect must be [x, y, w, h] with w and h > 0.")
-	else:
+	elif SplitArtRef(pack.Manifest.MapImage)[0].is_empty():
 		var image_path := "%s/%s" % [pack_dir, pack.Manifest.MapImage]
 		if not (ResourceLoader.exists(image_path) or FileAccess.file_exists(image_path)):
 			errors.append("pack.json: map_image '%s' is not in %s." % [pack.Manifest.MapImage, pack_dir])
+
+
+## Rule 18 (SCHEMA.md section 14): art sets, skins and art references.
+static func _validate_art(pack: LoadedPack, errors: Array[String]) -> void:
+	var sets := pack.Manifest.ArtSets
+	var skins: Array = []
+	for s in sets:
+		if not KNOWN_ART_SETS.has(s):
+			errors.append("pack.json art_sets: '%s' is not an art set the engine knows (%s)." % [s, ", ".join(KNOWN_ART_SETS.keys())])
+		else:
+			skins.append_array(KNOWN_ART_SETS[s])
+	for f in pack.Factions:
+		var ctx := "factions.json[%s]" % f.Id
+		if sets.is_empty():
+			if not f.ArtSkin.is_empty():
+				errors.append("%s: skin '%s' needs pack.json art_sets - a skin is one of an art set's side looks." % [ctx, f.ArtSkin])
+		elif f.ArtSkin.is_empty():
+			errors.append("%s: 'skin' is required when the pack declares art_sets - which side look does it wear (%s)?" % [ctx, ", ".join(skins)])
+		elif not skins.is_empty() and not skins.has(f.ArtSkin):
+			errors.append("%s: skin '%s' is not a side look of %s (%s)." % [ctx, f.ArtSkin, ", ".join(sets), ", ".join(skins)])
+	for pair in [["characters.json", pack.Characters], ["units.json", pack.Units], ["facilities.json", pack.Facilities],
+			["missions.json", pack.Missions], ["map.json", pack.Map.Planets if pack.Map != null else []]]:
+		for row in pair[1]:
+			if row.Art.is_empty():
+				continue
+			var ctx := "%s[%s] art" % [pair[0], row.Id]
+			if sets.is_empty():
+				errors.append("%s: '%s' needs pack.json art_sets." % [ctx, row.Art])
+			elif ParseArtRef(row.Art, sets).is_empty():
+				errors.append("%s: '%s' must be [<art set>:]<kind>/<id>, the art set one of %s and the kind one of %s." % [ctx, row.Art, ", ".join(sets), ", ".join(ART_KINDS)])
+	for pair in [["map_image", pack.Manifest.MapImage], ["menu.image", pack.Manifest.Menu.ImageFile if pack.Manifest.Menu != null else ""]]:
+		var split := SplitArtRef(pair[1])
+		if not split[0].is_empty() and not sets.has(split[0]):
+			errors.append("pack.json %s: '%s' names art set '%s', which art_sets does not declare." % [pair[0], pair[1], split[0]])
+
+
+## "<set>:<path>" -> [set, path]; a plain file name -> ["", name].
+static func SplitArtRef(ref: String) -> PackedStringArray:
+	var colon := ref.find(":")
+	if colon <= 0 or ref.find("://") >= 0 or ref.substr(0, colon).contains("/"):
+		return PackedStringArray(["", ref])
+	return PackedStringArray([ref.substr(0, colon), ref.substr(colon + 1)])
+
+
+## A row's `art`, "[<set>:]<kind>/<id>", as [set, kind, id] (set "" = any of
+## the pack's), or [] when malformed or naming a set the pack does not declare.
+static func ParseArtRef(ref: String, sets: Array) -> Array:
+	var split := SplitArtRef(ref)
+	if not split[0].is_empty() and not sets.has(split[0]):
+		return []
+	var parts := split[1].split("/")
+	if parts.size() != 2 or not ART_KINDS.has(parts[0]) or parts[1].strip_edges().is_empty():
+		return []
+	return [split[0], parts[0], parts[1]]
 
 
 static func _require_color(value: String, ctx: String, errors: Array[String]) -> void:

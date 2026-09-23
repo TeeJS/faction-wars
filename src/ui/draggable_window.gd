@@ -334,7 +334,7 @@ func OpenCreateMission(team: Array, origin: Planet, target: Planet, picked: Vari
 	box.add_child(picker)
 	var showMission := func(index: int) -> void:
 		var d: PackDefs.MissionDefPack = MissionCatalog.DefFor(legal[index])
-		Art.Fill(missionPic, Art.MissionPicture(d.Id, actor.Id) if d != null else null)
+		Art.Fill(missionPic, Art.MissionPicture(d.Id, actor.ArtSkin) if d != null else null)
 	picker.item_selected.connect(showMission)
 	showMission.call(0)
 
@@ -709,7 +709,7 @@ func ConfirmScrapUnits(names: Array, refundNote: String, onConfirm: Callable, pl
 	for n in names:
 		text += "\n" + str(n)
 	var f: Faction = GameSettings.PlayerFaction
-	var side: String = "alliance" if f != null and f.Id == "alliance" else "empire"
+	var side: String = "alliance" if f != null and f.ArtSkin == "alliance" else "empire"
 	ui.OpenConfirmation(f, OUI.Pic("scrap_picture." + side), text, refundNote, onConfirm)
 
 

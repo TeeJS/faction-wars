@@ -1,6 +1,6 @@
 # Plan: the original's art out of the repo, imported by owners (Option A)
 
-Status: **signed off by TeeJ, 2026-09-23. Nothing built yet.**
+Status: **signed off by TeeJ, 2026-09-23.** Phases 0-4 done; see each phase.
 Stop after every phase with a go/no-go read-out.
 
 ## Charter
@@ -99,6 +99,10 @@ Full-screen bitmaps in the install, for later use: `COMMON.DLL` 10100-10103, 200
 - Still only reads the DLLs' bytes; it runs nothing from the game.
 
 ### Phase 2: art sets and skins in the engine
+**Done 2026-09-23** (`tests/art_sets.gd`, `tests/pack_validation.gd` rule 18). The member is
+`ArtSkin` in code (`Skin` is a Godot class); the JSON key is `skin`. Packs also load from
+`user://packs/` already (phase 3 fills it). SCHEMA.md section 14.
+
 - `pack.json` `art_sets`, `factions.json` `skin`, row `art` references, and the pack's own `art/` folder. SCHEMA.md and the validator get the rules.
 - Replace the five hard-coded `"alliance"`/`"empire"` sites and the faction-keyed art lookups with `skin`.
 - The Star Wars pack declares `art_sets: ["swr-original"]` and skins its two sides.
@@ -106,6 +110,15 @@ Full-screen bitmaps in the install, for later use: `COMMON.DLL` 10100-10103, 200
 - Tests: a tiny two-faction fixture pack (new factions with swapped skins, a shipyard by original id, one row by `art` reference, one character with its own picture) renders the original look. Without the art set it falls back.
 
 ### Phase 3: import in the game (web and desktop)
+**Done 2026-09-23** (`src/ui/pack_import.gd`, `tests/pack_import.gd`, `tests/pack_picker.gd`).
+Checked in a real browser (the Browser pane, a web export without the committed art):
+the Import button imported the exporter's 1,082-file set; it survived a reload, a
+re-import replaced it, Remove survived a reload, and with it gone the game fell back
+to the button menu and the plain map in the same layout. Drag and drop was not
+exercised in the browser (the engine's own drop handler feeds the same import).
+The exporter (2.1.0) mirrors the galaxy map's edges out to 640x480 so the map keeps
+its placement.
+
 - An **Import pack file...** button on the pack picker. Drag and drop anywhere (the web build accepts dropped files; `display_server_web.cpp`). Desktop uses the native file dialog. Web uses the browser's file picker, which works on tablets too.
 - Unzip, check `manifest.json` and every SHA-256, then write:
   - an art set to `user://art/<set>/`;
@@ -117,6 +130,16 @@ Full-screen bitmaps in the install, for later use: `COMMON.DLL` 10100-10103, 200
 - TeeJ checks the browser build and a tablet.
 
 ### Phase 4: a real custom pack (optional proof)
+**Done 2026-09-23** in the browser (web export, no committed art). A "Separatists vs
+Trade Federation" pack made from the Star Wars JSON: its sides renamed and recoloured,
+the Separatists with skin `empire` and the Trade Federation with `alliance`, map and
+Cockpit from `swr-original`, one `art` reference and one picture of its own. The
+exporter's Build faction pack made the file (checked against the art set: clean), the
+picker imported it beside the art set, and it played: the Separatists' worlds as the
+Empire's green stars with the Empire's icons, the Trade Federation's Coruscant in the
+Alliance's red, and the original's sector window. The generator is not committed; the
+same pack is built in `tests/art_sets.gd`.
+
 - TeeJ's Separatists vs Trade Federation, or a minimal one: imported from a pack file into the web build, wearing the original look.
 
 ### Phase 5: take the art out (destructive; a separate go for each step)

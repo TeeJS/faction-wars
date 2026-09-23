@@ -196,7 +196,7 @@ func RefreshCommsHighlights() -> void:
 	var commsList: VBoxContainer = get_node_or_null("CommsPanel/Margin/CommsList")
 	if commsList == null:
 		return
-	var side: String = GameSettings.PlayerFaction.Id if GameSettings.PlayerFaction != null else ""
+	var side: String = GameSettings.PlayerFaction.ArtSkin if GameSettings.PlayerFaction != null else ""
 	var showing: String = CommsCategory()
 	var pictured: bool = Socket("All", side, false) != null
 	if pictured:

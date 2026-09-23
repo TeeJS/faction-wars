@@ -19,6 +19,10 @@ var Seed: PackDefs.FactionSeedDef
 var Victory: PackDefs.VictoryDef
 ## The side's agent droid / adviser, as the pack names it (manual p030, Fig. 2.16).
 var AgentName: String = ""
+## Which of the art set's side looks this faction wears (factions.json `skin`,
+## docs/original-art-plan.md): the original's pictures are keyed by it, never
+## by the id, so a Separatist side can wear the Empire's. Defaults to the id.
+var ArtSkin: String = ""
 
 
 static func FromPack(def: PackDefs.FactionDef) -> Faction:
@@ -33,6 +37,7 @@ static func FromPack(def: PackDefs.FactionDef) -> Faction:
 	f.Seed = def.Seed
 	f.Victory = def.Victory
 	f.AgentName = def.AgentName
+	f.ArtSkin = def.ArtSkin if not def.ArtSkin.is_empty() else def.Id
 	return f
 
 
@@ -42,7 +47,15 @@ static func Simple(id: String, display_name: String, color: Color) -> Faction:
 	f.Id = id
 	f.DisplayName = display_name
 	f.FactionColor = color
+	f.ArtSkin = id
 	return f
+
+
+## The skin for a faction id - the loaded side's ArtSkin, or the id itself for a
+## name that is no side ("unexplored", or "").
+static func SkinOf(faction_id: String) -> String:
+	var f: Faction = FactionRegistry.ById(faction_id) if not faction_id.is_empty() else null
+	return f.ArtSkin if f != null and f.Id == faction_id else faction_id
 
 
 ## True when this faction's headquarters is concealed from other sides.
