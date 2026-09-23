@@ -1,6 +1,7 @@
 extends SceneTree
 ## The Comms Center is docked (TeeJ, 2026-09-23): it opens on the left edge of
-## the map frame at full frame height with no tab strip of its own; the Message
+## the map frame - at full frame height with no tab strip of its own, or, with
+## the imported art, as the original's Message Index with its own tabs; the Message
 ## Alert column's buttons are its tabs and the one on show reads as pressed;
 ## minimised and reopened, it re-docks. Also: the day box shows an unread
 ## COUNT rather than a list of category names.
@@ -41,9 +42,15 @@ func _init() -> void:
 	var w: DraggableWindow = ui._openWindows.get("Communications")
 	_check(w != null and w.visible, "the Comms Center opens")
 	_check(w.position == UIManager.CommsRect.position, "it is docked at the map frame's top-left (%s)" % str(w.position))
-	_check(w.size.y >= UIManager.CommsRect.size.y - 1, "it is the frame's full height (%.0f)" % w.size.y)
 	var tabs: TabContainer = w._tabContainer
-	_check(not tabs.tabs_visible, "it has no tab strip of its own")
+	if w._original:
+		# With the imported art it is the original's Message Index (manual p078
+		# Fig 3.18): its own frame drawn 2x, and its own ten category tabs.
+		_check(w.size == w.OriginalSize(), "it is the original's Message Index, its frame drawn 2x (%s)" % str(w.size))
+		_check(w._oTabs.size() == 10 and w._oCaption.text == "Fleet Messages", "with the original's ten tabs, on Fleets")
+	else:
+		_check(w.size.y >= UIManager.CommsRect.size.y - 1, "it is the frame's full height (%.0f)" % w.size.y)
+		_check(not tabs.tabs_visible, "it has no tab strip of its own")
 	_check(tabs.get_child(tabs.current_tab).name == "Fleets", "it opened on the category asked for")
 	_check((list.get_node("Fleets") as Button).has_meta("active_tab"), "the column's Fleets button reads as pressed")
 

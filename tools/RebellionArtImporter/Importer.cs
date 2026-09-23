@@ -129,6 +129,24 @@ public sealed class Importer
         // the grey spotlight behind a trooper regiment's picture (122x50).
         ("status_plate.alliance", 11554), ("status_plate.empire", 11558),
         ("status_backdrop.troops", 11514),
+        // The Message Index (p078 Fig 3.18): the Alliance's socket column over
+        // the frame's right strip, and the plate under a read message (p080
+        // Fig 3.19, the band across its top - not yet on a screenshot).
+        ("msgindex_side.alliance", 10820), ("msgsummary_plate", 10823),
+    };
+
+    // STRATEGY.DLL: Message Index parts keyed by BLACK as well as blue, as the
+    // original draws them (matched on TeeJ's screenshots of both sides' Advice
+    // tab): the selected row's bar per side (356x21) and the rows' 15x15
+    // category icons - Advice per side seen; the others are the same set's
+    // pictures, matched to their category by what they show (not yet seen).
+    private static readonly (string Name, int Id)[] BlackKeyed =
+    {
+        ("msgindex_selection.empire", 10915), ("msgindex_selection.alliance", 10914),
+        ("msgicon.advice.empire", 10969), ("msgicon.advice.alliance", 10968),
+        ("msgicon.loyalty", 10916), ("msgicon.fleets.empire", 10965), ("msgicon.fleets.alliance", 10964),
+        ("msgicon.resources", 10966),
+        ("msgicon.conflict", 10967), ("msgicon.defense", 10963),
     };
 
     // GOKRES.DLL: the picture of a manufacturing queue in its Status window
@@ -190,6 +208,19 @@ public sealed class Importer
         ("mission_to_decoys", 11117, 11118, 0), ("mission_to_agents", 11119, 11120, 0),
         // A Status window's Encyclopedia button (32x31); its close is ency_close.alliance.
         ("status_encyclopedia", 11552, 11553, 11612),
+        // The Message Index (Fig 3.18): the band's Select All and Delete
+        // (56x20, opaque), and the side column under Close, per side - Message
+        // Summary, Post Messages with Alert (normal) / Silently (pressed), Open
+        // Window, Compose Chat (Empire 44x41, Alliance 32x31).
+        ("msgindex_select_all", 10900, 10901, 0), ("msgindex_delete", 10902, 10903, 0),
+        ("msgindex_summary.empire", 10738, 10739, 10962), ("msgindex_summary.alliance", 10870, 10871, 10961),
+        ("msgindex_post.empire", 10874, 10875, 0), ("msgindex_post.alliance", 10872, 10873, 0),
+        ("msgindex_open.empire", 10520, 10521, 10960), ("msgindex_open.alliance", 10518, 10519, 10959),
+        ("msgindex_compose.empire", 10879, 10880, 10881), ("msgindex_compose.alliance", 10876, 10877, 10878),
+        // A read message's band: scroll up / down through the tab (19x15), and
+        // the tick and cross of a report that asks (51x35, Fig 2.38).
+        ("msgsummary_up", 10948, 10949, 10950), ("msgsummary_down", 10919, 10920, 10921),
+        ("decision_ok", 10926, 10927, 10928), ("decision_cancel", 10929, 10930, 10931),
     };
 
     // STRATEGY.DLL: buttons drawn CLIPPED to their control, as (name, normal,
@@ -383,6 +414,11 @@ public sealed class Importer
             if (pressed > 0 && SaveSprite(strategy, pressed, Path.Combine(outRoot, "buttons", $"{name}.pressed.png"), true)) pictureCount++;
             if (disabled > 0 && SaveSprite(strategy, disabled, Path.Combine(outRoot, "buttons", $"{name}.disabled.png"), true)) pictureCount++;
         }
+        foreach (var (name, id) in BlackKeyed)
+        {
+            if (SaveSprite(strategy, id, Path.Combine(outRoot, "windows", $"{name}.png"), keyBlack: true)) { windows++; pictureCount++; }
+            else missing.Add($"windows/{name}: no bitmap {id} in STRATEGY.DLL");
+        }
         foreach (var (name, normal, pressed, x, y, w, h) in ClippedButtons)
         {
             var clip = new Rectangle(x, y, w, h);
@@ -463,7 +499,7 @@ public sealed class Importer
     /// clipped button's second magenta shade (204,28,205) is keyed as well
     /// (never elsewhere: the Manufacturing tab pictures draw it).</summary>
     private static bool SaveSprite(PeResources dll, int bitmapId, string outPath, bool keyMagenta = false, Rectangle? clip = null,
-        bool keyCorner = false)
+        bool keyCorner = false, bool keyBlack = false)
     {
         if (!dll.Bitmaps.ContainsKey(bitmapId))
             return false;
@@ -482,6 +518,7 @@ public sealed class Importer
                 bool key = keyCorner ? c.ToArgb() == corner.ToArgb() :
                     (c.R == 0 && c.G == 0 && c.B == 255 && !DrawnWhole.Contains(bitmapId))
                     || (keyMagenta && c.R == 255 && c.G == 0 && c.B == 255)
+                    || (keyBlack && c.R == 0 && c.G == 0 && c.B == 0)
                     || (clip != null && c.R == 204 && c.G == 28 && c.B == 205);
                 rgba.SetPixel(x, y, key ? Color.Transparent : Color.FromArgb(255, c.R, c.G, c.B));
             }
