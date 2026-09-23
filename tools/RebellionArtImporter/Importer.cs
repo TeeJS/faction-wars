@@ -329,9 +329,10 @@ public sealed class Importer
     {
         foreach (var f in new[] { "ENCYTEXT.DLL", "ENCYBMAP.DLL", "TEXTSTRA.DLL", "STRATEGY.DLL", "GOKRES.DLL" })
             if (!File.Exists(Path.Combine(gameDir, f)))
-                return $"{f} is not in {gameDir} - is that the installed game's folder?";
+                return $"{f} is not in {gameDir} - pick the folder the game is installed in, or the REBELLION folder on the CD.";
         if (!Directory.Exists(Path.Combine(gameDir, "EData")))
-            return $"There is no EData folder in {gameDir}.";
+            return $"There is no EData folder in {gameDir}. An install from the CD leaves the pictures on the disc - " +
+                   @"pick the REBELLION folder on the CD instead (for example D:\REBELLION).";
         if (!File.Exists(Path.Combine(packDir, "pack.json")))
             return $"{packDir} has no pack.json - pick the packs\\star-wars-rebellion folder.";
         return null;
