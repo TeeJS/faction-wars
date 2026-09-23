@@ -5,7 +5,7 @@ extends PanelContainer
 ## row builder with its menu (manual p045, Fig 2.40) shared by every window that
 ## lists people.
 
-## The player's own artwork overlay (tools/RebellionArtImporter).
+## The player's own artwork overlay (tools/FactionWarsExporter).
 const Art := preload("res://src/ui/artwork.gd")
 
 var _pendingRefresh: bool = false

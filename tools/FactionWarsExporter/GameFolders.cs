@@ -1,7 +1,7 @@
 using System.Text;
 using Microsoft.Win32;
 
-namespace RebellionArtImporter;
+namespace FactionWarsExporter;
 
 /// <summary>
 /// Where a player's copy of Star Wars: Rebellion is likely to be. Every version

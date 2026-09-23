@@ -20,7 +20,7 @@ var _planetStars: Dictionary = {}    # Planet -> Label
 ## size. Coordinates are never rescaled to the picture: Planet.DistanceTo
 ## reads them, so they are travel time.
 var _backdrop: Sprite2D = null
-## The player's own artwork overlay (tools/RebellionArtImporter).
+## The player's own artwork overlay (tools/FactionWarsExporter).
 const Art := preload("res://src/ui/artwork.gd")
 ## The original drew its 15 px stars on a 640-wide screen; ours is 1440.
 const StarScale := 2.0

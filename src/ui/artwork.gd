@@ -1,6 +1,6 @@
 class_name Artwork
 extends RefCounted
-## THE PLAYER'S OWN ARTWORK OVERLAY. tools/RebellionArtImporter copies pictures
+## THE PLAYER'S OWN ARTWORK OVERLAY. tools/FactionWarsExporter copies pictures
 ## out of a player's installed Star Wars: Rebellion into
 ## packs/<id>/original/ (gitignored: the repo never carries them). This is the
 ## one reader: a picture the overlay has wins, one it lacks means "draw what

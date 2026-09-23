@@ -1179,7 +1179,7 @@ suffix and the GID's Uprisings mode. That is what made Subdue Uprising look as
 though it were offered against quiet worlds. Now drawn in `SectorWindow`, over
 the mission marker when both apply, with the mission menu still attached so Abort
 stays reachable. The glyph is the original's flame when the player imported the
-art (`tools/RebellionArtImporter`), our own otherwise.
+art (`tools/FactionWarsExporter`), our own otherwise.
 
 #### The GID Uprisings mode has exactly two tiers *(confirmed)*
 
@@ -4203,7 +4203,7 @@ known. Reached from the bottom-bar
 Encyclopedia control, F7, right-click → Encyclopedia on characters, units,
 fleets, facilities, missions and the HQ, and the Create Mission window's
 Encyclopedia button. Pictures and text are the player's imported originals
-(`tools/RebellionArtImporter`); rows without them show the pack's own facts.
+(`tools/FactionWarsExporter`); rows without them show the pack's own facts.
 
 ### The two droids *(PDF p076 / manual p078)*
 
