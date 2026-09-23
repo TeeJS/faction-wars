@@ -343,6 +343,11 @@ func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, fa
 		var rowBtn := Button.new()
 		rowBtn.text = "%s (Tier %d)   %s" % [fac.Name(), fac.Tier, statusText]
 		rowBtn.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		# The original's list miniature of this facility, when the player imported it.
+		var mini: Texture2D = Art.Miniature("facilities", fac.Def.Id if fac.Def != null else fac.Family())
+		if mini != null:
+			rowBtn.icon = mini
+			rowBtn.set_meta("miniature", true)
 		rowBtn.toggle_mode = true
 		rowBtn.button_pressed = picked
 		rowBtn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
