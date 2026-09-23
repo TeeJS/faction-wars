@@ -48,14 +48,14 @@ func _init() -> void:
 	if rows.has("energy"):
 		var r: Control = rows["energy"]
 		_check(r.get_child_count() == home.BaseEnergy, "energy: one square per slot (%d of %d)" % [r.get_child_count(), home.BaseEnergy])
-		_check(_count(r, SectorWindow.CEnergyUsed) == home.UsedEnergySlots(), "energy: white squares = used slots (%d of %d)" % [_count(r, SectorWindow.CEnergyUsed), home.UsedEnergySlots()])
-		_check(_count(r, SectorWindow.CEnergyFree) == home.FreeEnergySlots(), "energy: blue squares = free slots (%d of %d)" % [_count(r, SectorWindow.CEnergyFree), home.FreeEnergySlots()])
+		_check(_count(r, SectorWindow.EnergyUsedColor()) == home.UsedEnergySlots(), "energy: white squares = used slots (%d of %d)" % [_count(r, SectorWindow.EnergyUsedColor()), home.UsedEnergySlots()])
+		_check(_count(r, SectorWindow.EnergyFreeColor()) == home.FreeEnergySlots(), "energy: blue squares = free slots (%d of %d)" % [_count(r, SectorWindow.EnergyFreeColor()), home.FreeEnergySlots()])
 		_check(r.tooltip_text == "%s %d/%d" % [Terms.label("energy"), home.UsedEnergySlots(), home.BaseEnergy], "energy hover reads '%s'" % r.tooltip_text)
 	if rows.has("materials"):
 		var r: Control = rows["materials"]
 		_check(r.get_child_count() == home.BaseRawMaterials, "materials: one square per site (%d of %d)" % [r.get_child_count(), home.BaseRawMaterials])
-		_check(_count(r, SectorWindow.CMineBuilt) == home.Mines(), "materials: yellow squares = built mines (%d of %d)" % [_count(r, SectorWindow.CMineBuilt), home.Mines()])
-		_check(_count(r, SectorWindow.CMineFree) == home.FreeMineSlots(), "materials: red squares = free sites (%d of %d)" % [_count(r, SectorWindow.CMineFree), home.FreeMineSlots()])
+		_check(_count(r, SectorWindow.MineBuiltColor()) == home.Mines(), "materials: yellow squares = built mines (%d of %d)" % [_count(r, SectorWindow.MineBuiltColor()), home.Mines()])
+		_check(_count(r, SectorWindow.MineFreeColor()) == home.FreeMineSlots(), "materials: red squares = free sites (%d of %d)" % [_count(r, SectorWindow.MineFreeColor()), home.FreeMineSlots()])
 		_check(r.tooltip_text == "%s %d/%d" % [Terms.label("raw_materials"), home.Mines(), home.BaseRawMaterials], "materials hover reads '%s' (Fig 2.12: 'Raw Materials 3/9')" % r.tooltip_text)
 	if rows.has("loyalty"):
 		var bar: Control = rows["loyalty"]
@@ -65,7 +65,7 @@ func _init() -> void:
 			total_w += (seg as Control).size.x
 		for side in FactionRegistry.Playable:
 			var pct: int = home.SupportFor(side)
-			var seg: Control = Lq.first_or_null(bar.get_children(), func(c) -> bool: return SectorWindow.BlockColor(c) == side.FactionColor)
+			var seg: Control = Lq.first_or_null(bar.get_children(), func(c) -> bool: return SectorWindow.BlockColor(c) == SectorWindow.LoyaltyColor(side))
 			if pct > 0 and (seg == null or absf(seg.size.x - bar.size.x * pct / 100.0) > 0.51):
 				ok = false
 		_check(ok, "loyalty: each side's segment is its share of the bar, in its colour (%s)" % bar.tooltip_text)
@@ -75,7 +75,7 @@ func _init() -> void:
 		var seen_x: float = -1.0
 		var in_order := true
 		for side in order:
-			var seg: Control = Lq.first_or_null(bar.get_children(), func(c) -> bool: return SectorWindow.BlockColor(c) == side.FactionColor)
+			var seg: Control = Lq.first_or_null(bar.get_children(), func(c) -> bool: return SectorWindow.BlockColor(c) == SectorWindow.LoyaltyColor(side))
 			if seg == null:
 				continue
 			if seg.position.x <= seen_x:
@@ -85,12 +85,21 @@ func _init() -> void:
 		if Lq.any(FactionRegistry.Playable, func(f: Faction) -> bool: return f.Id == "empire"):
 			_check(order[0].Id == "empire", "Star Wars: the Empire is on the left (Fig 2.9)")
 		var first: Control = bar.get_child(0)
-		_check((first.get_theme_stylebox("panel") as StyleBoxFlat).corner_radius_top_left == SectorWindow.CornerRadius, "the bar's corners are rounded")
+		_check((first.get_theme_stylebox("panel") as StyleBoxFlat).corner_radius_top_left == SectorWindow.BarRadius(),
+			"the bar's corners are rounded (square in the original's window)")
 	if rows.size() == 3:
-		_check(rows["energy"].position.x == rows["materials"].position.x and rows["materials"].position.x == rows["loyalty"].position.x,
-			"the three rows share one left edge, so the squares line up (x=%.0f)" % rows["energy"].position.x)
+		# The original's loyalty bar starts a pixel left of its squares, under
+		# the picture's edge; ours share one edge.
+		var loyalty_x: float = rows["energy"].position.x - (SectorWindow.K if SectorWindow.OriginalLook else 0)
+		_check(rows["energy"].position.x == rows["materials"].position.x and rows["loyalty"].position.x == loyalty_x,
+			"the square rows share one left edge, so the squares line up (x=%.0f), the loyalty bar at x=%.0f" % [rows["energy"].position.x, loyalty_x])
 	var name_lbl: Label = _name_label(ui, home)
-	_check(name_lbl != null and rows.has("loyalty") and name_lbl.position.y >= rows["loyalty"].position.y + SectorWindow.LoyaltyHeight,
+	# The original's name line starts over the loyalty bar's last rows (the
+	# letters are under it: the line's top is space); ours clears the bars.
+	var name_top: float = 0.0
+	if name_lbl != null:
+		name_top = name_lbl.position.y + (name_lbl.size.y / 2.0 if SectorWindow.OriginalLook else 0.0)
+	_check(name_lbl != null and rows.has("loyalty") and name_top >= rows["loyalty"].position.y + rows["loyalty"].size.y,
 		"the name sits below the bars")
 
 	# --- An unexplored world: no bars at all. ---
@@ -124,12 +133,9 @@ func _rows_for(ui: UIManager, planet: Planet) -> Dictionary:
 	var w: DraggableWindow = _window_titled(ui, sector.Name)
 	var map: Control = w.get_node("%SectorMap")
 	var out := {}
-	# The rows of THIS planet: the ones on its left edge (BarsLeft from its centre).
-	var btn: Control = Lq.first_or_null(map.get_children(), func(c) -> bool: return c is SectorWindow.PlanetMapButton and c.AssociatedPlanet == planet)
-	var left: float = btn.position.x + 16 - SectorWindow.BarsLeft
+	# The rows of THIS planet: every part of a system's entry names it.
 	for c in map.get_children():
-		if c is Control and c.has_meta("bar_row") and absf(c.position.x - left) < 0.5 \
-				and c.position.y > btn.position.y and c.position.y < btn.position.y + 80:
+		if c is Control and not c.is_queued_for_deletion() and c.has_meta("bar_row") and c.get_meta("system", null) == planet:
 			out[c.get_meta("bar_row")] = c
 	return out
 
