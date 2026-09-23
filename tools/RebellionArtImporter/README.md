@@ -44,7 +44,7 @@ nothing for endpoint protection to object to.
 ```
 packs/star-wars-rebellion/original/
   characters/<id>.png   units/<id>.png   facilities/<id>.png
-  planets/<id>.png      missions/<id>.png  missions/<id>.empire.png
+  planets/<id>.png      missions/<id>.<faction>.png (alliance / empire)
   icons/<glyph>.<faction>.png (+ .hover.png)   planet_sprites/<artwork_id>.png
   portraits/<kind>/<id>.png (80x80)   miniatures/<kind>/<id>.png (61x25)
   gid/<faction>.<tier>.png  gid/unexplored.<tier>.png  icons/uprising.png (+ .hover.png)

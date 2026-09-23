@@ -61,7 +61,7 @@ func _init() -> void:
 
 	# --- Write portraits and a miniature under user://original. ---
 	var dir := "user://original/%s" % pack_id
-	for sub in ["portraits/characters", "portraits/units", "miniatures/characters"]:
+	for sub in ["portraits/characters", "portraits/units", "miniatures/characters", "characters", "planets", "missions"]:
 		DirAccess.make_dir_recursive_absolute("%s/%s" % [dir, sub])
 	var written: Array[String] = []
 	var p80 := Image.create(80, 80, false, Image.FORMAT_RGBA8)
@@ -87,7 +87,7 @@ func _init() -> void:
 	var rect: Control = csw.get_node(CharacterStatusWindow.PortraitPath)
 	var pic: TextureRect = rect.get_node_or_null("Picture")
 	_check(pic != null and pic.texture != null and pic.texture.get_width() == 80, "Character Status shows the 80x80 portrait")
-	_check(pic != null and pic.stretch_mode == TextureRect.STRETCH_KEEP_ASPECT_CENTERED, "the portrait keeps its aspect, centred")
+	_check(pic != null and pic.stretch_mode == TextureRect.STRETCH_KEEP_CENTERED, "an 80x80 portrait in the 100x120 slot is shown 1:1, centred")
 	var lbl: Label = Lq.first_or_null(rect.get_children(), func(c) -> bool: return c is Label)
 	_check(lbl != null and not lbl.visible, "the placeholder text is hidden under the portrait")
 
@@ -107,11 +107,53 @@ func _init() -> void:
 	var row: Button = _row_for(dw, who)
 	_check(row != null and row.has_meta("miniature") and row.icon != null and row.icon.get_width() == 61, "the Defenses personnel row carries the 61x25 miniature")
 
-	# Message window: the character's portrait on a message about them.
+	# Message window: the character's portrait on a message about them, shown
+	# 1:1 (the 180 px slot must not blow an 80 px face up), and the 400x200
+	# panel instead once that exists.
 	var msg := GameMessage.new("Test", "A message about %s." % who.Name, Enums.MessageCategory.Missions, StrategicTickManager.Today, home, who)
-	_check(MessageWindow.MessagePicture(msg) != null and MessageWindow.MessagePicture(msg).get_width() == 80, "a message about a character carries their portrait")
+	_check(MessageWindow.MessagePicture(msg) != null and MessageWindow.MessagePicture(msg).get_width() == 80, "a message about a character carries their portrait when that is all there is")
+	var slot := ColorRect.new()
+	slot.custom_minimum_size = Vector2(0, 180)
+	slot.size = Vector2(470, 180)
+	var shown: TextureRect = Art.Fill(slot, MessageWindow.MessagePicture(msg))
+	_check(shown != null and shown.stretch_mode == TextureRect.STRETCH_KEEP_CENTERED, "a small portrait in a big slot is shown 1:1, not scaled up")
+	var panel := Image.create(400, 200, false, Image.FORMAT_RGBA8)
+	panel.fill(Color(0.3, 0.3, 0.5))
+	var panel_path := "%s/characters/%s.png" % [dir, who.PackId]
+	panel.save_png(panel_path)
+	written.append(panel_path)
+	Art.Reset()
+	_check(MessageWindow.MessagePicture(msg).get_width() == 400, "with the 400x200 panel imported, a message shows that instead")
+	shown = Art.Fill(slot, MessageWindow.MessagePicture(msg))
+	_check(shown.stretch_mode == TextureRect.STRETCH_KEEP_ASPECT_CENTERED and shown.texture_filter == CanvasItem.TEXTURE_FILTER_LINEAR, "a large picture is fitted and filtered smoothly")
 	var plain := GameMessage.new("Test", "About nobody.", Enums.MessageCategory.Missions, StrategicTickManager.Today, null, null)
 	_check(MessageWindow.MessagePicture(plain) == null, "a message about nobody carries no picture")
+
+	# Mission window: the mission's picture for our side, and the world's.
+	var m: Mission = MissionManager.Launch(Enums.MissionType.Diplomacy, [who], home, home)
+	if m != null:
+		var mdef: PackDefs.MissionDefPack = MissionCatalog.DefFor(m.Type)
+		var mpic := Image.create(400, 200, false, Image.FORMAT_RGBA8)
+		mpic.fill(Color(0.7, 0.2, 0.2))
+		var mpath := "%s/missions/%s.%s.png" % [dir, mdef.Id, us.Id]
+		mpic.save_png(mpath)
+		written.append(mpath)
+		var ppic := Image.create(400, 200, false, Image.FORMAT_RGBA8)
+		ppic.fill(Color(0.2, 0.5, 0.2))
+		var ppath := "%s/planets/%s.png" % [dir, home.PackId]
+		ppic.save_png(ppath)
+		written.append(ppath)
+		Art.Reset()
+		ui.OnMissionClicked(home)
+		for _i in 3:
+			await process_frame
+		var mw: DraggableWindow = ui._openWindows.get(home.Name + " Missions")
+		var mrect: Control = mw.get_node(MissionWindow.MissionPicturePath) if mw != null else null
+		var prect: Control = mw.get_node(MissionWindow.PlanetPicturePath) if mw != null else null
+		_check(mrect != null and mrect.get_node_or_null("Picture") != null, "the Mission window shows our side's picture of the running mission")
+		_check(prect != null and prect.get_node_or_null("Picture") != null, "the Mission window shows the target world's picture")
+	else:
+		_check(false, "a Diplomacy mission could be launched for the Mission window check")
 
 	# --- Remove the files: placeholders again, and no stale face on repaint. ---
 	for path in written:

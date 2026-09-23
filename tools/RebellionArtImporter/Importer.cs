@@ -34,7 +34,7 @@ namespace RebellionArtImporter;
 /// Output, under the pack folder (gitignored - never committed):
 ///   original/characters/&lt;id&gt;.png   original/units/&lt;id&gt;.png
 ///   original/facilities/&lt;id&gt;.png   original/planets/&lt;id&gt;.png
-///   original/missions/&lt;id&gt;.png (+ &lt;id&gt;.empire.png)
+///   original/missions/&lt;id&gt;.&lt;faction&gt;.png (alliance / empire)
 ///   original/descriptions.json     { "characters": { id: text }, ... }
 ///   original/portraits/&lt;kind&gt;/&lt;id&gt;.png   original/miniatures/&lt;kind&gt;/&lt;id&gt;.png
 ///   original/icons/&lt;glyph&gt;.&lt;faction&gt;.png (+ .hover.png)   sector-window corners
@@ -133,15 +133,16 @@ public sealed class Importer
                 else
                     missing.Add($"{kind}/{id}: no description at Encyclopedia id {ency}");
 
-                if (SavePicture(pictures, ency, Path.Combine(outRoot, kind, id + ".png")))
+                // A mission's picture comes per side: the Alliance one at the
+                // Encyclopedia id, the Imperial one at the string id itself.
+                var outName = kind == "missions" ? id + ".alliance.png" : id + ".png";
+                if (SavePicture(pictures, ency, Path.Combine(outRoot, kind, outName)))
                 {
                     pictureCount++;
                     got++;
                 }
                 else
                     missing.Add($"{kind}/{id}: no picture at Encyclopedia id {ency}");
-
-                // Missions carry a second, Imperial picture at the string id itself.
                 if (kind == "missions" && SavePicture(pictures, stringId.Value, Path.Combine(outRoot, kind, id + ".empire.png")))
                     pictureCount++;
             }
