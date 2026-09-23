@@ -740,6 +740,9 @@ func OpenBuildChooser(planet: Planet, producer: String) -> void:
 	var days: Array[int] = []
 	var place: Array[Callable] = []   # C#: List<Func<int, (int made, string error)>> - each returns a Result (value = made, error)
 	var blocked: Array[String] = []   # C#: null when nothing blocks - "" here
+	# The original's window names an item plainly and shows its picture.
+	var titles: Array[String] = []
+	var encyclopedia: Array = []
 
 	if producer == "produces_facility":
 		var rate: int = planet.BestYardRateForUi()
@@ -747,6 +750,8 @@ func OpenBuildChooser(planet: Planet, producer: String) -> void:
 			var r: PackDefs.FacilityDef = rule
 			var rFamily: String = r.Family
 			names.append("%s (Tier %d)" % [r.DisplayName, r.Tier])
+			titles.append(r.DisplayName)
+			encyclopedia.append(["facilities", r.Id])
 			refined.append(r.ConstructionCost)
 			maint.append(r.MaintenanceCost)
 			days.append(r.ConstructionCost * rate)
@@ -759,6 +764,8 @@ func OpenBuildChooser(planet: Planet, producer: String) -> void:
 		for rule in MilitaryCatalog.BuildableAt(producer, owner):
 			var r: PackDefs.UnitDef = rule
 			names.append(r.Name)
+			titles.append(r.Name)
+			encyclopedia.append(["units", r.Id])
 			refined.append(r.ConstructionCost)
 			maint.append(r.MaintenanceCost)
 			days.append(r.ConstructionCost * rate)
@@ -768,6 +775,20 @@ func OpenBuildChooser(planet: Planet, producer: String) -> void:
 				return CommandBus.issue("queue_units", { "planet": planet.Name, "rule": r.Name, "destination": target.Name if target != null else "", "count": n }))
 
 	if names.size() == 0:
+		return
+
+	# The original's Build Selection window (Fig 3.58) when the art is imported.
+	var ui: UIManager = get_parent() as UIManager
+	if ui != null and ui.BuildSelectionScript.CanBuild():
+		var items: Array = []
+		for i in names.size():
+			items.append({ "name": titles[i], "picture": Art.Scaled(Art.Portrait(encyclopedia[i][0], encyclopedia[i][1]), OUI.K),
+				"refined": refined[i], "maint": maint[i], "days": days[i], "blocked": blocked[i], "place": place[i],
+				"encyclopedia": encyclopedia[i] })
+		ui.OpenBuildSelection(owner, items, planet.DeploymentDaysTo(target), target.Name, helpers,
+			func() -> void:
+				if is_instance_valid(self):
+					Populate(planet))
 		return
 
 	var dialog := ConfirmationDialog.new()
