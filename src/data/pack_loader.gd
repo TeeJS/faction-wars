@@ -192,6 +192,7 @@ static func _validate(pack: LoadedPack, pack_dir: String, errors: Array[String])
 	_validate_setup(pack, errors)
 	_validate_display(pack, errors)
 	_validate_menu(pack, pack_dir, errors)
+	_validate_icons(pack, pack_dir, errors)
 	_validate_roles(pack, errors)
 
 
@@ -231,6 +232,25 @@ static func _validate_roles(pack: LoadedPack, errors: Array[String]) -> void:
 ## Rule 11: the Cockpit picture, when a pack has one, reaches every menu function
 ## exactly the way the button menu does - one region per difficulty, per offered
 ## galaxy size and per playable faction, and one each of the rest.
+## The sector window's corner glyphs (manual p070 Fig 3.7). A pack may ship its
+## own picture for any of them; the engine's assets/icons/ stands in otherwise.
+const KNOWN_CORNER_ICONS := ["manufacturing", "defenses", "fleet", "mission", "uprising"]
+
+
+## Rule 17: display.json icons name known glyphs and files the pack ships.
+static func _validate_icons(pack: LoadedPack, pack_dir: String, errors: Array[String]) -> void:
+	if pack.Display == null:
+		return
+	for key in pack.Display.Icons:
+		if not KNOWN_CORNER_ICONS.has(key):
+			errors.append("display.json: icons names '%s', which is not a corner glyph. Known: %s." % [key, ", ".join(KNOWN_CORNER_ICONS)])
+			continue
+		var file: String = str(pack.Display.Icons[key]).strip_edges()
+		var image_path := "%s/%s" % [pack_dir, file]
+		if file.is_empty() or not (ResourceLoader.exists(image_path) or FileAccess.file_exists(image_path)):
+			errors.append("display.json: icons['%s'] = '%s' is not in %s." % [key, file, pack_dir])
+
+
 static func _validate_menu(pack: LoadedPack, pack_dir: String, errors: Array[String]) -> void:
 	var setup := pack.Manifest.Setup
 	var sizes: Array[String] = setup.GalaxySizes if setup != null else []

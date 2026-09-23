@@ -155,7 +155,13 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 				Vector2(finalX + offset - cornerHalf, finalY + offset - cornerHalf),   # Bottom-Right
 			]
 
-			var cornerLabels: Array[String] = ["E", "F", "D", "M"]   # Placeholders: Fleet, Economy, Missions, Defense, etc.
+			var cornerLabels: Array[String] = ["E", "F", "D", "M"]   # the corner's job: Economy, Fleet, Defenses, Mission
+			# The glyph each corner shows (manual p070 Fig 3.7): Manufacturing top
+			# left, Fleet upper right, Defenses lower left, Mission lower right.
+			# Our own artwork (assets/icons, or the pack's via display.json
+			# `icons`), white on alpha, tinted with the faction colour as the
+			# letters were (TeeJ, 2026-09-22).
+			var cornerGlyphs: Array[String] = ["manufacturing", "fleet", "defenses", "mission"]
 
 			# ⚠ THE FLEET MARKER IS CONDITIONAL, AND IT WAS ALWAYS DRAWN.
 			#
@@ -194,22 +200,28 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 				if cornerLabels[i] == "F" and fleetsHere.size() == 0:
 					continue
 
+				# The glyph sits straight on the map like the original's; a
+				# faint rounded box shows only on hover.
 				var cornerStyle := StyleBoxFlat.new()
-				cornerStyle.bg_color = Color(0.2, 0.2, 0.2, 0.9)   # Dark gray background
-				cornerStyle.corner_radius_top_left = 8
-				cornerStyle.corner_radius_top_right = 8
-				cornerStyle.corner_radius_bottom_left = 8
-				cornerStyle.corner_radius_bottom_right = 8
+				cornerStyle.bg_color = Color(0, 0, 0, 0)
+				cornerStyle.corner_radius_top_left = 4
+				cornerStyle.corner_radius_top_right = 4
+				cornerStyle.corner_radius_bottom_left = 4
+				cornerStyle.corner_radius_bottom_right = 4
 
 				var cornerBtn := Button.new()
-				cornerBtn.text = cornerLabels[i]
+				cornerBtn.set_meta("corner", cornerGlyphs[i])
+				cornerBtn.icon = FactionRegistry.CornerIcon(cornerGlyphs[i])
+				cornerBtn.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+				cornerBtn.expand_icon = false
 				cornerBtn.custom_minimum_size = Vector2(cornerSize, cornerSize)
 				cornerBtn.size = Vector2(cornerSize, cornerSize)
 				cornerBtn.position = cornerPositions[i]
 				cornerBtn.flat = true   # Removes background
-
-				cornerBtn.add_theme_font_size_override("font_size", 10)
-				cornerBtn.add_theme_color_override("font_color", planet.GetFactionColor())
+				# No inner padding: a 16 px glyph in a 16 px button.
+				var tight := StyleBoxEmpty.new()
+				cornerBtn.add_theme_stylebox_override("focus", tight)
+				_TintIcon(cornerBtn, planet.GetFactionColor())
 
 				# WHOSE fleet, not just that there is one. Fig 3.7 (manual p070)
 				# puts SEPARATE Imperial and Alliance fleet icons in this
@@ -226,8 +238,7 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 					var flagged: Faction = GameSettings.PlayerFaction if oursInOrbit else fleetsHere[0].Faction
 
 					var tint: Color = flagged.FactionColor if flagged != null else Color.GRAY
-					cornerStyle.bg_color = Color(tint.r * 0.55, tint.g * 0.55, tint.b * 0.55, 1.0)
-					cornerBtn.add_theme_color_override("font_color", Color.WHITE)
+					_TintIcon(cornerBtn, tint)
 					cornerBtn.tooltip_text = "In orbit: " + ", ".join(Lq.select(fleetsHere,
 						func(f: Fleet) -> String: return "%s (%s)" % [f.Name, f.Faction.DisplayName if f.Faction != null else "unknown"]))
 
@@ -240,9 +251,12 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 				# active list until the next day tick, so the icon used to stay
 				# lit on a mission that had just been called off.
 				var missionHere: bool = cornerLabels[i] == "M" and myMissionHere
+				if cornerLabels[i] == "M":
+					# Lit in our colour while a mission runs, faint otherwise -
+					# the corner is still the way to the Mission window.
+					var mine: Color = GameSettings.PlayerFaction.FactionColor
+					_TintIcon(cornerBtn, mine if missionHere else Color(mine.r, mine.g, mine.b, 0.35))
 				if missionHere:
-					cornerStyle.bg_color = Color(0.55, 0.45, 0.05, 1.0)
-					cornerBtn.add_theme_color_override("font_color", Color.WHITE)
 					cornerBtn.tooltip_text = "Mission in progress - right-click for orders"
 
 					# "Double-click it for the Mission window; RIGHT-CLICK IT
@@ -279,9 +293,9 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 				# world we hold, else the last sighting) - not read live off an enemy
 				# world we merely explored once. IsInUprising -> IntelManager.UprisingSeen.
 				if cornerLabels[i] == "M" and planet.IsExplored and IntelManager.UprisingSeen(GameSettings.PlayerFaction, planet):
-					cornerBtn.text = "▲"
-					cornerStyle.bg_color = Color(0.72, 0.18, 0.05, 1.0)
-					cornerBtn.add_theme_color_override("font_color", Color(1.0, 0.85, 0.4))
+					cornerBtn.set_meta("corner", "uprising")
+					cornerBtn.icon = FactionRegistry.CornerIcon("uprising")
+					_TintIcon(cornerBtn, CUprising)
 					cornerBtn.tooltip_text = ("%s is IN UPRISING - right-click for mission orders" % planet.Name) if missionHere \
 						else ("%s is IN UPRISING" % planet.Name)
 
@@ -289,8 +303,9 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 
 				# Add hover effect to highlight the corner button
 				var hoverStyle: StyleBoxFlat = cornerStyle.duplicate()
-				hoverStyle.bg_color = Color(0.4, 0.4, 0.4, 1.0)
+				hoverStyle.bg_color = Color(1, 1, 1, 0.18)
 				cornerBtn.add_theme_stylebox_override("hover", hoverStyle)
+				cornerBtn.add_theme_stylebox_override("pressed", hoverStyle)
 
 				var actionIndex: int = i
 				cornerBtn.pressed.connect(func() -> void:
@@ -326,6 +341,22 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 		nameLabel.add_theme_color_override("font_color", Color(0.8, 0.8, 0.8, 0.9))
 
 		sectorMap.add_child(nameLabel)
+
+
+## The uprising flame's own colour (manual p091: "a flaming icon").
+const CUprising := Color(1.0, 0.55, 0.12)
+
+
+## A corner glyph is white on alpha; the button's icon colours carry the tint,
+## in every state, so hover and press do not wash it out.
+static func _TintIcon(btn: Button, color: Color) -> void:
+	for state in ["icon_normal_color", "icon_hover_color", "icon_pressed_color", "icon_focus_color", "icon_hover_pressed_color"]:
+		btn.add_theme_color_override(state, color)
+
+
+## The tint a corner glyph was given (for the tests).
+static func IconTint(btn: Button) -> Color:
+	return btn.get_theme_color("icon_normal_color")
 
 
 # ---- THE THREE BARS UNDER A SYSTEM (manual p025 Fig 2.9, p084 Fig 3.26) ----
