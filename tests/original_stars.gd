@@ -27,7 +27,13 @@ func _check(cond: bool, what: String) -> void:
 func _init() -> void:
 	await process_frame
 	Art.IgnoreProjectFolder = true
+	Art.UserArtRoot = "user://test-original_stars-art"   # never the player's own
 	FactionRegistry.EnsureLoaded()
+	if FactionRegistry.Pack.Manifest.ArtSets.is_empty():
+		print("[original_stars] (this pack declares no art set - the original's pictures do not apply)")
+		print("[original_stars] 0 checks, 0 failed")
+		quit(0)
+		return
 	MpSetup.reset()
 	GameSettings.SelectedDifficulty = Enums.Difficulty.Medium
 	GameSettings.SelectedSize = Enums.GalaxySize.Standard
@@ -48,15 +54,15 @@ func _init() -> void:
 	_check(not map._planetSprites[home].visible and (map._planetStars[home].visible or map._planetFlares[home].visible), "without an import the map draws the labels")
 
 	# Write a star for our side at every tier, an unexplored one, and a flame.
-	var dir := "user://original/%s" % pack_id
+	var dir := "%s/%s" % [Art.UserArtRoot, FactionRegistry.Pack.Manifest.ArtSets[0]]
 	DirAccess.make_dir_recursive_absolute(dir + "/gid")
 	DirAccess.make_dir_recursive_absolute(dir + "/icons")
 	DirAccess.make_dir_recursive_absolute(dir + "/miniatures/units")
 	var written: Array[String] = []
 	for tier in ["big", "mid", "low", "none"]:
-		for side in [us.Id, "unexplored"]:
+		for side in [us.ArtSkin, "unexplored"]:
 			var img := Image.create(15, 15, false, Image.FORMAT_RGBA8)
-			img.fill(Color(1, 0.5, 0.2) if side == us.Id else Color(0.6, 0.6, 0.6))
+			img.fill(Color(1, 0.5, 0.2) if side == us.ArtSkin else Color(0.6, 0.6, 0.6))
 			var path := "%s/gid/%s.%s.png" % [dir, side, tier]
 			img.save_png(path)
 			written.append(path)

@@ -13,8 +13,6 @@ extends RefCounted
 ##   then, for each art set the pack declares:
 ##   res://art/<set>/            a checkout's exported folder (gitignored)
 ##   user://art/<set>/           the art set the player imported
-##   LEGACY_SET_ROOTS[<set>]     the beta's committed copy and the old
-##                               importer's user folder (to go: plan phase 5)
 ## A pack row may borrow another row's pictures from a set (its `art`, e.g.
 ## "swr-original:facilities/orbital_shipyard"); the pack's own art/ still
 ## comes first. The original's side pictures are keyed by a SKIN
@@ -27,17 +25,11 @@ extends RefCounted
 ## there is no OS path to read. A file under user:// is a plain PNG and is read
 ## with Image.load_from_file.
 
-## Where swr-original lived before art sets: the beta's committed copy and the
-## old importer's user folder.
-const LEGACY_SET_ROOTS := {
-	"swr-original": ["res://packs/star-wars-rebellion/original", "user://original/star-wars-rebellion"],
-}
-
 static var _cache: Dictionary = {}      # lookup key -> Texture2D or null
 static var _cache_pack: String = ""
 static var _aliases: Dictionary = {}    # "<kind>/<id>" -> [set, kind, id], for the loaded pack
-## Tests only: skip the project's own copies (res://art/ and the committed legacy
-## folder), so a developer's exported art does not decide what a test sees.
+## Tests only: skip the project's own copy (res://art/), so a developer's
+## exported art does not decide what a test sees.
 static var IgnoreProjectFolder: bool = false
 ## Where imported art sets live: <this>/<set>/. Tests point it elsewhere, so a
 ## player's own imported art set is never touched by a test.
@@ -82,8 +74,7 @@ static func TabIcon(name: String, side: String, state: String = "") -> Texture2D
 	return tex
 
 
-## A window button's picture: original/buttons/<name>[.pressed].png.
-## A window button's picture: original/buttons/<name>[.pressed|.disabled].png.
+## A window button's picture: buttons/<name>[.pressed|.disabled].png.
 static func ButtonIcon(name: String, state: String = "") -> Texture2D:
 	return _texture("buttons/%s%s.png" % [name, "" if state.is_empty() else "." + state])
 
@@ -112,7 +103,7 @@ static func Scaled(tex: Texture2D, factor: int) -> Texture2D:
 	return out
 
 
-## The planet sprite for a map.json artwork_id: original/planet_sprites/<n>.png.
+## The planet sprite for a map.json artwork_id: planet_sprites/<n>.png.
 static func PlanetSprite(artwork_id: int) -> Texture2D:
 	if artwork_id <= 0:
 		return null
@@ -307,9 +298,6 @@ static func _set_roots(set_id: String) -> Array[String]:
 	if not IgnoreProjectFolder:
 		roots.append("res://art/%s" % set_id)
 	roots.append("%s/%s" % [UserArtRoot, set_id])
-	for r in LEGACY_SET_ROOTS.get(set_id, []):
-		if not (IgnoreProjectFolder and str(r).begins_with("res://")):
-			roots.append(str(r))
 	return roots
 
 
@@ -370,8 +358,8 @@ static func _find(own_rel: String, set_rel: String, only_set: String = "") -> Te
 	return tex
 
 
-## Whether any copy of art set `set_id` is present (imported, a checkout's
-## export, or the committed legacy copy) - a folder with something in it.
+## Whether any copy of art set `set_id` is present (imported, or a checkout's
+## export) - a folder with something in it.
 static func HasArtSet(set_id: String) -> bool:
 	for root in _set_roots(set_id):
 		if not DirAccess.dir_exists_absolute(root):

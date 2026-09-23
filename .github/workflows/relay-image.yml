@@ -21,6 +21,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # The original game's artwork is never published (docs/original-art-plan.md):
+      # players import their own art set. Nothing of it may be in the repo.
+      - name: No original artwork in the repo
+        run: |
+          set -e
+          leaked=$(git ls-files 'art/*' 'packs/*/original/*' | head -20)
+          if [ -n "$leaked" ]; then
+            echo "::error::The original's artwork is committed - it must never be published:"
+            echo "$leaked"
+            exit 1
+          fi
+
       - name: Godot ${{ env.GODOT_VERSION }} and the web export templates
         run: |
           set -e
@@ -47,6 +59,11 @@ jobs:
           ./godot --headless --path . --export-release Web build/web/index.html
           ls -la build/web
           test -s build/web/index.wasm && test -s build/web/index.pck && test -s build/web/index.html
+          # ...nor in the exported game: no art-set or original/ path in the pck.
+          if grep -a -q -E 'art/swr-original/|/original/(portraits|windows|tabs|buttons)/' build/web/index.pck; then
+            echo "::error::The web export carries the original's artwork."
+            exit 1
+          fi
 
       - name: Image name (lower-case owner)
         run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/wars-relay" >> "$GITHUB_ENV"

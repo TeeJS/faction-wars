@@ -8696,7 +8696,7 @@
     "DisplayName": "Star Wars: Rebellion",
     "FactionCount": 2,
     "Id": "star-wars-rebellion",
-    "MapImage": "galaxyShaded.bmp",
+    "MapImage": "swr-original:screens/galaxy.png",
     "MapImageRect": "[P: (-5.0, 110.0), S: (1070.667, 803.0)]",
     "Menu": {
       "Credits": [
@@ -8704,15 +8704,15 @@
         "This faction pack: unit, facility, character, mission and map tables from the original GData files; rules and screens from the manual.",
         "Faction Wars engine: TeeJS."
       ],
-      "ImageFile": "cockpit.png",
+      "ImageFile": "swr-original:screens/cockpit.png",
       "Readout": {
         "ColorHex": "#40ff40",
         "HqOnly": "Headquarters Only Victory",
         "Rect": [
-          609,
-          842,
-          244,
-          34
+          270,
+          374,
+          108,
+          15
         ],
         "Standard": "Standard Game"
       },
@@ -8720,10 +8720,10 @@
         {
           "Action": "difficulty",
           "Rect": [
-            133,
-            82,
-            120,
-            110
+            58,
+            36,
+            53,
+            48
           ],
           "SelectedColorHex": "#ff3030",
           "Tooltip": "Set game difficulty to easy.",
@@ -8732,10 +8732,10 @@
         {
           "Action": "difficulty",
           "Rect": [
-            273,
-            82,
             120,
-            110
+            36,
+            53,
+            48
           ],
           "SelectedColorHex": "#ff3030",
           "Tooltip": "Set game difficulty to medium.",
@@ -8744,10 +8744,10 @@
         {
           "Action": "difficulty",
           "Rect": [
-            413,
-            82,
-            120,
-            110
+            183,
+            36,
+            53,
+            48
           ],
           "SelectedColorHex": "#ff3030",
           "Tooltip": "Set game difficulty to hard.",
@@ -8756,10 +8756,10 @@
         {
           "Action": "galaxy_size",
           "Rect": [
-            649,
-            652,
-            64,
-            64
+            288,
+            289,
+            28,
+            28
           ],
           "SelectedColorHex": "#ffd23c",
           "Tooltip": "Set the size of the galaxy: standard.",
@@ -8768,10 +8768,10 @@
         {
           "Action": "galaxy_size",
           "Rect": [
-            727,
-            652,
-            64,
-            64
+            322,
+            289,
+            28,
+            28
           ],
           "SelectedColorHex": "#ffd23c",
           "Tooltip": "Set the size of the galaxy: large.",
@@ -8780,10 +8780,10 @@
         {
           "Action": "galaxy_size",
           "Rect": [
-            805,
-            652,
-            64,
-            64
+            357,
+            289,
+            28,
+            28
           ],
           "SelectedColorHex": "#ffd23c",
           "Tooltip": "Set the size of the galaxy: huge.",
@@ -8792,10 +8792,10 @@
         {
           "Action": "load_game",
           "Rect": [
-            923,
-            518,
-            90,
-            94
+            409,
+            230,
+            40,
+            41
           ],
           "SelectedColorHex": "",
           "Tooltip": "Load a saved game.",
@@ -8804,10 +8804,10 @@
         {
           "Action": "credits",
           "Rect": [
-            1029,
-            542,
-            80,
-            74
+            456,
+            240,
+            35,
+            32
           ],
           "SelectedColorHex": "",
           "Tooltip": "View credits.",
@@ -8816,10 +8816,10 @@
         {
           "Action": "start",
           "Rect": [
-            333,
-            680,
-            170,
-            150
+            147,
+            302,
+            75,
+            66
           ],
           "SelectedColorHex": "",
           "Tooltip": "Start the game as the Empire.",
@@ -8828,10 +8828,10 @@
         {
           "Action": "start",
           "Rect": [
-            969,
-            680,
-            164,
-            150
+            430,
+            302,
+            72,
+            66
           ],
           "SelectedColorHex": "",
           "Tooltip": "Start the game as the Alliance.",
@@ -8840,10 +8840,10 @@
         {
           "Action": "hq_only_victory",
           "Rect": [
-            689,
-            748,
-            96,
-            74
+            305,
+            332,
+            42,
+            32
           ],
           "SelectedColorHex": "",
           "Tooltip": "Headquarters Only Victory: winner is the first to capture the opponent's headquarters. This makes the game shorter than fulfilling all the victory conditions.",
@@ -8852,10 +8852,10 @@
         {
           "Action": "multiplayer",
           "Rect": [
-            141,
-            872,
-            136,
-            142
+            62,
+            387,
+            60,
+            63
           ],
           "SelectedColorHex": "",
           "Tooltip": "Play the game across the network with a human opponent (head-to-head).",
@@ -8864,10 +8864,10 @@
         {
           "Action": "exit",
           "Rect": [
-            1237,
-            884,
-            126,
-            126
+            549,
+            392,
+            56,
+            56
           ],
           "SelectedColorHex": "",
           "Tooltip": "Exit.",

@@ -143,7 +143,12 @@ same pack is built in `tests/art_sets.gd`.
 - TeeJ's Separatists vs Trade Federation, or a minimal one: imported from a pack file into the web build, wearing the original look.
 
 ### Phase 5: take the art out (destructive; a separate go for each step)
-- **5a (a normal PR):**
+- **5a (a normal PR):** *prepared 2026-09-23, not merged.* Also: the Star Wars `pack.json` takes
+  `swr-original:screens/galaxy.png` and `swr-original:screens/cockpit.png` (menu rects divided by
+  2.25, x less 1: cockpit.png was 20001 at x2.25 from x 1); Artwork's legacy roots are gone; the
+  exporter's `--pack` mode is refused (a checkout uses `--folder <repo>\art\swr-original`).
+  **Merge only after the exporter release is published**, or the testers have no way to get
+  the art.
   - delete the Phase 0 files and re-ignore them;
   - add `export_presets.cfg` exclusions;
   - add a CI step that **fails the build** if anything from the art set is in the export.

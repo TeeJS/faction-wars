@@ -73,11 +73,11 @@ Without `--art`, the build checks against the default art-set file, else reads
 the art set in memory from the game folder (found, or `--gamedir`). With none of
 those it warns and builds; the game checks again on import.
 
-A development checkout, until the engine reads art sets (plan phase 2), writes
-the set under the pack, reading the rows from that pack:
+A development checkout keeps its own copy at `<repo>\art\swr-original` (gitignored,
+and excluded from exports); run Godot's `--import` once after writing it:
 
 ```powershell
-.\FactionWarsExporter.exe --gamedir 'C:\Program Files (x86)\GOG Galaxy\Games\Star Wars - Rebellion' --pack 'D:\Github\faction-wars\packs\star-wars-rebellion'
+.\FactionWarsExporter.exe --gamedir 'C:\Program Files (x86)\GOG Galaxy\Games\Star Wars - Rebellion' --folder 'D:\Github\faction-wars\art\swr-original'
 ```
 
 ## The art-set file

@@ -28,7 +28,13 @@ func _check(cond: bool, what: String) -> void:
 func _init() -> void:
 	await process_frame
 	Art.IgnoreProjectFolder = true   # only what this test writes counts
+	Art.UserArtRoot = "user://test-portraits-art"   # never the player's own
 	FactionRegistry.EnsureLoaded()
+	if FactionRegistry.Pack.Manifest.ArtSets.is_empty():
+		print("[portraits] (this pack declares no art set - the original's pictures do not apply)")
+		print("[portraits] 0 checks, 0 failed")
+		quit(0)
+		return
 	MpSetup.reset()
 	GameSettings.SelectedDifficulty = Enums.Difficulty.Medium
 	GameSettings.SelectedSize = Enums.GalaxySize.Standard
@@ -59,8 +65,8 @@ func _init() -> void:
 	for _i in 2:
 		await process_frame
 
-	# --- Write portraits and a miniature under user://original. ---
-	var dir := "user://original/%s" % pack_id
+	# --- Write portraits and a miniature under the test art set. ---
+	var dir := "%s/%s" % [Art.UserArtRoot, FactionRegistry.Pack.Manifest.ArtSets[0]]
 	for sub in ["portraits/characters", "portraits/units", "miniatures/characters", "characters", "planets", "missions"]:
 		DirAccess.make_dir_recursive_absolute("%s/%s" % [dir, sub])
 	var written: Array[String] = []
@@ -138,7 +144,7 @@ func _init() -> void:
 		var mdef: PackDefs.MissionDefPack = MissionCatalog.DefFor(m.Type)
 		var mpic := Image.create(400, 200, false, Image.FORMAT_RGBA8)
 		mpic.fill(Color(0.7, 0.2, 0.2))
-		var mpath := "%s/missions/%s.%s.png" % [dir, mdef.Id, us.Id]
+		var mpath := "%s/missions/%s.%s.png" % [dir, mdef.Id, us.ArtSkin]
 		mpic.save_png(mpath)
 		written.append(mpath)
 		var ppic := Image.create(400, 200, false, Image.FORMAT_RGBA8)
