@@ -11,9 +11,9 @@ version.txt
 # Manual scans, PDFs and digests are copyrighted - never commit any of it.
 manual/
 
-# Artwork copied out of the installed game by tools/FactionWarsExporter.
-# Committed for the beta build (TeeJ, 2026-09-23); to be dealt with before a public release.
-packs/*/original/import.log
+# The original's artwork is never committed (docs/original-art-plan.md): players
+# import their own art set. packs/*/original/ was its old home.
+packs/*/original/
 tools/FactionWarsExporter/bin/
 tools/FactionWarsExporter/obj/
 # The exporter's packaged build (tools/FactionWarsExporter/build.ps1).

@@ -26,6 +26,8 @@ const PackImport := preload("res://src/ui/pack_import.gd")
 
 const MENU_SCENE := "res://Menu.tscn"
 const LastFile := "user://pack.cfg"
+## The Faction Wars Exporter's download: always the newest release's zip.
+const EXPORTER_URL := "https://github.com/TeeJS/faction-wars/releases/latest/download/FactionWarsExporter-win-x64.zip"
 
 ## pack id -> the Play button, for the test and the keyboard.
 var _play: Dictionary = {}
@@ -259,6 +261,28 @@ func _imports() -> Control:
 	how.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	how.add_theme_color_override("font_color", Color(0.75, 0.75, 0.8))
 	box.add_child(how)
+
+	# Where to get the exporter. In the browser a link that opens it in a new
+	# tab; on the desktop the address to copy (the game starts no other program).
+	var get_it := HBoxContainer.new()
+	get_it.name = "ExporterLink"
+	get_it.alignment = BoxContainer.ALIGNMENT_CENTER
+	var lead := Label.new()
+	lead.text = "Download the Faction Wars Exporter (Windows):"
+	get_it.add_child(lead)
+	if OS.has_feature("web"):
+		var link := LinkButton.new()
+		link.text = "FactionWarsExporter-win-x64.zip"
+		link.tooltip_text = EXPORTER_URL
+		link.pressed.connect(func() -> void: JavaScriptBridge.eval("window.open('%s', '_blank')" % EXPORTER_URL, true))
+		get_it.add_child(link)
+	else:
+		var address := LineEdit.new()
+		address.text = EXPORTER_URL
+		address.editable = false
+		address.custom_minimum_size = Vector2(620, 0)
+		get_it.add_child(address)
+	box.add_child(get_it)
 
 	for e in PackImport.Installed():
 		var line := HBoxContainer.new()

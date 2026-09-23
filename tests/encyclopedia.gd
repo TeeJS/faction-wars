@@ -28,7 +28,13 @@ func _check(cond: bool, what: String) -> void:
 func _init() -> void:
 	await process_frame
 	Art.IgnoreProjectFolder = true
+	Art.UserArtRoot = "user://test-encyclopedia-art"   # never the player's own
 	FactionRegistry.EnsureLoaded()
+	if FactionRegistry.Pack.Manifest.ArtSets.is_empty():
+		print("[encyclopedia] (this pack declares no art set - the original's pictures do not apply)")
+		print("[encyclopedia] 0 checks, 0 failed")
+		quit(0)
+		return
 	MpSetup.reset()
 	GameSettings.SelectedDifficulty = Enums.Difficulty.Medium
 	GameSettings.SelectedSize = Enums.GalaxySize.Standard
@@ -85,9 +91,9 @@ func _init() -> void:
 	w._viewIndexBtn.pressed.emit()
 	_check(w._indexView.visible and w._tabs[6].button_pressed, "View Index returns to the Personnel index")
 
-	# Imported text and picture: a unit, from user://original.
+	# Imported text and picture: a unit, from the test art set.
 	var unit: PackDefs.UnitDef = pack.Units[0]
-	var dir := "user://original/%s" % pack_id
+	var dir := "%s/%s" % [Art.UserArtRoot, FactionRegistry.Pack.Manifest.ArtSets[0]]
 	DirAccess.make_dir_recursive_absolute(dir + "/units")
 	var img := Image.create(400, 200, false, Image.FORMAT_RGBA8)
 	img.fill(Color(0.2, 0.4, 0.7))

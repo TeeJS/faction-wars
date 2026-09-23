@@ -8,9 +8,7 @@ internal static class Program
     ///       the art-set file (log: &lt;out&gt;.log)
     ///   FactionWarsExporter.exe --gamedir "..." --folder "D:\...\swr-original"
     ///       the art set as a folder (log: &lt;folder&gt;\export.log)
-    ///   FactionWarsExporter.exe --gamedir "..." --pack "D:\...\packs\star-wars-rebellion"
-    ///       the same set under &lt;pack&gt;\original, rows read from that pack - TeeJ's
-    ///       checkout, until the engine reads art sets (log: original\import.log)
+    ///   A checkout's own copy: --folder "&lt;repo&gt;\art\swr-original" (gitignored).
     ///   FactionWarsExporter.exe --build "D:\...\my-pack" --out "D:\...\my-pack.zip" [--art "...art.zip"] [--gamedir "..."]
     ///       a faction-pack file, refused if it carries the original's art (log: &lt;out&gt;.log)
     /// Exit code 0 = done, 1 = a problem (the log says which), 2 = failed.
@@ -26,9 +24,9 @@ internal static class Program
 
         if (opt.ContainsKey("--build") && opt.ContainsKey("--out"))
             return Build(Get("--build"), Get("--out"), Get("--art"), Get("--gamedir"));
-        if (opt.ContainsKey("--gamedir") && opt.ContainsKey("--pack"))
-            return Export(Get("--gamedir"), Get("--pack"), () => new FolderSink(Path.Combine(Get("--pack"), "original")),
-                Path.Combine(Get("--pack"), "original", "import.log"));
+        if (opt.ContainsKey("--pack"))
+            return Log(Path.Combine(Get("--pack"), "original", "import.log"),
+                "--pack is gone: the game reads art sets now. For a checkout, use --folder <repo>\\art\\swr-original.", 1);
         if (opt.ContainsKey("--gamedir") && opt.ContainsKey("--folder"))
             return Export(Get("--gamedir"), Importer.BundledRows, () => new FolderSink(Get("--folder")),
                 Path.Combine(Get("--folder"), "export.log"));

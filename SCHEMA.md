@@ -935,9 +935,9 @@ engine's own art.
 | `map_image`, `menu.image` | `"<set>:<path>"` | A picture from the art set (`swr-original:screens/galaxy.png`, `swr-original:screens/cockpit.png`). |
 
 Where the engine looks (`src/ui/artwork.gd`): the pack's own `art/`, then for each
-declared set `res://art/<set>/` (a checkout's exported folder, gitignored),
-`user://art/<set>/` (imported), and until plan phase 5 the Star Wars pack's
-committed `original/` folder. The art set's layout is the exporter's
+declared set `res://art/<set>/` (a checkout's exported folder, gitignored and
+excluded from exports) and `user://art/<set>/` (imported). Nothing of an art set
+is ever committed: CI fails a build that carries any. The art set's layout is the exporter's
 (`tools/FactionWarsExporter/README.md`).
 
 Packs load from `res://packs/<id>/` (shipped) and `user://packs/<id>/`

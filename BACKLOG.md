@@ -32,7 +32,7 @@ target) before landing.
 
 | # | Item | Plan |
 |---|------|------|
-| 40 | **The original's art out of the public repo; owners import it.** A signed exporter writes the player's own art set to a file (their backup); the game imports it into browser storage (web) or the user folder (desktop). Art sets are separate from shareable faction packs, so custom packs (e.g. Separatists vs Trade Federation) can wear the original UI. Removal, history rewrite and GHCR purge come last. | `docs/original-art-plan.md` (TeeJ signed off 2026-09-23) |
+| 40 | **The original's art out of the public repo; owners import it.** A signed exporter writes the player's own art set to a file (their backup); the game imports it into browser storage (web) or the user folder (desktop). Art sets are separate from shareable faction packs, so custom packs (e.g. Separatists vs Trade Federation) can wear the original UI. Removal, history rewrite and GHCR purge come last. | `docs/original-art-plan.md` (TeeJ signed off 2026-09-23). Phases 0-4 done (#114, #115, #116); 5a prepared (merge after the exporter release); 5b/5c each need TeeJ's go |
 
 What remains is under **Missing Features** (new screens) and **Backlog** below;
 those need TeeJ's go before they start.
