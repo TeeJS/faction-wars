@@ -221,7 +221,6 @@ func AttachQueueMenu(labelPath: String, planet: Planet, producer: String, queue:
 	menu.add_item("Destination...", 2)
 	menu.add_separator()
 	menu.add_item("Encyclopedia", 3)
-	menu.set_item_disabled(menu.get_item_index(3), true)
 	label.add_child(menu)
 	RegisterPopupMenu(menu)
 
@@ -235,6 +234,10 @@ func AttachQueueMenu(labelPath: String, planet: Planet, producer: String, queue:
 	var onId := func(id: int) -> void:
 		match id:
 			0: OpenBuildChooser(planet, producer)
+			3:   # Encyclopedia - the producing facility's entry
+				var ui3: UIManager = get_parent() as UIManager
+				if ui3 != null:
+					ui3.OpenEncyclopedia("facilities", FacilityCatalog.FamilyForRole(producer))
 			1:
 				CommandBus.issue("cancel_build", { "planet": planet.Name, "producer": producer })
 				Populate(planet)
@@ -448,6 +451,10 @@ func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, fa
 			match id:
 				0:
 					OpenBuildChooser(planet, rowFac.ProducerRole())
+				2:   # Encyclopedia - this facility's entry (manual p085)
+					var ui2: UIManager = get_parent() as UIManager
+					if ui2 != null and rowFac.Def != null:
+						ui2.OpenEncyclopedia("facilities", rowFac.Def.Id)
 				4:
 					OpenDestinationChooser(planet)
 				6:

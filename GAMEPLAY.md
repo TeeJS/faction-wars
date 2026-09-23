@@ -4023,6 +4023,15 @@ the selected database persists between them. Reachable three ways: the
 Encyclopedia control, right-click → Encyclopedia on any item, or the **ℹ icon
 present in many windows**, which jumps to the entry for the current context.
 
+**Implemented** (`src/ui/encyclopedia_window.gd`, 2026-09-23): Index view with
+the Topic entry box, the seven database tabs, the list and View Topic / View
+Index / Close; Topic view with the name, the browse arrows, the picture and
+the description, the chosen database persisting. Reached from the bottom-bar
+Encyclopedia control, F7, right-click → Encyclopedia on characters, units,
+fleets, facilities, missions and the HQ, and the Create Mission window's
+Encyclopedia button. Pictures and text are the player's imported originals
+(`tools/RebellionArtImporter`); rows without them show the pack's own facts.
+
 ### The two droids *(PDF p076 / manual p078)*
 
 Two distinct droids per side, with different jobs — a detail easy to conflate:

@@ -176,6 +176,10 @@ func _ready() -> void:
 
 	charInfoBtn.pressed.connect(_uiManager.OpenPersonnelFinder)
 	planetInfoBtn.pressed.connect(_uiManager.OpenPlanetFinder)
+	# The Encyclopedia control (manual p073): the Index view.
+	var encyBtn: Button = get_node_or_null("UIManager/HBoxContainer/Encyclopedia")
+	if encyBtn != null:
+		encyBtn.pressed.connect(func() -> void: _uiManager.OpenEncyclopedia())
 
 	# THE AGENT DROID. "C-3PO for the Alliance, IMP-22 for the Empire" (manual
 	# p031). The manual's gesture is a RIGHT-CLICK on the droid itself; there is
