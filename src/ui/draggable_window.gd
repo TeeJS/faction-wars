@@ -302,11 +302,23 @@ func OpenCreateMission(team: Array, origin: Planet, target: Planet, picked: Vari
 	missionLabel.text = "Mission:"
 	box.add_child(missionLabel)
 
+	# "The currently selected mission" (Fig 2.34): its picture for our side,
+	# when the player imported the original's; a plain plate otherwise.
+	var missionPic := ColorRect.new()
+	missionPic.color = Color(0.08, 0.1, 0.14, 1)
+	missionPic.custom_minimum_size = Vector2(ContentWidth, ContentWidth / 2.0)
+	box.add_child(missionPic)
+
 	var picker := OptionButton.new()
 	for i in legal.size():
-		picker.add_item(JsonUtil.enum_name(Enums.MissionType, legal[i]), i)
+		picker.add_item(MissionCatalog.DisplayNameFor(legal[i]), i)
 	picker.selected = 0
 	box.add_child(picker)
+	var showMission := func(index: int) -> void:
+		var d: PackDefs.MissionDefPack = MissionCatalog.DefFor(legal[index])
+		Art.Fill(missionPic, Art.MissionPicture(d.Id, actor.Id) if d != null else null)
+	picker.item_selected.connect(showMission)
+	showMission.call(0)
 
 	# The Decoy tab (manual p102, fig 3.48).
 	var decoyBoxes: Array[CheckBox] = []
@@ -352,7 +364,7 @@ func OpenCreateMission(team: Array, origin: Planet, target: Planet, picked: Vari
 	pad.add_child(box)
 	dialog.add_child(pad)
 
-	var contentHeight: int = 210 + ((mini(team.size() * 26, 120) + 44) if team.size() > 1 else 0)
+	var contentHeight: int = 210 + int(ContentWidth / 2.0) + 8 + ((mini(team.size() * 26, 120) + 44) if team.size() > 1 else 0)
 
 	dialog.confirmed.connect(func() -> void:
 		var decoys: Array = []
