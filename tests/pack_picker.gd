@@ -59,8 +59,7 @@ func _init() -> void:
 	ArtScript.UserArtRoot = "user://test-picker-art"
 	Importer._remove(ArtScript.UserArtRoot)
 	picker._on_imported({"ok": true, "message": "nothing yet"})
-	# The old importer's user folder (user://original/) may still hold a copy on
-	# this machine, so the card must agree with Artwork, whatever it finds.
+	# The card must agree with Artwork, whatever it finds.
 	var look: Label = picker.find_child("OriginalLook", true, false)
 	var has: bool = ArtScript.HasArtSet("swr-original")
 	_check(look != null and look.text == ("Original look: yes" if has else "Original look: import your art set (below)"),

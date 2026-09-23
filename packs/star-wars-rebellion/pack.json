@@ -10,8 +10,10 @@
     "color": "#5499ff"
   },
   "unexplored_color": "#cccccc",
-  "art_sets": ["swr-original"],
-  "map_image": "galaxyShaded.bmp",
+  "art_sets": [
+    "swr-original"
+  ],
+  "map_image": "swr-original:screens/galaxy.png",
   "map_image_rect": [
     -5,
     110,
@@ -33,15 +35,15 @@
     "hq_only": "Rebel Win Conditions: Capture Coruscant.\nImperial Win Conditions: Destroy the Rebel headquarters."
   },
   "menu": {
-    "_comment": "The Shuttle Cockpit (manual p021, Fig. 2.2). rect = [x, y, w, h] in the picture's pixels.",
-    "image": "cockpit.png",
+    "_comment": "The Shuttle Cockpit (manual p021, Fig. 2.2), COMMON.DLL 20001 from the player's art set. rect = [x, y, w, h] in the picture's pixels (640x480).",
+    "image": "swr-original:screens/cockpit.png",
     "selected_color": "#ffd23c",
     "readout": {
       "rect": [
-        609,
-        842,
-        244,
-        34
+        270.2,
+        374.2,
+        108.4,
+        15.1
       ],
       "standard": "Standard Game",
       "hq_only": "Headquarters Only Victory",
@@ -52,10 +54,10 @@
         "action": "difficulty",
         "value": "easy",
         "rect": [
-          133,
-          82,
-          120,
-          110
+          58.7,
+          36.4,
+          53.3,
+          48.9
         ],
         "tooltip": "Set game difficulty to easy.",
         "selected_color": "#ff3030"
@@ -64,10 +66,10 @@
         "action": "difficulty",
         "value": "medium",
         "rect": [
-          273,
-          82,
-          120,
-          110
+          120.9,
+          36.4,
+          53.3,
+          48.9
         ],
         "tooltip": "Set game difficulty to medium.",
         "selected_color": "#ff3030"
@@ -76,10 +78,10 @@
         "action": "difficulty",
         "value": "hard",
         "rect": [
-          413,
-          82,
-          120,
-          110
+          183.1,
+          36.4,
+          53.3,
+          48.9
         ],
         "tooltip": "Set game difficulty to hard.",
         "selected_color": "#ff3030"
@@ -88,10 +90,10 @@
         "action": "galaxy_size",
         "value": "standard",
         "rect": [
-          649,
-          652,
-          64,
-          64
+          288.0,
+          289.8,
+          28.4,
+          28.4
         ],
         "tooltip": "Set the size of the galaxy: standard.",
         "selected_color": "#ffd23c"
@@ -100,10 +102,10 @@
         "action": "galaxy_size",
         "value": "large",
         "rect": [
-          727,
-          652,
-          64,
-          64
+          322.7,
+          289.8,
+          28.4,
+          28.4
         ],
         "tooltip": "Set the size of the galaxy: large.",
         "selected_color": "#ffd23c"
@@ -112,10 +114,10 @@
         "action": "galaxy_size",
         "value": "huge",
         "rect": [
-          805,
-          652,
-          64,
-          64
+          357.3,
+          289.8,
+          28.4,
+          28.4
         ],
         "tooltip": "Set the size of the galaxy: huge.",
         "selected_color": "#ffd23c"
@@ -123,20 +125,20 @@
       {
         "action": "load_game",
         "rect": [
-          923,
-          518,
-          90,
-          94
+          409.8,
+          230.2,
+          40.0,
+          41.8
         ],
         "tooltip": "Load a saved game."
       },
       {
         "action": "credits",
         "rect": [
-          1029,
-          542,
-          80,
-          74
+          456.9,
+          240.9,
+          35.6,
+          32.9
         ],
         "tooltip": "View credits."
       },
@@ -144,10 +146,10 @@
         "action": "start",
         "value": "empire",
         "rect": [
-          333,
-          680,
-          170,
-          150
+          147.6,
+          302.2,
+          75.6,
+          66.7
         ],
         "tooltip": "Start the game as the Empire."
       },
@@ -155,40 +157,40 @@
         "action": "start",
         "value": "alliance",
         "rect": [
-          969,
-          680,
-          164,
-          150
+          430.2,
+          302.2,
+          72.9,
+          66.7
         ],
         "tooltip": "Start the game as the Alliance."
       },
       {
         "action": "hq_only_victory",
         "rect": [
-          689,
-          748,
-          96,
-          74
+          305.8,
+          332.4,
+          42.7,
+          32.9
         ],
         "tooltip": "Headquarters Only Victory: winner is the first to capture the opponent's headquarters. This makes the game shorter than fulfilling all the victory conditions."
       },
       {
         "action": "multiplayer",
         "rect": [
-          141,
-          872,
-          136,
-          142
+          62.2,
+          387.6,
+          60.4,
+          63.1
         ],
         "tooltip": "Play the game across the network with a human opponent (head-to-head)."
       },
       {
         "action": "exit",
         "rect": [
-          1237,
-          884,
-          126,
-          126
+          549.3,
+          392.9,
+          56.0,
+          56.0
         ],
         "tooltip": "Exit."
       }

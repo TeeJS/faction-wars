@@ -6,6 +6,8 @@ extends SceneTree
 ##   .\tools\run-gd.ps1 tests/map_backdrop.gd              (Star Wars)
 ##   .\tools\run-gd.ps1 tests/map_backdrop.gd -- --pack=ww2
 
+const Art := preload("res://src/ui/artwork.gd")
+
 var _fails := 0
 var _checks := 0
 
@@ -37,7 +39,8 @@ func _init() -> void:
 
 	var backdrop := map.Backdrop()
 	_check(backdrop != null and backdrop.texture != null, "the map draws a backdrop")
-	var expected: Texture2D = load("%s/%s/%s" % [FactionRegistry.PACKS_ROOT, pack.Manifest.Id, pack.Manifest.MapImage])
+	# The pack's picture, or its art set's ("swr-original:screens/galaxy.png").
+	var expected: Texture2D = Art.PackImage(pack.Manifest.MapImage)
 	_check(backdrop != null and backdrop.texture.get_size() == expected.get_size(),
 		"the backdrop is the pack's map_image '%s' (%s)" % [pack.Manifest.MapImage, str(expected.get_size())])
 	var rect := pack.Manifest.MapImageRect
