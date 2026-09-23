@@ -1,6 +1,6 @@
 # Plan: the original's art out of the repo, imported by owners (Option A)
 
-Status: **signed off by TeeJ, 2026-09-23.** Phases 0-3 done; see each phase.
+Status: **signed off by TeeJ, 2026-09-23.** Phases 0-4 done; see each phase.
 Stop after every phase with a go/no-go read-out.
 
 ## Charter
@@ -130,6 +130,16 @@ its placement.
 - TeeJ checks the browser build and a tablet.
 
 ### Phase 4: a real custom pack (optional proof)
+**Done 2026-09-23** in the browser (web export, no committed art). A "Separatists vs
+Trade Federation" pack made from the Star Wars JSON: its sides renamed and recoloured,
+the Separatists with skin `empire` and the Trade Federation with `alliance`, map and
+Cockpit from `swr-original`, one `art` reference and one picture of its own. The
+exporter's Build faction pack made the file (checked against the art set: clean), the
+picker imported it beside the art set, and it played: the Separatists' worlds as the
+Empire's green stars with the Empire's icons, the Trade Federation's Coruscant in the
+Alliance's red, and the original's sector window. The generator is not committed; the
+same pack is built in `tests/art_sets.gd`.
+
 - TeeJ's Separatists vs Trade Federation, or a minimal one: imported from a pack file into the web build, wearing the original look.
 
 ### Phase 5: take the art out (destructive; a separate go for each step)
