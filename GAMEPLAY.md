@@ -2227,8 +2227,8 @@ The Build Selection window's own callouts settle a reading that §3a left open:
 
 | Field | Fig. 3.58 value | The manual's callout |
 |---|---|---|
-| Maintenance cost | 26 | — |
-| Refined material cost | 24 | — |
+| Refined material cost (the left box) | 26 | "Refined material cost" |
+| Maintenance cost (the right box, the wrench) | 24 | "Maintenance cost" |
 | **Best Time To Completion** | **Days: 104** | "**Denotes the day task will be completed**" |
 | **Best Time To Deployment** | Days: 0 | "**Additional** number of days until unit is deployed to destination system" |
 | Number to build | 1 | "Number of units to build **consecutively**" |
@@ -2240,6 +2240,28 @@ these are optimistic estimates that can slip.
 
 "Number to build" queues **consecutive** copies — one order, N units, built in
 series, not in parallel.
+
+(The two cost rows were the other way round here until 2026-09-23. The
+callout lines run "Refined material cost" to the left box and "Maintenance
+cost" to the wrench, and the pack's Carrack costs 26 to build and 24 to
+maintain: two sources, **Confirmed**.)
+
+**The shipped game shows a duration, not a date.** TeeJ's screenshot of the
+original's Build Selection (a Construction Yard, 2026-09-23) reads "Best Time
+To Completion: 40 Days" - the yard's refined cost 10 at 4 days a point - where
+the manual's pre-release figure reads "Days: 104" and its callout says "the
+day". The window is built to the shipped screen.
+
+**Implemented** (`src/ui/build_selection_window.gd`, 2026-09-23): with the
+imported art it is the original's window, rebuilt from its bitmaps at the
+places matched on that screenshot (every part pixel for pixel): the 210x261
+plate (STRATEGY.DLL 10800) with its title bar inside the bevel, the item's
+picture (GOKRES class bitmap) and name, the drop-down arrow, the refined and
+maintenance costs centred in their icon boxes, the two times right-aligned,
+Number to build with its spinner, and the Encyclopedia / build / cancel
+buttons drawn whole (10592-10597; 11620 the greyed build). An order that
+cannot be placed greys the build button and says why on it. **Provisional**:
+the open list's look (no screenshot yet).
 
 ### New ships always create a fleet *(PDF p112 / manual p114)*
 
