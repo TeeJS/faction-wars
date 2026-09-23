@@ -88,6 +88,8 @@ static func Scaled(tex: Texture2D, factor: int) -> Texture2D:
 		img.decompress()
 	img.resize(img.get_width() * factor, img.get_height() * factor, Image.INTERPOLATE_NEAREST)
 	var out := ImageTexture.create_from_image(img)
+	# What it was made from (a scaled picture has no path of its own).
+	out.set_meta("source", tex.resource_path if not tex.resource_path.is_empty() else str(tex.get_meta("source", "")))
 	_scaled[key] = out
 	return out
 

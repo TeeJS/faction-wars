@@ -7,6 +7,116 @@ extends DraggableWindow
 
 var _sector: Sector
 
+## THE ORIGINAL'S SECTOR WINDOW (manual p025 Fig 2.8), with the player's
+## imported art, measured on TeeJ's screenshot of the original's Corellian
+## sector (2026-09-23) and drawn K times as large: a 235x360 window of
+## see-through grey over the map with a one-pixel light frame (solid top and
+## bottom, dotted sides) and no shadow; the sector's name in yellow Arial 13
+## across the top; the box that switches the window to the other side of the
+## screen and the close box; every system's 37x37 picture with its top-left
+## in the box (20, 24) - (167, 295), placed by where it lies in the sector;
+## the corner cells tiled round the picture's middle; the GID
+## star under its lower left; the energy and materials rows (2x3 squares, 3
+## apart) and the loyalty bar (the picture's width) under it; the name in its
+## side's colour. Set by Populate for the static helpers below.
+static var OriginalLook: bool = false
+const K := OUI.K
+const OW := 235
+const OH := 360
+const OBox := Rect2(20, 24, 147, 271)
+const OSprite := 37
+const OTitleColor := Color(240 / 255.0, 240 / 255.0, 0)
+const ONeutral := Color(0, 1, 1)
+const OBackground := Color(72 / 255.0, 72 / 255.0, 72 / 255.0, 0.78)
+const OBorder := Color(192 / 255.0, 192 / 255.0, 192 / 255.0)
+## From each system's picture's top-left, in original pixels: the GID star's
+## top-left, the energy and materials rows' tops (one pixel in), the loyalty
+## bar's top, the name's line.
+const OStar := Vector2(0, 26)
+const OEnergyTop := 39.0
+const ONameTop := 49.0
+const ONamePx := 11.0
+## The corner cells: the left and upper ones end 1.5 pixels short of the
+## picture's middle, the right and lower ones start half a pixel past it.
+const OCellNear := 1.5
+const OCellFar := 0.5
+## The original's bar colours (sampled): blue free energy, yellow mines, the
+## orange of raw material still in the ground.
+const OCEnergyFree := Color(0, 0, 1)
+const OCMineBuilt := Color(1, 1, 0)
+const OCMineFree := Color(249 / 255.0, 92 / 255.0, 15 / 255.0)
+var _dockRight: bool = true
+var _originalTitle: Label
+
+
+static func CanBuildOriginal() -> bool:
+	return Art.PlanetSprite(1) != null and Art.ButtonIcon("sector_switch") != null \
+		and Art.ButtonIcon("title_close") != null
+
+
+## Where the original's window sits: against the right or the left edge of
+## the map frame (UIManager's Rect2(150, 99, 1070, ...)), at its top.
+static func DockPosition(right: bool) -> Vector2:
+	var frame := Rect2(150, 99, 1070, 0)
+	return Vector2(frame.end.x - OW * K if right else frame.position.x, frame.position.y)
+
+
+## The name's colour in the original: its side's, cyan for a system no side
+## holds, the map's own grey for one never seen.
+static func _OriginalNameColor(planet: Planet) -> Color:
+	var owner: Faction = IntelManager.OwnerSeen(GameSettings.LocalFaction(), planet)
+	if owner == null:
+		return FactionRegistry.Unknown.FactionColor
+	if owner == FactionRegistry.Neutral:
+		return ONeutral
+	return OUI.SideColor(owner)
+
+
+## The window itself in the original's look: no title bar; see-through grey
+## with the light frame and no shadow; the sector's name; the box that
+## switches sides and the close box. Built once - Populate runs again on
+## every repaint.
+func _BuildOriginalChrome(sector: Sector) -> void:
+	if _originalTitle == null:
+		(get_node("%TitleBar") as Control).visible = false
+		var sb := StyleBoxFlat.new()
+		sb.bg_color = OBackground
+		sb.shadow_size = 0
+		sb.set_content_margin_all(0)
+		add_theme_stylebox_override("panel", sb)
+		texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		var area: MarginContainer = OUI.Flatten(self)
+		var chrome := Control.new()
+		chrome.name = "OriginalChrome"
+		chrome.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		chrome.draw.connect(_DrawFrame.bind(chrome))
+		area.add_child(chrome)
+		# Right-click on it: the pin menu (UIManager._WireSectorPinMenu).
+		_originalTitle = OUI.Text(chrome, "", 0, 4.5, OW, 16, 13, OTitleColor, HORIZONTAL_ALIGNMENT_CENTER, false, "SectorTitle")
+		_originalTitle.mouse_filter = Control.MOUSE_FILTER_STOP
+		OUI.PictureButton(chrome, "sector_switch", 204, 2, "Switch window to other side of screen").pressed.connect(_SwitchSide)
+		OUI.PictureButton(chrome, "title_close", 218, 2, "Close").pressed.connect(CloseWindow)
+	_originalTitle.text = sector.Name
+
+
+## The frame: one light pixel all round, solid along the top and bottom and
+## every other pixel down the sides (as sampled; the second row is lit too).
+func _DrawFrame(c: Control) -> void:
+	var w: float = OW * K
+	var h: float = OH * K
+	c.draw_rect(Rect2(0, 0, w, K), OBorder)
+	c.draw_rect(Rect2(0, h - K, w, K), OBorder)
+	for y in range(1, OH - 1):
+		if y % 2 == 0 or y == 1:
+			c.draw_rect(Rect2(0, y * K, K, K), OBorder)
+			c.draw_rect(Rect2(w - K, y * K, K, K), OBorder)
+
+
+## "Switch window to other side of screen" (manual p025 Fig 2.8).
+func _SwitchSide() -> void:
+	_dockRight = not _dockRight
+	position = DockPosition(_dockRight)
+
 
 
 # The planet markers were built once when the window opened and never
@@ -31,6 +141,11 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 
 	for child in sectorMap.get_children():
 		child.queue_free()
+
+	var original: bool = CanBuildOriginal()
+	OriginalLook = original
+	if original:
+		_BuildOriginalChrome(sector)
 
 	# WHILE THE CROSSHAIRS ARE UP the parts of a system that are not buttons
 	# (star, bars, name) let the click through to the map, which names the
@@ -66,6 +181,8 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 	# Safety floor: Prevent the window from collapsing completely if planets are in a straight line
 	mapSize.x = maxf(mapSize.x, 100.0)
 	mapSize.y = maxf(mapSize.y, 100.0)
+	if original:
+		mapSize = Vector2(OW, OH) * K
 
 	sectorMap.custom_minimum_size = mapSize
 
@@ -86,6 +203,14 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 
 		var finalX: float = padding + (normalizedX * usableWidth)
 		var finalY: float = padding + (normalizedY * usableHeight)
+		if original:
+			# The original's box: every system's picture has its top-left in
+			# (20, 24) - (167, 295), placed by where it lies in the sector
+			# (fitted to all ten Corellian systems to the pixel).
+			var nx: float = normalizedX if maxX > minX else 0.5
+			var ny: float = normalizedY if maxY > minY else 0.5
+			finalX = (roundf(OBox.position.x + nx * OBox.size.x) + OSprite / 2.0) * K
+			finalY = (roundf(OBox.position.y + ny * OBox.size.y) + OSprite / 2.0) * K
 
 		# --- 1. THE MAIN PLANET BUTTON ---
 		var planetCircle := StyleBoxFlat.new()
@@ -122,9 +247,23 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 			planetMapNode.expand_icon = true
 			planetMapNode.set_meta("sprite", true)
 			nameColor = planet.GetFactionColor()
+			if original:
+				# The picture at its own size, drawn K times; the name in the
+				# side's colour (the original's neutral is cyan).
+				planetMapNode.icon = Art.Scaled(sprite, K)
+				planetMapNode.expand_icon = false
+				planetMapNode.custom_minimum_size = Vector2(OSprite, OSprite) * K
+				planetMapNode.size = planetMapNode.custom_minimum_size
+				planetMapNode.position = Vector2(finalX, finalY) - planetMapNode.size / 2.0
+				nameColor = _OriginalNameColor(planet)
 			var ring := StyleBoxFlat.new()
 			ring.bg_color = Color(0, 0, 0, 0)
 			ring.set_corner_radius_all(16)
+			if original:
+				# Round the picture, and no margins: the button stays the
+				# picture's size, so the picture stays where it was placed.
+				ring.set_corner_radius_all(OSprite * K / 2)
+				ring.set_content_margin_all(0)
 			if Gid.ShowHqHighlight(planet):
 				ring.border_color = Gid.CHighlight
 				ring.set_border_width_all(3)
@@ -397,8 +536,14 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 		# system" once a Longprobe reports (p049). They sit between the lower
 		# corner icons and the name, so the name moves down to make room.
 		var nameY: float = finalY + 30
+		var barsTop: float = finalY + BarsTop
+		if original:
+			barsTop = finalY + (OEnergyTop - OSprite / 2.0) * K
 		if planet.IsExplored:
-			nameY = finalY + BarsTop + AddResourceBars(sectorMap, planet, finalX, finalY + BarsTop)
+			nameY = barsTop + AddResourceBars(sectorMap, planet, finalX, barsTop)
+		if original:
+			# The original's names all sit on one line under their pictures.
+			nameY = finalY + (ONameTop - OSprite / 2.0) * K
 
 		# --- 3. PLANET NAME LABEL ---
 		var nameLabel := Label.new()
@@ -409,6 +554,13 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 		nameLabel.position = Vector2(finalX - 50, nameY)
 		nameLabel.add_theme_font_size_override("font_size", 15)
 		nameLabel.add_theme_color_override("font_color", nameColor)
+		if original:
+			# Arial 11, centred under the picture, as wide as the name (a
+			# crosshair click on it names the system - see SystemAt).
+			OUI.Style(nameLabel, ONamePx, nameColor)
+			var nameW: float = nameLabel.get_combined_minimum_size().x
+			nameLabel.size = Vector2(nameW, nameLabel.get_combined_minimum_size().y)
+			nameLabel.position = Vector2(floorf(finalX - nameW / 2.0), nameY)
 
 		sectorMap.add_child(nameLabel)
 
@@ -494,6 +646,10 @@ static func _PlaceCorner(btn: Button, corner: int, cx: float, cy: float) -> void
 	# The icon's inner corner goes here.
 	var ax: float = cx if original else (cx - GlyphInnerX if left else cx + GlyphInnerX)
 	var ay: float = cy if original else (cy - GlyphInnerY if top else cy + GlyphInnerY)
+	if original and OriginalLook:
+		# The original's own sector window (measured on Corellian).
+		ax = cx - OCellNear * K if left else cx + OCellFar * K
+		ay = cy - OCellNear * K if top else cy + OCellFar * K
 	btn.custom_minimum_size = icon
 	var box: Vector2 = btn.get_combined_minimum_size()
 	var pad: Vector2 = (box - icon).max(Vector2.ZERO) / 2.0
@@ -554,10 +710,12 @@ static func _OriginalIcon(btn: Button, glyph: String, faction_id: String, alpha:
 	var tex: Texture2D = Art.CornerIcon(glyph, faction_id)
 	if tex == null:
 		return false
+	var k: int = K if OriginalLook else 1
+	tex = Art.Scaled(tex, k)
 	btn.icon = tex
 	btn.set_meta("original_icon", true)
 	_TintIcon(btn, Color(1, 1, 1, alpha))
-	var hover: Texture2D = Art.CornerIcon(glyph, faction_id, true)
+	var hover: Texture2D = Art.Scaled(Art.CornerIcon(glyph, faction_id, true), k)
 	if hover != null:
 		btn.mouse_entered.connect(func() -> void: btn.icon = hover)
 		btn.mouse_exited.connect(func() -> void: btn.icon = tex)
@@ -615,21 +773,70 @@ static func AddResourceBars(sectorMap: Control, planet: Planet, centerX: float, 
 		var total: int = int(seen["energy"])
 		var used: int = int(seen.get("energy_used", 0))
 		var tip := "%s %d/%d" % [Terms.label("energy"), used, total]
-		y += _AddSquareRow(sectorMap, "energy", centerX, y, total, used, CEnergyUsed, CEnergyFree, tip) + RowGap
+		y += _AddSquareRow(sectorMap, "energy", centerX, y, total, used, EnergyUsedColor(), EnergyFreeColor(), tip) + _RowGap()
 		widest = maxf(widest, _RowWidth(total))
 	if seen.has("materials"):
 		var total: int = int(seen["materials"])
 		var built: int = int(seen.get("mines", 0))
 		var tip := "%s %d/%d" % [Terms.label("raw_materials"), built, total]
-		y += _AddSquareRow(sectorMap, "materials", centerX, y, total, built, CMineBuilt, CMineFree, tip) + RowGap
+		y += _AddSquareRow(sectorMap, "materials", centerX, y, total, built, MineBuiltColor(), MineFreeColor(), tip) + _RowGap()
 		widest = maxf(widest, _RowWidth(total))
 	if seen.has("support") and bool(seen.get("inhabited", true)):
-		y += _AddLoyaltyBar(sectorMap, centerX, y, seen["support"], widest) + RowGap
+		y += _AddLoyaltyBar(sectorMap, centerX, y, seen["support"], widest) + _RowGap()
 	return y - top
 
 
+# The colours drawn: the original's in its own window, ours otherwise.
+static func EnergyUsedColor() -> Color:
+	return CEnergyUsed
+
+
+static func EnergyFreeColor() -> Color:
+	return OCEnergyFree if OriginalLook else CEnergyFree
+
+
+static func MineBuiltColor() -> Color:
+	return OCMineBuilt if OriginalLook else CMineBuilt
+
+
+static func MineFreeColor() -> Color:
+	return OCMineFree if OriginalLook else CMineFree
+
+
+static func LoyaltyColor(side: Faction) -> Color:
+	return OUI.SideColor(side) if OriginalLook else side.FactionColor
+
+
+## Our slightly rounded blocks; the original's are square.
+static func BarRadius() -> int:
+	return 0 if OriginalLook else CornerRadius
+
+
+# The original's sector window draws its squares 2x3 with a pixel between,
+# its rows a pixel apart and one pixel in from the picture's left edge, and
+# the loyalty bar 3 high across the picture's whole width, all square-cornered.
+static func _SquareW() -> float:
+	return 2.0 * K if OriginalLook else SquareSize
+
+
+static func _SquareH() -> float:
+	return 3.0 * K if OriginalLook else SquareSize
+
+
+static func _SquareGap() -> float:
+	return 1.0 * K if OriginalLook else SquareGap
+
+
+static func _RowGap() -> float:
+	return 1.0 * K if OriginalLook else RowGap
+
+
+static func _RowsLeft() -> float:
+	return (OSprite / 2.0 - 1.0) * K if OriginalLook else BarsLeft
+
+
 static func _RowWidth(total: int) -> float:
-	return maxf(0.0, total * SquareSize + (total - 1) * SquareGap)
+	return maxf(0.0, total * _SquareW() + (total - 1) * _SquareGap())
 
 
 ## One row of `total` squares, the first `filled` in colour A, the rest in B,
@@ -642,16 +849,16 @@ static func _AddSquareRow(sectorMap: Control, kind: String, centerX: float, y: f
 	row.set_meta("total", total)
 	row.set_meta("filled", filled)
 	var width: float = _RowWidth(total)
-	row.size = Vector2(maxf(width, 1.0), SquareSize)
-	row.position = Vector2(centerX - BarsLeft, y)
+	row.size = Vector2(maxf(width, 1.0), _SquareH())
+	row.position = Vector2(centerX - _RowsLeft(), y)
 	row.tooltip_text = tip
 	row.mouse_filter = Control.MOUSE_FILTER_PASS
 	for i in total:
-		var sq := _Block(filledColor if i < mini(filled, total) else freeColor, Vector2(SquareSize, SquareSize), true, true)
-		sq.position = Vector2(i * (SquareSize + SquareGap), 0)
+		var sq := _Block(filledColor if i < mini(filled, total) else freeColor, Vector2(_SquareW(), _SquareH()), true, true)
+		sq.position = Vector2(i * (_SquareW() + _SquareGap()), 0)
 		row.add_child(sq)
 	sectorMap.add_child(row)
-	return SquareSize
+	return _SquareH()
 
 
 ## One coloured block with rounded corners - on the left end, the right end,
@@ -659,10 +866,11 @@ static func _AddSquareRow(sectorMap: Control, kind: String, centerX: float, y: f
 static func _Block(color: Color, size: Vector2, round_left: bool, round_right: bool) -> Panel:
 	var style := StyleBoxFlat.new()
 	style.bg_color = color
-	style.corner_radius_top_left = CornerRadius if round_left else 0
-	style.corner_radius_bottom_left = CornerRadius if round_left else 0
-	style.corner_radius_top_right = CornerRadius if round_right else 0
-	style.corner_radius_bottom_right = CornerRadius if round_right else 0
+	var radius: int = BarRadius()
+	style.corner_radius_top_left = radius if round_left else 0
+	style.corner_radius_bottom_left = radius if round_left else 0
+	style.corner_radius_top_right = radius if round_right else 0
+	style.corner_radius_bottom_right = radius if round_right else 0
 	var block := Panel.new()
 	block.add_theme_stylebox_override("panel", style)
 	block.size = size
@@ -685,8 +893,13 @@ static func _AddLoyaltyBar(sectorMap: Control, centerX: float, y: float, support
 	bar.name = "Bars_loyalty"
 	bar.set_meta("bar_row", "loyalty")
 	bar.set_meta("support", support.duplicate())
-	bar.size = Vector2(width, LoyaltyHeight)
+	var height: float = LoyaltyHeight
 	bar.position = Vector2(centerX - BarsLeft, y)
+	if OriginalLook:
+		width = OSprite * K
+		height = 3.0 * K
+		bar.position = Vector2(centerX - OSprite / 2.0 * K, y)
+	bar.size = Vector2(width, height)
 	bar.mouse_filter = Control.MOUSE_FILTER_PASS
 	var words: PackedStringArray = PackedStringArray()
 	var x: float = 0.0
@@ -701,14 +914,14 @@ static func _AddLoyaltyBar(sectorMap: Control, centerX: float, y: float, support
 		var w: float = width * pct / 100.0
 		if w <= 0.0:
 			continue
-		var seg := _Block(side.FactionColor, Vector2(w, LoyaltyHeight), drawn == 0, drawn == to_draw - 1)
+		var seg := _Block(LoyaltyColor(side), Vector2(w, height), drawn == 0, drawn == to_draw - 1)
 		seg.position = Vector2(x, 0)
 		bar.add_child(seg)
 		x += w
 		drawn += 1
 	bar.tooltip_text = "Loyalty: %s" % ", ".join(words)
 	sectorMap.add_child(bar)
-	return LoyaltyHeight
+	return height
 
 
 # The mission icon's right-click menu (manual p109, fig 3.50).
@@ -802,6 +1015,12 @@ static func AddGidStar(sectorMap: Control, planet: Planet, centerX: float, cente
 		pic.set_meta("gid_star", true)
 		pic.size = starTex.get_size()
 		pic.position = Vector2(centerX - StarOffsetX - pic.size.x / 2.0, centerY + StarOffsetY - pic.size.y / 2.0)
+		if OriginalLook:
+			# The original's sector window: drawn K times, under the
+			# picture's lower left (measured on Corellian).
+			pic.texture = Art.Scaled(starTex, K)
+			pic.size = pic.texture.get_size()
+			pic.position = Vector2(centerX, centerY) + (OStar - Vector2(OSprite, OSprite) / 2.0) * K
 		pic.tooltip_text = "%s: %s" % [Gid.TitleFor(mode), mode.TierFor(mode.Magnitude.call(planet)).LabelText]
 		sectorMap.add_child(pic)
 		return
