@@ -694,6 +694,25 @@ func OnCharacterMenuAction(actionId: int, characters: Array, uiManager: UIManage
 			print("Unhandled menu action %d" % actionId)
 
 
+## SCRAP ASKS FIRST, in the original's own dialog when the art is imported:
+## "Are you sure you want to scrap the following units?" (TEXTSTRA.DLL 28752)
+## and each unit on its own line (28756), over the console picture, with the
+## tick and the cross (TeeJ's screenshot of the original, 2026-09-23). What
+## scrapping gives back is not in the original's dialog; it is on the tick.
+## `plain` is the caller's own dialog, for a player without the art.
+func ConfirmScrapUnits(names: Array, refundNote: String, onConfirm: Callable, plain: Callable) -> void:
+	var ui: UIManager = _uiManager if _uiManager != null else get_parent() as UIManager
+	if ui == null or not ui.ConfirmScript.CanBuild():
+		plain.call()
+		return
+	var text: String = "Are you sure you want to scrap the following units?"
+	for n in names:
+		text += "\n" + str(n)
+	var f: Faction = GameSettings.PlayerFaction
+	var side: String = "alliance" if f != null and f.Id == "alliance" else "empire"
+	ui.OpenConfirmation(f, OUI.Pic("scrap_picture." + side), text, refundNote, onConfirm)
+
+
 ## Retiring is irreversible and gives back only half the material, so it asks
 ## first - the same shape the Economy window uses for scrapping a facility.
 func ConfirmRetire(what: String, refund: int, onConfirm: Callable) -> void:
