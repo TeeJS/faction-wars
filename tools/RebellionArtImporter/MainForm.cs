@@ -22,13 +22,13 @@ public sealed class MainForm : Form
 
         var intro = new Label
         {
-            Text = "Copies the Encyclopedia pictures and descriptions from YOUR installed copy of Star Wars: Rebellion into the Faction Wars " +
-                   "pack (packs\\star-wars-rebellion\\original). Nothing is downloaded and nothing leaves this machine.",
-            AutoSize = false, Width = 640, Height = 44, Location = new Point(15, 12),
+            Text = "Copies the Encyclopedia pictures and descriptions from YOUR copy of Star Wars: Rebellion (GOG, Steam or the original CD) " +
+                   "into the Faction Wars pack (packs\\star-wars-rebellion\\original). Nothing is downloaded and nothing leaves this machine.",
+            AutoSize = false, Width = 640, Height = 48, Location = new Point(15, 12),
         };
         Controls.Add(intro);
 
-        Controls.Add(Row("Installed game:", _gameDir, 64, () => Browse(_gameDir, "Pick the folder Star Wars: Rebellion is installed in (it holds REBEXE.EXE and EData)")));
+        Controls.Add(Row("Game folder:", _gameDir, 64, () => Browse(_gameDir, "Pick the folder Star Wars: Rebellion is installed in (it holds REBEXE.EXE and EData), or the REBELLION folder on the CD")));
         Controls.Add(Row("Pack folder:", _packDir, 100, () => Browse(_packDir, "Pick packs\\star-wars-rebellion inside Faction Wars")));
 
         _import.Location = new Point(15, 140);
@@ -99,19 +99,8 @@ public sealed class MainForm : Form
 
 public static class Defaults
 {
-    public static string GameDir()
-    {
-        foreach (var candidate in new[]
-        {
-            @"C:\Program Files (x86)\GOG Galaxy\Games\Star Wars - Rebellion",
-            @"C:\GOG Games\Star Wars - Rebellion",
-            @"C:\Program Files (x86)\Steam\steamapps\common\Star Wars - Rebellion",
-            @"C:\Program Files (x86)\LucasArts\Rebellion",
-        })
-            if (File.Exists(Path.Combine(candidate, "ENCYTEXT.DLL")))
-                return candidate;
-        return "";
-    }
+    /// <summary>GOG, any Steam library, an old CD install, or a CD in a drive - see GameFolders.</summary>
+    public static string GameDir() => GameFolders.Find();
 
     /// <summary>The pack folder, searched upward from where the exe sits (build/, tools/, the repo root).</summary>
     public static string PackDir()
