@@ -2281,8 +2281,10 @@ centred over the picture's last rows, grey for the item on show, and the
 original's scroll bar (10658-10669, 12 of 13 columns drawn) inside the frame's
 right edge. **Inferred**: the thumb is the shown share of the track (41 of 122
 for 2 of 6 - it fits, the total was not visible), the arrows step a row.
-**Not matched**: the order - the original lists the Alliance Army and Fleet
-Regiments first, ours the special forces first (catalogue order).
+**Order**: a training facility's list starts with the regiments, then the
+special forces, each in the pack's order (TeeJ, 2026-09-23: "match it" - the
+original's shows the Alliance Army and Fleet Regiments on top; the special
+forces' order after them, and a shipyard's list, not yet seen).
 
 ### New ships always create a fleet *(PDF p112 / manual p114)*
 
@@ -3917,8 +3919,8 @@ quoted in **days** and why Pause is a first-class command.
   round(20 + 147·x, 24 + 271·y) for its place (x, y) in the sector's box
   (all ten Corellian systems to the pixel); the star, corner cells, bars (2×3
   squares, the loyalty bar the picture's width) and name are at the original's
-  offsets from it. **Not implemented: the two-window limit** — the manual does
-  not say what opening a third does (or where the second opens).
+  offsets from it. **The two-window limit is dropped** (TeeJ, 2026-09-23: "drop
+  it"): any number of Sector windows may be open, as with System windows.
 
   **Deliberately NOT the original (TeeJ, 2026-09-23: "allow them to be moved
   and minimized, that was stupid UI in the original"):** ours is dragged by its

@@ -743,6 +743,7 @@ func OpenBuildChooser(planet: Planet, producer: String) -> void:
 	# The original's window names an item plainly and shows its picture.
 	var titles: Array[String] = []
 	var encyclopedia: Array = []
+	var kinds: Array[String] = []   # the unit kind, "" for a facility
 
 	if producer == "produces_facility":
 		var rate: int = planet.BestYardRateForUi()
@@ -752,6 +753,7 @@ func OpenBuildChooser(planet: Planet, producer: String) -> void:
 			names.append("%s (Tier %d)" % [r.DisplayName, r.Tier])
 			titles.append(r.DisplayName)
 			encyclopedia.append(["facilities", r.Id])
+			kinds.append("")
 			refined.append(r.ConstructionCost)
 			maint.append(r.MaintenanceCost)
 			days.append(r.ConstructionCost * rate)
@@ -766,6 +768,7 @@ func OpenBuildChooser(planet: Planet, producer: String) -> void:
 			names.append(r.DisplayName)
 			titles.append(r.DisplayName)
 			encyclopedia.append(["units", r.Id])
+			kinds.append(r.Kind)
 			refined.append(r.ConstructionCost)
 			maint.append(r.MaintenanceCost)
 			days.append(r.ConstructionCost * rate)
@@ -780,8 +783,17 @@ func OpenBuildChooser(planet: Planet, producer: String) -> void:
 	# The original's Build Selection window (Fig 3.58) when the art is imported.
 	var ui: UIManager = get_parent() as UIManager
 	if ui != null and ui.BuildSelectionScript.CanBuild():
+		# The original's training list starts with the regiments (TeeJ's
+		# screenshot: Alliance Army Regiment, Alliance Fleet Regiment on top
+		# of six), then the special forces - each in the pack's order (the
+		# special forces' order is INFERRED; a shipyard's list is as the pack
+		# gives it, not yet seen). TeeJ, 2026-09-23: "match it".
+		var order: Array = range(names.size())
+		if producer == "produces_troop":
+			order = Lq.where(order, func(i: int) -> bool: return kinds[i] == "troop") \
+				+ Lq.where(order, func(i: int) -> bool: return kinds[i] != "troop")
 		var items: Array = []
-		for i in names.size():
+		for i in order:
 			items.append({ "name": titles[i], "picture": Art.Scaled(Art.Portrait(encyclopedia[i][0], encyclopedia[i][1]), OUI.K),
 				"refined": refined[i], "maint": maint[i], "days": days[i], "blocked": blocked[i], "place": place[i],
 				"encyclopedia": encyclopedia[i] })
