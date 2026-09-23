@@ -10,6 +10,37 @@ func _ready() -> void:
 	super()   # Ensures window dragging/closing logic works
 
 
+## Everything the original's Status window shows for a facility
+## (OUI.StatusPlate). TeeJ's screenshot of the original's Manufacturing Status
+## (an Orbital Shipyard on Chandrila) gives the fields and their words:
+## Location, Status, Maintenance Cost, Standard Processing Rate, Bombardment
+## Value, as bare numbers. A shield or gun is a "Defense Facility Status"
+## (TEXTSTRA.DLL 34403); its rows past Maintenance Cost are not on any
+## screenshot yet, so they are this window's own (weapons, shield).
+static func StatusData(facility: Facility) -> Dictionary:
+	var defence: bool = facility.HasRole("shield") or facility.HasRole("anti_ship") or facility.HasRole("disable")
+	var rows: Array = []
+	rows.append(["Location:", facility.Attached.Name if facility.Attached != null else "Unknown"])
+	rows.append(["Status:", "Damaged" if facility.IsDamaged else "Active"])
+	rows.append([Terms.field("maintenance"), str(FacilityCatalog.MaintenanceCost(facility.Family(), facility.Tier))])
+	if defence:
+		if facility.HasRole("anti_ship") or facility.HasRole("disable"):
+			rows.append(["Weapons Rating:", str(facility.WeaponRating)])
+		if facility.HasRole("shield"):
+			rows.append([Terms.field("shield"), str(facility.ShieldStrength)])
+	else:
+		rows.append(["Standard Processing Rate:", str(FacilityCatalog.ProcessingRate(facility.Family(), facility.Tier))])
+	rows.append(["Bombardment Value:", str(maxi(0, facility.BombardmentDefense))])
+	var id: String = facility.Def.Id if facility.Def != null else facility.Family()
+	return {
+		"title": "Defense Facility Status" if defence else "Manufacturing Status",
+		"fields": rows,
+		"picture": Art.Scaled(Art.Portrait("facilities", id), OUI.K),
+		"name": facility.Name(),
+		"encyclopedia": ["facilities", id],
+	}
+
+
 func Populate(facility: Facility) -> void:
 	_associatedFacility = facility
 
@@ -47,7 +78,9 @@ func Populate(facility: Facility) -> void:
 	# "Maintenance Cost: HOW MANY MAINTENANCE UNITS facility uses" (p085).
 	# Not credits, and not per turn - it is a standing draw on the pool for
 	# as long as the facility exists. There is no currency in this game.
-	var maintenance: int = facility.MaintenanceCost if facility.MaintenanceCost > 0 else 0
+	# The catalogue's figure: Planet.AddFacility copies MaintenanceCost onto
+	# defences only, so a shipyard's own field reads 0 (the pack says 13).
+	var maintenance: int = FacilityCatalog.MaintenanceCost(facility.Family(), facility.Tier)
 	(get_node("%ValMaintenanceCost") as Label).text = "%d maintenance" % maintenance
 
 	# The manual's status block is Location, Status, Maintenance Cost,

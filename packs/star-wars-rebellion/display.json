@@ -627,7 +627,7 @@
     "detection": "Detection Rating",
     "weapons": "Weapons Rating",
     "bombardment": "Bombardment Value",
-    "bombardment_defense": "Bombardment Defense",
+    "bombardment_defense": "Bombardment Value",
     "bombardment_modifier": "Bombardment Modifier",
     "maintenance": "Maintenance Cost",
     "squadron_size": "Squadron Size",

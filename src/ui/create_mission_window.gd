@@ -73,7 +73,6 @@ var _picture: TextureRect
 var _list: Control
 var _listRows: Array = []
 var _columns: Array = []
-var _blocker: Control
 
 
 ## True when the player imported the art this window is made of.
@@ -98,7 +97,7 @@ func Setup(ui: UIManager, team: Array, origin: Planet, target: Planet, victim: C
 	_faction = team[0].Faction
 	_side = OUI.Side(_faction)
 	_build()
-	_block_the_rest()
+	OUI.Modal(self)
 	_show_page(0)
 	_show_mission(0)
 
@@ -379,22 +378,3 @@ func _on_assign() -> void:
 	CloseWindow()
 	if launch.is_valid():
 		launch.call(type, decoys)
-
-
-## Modal, like the dialog it replaces: nothing under it takes a click while it
-## is up. The Encyclopedia it opens comes up over it.
-func _block_the_rest() -> void:
-	if _blocker != null and is_instance_valid(_blocker):
-		return
-	var parent: Node = get_parent()
-	if parent == null:
-		return
-	_blocker = Control.new()
-	_blocker.name = "CreateMissionBlocker"
-	_blocker.set_anchors_preset(Control.PRESET_FULL_RECT)
-	_blocker.mouse_filter = Control.MOUSE_FILTER_STOP
-	parent.add_child(_blocker)
-	parent.move_child(_blocker, get_index())
-	tree_exiting.connect(func() -> void:
-		if is_instance_valid(_blocker):
-			_blocker.queue_free())
