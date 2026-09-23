@@ -99,12 +99,64 @@ func Populate(fleet: Fleet) -> void:
 
 	Gap(body)
 
-	# "Damaged Ships" - damage is not modelled, so this is honestly 0 rather
-	# than absent. Hyperdrive Rating is a yes/no in the original, not the
+	# "Damaged Ships" - the ships whose damage state is below design
+	# (Unit.IsDamaged; it read `Hull > 0 and Shield < 0`, never true, so it
+	# was always 0). Hyperdrive Rating is a yes/no in the original, not the
 	# number: the number belongs to a ship, and what matters for a fleet is
 	# whether it can make the jump at all (manual p055).
-	Row(body, "Damaged Ships:", str(Lq.count(fleet.Ships, func(s: Unit) -> bool: return s.Hull > 0 and s.Shield < 0)))
+	Row(body, "Damaged Ships:", str(Lq.count(fleet.Ships, func(s: Unit) -> bool: return s.IsDamaged())))
 	Row(body, Terms.field("hyperdrive"), "Yes" if fleet.HyperdriveRating() > 0 else "No")
+
+
+## Everything the ORIGINAL'S Status window shows for a fleet (OUI.StatusPlate),
+## in its order and words (TEXTSTRA.DLL 34616-34625), measured on TeeJ's
+## screenshot of an Alliance fleet (2026-09-23): no colon on Number Of Ships,
+## the Capacity: and Embarked: headings with their rows unindented, Damaged
+## Ships, Hyperdrive Rating Yes / No; the fleet's picture per side (STRATEGY
+## 10425; the Empire's 10426 inferred) over its flames when a ship of it is
+## damaged (10427). ETA Destination only while it travels (the photograph this
+## window was first built from; not on the new capture).
+static func StatusData(fleet: Fleet) -> Dictionary:
+	var Holder := func(rank: int) -> String:
+		if GameState.ActiveRoster == null:
+			return "Not Assigned"
+		var c: Character = Lq.first_or_null(GameState.ActiveRoster,
+			func(x: Character) -> bool: return x.Commanding == fleet and x.Rank == rank)
+		return c.Name if c != null else "Not Assigned"
+	var fighterCap: int = Lq.sum(fleet.Ships, func(s: Unit) -> int: return s.FighterCapacity)
+	var troopCap: int = Lq.sum(fleet.Ships, func(s: Unit) -> int: return s.TroopCapacity)
+	var fighters: int = Lq.sum(fleet.Ships, func(s: Unit) -> int:
+		return Lq.count(s.Hangar, func(h: Unit) -> bool: return h.Type == Enums.UnitType.Fighter) if s.Hangar != null else 0)
+	var troops: int = Lq.sum(fleet.Ships, func(s: Unit) -> int:
+		return Lq.count(s.Hangar, func(h: Unit) -> bool: return h.Type == Enums.UnitType.Troop) if s.Hangar != null else 0)
+	var personnel: int = Lq.count(GameState.ActiveRoster, func(c: Character) -> bool: return c.Attached == fleet) \
+		if GameState.ActiveRoster != null else 0
+	var damaged: int = Lq.count(fleet.Ships, func(s: Unit) -> bool: return s.IsDamaged())
+	var rows: Array = []
+	rows.append(["Status:", UnitStatusWindow.StatusWord(fleet.Status)])
+	if fleet.Status == Enums.Status.Enroute and fleet.DaysToDestination > 0:
+		rows.append(["ETA Destination:", "Day %d" % (StrategicTickManager.Today + fleet.DaysToDestination)])
+	rows.append(["Admiral:", Holder.call(Enums.Rank.Admiral)])
+	rows.append(["General:", Holder.call(Enums.Rank.General)])
+	rows.append(["Commander:", Holder.call(Enums.Rank.Commander)])
+	rows.append(["Number Of Ships", str(fleet.Ships.size())])
+	rows.append(["Capacity:", ""])
+	rows.append(["Fighter Squadrons:", str(fighterCap)])
+	rows.append(["Trooper Regiments:", str(troopCap)])
+	rows.append(["Embarked:", ""])
+	rows.append(["Fighter Squadrons:", str(fighters)])
+	rows.append(["Trooper Regiments:", str(troops)])
+	rows.append(["Personnel:", str(personnel)])
+	rows.append(["Damaged Ships:", str(damaged)])
+	rows.append(["Hyperdrive Rating:", "Yes" if fleet.HyperdriveRating() > 0 else "No"])
+	var side: String = OUI.Side(fleet.Faction)
+	return {
+		"title": "Fleet Status",
+		"fields": rows,
+		"picture": OUI.Pic("status_fleet.%s" % side),
+		"backdrop": OUI.Pic("status_fleet_damage") if damaged > 0 else null,
+		"name": fleet.Name,
+	}
 
 
 static func Header(into: VBoxContainer, text: String) -> void:

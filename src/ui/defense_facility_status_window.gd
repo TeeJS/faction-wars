@@ -24,13 +24,18 @@ static func StatusData(facility: Facility) -> Dictionary:
 	rows.append(["Status:", "Damaged" if facility.IsDamaged else "Active"])
 	rows.append([Terms.field("maintenance"), str(FacilityCatalog.MaintenanceCost(facility.Family(), facility.Tier))])
 	if defence:
-		if facility.HasRole("anti_ship") or facility.HasRole("disable"):
-			rows.append(["Weapons Rating:", str(facility.WeaponRating)])
-		if facility.HasRole("shield"):
-			rows.append([Terms.field("shield"), str(facility.ShieldStrength)])
+		# The original's Defense Facility Status (TeeJ's screenshot of a
+		# GenCore Level I, 2026-09-23): Weapons Rating even on a shield (0),
+		# "Shield Strength" with no colon, "Bombardment Defense Strength:" -
+		# broken after "Bombardment", where the original breaks it (our Arial
+		# runs narrow enough to fit a word more). A battery's list is INFERRED
+		# to be the same (not seen).
+		rows.append(["Weapons Rating:", str(facility.WeaponRating)])
+		rows.append(["Shield Strength", str(facility.ShieldStrength)])
+		rows.append(["Bombardment\nDefense Strength:", str(maxi(0, facility.BombardmentDefense))])
 	else:
 		rows.append(["Standard Processing Rate:", str(FacilityCatalog.ProcessingRate(facility.Family(), facility.Tier))])
-	rows.append(["Bombardment Value:", str(maxi(0, facility.BombardmentDefense))])
+		rows.append(["Bombardment Value:", str(maxi(0, facility.BombardmentDefense))])
 	var id: String = facility.Def.Id if facility.Def != null else facility.Family()
 	return {
 		"title": "Defense Facility Status" if defence else "Manufacturing Status",

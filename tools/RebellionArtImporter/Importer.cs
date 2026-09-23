@@ -133,6 +133,10 @@ public sealed class Importer
         // the grey spotlight behind a trooper regiment's picture (122x50).
         ("status_plate.alliance", 11554), ("status_plate.empire", 11558),
         ("status_backdrop.troops", 11514),
+        // A fleet's Status picture per side (122x50; the Empire's inferred),
+        // and the flames drawn UNDER it when a ship of it is damaged
+        // (measured on TeeJ's Alliance Fleet Status).
+        ("status_fleet.alliance", 10425), ("status_fleet.empire", 10426), ("status_fleet_damage", 10427),
         // The Message Index (p078 Fig 3.18): the Alliance's socket column over
         // the frame's right strip, and the plate under a read message (p080
         // Fig 3.19, the band across its top - not yet on a screenshot).
@@ -141,10 +145,10 @@ public sealed class Importer
         // the picture box, the two cost boxes with their icons, the times box
         // and the number box (TeeJ's screenshot of the original, Empire).
         ("build_plate", 10800),
-        // The confirmation dialog (TeeJ's screenshot of the original's Scrap,
-        // Empire, rebuilt pixel for pixel): the 424x331 frame per side (no title
-        // bar; the Alliance's 11125 inferred), and Scrap's 400x200 console picture
-        // per side, drawn whole (the Alliance's 1032 inferred).
+        // The confirmation dialog (TeeJ's screenshots of the original's Scrap,
+        // both sides, rebuilt pixel for pixel): the 424x331 frame per side (no
+        // title bar), drawn whole - its last row is pure blue and shows - and
+        // Scrap's 400x200 console picture per side, drawn whole.
         ("confirm_frame.empire", 11126), ("confirm_frame.alliance", 11125),
         ("scrap_picture.empire", 1033), ("scrap_picture.alliance", 1032),
     };
@@ -283,7 +287,7 @@ public sealed class Importer
     // Bitmaps the original draws WHOLE, pure blue included: the Create Mission
     // plates' blue line under the tabs and the tabs' blue edges are on TeeJ's
     // screenshot of the original, pixel for pixel (2026-09-23).
-    private static readonly HashSet<int> DrawnWhole = new() { 10598, 11100, 11101, 11103, 11104, 11105, 11106, 11107, 11108, 11109, 11110,
+    private static readonly HashSet<int> DrawnWhole = new() { 10598, 11125, 11126, 11100, 11101, 11103, 11104, 11105, 11106, 11107, 11108, 11109, 11110,
         // The Status plates are opaque; the pressed Encyclopedia button keeps its blue face.
         11554, 11558, 11553,
         // Build Selection's plate is opaque; so are the Scrap pictures.
@@ -542,6 +546,12 @@ public sealed class Importer
                     int? mini = entry["miniature"]?.GetValue<int>();
                     if (portrait is int p && SaveSprite(gokres, p, Path.Combine(outRoot, "portraits", kind, id + ".png"))) { portraits++; pictureCount++; }
                     else missing.Add($"portraits/{kind}/{id}: no bitmap {portrait} in GOKRES.DLL");
+                    // A capital ship's flames, drawn UNDER its picture on the
+                    // Status window when it is damaged: GOKRES picture + 8192
+                    // (measured: 10053 under the Corellian Corvette's 1861;
+                    // every ship's flames follow its own hull).
+                    if (portrait is int pd && entry["family"]?.GetValue<string>() == "capital_ship"
+                        && SaveSprite(gokres, pd + 8192, Path.Combine(outRoot, "portraits", kind, id + ".damage.png"))) pictureCount++;
                     if (mini is int m && SaveSprite(gokres, m, Path.Combine(outRoot, "miniatures", kind, id + ".png"))) { minis++; pictureCount++; }
                 }
             }

@@ -3483,9 +3483,21 @@ else"), no title bar, the 379x272 plate per side (STRATEGY.DLL 11554 / 11558),
 the fields in the original's words (TEXTSTRA.DLL), the class picture and name,
 the Encyclopedia button and the diamond that closes it; Esc closes it too.
 Matched on screenshots of a Trooper Regiment, Spec Forces, a Manufacturing
-Status and Facilities Under Construction. Not yet seen: fighters, capital
-ships, defence facilities (their rows are ours), characters and fleets (their
-windows are still the plain ones).
+Status and Facilities Under Construction; since then (TeeJ's Alliance
+screenshots, each rebuilt to 0 differing pixels) a **Character, Fleet, Capital
+Ship, Fighter Squadron and Defense Facility** Status too, and all five are
+now the original's, with its field lists: headings are labels with no value
+("Capacity:", "R&D Capabilities"), sub-items start with one space (" Ship
+Design"), some labels have no colon ("Number Of Ships", "Shield Strength");
+a fighter's shield and weapons are the whole squadron's (a craft's x the craft
+left : x twelve - the X-wing's 96:96 laser); a capital ship reads
+current:maximum from its damage state. A list longer than 14 lines is cut at
+y 250 and gets the original's scroll bar at x 214 (thumb 199 / (14 x lines)
+of the track - fits all three captures, not settled). A damaged ship's or
+fleet's flames are drawn UNDER its picture (GOKRES picture + 8192; STRATEGY
+10427 for a fleet). **Inferred**: the capital ship's lines past Hull Value
+(Fig 3.62's order; the thumb needs exactly these 49 lines), a character's
+General:/Commander:, a battery's list, the Empire's fleet picture (10426).
 
 ### ★ Maintenance is charged up front, for the whole order *(PDF p082 / manual p084)*
 
