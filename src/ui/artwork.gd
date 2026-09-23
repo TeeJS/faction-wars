@@ -45,6 +45,47 @@ static func GidStar(faction_id: String, tier: String) -> Texture2D:
 	return _texture("gid/%s.%s.png" % [faction_id, tier])
 
 
+## A window's picture: original/windows/<name>.png (the Manufacturing window's
+## ship_construction / troops_in_training / facilities_under_construction).
+static func WindowPicture(name: String) -> Texture2D:
+	return _texture("windows/%s.png" % name)
+
+
+## A window tab's icon: original/tabs/<name>[.<faction id>][.pressed|.grey].png.
+## The per-side icons (manufacturing, fighters, troops, personnel) fall back
+## to the sideless file, so a pack with one set still gets it.
+static func TabIcon(name: String, faction_id: String, state: String = "") -> Texture2D:
+	var suffix := "" if state.is_empty() else "." + state
+	var tex: Texture2D = null
+	if not faction_id.is_empty():
+		tex = _texture("tabs/%s.%s%s.png" % [name, faction_id, suffix])
+	if tex == null:
+		tex = _texture("tabs/%s%s.png" % [name, suffix])
+	return tex
+
+
+## The same picture pixel-doubled (nearest neighbour), for the 2x the HUD
+## draws the original's small bitmaps at. Cached per texture and factor.
+static var _scaled: Dictionary = {}
+
+static func Scaled(tex: Texture2D, factor: int) -> Texture2D:
+	if tex == null or factor <= 1:
+		return tex
+	var key := "%s@%d" % [tex.get_instance_id(), factor]
+	if _scaled.has(key):
+		return _scaled[key]
+	var img: Image = tex.get_image()
+	if img == null:
+		return tex
+	img = img.duplicate()
+	if img.is_compressed():
+		img.decompress()
+	img.resize(img.get_width() * factor, img.get_height() * factor, Image.INTERPOLATE_NEAREST)
+	var out := ImageTexture.create_from_image(img)
+	_scaled[key] = out
+	return out
+
+
 ## The planet sprite for a map.json artwork_id: original/planet_sprites/<n>.png.
 static func PlanetSprite(artwork_id: int) -> Texture2D:
 	if artwork_id <= 0:

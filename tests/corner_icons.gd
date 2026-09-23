@@ -47,8 +47,9 @@ func _init() -> void:
 		home = Lq.first_or_null(GameState.AllPlanets(), func(p: Planet) -> bool: return p.ControllingFaction == us)
 	_check(home != null, "%s holds a world (%s)" % [us.Id, home.Name if home != null else "-"])
 	var corners: Dictionary = await _corners_for(ui, home)
-	for name in ["manufacturing", "defenses", "mission"]:
+	for name in ["manufacturing", "defenses"]:
 		_check(corners.has(name), "the %s corner is drawn under %s" % [name, home.Name])
+	_check(not corners.has("mission"), "no mission corner while no mission runs (TeeJ, 2026-09-23)")
 	if not home.FleetsInOrbit().is_empty():
 		_check(corners.has("fleet"), "the fleet corner is drawn where a fleet is in orbit")
 		if corners.has("fleet"):
@@ -59,8 +60,23 @@ func _init() -> void:
 			"the %s corner shows the picture, not a letter (%s)" % [name, btn.icon.resource_path if btn.icon != null else "-"])
 	if corners.has("manufacturing"):
 		_check(SectorWindow.IconTint(corners["manufacturing"]) == home.GetFactionColor(), "the manufacturing glyph is tinted in the world's colour")
-	if corners.has("mission"):
-		_check(SectorWindow.IconTint(corners["mission"]).a < 1.0, "the mission glyph is faint while no mission runs")
+	# The corners sit tight against the planet: an inner corner within a few
+	# pixels of the original's (+-15, +-9) from the centre.
+	if corners.has("manufacturing"):
+		var b: Button = corners["manufacturing"]
+		var pad: Vector2 = (b.size - b.icon.get_size()).max(Vector2.ZERO) / 2.0
+		var inner: Vector2 = b.position + b.size - pad - _lastCentre
+		_check(inner.x >= -28 and inner.x <= -14 and inner.y >= -19 and inner.y <= -8,
+			"the manufacturing corner hugs the planet (inner corner %s)" % str(inner))
+
+	# A world we know has no defenses shows no Defenses corner.
+	var bare: Planet = Lq.first_or_null(GameState.AllPlanets(), func(p: Planet) -> bool:
+		return p.ControllingFaction == us and p.Troopers().is_empty() and p.FighterSquadrons.is_empty() \
+			and p.SpecForces().is_empty() \
+			and not Lq.any(GameState.ActiveRoster, func(c: Character) -> bool: return c.Attached == p and not c.IsOffMap()) \
+			and not Lq.any(p.Facilities, func(f: Facility) -> bool: return IntelManager.IsDefensive(f)))
+	if bare != null:
+		_check(not (await _corners_for(ui, bare)).has("defenses"), "no Defenses corner on %s, which has none" % bare.Name)
 
 	# A mission of ours lights the mission glyph in our colour.
 	var agent: Character = Lq.first_or_null(GameState.ActiveRoster, func(c: Character) -> bool:
@@ -92,6 +108,8 @@ func _init() -> void:
 	quit(1 if _fails > 0 else 0)
 
 
+var _lastCentre: Vector2 = Vector2.ZERO
+
 ## Opens the planet's sector window and returns its corner buttons by glyph name.
 func _corners_for(ui: UIManager, planet: Planet) -> Dictionary:
 	var sector: Sector = Lq.first_or_null(GameState.ActiveGalaxy, func(s: Sector) -> bool: return s.Planets.has(planet))
@@ -109,8 +127,9 @@ func _corners_for(ui: UIManager, planet: Planet) -> Dictionary:
 	var centre: Vector2 = btn.position + Vector2(16, 16)
 	var out := {}
 	for c in map.get_children():
-		if c is Button and c.has_meta("corner") and (c.position + Vector2(8, 8)).distance_to(centre) < 40:
+		if c is Button and c.has_meta("corner") and (c.position + c.size / 2.0).distance_to(centre) < 40:
 			out[c.get_meta("corner")] = c
+	_lastCentre = centre
 	return out
 
 

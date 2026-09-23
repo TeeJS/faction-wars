@@ -71,7 +71,7 @@ color = Color(0.121569, 0.160784, 0.215686, 1)
 
 [node name="PlanetInformation" type="TabContainer" parent="MainVBox/ContentArea" unique_id=1410065399]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(400, 500)
+custom_minimum_size = Vector2(420, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 10
 current_tab = 0
@@ -79,6 +79,13 @@ current_tab = 0
 [node name="Information" type="VBoxContainer" parent="MainVBox/ContentArea/PlanetInformation" unique_id=1616938732]
 layout_mode = 2
 metadata/_tab_index = 0
+
+[node name="picture" type="ColorRect" parent="MainVBox/ContentArea/PlanetInformation/Information"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(400, 200)
+layout_mode = 2
+size_flags_horizontal = 4
+color = Color(0.08, 0.1, 0.14, 1)
 
 [node name="title" type="Label" parent="MainVBox/ContentArea/PlanetInformation/Information" unique_id=752957022]
 unique_name_in_owner = true

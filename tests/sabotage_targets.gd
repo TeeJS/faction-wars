@@ -62,8 +62,9 @@ func _init() -> void:
 	w.PopulateOrbitalDefenses(tabs, them)
 	await process_frame
 	var rows: Array = []
-	_collect_rows(tabs.get_node("Orbital Defenses"), rows)
-	_check(rows.size() == defences.size(), "the Orbital Defenses tab has %d target rows (has %d)" % [defences.size(), rows.size()])
+	_collect_rows(tabs.get_node("Planetary Shield"), rows)
+	_collect_rows(tabs.get_node("Planetary Battery"), rows)
+	_check(rows.size() == defences.size(), "the Planetary Shield and Battery tabs have %d target rows (have %d)" % [defences.size(), rows.size()])
 	var types: Array = []
 	for r in rows:
 		types.append(str(r.get_meta("defence_type")))
@@ -74,7 +75,8 @@ func _init() -> void:
 	w.PopulateOrbitalDefenses(tabs, them)
 	await process_frame
 	var blind: Array = []
-	_collect_rows(tabs.get_node("Orbital Defenses"), blind)
+	_collect_rows(tabs.get_node("Planetary Shield"), blind)
+	_collect_rows(tabs.get_node("Planetary Battery"), blind)
 	_check(blind.is_empty(), "unseen defences offer no rows")
 	# THE BUG TeeJ hit (report screenshot, room #232): a Facility target showed
 	# "Target: Taanab" (the planet) because Facility.Name is a METHOD, read as a
