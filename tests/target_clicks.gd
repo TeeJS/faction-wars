@@ -12,7 +12,9 @@ extends SceneTree
 ## names that system. Outside targeting the icons still open their windows, and
 ## object targeting inside a system's windows is untouched.
 ##
-## Real clicks, pushed through the viewport, so the GUI decides what is hit.
+## Real clicks, pushed through the viewport, so the GUI decides what is hit;
+## an icon is clicked on its drawn pixels, read from its picture (the rest
+## of its cell belongs to what is under it - tests/corner_masks.gd).
 ##
 ##   .\tools\run-gd.ps1 tests/target_clicks.gd -- --pack=ww2
 ##   .\tools\run-gd.ps1 tests/target_clicks.gd              (Star Wars)
@@ -65,30 +67,37 @@ func _init() -> void:
 		quit(1)
 		return
 
-	# --- 1. THE REPORT: a click on the picture where an icon covers it. ---
+	# --- 1. THE REPORT: a click on the picture where an icon's cell covers it. ---
 	var w: SectorWindow = await _open_sector(ui, home)
 	var parts: Dictionary = _parts(w, home)
 	var pic: Rect2 = parts["picture"]
-	var covered: Dictionary = {}   # icon -> a point on the picture that the icon covers
+	# Read now, while this window's buttons exist: every step below reopens it.
+	var glyphs: Dictionary = {}   # icon -> a point in the middle of its drawn pixels
+	for corner in parts["corner_buttons"]:
+		var g: Variant = _glyph_point(parts["corner_buttons"][corner])
+		_check(g != null, "the %s icon has drawn pixels to click (%s)" % [corner, str(g)])
+		if g != null:
+			glyphs[corner] = g
+	var covered: Dictionary = {}   # icon -> a point on the picture that the icon's cell covers
 	for corner in parts["corners"]:
 		var overlap: Rect2 = pic.intersection(parts["corners"][corner])
 		if overlap.get_area() >= 1.0:
 			covered[corner] = overlap.get_center()
 	print("[target_clicks] %s: picture %s; icons %s; covering the picture: %s" % [home.Name, str(pic), str(parts["corners"]), str(covered.keys())])
-	_check(not covered.is_empty(), "at least one corner icon covers part of %s's picture (the regression's precondition)" % home.Name)
+	_check(not covered.is_empty(), "at least one corner icon's cell covers part of %s's picture (the regression's precondition)" % home.Name)
 	for corner in covered:
 		w = await _open_sector(ui, home)
 		_aim(ui)
 		var hit: String = await _click(w, covered[corner])
 		_check(_picked == home and not ui.IsTargeting and _opened(ui, home).is_empty(),
-			"a crosshair click on %s's picture where the %s icon covers it names the system (on top: %s; picked %s; opened %s)" \
+			"a crosshair click on %s's picture where the %s icon's cell covers it names the system (under the pointer: %s; picked %s; opened %s)" \
 				% [home.Name, corner, hit, _picked.Name if _picked != null else "nothing", str(_opened(ui, home))])
 
 	# --- 2. EVERY PART OF THE SYSTEM'S ENTRY names it while the crosshair is up. ---
 	var spots: Dictionary = {}   # what -> map point
 	spots["the picture's centre"] = pic.get_center()
-	for corner in parts["corners"]:
-		spots["the %s icon" % corner] = (parts["corners"][corner] as Rect2).get_center()
+	for corner in glyphs:
+		spots["the %s icon" % corner] = glyphs[corner]
 	for kind in parts["bars"]:
 		spots["the %s bar" % kind] = (parts["bars"][kind] as Rect2).get_center()
 	_check(parts.has("name") and parts["bars"].size() >= 2, "the entry has its name and its bars (bars %s)" % str(parts["bars"].keys()))
@@ -101,7 +110,7 @@ func _init() -> void:
 		_aim(ui)
 		var hit: String = await _click(w, spots[what])
 		_check(_picked == home and not ui.IsTargeting and _opened(ui, home).is_empty(),
-			"a crosshair click on %s names %s (on top: %s; picked %s; opened %s)" \
+			"a crosshair click on %s names %s (under the pointer: %s; picked %s; opened %s)" \
 				% [what, home.Name, hit, _picked.Name if _picked != null else "nothing", str(_opened(ui, home))])
 
 	# --- 3. Blank space in the sector window names nothing; the crosshair stays up. ---
@@ -111,15 +120,15 @@ func _init() -> void:
 	if blank != null:
 		_aim(ui)
 		var hit: String = await _click(w, blank)
-		_check(_picked == null and ui.IsTargeting, "a crosshair click on blank space names nothing and the crosshair stays up (on top: %s)" % hit)
+		_check(_picked == null and ui.IsTargeting, "a crosshair click on blank space names nothing and the crosshair stays up (under the pointer: %s)" % hit)
 		ui.CancelTargeting()
 
 	# --- 4. Outside targeting the icons still open their own windows. ---
-	for corner in parts["corners"]:
+	for corner in glyphs:
 		w = await _open_sector(ui, home)
-		var hit: String = await _click(w, (parts["corners"][corner] as Rect2).get_center())
+		var hit: String = await _click(w, glyphs[corner])
 		var title: String = home.Name + WindowFor.get(corner, "?")
-		_check(_opened(ui, home).has(title) and _picked == null, "outside targeting the %s icon still opens '%s' (on top: %s; opened %s)" % [corner, title, hit, str(_opened(ui, home))])
+		_check(_opened(ui, home).has(title) and _picked == null, "outside targeting the %s icon still opens '%s' (under the pointer: %s; opened %s)" % [corner, title, hit, str(_opened(ui, home))])
 
 	# --- 5. Object targeting inside a system's window is untouched. ---
 	# One of our people standing on a world, clicked in its System Defenses
@@ -159,7 +168,7 @@ func _init() -> void:
 	var at: Vector2 = covered.values()[0] if not covered.is_empty() else pic.get_center()
 	var objHit: String = await _click(w, at)
 	_check(_picked == home and _pickedObject == null and not ui.IsTargeting,
-		"object targeting: a click on %s's picture names the system itself (on top: %s)" % [home.Name, objHit])
+		"object targeting: a click on %s's picture names the system itself (under the pointer: %s)" % [home.Name, objHit])
 
 	# --- 6. From the galaxy map: the region opens its theatre with the crosshair still up. ---
 	ui.CancelTargeting()
@@ -178,7 +187,7 @@ func _init() -> void:
 		sw.move_to_front()
 		await process_frame
 		var mapHit: String = await _click(sw, at)
-		_check(_picked == home and not ui.IsTargeting, "...and a click on %s's picture there names the system (on top: %s)" % [home.Name, mapHit])
+		_check(_picked == home and not ui.IsTargeting, "...and a click on %s's picture there names the system (under the pointer: %s)" % [home.Name, mapHit])
 	ui.CancelTargeting()
 	ui.CloseAllWindows()
 	for _i in 2:
@@ -218,12 +227,11 @@ func _open_sector(ui: UIManager, planet: Planet) -> SectorWindow:
 
 
 ## A left click at a point of the window's sector map, pushed through the
-## viewport as the mouse would send it. Returns what was on top there.
+## viewport as the mouse would send it. Returns what the GUI had under the
+## pointer, named before the click (a click can repaint the map).
 func _click(w: SectorWindow, local: Vector2) -> String:
 	var map: Control = w.get_node("%SectorMap")
-	var over: String = _describe(_top_at(map, local))
-	await _press_at(map.get_global_transform_with_canvas() * local)
-	return over
+	return await _press_at(map.get_global_transform_with_canvas() * local)
 
 
 ## A left click at a viewport point. The pointer is moved, then moved again
@@ -231,10 +239,11 @@ func _click(w: SectorWindow, local: Vector2) -> String:
 ## change makes Input send a motion of its own at ITS idea of the pointer,
 ## which headless is not where these pushes put it, and landing between them
 ## it would un-hover the button.
-func _press_at(at: Vector2) -> void:
+func _press_at(at: Vector2) -> String:
 	_push_motion(at)
 	await process_frame
 	_push_motion(at)
+	var over: String = _describe(root.gui_get_hovered_control())
 	for down in [true, false]:
 		var b := InputEventMouseButton.new()
 		b.button_index = MOUSE_BUTTON_LEFT
@@ -245,6 +254,7 @@ func _press_at(at: Vector2) -> void:
 		root.push_input(b, true)
 	for _i in 2:
 		await process_frame
+	return over
 
 
 func _push_motion(at: Vector2) -> void:
@@ -252,20 +262,6 @@ func _push_motion(at: Vector2) -> void:
 	move.position = at
 	move.global_position = at
 	root.push_input(move, true)
-
-
-## What the GUI finds on top at a point of the sector map: the last-added
-## child there that takes the mouse (the parts are plain children, and none
-## has a child of its own that does), else the map itself.
-static func _top_at(map: Control, local: Vector2) -> Control:
-	var kids: Array = map.get_children()
-	for i in range(kids.size() - 1, -1, -1):
-		var c: Control = kids[i] as Control
-		if c == null or c.is_queued_for_deletion() or not c.visible or c.mouse_filter == Control.MOUSE_FILTER_IGNORE:
-			continue
-		if Rect2(c.position, c.size).has_point(local):
-			return c
-	return map
 
 
 static func _describe(c: Control) -> String:
@@ -290,11 +286,12 @@ func _parts(w: SectorWindow, planet: Planet) -> Dictionary:
 	var pic := Rect2(btn.position, btn.size)
 	var centre: Vector2 = pic.get_center()
 	var star_at: Vector2 = centre + Vector2(-SectorWindow.StarOffsetX, SectorWindow.StarOffsetY)
-	var out := {"picture": pic, "corners": {}, "bars": {}}
+	var out := {"picture": pic, "corners": {}, "corner_buttons": {}, "bars": {}}
 	for c in kids:
 		var r := Rect2(c.position, c.size)
 		if c is Button and c.has_meta("corner") and r.get_center().distance_to(centre) < 40:
 			out["corners"][c.get_meta("corner")] = r
+			out["corner_buttons"][c.get_meta("corner")] = c
 		elif c.has_meta("bar_row") and absf(c.position.x - (centre.x - SectorWindow.BarsLeft)) < 0.5 \
 				and c.position.y > centre.y and c.position.y < centre.y + 80:
 			out["bars"][c.get_meta("bar_row")] = r
@@ -303,6 +300,53 @@ func _parts(w: SectorWindow, planet: Planet) -> Dictionary:
 		elif (c.has_meta("gid_star") or (c is Label and c.text == "+")) and r.get_center().distance_to(star_at) < 2.0:
 			out["star"] = r
 	return out
+
+
+## A sector-map point in the middle of an icon's drawn pixels, read from its
+## picture: drawn at its own size and centred in the button (a Button with no
+## text and expand_icon off), the drawn pixel with drawn pixels all round it
+## nearest their centroid (any drawn pixel, if none has). Null when the
+## picture cannot be read or draws nothing.
+static func _glyph_point(btn: Button) -> Variant:
+	var img: Image = btn.icon.get_image() if btn.icon != null else null
+	if img == null or img.is_empty():
+		return null
+	if img.is_compressed():
+		img.decompress()
+	var drawn: Vector2 = btn.icon.get_size()
+	var origin: Vector2 = btn.position + ((btn.size - drawn) / 2.0).floor()
+	var solid: Array = []
+	var sum := Vector2.ZERO
+	for y in img.get_height():
+		for x in img.get_width():
+			if img.get_pixel(x, y).a >= 0.5:
+				solid.append(Vector2i(x, y))
+				sum += Vector2(x, y)
+	if solid.is_empty():
+		return null
+	var centroid: Vector2 = sum / solid.size()
+	for inner in [true, false]:
+		var best: Variant = null
+		var bestD: float = INF
+		for px: Vector2i in solid:
+			if inner and not _surrounded(img, px):
+				continue
+			var d: float = centroid.distance_to(Vector2(px))
+			if d < bestD:
+				best = px
+				bestD = d
+		if best != null:
+			return origin + (Vector2(best) + Vector2(0.5, 0.5)) * drawn / Vector2(img.get_size())
+	return null
+
+
+static func _surrounded(img: Image, px: Vector2i) -> bool:
+	for dy in [-1, 0, 1]:
+		for dx in [-1, 0, 1]:
+			var q: Vector2i = px + Vector2i(dx, dy)
+			if q.x < 0 or q.y < 0 or q.x >= img.get_width() or q.y >= img.get_height() or img.get_pixel(q.x, q.y).a < 0.5:
+				return false
+	return true
 
 
 ## A point of the sector map that nothing is drawn on, or null.
