@@ -363,6 +363,13 @@ func _init() -> void:
 		for _i in 3:
 			await process_frame
 
+	# ---- the mouse pointers (REBEXE.EXE) ----
+	var pointer: Texture2D = Art.CursorPicture("pointer")
+	var cross: Texture2D = Art.CursorPicture("crosshair")
+	_check(pointer != null and pointer.get_size() == Vector2(32, 32) and Art.CursorHotspot("pointer") == Vector2.ZERO,
+		"the original's arrow, its hotspot at its tip")
+	_check(cross != null and Art.CursorHotspot("crosshair") == Vector2(12, 12), "the original's crosshair, its hotspot at its centre")
+
 	# ---- the Message Index column ----
 	ui.RefreshCommsHighlights()
 	var list: VBoxContainer = ui.get_node("CommsPanel/Margin/CommsList")
