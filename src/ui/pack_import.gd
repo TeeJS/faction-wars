@@ -25,6 +25,11 @@ const KIND_FACTION_PACK := "faction_pack"
 ## Where a picked file is staged for the zip reader (user://, so it is never an
 ## OS temp folder).
 const STAGING := "user://import-staging.zip"
+## The oldest Faction Wars Exporter whose art set this version of the game can
+## use, per art set. 2.1.0: the galaxy map mirrored out to 640x480, which the
+## Star Wars pack's map_image_rect needs. Raise it when the game needs pictures
+## an older exporter did not write; the picker then asks for a new export.
+const MIN_EXPORTER := {"swr-original": "2.1.0"}
 
 
 ## Called with each import's result (the pack picker refreshes its cards).
@@ -186,12 +191,38 @@ static func _import(zip: ZIPReader) -> Dictionary:
 	_sync()
 	_ask_to_keep_storage()
 	var what := "the art set" if kind == KIND_ART_SET else "the faction pack"
-	return {"ok": true, "kind": kind, "id": id, "files": contents.size(),
-		"message": "Imported %s \"%s\" (%d files)." % [what, title, contents.size()]}
+	var message := "Imported %s \"%s\" (%d files)." % [what, title, contents.size()]
+	var made_by := str(manifest.get("exporter", ""))
+	if kind == KIND_ART_SET and IsOutdated(id, made_by):
+		message += " " + OutdatedNote(id, made_by)
+	return {"ok": true, "kind": kind, "id": id, "files": contents.size(), "message": message}
+
+
+## Whether an art set made by exporter `made_by` is older than this game needs.
+static func IsOutdated(set_id: String, made_by: String) -> bool:
+	return IsOlder(made_by, str(MIN_EXPORTER.get(set_id, "0")))
+
+
+static func OutdatedNote(set_id: String, made_by: String) -> String:
+	return "It was made by exporter %s; this version of Faction Wars needs %s or later - download the new exporter and export again." \
+		% [made_by if not made_by.is_empty() else "(unknown)", MIN_EXPORTER.get(set_id, "")]
+
+
+## "2.0.9" is older than "2.1.0"; a missing version is older than any.
+static func IsOlder(version: String, than: String) -> bool:
+	var a := version.split(".")
+	var b := than.split(".")
+	for i in maxi(a.size(), b.size()):
+		var x := int(a[i]) if i < a.size() else 0
+		var y := int(b[i]) if i < b.size() else 0
+		if x != y:
+			return x < y
+	return false
 
 
 ## The art sets and faction packs the player imported: [{ kind, id, title,
-## files, created_utc }], art sets first.
+## files, created_utc, exporter, outdated }], art sets first. `outdated`: an art
+## set older than MIN_EXPORTER.
 static func Installed() -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
 	for pair in [[KIND_ART_SET, Art.UserArtRoot], [KIND_FACTION_PACK, FactionRegistry.USER_PACKS_ROOT]]:
@@ -199,11 +230,13 @@ static func Installed() -> Array[Dictionary]:
 			if id.ends_with(".importing"):
 				continue
 			var m: Variant = JSON.parse_string(FileAccess.get_file_as_string("%s/%s/manifest.json" % [pair[1], id]))
-			var entry := {"kind": pair[0], "id": id, "title": id, "files": 0, "created_utc": ""}
+			var entry := {"kind": pair[0], "id": id, "title": id, "files": 0, "created_utc": "", "exporter": "", "outdated": false}
 			if m is Dictionary:
 				entry["title"] = str(m.get("title", id))
 				entry["files"] = (m.get("files", {}) as Dictionary).size() if m.get("files") is Dictionary else 0
 				entry["created_utc"] = str(m.get("created_utc", ""))
+				entry["exporter"] = str(m.get("exporter", ""))
+			entry["outdated"] = pair[0] == KIND_ART_SET and IsOutdated(id, entry["exporter"])
 			out.append(entry)
 	return out
 
