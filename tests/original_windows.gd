@@ -247,6 +247,15 @@ func _init() -> void:
 			_check(cm._pages[1].visible and not cm._pages[0].visible and decoyPlate.get_size() == Vector2(259, 355) * K,
 				"the Decoy tab, on its own plate")
 			_check(cm._columns[0].get_child_count() == team.size() and cm._columns[1].get_child_count() == 0, "the team in the agents column")
+			var toD: TextureButton = cm.find_child("mission_to_decoys", true, false)
+			var toA: TextureButton = cm.find_child("mission_to_agents", true, false)
+			_check(toD != null and toD.position == Vector2(120, 136) * K and toA != null and toA.position == Vector2(120, 221) * K,
+				"the arrows at (120, 136) and (120, 221)")
+			await process_frame
+			var first: Control = cm._columns[0].get_child(0) if cm._columns[0].get_child_count() > 0 else null
+			var mpic: Control = first.find_child("Picture", false, false) if first != null else null
+			var at: Vector2 = (mpic.global_position - cm._canvas.global_position) / K if mpic != null else Vector2(-1, -1)
+			_check(at == Vector2(31, 110), "the first agent's picture at (31, 110) (%s)" % str(at))
 			(cm.find_child("mission_ok", true, false) as TextureButton).pressed.emit()
 			for _i in 3:
 				await process_frame

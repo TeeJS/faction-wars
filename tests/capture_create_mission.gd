@@ -6,7 +6,7 @@ extends SceneTree
 ## tests/capture_windows.gd:
 ##
 ##   Godot_console.exe --path . --resolution 1440x850 -s tests/capture_create_mission.gd -- --out=C:/tmp/cm.png [--faction=alliance]
-##   writes <out minus .png>_select.png and _decoy.png
+##   writes <out minus .png>_select.png, _list.png and _decoy.png
 
 func _init() -> void:
 	await process_frame
@@ -54,6 +54,12 @@ func _init() -> void:
 	for _i in 3:
 		await process_frame
 	ok = _shot(w, out + "_select.png") and ok
+	# The mission list dropped down, as in TeeJ's screenshot of the original's.
+	w._open_list(true)
+	for _i in 3:
+		await process_frame
+	ok = _shot(w, out + "_list.png") and ok
+	w._open_list(false)
 	# The Decoy tab: the whole of the recruiter's world's people, one moved.
 	w.CloseWindow()
 	for _i in 2:
@@ -71,7 +77,8 @@ func _init() -> void:
 		if crowd.size() > 1:
 			w._picked = [crowd[1]]
 			w._move(true)
-			w._picked = [crowd[0]]
+			# Nobody picked, as in TeeJ's screenshot of the original.
+			w._picked = []
 			w._fill_columns()
 		for _i in 3:
 			await process_frame

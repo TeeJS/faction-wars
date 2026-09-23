@@ -763,8 +763,8 @@ func OpenBuildChooser(planet: Planet, producer: String) -> void:
 		var rate: int = planet.BestProducerRateForUi(producer)
 		for rule in MilitaryCatalog.BuildableAt(producer, owner):
 			var r: PackDefs.UnitDef = rule
-			names.append(r.Name)
-			titles.append(r.Name)
+			names.append(r.DisplayName)
+			titles.append(r.DisplayName)
 			encyclopedia.append(["units", r.Id])
 			refined.append(r.ConstructionCost)
 			maint.append(r.MaintenanceCost)
@@ -772,7 +772,7 @@ func OpenBuildChooser(planet: Planet, producer: String) -> void:
 			var why: Result = planet.CanQueueUnit(r, target)
 			blocked.append(why.error)
 			place.append(func(n: int) -> Result:
-				return CommandBus.issue("queue_units", { "planet": planet.Name, "rule": r.Name, "destination": target.Name if target != null else "", "count": n }))
+				return CommandBus.issue("queue_units", { "planet": planet.Name, "rule": r.DisplayName, "destination": target.Name if target != null else "", "count": n }))
 
 	if names.size() == 0:
 		return

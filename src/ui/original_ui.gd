@@ -614,3 +614,233 @@ static func _card_name(card: Control, title: String, color: Color) -> Label:
 	name.clip_text = true
 	name.add_theme_constant_override("line_spacing", 3 * K / 2)
 	return name
+
+
+# ---- the drop-down picture list and the scroll bar ---------------------------
+
+## THE ORIGINAL'S DROP-DOWN LIST OF PICTURES (the Build Selection window's
+## items, measured on TeeJ's screenshot of the original, rebuilt to 0
+## differing pixels): the 195x61 starfield (STRATEGY 10598) tiled down from
+## the panel's corner; a white one-pixel frame, one pixel short of it on the
+## right and the bottom; a row every `pitch` pixels - its picture at
+## (picture_x, picture_y) in the row, its name (Arial `name_px`) centred
+## across the panel at `name_y` (the Build list's over the picture's last
+## rows, Create Mission's above it), grey for the current item and white for
+## the rest; the rows cut two pixels inside the frame's top; the scroll bar
+## inside its right edge. The rows are Buttons named "Row<i>" (pressing one
+## picks it); the panel's "rows" meta holds them. `rect` is the starfield's,
+## in original pixels; `layout` = {top, pitch, picture_x, picture_y, name_y,
+## name_px}, `top` being the first row's in the panel, unscrolled. Items are
+## {picture: Texture2D (drawn size), name}. It opens scrolled to show the
+## current item (INFERRED).
+static func DropList(parent: Control, rect: Rect2, items: Array, current: int, layout: Dictionary,
+		on_pick: Callable) -> Control:
+	var panel := DropListPanel.new()
+	panel.name = "DropList"
+	panel.k = K
+	panel.star = Pic("list_starfield")
+	panel.position = rect.position * K
+	panel.size = rect.size * K
+	parent.add_child(panel)
+	var inner := Control.new()   # inside the frame: the rows are cut there
+	inner.name = "Rows"
+	inner.position = Vector2(1, 2) * K
+	inner.size = (rect.size - Vector2(3, 5)) * K
+	inner.clip_contents = true
+	inner.mouse_filter = Control.MOUSE_FILTER_PASS
+	panel.add_child(inner)
+	var rows: Array = []
+	var empty := StyleBoxEmpty.new()
+	var grey := Color(128 / 255.0, 128 / 255.0, 128 / 255.0)
+	for i in items.size():
+		var row := Button.new()
+		row.name = "Row%d" % i
+		row.flat = true
+		row.focus_mode = Control.FOCUS_NONE
+		row.size = Vector2(rect.size.x - 3 - ScrollBar12.W, float(layout.pitch)) * K
+		row.tooltip_text = str(items[i].name)
+		for st in ["normal", "hover", "pressed", "focus", "hover_pressed"]:
+			row.add_theme_stylebox_override(st, empty)
+		var pic: Texture2D = items[i].get("picture")
+		if pic != null:
+			var p := Place(row, pic, float(layout.picture_x) - 1, float(layout.get("picture_y", 0)), "Picture")
+			p.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var label := Text(row, str(items[i].name), -1, float(layout.name_y), rect.size.x, 16,
+			float(layout.name_px), grey if i == current else Color.WHITE, HORIZONTAL_ALIGNMENT_CENTER, false, "Name")
+		label.clip_text = true
+		var index := i
+		row.pressed.connect(func() -> void: on_pick.call(index))
+		inner.add_child(row)
+		rows.append(row)
+	panel.set_meta("rows", rows)
+	panel.rows = rows
+	panel.top = float(layout.top) - 2
+	panel.pitch = float(layout.pitch)
+	# The scroll bar: the up arrow 2 rows under the frame's top, the down
+	# arrow's last row on the row above the frame's bottom, its 13th column
+	# under the frame's right edge (measured on both lists: x 190, y 113-252
+	# in the Build panel at 9,111 of 195x144; x 224, y 203-315 in Create
+	# Mission's at 38,201 of 200x117).
+	var bar := ScrollBar12.new()
+	bar.name = "ScrollBar"
+	bar.k = K
+	bar.parts = [Btn("scroll_up"), Btn("scroll_down"), Btn("scroll_thumb_top"), Btn("scroll_thumb_mid"), Btn("scroll_thumb_bottom")]
+	bar.position = Vector2(rect.size.x - 1 - ScrollBar12.W, 2) * K
+	bar.size = Vector2(ScrollBar12.W - 1, rect.size.y - 4) * K
+	panel.add_child(bar)
+	panel.bar = bar
+	var shown: int = maxi(1, roundi((rect.size.y - float(layout.top)) / float(layout.pitch)))
+	bar.set_rows(0, shown, items.size())
+	bar.scrolled.connect(panel.scroll_to)
+	panel.scroll_to(clampi(current - shown + 1, 0, maxi(0, items.size() - shown)) if current >= shown else 0)
+	return panel
+
+
+class DropListPanel extends Control:
+	var k: int = 2
+	var star: Texture2D
+	var rows: Array = []
+	var top: float = 0.0
+	var pitch: float = 1.0
+	var bar: ScrollBar12
+	var first: int = 0
+
+	func _init() -> void:
+		clip_contents = true
+		mouse_filter = Control.MOUSE_FILTER_STOP
+		texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+
+	func _draw() -> void:
+		if star != null:
+			var y := 0.0
+			while y < size.y:
+				draw_texture(star, Vector2(0, y))
+				y += star.get_height()
+		else:
+			draw_rect(Rect2(Vector2.ZERO, size), Color.BLACK)
+		# The frame, one pixel short of the starfield on the right and bottom.
+		var w: float = size.x - k
+		var h: float = size.y - k
+		draw_rect(Rect2(0, 0, w, k), Color.WHITE)
+		draw_rect(Rect2(0, h - k, w, k), Color.WHITE)
+		draw_rect(Rect2(0, 0, k, h), Color.WHITE)
+		draw_rect(Rect2(w - k, 0, k, h), Color.WHITE)
+
+	func scroll_to(p_first: int) -> void:
+		first = p_first
+		for i in rows.size():
+			(rows[i] as Control).position = Vector2(0, (top + (i - first) * pitch) * k)
+		if bar != null and bar.first != first:
+			bar.set_rows(first, bar.shown, bar.total)
+
+	func _gui_input(event: InputEvent) -> void:
+		if event is InputEventMouseButton and event.pressed and bar != null \
+				and (event.button_index == MOUSE_BUTTON_WHEEL_UP or event.button_index == MOUSE_BUTTON_WHEEL_DOWN):
+			bar.step(-1 if event.button_index == MOUSE_BUTTON_WHEEL_UP else 1)
+			accept_event()
+
+
+## THE ORIGINAL'S SCROLL BAR (STRATEGY 10658-10669; measured on the Build
+## Selection list, the Encyclopedia's index and the Message Index): the up
+## arrow (13x9) at the top, the down arrow at the bottom, the black track
+## between them and the thumb on it - a cap, its middle repeated, a cap. The
+## parts are 13 wide; the original never draws their last column. The
+## thumb's length is the shown share of the track, never under 12 pixels, and
+## the arrows step a row (both INFERRED: they fit the samples, whose totals
+## are not known). `parts` = [up, down, thumb top, thumb middle, thumb
+## bottom] at the drawn scale.
+class ScrollBar12 extends Control:
+	signal scrolled(first: int)
+	const W := 13
+	const Arrow := 9
+	const MinThumb := 12
+	var k: int = 2
+	var parts: Array = []
+	var first: int = 0
+	var shown: int = 1
+	var total: int = 1
+	var _grab: float = -1.0
+	var _grab_first: int = 0
+
+	func _init() -> void:
+		mouse_filter = Control.MOUSE_FILTER_STOP
+		texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+
+	func set_rows(p_first: int, p_shown: int, p_total: int) -> void:
+		shown = maxi(1, p_shown)
+		total = maxi(1, p_total)
+		first = clampi(p_first, 0, maxi(0, total - shown))
+		queue_redraw()
+
+	func _track() -> Rect2:
+		return Rect2(0, Arrow * k, (W - 1) * k, size.y - 2 * Arrow * k)
+
+	## The thumb, in drawn pixels, on whole original pixels.
+	func Thumb() -> Rect2:
+		var t := _track()
+		if total <= shown:
+			return t
+		var span: int = int(t.size.y) / k
+		var length: int = mini(span, maxi(MinThumb, roundi(float(span) * shown / total)))
+		var y: int = roundi(float(span - length) * first / (total - shown))
+		return Rect2(t.position.x, t.position.y + y * k, t.size.x, length * k)
+
+	func _draw() -> void:
+		draw_rect(_track(), Color.BLACK)
+		if parts.size() < 5:
+			return
+		_part(parts[0], 0.0)
+		_part(parts[1], size.y - Arrow * k)
+		var th := Thumb()
+		var cap_top: Texture2D = parts[2]
+		var mid: Texture2D = parts[3]
+		var cap_bottom: Texture2D = parts[4]
+		if cap_top == null or mid == null or cap_bottom == null:
+			return
+		var y: float = th.position.y + cap_top.get_height()
+		var end: float = th.end.y - cap_bottom.get_height()
+		while y < end:
+			_part(mid, y, minf(mid.get_height(), end - y))
+			y += mid.get_height()
+		_part(cap_top, th.position.y)
+		_part(cap_bottom, end)
+
+	func _part(tex: Texture2D, y: float, h: float = -1.0) -> void:
+		if tex == null:
+			return
+		var hh: float = tex.get_height() if h < 0.0 else h
+		draw_texture_rect_region(tex, Rect2(0, y, (W - 1) * k, hh), Rect2(0, 0, (W - 1) * k, hh))
+
+	func _gui_input(event: InputEvent) -> void:
+		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+			if not event.pressed:
+				_grab = -1.0
+				return
+			var y: float = event.position.y
+			var th := Thumb()
+			if y < Arrow * k:
+				step(-1)
+			elif y >= size.y - Arrow * k:
+				step(1)
+			elif y < th.position.y:
+				step(-shown)
+			elif y >= th.end.y:
+				step(shown)
+			else:
+				_grab = y
+				_grab_first = first
+			accept_event()
+		elif event is InputEventMouseMotion and _grab >= 0.0 and total > shown:
+			var free: float = _track().size.y - Thumb().size.y
+			if free > 0.0:
+				_scroll_to(_grab_first + roundi((event.position.y - _grab) / free * (total - shown)))
+			accept_event()
+
+	func step(rows: int) -> void:
+		_scroll_to(first + rows)
+
+	func _scroll_to(f: int) -> void:
+		var was := first
+		set_rows(f, shown, total)
+		if first != was:
+			scrolled.emit(first)
