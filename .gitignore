@@ -10,3 +10,8 @@ version.txt
 
 # Manual scans, PDFs and digests are copyrighted - never commit any of it.
 manual/
+
+# Artwork a player copied out of their own installed game (tools/RebellionArtImporter) - never committed
+packs/*/original/
+tools/RebellionArtImporter/bin/
+tools/RebellionArtImporter/obj/

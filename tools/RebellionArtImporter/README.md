@@ -1,0 +1,58 @@
+# Rebellion Art Importer
+
+A small Windows utility for people who **own Star Wars: Rebellion**. It copies
+the Encyclopedia pictures and descriptions out of *their* installed copy into
+the Faction Wars pack, so the game can show the original artwork. The repo never
+distributes that artwork: the output folder (`packs/star-wars-rebellion/original/`)
+is gitignored, and the tool reads only from the folder the player points it at.
+
+## Use
+
+Double-click `RebellionArtImporter.exe`, check the two folders (the GOG install
+and the pack folder are found automatically when they are where expected), click
+**Import**. About 300 pictures and 150 descriptions are written in a few seconds.
+
+From a script:
+
+```powershell
+.\RebellionArtImporter.exe --gamedir 'C:\Program Files (x86)\GOG Galaxy\Games\Star Wars - Rebellion' --pack 'D:\Github\faction-wars\packs\star-wars-rebellion'
+```
+
+runs without a window and writes `original\import.log` (exit 0 = done).
+
+## What it reads, and how (verified against the installed game, 2026-09-22)
+
+| Piece | Where | Key |
+|---|---|---|
+| Descriptions | `ENCYTEXT.DLL`, RCDATA resources | Encyclopedia id = the pack row's `string_id` − 4096 |
+| Which picture | `ENCYBMAP.DLL`, a string table | the same id → `EDATA.nnn` |
+| Pictures | `EData\EDATA.nnn`, 400×200 8-bit BMP | saved as PNG |
+| Planets | 26 portraits shared by `artwork_id` | string 11100 + artwork_id − 1; no text |
+| Missions | two pictures each | id − 4096 (Alliance), id (Empire) |
+
+The DLLs are parsed from their bytes (`PeResources.cs`); nothing from the game is
+loaded or executed, so a 32-bit DLL reads fine from this 64-bit tool and there is
+nothing for endpoint protection to object to.
+
+## Output
+
+```
+packs/star-wars-rebellion/original/
+  characters/<id>.png   units/<id>.png   facilities/<id>.png
+  planets/<id>.png      missions/<id>.png  missions/<id>.empire.png
+  descriptions.json     { "characters": { "<id>": "text" }, "units": ..., ... }
+  README.txt            the do-not-redistribute note
+```
+
+## Build
+
+.NET 8 SDK. Framework-dependent, so the exe is a normal signable binary (no
+single-file packing):
+
+```powershell
+dotnet publish tools\RebellionArtImporter -c Release -r win-x64 -p:SelfContained=false -o build\RebellionArtImporter
+```
+
+Sign `build\RebellionArtImporter\RebellionArtImporter.exe` with Azure Trusted
+Signing before handing it out. Players need the .NET 8 Desktop Runtime; Windows
+offers the download if it is missing.
