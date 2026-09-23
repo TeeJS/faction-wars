@@ -33,7 +33,13 @@ func _paint() -> void:
 	var data: Dictionary = _source.call()
 	WindowTitle = str(data.get("title", "Status"))
 	if OUI.HasStatus():
+		# A repaint keeps the list where the player scrolled it.
+		var old: Node = find_child("ScrollBar", true, false)
+		var first: int = int(old.get("first")) if old != null else 0
 		var canvas: Control = OUI.StatusPlate(self, _faction, data)
+		var bar: Node = canvas.get_node_or_null("ScrollBar")
+		if bar != null and first > 0:
+			bar.step(first)
 		(canvas.get_node("ency_close_alliance") as BaseButton).pressed.connect(CloseWindow)
 		_wire_encyclopedia(canvas.get_node("status_encyclopedia") as BaseButton, data)
 		return

@@ -1,8 +1,8 @@
 extends DraggableWindow
-## THE ORIGINAL'S CONFIRMATION DIALOG, as its Scrap asks (TeeJ's screenshot of
-## the original, Empire, rebuilt pixel for pixel 2026-09-23): no title bar,
-## the side's 424x331 frame (STRATEGY.DLL 11126; the Alliance's 11125
-## inferred), the 400x200 console picture at (12, 30), the question and one
+## THE ORIGINAL'S CONFIRMATION DIALOG, as its Scrap asks (TeeJ's screenshots
+## of the original, both sides, rebuilt pixel for pixel 2026-09-23): no title
+## bar, the side's 424x331 frame drawn whole (STRATEGY.DLL 11126 / 11125, its
+## last row pure blue), the 400x200 console picture (1033 / 1032) at (12, 30), the question and one
 ## line per unit in white Arial 13 from (24, 242) a line every 16, and the
 ## tick and cross at (355, 244) and (355, 281). Modal; Esc is the cross,
 ## Enter the tick (manual p064). Opened through DraggableWindow.ConfirmScrapUnits.
