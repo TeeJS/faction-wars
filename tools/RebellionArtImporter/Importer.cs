@@ -51,6 +51,7 @@ namespace RebellionArtImporter;
 ///   original/windows/&lt;name&gt;.png                            window pictures
 ///   original/tabs/&lt;name&gt;[.&lt;faction&gt;].png (+ .pressed / .grey)   window tab icons
 ///   original/buttons/&lt;name&gt;.png (+ .pressed / .disabled)       window buttons
+///   original/cursors/pointer.png, crosshair.png, hotspots.json   the mouse pointers (REBEXE.EXE)
 /// </summary>
 public sealed class Importer
 {
@@ -444,6 +445,32 @@ public sealed class Importer
             }
         }
         Say($"mission pictures for Create Mission: {missionCards} (GOKRES.DLL).");
+        // The mouse pointers: REBEXE.EXE's RT_CURSOR 3 (group 1001, the arrow -
+        // all 179 of its pixels matched TeeJ's screenshot of the original) and 4
+        // (group 1002, the targeting crosshair). Their hotspots go beside them.
+        var exe = Path.Combine(_gameDir, "REBEXE.EXE");
+        if (File.Exists(exe))
+        {
+            var rebexe = new PeResources(exe);
+            var hotspots = new JsonObject();
+            foreach (var (name, id) in new[] { ("pointer", 3), ("crosshair", 4) })
+            {
+                if (!rebexe.Cursors.ContainsKey(id)) { missing.Add($"cursors/{name}: no cursor {id} in REBEXE.EXE"); continue; }
+                var (hx, hy, w, h, argb) = rebexe.Cursor(id);
+                Directory.CreateDirectory(Path.Combine(outRoot, "cursors"));
+                using var bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
+                for (int y = 0; y < h; y++)
+                    for (int x = 0; x < w; x++)
+                        bmp.SetPixel(x, y, Color.FromArgb(argb[y * w + x]));
+                bmp.Save(Path.Combine(outRoot, "cursors", $"{name}.png"), ImageFormat.Png);
+                hotspots[name] = new JsonArray(hx, hy);
+                pictureCount++;
+            }
+            File.WriteAllText(Path.Combine(outRoot, "cursors", "hotspots.json"), hotspots.ToJsonString() + "\n");
+        }
+        else
+            missing.Add("REBEXE.EXE not found - no mouse pointers");
+
         foreach (var (name, id) in QueuePictures)
         {
             if (SaveSprite(cards, id, Path.Combine(outRoot, "windows", $"{name}.png"), keyCorner: true)) pictureCount++;
