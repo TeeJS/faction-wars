@@ -424,6 +424,8 @@ static func Canvas(area: Control, w: int, h: int) -> Control:
 static func Flatten(window: Control) -> MarginContainer:
 	var area: MarginContainer = window.get_node_or_null("%ContentArea")
 	if area == null:
+		area = window.get_node_or_null("MainVBox/ContentArea")   # a scene that did not mark it unique
+	if area == null:
 		return null
 	for side in ["left", "top", "right", "bottom"]:
 		area.add_theme_constant_override("margin_" + side, 0)

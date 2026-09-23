@@ -310,6 +310,59 @@ func _init() -> void:
 		for _i in 2:
 			await process_frame
 
+	# ---- the Message Index (manual p078 Fig 3.18) ----
+	EventBus.BroadcastMessage(GameMessage.new("A test of the index", "It reads in the same frame.", Enums.MessageCategory.Conflict))
+	ui.OnMessageIndexClicked("All")
+	for _i in 4:
+		await process_frame
+	var mw: Node = ui._openWindows.get("Communications")
+	_check(mw != null and mw._original, "the Comms Center is the original's Message Index")
+	if mw != null and mw._original:
+		_check(mw.size == Vector2(470, 330) * K, "the 470x330 frame (%s)" % str(mw.size / K))
+		var txs: Array = []
+		for t in mw._oTabs:
+			txs.append(int(t.position.x / K))
+		_check(txs == [22, 60, 98, 136, 173, 211, 249, 285, 323, 360] and int(mw._oTabs[0].position.y / K) == 46,
+			"ten category tabs at the original's places %s" % str(txs))
+		_check(mw._oCaption.text == "All Messages" and mw._oCaption.position == Vector2(35, 90) * K, "the band names the tab")
+		var sa: TextureButton = mw.find_child("msgindex_select_all", true, false)
+		var dl: TextureButton = mw.find_child("msgindex_delete", true, false)
+		_check(sa != null and sa.position == Vector2(282, 87) * K and dl != null and dl.position == Vector2(340, 87) * K,
+			"Select All and Delete on the band at (282, 87) and (340, 87)")
+		var sx: int = 426 if us.Id == "empire" else 423
+		var sys: Array = [21, 89, 148, 207, 266] if us.Id == "empire" else [25, 93, 147, 201, 255]
+		var sideNames: Array = ["ency_close_%s", "msgindex_summary_%s", "msgindex_post_%s", "msgindex_open_%s", "msgindex_compose_%s"]
+		var sidePlaces: Array = []
+		for i in sideNames.size():
+			var sb: TextureButton = mw.find_child(sideNames[i] % us.Id, true, false)
+			sidePlaces.append(sb.position / K if sb != null else null)
+		_check(sidePlaces == [Vector2(sx, sys[0]), Vector2(sx, sys[1]), Vector2(sx, sys[2]), Vector2(sx, sys[3]), Vector2(sx, sys[4])],
+			"the five side buttons at the original's places")
+		var rows: Array = mw._oRows.get_children()
+		_check(not rows.is_empty() and (rows[0] as Control).custom_minimum_size.y == 21 * K, "rows 21 pixels apart (%d rows)" % rows.size())
+		var target: GameMessage = Lq.first_or_null(MessageWindow.MessagesFor("All"), func(m: GameMessage) -> bool: return m.Title == "A test of the index")
+		mw._o_pick(target, false, false)
+		for _i in 2:
+			await process_frame
+		var picked: Control = null
+		for r in mw._oRows.get_children():
+			var t: Label = r.get_node_or_null("Title")
+			if t != null and t.text == "A test of the index":
+				picked = r
+		_check(picked != null and picked.get_node_or_null("Bar") != null, "a picked row carries the side's bar")
+		(mw.find_child("msgindex_summary_%s" % us.Id, true, false) as TextureButton).pressed.emit()
+		for _i in 2:
+			await process_frame
+		_check(mw._oSummary.visible and not mw._oIndex.visible and mw._oSumTitle.text == "A test of the index" and target.IsRead,
+			"Message Summary reads it in the same frame, and marks it read")
+		(mw.find_child("msgindex_summary_%s" % us.Id, true, false) as TextureButton).pressed.emit()
+		for _i in 2:
+			await process_frame
+		_check(mw._oIndex.visible, "and brings the index back")
+		(mw.find_child("ency_close_%s" % us.Id, true, false) as TextureButton).pressed.emit()
+		for _i in 3:
+			await process_frame
+
 	# ---- the Message Index column ----
 	ui.RefreshCommsHighlights()
 	var list: VBoxContainer = ui.get_node("CommsPanel/Margin/CommsList")
