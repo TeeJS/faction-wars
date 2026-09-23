@@ -5,6 +5,8 @@ extends DraggableWindow
 
 var _associatedCharacter: Character
 
+const PortraitPath := "MainVBox/ContentArea/Padding/SplitVBox/TopSection/PortraitRect"
+
 
 func _ready() -> void:
 	super()   # Ensures closing and dragging works!
@@ -12,6 +14,10 @@ func _ready() -> void:
 
 func Populate(character: Character) -> void:
 	_associatedCharacter = character
+	# THE PORTRAIT (manual p101, Fig 3.46): the original's own, when the
+	# player imported it (original/portraits/characters/<id>.png), else the
+	# placeholder.
+	Art.Fill(get_node_or_null(PortraitPath), Art.Portrait("characters", character.PackId))
 	# Set Window Title
 	var displayRank: String = "" if character.Rank == Enums.Rank.None else "%s " % JsonUtil.enum_name(Enums.Rank, character.Rank)
 	(get_node("%TitleBarLabel") as Label).text = " %s%s Status" % [displayRank, character.Name]

@@ -5,9 +5,6 @@ extends DraggableWindow
 
 var _sector: Sector
 
-## The player's own artwork overlay (tools/RebellionArtImporter). Preloaded by
-## path: a class_name can lag the editor's class cache after a pull.
-const Art := preload("res://src/ui/artwork.gd")
 
 
 # The planet markers were built once when the window opened and never

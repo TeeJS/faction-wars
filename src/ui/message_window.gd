@@ -11,6 +11,8 @@ var _gotoButton: Button
 
 var _selectedMessage: GameMessage
 
+const PortraitPath := "MainVBox/ContentArea/SplitView/DetailView/PortraitRect"
+
 # Built in code rather than in the scene, so the .tscn needs no editing:
 # continue / abort for a mission report, and delete for any message.
 var _actionRow: HBoxContainer
@@ -233,6 +235,7 @@ func RefreshCategory(categoryFilter: String) -> void:
 	# Reset the detail pane and Go To button
 	_detailSubject.text = "Select a message..."
 	_detailBody.text = "Awaiting selection."
+	Art.Fill(get_node_or_null(PortraitPath), null)
 	_selectedMessage = null
 	if _gotoButton != null:
 		_gotoButton.disabled = true
@@ -313,6 +316,20 @@ func RefreshCategory(categoryFilter: String) -> void:
 # right-hand column). Head-to-head only - there is nobody to chat with in a
 # single-player game.
 var _composeBtn: Button
+
+
+## The picture a message can carry, from the player's imported originals:
+## the character's portrait, else the world's Encyclopedia picture.
+static func MessagePicture(message: GameMessage) -> Texture2D:
+	if message == null:
+		return null
+	if message.AssociatedCharacter != null:
+		var pic: Texture2D = Art.Portrait("characters", message.AssociatedCharacter.PackId)
+		if pic != null:
+			return pic
+	if message.AssociatedLocation is Planet:
+		return Art.Picture("planets", (message.AssociatedLocation as Planet).PackId)
+	return null
 
 
 func BuildComposeButton() -> void:
@@ -407,6 +424,8 @@ func ShowDetail(message: GameMessage, clickedButton: Button) -> void:
 	# Instantly update the right-hand panel
 	_detailSubject.text = "Day %d: %s" % [message.DayReceived, message.Title]
 	_detailBody.text = message.Body
+	# The message's picture: the character it is about, else its world.
+	Art.Fill(get_node_or_null(PortraitPath), MessagePicture(message))
 
 	# --- Enable Go To if this message is attached to a planet ---
 	if _gotoButton != null:

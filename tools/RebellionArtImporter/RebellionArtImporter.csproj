@@ -24,4 +24,9 @@
     <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
   </PropertyGroup>
 
+  <ItemGroup>
+    <!-- pack row id -> GOKRES.DLL portrait / miniature bitmap ids (see README). -->
+    <None Include="gokres_map.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

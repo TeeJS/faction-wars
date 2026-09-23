@@ -1,0 +1,794 @@
+{
+ "characters": {
+  "mon_mothma": {
+   "portrait": 2112,
+   "miniature": 18496,
+   "dat_id": 576,
+   "family": "major_character"
+  },
+  "leia_organa": {
+   "portrait": 2113,
+   "miniature": 18497,
+   "dat_id": 577,
+   "family": "major_character"
+  },
+  "luke_skywalker": {
+   "portrait": 2114,
+   "miniature": 18498,
+   "dat_id": 578,
+   "family": "major_character"
+  },
+  "han_solo": {
+   "portrait": 2115,
+   "miniature": 18499,
+   "dat_id": 579,
+   "family": "major_character"
+  },
+  "emperor_palpatine": {
+   "portrait": 2176,
+   "miniature": 18560,
+   "dat_id": 640,
+   "family": "major_character"
+  },
+  "darth_vader": {
+   "portrait": 2177,
+   "miniature": 18561,
+   "dat_id": 641,
+   "family": "major_character"
+  },
+  "ackbar": {
+   "portrait": 2624,
+   "miniature": 19008,
+   "dat_id": 832,
+   "family": "minor_character"
+  },
+  "wedge_antilles": {
+   "portrait": 2625,
+   "miniature": 19009,
+   "dat_id": 833,
+   "family": "minor_character"
+  },
+  "lando_calrissian": {
+   "portrait": 2626,
+   "miniature": 19010,
+   "dat_id": 834,
+   "family": "minor_character"
+  },
+  "chewbacca": {
+   "portrait": 2627,
+   "miniature": 19011,
+   "dat_id": 835,
+   "family": "minor_character"
+  },
+  "jan_dodonna": {
+   "portrait": 2628,
+   "miniature": 19012,
+   "dat_id": 836,
+   "family": "minor_character"
+  },
+  "crix_madine": {
+   "portrait": 2629,
+   "miniature": 19013,
+   "dat_id": 837,
+   "family": "minor_character"
+  },
+  "carlist_rieekan": {
+   "portrait": 2630,
+   "miniature": 19014,
+   "dat_id": 838,
+   "family": "minor_character"
+  },
+  "afyon": {
+   "portrait": 2631,
+   "miniature": 19015,
+   "dat_id": 839,
+   "family": "minor_character"
+  },
+  "drayson": {
+   "portrait": 2632,
+   "miniature": 19016,
+   "dat_id": 840,
+   "family": "minor_character"
+  },
+  "borsk_fey_lya": {
+   "portrait": 2633,
+   "miniature": 19017,
+   "dat_id": 841,
+   "family": "minor_character"
+  },
+  "tura_raftican": {
+   "portrait": 2634,
+   "miniature": 19018,
+   "dat_id": 842,
+   "family": "minor_character"
+  },
+  "bren_derlin": {
+   "portrait": 2635,
+   "miniature": 19019,
+   "dat_id": 843,
+   "family": "minor_character"
+  },
+  "garm_bel_iblis": {
+   "portrait": 2636,
+   "miniature": 19020,
+   "dat_id": 844,
+   "family": "minor_character"
+  },
+  "talon_karrde": {
+   "portrait": 2637,
+   "miniature": 19021,
+   "dat_id": 845,
+   "family": "minor_character"
+  },
+  "narra": {
+   "portrait": 2638,
+   "miniature": 19022,
+   "dat_id": 846,
+   "family": "minor_character"
+  },
+  "huoba_neva": {
+   "portrait": 2639,
+   "miniature": 19023,
+   "dat_id": 847,
+   "family": "minor_character"
+  },
+  "page": {
+   "portrait": 2640,
+   "miniature": 19024,
+   "dat_id": 848,
+   "family": "minor_character"
+  },
+  "syub_snunb": {
+   "portrait": 2641,
+   "miniature": 19025,
+   "dat_id": 849,
+   "family": "minor_character"
+  },
+  "adar_tallon": {
+   "portrait": 2642,
+   "miniature": 19026,
+   "dat_id": 850,
+   "family": "minor_character"
+  },
+  "sarin_virgilio": {
+   "portrait": 2643,
+   "miniature": 19027,
+   "dat_id": 851,
+   "family": "minor_character"
+  },
+  "vanden_willard": {
+   "portrait": 2644,
+   "miniature": 19028,
+   "dat_id": 852,
+   "family": "minor_character"
+  },
+  "roget_jiriss": {
+   "portrait": 2645,
+   "miniature": 19029,
+   "dat_id": 853,
+   "family": "minor_character"
+  },
+  "kaiya_andrimetrum": {
+   "portrait": 2646,
+   "miniature": 19030,
+   "dat_id": 854,
+   "family": "minor_character"
+  },
+  "mazer_rackus": {
+   "portrait": 2647,
+   "miniature": 19031,
+   "dat_id": 855,
+   "family": "minor_character"
+  },
+  "orrimaarko": {
+   "portrait": 2648,
+   "miniature": 19032,
+   "dat_id": 856,
+   "family": "minor_character"
+  },
+  "ma_w_shiye": {
+   "portrait": 2649,
+   "miniature": 19033,
+   "dat_id": 857,
+   "family": "minor_character"
+  },
+  "jerjerrod": {
+   "portrait": 2688,
+   "miniature": 19072,
+   "dat_id": 896,
+   "family": "minor_character"
+  },
+  "ozzel": {
+   "portrait": 2689,
+   "miniature": 19073,
+   "dat_id": 897,
+   "family": "minor_character"
+  },
+  "piett": {
+   "portrait": 2690,
+   "miniature": 19074,
+   "dat_id": 898,
+   "family": "minor_character"
+  },
+  "veers": {
+   "portrait": 2691,
+   "miniature": 19075,
+   "dat_id": 899,
+   "family": "minor_character"
+  },
+  "brandei": {
+   "portrait": 2692,
+   "miniature": 19076,
+   "dat_id": 900,
+   "family": "minor_character"
+  },
+  "covell": {
+   "portrait": 2693,
+   "miniature": 19077,
+   "dat_id": 901,
+   "family": "minor_character"
+  },
+  "dorja": {
+   "portrait": 2694,
+   "miniature": 19078,
+   "dat_id": 902,
+   "family": "minor_character"
+  },
+  "bin_essada": {
+   "portrait": 2695,
+   "miniature": 19079,
+   "dat_id": 903,
+   "family": "minor_character"
+  },
+  "niles_ferrier": {
+   "portrait": 2696,
+   "miniature": 19080,
+   "dat_id": 904,
+   "family": "minor_character"
+  },
+  "grammel": {
+   "portrait": 2697,
+   "miniature": 19081,
+   "dat_id": 905,
+   "family": "minor_character"
+  },
+  "griff": {
+   "portrait": 2698,
+   "miniature": 19082,
+   "dat_id": 906,
+   "family": "minor_character"
+  },
+  "klev": {
+   "portrait": 2699,
+   "miniature": 19083,
+   "dat_id": 907,
+   "family": "minor_character"
+  },
+  "needa": {
+   "portrait": 2700,
+   "miniature": 19084,
+   "dat_id": 908,
+   "family": "minor_character"
+  },
+  "bane_nothos": {
+   "portrait": 2701,
+   "miniature": 19085,
+   "dat_id": 909,
+   "family": "minor_character"
+  },
+  "orlok": {
+   "portrait": 2702,
+   "miniature": 19086,
+   "dat_id": 910,
+   "family": "minor_character"
+  },
+  "pellaeon": {
+   "portrait": 2703,
+   "miniature": 19087,
+   "dat_id": 911,
+   "family": "minor_character"
+  },
+  "screed": {
+   "portrait": 2704,
+   "miniature": 19088,
+   "dat_id": 912,
+   "family": "minor_character"
+  },
+  "thrawn": {
+   "portrait": 2705,
+   "miniature": 19089,
+   "dat_id": 913,
+   "family": "minor_character"
+  },
+  "zuggs": {
+   "portrait": 2706,
+   "miniature": 19090,
+   "dat_id": 914,
+   "family": "minor_character"
+  },
+  "daala": {
+   "portrait": 2707,
+   "miniature": 19091,
+   "dat_id": 915,
+   "family": "minor_character"
+  },
+  "pter_thanas": {
+   "portrait": 2708,
+   "miniature": 19092,
+   "dat_id": 916,
+   "family": "minor_character"
+  },
+  "bevel_lemelisk": {
+   "portrait": 2709,
+   "miniature": 19093,
+   "dat_id": 917,
+   "family": "minor_character"
+  },
+  "shenir_rix": {
+   "portrait": 2710,
+   "miniature": 19094,
+   "dat_id": 918,
+   "family": "minor_character"
+  },
+  "noval_garaint": {
+   "portrait": 2711,
+   "miniature": 19095,
+   "dat_id": 919,
+   "family": "minor_character"
+  },
+  "garindan": {
+   "portrait": 2712,
+   "miniature": 19096,
+   "dat_id": 920,
+   "family": "minor_character"
+  },
+  "menndo": {
+   "portrait": 2713,
+   "miniature": 19097,
+   "dat_id": 921,
+   "family": "minor_character"
+  },
+  "labansat": {
+   "portrait": 2714,
+   "miniature": 19098,
+   "dat_id": 922,
+   "family": "minor_character"
+  },
+  "villar": {
+   "portrait": 2715,
+   "miniature": 19099,
+   "dat_id": 923,
+   "family": "minor_character"
+  }
+ },
+ "units": {
+  "mon_calamari_cruiser": {
+   "portrait": 1856,
+   "miniature": 18240,
+   "dat_id": 64,
+   "family": "capital_ship"
+  },
+  "bulk_cruiser": {
+   "portrait": 1857,
+   "miniature": 18241,
+   "dat_id": 65,
+   "family": "capital_ship"
+  },
+  "assault_frigate": {
+   "portrait": 1858,
+   "miniature": 18242,
+   "dat_id": 66,
+   "family": "capital_ship"
+  },
+  "nebulon_b_frigate": {
+   "portrait": 1859,
+   "miniature": 18243,
+   "dat_id": 67,
+   "family": "capital_ship"
+  },
+  "alliance_escort_carrier": {
+   "portrait": 1860,
+   "miniature": 18244,
+   "dat_id": 68,
+   "family": "capital_ship"
+  },
+  "corellian_corvette": {
+   "portrait": 1861,
+   "miniature": 18245,
+   "dat_id": 69,
+   "family": "capital_ship"
+  },
+  "medium_transport": {
+   "portrait": 1862,
+   "miniature": 18246,
+   "dat_id": 70,
+   "family": "capital_ship"
+  },
+  "bulk_transport": {
+   "portrait": 1863,
+   "miniature": 18247,
+   "dat_id": 71,
+   "family": "capital_ship"
+  },
+  "corellian_gunship": {
+   "portrait": 1864,
+   "miniature": 18248,
+   "dat_id": 72,
+   "family": "capital_ship"
+  },
+  "alliance_dreadnaught": {
+   "portrait": 1865,
+   "miniature": 18249,
+   "dat_id": 73,
+   "family": "capital_ship"
+  },
+  "cc_7700_frigate": {
+   "portrait": 1866,
+   "miniature": 18250,
+   "dat_id": 74,
+   "family": "capital_ship"
+  },
+  "bulwark_battlecruiser": {
+   "portrait": 1867,
+   "miniature": 18251,
+   "dat_id": 75,
+   "family": "capital_ship"
+  },
+  "liberator_cruiser": {
+   "portrait": 1868,
+   "miniature": 18252,
+   "dat_id": 76,
+   "family": "capital_ship"
+  },
+  "cc_9600_frigate": {
+   "portrait": 1869,
+   "miniature": 18253,
+   "dat_id": 77,
+   "family": "capital_ship"
+  },
+  "dauntless_cruiser": {
+   "portrait": 1870,
+   "miniature": 18254,
+   "dat_id": 78,
+   "family": "capital_ship"
+  },
+  "strike_cruiser": {
+   "portrait": 1920,
+   "miniature": 18304,
+   "dat_id": 128,
+   "family": "capital_ship"
+  },
+  "lancer_frigate": {
+   "portrait": 1921,
+   "miniature": 18305,
+   "dat_id": 129,
+   "family": "capital_ship"
+  },
+  "interdictor_cruiser": {
+   "portrait": 1922,
+   "miniature": 18306,
+   "dat_id": 130,
+   "family": "capital_ship"
+  },
+  "carrack_light_cruiser": {
+   "portrait": 1923,
+   "miniature": 18307,
+   "dat_id": 131,
+   "family": "capital_ship"
+  },
+  "victory_destroyer": {
+   "portrait": 1924,
+   "miniature": 18308,
+   "dat_id": 132,
+   "family": "capital_ship"
+  },
+  "imperial_star_destroyer": {
+   "portrait": 1925,
+   "miniature": 18309,
+   "dat_id": 133,
+   "family": "capital_ship"
+  },
+  "super_star_destroyer": {
+   "portrait": 1926,
+   "miniature": 18310,
+   "dat_id": 134,
+   "family": "capital_ship"
+  },
+  "assault_transport": {
+   "portrait": 1927,
+   "miniature": 18311,
+   "dat_id": 135,
+   "family": "capital_ship"
+  },
+  "death_star": {
+   "portrait": 1928,
+   "miniature": 18312,
+   "dat_id": 136,
+   "family": "capital_ship"
+  },
+  "galleon": {
+   "portrait": 1929,
+   "miniature": 18313,
+   "dat_id": 137,
+   "family": "capital_ship"
+  },
+  "victory_ii_star_destroyer": {
+   "portrait": 1930,
+   "miniature": 18314,
+   "dat_id": 138,
+   "family": "capital_ship"
+  },
+  "imperial_ii_star_destroyer": {
+   "portrait": 1931,
+   "miniature": 18315,
+   "dat_id": 139,
+   "family": "capital_ship"
+  },
+  "star_galleon": {
+   "portrait": 1932,
+   "miniature": 18316,
+   "dat_id": 140,
+   "family": "capital_ship"
+  },
+  "imperial_escort_carrier": {
+   "portrait": 1933,
+   "miniature": 18317,
+   "dat_id": 141,
+   "family": "capital_ship"
+  },
+  "imperial_dreadnaught": {
+   "portrait": 1934,
+   "miniature": 18318,
+   "dat_id": 142,
+   "family": "capital_ship"
+  },
+  "a_wing": {
+   "portrait": 1600,
+   "miniature": 17984,
+   "dat_id": 1,
+   "family": "fighter"
+  },
+  "b_wing": {
+   "portrait": 1601,
+   "miniature": 17985,
+   "dat_id": 2,
+   "family": "fighter"
+  },
+  "x_wing": {
+   "portrait": 1602,
+   "miniature": 17986,
+   "dat_id": 3,
+   "family": "fighter"
+  },
+  "y_wing": {
+   "portrait": 1603,
+   "miniature": 17987,
+   "dat_id": 4,
+   "family": "fighter"
+  },
+  "tie_fighter": {
+   "portrait": 1664,
+   "miniature": 18048,
+   "dat_id": 5,
+   "family": "fighter"
+  },
+  "tie_interceptor": {
+   "portrait": 1665,
+   "miniature": 18049,
+   "dat_id": 6,
+   "family": "fighter"
+  },
+  "tie_bomber": {
+   "portrait": 1666,
+   "miniature": 18050,
+   "dat_id": 7,
+   "family": "fighter"
+  },
+  "tie_defender": {
+   "portrait": 1667,
+   "miniature": 18051,
+   "dat_id": 8,
+   "family": "fighter"
+  },
+  "alliance_fleet_regiment": {
+   "portrait": 1088,
+   "miniature": 17472,
+   "dat_id": 1,
+   "family": "troop"
+  },
+  "alliance_army_regiment": {
+   "portrait": 1089,
+   "miniature": 17473,
+   "dat_id": 2,
+   "family": "troop"
+  },
+  "sullustan_regiment": {
+   "portrait": 1090,
+   "miniature": 17474,
+   "dat_id": 3,
+   "family": "troop"
+  },
+  "wookiee_regiment": {
+   "portrait": 1091,
+   "miniature": 17475,
+   "dat_id": 4,
+   "family": "troop"
+  },
+  "mon_calamari_regiment": {
+   "portrait": 1092,
+   "miniature": 17476,
+   "dat_id": 5,
+   "family": "troop"
+  },
+  "stormtrooper_regiment": {
+   "portrait": 1152,
+   "miniature": 17536,
+   "dat_id": 6,
+   "family": "troop"
+  },
+  "imperial_fleet_regiment": {
+   "portrait": 1153,
+   "miniature": 17537,
+   "dat_id": 7,
+   "family": "troop"
+  },
+  "imperial_army_regiment": {
+   "portrait": 1154,
+   "miniature": 17538,
+   "dat_id": 8,
+   "family": "troop"
+  },
+  "war_droid_regiment": {
+   "portrait": 1155,
+   "miniature": 17539,
+   "dat_id": 9,
+   "family": "troop"
+  },
+  "dark_trooper_regiment": {
+   "portrait": 1156,
+   "miniature": 17540,
+   "dat_id": 10,
+   "family": "troop"
+  },
+  "guerrillas": {
+   "portrait": 1344,
+   "miniature": 17728,
+   "dat_id": 1,
+   "family": "special_force"
+  },
+  "infiltrators": {
+   "portrait": 1345,
+   "miniature": 17729,
+   "dat_id": 2,
+   "family": "special_force"
+  },
+  "longprobe_y_wing_recon_team": {
+   "portrait": 1346,
+   "miniature": 17730,
+   "dat_id": 3,
+   "family": "special_force"
+  },
+  "bothan_spies": {
+   "portrait": 1347,
+   "miniature": 17731,
+   "dat_id": 4,
+   "family": "special_force"
+  },
+  "imperial_probe_droid": {
+   "portrait": 1408,
+   "miniature": 17792,
+   "dat_id": 5,
+   "family": "special_force"
+  },
+  "imperial_espionage_droid": {
+   "portrait": 1409,
+   "miniature": 17793,
+   "dat_id": 6,
+   "family": "special_force"
+  },
+  "imperial_commandos": {
+   "portrait": 1410,
+   "miniature": 17794,
+   "dat_id": 7,
+   "family": "special_force"
+  },
+  "noghri_death_commandos": {
+   "portrait": 1411,
+   "miniature": 17795,
+   "dat_id": 8,
+   "family": "special_force"
+  },
+  "bounty_hunters": {
+   "portrait": 1412,
+   "miniature": 17796,
+   "dat_id": 9,
+   "family": "special_force"
+  }
+ },
+ "facilities": {
+  "shipyard": {
+   "portrait": 256,
+   "miniature": 16640,
+   "dat_id": 1,
+   "family": "manufacturing_facility"
+  },
+  "training_facility": {
+   "portrait": 257,
+   "miniature": 16641,
+   "dat_id": 2,
+   "family": "manufacturing_facility"
+  },
+  "construction_yard": {
+   "portrait": 258,
+   "miniature": 16642,
+   "dat_id": 3,
+   "family": "manufacturing_facility"
+  },
+  "advanced_shipyard": {
+   "portrait": 259,
+   "miniature": 16643,
+   "dat_id": 4,
+   "family": "manufacturing_facility"
+  },
+  "advanced_training_facility": {
+   "portrait": 260,
+   "miniature": 16644,
+   "dat_id": 5,
+   "family": "manufacturing_facility"
+  },
+  "advanced_construction_yard": {
+   "portrait": 261,
+   "miniature": 16645,
+   "dat_id": 6,
+   "family": "manufacturing_facility"
+  },
+  "mine": {
+   "portrait": 1,
+   "miniature": 16385,
+   "dat_id": 1,
+   "family": "production_facility"
+  },
+  "refinery": {
+   "portrait": 2,
+   "miniature": 16386,
+   "dat_id": 2,
+   "family": "production_facility"
+  },
+  "ion_cannon": {
+   "portrait": 512,
+   "miniature": 16896,
+   "dat_id": 1,
+   "family": "defense_facility"
+  },
+  "turbolaser_battery": {
+   "portrait": 513,
+   "miniature": 16897,
+   "dat_id": 2,
+   "family": "defense_facility"
+  },
+  "planetary_shield": {
+   "portrait": 514,
+   "miniature": 16898,
+   "dat_id": 3,
+   "family": "defense_facility"
+  },
+  "death_star_shield": {
+   "portrait": 640,
+   "miniature": 17024,
+   "dat_id": 4,
+   "family": "defense_facility"
+  },
+  "advanced_turbolaser_battery": {
+   "portrait": 515,
+   "miniature": 16899,
+   "dat_id": 5,
+   "family": "defense_facility"
+  },
+  "advanced_planetary_shield": {
+   "portrait": 516,
+   "miniature": 16900,
+   "dat_id": 6,
+   "family": "defense_facility"
+  }
+ }
+}
