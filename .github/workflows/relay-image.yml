@@ -21,6 +21,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # The original's artwork for the beta build: the player-imported
+      # packs/star-wars-rebellion/original/ folder (tools/RebellionArtImporter),
+      # kept in a PRIVATE repo and pulled in here so the export packs it. The
+      # main repo never carries it. Skipped cleanly when the key is not set.
+      - name: The original's artwork (private media repo)
+        if: ${{ secrets.MEDIA_DEPLOY_KEY != '' }}
+        uses: actions/checkout@v4
+        with:
+          repository: TeeJS/faction-wars-media
+          ssh-key: ${{ secrets.MEDIA_DEPLOY_KEY }}
+          path: packs/star-wars-rebellion/original
+
       - name: Godot ${{ env.GODOT_VERSION }} and the web export templates
         run: |
           set -e
