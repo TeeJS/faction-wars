@@ -3999,6 +3999,10 @@
       "idle_training_facilities",
       "idle_construction_yards"
     ],
+    "LoyaltyBar": [
+      "empire",
+      "alliance"
+    ],
     "SpecialPowerRanks": {
       "knight": "Jedi Knight",
       "master": "Jedi Master",
