@@ -66,13 +66,15 @@ func _init() -> void:
 		"the Star Wars card says whether its art set is there (%s)" % (look.text if look != null else "no label"))
 	DirAccess.make_dir_recursive_absolute(ArtScript.UserArtRoot + "/swr-original")
 	var m := FileAccess.open(ArtScript.UserArtRoot + "/swr-original/manifest.json", FileAccess.WRITE)
-	m.store_string(JSON.stringify({"format": 1, "kind": "art_set", "id": "swr-original", "title": "Test art", "files": {"a.png": "00"}}))
+	m.store_string(JSON.stringify({"format": 1, "kind": "art_set", "id": "swr-original", "title": "Test art", "exporter": "2.0.0", "files": {"a.png": "00"}}))
 	m.close()
 	picker._on_imported({"ok": true, "message": "Imported the art set."})
 	look = picker.find_child("OriginalLook", true, false)
 	_check(look != null and look.text == "Original look: yes", "after an import the card says so at once")
-	_check(_labels(picker).has("Art set: Test art - 1 files") and _labels(picker).has("Imported the art set."),
-		"the import is listed, with Remove, and its result shown")
+	_check(_labels(picker).has("Art set: Test art - 1 files, exporter 2.0.0") and _labels(picker).has("Imported the art set."),
+		"the import is listed with its exporter's version, with Remove, and its result shown")
+	var outdated: Label = picker.find_child("Outdated", true, false)
+	_check(outdated != null and outdated.text.contains("needs 2.1.0 or later"), "an art set older than the game needs says to export again")
 	Importer._remove(ArtScript.UserArtRoot)
 	ArtScript.IgnoreProjectFolder = false
 	ArtScript.UserArtRoot = "user://art"

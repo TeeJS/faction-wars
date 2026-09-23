@@ -289,8 +289,13 @@ func _imports() -> Control:
 		line.alignment = BoxContainer.ALIGNMENT_CENTER
 		line.add_theme_constant_override("separation", 12)
 		var what := Label.new()
-		what.text = "%s: %s - %d files%s" % ["Art set" if e.kind == PackImport.KIND_ART_SET else "Faction pack",
-			e.title, e.files, (", " + str(e.created_utc).substr(0, 10)) if not str(e.created_utc).is_empty() else ""]
+		var details: Array[String] = ["%d files" % e.files]
+		if not str(e.created_utc).is_empty():
+			details.append(str(e.created_utc).substr(0, 10))
+		if not str(e.exporter).is_empty():
+			details.append("exporter %s" % e.exporter)
+		what.text = "%s: %s - %s" % ["Art set" if e.kind == PackImport.KIND_ART_SET else "Faction pack",
+			e.title, ", ".join(details)]
 		line.add_child(what)
 		var remove := Button.new()
 		remove.text = "Remove"
@@ -299,6 +304,16 @@ func _imports() -> Control:
 			_on_imported({"ok": true, "message": "Removed %s." % e.title}))
 		line.add_child(remove)
 		box.add_child(line)
+		# Too old for this version of the game: say so, and how to fix it.
+		if e.outdated:
+			var old := Label.new()
+			old.name = "Outdated"
+			old.text = PackImport.OutdatedNote(e.id, e.exporter)
+			old.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			old.custom_minimum_size = Vector2(700, 0)
+			old.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			old.add_theme_color_override("font_color", Color(1.0, 0.7, 0.3))
+			box.add_child(old)
 
 	if not _last_import.is_empty():
 		var said := Label.new()

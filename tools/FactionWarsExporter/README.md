@@ -20,6 +20,11 @@ and nothing needs admin rights.
    the artwork (cleared site data, a new browser or device), import the same
    file again.
 
+The window's title shows the exporter's version, and every art-set file records
+it. The game lists it beside the imported art set, and says when the art set is
+older than that version of the game needs (`MIN_EXPORTER` in
+`src/ui/pack_import.gd`) - then download the newest exporter and export again.
+
 Every version of the game has the same folder - the DLLs with `EData` beside
 them - so any of these works as the game folder (`GameFolders.cs` looks in this
 order):

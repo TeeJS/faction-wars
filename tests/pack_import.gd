@@ -74,6 +74,21 @@ func _init() -> void:
 	r = PackImport.ImportBytes(FileAccess.get_file_as_bytes(TMP + "/art.zip"))
 	_check(r.ok, "the browser's path - the file's bytes - imports too")
 
+	# The exporter's version: an art set older than the game needs imports, and
+	# says so; one new enough says nothing.
+	_check(PackImport.IsOlder("2.0.0", "2.1.0") and PackImport.IsOlder("2.0.9", "2.1") and not PackImport.IsOlder("2.1.0", "2.1.0")
+		and not PackImport.IsOlder("2.10.0", "2.9.9") and PackImport.IsOlder("", "2.1.0"), "versions compare part by part")
+	_zip(TMP + "/old-art.zip", "art_set", "swr-original", art, {}, "2.0.0")
+	r = PackImport.ImportFile(TMP + "/old-art.zip")
+	_check(r.ok and r.message.contains("made by exporter 2.0.0") and r.message.contains("needs 2.1.0 or later"),
+		"an art set from exporter 2.0.0 imports, and says to export again (%s)" % r.message)
+	var old_entry: Dictionary = PackImport.Installed()[0]
+	_check(old_entry.exporter == "2.0.0" and old_entry.outdated, "... and is listed as outdated")
+	_zip(TMP + "/new-art.zip", "art_set", "swr-original", art, {}, "2.1.0")
+	r = PackImport.ImportFile(TMP + "/new-art.zip")
+	_check(r.ok and not r.message.contains("export again") and not PackImport.Installed()[0].outdated,
+		"one from exporter 2.1.0 is current")
+
 	# ---- a faction pack ----
 	var pack_files := {}
 	for f in FactionRegistry.PACK_FILES:
@@ -133,7 +148,7 @@ func _init() -> void:
 
 ## A pack file as the exporter writes it: the files, and manifest.json listing
 ## each one's SHA-256 (`bad_hashes` overrides some, to damage it).
-func _zip(path: String, kind: String, id: String, files: Dictionary, bad_hashes: Dictionary = {}) -> void:
+func _zip(path: String, kind: String, id: String, files: Dictionary, bad_hashes: Dictionary = {}, exporter: String = "2.1.0") -> void:
 	var hashes := {}
 	for rel in files:
 		hashes[rel] = bad_hashes.get(rel, PackImport._sha256(files[rel]))
@@ -144,7 +159,7 @@ func _zip(path: String, kind: String, id: String, files: Dictionary, bad_hashes:
 		zp.write_file(files[rel])
 		zp.close_file()
 	zp.start_file("manifest.json")
-	zp.write_file(JSON.stringify({"format": 1, "kind": kind, "id": id, "title": id, "files": hashes}).to_utf8_buffer())
+	zp.write_file(JSON.stringify({"format": 1, "kind": kind, "id": id, "title": id, "exporter": exporter, "files": hashes}).to_utf8_buffer())
 	zp.close_file()
 	zp.close()
 

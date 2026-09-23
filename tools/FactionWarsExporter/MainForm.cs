@@ -15,7 +15,7 @@ public sealed class MainForm : Form
 
     public MainForm()
     {
-        Text = "Faction Wars Exporter";
+        Text = "Faction Wars Exporter " + (typeof(MainForm).Assembly.GetName().Version?.ToString(3) ?? "");
         StartPosition = FormStartPosition.CenterScreen;
         FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = false;
