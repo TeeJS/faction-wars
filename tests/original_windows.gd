@@ -29,9 +29,41 @@ func _check(cond: bool, what: String) -> void:
 func _status_window(ui: UIManager) -> Control:
 	for k in ui._openWindows:
 		var w: Variant = ui._openWindows[k]
-		if str(k).begins_with("Status_") and is_instance_valid(w) and not (w as Node).is_queued_for_deletion():
+		if "Status" in str(k) and is_instance_valid(w) and not (w as Node).is_queued_for_deletion():
 			return w
 	return null
+
+
+## Where a control sits on a Status window's canvas, in original pixels (the
+## fields sit in the scrolling list, not on the canvas itself).
+func _on_canvas(w: Control, c: Control) -> Vector2:
+	var canvas: Control = w.find_child("StatusCanvas", true, false)
+	return (c.global_position - canvas.global_position) / K if canvas != null and c != null else Vector2(-1, -1)
+
+
+## Opens a Status window with `open`, returns it (null when none opened).
+func _open_status(ui: UIManager, open: Callable) -> Control:
+	open.call()
+	for _i in 3:
+		await process_frame
+	return _status_window(ui)
+
+
+## Closes a Status window by its diamond.
+func _close_status(w: Control) -> void:
+	(w.find_child("ency_close_alliance", true, false) as TextureButton).pressed.emit()
+	for _i in 2:
+		await process_frame
+
+
+## The labels of a Status window's fields, in order.
+static func _labels(w: Control) -> Array:
+	var out: Array = []
+	var i := 0
+	while w.find_child("Label%d" % i, true, false) != null:
+		out.append((w.find_child("Label%d" % i, true, false) as Label).text)
+		i += 1
+	return out
 
 
 func _cards(node: Node) -> Array:
@@ -284,7 +316,7 @@ func _init() -> void:
 			_check(title != null and title.text == "Trooper Regiment Status", "titled as the original: %s" % (title.text if title != null else "?"))
 			var l0: Label = sw.find_child("Label0", true, false)
 			var v0: Label = sw.find_child("Value0", true, false)
-			_check(l0 != null and l0.text == "Attached:" and l0.position == Vector2(18, 47) * K and v0.position == Vector2(121, 47) * K,
+			_check(l0 != null and l0.text == "Attached:" and _on_canvas(sw, l0) == Vector2(18, 47) and _on_canvas(sw, v0) == Vector2(121, 47),
 				"the first field at (18, 47), its value at (121, 47)")
 			var l5: Label = sw.find_child("Label5", true, false)
 			_check(l5 != null and l5.text == "Bombardment Value:", "the original's \"Bombardment Value:\" (%s)" % (l5.text if l5 != null else "?"))
@@ -315,13 +347,15 @@ func _init() -> void:
 		_check(qt.text == "Facilities Under Construction", "titled Facilities Under Construction")
 		var q3: Label = qw.find_child("Label3", true, false)
 		var qv3: Label = qw.find_child("Value3", true, false)
-		_check(q3 != null and q3.text == "Estimated Day of Completion:" and qv3.position == Vector2(121, 103) * K,
+		_check(q3 != null and q3.text == "Estimated Day of Completion:" and _on_canvas(qw, qv3) == Vector2(121, 103),
 			"Estimated Day of Completion wraps, its value on the second line at (121, 103)")
 		var qp: TextureRect = qw.find_child("Picture", true, false)
 		_check(qp != null and qp.position == Vector2(244, 20) * K, "the queue's 126x88 picture at (244, 20)")
 		(qw.find_child("ency_close_alliance", true, false) as TextureButton).pressed.emit()
 		for _i in 2:
 			await process_frame
+
+	await _other_status_windows(ui, us)
 
 	# ---- the Message Index (manual p078 Fig 3.18) ----
 	EventBus.BroadcastMessage(GameMessage.new("A test of the index", "It reads in the same frame.", Enums.MessageCategory.Conflict))
@@ -510,3 +544,66 @@ func _init() -> void:
 
 	print("[original_windows] %d checks, %d failed" % [_checks, _fails])
 	quit(1 if _fails > 0 else 0)
+
+
+## The Character, Fleet, Capital Ship and Defense Facility Status windows
+## (TeeJ's screenshots of the original's, 2026-09-23).
+func _other_status_windows(ui: UIManager, us: Faction) -> void:
+	var person: Character = Lq.first_or_null(GameState.ActiveRoster, func(c: Character) -> bool:
+		return c.Faction == us and not c.IsOffMap())
+	if person != null:
+		var cw2: Control = await _open_status(ui, func() -> void: ui.OpenCharacterStatusWindow(person))
+		_check(cw2 != null and cw2.find_child("StatusCanvas", true, false) != null, "a character's Status window is the original's")
+		if cw2 != null and cw2.find_child("StatusCanvas", true, false) != null:
+			var names: Array = _labels(cw2)
+			_check(names.has("R&D Capabilities") and names.has(" Ship Design") and names.has("Possible Command Ranks") and names.has("Admiral:"),
+				"the original's headings and sub-items (%s)" % str(names))
+			var cbar: Control = cw2.find_child("ScrollBar", true, false)
+			_check(cbar != null and _on_canvas(cw2, cbar) == Vector2(214, 47), "17 lines: the scroll bar at (214, 47)")
+			if cbar != null:
+				_check(cbar.Thumb().size.y == 156 * K, "its thumb 156 pixels, as the original's (%d)" % int(cbar.Thumb().size.y / K))
+				var list: Control = cw2.find_child("List", true, false)
+				cbar.step(1)
+				_check(list.position.y == -14 * K, "a step scrolls the list a line")
+			var cpic: TextureRect = cw2.find_child("Picture", true, false)
+			_check(cpic != null and cpic.position == Vector2(267, 24) * K, "the 80x80 portrait at (267, 24)")
+			await _close_status(cw2)
+	var fleet: Fleet = null
+	for p in GameState.AllPlanets():
+		for f in p.OrbitingFleets:
+			if fleet == null and f.Faction == us and not f.Ships.is_empty():
+				fleet = f
+	if fleet != null:
+		var ship: Unit = fleet.Ships[0]
+		ship.DamageState().Hull -= 1
+		var fw: Control = await _open_status(ui, func() -> void: ui.OpenFleetStatusWindow(fleet))
+		_check(fw != null and fw.find_child("StatusCanvas", true, false) != null, "a fleet's Status window is the original's")
+		if fw != null and fw.find_child("StatusCanvas", true, false) != null:
+			var ft: Label = fw.find_child("Title", true, false)
+			_check(ft.text == "Fleet Status" and _labels(fw).has("Number Of Ships") and _labels(fw).has("Embarked:"), "titled Fleet Status, its fields the original's")
+			_check(fw.find_child("Backdrop", true, false) != null and fw.find_child("Picture", true, false) != null,
+				"the fleet's picture over its flames (a ship damaged)")
+			_check(fw.find_child("ScrollBar", true, false) == null, "14 lines: no scroll bar")
+			await _close_status(fw)
+		var sw2: Control = await _open_status(ui, func() -> void: ui.OpenUnitStatusWindow(ship))
+		if sw2 != null and sw2.find_child("StatusCanvas", true, false) != null:
+			var sl: Array = _labels(sw2)
+			_check(sl.size() == 39 and sl[0] == "Class:" and sl[1] == "Fleet:", "a capital ship's 39 fields, Class and Fleet first (%d)" % sl.size())
+			var fv: Label = sw2.find_child("Value1", true, false)
+			_check(fv != null and fv.text == fleet.Name, "its fleet named (%s)" % (fv.text if fv != null else "?"))
+			_check(int((sw2.find_child("StatusCanvas", true, false) as Control).get_meta("lines", 0)) == 49,
+				"49 lines, as the original's thumb says (%d)" % int((sw2.find_child("StatusCanvas", true, false) as Control).get_meta("lines", 0)))
+			_check(sw2.find_child("Backdrop", true, false) != null, "the damaged ship's flames under its picture")
+			await _close_status(sw2)
+		ship.DamageState().Hull += 1
+	var shieldGen: Facility = null
+	for p in GameState.AllPlanets():
+		for f in p.Facilities:
+			if shieldGen == null and p.ControllingFaction == us and f.HasRole("shield"):
+				shieldGen = f
+	if shieldGen != null:
+		var dw: Control = await _open_status(ui, func() -> void: ui.OpenDefenseFacilityStatusWindow(shieldGen))
+		if dw != null and dw.find_child("StatusCanvas", true, false) != null:
+			_check(_labels(dw) == ["Location:", "Status:", "Maintenance Cost:", "Weapons Rating:", "Shield Strength", "Bombardment\nDefense Strength:"],
+				"a shield's fields as the original's (%s)" % str(_labels(dw)))
+			await _close_status(dw)

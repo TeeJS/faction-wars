@@ -72,8 +72,7 @@ static func StatusFields(unit: Unit) -> Array:
 			rows.append([Terms.field("hyperdrive"), str(unit.Hyperdrive)])
 			rows.append(["Maximum %s:" % Terms.label("shield"), "%d:%d" % [unit.Shield, unit.Shield]])
 			rows.append([Terms.field("sublight"), str(unit.Sublight)])
-			# fake maneuverability stat based on sublight speed
-			rows.append(["Maneuverability:", str(maxi(1, unit.Sublight - 3))])
+			rows.append(["Maneuverability:", str(unit.Maneuverability)])
 			rows.append([Terms.field("detection"), str(unit.Detection)])
 			rows.append([Terms.field("bombardment"), "%d:%d" % [unit.Bombardment, unit.Bombardment]])
 			rows.append([Terms.field("weapons"), ""])
@@ -96,16 +95,113 @@ static func StatusFields(unit: Unit) -> Array:
 
 
 ## Everything the original's Status window shows for a unit (OUI.StatusPlate):
-## the class picture (GOKRES.DLL, 122x50), a regiment's over the grey spotlight.
+## the class picture (GOKRES.DLL, 122x50) - a regiment's over the grey
+## spotlight, a damaged ship's over its flames (GOKRES picture + 8192).
 static func StatusData(unit: Unit) -> Dictionary:
+	var backdrop: Texture2D = null
+	if unit.Type == Enums.UnitType.Troop:
+		backdrop = OUI.Pic("status_backdrop.troops")
+	elif unit.Type == Enums.UnitType.CapitalShip and unit.IsDamaged():
+		backdrop = Art.Scaled(Art.Portrait("units", unit.PackId + ".damage"), OUI.K)
 	return {
 		"title": StatusTitle(unit),
-		"fields": StatusFields(unit),
+		"fields": PlateFields(unit),
 		"picture": Art.Scaled(Art.Portrait("units", unit.PackId), OUI.K),
-		"backdrop": OUI.Pic("status_backdrop.troops") if unit.Type == Enums.UnitType.Troop else null,
+		"backdrop": backdrop,
 		"name": unit.Name,
 		"encyclopedia": ["units", unit.PackId],
 	}
+
+
+## The fields of the ORIGINAL'S window, in its order and words (TEXTSTRA.DLL
+## 34384-34819), measured on TeeJ's screenshots of a Fighter Squadron and a
+## Capital Ship Status (2026-09-23). A heading is a label with no value; a
+## sub-item's label starts with one space. Current:maximum pairs read the
+## ship's damage state. The regiment's and Spec Forces' lists are StatusFields.
+static func PlateFields(unit: Unit) -> Array:
+	match unit.Type:
+		Enums.UnitType.Fighter:
+			return _FighterFields(unit)
+		Enums.UnitType.CapitalShip:
+			return _CapitalShipFields(unit)
+	return StatusFields(unit)
+
+
+static func _Pair(now: int, most: int) -> String:
+	return "%d:%d" % [now, most]
+
+
+## The Fighter Squadron Status: no Status line; the squadron's aircraft left of
+## its twelve; its shield and weapons for the whole squadron - a craft's times
+## the craft left : times twelve (the original's X-wing: shield 5, laser 8,
+## torpedoes 4 a craft read 60:60, 96:96, 48:48); the three weapons always
+## listed, "0:0" for one it lacks. The list ends at Torpedoes (INFERRED from
+## the scroll thumb: 15 lines).
+static func _FighterFields(unit: Unit) -> Array:
+	var d: ShipDamage = unit.DamageState()
+	var rows: Array = []
+	rows.append(["Attached:", unit.Attached.Name if unit.Attached != null else "None"])
+	rows.append(["Maintenance Cost:", str(unit.MaintenanceCost)])
+	rows.append(["Squadron Size:", _Pair(d.Aircraft, d.MaxAircraft)])
+	rows.append(["Hyperdrive Rating:", str(unit.Hyperdrive)])
+	rows.append(["Maximum Shield Strength:", _Pair(d.Shield * d.Aircraft, d.MaxShield * d.MaxAircraft)])
+	rows.append(["Sub-Light Engine Rating:", str(unit.Sublight)])
+	rows.append(["Maneuverability:", str(unit.Maneuverability)])
+	rows.append(["Detection Rating:", str(unit.Detection)])
+	rows.append(["Bombardment Value:", _Pair(unit.Bombardment, unit.Bombardment)])
+	rows.append(["Weapons Rating:", ""])
+	for pair in [[" Laser Rating:", "laser"], [" Ion Cannon:", "ion_cannon"], [" Torpedoes:", "torpedo"]]:
+		var fitted: PackDefs.UnitWeaponDef = unit.Weapon(pair[1])
+		var n: int = fitted.total() if fitted != null else 0
+		rows.append([pair[0], _Pair(n * d.Aircraft, n * d.MaxAircraft)])
+	return rows
+
+
+## The Capital Ship Status, 49 lines. Lines 0-13 are measured; from Damage
+## Control on they are INFERRED - the order of the manual's Fig 3.62 (a
+## pre-release build), the words of TEXTSTRA - and the scroll thumb's length
+## (54 pixels) is reproduced only by exactly these 49 lines.
+static func _CapitalShipFields(unit: Unit) -> Array:
+	var d: ShipDamage = unit.DamageState()
+	var def: PackDefs.UnitDef = MilitaryCatalog.ById(unit.PackId)
+	var fleet: Fleet = OrderManager.FleetOf(unit)   # a ship is Attached to the world its fleet orbits
+	var fighters: int = Lq.count(unit.Hangar, func(h: Unit) -> bool: return h.Type == Enums.UnitType.Fighter) if unit.Hangar != null else 0
+	var troops: int = Lq.count(unit.Hangar, func(h: Unit) -> bool: return h.Type == Enums.UnitType.Troop) if unit.Hangar != null else 0
+	var personnel: int = Lq.count(GameState.ActiveRoster, func(c: Character) -> bool: return c.Attached == unit) \
+		if GameState.ActiveRoster != null else 0
+	var rows: Array = []
+	rows.append(["Class:", def.DisplayName if def != null else unit.Name])
+	rows.append(["Fleet:", fleet.Name if fleet != null else "None"])
+	rows.append(["Status:", StatusWord(unit.Status)])
+	rows.append(["Maintenance Cost:", str(unit.MaintenanceCost)])
+	rows.append(["Capacity:", ""])
+	rows.append(["Fighter Squadrons:", str(unit.FighterCapacity)])
+	rows.append(["Trooper Regiments:", str(unit.TroopCapacity)])
+	rows.append(["Embarked:", ""])
+	rows.append(["Fighter Squadrons:", str(fighters)])
+	rows.append(["Trooper Regiments:", str(troops)])
+	rows.append(["Personnel:", str(personnel)])
+	rows.append(["Ship Damaged:", "Yes" if unit.IsDamaged() else "No"])
+	rows.append(["Hyperdrive Rating:", _Pair(d.Hyperdrive, d.MaxHyperdrive)])
+	rows.append(["Hull Value:", _Pair(d.Hull, d.MaxHull)])
+	rows.append(["Damage Control Rating:", str(unit.DamageControl)])
+	rows.append(["Shield Recharge Rate:", _Pair(d.ShieldRecharge, d.MaxShieldRecharge)])
+	rows.append(["Maximum Shield Strength:", _Pair(d.Shield, d.MaxShield)])
+	rows.append(["Tractor Beam Power:", _Pair(d.TractorPower, d.MaxTractorPower)])
+	rows.append(["Sub-Light Engine Rating:", _Pair(d.Sublight, d.MaxSublight)])
+	rows.append(["Maneuverability:", str(unit.Maneuverability)])
+	rows.append(["Detection Rating:", str(unit.Detection)])
+	rows.append(["Weapon Recharge Rate:", _Pair(d.WeaponRecharge, d.MaxWeaponRecharge)])
+	rows.append(["Bombardment Modifier:", str(unit.Bombardment)])
+	var arcs: Array = [["Forward", Enums.ShipArc.Fore], ["Aft", Enums.ShipArc.Aft],
+		["Starboard", Enums.ShipArc.Starboard], ["Port", Enums.ShipArc.Port]]
+	for arc in arcs:
+		rows.append(["%s Weapons Arc Rating:" % arc[0], ""])
+		for pair in [[" Turbo Laser:", "turbolaser"], [" Ion Cannon:", "ion_cannon"], [" Laser Cannon:", "laser"]]:
+			var fitted: PackDefs.UnitWeaponDef = unit.Weapon(pair[1])
+			var n: int = fitted.in_arc(arc[1]) if fitted != null else 0
+			rows.append([pair[0], _Pair(n, n)])
+	return rows
 
 
 func Populate(unit: Unit) -> void:

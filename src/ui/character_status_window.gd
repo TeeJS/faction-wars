@@ -88,6 +88,53 @@ func Populate(character: Character) -> void:
 	(get_node("%ValCommands") as Label).text = "\n".join(commandList) if commandList.size() > 0 else "None"
 
 
+## Everything the ORIGINAL'S Status window shows for a character (OUI
+## .StatusPlate; manual p063 Fig 3.2, p101 Fig 3.46), in its order and words
+## (TEXTSTRA.DLL 34595-34615), measured on TeeJ's screenshot of Han Solo's
+## (2026-09-23): the command rank held (or None), where they are, the status
+## word, the Force ranking, the four ratings, the R&D Capabilities and Possible
+## Command Ranks headings with a Yes / No under each; the 80x80 portrait; the
+## name. General: and Commander: are INFERRED (below the capture's view; the
+## scroll thumb says 17 lines).
+static func StatusData(c: Character) -> Dictionary:
+	var word: String = "Awaiting Orders"
+	if c.IsCaptured():
+		word = "Captured"
+	elif c.Status == Enums.Status.Enroute:
+		word = "Enroute"
+	elif c.Status == Enums.Status.OnMission:
+		word = "On Mission"
+	elif c.IsInjured():
+		word = "Injured"
+	var yes := func(b: bool) -> String: return "Yes" if b else "No"
+	var rows: Array = []
+	rows.append(["Commanding:", JsonUtil.enum_name(Enums.Rank, c.Rank) if c.Rank != Enums.Rank.None else "None"])
+	rows.append(["Attached:", c.Attached.Name if c.Attached != null else "None"])
+	rows.append(["Status:", word])
+	if c.Status == Enums.Status.Enroute:
+		rows.append(["Time to Destination:", "%d Days" % c.DaysToDestination])
+	rows.append(["Force Ranking:", Character.RankLabel(c.SpecialPowerRankOf()) if c.SpecialPowerProbability > 0 else "None"])
+	rows.append(["Diplomacy Rating:", str(c.DiplomacyRating)])
+	rows.append(["Espionage Rating:", str(c.EspionageRating)])
+	rows.append(["Combat Rating:", str(c.CombatRating)])
+	rows.append(["Leadership Rating:", str(c.LeadershipRating)])
+	rows.append(["R&D Capabilities", ""])
+	rows.append([" Ship Design", yes.call(c.ShipDesign > 0)])
+	rows.append([" Troop Training", yes.call(c.TroopTraining > 0)])
+	rows.append([" Facility Design", yes.call(c.FacilityDesign > 0)])
+	rows.append(["Possible Command Ranks", ""])
+	rows.append(["Admiral:", yes.call(c.CanBeAdmiral)])
+	rows.append(["General:", yes.call(c.CanBeGeneral)])
+	rows.append(["Commander:", yes.call(c.CanBeCommander)])
+	return {
+		"title": "Character Status",
+		"fields": rows,
+		"picture": Art.Scaled(Art.Portrait("characters", c.PackId), OUI.K),
+		"name": c.Name,
+		"encyclopedia": ["characters", c.PackId],
+	}
+
+
 ## C#: GameSignature.For(Character); the port splits the overloads by type.
 func StateSignature() -> Variant:
 	return GameSignature.ForCharacter(_associatedCharacter)

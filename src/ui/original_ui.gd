@@ -348,6 +348,12 @@ static func LinePitch(l: Label, px: float, pitch: int, bold: bool = false) -> vo
 const StatusW := 379
 const StatusH := 272
 const StatusFieldPx := 10.5
+## The list: from y 47 to 250, 14 whole lines; the scroll bar at x 214.
+const StatusListTop := 47
+const StatusListH := 204
+const StatusListRight := 232
+const StatusLines := 14
+const StatusBarX := 214
 
 
 ## True when the player imported the Status window's art.
@@ -378,16 +384,51 @@ static func StatusPlate(window: Control, f: Faction, data: Dictionary) -> Contro
 	canvas.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	area.add_child(canvas)
 	Text(canvas, str(data.get("title", "")), 9, 18, 223, 16, 13, Color.WHITE, HORIZONTAL_ALIGNMENT_CENTER, true, "Title")
-	var y := 47
+	# The fields, clipped to the panel's list (y 47-250: 14 lines and 8 rows
+	# of the 15th); a longer list gets the original's scroll bar at x 214
+	# (TeeJ's Character, Capital Ship and Fighter Status, 2026-09-23).
+	var view := Control.new()
+	view.name = "Fields"
+	view.position = Vector2(0, StatusListTop) * K
+	view.size = Vector2(StatusListRight, StatusListH) * K
+	view.clip_contents = true
+	view.mouse_filter = Control.MOUSE_FILTER_PASS
+	canvas.add_child(view)
+	var list := Control.new()
+	list.name = "List"
+	list.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	view.add_child(list)
+	var y := 0
 	var n := 0
 	for pair in data.get("fields", []):
-		var label := Text(canvas, str(pair[0]), 18, y, 103, 56, StatusFieldPx, Color.WHITE, HORIZONTAL_ALIGNMENT_LEFT, false, "Label%d" % n)
+		var label := Text(list, str(pair[0]), 18, y, 103, 56, StatusFieldPx, Color.WHITE, HORIZONTAL_ALIGNMENT_LEFT, false, "Label%d" % n)
 		label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		LinePitch(label, StatusFieldPx, 14)
 		var lines: int = maxi(1, label.get_line_count())
-		Text(canvas, str(pair[1]), 121, y + 14 * (lines - 1), 109, 14, StatusFieldPx, Color.WHITE, HORIZONTAL_ALIGNMENT_LEFT, false, "Value%d" % n)
+		Text(list, str(pair[1]), 121, y + 14 * (lines - 1), 109, 14, StatusFieldPx, Color.WHITE, HORIZONTAL_ALIGNMENT_LEFT, false, "Value%d" % n)
 		y += 14 * lines
 		n += 1
+	var total: int = y / 14
+	canvas.set_meta("lines", total)
+	if total > StatusLines:
+		var scroll := ScrollBar12.new()
+		scroll.name = "ScrollBar"
+		scroll.k = K
+		scroll.parts = [Btn("scroll_up"), Btn("scroll_down"), Btn("scroll_thumb_top"), Btn("scroll_thumb_mid"), Btn("scroll_thumb_bottom")]
+		scroll.position = Vector2(StatusBarX, StatusListTop) * K
+		scroll.size = Vector2(ScrollBar12.W - 1, StatusListH) * K
+		# The thumb: 199 of the list's 14-per-line pixels (fits all three
+		# captures - 156, 176, 54 pixels for 17, 15, 49 lines - not settled).
+		scroll.thumb_view = 199.0
+		scroll.thumb_content = 14.0 * total
+		scroll.set_rows(0, StatusLines, total)
+		canvas.add_child(scroll)
+		view.size.x = StatusBarX * K   # the values stop at the bar (INFERRED)
+		scroll.scrolled.connect(func(first: int) -> void: list.position.y = -first * 14 * K)
+		view.gui_input.connect(func(e: InputEvent) -> void:
+			if e is InputEventMouseButton and e.pressed \
+					and (e.button_index == MOUSE_BUTTON_WHEEL_UP or e.button_index == MOUSE_BUTTON_WHEEL_DOWN):
+				scroll.step(-1 if e.button_index == MOUSE_BUTTON_WHEEL_UP else 1))
 	for key in ["backdrop", "picture"]:
 		var tex: Texture2D = data.get(key)
 		if tex != null:
@@ -759,6 +800,10 @@ class ScrollBar12 extends Control:
 	var first: int = 0
 	var shown: int = 1
 	var total: int = 1
+	## When set, the thumb's length is this share of the track instead of
+	## shown / total (the Status windows' list measures it in pixels).
+	var thumb_view: float = 0.0
+	var thumb_content: float = 0.0
 	var _grab: float = -1.0
 	var _grab_first: int = 0
 
@@ -781,7 +826,8 @@ class ScrollBar12 extends Control:
 		if total <= shown:
 			return t
 		var span: int = int(t.size.y) / k
-		var length: int = mini(span, maxi(MinThumb, roundi(float(span) * shown / total)))
+		var share: float = (thumb_view / thumb_content) if thumb_content > 0.0 else float(shown) / total
+		var length: int = mini(span, maxi(MinThumb, roundi(span * share)))
 		var y: int = roundi(float(span - length) * first / (total - shown))
 		return Rect2(t.position.x, t.position.y + y * k, t.size.x, length * k)
 
