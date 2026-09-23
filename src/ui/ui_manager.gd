@@ -174,6 +174,17 @@ static func Socket(category: String, side: String, current: bool) -> Texture2D:
 	if img.is_compressed():
 		img.decompress()
 	img = img.get_region(Rect2i(0, 0, img.get_width(), mini(SocketRows, img.get_height())))
+	# A raised button's four corner pixels are the plate's grey in the bitmap:
+	# clear them, so it stands on whatever is behind the column. The current
+	# (blue) tile's bottom corners are its own fill - it fuses into the band.
+	img.convert(Image.FORMAT_RGBA8)
+	var w: int = img.get_width()
+	var h: int = img.get_height()
+	var corners: Array = [Vector2i(0, 0), Vector2i(w - 1, 0)]
+	if not current:
+		corners.append_array([Vector2i(0, h - 1), Vector2i(w - 1, h - 1)])
+	for c in corners:
+		img.set_pixelv(c, Color(0, 0, 0, 0))
 	img.resize(SocketSize.x, SocketSize.y, Image.INTERPOLATE_NEAREST)
 	var out := ImageTexture.create_from_image(img)
 	_sockets[key] = out
@@ -258,14 +269,12 @@ func _StyleCommsColumn(commsList: VBoxContainer) -> void:
 	if margin != null:
 		for sideName in ["left", "top", "right", "bottom"]:
 			margin.add_theme_constant_override("margin_" + sideName, 3)
+	# No panel behind the sockets: each is the original's own raised button,
+	# standing on the screen (TeeJ, 2026-09-23: "get rid of the black
+	# background - these should look like buttons").
 	var panel: PanelContainer = get_node_or_null("CommsPanel")
 	if panel != null:
-		var sb := StyleBoxFlat.new()
-		sb.bg_color = Color(0.03, 0.03, 0.05, 1)
-		sb.set_border_width_all(2)
-		sb.border_color = Color(0.45, 0.47, 0.52, 1)
-		sb.set_corner_radius_all(3)
-		panel.add_theme_stylebox_override("panel", sb)
+		panel.add_theme_stylebox_override("panel", StyleBoxEmpty.new())
 
 
 ## The unread count on a socket's corner, yellow with a black edge; hidden at
