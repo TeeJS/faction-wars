@@ -42,12 +42,20 @@ const ColumnXs := [8, 136]
 const HeadY := 65
 const ListY := 93
 const ListH := 214
-## PROVISIONAL until there is a screenshot of the original's Decoy tab and of
-## its open mission list: the arrows' places (read off the manual's Fig
-## 3.48), a column's rows, and where the list drops down.
-const ToDecoysAt := Vector2(118, 130)
-const ToAgentsAt := Vector2(118, 219)
-const RowH := 44
+## Measured on TeeJ's screenshot of the original's Decoy tab (2026-09-23):
+## the arrows (normal pictures; the pressed ones draw the arrow 2 pixels
+## down and right at the same place) and a column's rows - 59 apart, the
+## picture on its grey plate 17 into the row (the first at y 110), 23 in
+## from the column's left, the name (Arial 13, grey) under it.
+const ToDecoysAt := Vector2(120, 136)
+const ToAgentsAt := Vector2(120, 221)
+const RowH := 59
+const RowPictureY := 17
+const RowNameY := 43
+const MemberGrey := Color(120 / 255.0, 120 / 255.0, 120 / 255.0)
+## The tab strip is the Select plate's on both tabs (5 pixels differ).
+const TabStrip := Rect2(7, 20, 246, 33)
+## PROVISIONAL until the open list is measured: where it drops down.
 const ListAt := Vector2(29, 192)
 const ListRowH := 15
 
@@ -142,8 +150,9 @@ func _build() -> void:
 		_tabs.append(b)
 	OUI.PictureButton(_canvas, "mission_encyclopedia", ButtonXs[0], ButtonY,
 		"Bring up the Encyclopedia entry for this mission").pressed.connect(_on_encyclopedia)
-	OUI.PictureButton(_canvas, "mission_ok", ButtonXs[1], ButtonY, "Assign mission").pressed.connect(_on_assign)
-	OUI.PictureButton(_canvas, "mission_cancel", ButtonXs[2], ButtonY, "Cancel mission assignment").pressed.connect(CloseWindow)
+	# The original's words (TEXTSTRA 34050, 34051).
+	OUI.PictureButton(_canvas, "mission_ok", ButtonXs[1], ButtonY, "Begin Mission").pressed.connect(_on_assign)
+	OUI.PictureButton(_canvas, "mission_cancel", ButtonXs[2], ButtonY, "Cancel").pressed.connect(CloseWindow)
 	_build_list()
 
 
@@ -167,7 +176,11 @@ func _build_select(page: Control) -> void:
 	var tex: Texture2D = _target_picture()
 	var pic := OUI.Place(page, tex, 0, 0, "TargetPicture")
 	if tex != null:
-		pic.position = (TargetBox.get_center() * K - tex.get_size() / 2.0).floor()
+		# Centred in the box in whole original pixels: x = 50 + (167 - w) // 2.
+		var w: int = int(tex.get_size().x) / K
+		var h: int = int(tex.get_size().y) / K
+		pic.position = Vector2(TargetBox.position.x + (int(TargetBox.size.x) - w) / 2,
+			TargetBox.position.y + (int(TargetBox.size.y) - h) / 2) * K
 	OUI.Text(page, _target_name(), 0, TargetNameY, PlateW, 16, 13, Color.WHITE, HORIZONTAL_ALIGNMENT_CENTER, true, "TargetName")
 	# Transit is real, and orders cannot be given in hyperspace (p109). The
 	# original's window does not print how far it is; the target says it on hover.
@@ -181,16 +194,17 @@ func _build_select(page: Control) -> void:
 
 
 ## What the mission is aimed at: the system's sprite, or - for an object
-## target - that person's, facility's or unit's miniature (PROVISIONAL: no
-## screenshot of an object target yet).
+## target - its class picture (the original's Sabotage of a KDY-150 shows
+## the facility's 122x50 picture, GOKRES 512). A character target's 80x80
+## portrait is INFERRED from the same set: no screenshot shows one.
 func _target_picture() -> Texture2D:
 	if _victim != null:
-		return OUI.Mini("characters", _victim.PackId)
+		return Art.Scaled(Art.Portrait("characters", _victim.PackId), K)
 	if _thing is Facility:
 		var fac: Facility = _thing
-		return OUI.Mini("facilities", fac.Def.Id if fac.Def != null else fac.Family())
+		return Art.Scaled(Art.Portrait("facilities", fac.Def.Id if fac.Def != null else fac.Family()), K)
 	if _thing is Unit:
-		return OUI.Mini("units", (_thing as Unit).PackId)
+		return Art.Scaled(Art.Portrait("units", (_thing as Unit).PackId), K)
 	return Art.Scaled(Art.PlanetSprite(_target.ArtworkId), K)
 
 
@@ -266,8 +280,18 @@ func _show_mission(index: int) -> void:
 # ---- Decoy -------------------------------------------------------------------
 
 func _build_decoy(page: Control) -> void:
-	OUI.Place(page, OUI.Pic("mission_agents.%s" % _side), ColumnXs[0], HeadY, "AgentsHead")
-	OUI.Place(page, OUI.Pic("mission_decoys.%s" % _side), ColumnXs[1], HeadY, "DecoysHead")
+	# The tab strip stays the Select plate's (under the tabs, drawn after).
+	var select: Texture2D = OUI.Pic("mission_plate")
+	if select != null:
+		var strip := AtlasTexture.new()
+		strip.atlas = select
+		strip.region = Rect2(TabStrip.position * K, TabStrip.size * K)
+		OUI.Place(page, strip, TabStrip.position.x, TabStrip.position.y, "TabStrip")
+	var heads: Array = [OUI.Place(page, OUI.Pic("mission_agents.%s" % _side), ColumnXs[0], HeadY, "AgentsHead"),
+		OUI.Place(page, OUI.Pic("mission_decoys.%s" % _side), ColumnXs[1], HeadY, "DecoysHead")]
+	for i in 2:   # the original's words (TEXTSTRA 34048, 34049)
+		(heads[i] as Control).tooltip_text = ["Agents", "Decoys"][i]
+		(heads[i] as Control).mouse_filter = Control.MOUSE_FILTER_PASS
 	_columns.clear()
 	for i in 2:
 		var scroll := ScrollContainer.new()
@@ -281,10 +305,11 @@ func _build_decoy(page: Control) -> void:
 		column.add_theme_constant_override("separation", 0)
 		scroll.add_child(column)
 		_columns.append(column)
+	# The original's words (TEXTSTRA 34053, 34054).
 	OUI.PictureButton(page, "mission_to_decoys", ToDecoysAt.x, ToDecoysAt.y,
-		"Move the selected agents to the Decoy column").pressed.connect(func() -> void: _move(true))
+		"Use Selected Agents as Decoys").pressed.connect(func() -> void: _move(true))
 	OUI.PictureButton(page, "mission_to_agents", ToAgentsAt.x, ToAgentsAt.y,
-		"Move the selected decoys to the Agent column").pressed.connect(func() -> void: _move(false))
+		"Use Selected Decoys as Agents").pressed.connect(func() -> void: _move(false))
 
 
 func _fill_columns() -> void:
@@ -296,9 +321,10 @@ func _fill_columns() -> void:
 		(_columns[1 if _decoys.has(m) else 0] as Control).add_child(_member_card(m))
 
 
-## One of the team in a column: the miniature on its plate, the name under
-## it; picked, the frame on the picture's outline and the name in the side's
-## colour, as in the Defenses grid.
+## One of the team in a column: the miniature on its grey plate, the name
+## under it in Arial 13, grey (measured). Picked, the frame on the picture's
+## outline and the name in the side's colour, as in the Defenses grid - OURS:
+## no screenshot shows a picked member.
 func _member_card(m: Unit) -> Control:
 	var b := Button.new()
 	b.name = "Member_%s" % m.Name.validate_node_name()
@@ -310,20 +336,20 @@ func _member_card(m: Unit) -> Control:
 	var empty := StyleBoxEmpty.new()
 	for st in ["normal", "hover", "pressed", "focus", "hover_pressed", "disabled"]:
 		b.add_theme_stylebox_override(st, empty)
-	var x: int = (108 - 61) / 2
+	var x: int = 23
 	var plate: Texture2D = OUI.Pic("card_plate")
 	if plate != null:
-		OUI.Place(b, plate, x, 4, "Plate")
+		OUI.Place(b, plate, x, RowPictureY, "Plate")
 	var mini: Texture2D = OUI.Mini("characters" if m is Character else "units", m.PackId)
 	if mini != null:
-		OUI.Place(b, mini, x, 4, "Picture")
-	var frame := OUI.SelectionFrame(x, 4, OUI.SideColor(_faction))
+		OUI.Place(b, mini, x, RowPictureY, "Picture")
+	var frame := OUI.SelectionFrame(x, RowPictureY, OUI.SideColor(_faction))
 	b.add_child(frame)
-	var name_label := OUI.Text(b, m.Name, 0, 31, 108, 13, 11, Color.WHITE, HORIZONTAL_ALIGNMENT_CENTER, false, "Name")
+	var name_label := OUI.Text(b, m.Name, 0, RowNameY, 108, 16, 13, MemberGrey, HORIZONTAL_ALIGNMENT_CENTER, false, "Name")
 	name_label.clip_text = true
 	var show := func(on: bool) -> void:
 		frame.visible = on
-		name_label.add_theme_color_override("font_color", OUI.SideColor(_faction) if on else Color.WHITE)
+		name_label.add_theme_color_override("font_color", OUI.SideColor(_faction) if on else MemberGrey)
 	b.button_pressed = _picked.has(m)
 	show.call(b.button_pressed)
 	b.toggled.connect(func(on: bool) -> void:

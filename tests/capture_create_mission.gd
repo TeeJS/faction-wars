@@ -71,7 +71,8 @@ func _init() -> void:
 		if crowd.size() > 1:
 			w._picked = [crowd[1]]
 			w._move(true)
-			w._picked = [crowd[0]]
+			# Nobody picked, as in TeeJ's screenshot of the original.
+			w._picked = []
 			w._fill_columns()
 		for _i in 3:
 			await process_frame
