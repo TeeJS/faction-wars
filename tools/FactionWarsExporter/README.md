@@ -86,7 +86,7 @@ A `.zip` of PNGs and JSON with `manifest.json` at its root:
 
 ```json
 { "format": 1, "kind": "art_set", "id": "swr-original",
-  "title": "Star Wars: Rebellion - original artwork", "exporter": "2.0.0",
+  "title": "Star Wars: Rebellion - original artwork", "exporter": "2.1.0",
   "created_utc": "...", "files": { "portraits/characters/<id>.png": "<sha256>", ... } }
 ```
 
@@ -127,7 +127,7 @@ Which row each picture belongs to comes from the Star Wars pack's own
 | Sector-window corner icons | `STRATEGY.DLL` bitmaps 10771–10790 | factory, tower, ship, crest per side, normal + highlighted; blue = transparent |
 | Planet sprites | `STRATEGY.DLL` bitmaps 10212–10237 | 26 by `artwork_id` (two ids ship no bitmap) |
 | The Shuttle Cockpit | `COMMON.DLL` bitmap 20001, 640×480 | the Star Wars pack's menu picture (manual p021 Fig 2.2) |
-| The galaxy map | `STRATEGY.DLL` bitmap 903, 607×437 | the map's backdrop |
+| The galaxy map | `STRATEGY.DLL` bitmap 903, 607×437 | the map's backdrop, its edges mirrored out to 640×480 - the Star Wars pack's map frame, so `map_image_rect` places it as before |
 | Window plates, parts, tabs and buttons | `STRATEGY.DLL`, `GOKRES.DLL` | every id is listed in `Importer.cs` |
 | Mouse pointers | `REBEXE.EXE` cursors 3 and 4 | read as data, never run |
 

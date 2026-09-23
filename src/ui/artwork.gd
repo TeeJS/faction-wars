@@ -371,10 +371,12 @@ static func _find(own_rel: String, set_rel: String, only_set: String = "") -> Te
 
 
 ## Whether any copy of art set `set_id` is present (imported, a checkout's
-## export, or the committed legacy copy).
+## export, or the committed legacy copy) - a folder with something in it.
 static func HasArtSet(set_id: String) -> bool:
 	for root in _set_roots(set_id):
-		if DirAccess.dir_exists_absolute(root):
+		if not DirAccess.dir_exists_absolute(root):
+			continue
+		if not DirAccess.get_files_at(root).is_empty() or not DirAccess.get_directories_at(root).is_empty():
 			return true
 	return false
 

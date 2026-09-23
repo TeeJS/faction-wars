@@ -81,6 +81,11 @@ public sealed class Importer
     // COMMON.DLL; the galaxy map, the map's backdrop, in STRATEGY.DLL. The
     // pack's old galaxyShaded.bmp was an edited copy of 903.
     public const int CockpitBitmap = 20001, GalaxyBitmap = 903;
+    // The galaxy map is 607x437; the Star Wars pack's map frame is 640x480, the
+    // size of its old galaxyShaded.bmp (an edited copy of 903 at its top-left).
+    // The strips right of and below the picture are its own edge, mirrored, so the
+    // pack's map_image_rect places the map exactly as before.
+    public const int GalaxyWidth = 640, GalaxyHeight = 480;
 
     // STRATEGY.DLL: the Message Alert bar's nine icons (27x22), in the order
     // the manual's Message Alerts menu lists them (p081 Fig 3.21) except that
@@ -578,7 +583,7 @@ public sealed class Importer
         var commonDll = Path.Combine(_gameDir, "COMMON.DLL");
         if (File.Exists(commonDll) && SaveSprite(new PeResources(commonDll), CockpitBitmap, P("screens", "cockpit.png"))) pictureCount++;
         else missing.Add($"screens/cockpit: no bitmap {CockpitBitmap} in COMMON.DLL");
-        if (SaveSprite(strategy, GalaxyBitmap, P("screens", "galaxy.png"))) pictureCount++;
+        if (SaveGalaxy(strategy, P("screens", "galaxy.png"))) pictureCount++;
         else missing.Add($"screens/galaxy: no bitmap {GalaxyBitmap} in STRATEGY.DLL");
 
         // Portraits and list miniatures: GOKRES.DLL, by the shipped id map.
@@ -673,6 +678,26 @@ public sealed class Importer
         using (var g = Graphics.FromImage(rgb))
             g.DrawImage(bmp, 0, 0, bmp.Width, bmp.Height);
         _sink.Write(outPath, Png(rgb));
+        return true;
+    }
+
+    /// <summary>The galaxy map, 903, mirrored out to GalaxyWidth x GalaxyHeight.</summary>
+    private bool SaveGalaxy(PeResources dll, string outPath)
+    {
+        if (!dll.Bitmaps.ContainsKey(GalaxyBitmap))
+            return false;
+        using var stream = new MemoryStream(dll.BitmapFile(GalaxyBitmap));
+        using var src = new Bitmap(stream);
+        using var dst = new Bitmap(GalaxyWidth, GalaxyHeight, PixelFormat.Format24bppRgb);
+        int w = src.Width, h = src.Height;
+        for (int y = 0; y < GalaxyHeight; y++)
+            for (int x = 0; x < GalaxyWidth; x++)
+            {
+                int sx = x < w ? x : Math.Max(0, 2 * w - 1 - x);
+                int sy = y < h ? y : Math.Max(0, 2 * h - 1 - y);
+                dst.SetPixel(x, y, src.GetPixel(sx, sy));
+            }
+        _sink.Write(outPath, Png(dst));
         return true;
     }
 

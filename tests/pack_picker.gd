@@ -49,6 +49,38 @@ func _init() -> void:
 		_check(plays.has(id) and not (plays[id] as Button).disabled, "'%s' has an enabled Play" % id)
 	_check(not FactionRegistry.IsLoaded(), "building the cards loads no pack")
 
+	# The player's imports (docs/original-art-plan.md, phase 3): the button,
+	# the Star Wars card saying whether its art set is there, and a rebuild
+	# that shows an import at once. A test art root, never the player's own.
+	const ArtScript := preload("res://src/ui/artwork.gd")
+	const Importer := preload("res://src/ui/pack_import.gd")
+	_check(picker.find_child("ImportButton", true, false) != null, "the Import pack file button is on the picker")
+	ArtScript.IgnoreProjectFolder = true
+	ArtScript.UserArtRoot = "user://test-picker-art"
+	Importer._remove(ArtScript.UserArtRoot)
+	picker._on_imported({"ok": true, "message": "nothing yet"})
+	# The old importer's user folder (user://original/) may still hold a copy on
+	# this machine, so the card must agree with Artwork, whatever it finds.
+	var look: Label = picker.find_child("OriginalLook", true, false)
+	var has: bool = ArtScript.HasArtSet("swr-original")
+	_check(look != null and look.text == ("Original look: yes" if has else "Original look: import your art set (below)"),
+		"the Star Wars card says whether its art set is there (%s)" % (look.text if look != null else "no label"))
+	DirAccess.make_dir_recursive_absolute(ArtScript.UserArtRoot + "/swr-original")
+	var m := FileAccess.open(ArtScript.UserArtRoot + "/swr-original/manifest.json", FileAccess.WRITE)
+	m.store_string(JSON.stringify({"format": 1, "kind": "art_set", "id": "swr-original", "title": "Test art", "files": {"a.png": "00"}}))
+	m.close()
+	picker._on_imported({"ok": true, "message": "Imported the art set."})
+	look = picker.find_child("OriginalLook", true, false)
+	_check(look != null and look.text == "Original look: yes", "after an import the card says so at once")
+	_check(_labels(picker).has("Art set: Test art - 1 files") and _labels(picker).has("Imported the art set."),
+		"the import is listed, with Remove, and its result shown")
+	Importer._remove(ArtScript.UserArtRoot)
+	ArtScript.IgnoreProjectFolder = false
+	ArtScript.UserArtRoot = "user://art"
+	PackPicker._last_import = {}
+	picker._on_imported({})
+	plays = picker.PlayButtons()
+
 	# The card text comes from the manifest, not from the id.
 	var labels := _labels(picker)
 	var sw := PackLoader.Load("%s/star-wars-rebellion" % FactionRegistry.PACKS_ROOT, [])
