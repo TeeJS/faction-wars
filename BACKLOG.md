@@ -30,8 +30,12 @@ target) before landing.
 
 ## Status — in progress
 
-*None — all approved work is merged.* What remains is under **Missing Features**
-(new screens) and **Backlog** below; those need TeeJ's go before they start.
+| # | Item | Plan |
+|---|------|------|
+| 40 | **The original's art out of the public repo; owners import it.** A signed exporter writes the player's own art set to a file (their backup); the game imports it into browser storage (web) or the user folder (desktop). Art sets are separate from shareable faction packs, so custom packs (e.g. Separatists vs Trade Federation) can wear the original UI. Removal, history rewrite and GHCR purge come last. | `docs/original-art-plan.md` (TeeJ signed off 2026-09-23) |
+
+What remains is under **Missing Features** (new screens) and **Backlog** below;
+those need TeeJ's go before they start.
 
 ---
 
@@ -49,6 +53,8 @@ no original to cite.
 | 12 | **Alt+B / Alt+T / Alt+F** build ships / troops / installations screens | no standalone build/manufacturing window |
 | 13 | **Pack hash in the multiplayer settings** | **Done** (branch `pack-plumbing`): the host's room settings carry `pack` + `pack_hash` (SHA-256 over the pack's JSON files); a guest on another pack or different content is told on the Options screen (`MpSetup.pack_mismatch`), and the lockstep hello refuses the start. The command-log header carries both too, so a save/replay/snapshot from another pack is refused by name (`FactionRegistry.HeaderMismatch`). `--pack=<id>` selects the pack headless; `FactionRegistry.ListPackIds()` is the picker's list |
 | 36 | **Old-repo dependency in the generators.** Six `tools/build-*-json.py` transforms: four read `data/` (deleted in #52), two read the old repo via `SCR_SOURCE`, and all six would have wiped the hand-added pack fields | **Done** — retired (TeeJ, 2026-09-22). The pack is hand-edited and is the contract; `source_*` fields keep provenance |
+| 38 | **Ships and fleets named like the original** | TeeJ, 2026-09-23. Fleet lookup by serial first; the original's own naming scheme to be read from its screens / tables before building |
+| 39 | **Message subject pictures** | TeeJ, 2026-09-23. Follow-up from the window-matching work (#95-#113); scope to be checked against the original before building |
 | — | Other window-checklist gaps | see `docs/window-checklists.md` (Missing/Partial rows) — e.g. portrait art placeholders, modal-vs-nonmodal chrome |
 
 ## Phase 5 — pack modularity (setting names still in engine code)
