@@ -12,8 +12,11 @@ extends RefCounted
 ##                                        the project, as TeeJ does)
 ##   user://original/<pack id>/...        the same layout for an exported build,
 ##                                        where the pack folder is inside the pck
-## Files are read with Image.load_from_file, not load(): they are not imported
-## resources and never will be.
+## A file under res:// is an imported resource (the editor imports every PNG it
+## finds, and an export packs the import, not the source file), so it is read
+## with load() - which is what makes the overlay work in a web export too, where
+## there is no OS path to read. A file under user:// is a plain PNG on disk and
+## is read with Image.load_from_file.
 
 static var _cache: Dictionary = {}      # relative path -> Texture2D or null
 static var _cache_pack: String = ""
@@ -131,6 +134,12 @@ static func _texture(rel: String) -> Texture2D:
 		roots.push_front("%s/%s/original" % [FactionRegistry.PACKS_ROOT, pack_id])
 	for base in roots:
 		var path := "%s/%s" % [base, rel]
+		if path.begins_with("res://"):
+			if ResourceLoader.exists(path, "Texture2D"):
+				tex = load(path) as Texture2D
+				if tex != null:
+					break
+			continue
 		if not FileAccess.file_exists(path):
 			continue
 		var img := Image.load_from_file(ProjectSettings.globalize_path(path))
