@@ -32,7 +32,6 @@ runs without a window and writes `original\import.log` (exit 0 = done).
 | Portraits and list miniatures | `GOKRES.DLL` bitmaps, 80×80 and 61×25 | per character, unit and facility, by the ids in `gokres_map.json` (from [open-rebellion](https://github.com/tdimino/open-rebellion)'s Ghidra-derived entity catalog; the 60 character portraits were checked by face) |
 | GID stars | `STRATEGY.DLL` bitmaps 10146–10157, 10169–10181 | four sizes per side (red / green / blue) and in grey for unexplored worlds |
 | Uprising flame | `STRATEGY.DLL` bitmaps 11608–11609 | two frames |
-| Console screens (the Finder buttons, GID control, Encyclopedia) | crops of `STRATEGY.DLL` 900 / 901, the 640×481 Command Center frames | six per side; the frame paints them, so they are cropped at measured rectangles |
 | Message Alert bar icons | `STRATEGY.DLL` bitmaps 10030–10068 | nine categories, dim and lit, per side; matched pixel-for-pixel against screenshots of the original |
 | Sector-window corner icons | `STRATEGY.DLL` bitmaps 10771–10790 | factory, tower, ship, crest per side, normal + highlighted; blue = transparent |
 | Planet sprites | `STRATEGY.DLL` bitmaps 10212–10237 | 26 by `artwork_id` (two ids ship no bitmap) |
@@ -50,7 +49,7 @@ packs/star-wars-rebellion/original/
   icons/<glyph>.<faction>.png (+ .hover.png)   planet_sprites/<artwork_id>.png
   portraits/<kind>/<id>.png (80x80)   miniatures/<kind>/<id>.png (61x25)
   gid/<faction>.<tier>.png  gid/unexplored.<tier>.png  icons/uprising.png (+ .hover.png)
-  alerts/<faction>.<category>.png (+ .lit.png)   console/<faction>.<control>.png
+  alerts/<faction>.<category>.png (+ .lit.png)
   descriptions.json     { "characters": { "<id>": "text" }, "units": ..., ... }
   README.txt            the do-not-redistribute note
 ```

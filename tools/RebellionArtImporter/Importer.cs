@@ -41,7 +41,6 @@ namespace RebellionArtImporter;
 ///   original/icons/uprising.png (+ .hover.png)             the flame, two frames
 ///   original/gid/&lt;faction&gt;.&lt;tier&gt;.png, gid/unexplored.&lt;tier&gt;.png   the GID stars
 ///   original/alerts/&lt;faction&gt;.&lt;category&gt;.png (+ .lit.png)   the Message Alert bar
-///   original/console/&lt;faction&gt;.&lt;control&gt;.png   the six console screens, cropped from 900/901
 ///   original/planet_sprites/&lt;artwork_id&gt;.png              the map's planets
 /// </summary>
 public sealed class Importer
@@ -68,20 +67,6 @@ public sealed class Importer
     // pixel-for-pixel against TeeJ's screenshots of the original (2026-09-22).
     private static readonly string[] AlertCategories = { "loyalty", "fleets", "missions", "resources", "manufacturing", "defense", "conflict", "advice", "chat" };
     private static readonly (string Faction, int Dim, int Lit)[] AlertSets = { ("alliance", 10050, 10060), ("empire", 10030, 10040) };
-
-    // STRATEGY.DLL 900 (Alliance) / 901 (Empire): the whole Command Center
-    // frame, 640x481, with the six console screens painted into it. Their
-    // rectangles (x, y, w, h; a 2 px bezel added on export) were measured on
-    // the bitmaps; the screens read, left to right, System Finder, Fleet
-    // Finder, Troop Finder, Personnel Finder, then the Galactic Information
-    // Display control and the Encyclopedia (the tooltips TEXTSTRA.DLL 5377-5382
-    // name; the last two by elimination).
-    private static readonly string[] ConsoleNames = { "system_finder", "fleet_finder", "troop_finder", "personnel_finder", "gid", "encyclopedia" };
-    private static readonly (string Faction, int Bitmap, (int X, int Y, int W, int H)[] Screens)[] Consoles =
-    {
-        ("alliance", 900, new[] { (105, 408, 28, 16), (157, 406, 28, 17), (209, 405, 27, 17), (258, 404, 27, 17), (394, 406, 27, 16), (446, 406, 27, 16) }),
-        ("empire", 901, new[] { (146, 434, 34, 22), (199, 434, 34, 22), (252, 434, 34, 22), (412, 433, 34, 22), (465, 434, 36, 22), (519, 435, 36, 23) }),
-    };
 
     // STRATEGY.DLL: (glyph, faction id, normal bitmap, highlighted bitmap).
     private static readonly (string Glyph, string Faction, int Normal, int Hover)[] CornerIcons =
@@ -232,24 +217,7 @@ public sealed class Importer
                 else missing.Add($"alerts/{faction}.{AlertCategories[k]}: no bitmap {dim + k} in STRATEGY.DLL");
                 if (SaveSprite(strategy, lit + k, Path.Combine(outRoot, "alerts", $"{faction}.{AlertCategories[k]}.lit.png"))) { alerts++; pictureCount++; }
             }
-        int screens = 0;
-        foreach (var (faction, bitmapId, rects) in Consoles)
-        {
-            if (!strategy.Bitmaps.ContainsKey(bitmapId)) { missing.Add($"console/{faction}: no bitmap {bitmapId} in STRATEGY.DLL"); continue; }
-            using var stream = new MemoryStream(strategy.BitmapFile(bitmapId));
-            using var frame = new Bitmap(stream);
-            for (int k = 0; k < rects.Length; k++)
-            {
-                var (x, y, w, h) = rects[k];
-                var rect = new Rectangle(x - 2, y - 2, w + 4, h + 4);
-                using var crop = frame.Clone(rect, PixelFormat.Format24bppRgb);
-                var dir = Path.Combine(outRoot, "console");
-                Directory.CreateDirectory(dir);
-                crop.Save(Path.Combine(dir, $"{faction}.{ConsoleNames[k]}.png"), ImageFormat.Png);
-                screens++; pictureCount++;
-            }
-        }
-        Say($"sprites: {icons} corner icons, {sprites} planet sprites, {stars} GID stars, the uprising flame, {alerts} alert icons, {screens} console screens.");
+        Say($"sprites: {icons} corner icons, {sprites} planet sprites, {stars} GID stars, the uprising flame, {alerts} alert icons.");
 
         // Portraits and list miniatures: GOKRES.DLL, by the shipped id map.
         var mapPath = Path.Combine(AppContext.BaseDirectory, "gokres_map.json");
