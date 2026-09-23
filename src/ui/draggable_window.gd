@@ -59,6 +59,18 @@ func CloseWindow() -> void:
 	queue_free()
 
 
+## A modal window (OUI.Modal) closes on Esc: "Cancel/Close Window - cancels
+## the current command (same as clicking Close or Cancel)" (manual p064).
+var CloseOnEscape: bool = false
+
+
+func _unhandled_key_input(event: InputEvent) -> void:
+	if CloseOnEscape and visible and event.is_pressed() and not event.is_echo() \
+			and (event as InputEventKey).keycode == KEY_ESCAPE:
+		get_viewport().set_input_as_handled()
+		CloseWindow()
+
+
 func MinimizeWindow() -> void:
 	# Hide the entire window and tell the UIManager to create a taskbar button.
 	visible = false

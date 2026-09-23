@@ -1173,19 +1173,52 @@ func EndUnitDrag() -> void:
 
 
 func OpenUnitStatusWindow(unit: Unit) -> void:
+	var windowName := "Status_%s_%d" % [unit.Name.replace(" ", ""), unit.get_instance_id()]   # several X-Wings can open at once
+	if OUI.HasStatus():
+		OpenStatusPlate(windowName, func() -> Dictionary: return UnitStatusWindow.StatusData(unit))
+		return
 	var targetPos := Vector2(350, 250)
-	OpenWindow("Status_%s_%d" % [unit.Name.replace(" ", ""), unit.get_instance_id()],   # several X-Wings can open at once
+	OpenWindow(windowName,
 		UnitStatusWindowTemplate,
 		func(window) -> void: window.Populate(unit),
 		targetPos)
 
 
 func OpenDefenseFacilityStatusWindow(facility: Facility) -> void:
+	var windowName := "Status_%s_%d" % [facility.Name().replace(" ", ""), facility.get_instance_id()]
+	if OUI.HasStatus():
+		OpenStatusPlate(windowName, func() -> Dictionary: return DefenseFacilityStatusWindow.StatusData(facility))
+		return
 	var targetPos: Vector2 = get_viewport().get_mouse_position()
-	OpenWindow("Status_%s_%d" % [facility.Name().replace(" ", ""), facility.get_instance_id()],
+	OpenWindow(windowName,
 		DefenseFacilityStatusWindowTemplate,
 		func(window) -> void: window.Populate(facility),
 		targetPos)
+
+
+## A manufacturing queue's Status window (manual p086, Fig 3.29): the queue's
+## right-click menu -> Status. The original's look with the imported art, the
+## same fields in a plain window without it.
+func OpenQueueStatusWindow(planet: Planet, producer: String) -> void:
+	OpenStatusPlate("Status_%s_%s" % [planet.Name.replace(" ", ""), producer],
+		func() -> Dictionary: return EconomyWindow.QueueStatusData(planet, producer))
+
+
+## A STATUS WINDOW (StatusPlateWindow): modal, as the manual has them (p064),
+## centred over the map frame like the Encyclopedia. `source` returns its
+## content and is asked again on every refresh.
+## Preloaded by path: a new script can lag the editor's class cache.
+const OUI := preload("res://src/ui/original_ui.gd")
+const StatusPlateScene := preload("res://src/ui/StatusPlateWindow.tscn")
+
+
+func OpenStatusPlate(windowName: String, source: Callable) -> void:
+	var size: Vector2 = Vector2(OUI.StatusW, OUI.StatusH) * OUI.K if OUI.HasStatus() else Vector2(460, 260)
+	var frame := Rect2(150, 99, 1070, get_viewport().get_visible_rect().size.y - 99)
+	var at: Vector2 = (frame.get_center() - size / 2.0).floor().max(Vector2(150, 99))
+	OpenWindow(windowName, StatusPlateScene,
+		func(window) -> void: window.Setup(self, GameSettings.PlayerFaction, source),
+		at)
 
 
 func StartFleetDrag(dragGroup: Array) -> void:
