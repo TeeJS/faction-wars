@@ -358,6 +358,23 @@ Objectives, Manage Garrisons, Manage Production, Translate Counterpart, Agent
 Advice.** The message droid (R2-D2 / SD-7) carries **Messages** and **Message
 Alerts**; messages other than Agent Advice eventually expire.
 
+**The Message Index is the original's** (`src/ui/message_window.gd`,
+2026-09-23; manual p078 Fig 3.18, p079, p080 Fig 3.19, p043 Fig 2.38). With
+the imported art the Comms Center is composed from its bitmaps at the places
+matched on TeeJ's screenshots of both sides (Advice with nine rows, Popular
+Support empty; each rebuilt pixel for pixel): the side's frame, the plate with
+its band and starfield list, the ten category tabs, the band's caption,
+**Select All** and **Delete Selected Messages**, rows of the category icon and
+the title (a row every 21 pixels, the side's bar under a picked one; click,
+ctrl-click, shift-click, double-click to read), and the side buttons **Close,
+Message Summary, Post Messages with Alert / Silently, Open Window, Compose
+Chat**. A message is read in the same frame (Figs 2.38 / 3.19): title on the
+band, the arrows through the tab, the picture, the text, and the tick and
+cross of a mission report that asks to continue. **Provisional** (no
+screenshot of the original yet): the reading view's layout, the read rows'
+"lighter type", the row icons of Mission, Manufacturing and Chat, and Post
+Silently has nothing to silence (no message sounds yet).
+
 ---
 
 ## 4. The sector window

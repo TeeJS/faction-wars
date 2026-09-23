@@ -345,8 +345,10 @@ func OnMessageIndexClicked(category: String = "All") -> void:
 	OpenWindow("Communications", MessageWindowTemplate,
 		func(window) -> void:
 			window.Setup(self)   # without this the window's _uiManager is null and Go To is a no-op
-			window.custom_minimum_size = CommsRect.size
-			window.size = CommsRect.size
+			# The original's Message Index is its 470x330 frame, drawn 2x.
+			var dock: Vector2 = window.OriginalSize() if window._original else CommsRect.size
+			window.custom_minimum_size = dock
+			window.size = dock
 			window.position = CommsRect.position
 			window._tabContainer.tabs_visible = false
 			window.OpenToCategory(category)
