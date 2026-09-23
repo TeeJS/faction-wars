@@ -12,6 +12,9 @@ extends Control
 ## Both drive the same StartGame; the picture form keeps its choices in
 ## _difficultyId / _sizeId / _hqOnly, the button form in the toggle groups.
 
+## The pack's pictures, including an art set's (docs/original-art-plan.md).
+const Art := preload("res://src/ui/artwork.gd")
+
 const DIFFICULTY_IDS := {"easy": Enums.Difficulty.Easy, "medium": Enums.Difficulty.Medium, "hard": Enums.Difficulty.Hard}
 ## By path, not by class_name: an editor whose global class cache predates
 ## pack_picker.gd (a pull with the editor open, 2026-09-22) failed to compile
@@ -86,7 +89,10 @@ func _ready() -> void:
 	btnExit.pressed.connect(func() -> void: Picker.ExitToPicker(get_tree()))
 	btnExit.text = "Exit to Faction Picker" if Picker.CanReturn() else "Exit to Desktop"
 
-	var has_picture: bool = FactionRegistry.Pack != null and FactionRegistry.Pack.Manifest.Menu != null
+	# The Cockpit picture may come from an art set the player has not imported:
+	# then this is the button menu, as for a pack without one.
+	var has_picture: bool = FactionRegistry.Pack != null and FactionRegistry.Pack.Manifest.Menu != null \
+		and Art.PackImage(FactionRegistry.Pack.Manifest.Menu.ImageFile) != null
 
 	# "Load Game" - restore a saved single-player game (issue #6, manual
 	# p073-077). Added in code (bottom-left of the Cockpit); opens a slot picker.
@@ -229,7 +235,7 @@ func _build_cockpit(menu: PackDefs.MenuDef) -> void:
 
 	_picture = TextureRect.new()
 	_picture.name = "Cockpit"
-	_picture.texture = load("%s/%s/%s" % [FactionRegistry.PACKS_ROOT, FactionRegistry.Pack.Manifest.Id, menu.ImageFile])
+	_picture.texture = Art.PackImage(menu.ImageFile)
 	_picture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	_picture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	_picture.mouse_filter = Control.MOUSE_FILTER_IGNORE

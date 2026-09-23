@@ -714,7 +714,8 @@ static func IconTint(btn: Button) -> Color:
 ## shaded colours (so no tint beyond the alpha), with the highlighted version
 ## on hover. Leaves the button alone when the overlay has nothing.
 static func _OriginalIcon(btn: Button, glyph: String, faction_id: String, alpha: float) -> bool:
-	var tex: Texture2D = Art.CornerIcon(glyph, faction_id)
+	var side: String = Faction.SkinOf(faction_id)
+	var tex: Texture2D = Art.CornerIcon(glyph, side)
 	if tex == null:
 		return false
 	var k: int = K if OriginalLook else 1
@@ -722,7 +723,7 @@ static func _OriginalIcon(btn: Button, glyph: String, faction_id: String, alpha:
 	btn.icon = tex
 	btn.set_meta("original_icon", true)
 	_TintIcon(btn, Color(1, 1, 1, alpha))
-	var hover: Texture2D = Art.Scaled(Art.CornerIcon(glyph, faction_id, true), k)
+	var hover: Texture2D = Art.Scaled(Art.CornerIcon(glyph, side, true), k)
 	if hover != null:
 		btn.mouse_entered.connect(func() -> void: btn.icon = hover)
 		btn.mouse_exited.connect(func() -> void: btn.icon = tex)

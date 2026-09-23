@@ -19,6 +19,9 @@ extends Control
 ## The last choice is remembered in user://pack.cfg and pre-focused next time;
 ## packs/active.json stays the headless default.
 
+## The pack's pictures, including an art set's (docs/original-art-plan.md).
+const Art := preload("res://src/ui/artwork.gd")
+
 const MENU_SCENE := "res://Menu.tscn"
 const LastFile := "user://pack.cfg"
 
@@ -133,7 +136,7 @@ func _build(ids: Array[String]) -> void:
 	var focus_first: Button = null
 	for id in ids:
 		var errors: Array[String] = []
-		var pack := PackLoader.Load("%s/%s" % [FactionRegistry.PACKS_ROOT, id], errors)
+		var pack := PackLoader.Load(FactionRegistry.PackDir(id), errors)
 		var play := _card(id, pack, errors)
 		if focus_first == null or id == last:
 			focus_first = play
@@ -170,7 +173,7 @@ func _card(id: String, pack: PackLoader.LoadedPack, errors: Array[String]) -> Bu
 
 	if pack != null:
 		var picture := TextureRect.new()
-		picture.texture = load("%s/%s/%s" % [FactionRegistry.PACKS_ROOT, id, pack.Manifest.MapImage])
+		picture.texture = Art.PackImage(pack.Manifest.MapImage, id, pack.Manifest.ArtSets)
 		picture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		picture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		picture.custom_minimum_size = Vector2(300, 170)

@@ -13,6 +13,9 @@ extends RefCounted
 ## pack mid-process.
 
 const PACKS_ROOT := "res://packs"
+## Packs the player imported (docs/original-art-plan.md): the same layout,
+## in the user folder (browser storage on the web). A shipped pack wins.
+const USER_PACKS_ROOT := "user://packs"
 ## The files a pack is made of - what PackLoader.Load reads and what the
 ## content hash covers, so two clients on the same pack id but different
 ## content are told so instead of desyncing (BACKLOG #13).
@@ -29,6 +32,8 @@ static var Unknown: Faction = null
 static var _by_id: Dictionary = {}
 static var _character_roles: Dictionary = {}   # character id -> Array[String]
 static var _character_starts: Dictionary = {}  # character id -> planet id ("" = none)
+## The loaded pack's folder: res://packs/<id> or user://packs/<id>.
+static var LoadedDir: String = ""
 ## SHA-256 over PACK_FILES of the loaded pack, hex. Travels in the command-log
 ## header and the multiplayer room settings.
 static var PackHash: String = ""
@@ -56,22 +61,34 @@ static func DefaultPackId() -> String:
 	return str(JsonUtil.get_ci(active, "pack"))
 
 
-## Every folder under packs/ that carries a pack.json, sorted - the picker's list.
+## Every folder under packs/ (shipped) or user://packs/ (imported) that
+## carries a pack.json, sorted - the picker's list.
 static func ListPackIds() -> Array[String]:
 	var out: Array[String] = []
-	var dir := DirAccess.open(PACKS_ROOT)
-	if dir == null:
-		return out
-	dir.list_dir_begin()
-	var name := dir.get_next()
-	while name != "":
-		if dir.current_is_dir() and not name.begins_with(".") \
-				and FileAccess.file_exists("%s/%s/pack.json" % [PACKS_ROOT, name]):
-			out.append(name)
-		name = dir.get_next()
-	dir.list_dir_end()
+	for root in [PACKS_ROOT, USER_PACKS_ROOT]:
+		var dir := DirAccess.open(root)
+		if dir == null:
+			continue
+		dir.list_dir_begin()
+		var name := dir.get_next()
+		while name != "":
+			if dir.current_is_dir() and not name.begins_with(".") and not out.has(name) \
+					and FileAccess.file_exists("%s/%s/pack.json" % [root, name]):
+				out.append(name)
+			name = dir.get_next()
+		dir.list_dir_end()
 	out.sort()
 	return out
+
+
+## Where pack `pack_id` lives: the shipped res://packs/<id>, else the
+## imported user://packs/<id>.
+static func PackDir(pack_id: String) -> String:
+	var shipped := "%s/%s" % [PACKS_ROOT, pack_id]
+	if FileAccess.file_exists("%s/pack.json" % shipped):
+		return shipped
+	var imported := "%s/%s" % [USER_PACKS_ROOT, pack_id]
+	return imported if FileAccess.file_exists("%s/pack.json" % imported) else shipped
 
 
 ## Load `pack_id`, or the default when it is empty. Loading the pack that is
@@ -92,7 +109,7 @@ static func EnsureLoaded(pack_id: String = "") -> bool:
 		push_error("[Pack] nothing names a pack to load (no caller id, no --pack=, no packs/active.json).")
 		return false
 	var errors: Array[String] = []
-	var dir := "%s/%s" % [PACKS_ROOT, pack_id]
+	var dir := PackDir(pack_id)
 	var pack := PackLoader.Load(dir, errors)
 	if pack == null:
 		push_error("[Pack] '%s' failed to load - %d problem(s):" % [pack_id, errors.size()])
@@ -101,6 +118,7 @@ static func EnsureLoaded(pack_id: String = "") -> bool:
 		assert(false)
 		return false
 	Load(pack)
+	LoadedDir = dir
 	PackHash = ContentHash(dir)
 	print("[Pack] '%s' loaded from %s (hash %s)." % [pack.Manifest.DisplayName, dir, PackHash.substr(0, 12)])
 	return true
@@ -121,6 +139,7 @@ static func Unload() -> void:
 	_character_starts.clear()
 	_icons.clear()
 	PackHash = ""
+	LoadedDir = ""
 
 
 ## SHA-256 over the pack's JSON files, in PACK_FILES order. JSON only: an
@@ -171,12 +190,23 @@ static func Load(pack: PackLoader.LoadedPack) -> void:
 	Neutral = Faction.Simple(n.Id, n.DisplayName, ParseColor(n.ColorHex))
 	_by_id[Neutral.Id] = Neutral
 
+	# The art sets name nobody's side "neutral", whatever the pack calls it.
+	Neutral.ArtSkin = "neutral"
 	Unknown = Faction.Simple("unknown", "Unexplored", ParseColor(pack.Manifest.UnexploredColor))
 
 	var ids: Array[String] = []
 	for f in Playable:
 		ids.append(f.Id)
 	print("[Pack] Factions loaded: %s (+%s)" % [", ".join(ids), Neutral.Id])
+
+
+## A picture by path: an imported resource under res://, a plain file under
+## user:// (an imported pack is not re-imported by the editor).
+static func _load_texture(path: String) -> Texture2D:
+	if not path.begins_with("user://"):
+		return load(path) as Texture2D
+	var img := Image.load_from_file(ProjectSettings.globalize_path(path))
+	return ImageTexture.create_from_image(img) if img != null and not img.is_empty() else null
 
 
 ## Declaration order in the pack.
@@ -263,8 +293,8 @@ static func CornerIcon(name: String) -> Texture2D:
 		return _icons[name]
 	var path := "%s/%s.png" % [ICONS_ROOT, name]
 	if Pack != null and Pack.Display != null and Pack.Display.Icons.has(name):
-		path = "%s/%s/%s" % [PACKS_ROOT, Pack.Manifest.Id, Pack.Display.Icons[name]]
-	var tex: Texture2D = load(path) as Texture2D
+		path = "%s/%s" % [LoadedDir if not LoadedDir.is_empty() else PackDir(Pack.Manifest.Id), Pack.Display.Icons[name]]
+	var tex: Texture2D = _load_texture(path)
 	if tex == null:
 		push_error("[FactionRegistry] corner icon '%s' could not be loaded from %s." % [name, path])
 	_icons[name] = tex

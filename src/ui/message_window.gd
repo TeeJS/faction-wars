@@ -583,7 +583,7 @@ func OriginalSize() -> Vector2:
 func _build_original() -> void:
 	_original = true
 	var f: Faction = GameSettings.PlayerFaction
-	_oSide = "alliance" if f != null and f.Id == "alliance" else "empire"
+	_oSide = "alliance" if f != null and f.ArtSkin == "alliance" else "empire"
 	var bar: Control = get_node_or_null("%TitleBar")
 	if bar != null:
 		bar.visible = false

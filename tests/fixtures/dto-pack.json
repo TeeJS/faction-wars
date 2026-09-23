@@ -1,6 +1,7 @@
 {
   "characters": [
     {
+      "Art": "",
       "CanCommand": [],
       "DisplayName": "Mon Mothma",
       "FactionId": "alliance",
@@ -56,6 +57,7 @@
       "WontBetray": true
     },
     {
+      "Art": "",
       "CanCommand": [],
       "DisplayName": "Leia Organa",
       "FactionId": "alliance",
@@ -112,6 +114,7 @@
       "WontBetray": true
     },
     {
+      "Art": "",
       "CanCommand": [
         "admiral",
         "commander",
@@ -172,6 +175,7 @@
       "WontBetray": true
     },
     {
+      "Art": "",
       "CanCommand": [
         "admiral",
         "commander",
@@ -232,6 +236,7 @@
       "WontBetray": true
     },
     {
+      "Art": "",
       "CanCommand": [],
       "DisplayName": "Emperor Palpatine",
       "FactionId": "empire",
@@ -288,6 +293,7 @@
       "WontBetray": true
     },
     {
+      "Art": "",
       "CanCommand": [
         "admiral",
         "commander",
@@ -348,6 +354,7 @@
       "WontBetray": true
     },
     {
+      "Art": "",
       "CanCommand": [
         "admiral",
         "general"
@@ -404,6 +411,7 @@
       "WontBetray": true
     },
     {
+      "Art": "",
       "CanCommand": [
         "admiral",
         "commander",
@@ -463,6 +471,7 @@
       "WontBetray": true
     },
     {
+      "Art": "",
       "CanCommand": [
         "admiral",
         "commander",
@@ -520,6 +529,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [],
       "DisplayName": "Chewbacca",
       "FactionId": "alliance",
@@ -576,6 +586,7 @@
       "WontBetray": true
     },
     {
+      "Art": "",
       "CanCommand": [
         "admiral",
         "general"
@@ -634,6 +645,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [
         "general"
       ],
@@ -689,6 +701,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [
         "general"
       ],
@@ -744,6 +757,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [
         "admiral",
         "commander",
@@ -801,6 +815,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [
         "admiral",
         "general"
@@ -857,6 +872,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [],
       "DisplayName": "Borsk Fey'lya",
       "FactionId": "alliance",
@@ -910,6 +926,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [],
       "DisplayName": "Tura Raftican",
       "FactionId": "alliance",
@@ -963,6 +980,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [
         "commander",
         "general"
@@ -1019,6 +1037,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [
         "admiral",
         "general"
@@ -1075,6 +1094,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [
         "admiral",
         "commander",
@@ -1132,6 +1152,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [
         "commander",
         "general"
@@ -1188,6 +1209,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [
         "admiral",
         "general"
@@ -1244,6 +1266,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [],
       "DisplayName": "Page",
       "FactionId": "alliance",
@@ -1297,6 +1320,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [
         "admiral",
         "commander"
@@ -1353,6 +1377,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [
         "admiral",
         "commander",
@@ -1410,6 +1435,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [
         "admiral",
         "general"
@@ -1466,6 +1492,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [
         "admiral",
         "general"
@@ -1522,6 +1549,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [
         "admiral",
         "commander"
@@ -1578,6 +1606,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [
         "general"
       ],
@@ -1633,6 +1662,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [],
       "DisplayName": "Mazer Rackus",
       "FactionId": "alliance",
@@ -1686,6 +1716,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [],
       "DisplayName": "Orrimaarko",
       "FactionId": "alliance",
@@ -1739,6 +1770,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [],
       "DisplayName": "Ma'w'shiye",
       "FactionId": "alliance",
@@ -1792,6 +1824,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [
         "admiral",
         "commander",
@@ -1851,6 +1884,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [
         "admiral",
         "general"
@@ -1909,6 +1943,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [
         "admiral",
         "commander",
@@ -1968,6 +2003,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [
         "general"
       ],
@@ -2025,6 +2061,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [
         "admiral",
         "commander",
@@ -2082,6 +2119,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [
         "general"
       ],
@@ -2137,6 +2175,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [
         "admiral",
         "commander",
@@ -2194,6 +2233,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [],
       "DisplayName": "Bin Essada",
       "FactionId": "empire",
@@ -2247,6 +2287,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [],
       "DisplayName": "Niles Ferrier",
       "FactionId": "empire",
@@ -2300,6 +2341,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [
         "admiral",
         "commander",
@@ -2357,6 +2399,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [
         "admiral",
         "general"
@@ -2413,6 +2456,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [
         "admiral",
         "general"
@@ -2469,6 +2513,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [
         "admiral",
         "commander",
@@ -2528,6 +2573,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [
         "admiral",
         "commander",
@@ -2585,6 +2631,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [
         "general"
       ],
@@ -2640,6 +2687,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [
         "admiral",
         "commander",
@@ -2697,6 +2745,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [
         "admiral",
         "commander",
@@ -2754,6 +2803,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [
         "admiral",
         "commander",
@@ -2811,6 +2861,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [
         "admiral",
         "commander",
@@ -2868,6 +2919,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [
         "admiral",
         "commander",
@@ -2925,6 +2977,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [
         "admiral",
         "commander",
@@ -2982,6 +3035,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [],
       "DisplayName": "Bevel Lemelisk",
       "FactionId": "empire",
@@ -3035,6 +3089,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [],
       "DisplayName": "Shenir Rix",
       "FactionId": "empire",
@@ -3088,6 +3143,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [],
       "DisplayName": "Noval Garaint",
       "FactionId": "empire",
@@ -3141,6 +3197,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [],
       "DisplayName": "Garindan",
       "FactionId": "empire",
@@ -3194,6 +3251,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [],
       "DisplayName": "Menndo",
       "FactionId": "empire",
@@ -3247,6 +3305,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [],
       "DisplayName": "Labansat",
       "FactionId": "empire",
@@ -3300,6 +3359,7 @@
       "WontBetray": false
     },
     {
+      "Art": "",
       "CanCommand": [],
       "DisplayName": "Villar",
       "FactionId": "empire",
@@ -4051,6 +4111,7 @@
   },
   "facilities": [
     {
+      "Art": "",
       "BuildableBy": [
         "alliance"
       ],
@@ -4072,6 +4133,7 @@
       "Tier": 1
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance",
         "empire"
@@ -4094,6 +4156,7 @@
       "Tier": 1
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance",
         "empire"
@@ -4116,6 +4179,7 @@
       "Tier": 1
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance",
         "empire"
@@ -4138,6 +4202,7 @@
       "Tier": 1
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance",
         "empire"
@@ -4160,6 +4225,7 @@
       "Tier": 2
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance",
         "empire"
@@ -4182,6 +4248,7 @@
       "Tier": 2
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance",
         "empire"
@@ -4204,6 +4271,7 @@
       "Tier": 2
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance",
         "empire"
@@ -4226,6 +4294,7 @@
       "Tier": 1
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance",
         "empire"
@@ -4248,6 +4317,7 @@
       "Tier": 1
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance",
         "empire"
@@ -4272,6 +4342,7 @@
       "Tier": 1
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance",
         "empire"
@@ -4296,6 +4367,7 @@
       "Tier": 1
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance",
         "empire"
@@ -4320,6 +4392,7 @@
       "Tier": 1
     },
     {
+      "Art": "",
       "BuildableBy": [
         "empire"
       ],
@@ -4343,6 +4416,7 @@
       "Tier": 1
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance",
         "empire"
@@ -4367,6 +4441,7 @@
       "Tier": 2
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance",
         "empire"
@@ -4394,6 +4469,7 @@
   "factions": [
     {
       "AgentName": "C-3PO",
+      "ArtSkin": "alliance",
       "ColorHex": "#ff0000",
       "DisplayName": "Rebel Alliance",
       "Hq": {
@@ -4428,6 +4504,7 @@
     },
     {
       "AgentName": "IMP-22",
+      "ArtSkin": "empire",
       "ColorHex": "#00ff00",
       "DisplayName": "Galactic Empire",
       "Hq": {
@@ -4457,6 +4534,7 @@
   "map": {
     "Planets": [
       {
+        "Art": "",
         "ArtworkId": 1,
         "DisplayName": "Abregado",
         "Id": "abregado",
@@ -4467,6 +4545,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 2,
         "DisplayName": "Cathar",
         "Id": "cathar",
@@ -4477,6 +4556,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 7,
         "DisplayName": "Da Soocha",
         "Id": "da_soocha",
@@ -4487,6 +4567,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 8,
         "DisplayName": "Galpos II",
         "Id": "galpos_ii",
@@ -4497,6 +4578,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 3,
         "DisplayName": "Garban",
         "Id": "garban",
@@ -4507,6 +4589,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 4,
         "DisplayName": "Hefi",
         "Id": "hefi",
@@ -4517,6 +4600,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 9,
         "DisplayName": "Hishyim",
         "Id": "hishyim",
@@ -4527,6 +4611,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 10,
         "DisplayName": "Intuci",
         "Id": "intuci",
@@ -4537,6 +4622,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 11,
         "DisplayName": "Tieos",
         "Id": "tieos",
@@ -4547,6 +4633,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 12,
         "DisplayName": "Ukio",
         "Id": "ukio",
@@ -4557,6 +4644,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 5,
         "DisplayName": "Despayre",
         "Id": "despayre",
@@ -4567,6 +4655,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 13,
         "DisplayName": "Fedje",
         "Id": "fedje",
@@ -4577,6 +4666,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 11,
         "DisplayName": "Generis",
         "Id": "generis",
@@ -4587,6 +4677,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 14,
         "DisplayName": "Moltok",
         "Id": "moltok",
@@ -4597,6 +4688,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 15,
         "DisplayName": "Nam'ta",
         "Id": "nam_ta",
@@ -4607,6 +4699,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 8,
         "DisplayName": "Spefik",
         "Id": "spefik",
@@ -4617,6 +4710,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 7,
         "DisplayName": "Tibrin",
         "Id": "tibrin",
@@ -4627,6 +4721,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 11,
         "DisplayName": "Togoria",
         "Id": "togoria",
@@ -4637,6 +4732,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 6,
         "DisplayName": "Trammis",
         "Id": "trammis",
@@ -4647,6 +4743,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 7,
         "DisplayName": "Zeffliffl",
         "Id": "zeffliffl",
@@ -4657,6 +4754,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 8,
         "DisplayName": "Akrit'tar",
         "Id": "akrit_tar",
@@ -4667,6 +4765,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 7,
         "DisplayName": "F'tral",
         "Id": "f_tral",
@@ -4677,6 +4776,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 1,
         "DisplayName": "Fwillsving",
         "Id": "fwillsving",
@@ -4687,6 +4787,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 13,
         "DisplayName": "Ithor",
         "Id": "ithor",
@@ -4697,6 +4798,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 2,
         "DisplayName": "Jerijador",
         "Id": "jerijador",
@@ -4707,6 +4809,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 16,
         "DisplayName": "Kessel",
         "Id": "kessel",
@@ -4717,6 +4820,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 17,
         "DisplayName": "Kubindi",
         "Id": "kubindi",
@@ -4727,6 +4831,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 3,
         "DisplayName": "Morvogodine",
         "Id": "morvogodine",
@@ -4737,6 +4842,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 4,
         "DisplayName": "Norval II",
         "Id": "norval_ii",
@@ -4747,6 +4853,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 18,
         "DisplayName": "Skor II",
         "Id": "skor_ii",
@@ -4757,6 +4864,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 9,
         "DisplayName": "Allyuen",
         "Id": "allyuen",
@@ -4767,6 +4875,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 13,
         "DisplayName": "Anoat",
         "Id": "anoat",
@@ -4777,6 +4886,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 15,
         "DisplayName": "Bespin",
         "Id": "bespin",
@@ -4787,6 +4897,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 7,
         "DisplayName": "Deyer",
         "Id": "deyer",
@@ -4797,6 +4908,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 14,
         "DisplayName": "Gentes",
         "Id": "gentes",
@@ -4807,6 +4919,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 18,
         "DisplayName": "Hoth",
         "Id": "hoth",
@@ -4817,6 +4930,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 19,
         "DisplayName": "Lelmra",
         "Id": "lelmra",
@@ -4827,6 +4941,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 20,
         "DisplayName": "New Cov",
         "Id": "new_cov",
@@ -4837,6 +4952,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 8,
         "DisplayName": "Storthus",
         "Id": "storthus",
@@ -4847,6 +4963,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 13,
         "DisplayName": "Tokmia",
         "Id": "tokmia",
@@ -4857,6 +4974,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 5,
         "DisplayName": "Commenor",
         "Id": "commenor",
@@ -4867,6 +4985,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 6,
         "DisplayName": "Corellia",
         "Id": "corellia",
@@ -4877,6 +4996,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 1,
         "DisplayName": "Corfai",
         "Id": "corfai",
@@ -4887,6 +5007,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 2,
         "DisplayName": "Duros",
         "Id": "duros",
@@ -4897,6 +5018,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 3,
         "DisplayName": "Drall",
         "Id": "drall",
@@ -4907,6 +5029,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 7,
         "DisplayName": "Selonia",
         "Id": "selonia",
@@ -4917,6 +5040,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 4,
         "DisplayName": "Talus",
         "Id": "talus",
@@ -4927,6 +5051,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 5,
         "DisplayName": "Tralus",
         "Id": "tralus",
@@ -4937,6 +5062,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 6,
         "DisplayName": "Vagran",
         "Id": "vagran",
@@ -4947,6 +5073,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 1,
         "DisplayName": "Xyquine",
         "Id": "xyquine",
@@ -4957,6 +5084,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 2,
         "DisplayName": "Balfron",
         "Id": "balfron",
@@ -4967,6 +5095,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 3,
         "DisplayName": "Caprionril",
         "Id": "caprionril",
@@ -4977,6 +5106,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 11,
         "DisplayName": "Kamparas",
         "Id": "kamparas",
@@ -4987,6 +5117,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 4,
         "DisplayName": "Ketaris",
         "Id": "ketaris",
@@ -4997,6 +5128,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 11,
         "DisplayName": "Omwat",
         "Id": "omwat",
@@ -5007,6 +5139,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 5,
         "DisplayName": "Pantolomin",
         "Id": "pantolomin",
@@ -5017,6 +5150,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 6,
         "DisplayName": "Phorliss",
         "Id": "phorliss",
@@ -5027,6 +5161,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 1,
         "DisplayName": "Sarka",
         "Id": "sarka",
@@ -5037,6 +5172,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 2,
         "DisplayName": "Tangrene",
         "Id": "tangrene",
@@ -5047,6 +5183,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 3,
         "DisplayName": "Wor Tandell",
         "Id": "wor_tandell",
@@ -5057,6 +5194,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 9,
         "DisplayName": "Algarian",
         "Id": "algarian",
@@ -5067,6 +5205,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 4,
         "DisplayName": "Filve",
         "Id": "filve",
@@ -5077,6 +5216,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 5,
         "DisplayName": "Gamorr",
         "Id": "gamorr",
@@ -5087,6 +5227,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 11,
         "DisplayName": "Klatooine",
         "Id": "klatooine",
@@ -5097,6 +5238,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 19,
         "DisplayName": "Ord Mantell",
         "Id": "ord_mantell",
@@ -5107,6 +5249,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 6,
         "DisplayName": "Ord Pardon",
         "Id": "ord_pardon",
@@ -5117,6 +5260,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 1,
         "DisplayName": "Ord Trasi",
         "Id": "ord_trasi",
@@ -5127,6 +5271,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 13,
         "DisplayName": "Toprawa",
         "Id": "toprawa",
@@ -5137,6 +5282,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 19,
         "DisplayName": "Womrik",
         "Id": "womrik",
@@ -5147,6 +5293,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 11,
         "DisplayName": "Zebitrope IV",
         "Id": "zebitrope_iv",
@@ -5157,6 +5304,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 7,
         "DisplayName": "Ando",
         "Id": "ando",
@@ -5167,6 +5315,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 2,
         "DisplayName": "Berchest",
         "Id": "berchest",
@@ -5177,6 +5326,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 13,
         "DisplayName": "Bimmisaari",
         "Id": "bimmisaari",
@@ -5187,6 +5337,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 3,
         "DisplayName": "Carida",
         "Id": "carida",
@@ -5197,6 +5348,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 13,
         "DisplayName": "Delaya",
         "Id": "delaya",
@@ -5207,6 +5359,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 8,
         "DisplayName": "Halowan",
         "Id": "halowan",
@@ -5217,6 +5370,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 4,
         "DisplayName": "Mrisst",
         "Id": "mrisst",
@@ -5227,6 +5381,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 5,
         "DisplayName": "Obroa-skai",
         "Id": "obroa_skai",
@@ -5237,6 +5392,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 6,
         "DisplayName": "Palanhi",
         "Id": "palanhi",
@@ -5247,6 +5403,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 1,
         "DisplayName": "Ralltiir",
         "Id": "ralltiir",
@@ -5257,6 +5414,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 1,
         "DisplayName": "Bilbringi",
         "Id": "bilbringi",
@@ -5267,6 +5425,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 8,
         "DisplayName": "Byss",
         "Id": "byss",
@@ -5277,6 +5436,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 2,
         "DisplayName": "Charmath",
         "Id": "charmath",
@@ -5287,6 +5447,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 3,
         "DisplayName": "Firro",
         "Id": "firro",
@@ -5297,6 +5458,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 4,
         "DisplayName": "Khomm",
         "Id": "khomm",
@@ -5307,6 +5469,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 5,
         "DisplayName": "Kinyen",
         "Id": "kinyen",
@@ -5317,6 +5480,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 11,
         "DisplayName": "Phraetiss",
         "Id": "phraetiss",
@@ -5327,6 +5491,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 19,
         "DisplayName": "Rishi",
         "Id": "rishi",
@@ -5337,6 +5502,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 11,
         "DisplayName": "Taanab",
         "Id": "taanab",
@@ -5347,6 +5513,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 6,
         "DisplayName": "Wistril",
         "Id": "wistril",
@@ -5357,6 +5524,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 13,
         "DisplayName": "Altarrn",
         "Id": "altarrn",
@@ -5367,6 +5535,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 1,
         "DisplayName": "Arkania",
         "Id": "arkania",
@@ -5377,6 +5546,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 2,
         "DisplayName": "Elrood",
         "Id": "elrood",
@@ -5387,6 +5557,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 20,
         "DisplayName": "Fef",
         "Id": "fef",
@@ -5397,6 +5568,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 21,
         "DisplayName": "Fornax",
         "Id": "fornax",
@@ -5407,6 +5579,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 8,
         "DisplayName": "Nentan",
         "Id": "nentan",
@@ -5417,6 +5590,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 7,
         "DisplayName": "Sedri",
         "Id": "sedri",
@@ -5427,6 +5601,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 13,
         "DisplayName": "Valrar",
         "Id": "valrar",
@@ -5437,6 +5612,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 11,
         "DisplayName": "Vortex",
         "Id": "vortex",
@@ -5447,6 +5623,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 8,
         "DisplayName": "Yag'Dhul",
         "Id": "yag_dhul",
@@ -5457,6 +5634,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 11,
         "DisplayName": "Azbian",
         "Id": "azbian",
@@ -5467,6 +5645,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 13,
         "DisplayName": "Cardooine",
         "Id": "cardooine",
@@ -5477,6 +5656,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 3,
         "DisplayName": "Chrondre",
         "Id": "chrondre",
@@ -5487,6 +5667,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 13,
         "DisplayName": "Dar'Or",
         "Id": "dar_or",
@@ -5497,6 +5678,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 11,
         "DisplayName": "Douglas III",
         "Id": "douglas_iii",
@@ -5507,6 +5689,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 15,
         "DisplayName": "Engira",
         "Id": "engira",
@@ -5517,6 +5700,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 7,
         "DisplayName": "Jomark",
         "Id": "jomark",
@@ -5527,6 +5711,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 4,
         "DisplayName": "Kiffex",
         "Id": "kiffex",
@@ -5537,6 +5722,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 5,
         "DisplayName": "Trogan",
         "Id": "trogan",
@@ -5547,6 +5733,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 19,
         "DisplayName": "Waskiro",
         "Id": "waskiro",
@@ -5557,6 +5744,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 10,
         "DisplayName": "Culroon III",
         "Id": "culroon_iii",
@@ -5567,6 +5755,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 20,
         "DisplayName": "Davnar",
         "Id": "davnar",
@@ -5577,6 +5766,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 20,
         "DisplayName": "Derra IV",
         "Id": "derra_iv",
@@ -5587,6 +5777,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 11,
         "DisplayName": "Mindar",
         "Id": "mindar",
@@ -5597,6 +5788,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 19,
         "DisplayName": "Munto Codru",
         "Id": "munto_codru",
@@ -5607,6 +5799,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 6,
         "DisplayName": "Nal Hutta",
         "Id": "nal_hutta",
@@ -5617,6 +5810,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 9,
         "DisplayName": "Smarteel",
         "Id": "smarteel",
@@ -5627,6 +5821,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 1,
         "DisplayName": "Spuma",
         "Id": "spuma",
@@ -5637,6 +5832,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 20,
         "DisplayName": "Vodran",
         "Id": "vodran",
@@ -5647,6 +5843,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 2,
         "DisplayName": "Xa Fel",
         "Id": "xa_fel",
@@ -5657,6 +5854,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 19,
         "DisplayName": "Anchoron",
         "Id": "anchoron",
@@ -5667,6 +5865,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 14,
         "DisplayName": "Chalcedon",
         "Id": "chalcedon",
@@ -5677,6 +5876,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 22,
         "DisplayName": "Clak'dor VII",
         "Id": "clak_dor_vii",
@@ -5687,6 +5887,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 9,
         "DisplayName": "Cona",
         "Id": "cona",
@@ -5697,6 +5898,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 11,
         "DisplayName": "Dantooine",
         "Id": "dantooine",
@@ -5707,6 +5909,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 13,
         "DisplayName": "H'nemthe",
         "Id": "h_nemthe",
@@ -5717,6 +5920,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 3,
         "DisplayName": "Kabal",
         "Id": "kabal",
@@ -5727,6 +5931,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 11,
         "DisplayName": "Oetrago",
         "Id": "oetrago",
@@ -5737,6 +5942,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 8,
         "DisplayName": "Triton",
         "Id": "triton",
@@ -5747,6 +5953,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 18,
         "DisplayName": "Urdur",
         "Id": "urdur",
@@ -5757,6 +5964,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 4,
         "DisplayName": "Adega",
         "Id": "adega",
@@ -5767,6 +5975,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 20,
         "DisplayName": "Agrilat",
         "Id": "agrilat",
@@ -5777,6 +5986,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 15,
         "DisplayName": "Annaj",
         "Id": "annaj",
@@ -5787,6 +5997,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 8,
         "DisplayName": "Basilisk",
         "Id": "basilisk",
@@ -5797,6 +6008,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 13,
         "DisplayName": "Endor",
         "Id": "endor",
@@ -5807,6 +6019,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 8,
         "DisplayName": "Gandolo IV",
         "Id": "gandolo_iv",
@@ -5817,6 +6030,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 8,
         "DisplayName": "Hozrel XI",
         "Id": "hozrel_xi",
@@ -5827,6 +6041,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 19,
         "DisplayName": "Khuiumin",
         "Id": "khuiumin",
@@ -5837,6 +6052,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 13,
         "DisplayName": "Pzob",
         "Id": "pzob",
@@ -5847,6 +6063,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 8,
         "DisplayName": "Vjun",
         "Id": "vjun",
@@ -5857,6 +6074,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 5,
         "DisplayName": "Bakura",
         "Id": "bakura",
@@ -5867,6 +6085,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 19,
         "DisplayName": "Chazwa",
         "Id": "chazwa",
@@ -5877,6 +6096,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 13,
         "DisplayName": "Daltar",
         "Id": "daltar",
@@ -5887,6 +6107,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 6,
         "DisplayName": "Joiol",
         "Id": "joiol",
@@ -5897,6 +6118,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 1,
         "DisplayName": "Lafra",
         "Id": "lafra",
@@ -5907,6 +6129,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 13,
         "DisplayName": "Kimanan",
         "Id": "kimanan",
@@ -5917,6 +6140,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 20,
         "DisplayName": "Mantessa",
         "Id": "mantessa",
@@ -5927,6 +6151,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 8,
         "DisplayName": "Poderis",
         "Id": "poderis",
@@ -5937,6 +6162,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 19,
         "DisplayName": "Ryloth",
         "Id": "ryloth",
@@ -5947,6 +6173,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 9,
         "DisplayName": "Tatooine",
         "Id": "tatooine",
@@ -5957,6 +6184,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 11,
         "DisplayName": "Amorris",
         "Id": "amorris",
@@ -5967,6 +6195,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 13,
         "DisplayName": "Corstris",
         "Id": "corstris",
@@ -5977,6 +6206,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 2,
         "DisplayName": "Dathomir",
         "Id": "dathomir",
@@ -5987,6 +6217,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 3,
         "DisplayName": "Kirrek",
         "Id": "kirrek",
@@ -5997,6 +6228,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 13,
         "DisplayName": "Pil Diller",
         "Id": "pil_diller",
@@ -6007,6 +6239,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 18,
         "DisplayName": "Rafa",
         "Id": "rafa",
@@ -6017,6 +6250,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 4,
         "DisplayName": "Selaggis",
         "Id": "selaggis",
@@ -6027,6 +6261,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 5,
         "DisplayName": "Thrakia",
         "Id": "thrakia",
@@ -6037,6 +6272,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 7,
         "DisplayName": "Varn",
         "Id": "varn",
@@ -6047,6 +6283,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 11,
         "DisplayName": "Vinsoth",
         "Id": "vinsoth",
@@ -6057,6 +6294,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 19,
         "DisplayName": "Averam",
         "Id": "averam",
@@ -6067,6 +6305,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 11,
         "DisplayName": "Balmorra",
         "Id": "balmorra",
@@ -6077,6 +6316,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 6,
         "DisplayName": "Bortras",
         "Id": "bortras",
@@ -6087,6 +6327,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 13,
         "DisplayName": "Chandrila",
         "Id": "chandrila",
@@ -6097,6 +6338,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 1,
         "DisplayName": "Corsin",
         "Id": "corsin",
@@ -6107,6 +6349,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 23,
         "DisplayName": "Coruscant",
         "Id": "coruscant",
@@ -6117,6 +6360,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 2,
         "DisplayName": "Ghorman",
         "Id": "ghorman",
@@ -6127,6 +6371,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 3,
         "DisplayName": "Svivren",
         "Id": "svivren",
@@ -6137,6 +6382,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 13,
         "DisplayName": "Uvena",
         "Id": "uvena",
@@ -6147,6 +6393,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 4,
         "DisplayName": "Yaga Minor",
         "Id": "yaga_minor",
@@ -6157,6 +6404,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 5,
         "DisplayName": "Bothawui",
         "Id": "bothawui",
@@ -6167,6 +6415,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 24,
         "DisplayName": "Bpfassh",
         "Id": "bpfassh",
@@ -6177,6 +6426,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 7,
         "DisplayName": "Mon Calamari",
         "Id": "mon_calamari",
@@ -6187,6 +6437,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 6,
         "DisplayName": "Denab",
         "Id": "denab",
@@ -6197,6 +6448,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 1,
         "DisplayName": "Kothlis",
         "Id": "kothlis",
@@ -6207,6 +6459,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 8,
         "DisplayName": "Orto",
         "Id": "orto",
@@ -6217,6 +6470,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 13,
         "DisplayName": "Praesitlyn",
         "Id": "praesitlyn",
@@ -6227,6 +6481,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 2,
         "DisplayName": "Sluis Van",
         "Id": "sluis_van",
@@ -6237,6 +6492,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 14,
         "DisplayName": "Sullust",
         "Id": "sullust",
@@ -6247,6 +6503,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 25,
         "DisplayName": "Umgul",
         "Id": "umgul",
@@ -6257,6 +6514,7 @@
         "StartsInhabited": true
       },
       {
+        "Art": "",
         "ArtworkId": 19,
         "DisplayName": "Alk'lellish III",
         "Id": "alk_lellish_iii",
@@ -6267,6 +6525,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 3,
         "DisplayName": "Boordii",
         "Id": "boordii",
@@ -6277,6 +6536,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 26,
         "DisplayName": "Flax",
         "Id": "flax",
@@ -6287,6 +6547,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 13,
         "DisplayName": "Geedon V",
         "Id": "geedon_v",
@@ -6297,6 +6558,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 20,
         "DisplayName": "Kashyyyk",
         "Id": "kashyyyk",
@@ -6307,6 +6569,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 4,
         "DisplayName": "Linuri",
         "Id": "linuri",
@@ -6317,6 +6580,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 11,
         "DisplayName": "Qat Chrystac",
         "Id": "qat_chrystac",
@@ -6327,6 +6591,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 19,
         "DisplayName": "Tierfon",
         "Id": "tierfon",
@@ -6337,6 +6602,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 5,
         "DisplayName": "Woostri",
         "Id": "woostri",
@@ -6347,6 +6613,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 20,
         "DisplayName": "Yavin",
         "Id": "yavin",
@@ -6357,6 +6624,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 9,
         "DisplayName": "Ambria",
         "Id": "ambria",
@@ -6367,6 +6635,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 20,
         "DisplayName": "G'rho",
         "Id": "g_rho",
@@ -6377,6 +6646,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 9,
         "DisplayName": "Kirdo III",
         "Id": "kirdo_iii",
@@ -6387,6 +6657,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 9,
         "DisplayName": "Neelgaimon",
         "Id": "neelgaimon",
@@ -6397,6 +6668,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 19,
         "DisplayName": "Norulac",
         "Id": "norulac",
@@ -6407,6 +6679,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 6,
         "DisplayName": "Ruuria",
         "Id": "ruuria",
@@ -6417,6 +6690,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 8,
         "DisplayName": "Stic",
         "Id": "stic",
@@ -6427,6 +6701,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 1,
         "DisplayName": "Thanta Zilbra",
         "Id": "thanta_zilbra",
@@ -6437,6 +6712,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 19,
         "DisplayName": "Thila",
         "Id": "thila",
@@ -6447,6 +6723,7 @@
         "StartsInhabited": false
       },
       {
+        "Art": "",
         "ArtworkId": 8,
         "DisplayName": "Tund",
         "Id": "tund",
@@ -7656,6 +7933,7 @@
   },
   "missions": [
     {
+      "Art": "",
       "AvailableTo": [
         "alliance",
         "empire"
@@ -7692,6 +7970,7 @@
       }
     },
     {
+      "Art": "",
       "AvailableTo": [
         "alliance",
         "empire"
@@ -7729,6 +8008,7 @@
       }
     },
     {
+      "Art": "",
       "AvailableTo": [
         "alliance",
         "empire"
@@ -7765,6 +8045,7 @@
       }
     },
     {
+      "Art": "",
       "AvailableTo": [
         "alliance",
         "empire"
@@ -7801,6 +8082,7 @@
       }
     },
     {
+      "Art": "",
       "AvailableTo": [
         "alliance",
         "empire"
@@ -7828,6 +8110,7 @@
       }
     },
     {
+      "Art": "",
       "AvailableTo": [
         "alliance",
         "empire"
@@ -7858,6 +8141,7 @@
       }
     },
     {
+      "Art": "",
       "AvailableTo": [
         "alliance",
         "empire"
@@ -7888,6 +8172,7 @@
       }
     },
     {
+      "Art": "",
       "AvailableTo": [
         "alliance",
         "empire"
@@ -7918,6 +8203,7 @@
       }
     },
     {
+      "Art": "",
       "AvailableTo": [
         "alliance",
         "empire"
@@ -7948,6 +8234,7 @@
       }
     },
     {
+      "Art": "",
       "AvailableTo": [
         "alliance",
         "empire"
@@ -7975,6 +8262,7 @@
       }
     },
     {
+      "Art": "",
       "AvailableTo": [
         "alliance",
         "empire"
@@ -8005,6 +8293,7 @@
       }
     },
     {
+      "Art": "",
       "AvailableTo": [
         "alliance",
         "empire"
@@ -8032,6 +8321,7 @@
       }
     },
     {
+      "Art": "",
       "AvailableTo": [
         "alliance",
         "empire"
@@ -8059,6 +8349,7 @@
       }
     },
     {
+      "Art": "",
       "AvailableTo": [
         "alliance",
         "empire"
@@ -8086,6 +8377,7 @@
       }
     },
     {
+      "Art": "",
       "AvailableTo": [
         "alliance",
         "empire"
@@ -8116,6 +8408,7 @@
       }
     },
     {
+      "Art": "",
       "AvailableTo": [
         "alliance"
       ],
@@ -8144,6 +8437,7 @@
       }
     },
     {
+      "Art": "",
       "AvailableTo": [
         "alliance",
         "empire"
@@ -8171,6 +8465,7 @@
       }
     },
     {
+      "Art": "",
       "AvailableTo": [
         "alliance"
       ],
@@ -8197,6 +8492,7 @@
       }
     },
     {
+      "Art": "",
       "AvailableTo": [
         "alliance"
       ],
@@ -8223,6 +8519,7 @@
       }
     },
     {
+      "Art": "",
       "AvailableTo": [
         "alliance"
       ],
@@ -8249,6 +8546,7 @@
       }
     },
     {
+      "Art": "",
       "AvailableTo": [
         "alliance"
       ],
@@ -8275,6 +8573,7 @@
       }
     },
     {
+      "Art": "",
       "AvailableTo": [
         "alliance",
         "empire"
@@ -8305,6 +8604,7 @@
       }
     },
     {
+      "Art": "",
       "AvailableTo": [
         "empire"
       ],
@@ -8333,6 +8633,7 @@
       }
     },
     {
+      "Art": "",
       "AvailableTo": [
         "empire"
       ],
@@ -8359,6 +8660,7 @@
       }
     },
     {
+      "Art": "",
       "AvailableTo": [
         "empire"
       ],
@@ -8388,6 +8690,9 @@
     }
   ],
   "pack_manifest": {
+    "ArtSets": [
+      "swr-original"
+    ],
     "DisplayName": "Star Wars: Rebellion",
     "FactionCount": 2,
     "Id": "star-wars-rebellion",
@@ -14907,6 +15212,7 @@
   },
   "units": [
     {
+      "Art": "",
       "BuildableBy": [
         "alliance"
       ],
@@ -14964,6 +15270,7 @@
       }
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance"
       ],
@@ -15011,6 +15318,7 @@
       }
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance"
       ],
@@ -15068,6 +15376,7 @@
       }
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance"
       ],
@@ -15125,6 +15434,7 @@
       }
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance"
       ],
@@ -15172,6 +15482,7 @@
       }
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance"
       ],
@@ -15219,6 +15530,7 @@
       }
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance"
       ],
@@ -15266,6 +15578,7 @@
       }
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance"
       ],
@@ -15302,6 +15615,7 @@
       "Weapons": {}
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance"
       ],
@@ -15349,6 +15663,7 @@
       }
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance"
       ],
@@ -15396,6 +15711,7 @@
       }
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance"
       ],
@@ -15453,6 +15769,7 @@
       }
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance"
       ],
@@ -15510,6 +15827,7 @@
       }
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance"
       ],
@@ -15567,6 +15885,7 @@
       }
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance"
       ],
@@ -15624,6 +15943,7 @@
       }
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance"
       ],
@@ -15681,6 +16001,7 @@
       }
     },
     {
+      "Art": "",
       "BuildableBy": [
         "empire"
       ],
@@ -15738,6 +16059,7 @@
       }
     },
     {
+      "Art": "",
       "BuildableBy": [
         "empire"
       ],
@@ -15785,6 +16107,7 @@
       }
     },
     {
+      "Art": "",
       "BuildableBy": [
         "empire"
       ],
@@ -15852,6 +16175,7 @@
       }
     },
     {
+      "Art": "",
       "BuildableBy": [
         "empire"
       ],
@@ -15909,6 +16233,7 @@
       }
     },
     {
+      "Art": "",
       "BuildableBy": [
         "empire"
       ],
@@ -15956,6 +16281,7 @@
       }
     },
     {
+      "Art": "",
       "BuildableBy": [
         "empire"
       ],
@@ -16013,6 +16339,7 @@
       }
     },
     {
+      "Art": "",
       "BuildableBy": [
         "empire"
       ],
@@ -16070,6 +16397,7 @@
       }
     },
     {
+      "Art": "",
       "BuildableBy": [
         "empire"
       ],
@@ -16117,6 +16445,7 @@
       }
     },
     {
+      "Art": "",
       "BuildableBy": [
         "empire"
       ],
@@ -16176,6 +16505,7 @@
       }
     },
     {
+      "Art": "",
       "BuildableBy": [
         "empire"
       ],
@@ -16212,6 +16542,7 @@
       "Weapons": {}
     },
     {
+      "Art": "",
       "BuildableBy": [
         "empire"
       ],
@@ -16269,6 +16600,7 @@
       }
     },
     {
+      "Art": "",
       "BuildableBy": [
         "empire"
       ],
@@ -16326,6 +16658,7 @@
       }
     },
     {
+      "Art": "",
       "BuildableBy": [
         "empire"
       ],
@@ -16373,6 +16706,7 @@
       }
     },
     {
+      "Art": "",
       "BuildableBy": [
         "empire"
       ],
@@ -16420,6 +16754,7 @@
       }
     },
     {
+      "Art": "",
       "BuildableBy": [
         "empire"
       ],
@@ -16467,6 +16802,7 @@
       }
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance"
       ],
@@ -16505,6 +16841,7 @@
       }
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance"
       ],
@@ -16558,6 +16895,7 @@
       }
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance"
       ],
@@ -16601,6 +16939,7 @@
       }
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance"
       ],
@@ -16654,6 +16993,7 @@
       }
     },
     {
+      "Art": "",
       "BuildableBy": [
         "empire"
       ],
@@ -16692,6 +17032,7 @@
       }
     },
     {
+      "Art": "",
       "BuildableBy": [
         "empire"
       ],
@@ -16730,6 +17071,7 @@
       }
     },
     {
+      "Art": "",
       "BuildableBy": [
         "empire"
       ],
@@ -16783,6 +17125,7 @@
       }
     },
     {
+      "Art": "",
       "BuildableBy": [
         "empire"
       ],
@@ -16826,6 +17169,7 @@
       }
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance"
       ],
@@ -16849,6 +17193,7 @@
       "Weapons": {}
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance"
       ],
@@ -16872,6 +17217,7 @@
       "Weapons": {}
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance"
       ],
@@ -16895,6 +17241,7 @@
       "Weapons": {}
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance"
       ],
@@ -16918,6 +17265,7 @@
       "Weapons": {}
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance"
       ],
@@ -16941,6 +17289,7 @@
       "Weapons": {}
     },
     {
+      "Art": "",
       "BuildableBy": [
         "empire"
       ],
@@ -16966,6 +17315,7 @@
       "Weapons": {}
     },
     {
+      "Art": "",
       "BuildableBy": [
         "empire"
       ],
@@ -16989,6 +17339,7 @@
       "Weapons": {}
     },
     {
+      "Art": "",
       "BuildableBy": [
         "empire"
       ],
@@ -17012,6 +17363,7 @@
       "Weapons": {}
     },
     {
+      "Art": "",
       "BuildableBy": [
         "empire"
       ],
@@ -17035,6 +17387,7 @@
       "Weapons": {}
     },
     {
+      "Art": "",
       "BuildableBy": [
         "empire"
       ],
@@ -17058,6 +17411,7 @@
       "Weapons": {}
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance"
       ],
@@ -17082,6 +17436,7 @@
       "Weapons": {}
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance"
       ],
@@ -17106,6 +17461,7 @@
       "Weapons": {}
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance"
       ],
@@ -17130,6 +17486,7 @@
       "Weapons": {}
     },
     {
+      "Art": "",
       "BuildableBy": [
         "alliance"
       ],
@@ -17154,6 +17511,7 @@
       "Weapons": {}
     },
     {
+      "Art": "",
       "BuildableBy": [
         "empire"
       ],
@@ -17178,6 +17536,7 @@
       "Weapons": {}
     },
     {
+      "Art": "",
       "BuildableBy": [
         "empire"
       ],
@@ -17202,6 +17561,7 @@
       "Weapons": {}
     },
     {
+      "Art": "",
       "BuildableBy": [
         "empire"
       ],
@@ -17226,6 +17586,7 @@
       "Weapons": {}
     },
     {
+      "Art": "",
       "BuildableBy": [
         "empire"
       ],
@@ -17250,6 +17611,7 @@
       "Weapons": {}
     },
     {
+      "Art": "",
       "BuildableBy": [
         "empire"
       ],
