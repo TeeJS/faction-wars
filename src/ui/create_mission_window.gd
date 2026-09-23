@@ -298,8 +298,8 @@ func _fill_columns() -> void:
 
 
 ## One of the team in a column: the miniature on its plate, the name under
-## it; picked, a frame all the way round the picture and the name in the
-## side's colour, as in the Defenses grid.
+## it; picked, the frame on the picture's outline and the name in the side's
+## colour, as in the Defenses grid.
 func _member_card(m: Unit) -> Control:
 	var b := Button.new()
 	b.name = "Member_%s" % m.Name.validate_node_name()
@@ -318,14 +318,7 @@ func _member_card(m: Unit) -> Control:
 	var mini: Texture2D = OUI.Mini("characters" if m is Character else "units", m.PackId)
 	if mini != null:
 		OUI.Place(b, mini, x, 4, "Picture")
-	var frame := ReferenceRect.new()
-	frame.name = "Frame"
-	frame.editor_only = false
-	frame.border_color = OUI.SideColor(_faction)
-	frame.border_width = K
-	frame.position = Vector2(x - 1, 3) * K
-	frame.size = Vector2(63, 27) * K
-	frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var frame := OUI.SelectionFrame(x, 4, OUI.SideColor(_faction))
 	b.add_child(frame)
 	var name_label := OUI.Text(b, m.Name, 0, 31, 108, 13, 11, Color.WHITE, HORIZONTAL_ALIGNMENT_CENTER, false, "Name")
 	name_label.clip_text = true
