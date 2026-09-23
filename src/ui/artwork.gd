@@ -111,6 +111,12 @@ static func MissionPicture(mission_id: String, faction_id: String) -> Texture2D:
 	return tex if tex != null else _texture("missions/%s.png" % mission_id)
 
 
+## A mission's 130x65 picture in the Create Mission window, for a side:
+## original/missions/<mission id>.<faction id>.small.png (GOKRES.DLL).
+static func MissionCard(mission_id: String, faction_id: String) -> Texture2D:
+	return _texture("missions/%s.%s.small.png" % [mission_id, faction_id])
+
+
 ## The original's 80x80 portrait of a character, unit or facility:
 ## original/portraits/<kind>/<id>.png (GOKRES.DLL, see the importer's README).
 static func Portrait(kind: String, id: String) -> Texture2D:

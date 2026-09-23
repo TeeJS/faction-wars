@@ -1,8 +1,8 @@
 extends SceneTree
 ## The original's windows, rebuilt from the imported art (src/ui/original_ui.gd;
 ## TeeJ, 2026-09-23: "match the UI of the original"). Opens the System
-## Defenses, Manufacturing and Galactic Encyclopedia windows and the Message
-## Index column over the project's own imported art and checks each piece is
+## Defenses, Manufacturing, Galactic Encyclopedia and Create Mission windows
+## and the Message Index column over the project's own imported art and checks each piece is
 ## where the template matching on the original's screenshots put it. Skips
 ## (passes) when the art is not imported.
 ##
@@ -157,6 +157,64 @@ func _init() -> void:
 	_check(enc._topicTitle.text == ch.DisplayName, "the topic's name on the band")
 	_check(enc._viewTopicBtn.texture_normal == enc._viewTopicBtn.get_meta("pressed_tex"), "View Topic lit in Topic view")
 	enc.CloseWindow()
+
+	# ---- Create Mission (p042 Fig 2.34, p103 Fig 3.47, p104 Fig 3.48) ----
+	var recruit: int = Enums.MissionType.Recruitment
+	var team: Array = []
+	var world: Planet = null
+	for c in GameState.ActiveRoster:
+		if c.Faction != us or c.IsOffMap():
+			continue
+		var at: Planet = OrderManager.SystemOf(c.Attached)
+		if at != null and MissionManager.TeamCanPerform([c], recruit) and MissionManager.CanTarget(recruit, us, at).ok:
+			team = [c]
+			world = at
+			break
+	_check(world != null, "somebody of ours may recruit where they stand")
+	if world != null:
+		ui.OnDefenseClicked(world)
+		for _i in 3:
+			await process_frame
+		var host: DraggableWindow = ui._openWindows.get(world.Name + " Defenses")
+		host.OpenCreateMission(team, world, world)
+		for _i in 3:
+			await process_frame
+		var cm: Control = ui._openWindows.get("Create Mission")
+		_check(cm != null and cm.get("_canvas") != null, "Create Mission is the original's window")
+		if cm != null and cm.get("_canvas") != null:
+			_check(cm.size == Vector2(259, 355) * K, "the 259x355 plate is the window (%s)" % str(cm.size / K))
+			_check((cm.get_node("%TitleBar") as ColorRect).color == side and not (cm.get_node("%MinimizeButton") as Control).visible,
+				"a title bar in the side's colour with only the close box")
+			_check(ui.get_node_or_null("CreateMissionBlocker") != null, "modal, like the dialog it replaces")
+			_check(cm._tabs[0].position == Vector2(7, 20) * K and cm._tabs[1].position == Vector2(137, 20) * K, "the two tabs at (7, 20) and (137, 20)")
+			var places: Array = []
+			for n in ["mission_encyclopedia", "mission_ok", "mission_cancel"]:
+				var b: TextureButton = cm.find_child(n, true, false)
+				places.append(b.position / K if b != null and b.size == Vector2(64, 32) * K else null)
+			_check(places == [Vector2(33, 320), Vector2(102, 320), Vector2(170, 320)], "Encyclopedia, assign and cancel, 64x32, at the original's places %s" % str(places))
+			_check(cm._name.text == MissionCatalog.DisplayNameFor(cm._legal[0]), "the first mission's name")
+			_check(cm._picture.position == Vector2(70, 86) * K and cm._picture.texture != null
+				and cm._picture.texture.get_size() == Vector2(130, 65) * K, "its 130x65 picture at (70, 86)")
+			var tpic: TextureRect = cm.find_child("TargetPicture", true, false)
+			_check(tpic != null and tpic.texture != null and tpic.position == Vector2(115, 232) * K, "the system's sprite in the Target box")
+			var tname: Label = cm.find_child("TargetName", true, false)
+			_check(tname != null and tname.text == world.Name, "the target's name")
+			(cm.find_child("mission_list_open", true, false) as TextureButton).pressed.emit()
+			_check(cm._list.visible and cm._listRows.size() == cm._legal.size(), "the arrow drops down the %d missions" % cm._legal.size())
+			(cm._listRows[cm._legal.find(recruit)] as Button).pressed.emit()
+			_check(not cm._list.visible and cm._name.text == MissionCatalog.DisplayNameFor(recruit), "picking Recruitment shows it")
+			(cm._tabs[1] as TextureButton).pressed.emit()
+			var decoyPlate: Texture2D = (cm.get_theme_stylebox("panel") as StyleBoxTexture).texture
+			_check(cm._pages[1].visible and not cm._pages[0].visible and decoyPlate.get_size() == Vector2(259, 355) * K,
+				"the Decoy tab, on its own plate")
+			_check(cm._columns[0].get_child_count() == team.size() and cm._columns[1].get_child_count() == 0, "the team in the agents column")
+			(cm.find_child("mission_ok", true, false) as TextureButton).pressed.emit()
+			for _i in 3:
+				await process_frame
+			_check(ui._openWindows.get("Create Mission") == null and ui.get_node_or_null("CreateMissionBlocker") == null, "assign closes it")
+			_check(team[0].Status == Enums.Status.OnMission or team[0].Status == Enums.Status.Enroute,
+				"%s is sent (status %s)" % [team[0].Name, Enums.Status.keys()[team[0].Status]])
+		host.CloseWindow()
 
 	# ---- the Message Index column ----
 	ui.RefreshCommsHighlights()
