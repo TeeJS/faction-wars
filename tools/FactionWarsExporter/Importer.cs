@@ -3,7 +3,7 @@ using System.Drawing.Imaging;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
-namespace RebellionArtImporter;
+namespace FactionWarsExporter;
 
 /// <summary>
 /// The mapping from the pack's rows to the original's Encyclopedia, verified
@@ -36,7 +36,9 @@ namespace RebellionArtImporter;
 ///     Message Index windows, and the title-bar, Encyclopedia and scrollbar
 ///     buttons - see the tables below for every id.
 ///
-/// Output, under the pack folder (gitignored - never committed):
+/// Output: an ART SET (docs/original-art-plan.md) - these paths, relative to
+/// its root, written through an ArtSink (a .zip, a folder, or hashes only).
+/// The legacy --pack mode writes the same set under &lt;pack&gt;/original/:
 ///   original/characters/&lt;id&gt;.png   original/units/&lt;id&gt;.png
 ///   original/facilities/&lt;id&gt;.png   original/planets/&lt;id&gt;.png
 ///   original/missions/&lt;id&gt;.&lt;faction&gt;.png (alliance / empire), and
@@ -52,6 +54,9 @@ namespace RebellionArtImporter;
 ///   original/tabs/&lt;name&gt;[.&lt;faction&gt;].png (+ .pressed / .grey)   window tab icons
 ///   original/buttons/&lt;name&gt;.png (+ .pressed / .disabled)       window buttons
 ///   original/cursors/pointer.png, crosshair.png, hotspots.json   the mouse pointers (REBEXE.EXE)
+///   original/screens/cockpit.png   the Shuttle Cockpit (COMMON.DLL 20001), the menu picture
+///   original/screens/galaxy.png    the galaxy map (STRATEGY.DLL 903), the map's backdrop
+///   original/manifest.json         every file's SHA-256 (ArtSink)
 /// </summary>
 public sealed class Importer
 {
@@ -70,6 +75,12 @@ public sealed class Importer
         ("unexplored", 10181, 10180, 10170, 10169),
     };
     private const int UprisingFrame1 = 11608, UprisingFrame2 = 11609;
+
+    // Full-screen pictures (docs/original-art-plan.md, phase 0): the Shuttle
+    // Cockpit, the Star Wars pack's menu picture (manual p021 Fig 2.2), in
+    // COMMON.DLL; the galaxy map, the map's backdrop, in STRATEGY.DLL. The
+    // pack's old galaxyShaded.bmp was an edited copy of 903.
+    public const int CockpitBitmap = 20001, GalaxyBitmap = 903;
 
     // STRATEGY.DLL: the Message Alert bar's nine icons (27x22), in the order
     // the manual's Message Alerts menu lists them (p081 Fig 3.21) except that
@@ -310,22 +321,34 @@ public sealed class Importer
         // The Status plates are opaque; the pressed Encyclopedia button keeps its blue face.
         11554, 11558, 11553,
         // Build Selection's plate is opaque; so are the Scrap pictures.
-        10800, 1032, 1033 };
+        10800, 1032, 1033,
+        // The cockpit and the galaxy map are whole screens.
+        CockpitBitmap, GalaxyBitmap };
 
     public sealed record Result(int Pictures, int Descriptions, List<string> Missing, List<string> Log);
 
     private readonly string _gameDir;
-    private readonly string _packDir;
+    private readonly string _rowsDir;
+    private readonly ArtSink _sink;
     private readonly Action<string> _report;
 
-    public Importer(string gameDir, string packDir, Action<string> report)
+    /// <summary>The five pack files the rows are read from.</summary>
+    public static readonly string[] RowFiles = { "characters.json", "units.json", "facilities.json", "missions.json", "map.json" };
+
+    /// <param name="rowsDir">a folder holding the Star Wars pack's RowFiles: the
+    /// copy beside the exe (pack\), or a pack folder.</param>
+    public Importer(string gameDir, string rowsDir, ArtSink sink, Action<string> report)
     {
         _gameDir = gameDir;
-        _packDir = packDir;
+        _rowsDir = rowsDir;
+        _sink = sink;
         _report = report;
     }
 
-    public static string? Problem(string gameDir, string packDir)
+    /// <summary>The Star Wars pack's rows shipped beside the exe (see the csproj).</summary>
+    public static string BundledRows => Path.Combine(AppContext.BaseDirectory, "pack");
+
+    public static string? Problem(string gameDir, string rowsDir)
     {
         foreach (var f in new[] { "ENCYTEXT.DLL", "ENCYBMAP.DLL", "TEXTSTRA.DLL", "STRATEGY.DLL", "GOKRES.DLL" })
             if (!File.Exists(Path.Combine(gameDir, f)))
@@ -333,8 +356,9 @@ public sealed class Importer
         if (!Directory.Exists(Path.Combine(gameDir, "EData")))
             return $"There is no EData folder in {gameDir}. An install from the CD leaves the pictures on the disc - " +
                    @"pick the REBELLION folder on the CD instead (for example D:\REBELLION).";
-        if (!File.Exists(Path.Combine(packDir, "pack.json")))
-            return $"{packDir} has no pack.json - pick the packs\\star-wars-rebellion folder.";
+        foreach (var f in RowFiles)
+            if (!File.Exists(Path.Combine(rowsDir, f)))
+                return $"{f} is missing from {rowsDir} - the exporter's own folder is incomplete; download it again.";
         return null;
     }
 
@@ -348,14 +372,12 @@ public sealed class Importer
         var pictures = new PeResources(Path.Combine(_gameDir, "ENCYBMAP.DLL"));
         Say($"ENCYTEXT.DLL: {text.RcData.Count} descriptions. ENCYBMAP.DLL: {pictures.Strings.Count} picture entries.");
 
-        var outRoot = Path.Combine(_packDir, "original");
-        Directory.CreateDirectory(outRoot);
         var descriptions = new JsonObject();
         int pictureCount = 0, textCount = 0;
 
         foreach (var (file, kind) in new[] { ("characters.json", "characters"), ("units.json", "units"), ("facilities.json", "facilities"), ("missions.json", "missions") })
         {
-            var rows = ReadRows(Path.Combine(_packDir, file), kind);
+            var rows = ReadRows(Path.Combine(_rowsDir, file), kind);
             var texts = new JsonObject();
             int got = 0;
             foreach (var row in rows)
@@ -379,14 +401,14 @@ public sealed class Importer
                 // A mission's picture comes per side: the Alliance one at the
                 // Encyclopedia id, the Imperial one at the string id itself.
                 var outName = kind == "missions" ? id + ".alliance.png" : id + ".png";
-                if (SavePicture(pictures, ency, Path.Combine(outRoot, kind, outName)))
+                if (SavePicture(pictures, ency, P(kind, outName)))
                 {
                     pictureCount++;
                     got++;
                 }
                 else
                     missing.Add($"{kind}/{id}: no picture at Encyclopedia id {ency}");
-                if (kind == "missions" && SavePicture(pictures, stringId.Value, Path.Combine(outRoot, kind, id + ".empire.png")))
+                if (kind == "missions" && SavePicture(pictures, stringId.Value, P(kind, id + ".empire.png")))
                     pictureCount++;
             }
             descriptions[kind] = texts;
@@ -394,7 +416,7 @@ public sealed class Importer
         }
 
         // Planets: 26 portraits shared by artwork_id; no Encyclopedia text.
-        var map = JsonNode.Parse(File.ReadAllText(Path.Combine(_packDir, "map.json")))!.AsObject();
+        var map = JsonNode.Parse(File.ReadAllText(Path.Combine(_rowsDir, "map.json")))!.AsObject();
         int planets = 0, planetRows = 0;
         foreach (var p in map["planets"]!.AsArray())
         {
@@ -406,7 +428,7 @@ public sealed class Importer
                 missing.Add($"planets/{id}: no artwork_id");
                 continue;
             }
-            if (SavePicture(pictures, PlanetPictureBase + art.Value - 1, Path.Combine(outRoot, "planets", id + ".png")))
+            if (SavePicture(pictures, PlanetPictureBase + art.Value - 1, P("planets", id + ".png")))
             {
                 pictureCount++;
                 planets++;
@@ -422,14 +444,14 @@ public sealed class Importer
         int icons = 0;
         foreach (var (glyph, faction, normal, hover) in CornerIcons)
         {
-            if (SaveSprite(strategy, normal, Path.Combine(outRoot, "icons", $"{glyph}.{faction}.png"))) { icons++; pictureCount++; }
+            if (SaveSprite(strategy, normal, P("icons", $"{glyph}.{faction}.png"))) { icons++; pictureCount++; }
             else missing.Add($"icons/{glyph}.{faction}: no bitmap {normal} in STRATEGY.DLL");
-            if (SaveSprite(strategy, hover, Path.Combine(outRoot, "icons", $"{glyph}.{faction}.hover.png"))) { icons++; pictureCount++; }
+            if (SaveSprite(strategy, hover, P("icons", $"{glyph}.{faction}.hover.png"))) { icons++; pictureCount++; }
         }
         int sprites = 0;
         for (int art = 1; art <= PlanetSpriteCount; art++)
         {
-            if (SaveSprite(strategy, PlanetSpriteBase + art - 1, Path.Combine(outRoot, "planet_sprites", $"{art}.png"))) { sprites++; pictureCount++; }
+            if (SaveSprite(strategy, PlanetSpriteBase + art - 1, P("planet_sprites", $"{art}.png"))) { sprites++; pictureCount++; }
             else missing.Add($"planet_sprites/{art}: no bitmap {PlanetSpriteBase + art - 1} in STRATEGY.DLL");
         }
         int stars = 0;
@@ -437,86 +459,86 @@ public sealed class Importer
         {
             foreach (var (tier, id) in new[] { ("big", big), ("mid", mid), ("low", low), ("none", none) })
             {
-                if (SaveSprite(strategy, id, Path.Combine(outRoot, "gid", $"{faction}.{tier}.png"))) { stars++; pictureCount++; }
+                if (SaveSprite(strategy, id, P("gid", $"{faction}.{tier}.png"))) { stars++; pictureCount++; }
                 else missing.Add($"gid/{faction}.{tier}: no bitmap {id} in STRATEGY.DLL");
             }
         }
-        if (SaveSprite(strategy, UprisingFrame1, Path.Combine(outRoot, "icons", "uprising.png"))) pictureCount++;
+        if (SaveSprite(strategy, UprisingFrame1, P("icons", "uprising.png"))) pictureCount++;
         else missing.Add($"icons/uprising: no bitmap {UprisingFrame1} in STRATEGY.DLL");
-        if (SaveSprite(strategy, UprisingFrame2, Path.Combine(outRoot, "icons", "uprising.hover.png"))) pictureCount++;
+        if (SaveSprite(strategy, UprisingFrame2, P("icons", "uprising.hover.png"))) pictureCount++;
         int alerts = 0;
         foreach (var (faction, dim, lit) in AlertSets)
             for (int k = 0; k < AlertCategories.Length; k++)
             {
-                if (SaveSprite(strategy, dim + k, Path.Combine(outRoot, "alerts", $"{faction}.{AlertCategories[k]}.png"))) { alerts++; pictureCount++; }
+                if (SaveSprite(strategy, dim + k, P("alerts", $"{faction}.{AlertCategories[k]}.png"))) { alerts++; pictureCount++; }
                 else missing.Add($"alerts/{faction}.{AlertCategories[k]}: no bitmap {dim + k} in STRATEGY.DLL");
-                if (SaveSprite(strategy, lit + k, Path.Combine(outRoot, "alerts", $"{faction}.{AlertCategories[k]}.lit.png"))) { alerts++; pictureCount++; }
+                if (SaveSprite(strategy, lit + k, P("alerts", $"{faction}.{AlertCategories[k]}.lit.png"))) { alerts++; pictureCount++; }
             }
         int windows = 0;
         foreach (var (name, id) in WindowPictures)
         {
-            if (SaveSprite(strategy, id, Path.Combine(outRoot, "windows", $"{name}.png"))) { windows++; pictureCount++; }
+            if (SaveSprite(strategy, id, P("windows", $"{name}.png"))) { windows++; pictureCount++; }
             else missing.Add($"windows/{name}: no bitmap {id} in STRATEGY.DLL");
         }
         int tabs = 0;
         foreach (var (name, faction, normal, current, grey) in TabIcons)
         {
             var stem = faction.Length == 0 ? name : $"{name}.{faction}";
-            if (SaveSprite(strategy, normal, Path.Combine(outRoot, "tabs", $"{stem}.png"), true)) { tabs++; pictureCount++; }
+            if (SaveSprite(strategy, normal, P("tabs", $"{stem}.png"), true)) { tabs++; pictureCount++; }
             else missing.Add($"tabs/{stem}: no bitmap {normal} in STRATEGY.DLL");
-            if (SaveSprite(strategy, current, Path.Combine(outRoot, "tabs", $"{stem}.pressed.png"), true)) pictureCount++;
-            if (grey > 0 && SaveSprite(strategy, grey, Path.Combine(outRoot, "tabs", $"{stem}.grey.png"), true)) pictureCount++;
+            if (SaveSprite(strategy, current, P("tabs", $"{stem}.pressed.png"), true)) pictureCount++;
+            if (grey > 0 && SaveSprite(strategy, grey, P("tabs", $"{stem}.grey.png"), true)) pictureCount++;
         }
         int buttons = 0;
         foreach (var (name, normal, pressed, disabled) in Buttons)
         {
-            if (SaveSprite(strategy, normal, Path.Combine(outRoot, "buttons", $"{name}.png"), true)) { buttons++; pictureCount++; }
+            if (SaveSprite(strategy, normal, P("buttons", $"{name}.png"), true)) { buttons++; pictureCount++; }
             else missing.Add($"buttons/{name}: no bitmap {normal} in STRATEGY.DLL");
-            if (pressed > 0 && SaveSprite(strategy, pressed, Path.Combine(outRoot, "buttons", $"{name}.pressed.png"), true)) pictureCount++;
-            if (disabled > 0 && SaveSprite(strategy, disabled, Path.Combine(outRoot, "buttons", $"{name}.disabled.png"), true)) pictureCount++;
+            if (pressed > 0 && SaveSprite(strategy, pressed, P("buttons", $"{name}.pressed.png"), true)) pictureCount++;
+            if (disabled > 0 && SaveSprite(strategy, disabled, P("buttons", $"{name}.disabled.png"), true)) pictureCount++;
         }
         foreach (var (name, normal, pressed, disabled) in CornerKeyedButtons)
         {
-            if (SaveSprite(strategy, normal, Path.Combine(outRoot, "buttons", $"{name}.png"), keyCorner: true)) { buttons++; pictureCount++; }
+            if (SaveSprite(strategy, normal, P("buttons", $"{name}.png"), keyCorner: true)) { buttons++; pictureCount++; }
             else missing.Add($"buttons/{name}: no bitmap {normal} in STRATEGY.DLL");
-            if (pressed > 0 && SaveSprite(strategy, pressed, Path.Combine(outRoot, "buttons", $"{name}.pressed.png"), keyCorner: true)) pictureCount++;
-            if (disabled > 0 && SaveSprite(strategy, disabled, Path.Combine(outRoot, "buttons", $"{name}.disabled.png"), keyCorner: true)) pictureCount++;
+            if (pressed > 0 && SaveSprite(strategy, pressed, P("buttons", $"{name}.pressed.png"), keyCorner: true)) pictureCount++;
+            if (disabled > 0 && SaveSprite(strategy, disabled, P("buttons", $"{name}.disabled.png"), keyCorner: true)) pictureCount++;
         }
         foreach (var (name, normal, pressed, disabled) in ShadedButtons)
         {
-            if (SaveSprite(strategy, normal, Path.Combine(outRoot, "buttons", $"{name}.png"), true, keyShade: true)) { buttons++; pictureCount++; }
+            if (SaveSprite(strategy, normal, P("buttons", $"{name}.png"), true, keyShade: true)) { buttons++; pictureCount++; }
             else missing.Add($"buttons/{name}: no bitmap {normal} in STRATEGY.DLL");
-            if (pressed > 0 && SaveSprite(strategy, pressed, Path.Combine(outRoot, "buttons", $"{name}.pressed.png"), true, keyShade: true)) pictureCount++;
-            if (disabled > 0 && SaveSprite(strategy, disabled, Path.Combine(outRoot, "buttons", $"{name}.disabled.png"), true, keyShade: true)) pictureCount++;
+            if (pressed > 0 && SaveSprite(strategy, pressed, P("buttons", $"{name}.pressed.png"), true, keyShade: true)) pictureCount++;
+            if (disabled > 0 && SaveSprite(strategy, disabled, P("buttons", $"{name}.disabled.png"), true, keyShade: true)) pictureCount++;
         }
         foreach (var (name, id) in BlackKeyed)
         {
-            if (SaveSprite(strategy, id, Path.Combine(outRoot, "windows", $"{name}.png"), keyBlack: true)) { windows++; pictureCount++; }
+            if (SaveSprite(strategy, id, P("windows", $"{name}.png"), keyBlack: true)) { windows++; pictureCount++; }
             else missing.Add($"windows/{name}: no bitmap {id} in STRATEGY.DLL");
             // On a picked row the original keys only the black: a 15x16 icon's
             // blue last row shows, across the bar's edge (measured).
-            if (name.StartsWith("msgicon.") && SaveSprite(strategy, id, Path.Combine(outRoot, "windows", $"{name}.picked.png"), keyBlack: true, keepBlue: true)) pictureCount++;
+            if (name.StartsWith("msgicon.") && SaveSprite(strategy, id, P("windows", $"{name}.picked.png"), keyBlack: true, keepBlue: true)) pictureCount++;
         }
         foreach (var (name, normal, pressed, x, y, w, h) in ClippedButtons)
         {
             var clip = new Rectangle(x, y, w, h);
-            if (SaveSprite(strategy, normal, Path.Combine(outRoot, "buttons", $"{name}.png"), true, clip)) { buttons++; pictureCount++; }
+            if (SaveSprite(strategy, normal, P("buttons", $"{name}.png"), true, clip)) { buttons++; pictureCount++; }
             else missing.Add($"buttons/{name}: no bitmap {normal} in STRATEGY.DLL");
-            if (SaveSprite(strategy, pressed, Path.Combine(outRoot, "buttons", $"{name}.pressed.png"), true, clip)) pictureCount++;
+            if (SaveSprite(strategy, pressed, P("buttons", $"{name}.pressed.png"), true, clip)) pictureCount++;
         }
         Say($"sprites: {icons} corner icons, {sprites} planet sprites, {stars} GID stars, the uprising flame, {alerts} alert icons, {windows} window pictures, {tabs} tab icons, {buttons} buttons.");
 
         // The Create Mission window's mission pictures: GOKRES.DLL, per side.
         var cards = new PeResources(Path.Combine(_gameDir, "GOKRES.DLL"));
         int missionCards = 0;
-        foreach (var row in ReadRows(Path.Combine(_packDir, "missions.json"), "missions"))
+        foreach (var row in ReadRows(Path.Combine(_rowsDir, "missions.json"), "missions"))
         {
             string id = row["id"]!.GetValue<string>();
             if (row["string_id"]?.GetValue<int>() is not int sid)
                 continue;
             foreach (var (faction, less) in new[] { ("empire", MissionCardEmpire), ("alliance", MissionCardAlliance) })
             {
-                if (SaveSprite(cards, sid - less, Path.Combine(outRoot, "missions", $"{id}.{faction}.small.png"))) { missionCards++; pictureCount++; }
+                if (SaveSprite(cards, sid - less, P("missions", $"{id}.{faction}.small.png"))) { missionCards++; pictureCount++; }
                 else if (!id.StartsWith("unnamed"))
                     missing.Add($"missions/{id}.{faction}.small: no bitmap {sid - less} in GOKRES.DLL");
             }
@@ -534,25 +556,30 @@ public sealed class Importer
             {
                 if (!rebexe.Cursors.ContainsKey(id)) { missing.Add($"cursors/{name}: no cursor {id} in REBEXE.EXE"); continue; }
                 var (hx, hy, w, h, argb) = rebexe.Cursor(id);
-                Directory.CreateDirectory(Path.Combine(outRoot, "cursors"));
                 using var bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
                 for (int y = 0; y < h; y++)
                     for (int x = 0; x < w; x++)
                         bmp.SetPixel(x, y, Color.FromArgb(argb[y * w + x]));
-                bmp.Save(Path.Combine(outRoot, "cursors", $"{name}.png"), ImageFormat.Png);
+                _sink.Write(P("cursors", $"{name}.png"), Png(bmp));
                 hotspots[name] = new JsonArray(hx, hy);
                 pictureCount++;
             }
-            File.WriteAllText(Path.Combine(outRoot, "cursors", "hotspots.json"), hotspots.ToJsonString() + "\n");
+            _sink.WriteText(P("cursors", "hotspots.json"), hotspots.ToJsonString() + "\n");
         }
         else
             missing.Add("REBEXE.EXE not found - no mouse pointers");
 
         foreach (var (name, id) in QueuePictures)
         {
-            if (SaveSprite(cards, id, Path.Combine(outRoot, "windows", $"{name}.png"), keyCorner: true)) pictureCount++;
+            if (SaveSprite(cards, id, P("windows", $"{name}.png"), keyCorner: true)) pictureCount++;
             else missing.Add($"windows/{name}: no bitmap {id} in GOKRES.DLL");
         }
+
+        var commonDll = Path.Combine(_gameDir, "COMMON.DLL");
+        if (File.Exists(commonDll) && SaveSprite(new PeResources(commonDll), CockpitBitmap, P("screens", "cockpit.png"))) pictureCount++;
+        else missing.Add($"screens/cockpit: no bitmap {CockpitBitmap} in COMMON.DLL");
+        if (SaveSprite(strategy, GalaxyBitmap, P("screens", "galaxy.png"))) pictureCount++;
+        else missing.Add($"screens/galaxy: no bitmap {GalaxyBitmap} in STRATEGY.DLL");
 
         // Portraits and list miniatures: GOKRES.DLL, by the shipped id map.
         var mapPath = Path.Combine(AppContext.BaseDirectory, "gokres_map.json");
@@ -567,15 +594,15 @@ public sealed class Importer
                 {
                     int? portrait = entry!["portrait"]?.GetValue<int>();
                     int? mini = entry["miniature"]?.GetValue<int>();
-                    if (portrait is int p && SaveSprite(gokres, p, Path.Combine(outRoot, "portraits", kind, id + ".png"))) { portraits++; pictureCount++; }
+                    if (portrait is int p && SaveSprite(gokres, p, P("portraits", kind, id + ".png"))) { portraits++; pictureCount++; }
                     else missing.Add($"portraits/{kind}/{id}: no bitmap {portrait} in GOKRES.DLL");
                     // A capital ship's flames, drawn UNDER its picture on the
                     // Status window when it is damaged: GOKRES picture + 8192
                     // (measured: 10053 under the Corellian Corvette's 1861;
                     // every ship's flames follow its own hull).
                     if (portrait is int pd && entry["family"]?.GetValue<string>() == "capital_ship"
-                        && SaveSprite(gokres, pd + 8192, Path.Combine(outRoot, "portraits", kind, id + ".damage.png"))) pictureCount++;
-                    if (mini is int m && SaveSprite(gokres, m, Path.Combine(outRoot, "miniatures", kind, id + ".png"))) { minis++; pictureCount++; }
+                        && SaveSprite(gokres, pd + 8192, P("portraits", kind, id + ".damage.png"))) pictureCount++;
+                    if (mini is int m && SaveSprite(gokres, m, P("miniatures", kind, id + ".png"))) { minis++; pictureCount++; }
                 }
             }
             Say($"portraits: {portraits}, list miniatures: {minis} (GOKRES.DLL).");
@@ -583,13 +610,13 @@ public sealed class Importer
         else
             missing.Add("gokres_map.json is not beside the importer - no portraits or miniatures");
 
-        File.WriteAllText(Path.Combine(outRoot, "descriptions.json"),
+        _sink.WriteText(P("descriptions.json"),
             descriptions.ToJsonString(new JsonSerializerOptions { WriteIndented = true, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping }) + "\n");
-        File.WriteAllText(Path.Combine(outRoot, "README.txt"),
-            "Artwork and text copied from YOUR installed copy of Star Wars: Rebellion by the\n" +
-            "Rebellion Art Importer. It belongs to LucasArts / Disney and is for your own use\n" +
-            "with the game you bought. Do not commit or redistribute this folder.\n");
-        Say($"Done: {pictureCount} pictures and {textCount} descriptions written to {outRoot}.");
+        _sink.WriteText(P("README.txt"),
+            "Artwork and text exported from YOUR installed copy of Star Wars: Rebellion by the\n" +
+            "Faction Wars Exporter. It belongs to LucasArts / Disney and is for your own use\n" +
+            "with the game you bought. Keep it as your backup; do not share or upload it.\n");
+        Say($"Done: {pictureCount} pictures and {textCount} descriptions.");
         if (missing.Count > 0)
             Say($"{missing.Count} row(s) had nothing to import (listed below).");
         return new Result(pictureCount, textCount, missing, log);
@@ -601,19 +628,17 @@ public sealed class Importer
         return doc[key]!.AsArray().Select(n => n!.AsObject()).ToList();
     }
 
-    /// <summary>A STRATEGY.DLL bitmap as a PNG with the blue colour key made transparent.</summary>
     /// <summary>A bitmap as a PNG with the key colour transparent: pure blue
     /// everywhere, and pure magenta too for the window tabs and buttons, whose
     /// corners the original keys out the same way.
     /// A clip rectangle crops the bitmap to the part the original draws; a
     /// clipped button's second magenta shade (204,28,205) is keyed as well
     /// (never elsewhere: the Manufacturing tab pictures draw it).</summary>
-    private static bool SaveSprite(PeResources dll, int bitmapId, string outPath, bool keyMagenta = false, Rectangle? clip = null,
+    private bool SaveSprite(PeResources dll, int bitmapId, string outPath, bool keyMagenta = false, Rectangle? clip = null,
         bool keyCorner = false, bool keyBlack = false, bool keyShade = false, bool keepBlue = false)
     {
         if (!dll.Bitmaps.ContainsKey(bitmapId))
             return false;
-        Directory.CreateDirectory(Path.GetDirectoryName(outPath)!);
         using var stream = new MemoryStream(dll.BitmapFile(bitmapId));
         using var bmp = new Bitmap(stream);
         var r = clip ?? new Rectangle(0, 0, bmp.Width, bmp.Height);
@@ -632,7 +657,7 @@ public sealed class Importer
                     || ((clip != null || keyShade) && c.R == 204 && c.G == 28 && c.B == 205);
                 rgba.SetPixel(x, y, key ? Color.Transparent : Color.FromArgb(255, c.R, c.G, c.B));
             }
-        rgba.Save(outPath, ImageFormat.Png);
+        _sink.Write(outPath, Png(rgba));
         return true;
     }
 
@@ -643,12 +668,21 @@ public sealed class Importer
         var src = Path.Combine(_gameDir, "EData", file);
         if (!File.Exists(src))
             return false;
-        Directory.CreateDirectory(Path.GetDirectoryName(outPath)!);
         using var bmp = new Bitmap(src);
         using var rgb = new Bitmap(bmp.Width, bmp.Height, PixelFormat.Format24bppRgb);
         using (var g = Graphics.FromImage(rgb))
             g.DrawImage(bmp, 0, 0, bmp.Width, bmp.Height);
-        rgb.Save(outPath, ImageFormat.Png);
+        _sink.Write(outPath, Png(rgb));
         return true;
+    }
+
+    /// <summary>A path inside the art set: always forward slashes.</summary>
+    private static string P(params string[] parts) => string.Join('/', parts);
+
+    private static byte[] Png(Bitmap bmp)
+    {
+        using var ms = new MemoryStream();
+        bmp.Save(ms, ImageFormat.Png);
+        return ms.ToArray();
     }
 }
