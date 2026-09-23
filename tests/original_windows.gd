@@ -458,6 +458,18 @@ func _init() -> void:
 		_check(sw.size == Vector2(235, 360) * K and not (sw.get_node("%TitleBar") as Control).visible,
 			"235x360, no title bar (%s)" % str(sw.size / K))
 		_check(sw.position == SectorWindow.DockPosition(true), "docked at the map frame's right edge")
+		# Ours, not the original's (TeeJ, 2026-09-23): it moves and minimizes.
+		var stitle: Label = sw.find_child("SectorTitle", true, false)
+		_check(stitle != null and stitle.gui_input.is_connected(sw.OnTitleBarGuiInput), "dragged by its name strip")
+		var smin: TextureButton = sw.find_child("title_minimize", true, false)
+		_check(smin != null and smin.position == Vector2(190, 2) * K, "the minimize box at (190, 2)")
+		if smin != null:
+			smin.pressed.emit()
+			await process_frame
+			_check(not sw.visible, "the minimize box minimizes it")
+			ui.OnSectorClicked(sector)
+			await process_frame
+			_check(sw.visible and ui._openWindows.get(sector.Name) == sw, "opening the sector again restores it")
 		var sb: StyleBoxFlat = sw.get_theme_stylebox("panel") as StyleBoxFlat
 		_check(sb != null and sb.bg_color.a < 1.0 and sb.shadow_size == 0, "see-through, no shadow")
 		var sname: Label = sw.find_child("SectorTitle", true, false)
@@ -471,8 +483,9 @@ func _init() -> void:
 			return c is SectorWindow.PlanetMapButton and c.AssociatedPlanet == home)
 		_check(spic != null and spic.size == Vector2(37, 37) * K, "each system's picture at its own 37x37")
 		if spic != null:
-			var box := Rect2(Vector2(20, 24) * K, Vector2(147, 271) * K)
-			_check(box.has_point(spic.position) or spic.position == box.end, "its top-left in the box (20, 24) - (167, 295)")
+			# Inclusive: a system on the sector's edge sits on the box's edge.
+			var box := Rect2(Vector2(20, 24) * K, Vector2(147, 271) * K + Vector2.ONE)
+			_check(box.has_point(spic.position), "its top-left in the box (20, 24) - (167, 295) (%s)" % str(spic.position / K))
 			var energy: Control = Lq.first_or_null(smap.get_children(), func(c) -> bool:
 				return c.get_meta("system", null) == home and c.get_meta("bar_row", "") == "energy")
 			_check(energy != null and energy.position == spic.position + Vector2(1, 39) * K and energy.size.y == 3 * K,

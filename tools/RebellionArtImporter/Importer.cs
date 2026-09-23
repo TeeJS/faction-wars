@@ -213,8 +213,6 @@ public sealed class Importer
     // STRATEGY.DLL: buttons as (name, normal, pressed/current, disabled).
     private static readonly (string Name, int Normal, int Pressed, int Disabled)[] Buttons =
     {
-        // A window's title bar: the system box, minimise, close (14x14).
-        ("title_system", 10209, 0, 0), ("title_minimize", 10253, 0, 0), ("title_close", 10108, 0, 0),
         // The Encyclopedia's browse arrows (21x17).
         ("ency_prev", 10385, 10386, 10387), ("ency_next", 10382, 10383, 10384),
         // The frame's side column: the Empire's 44x41, the Alliance's 32x31.
@@ -242,6 +240,15 @@ public sealed class Importer
         // the tick and cross of a report that asks (51x35, Fig 2.38).
         ("msgsummary_up", 10948, 10949, 10950), ("msgsummary_down", 10919, 10920, 10921),
         ("decision_ok", 10926, 10927, 10928), ("decision_cancel", 10929, 10930, 10931),
+    };
+
+    // STRATEGY.DLL: the 14x14 boxes, keyed by their own bottom-left pixel (a
+    // green one): the original shows what is under the box there - the title
+    // bar's colour, the Sector window's see-through grey (measured).
+    private static readonly (string Name, int Normal, int Pressed, int Disabled)[] CornerKeyedButtons =
+    {
+        // A window's title bar: the system box, minimise, close.
+        ("title_system", 10209, 0, 0), ("title_minimize", 10253, 0, 0), ("title_close", 10108, 0, 0),
         // The Sector window's "switch window to other side of screen" box (p025 Fig 2.8).
         ("sector_switch", 10210, 10211, 0),
     };
@@ -438,6 +445,13 @@ public sealed class Importer
             else missing.Add($"buttons/{name}: no bitmap {normal} in STRATEGY.DLL");
             if (pressed > 0 && SaveSprite(strategy, pressed, Path.Combine(outRoot, "buttons", $"{name}.pressed.png"), true)) pictureCount++;
             if (disabled > 0 && SaveSprite(strategy, disabled, Path.Combine(outRoot, "buttons", $"{name}.disabled.png"), true)) pictureCount++;
+        }
+        foreach (var (name, normal, pressed, disabled) in CornerKeyedButtons)
+        {
+            if (SaveSprite(strategy, normal, Path.Combine(outRoot, "buttons", $"{name}.png"), keyCorner: true)) { buttons++; pictureCount++; }
+            else missing.Add($"buttons/{name}: no bitmap {normal} in STRATEGY.DLL");
+            if (pressed > 0 && SaveSprite(strategy, pressed, Path.Combine(outRoot, "buttons", $"{name}.pressed.png"), keyCorner: true)) pictureCount++;
+            if (disabled > 0 && SaveSprite(strategy, disabled, Path.Combine(outRoot, "buttons", $"{name}.disabled.png"), keyCorner: true)) pictureCount++;
         }
         foreach (var (name, normal, pressed, disabled) in ShadedButtons)
         {
