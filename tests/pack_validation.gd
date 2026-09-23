@@ -145,6 +145,11 @@ func _init() -> void:
 	_case("a special-power band with no label",
 		_pack({}, {}, {"gid_ranks_drop": "master"}), "no label for 'master'")
 
+	# Rule 17 - icons name known corner glyphs and files the pack ships.
+	_case("icons names a glyph the sector window has no corner for",
+		_pack({}, {}, {"icons": {"weather": "x.png"}}), "icons names 'weather', which is not a corner glyph")
+	_case("icons names a file the pack does not ship",
+		_pack({}, {}, {"icons": {"fleet": "no-such-file.png"}}), "icons['fleet'] = 'no-such-file.png' is not in")
 	# Rule 16 - loyalty_bar is every faction exactly once.
 	_case("loyalty_bar names a side that is not a faction",
 		_pack({}, {}, {"loyalty_bar": ["test_side", "nobody"]}), "loyalty_bar names 'nobody', which is not a faction id")
@@ -440,7 +445,8 @@ func _pack(sector_over: Dictionary, planet_over: Dictionary, other: Dictionary) 
 		"galaxy_display_modes": other.get("gid_alt", ["popular_support"]),
 		"special_power_ranks": ranks,
 		"terms": other.get("terms", {"hyperdrive": "Transit"}),
-		"loyalty_bar": other.get("loyalty_bar", [])})
+		"loyalty_bar": other.get("loyalty_bar", []),
+		"icons": other.get("icons", {})})
 
 	# One seeding table with one row, so a row that resolves to nothing is a case.
 	p.Rules = [{"EntryId": 1}]
@@ -462,6 +468,7 @@ func _case(what: String, pack: PackLoader.LoadedPack, expect: String) -> void:
 	PackLoader._validate_missions(pack, errors)
 	PackLoader._validate_display(pack, errors)
 	PackLoader._validate_menu(pack, PACK_DIR, errors)
+	PackLoader._validate_icons(pack, PACK_DIR, errors)
 	PackLoader._validate_roles(pack, errors)
 	PackLoader._validate_setup(pack, errors)
 	for e in errors:

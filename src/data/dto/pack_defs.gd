@@ -867,10 +867,21 @@ class DisplayDef:
 	## window's loyalty bar (manual p025 Fig 2.9 has the Empire on the left).
 	## Optional; empty = the pack's faction order. Validation rule 16.
 	var LoyaltyBar: Array[String] = []
+	## SCHEMA.md section 10, `icons`: the pack's own picture for a sector-window
+	## corner glyph (manufacturing, defenses, fleet, mission, uprising), a file in
+	## the pack folder. Optional per key; the engine's assets/icons/ otherwise.
+	## Validation rule 17.
+	var Icons: Dictionary = {}
 
 	static func from_dict(d: Dictionary) -> DisplayDef:
 		var o := DisplayDef.new()
 		o.LoyaltyBar = JsonUtil.str_list(d, "loyalty_bar", [])
+		var ic: Variant = JsonUtil.get_ci(d, "icons")
+		if ic is Dictionary:
+			for k in ic.keys():
+				if str(k).begins_with("_"):
+					continue
+				o.Icons[str(k)] = str(ic[k])
 		var c: Variant = JsonUtil.get_ci(d, "categories")
 		if c != null:
 			for e in c:
