@@ -17,6 +17,11 @@ namespace RebellionArtImporter;
 ///   Planets             STRING[11100 + artwork_id - 1] - 26 pictures, no text
 ///   Missions            STRING[string_id - 4096] is the Alliance picture,
 ///                       STRING[string_id] the Empire one
+///   GOKRES.DLL          RT_BITMAP portraits (80x80) and list miniatures
+///                       (61x25) of every character, unit and facility, by
+///                       the ids in gokres_map.json (from open-rebellion's
+///                       Ghidra-derived entity catalog; the 60 character
+///                       portraits were checked by face). Blue = transparent.
 ///   STRATEGY.DLL        RT_BITMAP sprites, blue (0,0,255) = transparent:
 ///     10771-10778 the Alliance sector-window icons (factory, tower, ship,
 ///     crest; each normal then highlighted), 10779-10786 the Imperial set,
@@ -28,6 +33,7 @@ namespace RebellionArtImporter;
 ///   original/facilities/&lt;id&gt;.png   original/planets/&lt;id&gt;.png
 ///   original/missions/&lt;id&gt;.png (+ &lt;id&gt;.empire.png)
 ///   original/descriptions.json     { "characters": { id: text }, ... }
+///   original/portraits/&lt;kind&gt;/&lt;id&gt;.png   original/miniatures/&lt;kind&gt;/&lt;id&gt;.png
 ///   original/icons/&lt;glyph&gt;.&lt;faction&gt;.png (+ .hover.png)   sector-window corners
 ///   original/planet_sprites/&lt;artwork_id&gt;.png              the map's planets
 /// </summary>
@@ -63,7 +69,7 @@ public sealed class Importer
 
     public static string? Problem(string gameDir, string packDir)
     {
-        foreach (var f in new[] { "ENCYTEXT.DLL", "ENCYBMAP.DLL", "TEXTSTRA.DLL", "STRATEGY.DLL" })
+        foreach (var f in new[] { "ENCYTEXT.DLL", "ENCYBMAP.DLL", "TEXTSTRA.DLL", "STRATEGY.DLL", "GOKRES.DLL" })
             if (!File.Exists(Path.Combine(gameDir, f)))
                 return $"{f} is not in {gameDir} - is that the installed game's folder?";
         if (!Directory.Exists(Path.Combine(gameDir, "EData")))
@@ -167,6 +173,29 @@ public sealed class Importer
             else missing.Add($"planet_sprites/{art}: no bitmap {PlanetSpriteBase + art - 1} in STRATEGY.DLL");
         }
         Say($"sprites: {icons} corner icons, {sprites} planet sprites.");
+
+        // Portraits and list miniatures: GOKRES.DLL, by the shipped id map.
+        var mapPath = Path.Combine(AppContext.BaseDirectory, "gokres_map.json");
+        if (File.Exists(mapPath))
+        {
+            var gokres = new PeResources(Path.Combine(_gameDir, "GOKRES.DLL"));
+            var idMap = JsonNode.Parse(File.ReadAllText(mapPath))!.AsObject();
+            int portraits = 0, minis = 0;
+            foreach (var (kind, rowsNode) in idMap)
+            {
+                foreach (var (id, entry) in rowsNode!.AsObject())
+                {
+                    int? portrait = entry!["portrait"]?.GetValue<int>();
+                    int? mini = entry["miniature"]?.GetValue<int>();
+                    if (portrait is int p && SaveSprite(gokres, p, Path.Combine(outRoot, "portraits", kind, id + ".png"))) { portraits++; pictureCount++; }
+                    else missing.Add($"portraits/{kind}/{id}: no bitmap {portrait} in GOKRES.DLL");
+                    if (mini is int m && SaveSprite(gokres, m, Path.Combine(outRoot, "miniatures", kind, id + ".png"))) { minis++; pictureCount++; }
+                }
+            }
+            Say($"portraits: {portraits}, list miniatures: {minis} (GOKRES.DLL).");
+        }
+        else
+            missing.Add("gokres_map.json is not beside the importer - no portraits or miniatures");
 
         File.WriteAllText(Path.Combine(outRoot, "descriptions.json"),
             descriptions.ToJsonString(new JsonSerializerOptions { WriteIndented = true, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping }) + "\n");
