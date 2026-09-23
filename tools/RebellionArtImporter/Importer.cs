@@ -40,6 +40,7 @@ namespace RebellionArtImporter;
 ///   original/icons/&lt;glyph&gt;.&lt;faction&gt;.png (+ .hover.png)   sector-window corners
 ///   original/icons/uprising.png (+ .hover.png)             the flame, two frames
 ///   original/gid/&lt;faction&gt;.&lt;tier&gt;.png, gid/unexplored.&lt;tier&gt;.png   the GID stars
+///   original/alerts/&lt;faction&gt;.&lt;category&gt;.png (+ .lit.png)   the Message Alert bar
 ///   original/planet_sprites/&lt;artwork_id&gt;.png              the map's planets
 /// </summary>
 public sealed class Importer
@@ -59,6 +60,13 @@ public sealed class Importer
         ("unexplored", 10181, 10180, 10170, 10169),
     };
     private const int UprisingFrame1 = 11608, UprisingFrame2 = 11609;
+
+    // STRATEGY.DLL: the Message Alert bar's nine icons (27x22), in the order
+    // the manual's Message Alerts menu lists them (p081 Fig 3.21) except that
+    // the bitmaps put Advice before Chat; dim and lit sets per side. Matched
+    // pixel-for-pixel against TeeJ's screenshots of the original (2026-09-22).
+    private static readonly string[] AlertCategories = { "loyalty", "fleets", "missions", "resources", "manufacturing", "defense", "conflict", "advice", "chat" };
+    private static readonly (string Faction, int Dim, int Lit)[] AlertSets = { ("alliance", 10050, 10060), ("empire", 10030, 10040) };
 
     // STRATEGY.DLL: (glyph, faction id, normal bitmap, highlighted bitmap).
     private static readonly (string Glyph, string Faction, int Normal, int Hover)[] CornerIcons =
@@ -201,7 +209,15 @@ public sealed class Importer
         if (SaveSprite(strategy, UprisingFrame1, Path.Combine(outRoot, "icons", "uprising.png"))) pictureCount++;
         else missing.Add($"icons/uprising: no bitmap {UprisingFrame1} in STRATEGY.DLL");
         if (SaveSprite(strategy, UprisingFrame2, Path.Combine(outRoot, "icons", "uprising.hover.png"))) pictureCount++;
-        Say($"sprites: {icons} corner icons, {sprites} planet sprites, {stars} GID stars, the uprising flame.");
+        int alerts = 0;
+        foreach (var (faction, dim, lit) in AlertSets)
+            for (int k = 0; k < AlertCategories.Length; k++)
+            {
+                if (SaveSprite(strategy, dim + k, Path.Combine(outRoot, "alerts", $"{faction}.{AlertCategories[k]}.png"))) { alerts++; pictureCount++; }
+                else missing.Add($"alerts/{faction}.{AlertCategories[k]}: no bitmap {dim + k} in STRATEGY.DLL");
+                if (SaveSprite(strategy, lit + k, Path.Combine(outRoot, "alerts", $"{faction}.{AlertCategories[k]}.lit.png"))) { alerts++; pictureCount++; }
+            }
+        Say($"sprites: {icons} corner icons, {sprites} planet sprites, {stars} GID stars, the uprising flame, {alerts} alert icons.");
 
         // Portraits and list miniatures: GOKRES.DLL, by the shipped id map.
         var mapPath = Path.Combine(AppContext.BaseDirectory, "gokres_map.json");
