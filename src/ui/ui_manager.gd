@@ -140,16 +140,44 @@ func _exit_tree() -> void:
 
 
 ## Paints each category button from what is actually unread in it.
-## The Message Alert bar (manual p022, p081): a category's original icon when
-## the player imported it - the lit one while that category has unread mail,
-## the dim one otherwise - else the text button, yellow when mail waits.
-## The icons are drawn at exactly 2x (crisp pixel doubling of the original's
-## 27x22) and the column grows DOWNWARD into the free space under it - the
-## panel's grow direction in Main.tscn, which used to be "both" and pushed it
-## up over the day panel (TeeJ, 2026-09-22: "we have vertical space, why don't
-## we make the images bigger?").
+## THE COLUMN IS THE MESSAGE INDEX'S STRIP (manual p079 Fig 3.19; TeeJ,
+## 2026-09-23, against his screenshots of the original's Message Index):
+## with the art imported, each category is the original's own 36x41 socket -
+## the galaxy for All Messages, then Loyalty, Fleets, Missions, Resources,
+## Manufacturing, Defense, Conflict, Chat and Advice in the side's versions -
+## the blue socket on the category on show, and the unread count in yellow on
+## the socket's corner. Each socket is its top 36 rows - under them the
+## strip's own band and the list box's dotted edge, which belong to a
+## horizontal strip - drawn 1.5x (all ten fit the column above the Feedback
+## box), nearest-neighbour so the pixels stay crisp. Without the art, the text
+## buttons, yellow when mail waits.
 const Art := preload("res://src/ui/artwork.gd")
-const AlertIconScale := 2.0
+const SocketRows := 36
+const SocketSize := Vector2i(54, 54)   # 36x36 at 1.5x
+const SocketNames := {
+	"All": "msg_all", "Loyalty": "msg_loyalty", "Fleets": "msg_fleets", "Missions": "msg_missions",
+	"Resources": "msg_resources", "Manufacturing": "msg_manufacturing", "Defense": "msg_defense",
+	"Conflict": "msg_conflict", "Chat": "msg_chat", "Advice": "msg_advice",
+}
+static var _sockets: Dictionary = {}
+
+
+## A socket picture at the column's size, cached.
+static func Socket(category: String, side: String, current: bool) -> Texture2D:
+	var key := "%s.%s.%s" % [category, side, current]
+	if _sockets.has(key):
+		return _sockets[key]
+	var tex: Texture2D = Art.TabIcon(SocketNames.get(category, ""), side, "pressed" if current else "")
+	if tex == null:
+		return null
+	var img: Image = tex.get_image().duplicate()
+	if img.is_compressed():
+		img.decompress()
+	img = img.get_region(Rect2i(0, 0, img.get_width(), mini(SocketRows, img.get_height())))
+	img.resize(SocketSize.x, SocketSize.y, Image.INTERPOLATE_NEAREST)
+	var out := ImageTexture.create_from_image(img)
+	_sockets[key] = out
+	return out
 
 
 func RefreshCommsHighlights() -> void:
@@ -158,54 +186,110 @@ func RefreshCommsHighlights() -> void:
 		return
 	var side: String = GameSettings.PlayerFaction.Id if GameSettings.PlayerFaction != null else ""
 	var showing: String = CommsCategory()
+	var pictured: bool = Socket("All", side, false) != null
+	if pictured:
+		_StyleCommsColumn(commsList)
 	for btn in commsList.get_children():
 		if not (btn is Button):
 			continue
 		# The column is the docked Comms Center's tab bar: the category on show
-		# reads as pressed.
+		# reads as current.
 		var active: bool = btn.name == showing
-		if active and not btn.has_meta("active_tab"):
+		if active:
 			btn.set_meta("active_tab", true)
-			btn.add_theme_stylebox_override("normal", btn.get_theme_stylebox("pressed"))
-			btn.add_theme_stylebox_override("hover", btn.get_theme_stylebox("pressed"))
-		elif not active and btn.has_meta("active_tab"):
+		elif btn.has_meta("active_tab"):
 			btn.remove_meta("active_tab")
-			btn.remove_theme_stylebox_override("normal")
-			btn.remove_theme_stylebox_override("hover")
-		var waiting: bool = Enums.MessageCategory.has(btn.name) \
-			and EventBus.UnreadCount(Enums.MessageCategory[btn.name]) > 0
-		var icon: Texture2D = Art.AlertIcon(side, btn.name, waiting) if btn.name != "All" else null
+		var unread: int = EventBus.UnreadCount(Enums.MessageCategory[btn.name]) \
+			if Enums.MessageCategory.has(btn.name) else 0
+		var icon: Texture2D = Socket(btn.name, side, active) if pictured else null
 		if icon != null:
 			if not btn.has_meta("alert_icon"):
 				btn.set_meta("alert_icon", true)
 				btn.set_meta("label", btn.text)
 				btn.tooltip_text = btn.text
 				btn.text = ""
+				btn.flat = true
 				btn.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
-				btn.expand_icon = true
-				btn.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST   # an exact 2x: pixel-doubled, not smeared
-				# The button is the icon plus a 4 px frame, centred in the
-				# column - not a column-wide bar (TeeJ, 2026-09-23: "make the
-				# rectangles fit the icons they are behind").
-				btn.custom_minimum_size = Vector2(icon.get_width() * AlertIconScale + 8, icon.get_height() * AlertIconScale + 8)
+				btn.expand_icon = false
+				btn.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+				btn.custom_minimum_size = Vector2(SocketSize)
 				btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+				var empty := StyleBoxEmpty.new()
+				for st in ["normal", "hover", "pressed", "focus", "hover_pressed"]:
+					btn.add_theme_stylebox_override(st, empty)
 			btn.icon = icon
+			_Badge(btn, unread)
 			btn.remove_theme_color_override("font_color")
 			btn.modulate = Color.WHITE
 			continue
+		# Plain text buttons (no art imported, or no longer).
 		if btn.has_meta("alert_icon"):
 			btn.remove_meta("alert_icon")
 			btn.icon = null
 			btn.text = btn.get_meta("label")
-			btn.expand_icon = false
+			btn.flat = false
 			btn.custom_minimum_size = Vector2.ZERO
 			btn.size_flags_horizontal = Control.SIZE_FILL
-		if waiting:
+			for st in ["normal", "hover", "pressed", "focus", "hover_pressed"]:
+				btn.remove_theme_stylebox_override(st)
+		_Badge(btn, 0)
+		if active:
+			btn.add_theme_stylebox_override("normal", btn.get_theme_stylebox("pressed"))
+			btn.add_theme_stylebox_override("hover", btn.get_theme_stylebox("pressed"))
+		else:
+			btn.remove_theme_stylebox_override("normal")
+			btn.remove_theme_stylebox_override("hover")
+		if unread > 0:
 			btn.add_theme_color_override("font_color", Color.YELLOW)
 			btn.modulate = Color(1.5, 1.5, 0.5)
 		else:
 			btn.remove_theme_color_override("font_color")
 			btn.modulate = Color.WHITE
+
+
+## The column behind the sockets: the Command Center's dark recess, the
+## sockets packed as the original packs its strip.
+func _StyleCommsColumn(commsList: VBoxContainer) -> void:
+	if commsList.has_meta("styled"):
+		return
+	commsList.set_meta("styled", true)
+	commsList.add_theme_constant_override("separation", 3)
+	var margin: MarginContainer = commsList.get_parent() as MarginContainer
+	if margin != null:
+		for sideName in ["left", "top", "right", "bottom"]:
+			margin.add_theme_constant_override("margin_" + sideName, 3)
+	var panel: PanelContainer = get_node_or_null("CommsPanel")
+	if panel != null:
+		var sb := StyleBoxFlat.new()
+		sb.bg_color = Color(0.03, 0.03, 0.05, 1)
+		sb.set_border_width_all(2)
+		sb.border_color = Color(0.45, 0.47, 0.52, 1)
+		sb.set_corner_radius_all(3)
+		panel.add_theme_stylebox_override("panel", sb)
+
+
+## The unread count on a socket's corner, yellow with a black edge; hidden at
+## zero.
+static func _Badge(btn: Button, count: int) -> void:
+	var badge: Label = btn.get_node_or_null("Badge")
+	if count <= 0:
+		if badge != null:
+			badge.visible = false
+		return
+	if badge == null:
+		badge = Label.new()
+		badge.name = "Badge"
+		badge.position = Vector2(SocketSize.x - 22, -2)
+		badge.size = Vector2(22, 16)
+		badge.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		badge.add_theme_font_size_override("font_size", 13)
+		badge.add_theme_color_override("font_color", Color.YELLOW)
+		badge.add_theme_color_override("font_outline_color", Color.BLACK)
+		badge.add_theme_constant_override("outline_size", 4)
+		badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		btn.add_child(badge)
+	badge.text = str(count)
+	badge.visible = true
 
 
 func ShowHudNotification(msg: GameMessage) -> void:
@@ -279,8 +363,18 @@ func OpenEncyclopedia(kind: String = "", id: String = "") -> void:
 			window.Setup(self)
 			if not kind.is_empty():
 				window.ShowTopic(kind, id)
-			window.set_deferred("position", EncyclopediaRect.position),
+			window.set_deferred("position", EncyclopediaPosition(window)),
 		EncyclopediaRect.position)
+
+
+## The original's Encyclopedia sits in the middle of the Command Center's
+## screen: centred over the map frame. The plain one keeps its rectangle.
+func EncyclopediaPosition(window: Control) -> Vector2:
+	if not window.get("_original"):
+		return EncyclopediaRect.position
+	var frame := Rect2(150, 99, 1070, get_viewport().get_visible_rect().size.y - 99)
+	var size: Vector2 = window.get_combined_minimum_size()
+	return (frame.get_center() - size / 2.0).floor().max(Vector2(150, 99))
 
 
 ## The category the docked Comms Center is showing, or "" when it is not open.

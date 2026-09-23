@@ -48,6 +48,7 @@ packs/star-wars-rebellion/original/
   planets/<id>.png      missions/<id>.<faction>.png (alliance / empire)
   icons/<glyph>.<faction>.png (+ .hover.png)   planet_sprites/<artwork_id>.png
   windows/<name>.png                            tabs/<name>[.<faction>].png (+ .pressed / .grey)
+  buttons/<name>.png (+ .pressed / .disabled)   windows/<plate or part>.png
   portraits/<kind>/<id>.png (80x80)   miniatures/<kind>/<id>.png (61x25)
   gid/<faction>.<tier>.png  gid/unexplored.<tier>.png  icons/uprising.png (+ .hover.png)
   alerts/<faction>.<category>.png (+ .lit.png)

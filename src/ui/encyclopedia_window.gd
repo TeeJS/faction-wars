@@ -45,20 +45,48 @@ var _shown: Array[Entry] = []         # the entries of the chosen database
 var _inTopic: bool = false
 
 var _topicBox: LineEdit
-var _tabs: Array[Button] = []
+var _tabs: Array[BaseButton] = []
 var _index: ItemList
-var _indexView: VBoxContainer
-var _topicView: VBoxContainer
+var _indexView: Control
+var _topicView: Control
 var _topicTitle: Label
-var _picture: ColorRect
+var _picture: Control
 var _text: RichTextLabel
-var _viewTopicBtn: Button
-var _viewIndexBtn: Button
+var _viewTopicBtn: BaseButton
+var _viewIndexBtn: BaseButton
+var _indexHeader: Label
+
+# THE ORIGINAL'S ENCYCLOPEDIA (Figs 3.10 / 3.11; TeeJ's screenshots of both
+# sides' Topic view): the side's 470x331 frame, the Index plate (10338) or
+# the Topic plate (10337) inside it at (12, 13), the browse arrows, the
+# 400x200 picture at (12, 31), the text box under it with the original's
+# scrollbar, and the side's three buttons down the frame's right edge. All
+# in the original's pixels, drawn OUI.K times as large.
+const FrameW := 470
+const FrameH := 331
+const PlateX := 12
+const PlateY := 13
+## The Empire's buttons are 44x41 at x 426, the Alliance's 32x31 at x 423.
+const SideButtonsX := {"empire": 426, "alliance": 423}
+const SideButtonsY := {"empire": [21, 89, 143], "alliance": [25, 93, 147]}
+## The seven database tabs (Fig 3.10), 36x41 sockets at 52-pixel pitch.
+## PROVISIONAL: no screenshot of the original's Index view yet; these are
+## the Message Index's own sockets that best match the manual's print.
+const TabSockets := ["msg_all", "msg_loyalty", "msg_fleets", "msg_manufacturing", "msg_missions", "msg_chat", "msg_advice"]
+const TabsX := 37
+const TabsY := 72
+const TabsPitch := 52
+
+var _original: bool = false
 
 
 func _ready() -> void:
 	super()
-	_build()
+	_original = _can_build_original()
+	if _original:
+		_build_original()
+	else:
+		_build()
 	_load_entries()
 	ShowIndex(_database)
 
@@ -120,6 +148,9 @@ func ShowIndex(db: int = -1) -> void:
 	_topicView.visible = false
 	_viewTopicBtn.disabled = _shown.is_empty()
 	_viewIndexBtn.disabled = true
+	if _indexHeader != null:
+		_indexHeader.text = Databases[_database]
+	_side_states()
 	(get_node("%TitleBarLabel") as Label).text = " Galactic Encyclopedia - %s" % Databases[_database]
 
 
@@ -177,10 +208,17 @@ func _show_current() -> void:
 	_viewIndexBtn.disabled = false
 	_topicTitle.text = e.Name
 	(get_node("%TitleBarLabel") as Label).text = " Galactic Encyclopedia - %s" % e.Name
-	Art.Fill(_picture, PictureFor(e))
-	_text.text = TextFor(e)
+	if _original:
+		# The picture at the original's 400x200, drawn K times as large.
+		(_picture as TextureRect).texture = Art.Scaled(PictureFor(e), OUI.K)
+		_text.text = _bbcode(TextFor(e))
+		_text.scroll_to_line(0)
+	else:
+		Art.Fill(_picture, PictureFor(e))
+		_text.text = TextFor(e)
 	for i in _tabs.size():
 		_tabs[i].button_pressed = i == _database
+	_side_states()
 
 
 ## "Type in its name in the Topic entry box" - the first entry of the chosen
@@ -256,6 +294,267 @@ static func TextFor(e: Entry) -> String:
 	if lines.is_empty():
 		lines.append("No description.")
 	return "\n".join(lines)
+
+
+# ---- the original's window -------------------------------------------------
+
+func _side() -> String:
+	var s0: String = OUI.Side(GameSettings.PlayerFaction)
+	return s0 if SideButtonsX.has(s0) else "empire"
+
+
+func _can_build_original() -> bool:
+	var side: String = _side()
+	if not OUI.Has(["frame." + side, "ency_topic_plate", "ency_index_plate"]):
+		return false
+	for b in ["ency_close.", "ency_view_topic.", "ency_view_index."]:
+		if Art.ButtonIcon(b + side) == null:
+			return false
+	return Art.ButtonIcon("ency_prev") != null and Art.ButtonIcon("ency_next") != null
+
+
+## The pressed look on the button of the view on show (Fig 3.11: View Topic
+## lit in Topic view), the normal one on the other.
+func _side_states() -> void:
+	if not _original:
+		return
+	for pair in [[_viewTopicBtn, _inTopic], [_viewIndexBtn, not _inTopic]]:
+		var b: TextureButton = pair[0]
+		b.texture_normal = b.get_meta("pressed_tex") if pair[1] else b.get_meta("normal_tex")
+
+
+## One of the frame's right-hand buttons, at its place for the side.
+func _frame_button(parent: Control, name: String, row: int, tip: String, action: Callable) -> TextureButton:
+	var side: String = _side()
+	var b := TextureButton.new()
+	b.name = name
+	var normal: Texture2D = OUI.Btn("%s.%s" % [name, side])
+	var pressed: Texture2D = OUI.Btn("%s.%s" % [name, side], "pressed")
+	b.set_meta("normal_tex", normal)
+	b.set_meta("pressed_tex", pressed if pressed != null else normal)
+	b.texture_normal = normal
+	b.texture_pressed = b.get_meta("pressed_tex")
+	# No greyed picture: the original shows the current view's button lit,
+	# the other one normal (Fig 3.11), and nothing greyed.
+	b.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	b.position = Vector2(SideButtonsX[side], SideButtonsY[side][row]) * OUI.K
+	b.size = normal.get_size()
+	b.tooltip_text = tip
+	b.set_meta("title", tip)
+	b.pressed.connect(action)
+	parent.add_child(b)
+	return b
+
+
+## A browse arrow (Fig 3.11: "Click here to browse through Encyclopedia").
+func _arrow_button(parent: Control, name: String, x: int, action: Callable) -> TextureButton:
+	var b := TextureButton.new()
+	b.name = name
+	b.texture_normal = OUI.Btn(name)
+	b.texture_pressed = OUI.Btn(name, "pressed")
+	b.texture_disabled = OUI.Btn(name, "disabled")
+	b.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	b.position = Vector2(x, 14) * OUI.K
+	b.size = b.texture_normal.get_size()
+	b.tooltip_text = "Click here to browse through the Encyclopedia"
+	b.pressed.connect(action)
+	parent.add_child(b)
+	return b
+
+
+## The original's scrollbar on a list or text box: its arrow pictures at the
+## ends, its three-part thumb, a black track, 13 pixels wide.
+static func StyleScrollBar(bar: ScrollBar) -> void:
+	if bar == null:
+		return
+	var up: Texture2D = OUI.Btn("scroll_up")
+	var down: Texture2D = OUI.Btn("scroll_down")
+	if up == null or down == null:
+		return
+	for n in ["decrement", "decrement_highlight", "decrement_pressed"]:
+		bar.add_theme_icon_override(n, up)
+	for n in ["increment", "increment_highlight", "increment_pressed"]:
+		bar.add_theme_icon_override(n, down)
+	var track := StyleBoxFlat.new()
+	track.bg_color = Color.BLACK
+	track.content_margin_left = 13 * OUI.K
+	bar.add_theme_stylebox_override("scroll", track)
+	bar.add_theme_stylebox_override("scroll_focus", track)
+	var top: Image = Art.ButtonIcon("scroll_thumb_top").get_image()
+	var mid: Image = Art.ButtonIcon("scroll_thumb_mid").get_image()
+	var bottom: Image = Art.ButtonIcon("scroll_thumb_bottom").get_image()
+	if top != null and mid != null and bottom != null:
+		var thumb := Image.create(13, top.get_height() + mid.get_height() + bottom.get_height(), false, Image.FORMAT_RGBA8)
+		for img in [top, mid, bottom]:
+			if img.is_compressed():
+				img.decompress()
+			img.convert(Image.FORMAT_RGBA8)
+		thumb.blit_rect(top, Rect2i(0, 0, 13, top.get_height()), Vector2i(0, 0))
+		thumb.blit_rect(mid, Rect2i(0, 0, 13, mid.get_height()), Vector2i(0, top.get_height()))
+		thumb.blit_rect(bottom, Rect2i(0, 0, 13, bottom.get_height()), Vector2i(0, top.get_height() + mid.get_height()))
+		thumb.resize(13 * OUI.K, thumb.get_height() * OUI.K, Image.INTERPOLATE_NEAREST)
+		var grab := StyleBoxTexture.new()
+		grab.texture = ImageTexture.create_from_image(thumb)
+		grab.texture_margin_top = top.get_height() * OUI.K
+		grab.texture_margin_bottom = bottom.get_height() * OUI.K
+		for n in ["grabber", "grabber_highlight", "grabber_pressed"]:
+			bar.add_theme_stylebox_override(n, grab)
+	bar.custom_minimum_size = Vector2(13 * OUI.K, 0)
+
+
+## The imported description's "label<TAB><TAB>value" lines as a two-column
+## table, the values lined up as the original lines them up.
+static func _bbcode(text: String) -> String:
+	var out: PackedStringArray = PackedStringArray()
+	var rows: PackedStringArray = PackedStringArray()
+	for line in text.split("\n"):
+		if line.contains("\t"):
+			var parts: PackedStringArray = line.split("\t", false)
+			rows.append("[cell padding=0,0,%d,0]%s[/cell][cell]%s[/cell]" % [16 * OUI.K, parts[0].strip_edges(), (parts[parts.size() - 1] if parts.size() > 1 else "").strip_edges()])
+			continue
+		if not rows.is_empty():
+			out.append("[table=2]%s[/table]" % "".join(rows))
+			rows.clear()
+		out.append(line)
+	if not rows.is_empty():
+		out.append("[table=2]%s[/table]" % "".join(rows))
+	return "\n".join(out)
+
+
+func _build_original() -> void:
+	var side: String = _side()
+	var K: int = OUI.K
+	# No title bar: the original's Encyclopedia is its frame. Dragged by it.
+	var bar: Control = get_node_or_null("%TitleBar")
+	if bar != null:
+		bar.visible = false
+	add_theme_stylebox_override("panel", StyleBoxEmpty.new())
+	var area: MarginContainer = OUI.Flatten(self)
+	custom_minimum_size = Vector2(FrameW, FrameH) * K
+	size = custom_minimum_size   # not the plain window's 1000x671
+	var body := Control.new()
+	body.name = "OriginalBody"
+	body.custom_minimum_size = Vector2(FrameW, FrameH) * K
+	body.mouse_filter = Control.MOUSE_FILTER_PASS
+	area.add_child(body)
+
+	# ---- Index view (Fig 3.10) ----
+	_indexView = Control.new()
+	_indexView.name = "IndexView"
+	_indexView.mouse_filter = Control.MOUSE_FILTER_PASS
+	_indexView.size = Vector2(FrameW, FrameH) * K
+	body.add_child(_indexView)
+	OUI.Place(_indexView, OUI.Pic("ency_index_plate"), PlateX, PlateY, "Plate")
+	OUI.Text(_indexView, "Galactic Encyclopedia", 97, 15, 250, 16, 15, Color.WHITE, HORIZONTAL_ALIGNMENT_LEFT, true, "Title")
+	OUI.Text(_indexView, "Topic", 37, 46, 90, 14, 12, Color(0.8, 0.8, 0.8), HORIZONTAL_ALIGNMENT_LEFT, false, "TopicLabel")
+	_topicBox = LineEdit.new()
+	_topicBox.name = "TopicBox"
+	_topicBox.position = Vector2(144, 46) * K
+	_topicBox.size = Vector2(240, 15) * K
+	_topicBox.placeholder_text = ""
+	_topicBox.flat = true
+	OUI.Style(_topicBox, 12, Color.WHITE)
+	var clear := StyleBoxEmpty.new()
+	for st in ["normal", "focus", "read_only"]:
+		_topicBox.add_theme_stylebox_override(st, clear)
+	_topicBox.text_changed.connect(JumpTo)
+	_topicBox.text_submitted.connect(func(t: String) -> void:
+		JumpTo(t)
+		if not _inTopic:
+			ViewTopic())
+	_indexView.add_child(_topicBox)
+	# The seven database tabs.
+	var group := ButtonGroup.new()
+	for i in Databases.size():
+		var tb := TextureButton.new()
+		tb.name = "Database%d" % i
+		tb.texture_normal = OUI.Tab(TabSockets[i], side)
+		tb.texture_pressed = OUI.Tab(TabSockets[i], side, "pressed")
+		tb.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		tb.toggle_mode = true
+		tb.button_group = group
+		tb.position = Vector2(TabsX + TabsPitch * i, TabsY) * K
+		tb.size = tb.texture_normal.get_size() if tb.texture_normal != null else Vector2(36, 41) * K
+		tb.tooltip_text = "Tab to show %s%s" % [Databases[i], "" if i == 0 else " database"]
+		tb.set_meta("title", Databases[i])
+		var db := i
+		tb.pressed.connect(func() -> void:
+			_current = -1
+			ShowIndex(db))
+		_indexView.add_child(tb)
+		_tabs.append(tb)
+	# The list under its header band.
+	_indexHeader = OUI.Text(_indexView, Databases[0], 41, 120, 330, 15, 12, Color.WHITE, HORIZONTAL_ALIGNMENT_LEFT, false, "Header")
+	_index = ItemList.new()
+	_index.name = "Index"
+	_index.position = Vector2(39, 139) * K
+	_index.size = Vector2(346, 163) * K
+	_index.add_theme_stylebox_override("panel", StyleBoxEmpty.new())
+	_index.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+	var sel := StyleBoxFlat.new()
+	sel.bg_color = OUI.SideColor(GameSettings.PlayerFaction)
+	sel.set_border_width_all(K)
+	sel.border_color = Color.WHITE
+	for st in ["selected", "selected_focus", "cursor", "cursor_unfocused"]:
+		_index.add_theme_stylebox_override(st, sel if st.begins_with("selected") else StyleBoxEmpty.new())
+	_index.add_theme_stylebox_override("hovered", StyleBoxEmpty.new())
+	_index.add_theme_font_override("font", OUI.Face(true))
+	_index.add_theme_font_size_override("font_size", 12 * K)
+	_index.add_theme_color_override("font_color", Color(0.47, 0.47, 0.47))
+	_index.add_theme_color_override("font_hovered_color", Color(0.8, 0.8, 0.8))
+	_index.add_theme_color_override("font_selected_color", Color.BLACK if side == "empire" else Color.WHITE)
+	_index.add_theme_constant_override("v_separation", 6 * K)
+	_index.add_theme_color_override("guide_color", Color(0, 0, 0, 0))   # no row rules in the original
+	_index.add_theme_constant_override("h_separation", 0)
+	_index.item_activated.connect(func(_i: int) -> void: ViewTopic())
+	_indexView.add_child(_index)
+	StyleScrollBar(_index.get_v_scroll_bar())
+
+	# ---- Topic view (Fig 3.11) ----
+	_topicView = Control.new()
+	_topicView.name = "TopicView"
+	_topicView.mouse_filter = Control.MOUSE_FILTER_PASS
+	_topicView.size = Vector2(FrameW, FrameH) * K
+	_topicView.visible = false
+	body.add_child(_topicView)
+	OUI.Place(_topicView, OUI.Pic("ency_topic_plate"), PlateX, PlateY, "Plate")
+	_topicTitle = OUI.Text(_topicView, "", 49, 14, 331, 17, 13, Color.WHITE, HORIZONTAL_ALIGNMENT_CENTER, true, "Title")
+	_topicTitle.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	var pic := TextureRect.new()
+	pic.name = "Picture"
+	pic.position = Vector2(12, 31) * K
+	pic.size = Vector2(400, 200) * K
+	pic.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
+	pic.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	pic.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_topicView.add_child(pic)
+	_picture = pic
+	_text = RichTextLabel.new()
+	_text.name = "Text"
+	_text.bbcode_enabled = true
+	_text.scroll_active = true
+	_text.position = Vector2(17, 232) * K
+	_text.size = Vector2(396, 86) * K
+	_text.add_theme_font_override("normal_font", OUI.Face())
+	_text.add_theme_font_size_override("normal_font_size", 13 * K)
+	_text.add_theme_color_override("default_color", Color.WHITE)
+	_text.add_theme_constant_override("line_separation", 0)
+	_text.add_theme_stylebox_override("normal", StyleBoxEmpty.new())
+	_text.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+	_topicView.add_child(_text)
+	StyleScrollBar(_text.get_v_scroll_bar())
+
+	# ---- the frame over both, its arrows and buttons ----
+	var frame := OUI.Place(body, OUI.Pic("frame." + side), 0, 0, "Frame")
+	frame.mouse_filter = Control.MOUSE_FILTER_PASS
+	frame.gui_input.connect(OnTitleBarGuiInput)
+	_arrow_button(_topicView, "ency_prev", 28, Prev)
+	_arrow_button(_topicView, "ency_next", 380, Next)
+	# The arrows sit on the frame's band: keep the topic view above the frame.
+	body.move_child(_topicView, body.get_child_count() - 1)
+	_frame_button(body, "ency_close", 0, "Close the Galactic Encyclopedia.", CloseWindow)
+	_viewTopicBtn = _frame_button(body, "ency_view_topic", 1, "Click here to see the selected topic.", ViewTopic)
+	_viewIndexBtn = _frame_button(body, "ency_view_index", 2, "While viewing a topic, click here to come back to the index.", func() -> void: ShowIndex())
 
 
 # ---- the window -----------------------------------------------------------
