@@ -61,7 +61,7 @@ func _init() -> void:
 	await process_frame
 
 	var tabs: TabContainer = w.get_node("%DefenseTabs")
-	var personnel: VBoxContainer = w.get_node("%PersonnelList")
+	var personnel: Container = w.get_node("%PersonnelList")
 
 	# Troops tab: clickable sabotage rows for the seen enemy regiments.
 	var troopRows := _intel_rows(tabs.get_node("Troops"))

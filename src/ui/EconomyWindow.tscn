@@ -64,6 +64,8 @@ color = Color(0.121569, 0.160784, 0.215686, 1)
 [node name="EconomyTabs" type="TabContainer" parent="MainVBox/ContentArea" unique_id=1577334684]
 unique_name_in_owner = true
 layout_mode = 2
+texture_filter = 1
+theme_override_constants/icon_max_width = 72
 theme_override_font_sizes/font_size = 10
 current_tab = 0
 

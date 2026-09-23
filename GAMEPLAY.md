@@ -1148,8 +1148,8 @@ invisible on the map — the only places it surfaced were the Planet window's te
 suffix and the GID's Uprisings mode. That is what made Subdue Uprising look as
 though it were offered against quiet worlds. Now drawn in `SectorWindow`, over
 the mission marker when both apply, with the mission menu still attached so Abort
-stays reachable. **The glyph is a placeholder**, in keeping with the `E`/`F`/`D`/`M`
-lettering on the other three corners — not the manual's flame artwork.
+stays reachable. The glyph is the original's flame when the player imported the
+art (`tools/RebellionArtImporter`), our own otherwise.
 
 #### The GID Uprisings mode has exactly two tiers *(confirmed)*
 
@@ -2658,6 +2658,11 @@ All of it is reached through the **System Defenses window** — double-click the
 This is the window §11 said you must go through to reach a character, and the
 window §3a's Fig. 2.13 showed the Garrison Requirement in.
 
+**Implemented** (`src/ui/defense_window.gd`, five tabs since 2026-09-23): the
+tabs are the original's pictures when imported, the personnel are cards
+(miniature over the name, as Fig 3.73), the system's picture lies behind the
+tabs, and the title is the system's name with its sprite.
+
 ### The defensive layers, and what each one stops *(PDF p124 / manual p126)*
 
 The manual maps threat to counter one-for-one:
@@ -3485,6 +3490,14 @@ Two display details worth copying:
 > **The first number here is the number of construction yards at this site. The
 > second number also includes the construction yard now being built.**
 
+**Implemented** (`src/ui/economy_window.gd`, matched to the original's window
+2026-09-23): the title is the system's name with its sprite; each queue row
+carries the original's picture (the ship, the compound, the hangar) with the
+yards ratio under it and the coloured header beside it; an idle queue reads the
+original's own "No Ships are being built" / "No Troops in training" / "No
+Facilities are being built"; the six tabs show the original's pictures, greyed
+when empty. All of it only when the player imported the art.
+
 That is the `1:2` notation §3a flagged: **built : built + under construction**.
 Worth noting against the code, where `ConstructionYards` defaults to 1 for a yard
 that does not exist — see [ECONOMY-NOTES.md](ECONOMY-NOTES.md) §6.
@@ -3744,6 +3757,16 @@ And the HQ marker, stated a third time:
 | **the star itself** | see below |
 | Window controls | Close, and **flip between left and right side of screen** |
 
+**When each corner is drawn** (`src/ui/sector_window.gd`, 2026-09-23, read off
+the original's own window: a freshly explored enemy world shows its factory and
+nothing else): Manufacturing only when the system has production facilities you
+know of; Defenses only when it has personnel, troops, fighters, shields or
+batteries you know of; Fleet only while a fleet is in orbit; Mission only while
+your mission runs there (or the uprising flame). "Know of" is the fogged intel,
+live on a world you hold. The icons sit tight against the planet: the
+original's bitmaps are 27×19 quadrant cells that tile around the system's
+centre, and ours are laid the same way.
+
 **★ And the star in the Sector window tracks the GID mode:**
 
 > **The size of this star corresponds to current Galactic Information Display.
@@ -3905,9 +3928,9 @@ Three independent sources:
    Fleets in System, Units Enroute to System). The original tracks fleet-borne
    personnel per system and ships display text for them.
 
-   ⚠ **Not yet built:** we draw four placeholder corner buttons
-   (`frontend/SectorWindow.cs:161`, `E`/`F`/`D`/`M`) against the original's six
-   named icons. `Characters in System`, `Characters on Fleets in System` and
+   ⚠ **Partly built:** the sector window draws the manual's four corner icons
+   (`src/ui/sector_window.gd`) against the original's six named icons.
+   `Characters in System`, `Characters on Fleets in System` and
    `Units Enroute to System` have no equivalent.
 
 The tier labels are confirmed verbatim from the same region: Idle Personnel is
@@ -4022,6 +4045,15 @@ Two views — **Index** (list, no detail) and **Topic** (picture + full text) �
 the selected database persists between them. Reachable three ways: the
 Encyclopedia control, right-click → Encyclopedia on any item, or the **ℹ icon
 present in many windows**, which jumps to the entry for the current context.
+
+**Implemented** (`src/ui/encyclopedia_window.gd`, 2026-09-23): Index view with
+the Topic entry box, the seven database tabs, the list and View Topic / View
+Index / Close; Topic view with the name, the browse arrows, the picture and
+the description, the chosen database persisting. Reached from the bottom-bar
+Encyclopedia control, F7, right-click → Encyclopedia on characters, units,
+fleets, facilities, missions and the HQ, and the Create Mission window's
+Encyclopedia button. Pictures and text are the player's imported originals
+(`tools/RebellionArtImporter`); rows without them show the pack's own facts.
 
 ### The two droids *(PDF p076 / manual p078)*
 

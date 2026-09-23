@@ -13,6 +13,10 @@ func Populate(planet: Planet) -> void:
 	var _facility: VBoxContainer = get_node("%facilities")
 
 	_title.text = planet.Name
+	SetTitleIcon(planet)
+	# The system's picture above its facts (TeeJ, 2026-09-23), when imported;
+	# an unexplored world shows none.
+	Art.Fill(get_node_or_null("%picture"), Art.Picture("planets", planet.PackId) if planet.IsExplored else null)
 	var player: Faction = GameSettings.PlayerFaction
 
 	# ALWAYS CLEAR PREVIOUS UI DATA FIRST
@@ -133,7 +137,9 @@ func _OnHqMenuAction(id: int, planet: Planet) -> void:
 				var r: Result = CommandBus.issue("move_hq", { "destination": dest.Name })
 				if not r.ok:
 					print("[HQ] %s" % r.error))
-		4:   # Encyclopedia - stubbed, as for all facilities.
-			print("[HQ] Encyclopedia for the headquarters at %s." % planet.Name)
+		4:   # Encyclopedia - the headquarters building's entry
+			var hq: Facility = Lq.first_or_null(planet.Facilities, func(f: Facility) -> bool: return f.HasRole("headquarters"))
+			if hq != null and hq.Def != null:
+				_uiManager.OpenEncyclopedia("facilities", hq.Def.Id)
 		5:   # Status
 			print("[HQ] Headquarters at %s." % planet.Name)

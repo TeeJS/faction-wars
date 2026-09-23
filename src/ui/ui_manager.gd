@@ -184,7 +184,11 @@ func RefreshCommsHighlights() -> void:
 				btn.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
 				btn.expand_icon = true
 				btn.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST   # an exact 2x: pixel-doubled, not smeared
-				btn.custom_minimum_size = Vector2(0, icon.get_height() * AlertIconScale + 8)
+				# The button is the icon plus a 4 px frame, centred in the
+				# column - not a column-wide bar (TeeJ, 2026-09-23: "make the
+				# rectangles fit the icons they are behind").
+				btn.custom_minimum_size = Vector2(icon.get_width() * AlertIconScale + 8, icon.get_height() * AlertIconScale + 8)
+				btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 			btn.icon = icon
 			btn.remove_theme_color_override("font_color")
 			btn.modulate = Color.WHITE
@@ -195,6 +199,7 @@ func RefreshCommsHighlights() -> void:
 			btn.text = btn.get_meta("label")
 			btn.expand_icon = false
 			btn.custom_minimum_size = Vector2.ZERO
+			btn.size_flags_horizontal = Control.SIZE_FILL
 		if waiting:
 			btn.add_theme_color_override("font_color", Color.YELLOW)
 			btn.modulate = Color(1.5, 1.5, 0.5)
@@ -257,6 +262,25 @@ func OnMessageIndexClicked(category: String = "All") -> void:
 			window.set_deferred("position", CommsRect.position)
 			RefreshCommsHighlights(),
 		CommsRect.position)
+
+
+## THE GALACTIC ENCYCLOPEDIA (manual p073-p074). One entry point: no
+## arguments opens the Index view (the Encyclopedia control, F7); a kind and
+## an id open that topic (right-click -> Encyclopedia, the i button). Kinds
+## are the overlay's: planets, units, facilities, missions, characters.
+## Preloaded by path: a new class_name can lag the editor's class cache.
+const EncyclopediaScene := preload("res://src/ui/EncyclopediaWindow.tscn")
+const EncyclopediaRect := Rect2(185, 99, 1000, 671)
+
+
+func OpenEncyclopedia(kind: String = "", id: String = "") -> void:
+	OpenWindow("Encyclopedia", EncyclopediaScene,
+		func(window) -> void:
+			window.Setup(self)
+			if not kind.is_empty():
+				window.ShowTopic(kind, id)
+			window.set_deferred("position", EncyclopediaRect.position),
+		EncyclopediaRect.position)
 
 
 ## The category the docked Comms Center is showing, or "" when it is not open.
@@ -886,6 +910,10 @@ func _unhandled_input(event: InputEvent) -> void:
 					return
 				KEY_F6:                       # F6 Message index (defaults to All - manual p079)
 					OnMessageIndexClicked("All")
+					get_viewport().set_input_as_handled()
+					return
+				KEY_F7:                       # F7 Encyclopedia (manual p081)
+					OpenEncyclopedia()
 					get_viewport().set_input_as_handled()
 					return
 

@@ -45,6 +45,47 @@ static func GidStar(faction_id: String, tier: String) -> Texture2D:
 	return _texture("gid/%s.%s.png" % [faction_id, tier])
 
 
+## A window's picture: original/windows/<name>.png (the Manufacturing window's
+## ship_construction / troops_in_training / facilities_under_construction).
+static func WindowPicture(name: String) -> Texture2D:
+	return _texture("windows/%s.png" % name)
+
+
+## A window tab's icon: original/tabs/<name>[.<faction id>][.pressed|.grey].png.
+## The per-side icons (manufacturing, fighters, troops, personnel) fall back
+## to the sideless file, so a pack with one set still gets it.
+static func TabIcon(name: String, faction_id: String, state: String = "") -> Texture2D:
+	var suffix := "" if state.is_empty() else "." + state
+	var tex: Texture2D = null
+	if not faction_id.is_empty():
+		tex = _texture("tabs/%s.%s%s.png" % [name, faction_id, suffix])
+	if tex == null:
+		tex = _texture("tabs/%s%s.png" % [name, suffix])
+	return tex
+
+
+## The same picture pixel-doubled (nearest neighbour), for the 2x the HUD
+## draws the original's small bitmaps at. Cached per texture and factor.
+static var _scaled: Dictionary = {}
+
+static func Scaled(tex: Texture2D, factor: int) -> Texture2D:
+	if tex == null or factor <= 1:
+		return tex
+	var key := "%s@%d" % [tex.get_instance_id(), factor]
+	if _scaled.has(key):
+		return _scaled[key]
+	var img: Image = tex.get_image()
+	if img == null:
+		return tex
+	img = img.duplicate()
+	if img.is_compressed():
+		img.decompress()
+	img.resize(img.get_width() * factor, img.get_height() * factor, Image.INTERPOLATE_NEAREST)
+	var out := ImageTexture.create_from_image(img)
+	_scaled[key] = out
+	return out
+
+
 ## The planet sprite for a map.json artwork_id: original/planet_sprites/<n>.png.
 static func PlanetSprite(artwork_id: int) -> Texture2D:
 	if artwork_id <= 0:
@@ -115,10 +156,39 @@ static func Fill(rect: Control, picture: Texture2D) -> TextureRect:
 	return existing
 
 
+## The imported Encyclopedia description of one pack row, or "" - from
+## original/descriptions.json ({ "characters": { id: text }, ... }), read once.
+static var _descriptions: Dictionary = {}
+static var _descriptions_loaded: bool = false
+
+static func Description(kind: String, id: String) -> String:
+	if not _descriptions_loaded:
+		_descriptions_loaded = true
+		_descriptions = {}
+		var pack_id: String = FactionRegistry.Pack.Manifest.Id if FactionRegistry.Pack != null else ""
+		var roots: Array[String] = ["user://original/%s" % pack_id]
+		if not IgnoreProjectFolder:
+			roots.push_front("%s/%s/original" % [FactionRegistry.PACKS_ROOT, pack_id])
+		for base in roots:
+			var path := "%s/descriptions.json" % base
+			var parsed: Variant = null
+			if FileAccess.file_exists(path):
+				parsed = JSON.parse_string(FileAccess.get_file_as_string(path))
+			elif ResourceLoader.exists(path):
+				var res: Variant = load(path)   # an export packs the JSON as a resource
+				parsed = res.data if res != null and "data" in res else null
+			if parsed is Dictionary:
+				_descriptions = parsed
+				break
+	var section: Variant = _descriptions.get(kind)
+	return str(section.get(id, "")) if section is Dictionary else ""
+
+
 ## Forget everything loaded (a new pack, or a test that wrote files).
 static func Reset() -> void:
 	_cache.clear()
 	_cache_pack = ""
+	_descriptions_loaded = false
 
 
 static func _texture(rel: String) -> Texture2D:

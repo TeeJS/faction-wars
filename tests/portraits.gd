@@ -105,7 +105,10 @@ func _init() -> void:
 		await process_frame
 	var dw: DraggableWindow = _window_titled_like(ui, home.Name)
 	var row: Button = _row_for(dw, who)
-	_check(row != null and row.has_meta("miniature") and row.icon != null and row.icon.get_width() == 61, "the Defenses personnel row carries the 61x25 miniature")
+	# The card shows the 61x25 miniature pixel-doubled (DraggableWindow.CardStyle:
+	# Art.Scaled(mini, 2)), so the icon is 122x50; the "miniature" meta says it
+	# is the imported miniature and not a placeholder.
+	_check(row != null and row.has_meta("miniature") and row.icon != null and row.icon.get_width() == 122 and row.icon.get_height() == 50, "the Defenses personnel row carries the 61x25 miniature (shown 2x as 122x50)")
 
 	# Message window: the character's portrait on a message about them, shown
 	# 1:1 (the 180 px slot must not blow an 80 px face up), and the 400x200
