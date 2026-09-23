@@ -1,6 +1,6 @@
 # Plan: the original's art out of the repo, imported by owners (Option A)
 
-Status: **signed off by TeeJ, 2026-09-23.** Phases 0-2 done; see each phase.
+Status: **signed off by TeeJ, 2026-09-23.** Phases 0-3 done; see each phase.
 Stop after every phase with a go/no-go read-out.
 
 ## Charter
@@ -110,6 +110,15 @@ Full-screen bitmaps in the install, for later use: `COMMON.DLL` 10100-10103, 200
 - Tests: a tiny two-faction fixture pack (new factions with swapped skins, a shipyard by original id, one row by `art` reference, one character with its own picture) renders the original look. Without the art set it falls back.
 
 ### Phase 3: import in the game (web and desktop)
+**Done 2026-09-23** (`src/ui/pack_import.gd`, `tests/pack_import.gd`, `tests/pack_picker.gd`).
+Checked in a real browser (the Browser pane, a web export without the committed art):
+the Import button imported the exporter's 1,082-file set; it survived a reload, a
+re-import replaced it, Remove survived a reload, and with it gone the game fell back
+to the button menu and the plain map in the same layout. Drag and drop was not
+exercised in the browser (the engine's own drop handler feeds the same import).
+The exporter (2.1.0) mirrors the galaxy map's edges out to 640x480 so the map keeps
+its placement.
+
 - An **Import pack file...** button on the pack picker. Drag and drop anywhere (the web build accepts dropped files; `display_server_web.cpp`). Desktop uses the native file dialog. Web uses the browser's file picker, which works on tablets too.
 - Unzip, check `manifest.json` and every SHA-256, then write:
   - an art set to `user://art/<set>/`;
