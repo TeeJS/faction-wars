@@ -51,7 +51,8 @@ pick the disc instead.
 
 ## Command line
 
-Runs without a window; exit code 0 = done, 1 = a problem (the log says which),
+Runs without a window and prints nothing (PowerShell does not wait for it);
+read the log. Exit code 0 = done, 1 = a problem (the log says which),
 2 = failed.
 
 ```powershell
