@@ -377,6 +377,27 @@ func EncyclopediaPosition(window: Control) -> Vector2:
 	return (frame.get_center() - size / 2.0).floor().max(Vector2(150, 99))
 
 
+## THE CREATE MISSION WINDOW as the original draws it (manual p042 Fig 2.34,
+## p103-p104 Figs 3.47 / 3.48), centred and modal like the dialog it replaces,
+## when the player imported its art. False when not: the caller then shows
+## the plain dialog. `launch` takes (mission type, decoys).
+## Preloaded by path: a new script can lag the editor's class cache.
+const CreateMissionScene := preload("res://src/ui/CreateMissionWindow.tscn")
+const CreateMissionScript := preload("res://src/ui/create_mission_window.gd")
+
+
+func OpenCreateMission(team: Array, origin: Planet, target: Planet, victim: Character, thing: Variant,
+		legal: Array, launch: Callable) -> bool:
+	if not CreateMissionScript.CanBuild():
+		return false
+	var size := Vector2(CreateMissionScript.PlateW, CreateMissionScript.PlateH) * CreateMissionScript.K
+	var at: Vector2 = ((get_viewport().get_visible_rect().size - size) / 2.0).floor()
+	OpenWindow("Create Mission", CreateMissionScene,
+		func(window) -> void: window.Setup(self, team, origin, target, victim, thing, legal, launch),
+		at)
+	return true
+
+
 ## The category the docked Comms Center is showing, or "" when it is not open.
 func CommsCategory() -> String:
 	var w: DraggableWindow = _openWindows.get("Communications")
