@@ -52,16 +52,25 @@ func _init() -> void:
 
 	# A marker lands at coordinate * scale - the picture and the regions agree.
 	# A VISIBLE marker: an unexplored world's dot is hidden and never placed.
+	# With the original's art imported, the marker is its star sprite and the
+	# label is hidden.
 	var planet: Planet = null
+	var star: Control = null
 	for sector in GameState.ActiveGalaxy:
 		for p in sector.Planets:
-			if (map._planetStars[p] as Label).visible:
+			var sprite: Control = map._planetSprites[p]
+			var label: Control = map._planetStars[p]
+			star = sprite if sprite.visible else (label if label.visible else null)
+			if star != null:
 				planet = p
 				break
 		if planet != null:
 			break
 	_check(planet != null, "some world has a visible marker")
-	var star: Label = map._planetStars[planet]
+	if planet == null:
+		print("[map_backdrop] %d checks, %d failed" % [_checks, _fails])
+		quit(1)
+		return
 	var centre: Vector2 = star.position + star.size / 2.0
 	_check(centre.is_equal_approx(map.MapPos(planet.MapX, planet.MapY)),
 		"%s's marker is at its coordinate x scale (%s)" % [planet.Name, str(centre)])
