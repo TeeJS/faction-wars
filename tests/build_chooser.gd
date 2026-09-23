@@ -55,6 +55,17 @@ func _init() -> void:
 		var dialog: ConfirmationDialog = Lq.first_or_null(ew.get_children(), func(c) -> bool: return c is ConfirmationDialog)
 		var bs: Node = ui._openWindows.get("Build Selection")
 		_check(dialog != null or bs != null, "%s: the chooser opens at %s" % [role, world.Name])
+		if bs != null and role == "produces_troop":
+			# The original's training list starts with the regiments (TeeJ's screenshot).
+			var kinds: Array = Lq.select(bs._items, func(it: Dictionary) -> String:
+				var def: PackDefs.UnitDef = Lq.first_or_null(MilitaryCatalog.All(), func(r) -> bool: return r.DisplayName == str(it.name))
+				return def.Kind if def != null else "?")
+			var first_other: int = kinds.find("spec_force")
+			_check(first_other < 0 or not kinds.slice(first_other).has("troop"),
+				"the training list puts the regiments first %s" % str(kinds))
+			bs.CloseWindow()
+			for _i in 2:
+				await process_frame
 		var wanted: Array = Lq.select(MilitaryCatalog.BuildableAt(role, us), func(r) -> String: return r.DisplayName)
 		if dialog != null:
 			var picker: OptionButton = dialog.find_children("*", "OptionButton", true, false)[0]
