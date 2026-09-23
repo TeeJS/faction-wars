@@ -46,7 +46,9 @@ var _inTopic: bool = false
 
 var _topicBox: LineEdit
 var _tabs: Array[BaseButton] = []
-var _index: ItemList
+## The Index view's list: an ItemList in the plain window, OriginalIndex in
+## the original's (the same calls).
+var _index
 var _indexView: Control
 var _topicView: Control
 var _topicTitle: Label
@@ -69,13 +71,18 @@ const PlateY := 13
 ## The Empire's buttons are 44x41 at x 426, the Alliance's 32x31 at x 423.
 const SideButtonsX := {"empire": 426, "alliance": 423}
 const SideButtonsY := {"empire": [21, 89, 143], "alliance": [25, 93, 147]}
-## The seven database tabs (Fig 3.10), 36x41 sockets at 52-pixel pitch.
-## PROVISIONAL: no screenshot of the original's Index view yet; these are
-## the Message Index's own sockets that best match the manual's print.
-const TabSockets := ["msg_all", "msg_loyalty", "msg_fleets", "msg_manufacturing", "msg_missions", "msg_chat", "msg_advice"]
-const TabsX := 37
-const TabsY := 72
+## The seven database tabs (Fig 3.10), measured on TeeJ's screenshots of the
+## original's Alliance Index view (rebuilt to 0 differing pixels): each
+## picture's top 49x41 at x 36 + 52i, y 78; the Empire's are the Alliance's
+## twins (not seen). The band names the database (TEXTSTRA.DLL 6224-6230).
+const TabNames := ["ency_tab_all", "ency_tab_system", "ency_tab_ship", "ency_tab_facilities",
+	"ency_tab_missions", "ency_tab_troop", "ency_tab_personnel"]
+const TabsX := 36
+const TabsY := 78
 const TabsPitch := 52
+const TabSize := Vector2(49, 41)
+const BandCaptions := ["All Databases", "System Database", "Ship Database", "Facilities Database",
+	"Missions Database", "Troop Database", "Personnel Database"]
 
 var _original: bool = false
 
@@ -107,6 +114,11 @@ func _load_entries() -> void:
 			_entries.append(Entry.new(KindSystem, p.Id, p.DisplayName, 1))
 	for u in pack.Units:
 		var db: int = 2 if u.Kind == "capital_ship" or u.Kind == "fighter" else 5
+		# The original files the special forces under Personnel (TeeJ's
+		# screenshot of its Personnel Database lists Bothan Spies among the
+		# characters). In its own window only.
+		if _original and u.Kind == "spec_force":
+			db = 6
 		_entries.append(Entry.new(KindUnit, u.Id, u.DisplayName, db))
 	for f in pack.Facilities:
 		_entries.append(Entry.new(KindFacility, f.Id, f.DisplayName, 3))
@@ -120,12 +132,16 @@ func _load_entries() -> void:
 		return a.Name.naturalnocasecmp_to(b.Name) < 0 if a.Database == b.Database else a.Database < b.Database)
 
 
-## The entries of a database (0 = every database, in database order).
+## The entries of a database (0 = every database, in database order - one
+## alphabetical list in the original's window, as its All Databases is:
+## A-wing, Abduction, Ackbar, Adar Tallon, Adega...).
 func EntriesOf(db: int) -> Array[Entry]:
 	var out: Array[Entry] = []
 	for e in _entries:
 		if db == 0 or e.Database == db:
 			out.append(e)
+	if db == 0 and _original:
+		out.sort_custom(func(a: Entry, b: Entry) -> bool: return a.Name.naturalnocasecmp_to(b.Name) < 0)
 	return out
 
 
@@ -142,6 +158,8 @@ func ShowIndex(db: int = -1) -> void:
 		_index.add_item(e.Name)
 	if _current >= 0 and _current < _shown.size():
 		_index.select(_current)
+	elif _original and not _shown.is_empty():
+		_index.select(0)   # the original shows the first entry picked on a tab
 	for i in _tabs.size():
 		_tabs[i].button_pressed = i == _database
 	_indexView.visible = true
@@ -149,7 +167,7 @@ func ShowIndex(db: int = -1) -> void:
 	_viewTopicBtn.disabled = _shown.is_empty()
 	_viewIndexBtn.disabled = true
 	if _indexHeader != null:
-		_indexHeader.text = Databases[_database]
+		_indexHeader.text = BandCaptions[_database] if _original else Databases[_database]
 	_side_states()
 	(get_node("%TitleBarLabel") as Label).text = " Galactic Encyclopedia - %s" % Databases[_database]
 
@@ -307,6 +325,8 @@ func _can_build_original() -> bool:
 	var side: String = _side()
 	if not OUI.Has(["frame." + side, "ency_topic_plate", "ency_index_plate"]):
 		return false
+	if Art.TabIcon("ency_tab_all", side) == null:
+		return false
 	for b in ["ency_close.", "ency_view_topic.", "ency_view_index."]:
 		if Art.ButtonIcon(b + side) == null:
 			return false
@@ -445,15 +465,17 @@ func _build_original() -> void:
 	_indexView.size = Vector2(FrameW, FrameH) * K
 	body.add_child(_indexView)
 	OUI.Place(_indexView, OUI.Pic("ency_index_plate"), PlateX, PlateY, "Plate")
-	OUI.Text(_indexView, "Galactic Encyclopedia", 97, 15, 250, 16, 15, Color.WHITE, HORIZONTAL_ALIGNMENT_LEFT, true, "Title")
-	OUI.Text(_indexView, "Topic", 37, 46, 90, 14, 12, Color(0.8, 0.8, 0.8), HORIZONTAL_ALIGNMENT_LEFT, false, "TopicLabel")
+	# Measured: the title (bold Arial 13) from (140, 14), "Topic" (Arial 13)
+	# from (36, 48), the typed text from (143, 45) in the plate's own box.
+	OUI.Text(_indexView, "Galactic Encyclopedia", 140, 15, 250, 16, 13, Color.WHITE, HORIZONTAL_ALIGNMENT_LEFT, true, "Title")
+	OUI.Text(_indexView, "Topic", 36, 49, 90, 16, 13, Color.WHITE, HORIZONTAL_ALIGNMENT_LEFT, false, "TopicLabel")
 	_topicBox = LineEdit.new()
 	_topicBox.name = "TopicBox"
-	_topicBox.position = Vector2(144, 46) * K
-	_topicBox.size = Vector2(240, 15) * K
+	_topicBox.position = Vector2(143, 45) * K
+	_topicBox.size = Vector2(243, 16) * K
 	_topicBox.placeholder_text = ""
 	_topicBox.flat = true
-	OUI.Style(_topicBox, 12, Color.WHITE)
+	OUI.Style(_topicBox, 13, Color.WHITE)
 	var clear := StyleBoxEmpty.new()
 	for st in ["normal", "focus", "read_only"]:
 		_topicBox.add_theme_stylebox_override(st, clear)
@@ -468,14 +490,14 @@ func _build_original() -> void:
 	for i in Databases.size():
 		var tb := TextureButton.new()
 		tb.name = "Database%d" % i
-		tb.texture_normal = OUI.Tab(TabSockets[i], side)
-		tb.texture_pressed = OUI.Tab(TabSockets[i], side, "pressed")
+		tb.texture_normal = _tab_picture(OUI.Tab(TabNames[i], side))
+		tb.texture_pressed = _tab_picture(OUI.Tab(TabNames[i], side, "pressed"))
 		tb.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		tb.toggle_mode = true
 		tb.button_group = group
 		tb.position = Vector2(TabsX + TabsPitch * i, TabsY) * K
-		tb.size = tb.texture_normal.get_size() if tb.texture_normal != null else Vector2(36, 41) * K
-		tb.tooltip_text = "Tab to show %s%s" % [Databases[i], "" if i == 0 else " database"]
+		tb.size = TabSize * K
+		tb.tooltip_text = BandCaptions[i]
 		tb.set_meta("title", Databases[i])
 		var db := i
 		tb.pressed.connect(func() -> void:
@@ -484,31 +506,28 @@ func _build_original() -> void:
 		_indexView.add_child(tb)
 		_tabs.append(tb)
 	# The list under its header band.
-	_indexHeader = OUI.Text(_indexView, Databases[0], 41, 120, 330, 15, 12, Color.WHITE, HORIZONTAL_ALIGNMENT_LEFT, false, "Header")
-	_index = ItemList.new()
-	_index.name = "Index"
-	_index.position = Vector2(39, 139) * K
-	_index.size = Vector2(346, 163) * K
-	_index.add_theme_stylebox_override("panel", StyleBoxEmpty.new())
-	_index.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
-	var sel := StyleBoxFlat.new()
-	sel.bg_color = OUI.SideColor(GameSettings.PlayerFaction)
-	sel.set_border_width_all(K)
-	sel.border_color = Color.WHITE
-	for st in ["selected", "selected_focus", "cursor", "cursor_unfocused"]:
-		_index.add_theme_stylebox_override(st, sel if st.begins_with("selected") else StyleBoxEmpty.new())
-	_index.add_theme_stylebox_override("hovered", StyleBoxEmpty.new())
-	_index.add_theme_font_override("font", OUI.Face(true))
-	_index.add_theme_font_size_override("font_size", 12 * K)
-	_index.add_theme_color_override("font_color", Color(0.47, 0.47, 0.47))
-	_index.add_theme_color_override("font_hovered_color", Color(0.8, 0.8, 0.8))
-	_index.add_theme_color_override("font_selected_color", Color.BLACK if side == "empire" else Color.WHITE)
-	_index.add_theme_constant_override("v_separation", 6 * K)
-	_index.add_theme_color_override("guide_color", Color(0, 0, 0, 0))   # no row rules in the original
-	_index.add_theme_constant_override("h_separation", 0)
-	_index.item_activated.connect(func(_i: int) -> void: ViewTopic())
-	_indexView.add_child(_index)
-	StyleScrollBar(_index.get_v_scroll_bar())
+	# The band's caption (bold Arial 13) from (40, 119).
+	_indexHeader = OUI.Text(_indexView, BandCaptions[0], 40, 120, 330, 16, 13, Color.WHITE, HORIZONTAL_ALIGNMENT_LEFT, true, "Header")
+	# The list: names from x 41 (cut there), a row every 20 from y 139, 8
+	# showing, and the original's scroll bar at (374, 137).
+	var list := OriginalIndex.new()
+	list.name = "Index"
+	list.k = K
+	list.position = Vector2(41, 137) * K
+	list.size = Vector2(333, 160) * K
+	list.font = OUI.Face()
+	_indexView.add_child(list)
+	var scroll := OUI.ScrollBar12.new()
+	scroll.name = "ScrollBar"
+	scroll.k = K
+	scroll.parts = [OUI.Btn("scroll_up"), OUI.Btn("scroll_down"), OUI.Btn("scroll_thumb_top"), OUI.Btn("scroll_thumb_mid"), OUI.Btn("scroll_thumb_bottom")]
+	scroll.position = Vector2(374, 137) * K
+	scroll.size = Vector2(OUI.ScrollBar12.W - 1, 160) * K
+	_indexView.add_child(scroll)
+	list.bar = scroll
+	scroll.scrolled.connect(list.scroll_to)
+	list.item_activated.connect(func(_i: int) -> void: ViewTopic())
+	_index = list
 
 	# ---- Topic view (Fig 3.11) ----
 	_topicView = Control.new()
@@ -548,6 +567,10 @@ func _build_original() -> void:
 	var frame := OUI.Place(body, OUI.Pic("frame." + side), 0, 0, "Frame")
 	frame.mouse_filter = Control.MOUSE_FILTER_PASS
 	frame.gui_input.connect(OnTitleBarGuiInput)
+	if side == "alliance":   # the Alliance's three-socket column over the frame's strip
+		var column := OUI.Place(body, OUI.Pic("ency_side.alliance"), 412, 0, "SideColumn")
+		column.mouse_filter = Control.MOUSE_FILTER_PASS
+		column.gui_input.connect(OnTitleBarGuiInput)
 	_arrow_button(_topicView, "ency_prev", 28, Prev)
 	_arrow_button(_topicView, "ency_next", 380, Next)
 	# The arrows sit on the frame's band: keep the topic view above the frame.
@@ -555,6 +578,118 @@ func _build_original() -> void:
 	_frame_button(body, "ency_close", 0, "Close the Galactic Encyclopedia.", CloseWindow)
 	_viewTopicBtn = _frame_button(body, "ency_view_topic", 1, "Click here to see the selected topic.", ViewTopic)
 	_viewIndexBtn = _frame_button(body, "ency_view_index", 2, "While viewing a topic, click here to come back to the index.", func() -> void: ShowIndex())
+
+
+## A tab picture as the original draws it: its top 49x41 (the Personnel
+## pictures are 57 tall).
+static func _tab_picture(tex: Texture2D) -> Texture2D:
+	if tex == null:
+		return null
+	var cut := AtlasTexture.new()
+	cut.atlas = tex
+	cut.region = Rect2(Vector2.ZERO, TabSize * OUI.K)
+	return cut
+
+
+## THE ORIGINAL'S INDEX LIST (TeeJ's screenshots, 0 differing pixels): a
+## name every 20 pixels, eight showing, in regular Arial 13 - grey
+## (120,120,120), the picked one white, no bar - cut at its left edge; the
+## scroll bar (OUI.ScrollBar12) steps a row. It answers the ItemList calls
+## this window makes: clear, add_item, select, get_selected_items,
+## ensure_current_is_visible, get_item_text, item_count, item_activated.
+class OriginalIndex extends Control:
+	signal item_activated(index: int)
+	const Pitch := 20
+	const Shown := 8
+	## A name's line starts 3 pixels under its row's top (the text cell's
+	## top is 2 under it: 139 against 137).
+	const TextTop := 3
+	const Grey := Color(120 / 255.0, 120 / 255.0, 120 / 255.0)
+	var k: int = 2
+	var font: Font
+	var bar: Control
+	var _names: Array[String] = []
+	var _rows: Array = []
+	var _selected: int = -1
+	var _first: int = 0
+	var item_count: int:
+		get:
+			return _names.size()
+
+	func _init() -> void:
+		clip_contents = true
+		mouse_filter = Control.MOUSE_FILTER_STOP
+
+	func clear() -> void:
+		for r in _rows:
+			(r as Node).queue_free()
+		_rows.clear()
+		_names.clear()
+		_selected = -1
+		_first = 0
+		_sync_bar()
+
+	func add_item(text: String) -> int:
+		var i: int = _names.size()
+		_names.append(text)
+		var l := Label.new()
+		l.text = text
+		l.mouse_filter = Control.MOUSE_FILTER_STOP
+		l.add_theme_font_override("font", font)
+		l.add_theme_font_size_override("font_size", 13 * k)
+		l.add_theme_color_override("font_color", Grey)
+		l.size = Vector2(size.x, Pitch * k)
+		l.gui_input.connect(func(e: InputEvent) -> void:
+			if e is InputEventMouseButton and e.pressed and e.button_index == MOUSE_BUTTON_LEFT:
+				select(i)
+				if e.double_click:
+					item_activated.emit(i))
+		add_child(l)
+		_rows.append(l)
+		_place()
+		_sync_bar()
+		return i
+
+	func get_item_text(i: int) -> String:
+		return _names[i] if i >= 0 and i < _names.size() else ""
+
+	func select(i: int, _single: bool = true) -> void:
+		if _selected >= 0 and _selected < _rows.size():
+			(_rows[_selected] as Label).add_theme_color_override("font_color", Grey)
+		_selected = i
+		if i >= 0 and i < _rows.size():
+			(_rows[i] as Label).add_theme_color_override("font_color", Color.WHITE)
+
+	func get_selected_items() -> PackedInt32Array:
+		return PackedInt32Array([_selected]) if _selected >= 0 else PackedInt32Array()
+
+	func ensure_current_is_visible() -> void:
+		if _selected < 0:
+			return
+		if _selected < _first:
+			scroll_to(_selected)
+		elif _selected >= _first + Shown:
+			scroll_to(_selected - Shown + 1)
+
+	func scroll_to(first: int) -> void:
+		_first = clampi(first, 0, maxi(0, _names.size() - Shown))
+		_place()
+		if bar != null and int(bar.get("first")) != _first:
+			bar.call("set_rows", _first, Shown, _names.size())
+
+	func _place() -> void:
+		for i in _rows.size():
+			(_rows[i] as Control).position = Vector2(0, TextTop + (i - _first) * Pitch) * k
+
+	func _sync_bar() -> void:
+		if bar != null:
+			bar.call("set_rows", _first, Shown, _names.size())
+
+	func _gui_input(event: InputEvent) -> void:
+		if event is InputEventMouseButton and event.pressed and bar != null \
+				and (event.button_index == MOUSE_BUTTON_WHEEL_UP or event.button_index == MOUSE_BUTTON_WHEEL_DOWN):
+			bar.call("step", -1 if event.button_index == MOUSE_BUTTON_WHEEL_UP else 1)
+			accept_event()
 
 
 # ---- the window -----------------------------------------------------------

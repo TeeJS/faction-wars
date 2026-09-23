@@ -4186,9 +4186,20 @@ the original's own: the side's 470x331 frame (STRATEGY.DLL 10335 Alliance,
 10336 Empire), the Index plate (10338) or the Topic plate (10337) inside it at
 (12, 13), the arrows (10382-10387), the 400x200 picture at (12, 31), the text
 box with the original's scrollbar, and the side's buttons down the right (the
-Empire's 44x41, the Alliance's 32x31). **The seven Index-view tab pictures are
-provisional**: no screenshot of the original's Index view yet, so they are the
-Message Index sockets that best match the manual's print of Fig 3.10. Reached from the bottom-bar
+Empire's 44x41, the Alliance's 32x31). **The Index view** (TeeJ's Alliance
+screenshots of All Databases and Personnel, rebuilt to 0 differing pixels):
+the seven tab pictures (10339-10362, 11615-11618; the top 49x41 of each) at
+x 36 + 52i, y 78; the title (bold Arial 13) from (140,14), "Topic" from
+(36,48); the band's caption the database's full name ("Personnel Database",
+TEXTSTRA 6224-6230); a name every 20 pixels from (41,139), eight showing, grey
+(120,120,120) and the picked one white with no bar, the first picked on a tab;
+the original's scroll bar at (374,137); the Alliance's socket column (10585)
+at (412,0). **All Databases is one alphabetical list** of every kind, and
+**the special forces are under Personnel** (the original's shows Bothan Spies
+there). **Inferred**: the Empire's tab pictures (the Alliance's twins).
+**Not matched**: the Topic box's text shadow; the original's All Databases
+has no Abregado between Abduction and Ackbar - which systems it lists is not
+known. Reached from the bottom-bar
 Encyclopedia control, F7, right-click → Encyclopedia on characters, units,
 fleets, facilities, missions and the HQ, and the Create Mission window's
 Encyclopedia button. Pictures and text are the player's imported originals
