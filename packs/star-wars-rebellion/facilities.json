@@ -24,7 +24,7 @@
     },
     {
       "id": "shipyard",
-      "display_name": "Shipyard",
+      "display_name": "Orbital Shipyard",
       "family": "shipyard",
       "tier": 1,
       "roles": [
@@ -216,7 +216,7 @@
     },
     {
       "id": "ion_cannon",
-      "display_name": "Ion Cannon",
+      "display_name": "KDY-150",
       "family": "ion_cannon",
       "tier": 1,
       "roles": [
@@ -242,7 +242,7 @@
     },
     {
       "id": "turbolaser_battery",
-      "display_name": "Turbolaser Battery",
+      "display_name": "LNR Series I",
       "family": "turbolaser_battery",
       "tier": 1,
       "roles": [
@@ -268,7 +268,7 @@
     },
     {
       "id": "planetary_shield",
-      "display_name": "Planetary Shield",
+      "display_name": "GenCore Level I",
       "family": "planetary_shield",
       "tier": 1,
       "roles": [
@@ -319,7 +319,7 @@
     },
     {
       "id": "advanced_turbolaser_battery",
-      "display_name": "Advanced Turbolaser Battery",
+      "display_name": "LNR Series II",
       "family": "turbolaser_battery",
       "tier": 2,
       "roles": [
@@ -345,7 +345,7 @@
     },
     {
       "id": "advanced_planetary_shield",
-      "display_name": "Advanced Planetary Shield",
+      "display_name": "GenCore Level II",
       "family": "planetary_shield",
       "tier": 2,
       "roles": [

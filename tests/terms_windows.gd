@@ -117,14 +117,14 @@ func _init() -> void:
 	_check(battery != null, "we hold a battery somewhere")
 	if shield != null:
 		var l5: Array = await _open("DefenseFacilityStatusWindow", func() -> void: _ui.OpenDefenseFacilityStatusWindow(shield))
-		_check(l5.has("Planetary Shield Status"), "the shield's window is titled 'Planetary Shield Status'")
-		_check(l5.has("Planetary Shield"), "the shield's type reads 'Planetary Shield'")
+		_check(l5.has("GenCore Level I Status"), "the shield's window is titled 'GenCore Level I Status' (the original's model name, TEXTSTRA 8706)")
+		_check(l5.has("GenCore Level I"), "the shield's type reads 'GenCore Level I'")
 		_check(l5.has("Shield Strength:"), "the shield row reads 'Shield Strength:'")
 		_check(Lq.any(l5, func(t: String) -> bool: return t.ends_with(" HP")), "the shield row has a value")
 		_check(l5.has("🛡️"), "the shield's glyph")
 	if battery != null:
 		var l6: Array = await _open("DefenseFacilityStatusWindow", func() -> void: _ui.OpenDefenseFacilityStatusWindow(battery))
-		_check(l6.has("Turbolaser Battery Status"), "the battery's window is titled 'Turbolaser Battery Status'")
+		_check(l6.has("LNR Series I Status"), "the battery's window is titled 'LNR Series I Status' (TEXTSTRA 8705)")
 		_check(l6.has("N/A"), "the battery has no shield strength")
 		_check(l6.has("💥"), "the battery's glyph")
 	_check(Terms.label("shield_active") == "Active Shielding" and Terms.label("weapon_armed") == "Weapon Armed", "the Defenses tags keep their words")
