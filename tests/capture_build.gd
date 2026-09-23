@@ -5,6 +5,9 @@ extends SceneTree
 ## (NOT --headless):
 ##
 ##   Godot_console.exe --path . --resolution 1440x850 -s tests/capture_build.gd -- --out=C:/tmp/build.png [--faction=alliance]
+##
+## --role=produces_troop builds at a training facility instead; --list drops
+## the item list, as in TeeJ's screenshot of the original's.
 
 func _init() -> void:
 	await process_frame
@@ -20,13 +23,14 @@ func _init() -> void:
 		await process_frame
 	var ui: UIManager = main.get_node("UIManager")
 	var us: Faction = GameSettings.PlayerFaction
+	var role := _arg("--role=", "produces_facility")
 	var world: Planet = Lq.first_or_null(GameState.AllPlanets(), func(p: Planet) -> bool:
-		return p.ControllingFaction == us and Lq.any(p.Facilities, func(f: Facility) -> bool: return f.HasRole("produces_facility")))
+		return p.ControllingFaction == us and Lq.any(p.Facilities, func(f: Facility) -> bool: return f.HasRole(role)))
 	ui.OnEconomyClicked(world)
 	for _i in 3:
 		await process_frame
 	var ew: Node = ui._openWindows.get(world.Name + " Economy")
-	ew.OpenBuildChooser(world, "produces_facility")
+	ew.OpenBuildChooser(world, role)
 	for _i in 3:
 		await process_frame
 	var w: Control = ui._openWindows.get("Build Selection")
@@ -35,6 +39,8 @@ func _init() -> void:
 		for i in w._items.size():
 			if str(w._items[i].name) == "Construction Yard":
 				w._show(i)
+		if "--list" in OS.get_cmdline_user_args():
+			w._open_list(true)
 		for _i in 3:
 			await process_frame
 		var img: Image = root.get_viewport().get_texture().get_image()

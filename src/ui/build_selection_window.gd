@@ -37,10 +37,12 @@ const UpAt := Vector2(189, 196)
 const DownAt := Vector2(189, 205)
 const ButtonXs := [5, 73, 141]
 const ButtonY := 224
-## PROVISIONAL (no screenshot of the open list yet): where it drops and how
-## tall a row is.
-const ListAt := Vector2(5, 108)
-const ListRowH := 14
+## The list the arrow drops (measured on TeeJ's screenshot of the original's,
+## rebuilt to 0 differing pixels): OUI.DropList over the costs, the times and
+## the buttons - each item's 122x50 picture every 70 pixels from y 119, its
+## name (Arial 11) centred over the picture's last rows.
+const ListRect := Rect2(9, 111, 195, 144)
+const ListLayout := {"top": 8, "pitch": 70, "picture_x": 38, "picture_y": 0, "name_y": 44, "name_px": 11}
 
 ## [{ name, picture (drawn size), refined, maint, days, blocked, place:
 ##    Callable(count) -> Result, encyclopedia: [kind, id] }]
@@ -68,7 +70,7 @@ var _listRows: Array = []
 
 ## True when the player imported the art this window is made of.
 static func CanBuild() -> bool:
-	return OUI.Has(["build_plate", "mission_list"]) and Art.ButtonIcon("build_ok") != null \
+	return OUI.Has(["build_plate", "list_starfield"]) and Art.ButtonIcon("build_ok") != null \
 		and Art.ButtonIcon("build_list_open") != null
 
 
@@ -109,7 +111,7 @@ func _build() -> void:
 	_picture = OUI.Place(_canvas, null, 0, PictureTop, "Picture")
 	_name = OUI.Text(_canvas, "", PictureCentreX - 100, NameY, 200, 13, 11, Color.WHITE, HORIZONTAL_ALIGNMENT_CENTER, false, "Name")
 	OUI.PictureButton(_canvas, "build_list_open", ListOpenAt.x, ListOpenAt.y,
-		"Bring up the list of items to build").pressed.connect(func() -> void: _list.visible = not _list.visible)
+		"Bring up the list of items to build").pressed.connect(func() -> void: _open_list(_list == null or not _list.visible))
 	_refined = OUI.Text(_canvas, "", RefinedCentreX - 30, CostY, 60, 16, 13, Color.WHITE, HORIZONTAL_ALIGNMENT_CENTER, false, "Refined")
 	_maint = OUI.Text(_canvas, "", MaintCentreX - 30, CostY, 60, 16, 13, Color.WHITE, HORIZONTAL_ALIGNMENT_CENTER, false, "Maintenance")
 	OUI.Text(_canvas, "Best Time To Completion:", 10, CompletionY, 140, 14, 11, Cream, HORIZONTAL_ALIGNMENT_LEFT, false, "CompletionLabel")
@@ -135,52 +137,21 @@ func _build() -> void:
 	_ok.texture_disabled = OUI.Btn("build_ok", "disabled")
 	_ok.pressed.connect(_on_build)
 	OUI.PictureButton(_canvas, "build_cancel", ButtonXs[2], ButtonY, "Cancel").pressed.connect(CloseWindow)
-	_build_list()
 
 
-## The list the arrow drops: what this facility can build here (PROVISIONAL
-## look - it uses Create Mission's list starfield).
-func _build_list() -> void:
-	_list = Control.new()
-	_list.name = "ItemList"
-	_list.position = ListAt * K
-	var bg: Texture2D = OUI.Pic("mission_list")
-	_list.size = bg.get_size() if bg != null else Vector2(200, 113) * K
-	_list.clip_contents = true
-	_list.mouse_filter = Control.MOUSE_FILTER_STOP
-	_list.visible = false
-	_canvas.add_child(_list)
-	if bg != null:
-		OUI.Place(_list, bg, 0, 0, "Starfield")
-	var scroll := ScrollContainer.new()
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	scroll.position = Vector2(4, 3) * K
-	scroll.size = _list.size - Vector2(8, 6) * K
-	_list.add_child(scroll)
-	EncyclopediaWindow.StyleScrollBar(scroll.get_v_scroll_bar())
-	var rows := VBoxContainer.new()
-	rows.add_theme_constant_override("separation", 0)
-	scroll.add_child(rows)
-	_listRows.clear()
-	var empty := StyleBoxEmpty.new()
-	for i in _items.size():
-		var row := Button.new()
-		row.name = "Row%d" % i
-		row.text = str(_items[i].name)
-		row.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		row.flat = true
-		row.focus_mode = Control.FOCUS_NONE
-		row.custom_minimum_size = Vector2(0, ListRowH) * K
-		row.add_theme_font_override("font", OUI.Face())
-		row.add_theme_font_size_override("font_size", 11 * K)
-		for st in ["normal", "hover", "pressed", "focus", "hover_pressed"]:
-			row.add_theme_stylebox_override(st, empty)
-		var index := i
-		row.pressed.connect(func() -> void:
-			_show(index)
-			_list.visible = false)
-		rows.add_child(row)
-		_listRows.append(row)
+## Drops the list (built afresh, so the item on show is the grey one) or
+## puts it away. Picking a row shows that item and puts the list away.
+func _open_list(open: bool) -> void:
+	if not open:
+		if _list != null:
+			_list.visible = false
+		return
+	if _list != null:
+		_list.queue_free()
+	_list = OUI.DropList(_canvas, ListRect, _items, _choice, ListLayout, func(index: int) -> void:
+		_show(index)
+		_open_list(false))
+	_listRows = _list.get_meta("rows")
 
 
 func _show(index: int) -> void:
@@ -206,10 +177,6 @@ func _show(index: int) -> void:
 	var blocked: String = str(it.get("blocked", ""))
 	_ok.disabled = not blocked.is_empty()
 	_ok.tooltip_text = blocked if not blocked.is_empty() else "Build"
-	for i in _listRows.size():
-		var c: Color = OUI.SideColor(_faction) if i == _choice else Color.WHITE
-		for key in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color", "font_hover_pressed_color"]:
-			(_listRows[i] as Button).add_theme_color_override(key, c)
 
 
 func _step(delta: int) -> void:

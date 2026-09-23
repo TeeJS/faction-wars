@@ -55,9 +55,14 @@ const RowNameY := 43
 const MemberGrey := Color(120 / 255.0, 120 / 255.0, 120 / 255.0)
 ## The tab strip is the Select plate's on both tabs (5 pixels differ).
 const TabStrip := Rect2(7, 20, 246, 33)
-## PROVISIONAL until the open list is measured: where it drops down.
-const ListAt := Vector2(29, 192)
-const ListRowH := 15
+## The list the arrow drops (measured on TeeJ's screenshot of the original's,
+## rebuilt to 0 differing pixels): OUI.DropList over the Target box - each
+## mission's name (Arial 13) centred across the panel, its 130x65 picture 24
+## pixels under it, a mission every 113 pixels, one showing at a time. While
+## it is down the arrow is drawn whole, its top row too, a pixel higher.
+const ListRect := Rect2(38, 201, 200, 117)
+const ListLayout := {"top": 2, "pitch": 113, "picture_x": 37, "picture_y": 24, "name_y": 1, "name_px": 13}
+const ListOpenedAt := Vector2(101, 174)
 
 var _team: Array = []
 var _origin: Planet
@@ -80,12 +85,13 @@ var _name: Label
 var _picture: TextureRect
 var _list: Control
 var _listRows: Array = []
+var _listArrow: TextureButton
 var _columns: Array = []
 
 
 ## True when the player imported the art this window is made of.
 static func CanBuild() -> bool:
-	return OUI.Has(["mission_plate", "mission_decoy_plate", "mission_list"]) \
+	return OUI.Has(["mission_plate", "mission_decoy_plate", "list_starfield"]) \
 		and Art.ButtonIcon("mission_ok") != null and Art.TabIcon("mission_select", "empire") != null
 
 
@@ -153,7 +159,6 @@ func _build() -> void:
 	# The original's words (TEXTSTRA 34050, 34051).
 	OUI.PictureButton(_canvas, "mission_ok", ButtonXs[1], ButtonY, "Begin Mission").pressed.connect(_on_assign)
 	OUI.PictureButton(_canvas, "mission_cancel", ButtonXs[2], ButtonY, "Cancel").pressed.connect(CloseWindow)
-	_build_list()
 
 
 func _page_control(page_name: String) -> Control:
@@ -170,8 +175,8 @@ func _page_control(page_name: String) -> Control:
 func _build_select(page: Control) -> void:
 	_name = OUI.Text(page, "", NameCentreX - 100, NameY, 200, 16, 13, Color.WHITE, HORIZONTAL_ALIGNMENT_CENTER, false, "MissionName")
 	_picture = OUI.Place(page, null, PictureAt.x, PictureAt.y, "MissionPicture")
-	OUI.PictureButton(page, "mission_list_open", ListOpenAt.x, ListOpenAt.y,
-		"Bring up the Mission Type list").pressed.connect(func() -> void: _list.visible = not _list.visible)
+	_listArrow = OUI.PictureButton(page, "mission_list_open", ListOpenAt.x, ListOpenAt.y, "Bring up the Mission Type list")
+	_listArrow.pressed.connect(func() -> void: _open_list(_list == null or not _list.visible))
 	OUI.Text(page, "Target", TargetWordAt.x, TargetWordAt.y, 80, 16, 13, Color.WHITE, HORIZONTAL_ALIGNMENT_LEFT, true, "TargetWord")
 	var tex: Texture2D = _target_picture()
 	var pic := OUI.Place(page, tex, 0, 0, "TargetPicture")
@@ -218,47 +223,32 @@ func _target_name() -> String:
 	return _target.Name
 
 
-## The list the arrow drops down: the missions this team may run here.
-func _build_list() -> void:
-	_list = Control.new()
-	_list.name = "MissionList"
-	_list.position = ListAt * K
-	var bg: Texture2D = OUI.Pic("mission_list")
-	_list.size = bg.get_size() if bg != null else Vector2(200, 113) * K
-	_list.clip_contents = true
-	_list.mouse_filter = Control.MOUSE_FILTER_STOP
-	_list.visible = false
-	_pages[0].add_child(_list)
-	if bg != null:
-		OUI.Place(_list, bg, 0, 0, "Starfield")
-	var scroll := ScrollContainer.new()
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	scroll.position = Vector2(4, 3) * K
-	scroll.size = _list.size - Vector2(8, 6) * K
-	_list.add_child(scroll)
-	var rows := VBoxContainer.new()
-	rows.add_theme_constant_override("separation", 0)
-	scroll.add_child(rows)
-	_listRows.clear()
-	var empty := StyleBoxEmpty.new()
-	for i in _legal.size():
-		var row := Button.new()
-		row.name = "Row%d" % i
-		row.text = MissionCatalog.DisplayNameFor(_legal[i])
-		row.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		row.flat = true
-		row.focus_mode = Control.FOCUS_NONE
-		row.custom_minimum_size = Vector2(0, ListRowH) * K
-		row.add_theme_font_override("font", OUI.Face())
-		row.add_theme_font_size_override("font_size", 13 * K)
-		for st in ["normal", "hover", "pressed", "focus", "hover_pressed"]:
-			row.add_theme_stylebox_override(st, empty)
-		var index := i
-		row.pressed.connect(func() -> void:
-			_show_mission(index)
-			_list.visible = false)
-		rows.add_child(row)
-		_listRows.append(row)
+## Drops the list of the missions this team may run here (built afresh, so
+## the mission on show is the grey one - INFERRED from the Build list: the
+## original's capture has the current mission's name scrolled out of view)
+## or puts it away. Picking one shows it and puts the list away.
+func _open_list(open: bool) -> void:
+	if _listArrow != null:
+		_listArrow.texture_normal = OUI.Btn("mission_list_opened" if open else "mission_list_open")
+		_listArrow.texture_pressed = OUI.Btn("mission_list_opened" if open else "mission_list_open", "pressed")
+		var at: Vector2 = ListOpenedAt if open else ListOpenAt
+		_listArrow.position = at * K
+		_listArrow.size = _listArrow.texture_normal.get_size() if _listArrow.texture_normal != null else _listArrow.size
+	if not open:
+		if _list != null:
+			_list.visible = false
+		return
+	if _list != null:
+		_list.queue_free()
+	var items: Array = []
+	for type in _legal:
+		var d: PackDefs.MissionDefPack = MissionCatalog.DefFor(type)
+		items.append({"name": MissionCatalog.DisplayNameFor(type),
+			"picture": Art.Scaled(Art.MissionCard(d.Id, _side), K) if d != null else null})
+	_list = OUI.DropList(_pages[0], ListRect, items, _choice, ListLayout, func(index: int) -> void:
+		_show_mission(index)
+		_open_list(false))
+	_listRows = _list.get_meta("rows")
 
 
 func _show_mission(index: int) -> void:
@@ -270,11 +260,6 @@ func _show_mission(index: int) -> void:
 	var tex: Texture2D = Art.Scaled(Art.MissionCard(d.Id, _side), K) if d != null else null
 	_picture.texture = tex
 	_picture.size = tex.get_size() if tex != null else Vector2.ZERO
-	# The list shows the chosen one in the side's colour, as a selected name.
-	for i in _listRows.size():
-		var c: Color = OUI.SideColor(_faction) if i == _choice else Color.WHITE
-		for key in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color", "font_hover_pressed_color"]:
-			(_listRows[i] as Button).add_theme_color_override(key, c)
 
 
 # ---- Decoy -------------------------------------------------------------------
@@ -385,8 +370,7 @@ func _show_page(index: int) -> void:
 	for i in _tabs.size():
 		(_tabs[i] as TextureButton).texture_normal = _tabs[i].get_meta("current" if i == index else "normal")
 	OUI.SetPlate(self, OUI.Pic("mission_plate" if index == 0 else "mission_decoy_plate"))
-	if _list != null:
-		_list.visible = false
+	_open_list(false)
 	if index == 1:
 		_fill_columns()
 
