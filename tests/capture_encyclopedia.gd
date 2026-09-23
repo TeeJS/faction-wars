@@ -5,6 +5,9 @@ extends SceneTree
 ##
 ##   Godot_console.exe --path . --resolution 1440x850 -s tests/capture_encyclopedia.gd -- --out=C:/tmp/ency.png [--pack=ww2]
 ##   writes <out> (Index) and <out minus .png>_topic.png (Topic).
+##
+## --faction=alliance plays that side; --db=N shows database N (0 = All,
+## 6 = Personnel, the default); --crop saves the window alone.
 
 func _init() -> void:
 	await process_frame
@@ -13,6 +16,8 @@ func _init() -> void:
 	MpSetup.reset()
 	GameSettings.SelectedDifficulty = Enums.Difficulty.Medium
 	GameSettings.SelectedSize = Enums.GalaxySize.Standard
+	if not _arg("--faction=", "").is_empty():
+		GameSettings.PlayerFaction = FactionRegistry.ById(_arg("--faction=", ""))
 	var main: Node = load("res://Main.tscn").instantiate()
 	root.add_child(main)
 	for _i in 8:
@@ -22,10 +27,14 @@ func _init() -> void:
 	for _i in 3:
 		await process_frame
 	var w: EncyclopediaWindow = ui._openWindows.get("Encyclopedia")
-	w.ShowIndex(6)
+	w.ShowIndex(int(_arg("--db=", "6")))
 	for _i in 3:
 		await process_frame
-	var err := root.get_viewport().get_texture().get_image().save_png(out)
+	var crop: bool = "--crop" in OS.get_cmdline_user_args()
+	var img: Image = root.get_viewport().get_texture().get_image()
+	if crop:
+		img = img.get_region(Rect2i(Vector2i(w.global_position), Vector2i(w.size)))
+	var err := img.save_png(out)
 	var us: Faction = GameSettings.PlayerFaction
 	var major: Character = Lq.first_or_null(GameState.ActiveRoster, func(c: Character) -> bool: return c.Faction == us and c.IsMajor)
 	w.ShowTopic("characters", major.PackId)
