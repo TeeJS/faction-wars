@@ -556,6 +556,11 @@ func InitiateFleetMove(fleet: Fleet, uiManager: UIManager, requireConfirmation: 
 # uses, since scrapping is irreversible and returns only half the material.
 func ConfirmScrapShip(ship: Unit, refund: int, onConfirm: Callable, label: String = "") -> void:
 	var what: String = label if not label.is_empty() else (ship.Name if ship != null else "this unit")
+	ConfirmScrapUnits([what], "Returns %d %s, and the maintenance capacity it was drawing." % [refund, Terms.lower("refined_materials")],
+		onConfirm, func() -> void: _PlainConfirmScrapShip(what, refund, onConfirm))
+
+
+func _PlainConfirmScrapShip(what: String, refund: int, onConfirm: Callable) -> void:
 	var dialog := ConfirmationDialog.new()
 	dialog.title = "Confirm Scrap"
 	dialog.dialog_text = "Are you sure you want to scrap the following units?\n\n" \

@@ -138,6 +138,12 @@ public sealed class Importer
         // the picture box, the two cost boxes with their icons, the times box
         // and the number box (TeeJ's screenshot of the original, Empire).
         ("build_plate", 10800),
+        // The confirmation dialog (TeeJ's screenshot of the original's Scrap,
+        // Empire, rebuilt pixel for pixel): the 424x331 frame per side (no title
+        // bar; the Alliance's 11125 inferred), and Scrap's 400x200 console picture
+        // per side, drawn whole (the Alliance's 1032 inferred).
+        ("confirm_frame.empire", 11126), ("confirm_frame.alliance", 11125),
+        ("scrap_picture.empire", 1033), ("scrap_picture.alliance", 1032),
     };
 
     // STRATEGY.DLL: buttons drawn WHOLE with both magenta shades keyed, as
@@ -266,8 +272,8 @@ public sealed class Importer
     private static readonly HashSet<int> DrawnWhole = new() { 11100, 11101, 11103, 11104, 11105, 11106, 11107, 11108, 11109, 11110,
         // The Status plates are opaque; the pressed Encyclopedia button keeps its blue face.
         11554, 11558, 11553,
-        // Build Selection's plate is opaque.
-        10800 };
+        // Build Selection's plate is opaque; so are the Scrap pictures.
+        10800, 1032, 1033 };
 
     public sealed record Result(int Pictures, int Descriptions, List<string> Missing, List<string> Log);
 

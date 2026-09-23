@@ -154,14 +154,18 @@ func _init() -> void:
 		_check(head != null and head.text == "Ship Construction", "the row header")
 	# A facility page whose last row is short: every card still on the grid.
 	var shortRow: Array = []
+	var shortPage: int = -1
 	for i in etabs.get_tab_count():
 		var fcards: Array = _cards(etabs.get_child(i))
 		if fcards.size() > 3 and fcards.size() % 3 != 0:
-			etabs.current_tab = i
-			shortRow = fcards
+			shortPage = i
 			break
-	for _i in 2:
-		await process_frame
+	if shortPage >= 0:
+		etabs.current_tab = shortPage
+		for _i in 2:
+			await process_frame
+		# Turning the page repaints it: collect its cards afterwards.
+		shortRow = _cards(etabs.get_child(shortPage))
 	if not shortRow.is_empty():
 		var onGrid: bool = Lq.all(shortRow, func(c: Control) -> bool:
 			return c.size == Vector2(70, 70) * K and int(c.position.x) % (70 * K) == 0 and int(c.position.y) % (70 * K) == 0)
@@ -397,6 +401,36 @@ func _init() -> void:
 			_check(ui._openWindows.get("Build Selection") == null, "cancel closes it")
 	if bew != null:
 		bew.CloseWindow()
+	# A window closed this frame is still registered until it leaves the tree.
+	for _i in 2:
+		await process_frame
+
+	# ---- the Scrap confirmation ----
+	ui.OnEconomyClicked(home)
+	for _i in 3:
+		await process_frame
+	var sew: Node = ui._openWindows.get(home.Name + " Economy")
+	var scrapped: Array = [false]
+	sew.ConfirmScrap(home, "Mine", 10, 0, func() -> void: scrapped[0] = true)
+	for _i in 3:
+		await process_frame
+	var cw: Control = ui._openWindows.get("Confirm")
+	_check(cw != null and cw.find_child("Picture", true, false) != null, "Scrap asks in the original's dialog")
+	if cw != null and cw.find_child("Picture", true, false) != null:
+		_check(cw.size == Vector2(424, 331) * K and cw.has_meta("modal_blocker"), "the 424x331 frame, modal")
+		_check((cw.find_child("Picture", true, false) as Control).position == Vector2(12, 30) * K, "the console picture at (12, 30)")
+		var words: Label = cw.find_child("Text", true, false)
+		_check(words != null and words.text == "Are you sure you want to scrap the following units?\nMine" and words.position == Vector2(24, 242) * K,
+			"the original's question, a unit a line, at (24, 242)")
+		var cok: TextureButton = cw.find_child("decision_ok", true, false)
+		var cno: TextureButton = cw.find_child("decision_cancel", true, false)
+		_check(cok != null and cok.position == Vector2(355, 244) * K and cno != null and cno.position == Vector2(355, 281) * K,
+			"the tick and cross at (355, 244) and (355, 281)")
+		cok.pressed.emit()
+		for _i in 2:
+			await process_frame
+		_check(scrapped[0] and ui._openWindows.get("Confirm") == null, "the tick scraps and closes it")
+	sew.CloseWindow()
 
 	# ---- the mouse pointers (REBEXE.EXE) ----
 	var pointer: Texture2D = Art.CursorPicture("pointer")

@@ -1018,7 +1018,7 @@ func OnUnitMenuAction(actionId: int, units: Array, uiManager: UIManager) -> void
 			var what: String = doomed[0].Name if doomed.size() == 1 \
 				else "%d units" % doomed.size()
 
-			ConfirmRetire(what, refund, func() -> void:
+			var scrap := func() -> void:
 				for u in doomed:
 					# The ORBIT world for anything riding a fleet - the
 					# cast this replaced was null for a loaded unit, so
@@ -1029,7 +1029,12 @@ func OnUnitMenuAction(actionId: int, units: Array, uiManager: UIManager) -> void
 					SelectedTroops.erase(u)
 					SelectedSpecForces.erase(u)
 					SelectedFighters.erase(u)
-				Populate(_associatedPlanet, uiManager))
+				if is_instance_valid(self):
+					Populate(_associatedPlanet, uiManager)
+			# The original's own words for units: Scrap, one unit per line.
+			ConfirmScrapUnits(Lq.select(doomed, func(u: Unit) -> String: return u.Name),
+				"Returns %d %s and the maintenance capacity they were drawing." % [refund, Terms.lower("refined_materials")],
+				scrap, func() -> void: ConfirmRetire(what, refund, scrap))
 
 		_:
 			print("Unhandled unit menu action %d" % actionId)
