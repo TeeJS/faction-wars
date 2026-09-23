@@ -2,6 +2,8 @@ class_name SectorWindow
 extends DraggableWindow
 ## frontend/SectorWindow.cs - the Sector window (manual p025, Fig 2.8): every
 ## system in the sector, its four corner icons, and the mirrored GID star.
+## While the crosshairs are up, a click anywhere on a system - its picture,
+## corner icons, star, bars or name - names that system (SystemAt).
 
 var _sector: Sector
 
@@ -29,6 +31,12 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 
 	for child in sectorMap.get_children():
 		child.queue_free()
+
+	# WHILE THE CROSSHAIRS ARE UP the parts of a system that are not buttons
+	# (star, bars, name) let the click through to the map, which names the
+	# system - see SystemAt. Once only: Populate runs again on every repaint.
+	if not sectorMap.gui_input.is_connected(_OnSectorMapInput):
+		sectorMap.gui_input.connect(_OnSectorMapInput)
 
 	var minX: float = sector.MinX
 	var maxX: float = sector.MaxX
@@ -70,6 +78,9 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 	var usableHeight: float = mapSize.y - padding - paddingBottom
 
 	for planet in sector.Planets:
+		# Everything added from here to the name label is this system's entry.
+		var firstPart: int = sectorMap.get_child_count()
+
 		var normalizedX: float = (planet.MapX - minX) / sectorWidth
 		var normalizedY: float = (planet.MapY - minY) / sectorHeight
 
@@ -361,6 +372,15 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 
 				var actionIndex: int = i
 				cornerBtn.pressed.connect(func() -> void:
+					# CROSSHAIRS UP: the icon is part of the system, so the click names
+					# the system exactly as a click on the planet does. The original's
+					# icons are quadrant cells laid over the planet's picture
+					# (_PlaceCorner), so most clicks on the picture land here - and they
+					# opened this icon's window instead (TeeJ, 2026-09-23: "it just
+					# won't choose the planet").
+					if uiManager.IsTargeting:
+						uiManager.OnPlanetClicked(planet)
+						return
 					# "F", "E", "M", "D"
 					if cornerLabels[actionIndex] == "D":
 						uiManager.OnDefenseClicked(planet)
@@ -393,6 +413,54 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 		nameLabel.add_theme_color_override("font_color", nameColor)
 
 		sectorMap.add_child(nameLabel)
+
+		# THE SYSTEM'S ENTRY - picture, star, corner icons, bars, name: what a
+		# crosshair click anywhere on names this system (SystemAt).
+		for k in range(firstPart, sectorMap.get_child_count()):
+			sectorMap.get_child(k).set_meta("system", planet)
+
+
+## A CROSSHAIR CLICK ANYWHERE ON A SYSTEM NAMES THAT SYSTEM: "click on the
+## system's icon in that system's Sector window" (manual p102 TIP), "click
+## on the system where you want a new facility" (p087). The picture and the
+## corner icons are buttons and answer for themselves; a click on the star,
+## the bars or the name goes through to the map and lands here. Blank space
+## names nothing and the crosshair stays up; outside targeting this does
+## nothing at all.
+func _OnSectorMapInput(event: InputEvent) -> void:
+	if _uiManager == null or not _uiManager.IsTargeting:
+		return
+	if not (event is InputEventMouseButton) or not event.pressed or event.button_index != MOUSE_BUTTON_LEFT:
+		return
+	var planet: Planet = SystemAt(event.position)
+	if planet == null:
+		return
+	(get_node("%SectorMap") as Control).accept_event()
+	_uiManager.OnPlanetClicked(planet)
+
+
+## The system with a part of its entry - picture, corner icon, star, bar row
+## or name - under `at` (sector-map coordinates), or null. Where two systems'
+## parts overlap there, the one whose centre is nearer wins.
+func SystemAt(at: Vector2) -> Planet:
+	var best: Planet = null
+	var bestDist: float = INF
+	var centres: Dictionary = {}   # Planet -> its picture's centre
+	var under: Array = []
+	for c in get_node("%SectorMap").get_children():
+		if not (c is Control) or c.is_queued_for_deletion() or not c.has_meta("system"):
+			continue
+		var box := Rect2(c.position, c.size)
+		if c is PlanetMapButton:
+			centres[c.get_meta("system")] = box.get_center()
+		if box.has_point(at) and not under.has(c.get_meta("system")):
+			under.append(c.get_meta("system"))
+	for p: Planet in under:
+		var d: float = at.distance_to(centres.get(p, at))
+		if d < bestDist:
+			best = p
+			bestDist = d
+	return best
 
 
 ## The uprising flame's own colour (manual p091: "a flaming icon").
