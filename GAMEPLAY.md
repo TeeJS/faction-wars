@@ -4355,10 +4355,18 @@ Encyclopedia / assign / cancel buttons (10592-10597, drawn clipped to 64x32 as
 the original draws them). The plates and tabs are drawn whole, their pure blue
 included. The Decoy tab lays the team in the agent and decoy columns under
 their heads (11121-11124) with the arrows between them (11117-11120). Text is
-Arial 13 as measured. **Provisional** (no screenshot of the original yet):
-the Decoy tab's arrow places and rows, the open mission list (on the 200x113
-starfield 11102), and an object target's picture (its miniature). Without the
-art the plain dialog stays.
+Arial 13 as measured. **Decoy tab and object targets** (measured on TeeJ's
+Alliance screenshots, rebuilt to 0 differing pixels): the arrows at (120,136)
+and (120,221); a member every 59 pixels from y 110, the miniature on the grey
+plate 11500 23 in from the column, the name in grey (120,120,120) Arial 13
+under it; the tab strip stays the Select plate's; an object target shows its
+122x50 class picture (Sabotage of a KDY-150: GOKRES 512) centred in the box
+as x = 50 + (167 - w) // 2; tooltips are the original's (TEXTSTRA
+34048-34054). **Ours / inferred**: a picked member's look (never seen), a
+character target's picture (its 80x80 portrait, by the same set). **Not
+matched**: a facility target is named from the pack ("Ion Cannon") where the
+original says "KDY-150" (TEXTSTRA 8704). **Provisional**: the open mission
+list. Without the art the plain dialog stays.
 
 ### The standing risk warning *(PDF p043 / manual p044)*
 
