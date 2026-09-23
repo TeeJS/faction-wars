@@ -115,8 +115,8 @@ func _init() -> void:
 		_check(s["pic"].is_hovered() and not cell.is_hovered(),
 			"the pointer on the picture there is over the planet, not the %s icon (under the pointer: %s)" % [bare["cell"], _describe(over)])
 		if cell.has_meta("original_icon"):
-			_check(not cell.icon.resource_path.ends_with(".hover.png"),
-				"...and the %s icon keeps its plain picture (%s)" % [bare["cell"], cell.icon.resource_path.get_file()])
+			_check(not _file(cell.icon).ends_with(".hover.png"),
+				"...and the %s icon keeps its plain picture (%s)" % [bare["cell"], _file(cell.icon)])
 	for name in glyphs:
 		w = await _open_sector(ui, home)
 		var over: Control = await _hover(w, glyphs[name])
@@ -124,8 +124,8 @@ func _init() -> void:
 		var b: Button = s["corners"][name]
 		_check(b.is_hovered() and not s["pic"].is_hovered(), "the pointer on the %s glyph lights that icon (under the pointer: %s)" % [name, _describe(over)])
 		if b.has_meta("original_icon"):
-			_check(b.icon.resource_path.ends_with(".hover.png"),
-				"...showing the original's hover picture (%s)" % b.icon.resource_path.get_file())
+			_check(_file(b.icon).ends_with(".hover.png"),
+				"...showing the original's hover picture (%s)" % _file(b.icon))
 
 	# --- 3. Dropping onto the picture there reaches the planet's drop handler. ---
 	if bare != null:
@@ -196,14 +196,22 @@ func _open_sector(ui: UIManager, planet: Planet) -> SectorWindow:
 
 
 ## The window's picture button and corner icons for `planet`.
+## The picture file an icon shows (drawn larger, it remembers its source).
+static func _file(tex: Texture2D) -> String:
+	if tex == null:
+		return ""
+	var path: String = tex.resource_path if not tex.resource_path.is_empty() else str(tex.get_meta("source", ""))
+	return path.get_file()
+
+
 static func _scene(w: SectorWindow, planet: Planet) -> Dictionary:
 	var map: Control = w.get_node("%SectorMap")
 	var kids: Array = Lq.where(map.get_children(), func(c) -> bool: return c is Control and not c.is_queued_for_deletion())
 	var pic: Button = Lq.first_or_null(kids, func(c) -> bool: return c is SectorWindow.PlanetMapButton and c.AssociatedPlanet == planet)
-	var centre: Vector2 = pic.position + pic.size / 2.0
 	var corners := {}
+	# Every part of a system's entry names its system (SectorWindow.Populate).
 	for c in kids:
-		if c is Button and c.has_meta("corner") and (c.position + c.size / 2.0).distance_to(centre) < 40:
+		if c is Button and c.has_meta("corner") and c.get_meta("system", null) == planet:
 			corners[c.get_meta("corner")] = c
 	return {"map": map, "pic": pic, "corners": corners}
 

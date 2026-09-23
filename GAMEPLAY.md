@@ -3873,6 +3873,24 @@ quoted in **days** and why Pause is a first-class command.
 
 - **Sector windows cannot be moved or minimized** — only closed, or flipped to
   the other side of the screen. **At most two Sector windows at a time.**
+
+  **Implemented** (`src/ui/sector_window.gd`, 2026-09-23, with the imported
+  art, measured on TeeJ's screenshot of the original's Corellian sector): no
+  title bar; 235×360 of see-through grey
+  with a one-pixel light frame (dotted down the sides) and no shadow; the
+  sector's name in yellow Arial 13; the ↔ box (STRATEGY 10210) and the close
+  box at the top right; docked at the map frame's right edge, ↔ flips it to the
+  left. Each system's 37×37 picture sits with its top-left at
+  round(20 + 147·x, 24 + 271·y) for its place (x, y) in the sector's box
+  (all ten Corellian systems to the pixel); the star, corner cells, bars (2×3
+  squares, the loyalty bar the picture's width) and name are at the original's
+  offsets from it. **Not implemented: the two-window limit** — the manual does
+  not say what opening a third does (or where the second opens).
+
+  **Deliberately NOT the original (TeeJ, 2026-09-23: "allow them to be moved
+  and minimized, that was stupid UI in the original"):** ours is dragged by its
+  name strip and has the original's minimize box at (190, 2), left of the ↔
+  box; it restores from the Window Reference Bar like any other window.
 - **Any number of System windows** may be open.
 - **Up to 12 windows can be minimized**, parked in slots on the **Window
   Reference Bar** down the side of the screen.

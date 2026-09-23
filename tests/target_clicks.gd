@@ -285,19 +285,20 @@ func _parts(w: SectorWindow, planet: Planet) -> Dictionary:
 	var btn: Control = Lq.first_or_null(kids, func(c) -> bool: return c is SectorWindow.PlanetMapButton and c.AssociatedPlanet == planet)
 	var pic := Rect2(btn.position, btn.size)
 	var centre: Vector2 = pic.get_center()
-	var star_at: Vector2 = centre + Vector2(-SectorWindow.StarOffsetX, SectorWindow.StarOffsetY)
 	var out := {"picture": pic, "corners": {}, "corner_buttons": {}, "bars": {}}
+	# Every part of a system's entry names its system (SectorWindow.Populate).
 	for c in kids:
+		if c.get_meta("system", null) != planet:
+			continue
 		var r := Rect2(c.position, c.size)
-		if c is Button and c.has_meta("corner") and r.get_center().distance_to(centre) < 40:
+		if c is Button and c.has_meta("corner"):
 			out["corners"][c.get_meta("corner")] = r
 			out["corner_buttons"][c.get_meta("corner")] = c
-		elif c.has_meta("bar_row") and absf(c.position.x - (centre.x - SectorWindow.BarsLeft)) < 0.5 \
-				and c.position.y > centre.y and c.position.y < centre.y + 80:
+		elif c.has_meta("bar_row"):
 			out["bars"][c.get_meta("bar_row")] = r
 		elif c is Label and c.text == planet.Name:
 			out["name"] = r
-		elif (c.has_meta("gid_star") or (c is Label and c.text == "+")) and r.get_center().distance_to(star_at) < 2.0:
+		elif c.has_meta("gid_star") or (c is Label and c.text == "+"):
 			out["star"] = r
 	return out
 
