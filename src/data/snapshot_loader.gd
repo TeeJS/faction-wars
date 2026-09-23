@@ -141,6 +141,7 @@ static func _planet(pd: Dictionary, deferred: Array) -> Planet:
 	p.Name = str(pd.get("Name", ""))
 	p.PackId = _planet_id_for(p.Name)
 	p.MapX = float(pd.get("MapX", 0))
+	p.ArtworkId = int(pd.get("ArtworkId", 0))
 	p.MapY = float(pd.get("MapY", 0))
 	p.StartsInhabited = bool(pd.get("StartsInhabited", false))
 	p.IsInhabited = bool(pd.get("IsInhabited", false))

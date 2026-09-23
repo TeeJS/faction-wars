@@ -29,6 +29,8 @@ runs without a window and writes `original\import.log` (exit 0 = done).
 | Pictures | `EData\EDATA.nnn`, 400×200 8-bit BMP | saved as PNG |
 | Planets | 26 portraits shared by `artwork_id` | string 11100 + artwork_id − 1; no text |
 | Missions | two pictures each | id − 4096 (Alliance), id (Empire) |
+| Sector-window corner icons | `STRATEGY.DLL` bitmaps 10771–10790 | factory, tower, ship, crest per side, normal + highlighted; blue = transparent |
+| Planet sprites | `STRATEGY.DLL` bitmaps 10212–10237 | 26 by `artwork_id` (two ids ship no bitmap) |
 
 The DLLs are parsed from their bytes (`PeResources.cs`); nothing from the game is
 loaded or executed, so a 32-bit DLL reads fine from this 64-bit tool and there is
@@ -40,9 +42,18 @@ nothing for endpoint protection to object to.
 packs/star-wars-rebellion/original/
   characters/<id>.png   units/<id>.png   facilities/<id>.png
   planets/<id>.png      missions/<id>.png  missions/<id>.empire.png
+  icons/<glyph>.<faction>.png (+ .hover.png)   planet_sprites/<artwork_id>.png
   descriptions.json     { "characters": { "<id>": "text" }, "units": ..., ... }
   README.txt            the do-not-redistribute note
 ```
+
+## What the game does with it
+
+`src/ui/artwork.gd` reads the folder (or `user://original/<pack id>/` for an
+exported build). The sector window shows the original's corner icons in their
+own colours and the planets as their sprites, with the system name coloured by
+side as the manual has it. Anything the folder lacks falls back to the engine's
+own art, so nothing here is required.
 
 ## Build
 

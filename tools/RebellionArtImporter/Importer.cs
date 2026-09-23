@@ -17,17 +17,36 @@ namespace RebellionArtImporter;
 ///   Planets             STRING[11100 + artwork_id - 1] - 26 pictures, no text
 ///   Missions            STRING[string_id - 4096] is the Alliance picture,
 ///                       STRING[string_id] the Empire one
+///   STRATEGY.DLL        RT_BITMAP sprites, blue (0,0,255) = transparent:
+///     10771-10778 the Alliance sector-window icons (factory, tower, ship,
+///     crest; each normal then highlighted), 10779-10786 the Imperial set,
+///     10787-10790 the neutral factory and tower; 10212-10237 the 26 planet
+///     sprites by artwork_id (10240 is the asteroid field).
 ///
 /// Output, under the pack folder (gitignored - never committed):
 ///   original/characters/&lt;id&gt;.png   original/units/&lt;id&gt;.png
 ///   original/facilities/&lt;id&gt;.png   original/planets/&lt;id&gt;.png
 ///   original/missions/&lt;id&gt;.png (+ &lt;id&gt;.empire.png)
 ///   original/descriptions.json     { "characters": { id: text }, ... }
+///   original/icons/&lt;glyph&gt;.&lt;faction&gt;.png (+ .hover.png)   sector-window corners
+///   original/planet_sprites/&lt;artwork_id&gt;.png              the map's planets
 /// </summary>
 public sealed class Importer
 {
     public const int TextOffset = 4096;
     public const int PlanetPictureBase = 11100;
+    public const int PlanetSpriteBase = 10212;
+    public const int PlanetSpriteCount = 26;
+
+    // STRATEGY.DLL: (glyph, faction id, normal bitmap, highlighted bitmap).
+    private static readonly (string Glyph, string Faction, int Normal, int Hover)[] CornerIcons =
+    {
+        ("manufacturing", "alliance", 10771, 10772), ("defenses", "alliance", 10773, 10774),
+        ("fleet", "alliance", 10775, 10776), ("mission", "alliance", 10777, 10778),
+        ("manufacturing", "empire", 10779, 10780), ("defenses", "empire", 10781, 10782),
+        ("fleet", "empire", 10783, 10784), ("mission", "empire", 10785, 10786),
+        ("manufacturing", "neutral", 10787, 10788), ("defenses", "neutral", 10789, 10790),
+    };
 
     public sealed record Result(int Pictures, int Descriptions, List<string> Missing, List<string> Log);
 
@@ -44,7 +63,7 @@ public sealed class Importer
 
     public static string? Problem(string gameDir, string packDir)
     {
-        foreach (var f in new[] { "ENCYTEXT.DLL", "ENCYBMAP.DLL", "TEXTSTRA.DLL" })
+        foreach (var f in new[] { "ENCYTEXT.DLL", "ENCYBMAP.DLL", "TEXTSTRA.DLL", "STRATEGY.DLL" })
             if (!File.Exists(Path.Combine(gameDir, f)))
                 return $"{f} is not in {gameDir} - is that the installed game's folder?";
         if (!Directory.Exists(Path.Combine(gameDir, "EData")))
@@ -131,6 +150,24 @@ public sealed class Importer
         }
         Say($"planets: {planets} of {planetRows} pictures.");
 
+        // The strategic layer's sprites: the sector window's corner icons in each
+        // side's own shaded colours, and the planets themselves.
+        var strategy = new PeResources(Path.Combine(_gameDir, "STRATEGY.DLL"));
+        int icons = 0;
+        foreach (var (glyph, faction, normal, hover) in CornerIcons)
+        {
+            if (SaveSprite(strategy, normal, Path.Combine(outRoot, "icons", $"{glyph}.{faction}.png"))) { icons++; pictureCount++; }
+            else missing.Add($"icons/{glyph}.{faction}: no bitmap {normal} in STRATEGY.DLL");
+            if (SaveSprite(strategy, hover, Path.Combine(outRoot, "icons", $"{glyph}.{faction}.hover.png"))) { icons++; pictureCount++; }
+        }
+        int sprites = 0;
+        for (int art = 1; art <= PlanetSpriteCount; art++)
+        {
+            if (SaveSprite(strategy, PlanetSpriteBase + art - 1, Path.Combine(outRoot, "planet_sprites", $"{art}.png"))) { sprites++; pictureCount++; }
+            else missing.Add($"planet_sprites/{art}: no bitmap {PlanetSpriteBase + art - 1} in STRATEGY.DLL");
+        }
+        Say($"sprites: {icons} corner icons, {sprites} planet sprites.");
+
         File.WriteAllText(Path.Combine(outRoot, "descriptions.json"),
             descriptions.ToJsonString(new JsonSerializerOptions { WriteIndented = true, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping }) + "\n");
         File.WriteAllText(Path.Combine(outRoot, "README.txt"),
@@ -147,6 +184,26 @@ public sealed class Importer
     {
         var doc = JsonNode.Parse(File.ReadAllText(path))!.AsObject();
         return doc[key]!.AsArray().Select(n => n!.AsObject()).ToList();
+    }
+
+    /// <summary>A STRATEGY.DLL bitmap as a PNG with the blue colour key made transparent.</summary>
+    private static bool SaveSprite(PeResources dll, int bitmapId, string outPath)
+    {
+        if (!dll.Bitmaps.ContainsKey(bitmapId))
+            return false;
+        Directory.CreateDirectory(Path.GetDirectoryName(outPath)!);
+        using var stream = new MemoryStream(dll.BitmapFile(bitmapId));
+        using var bmp = new Bitmap(stream);
+        using var rgba = new Bitmap(bmp.Width, bmp.Height, PixelFormat.Format32bppArgb);
+        for (int y = 0; y < bmp.Height; y++)
+            for (int x = 0; x < bmp.Width; x++)
+            {
+                var c = bmp.GetPixel(x, y);
+                bool key = c.R == 0 && c.G == 0 && c.B == 255;
+                rgba.SetPixel(x, y, key ? Color.Transparent : Color.FromArgb(255, c.R, c.G, c.B));
+            }
+        rgba.Save(outPath, ImageFormat.Png);
+        return true;
     }
 
     private bool SavePicture(PeResources pictures, int encyId, string outPath)
