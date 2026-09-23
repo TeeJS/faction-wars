@@ -26,6 +26,15 @@ func _check(cond: bool, what: String) -> void:
 		print("[original_windows] FAIL %s" % what)
 
 
+func _cards(node: Node) -> Array:
+	var out: Array = []
+	if node.has_meta("card") and node is Control:
+		out.append(node)
+	for c in node.get_children():
+		out.append_array(_cards(c))
+	return out
+
+
 func _arg(prefix: String, default: String) -> String:
 	for a in OS.get_cmdline_user_args():
 		if a.begins_with(prefix):
@@ -87,6 +96,10 @@ func _init() -> void:
 		_check(pic == null or pic.texture.get_size() == Vector2(61, 25) * K, "its picture is the 61x25 miniature")
 		var nm: Label = c0.get_node_or_null("Name")
 		_check(nm != null and not nm.text.is_empty() and int(nm.position.y / K) == 29, "the name under the picture")
+		(c0 as BaseButton).button_pressed = true
+		var fr: ReferenceRect = c0.get_node_or_null("Frame")
+		_check(fr != null and fr.visible and fr.position == Vector2.ZERO and fr.size == Vector2(61, 25) * K,
+			"picked: the frame on the picture's own outline, inside the grid")
 	var cap: Label = plist.get_parent().get_parent().get_node_or_null("Caption1")
 	_check(cap != null and cap.text == "Personnel", "the page's caption")
 	var greyed: int = 0
@@ -131,6 +144,20 @@ func _init() -> void:
 			_check(q.text == "No Ships are being built", "an idle queue in the original's words")
 		var head: Label = mfg.get_node_or_null("HeaderText0")
 		_check(head != null and head.text == "Ship Construction", "the row header")
+	# A facility page whose last row is short: every card still on the grid.
+	var shortRow: Array = []
+	for i in etabs.get_tab_count():
+		var fcards: Array = _cards(etabs.get_child(i))
+		if fcards.size() > 3 and fcards.size() % 3 != 0:
+			etabs.current_tab = i
+			shortRow = fcards
+			break
+	for _i in 2:
+		await process_frame
+	if not shortRow.is_empty():
+		var onGrid: bool = Lq.all(shortRow, func(c: Control) -> bool:
+			return c.size == Vector2(70, 70) * K and int(c.position.x) % (70 * K) == 0 and int(c.position.y) % (70 * K) == 0)
+		_check(onGrid, "%d facility cards on the 70-pixel grid, the short row too, none stretched" % shortRow.size())
 	var shipyards: int = Lq.count(home.Facilities, func(f: Facility) -> bool: return f.HasRole("produces_unit"))
 	_check(etabs.is_tab_disabled(1) == (shipyards == 0) and estrip[1].disabled == (shipyards == 0), "the Shipyards picture greyed exactly when there are none")
 	ew.CloseWindow()

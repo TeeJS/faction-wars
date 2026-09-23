@@ -437,9 +437,11 @@ static func _picture_stack(parent: Control, mini: Texture2D, state: String) -> v
 
 
 ## Turn a list button into a CARD (Fig 3.73): the miniature at the top-left,
-## the name under it in white, wrapping; selected, a one-pixel frame round
-## the picture and the name in the side's colour. The button keeps its
-## menu, selection and drag; its text moves to the Name label.
+## the name under it in white, wrapping; selected, a one-pixel frame on the
+## picture's own outline and the name in the side's colour. The button keeps
+## its menu, selection and drag; its text moves to the Name label. A card is
+## exactly one grid cell: it never stretches, so every row keeps the grid
+## (TeeJ, 2026-09-23: "ITEMS NEED TO ALIGN IN A GRID").
 static func Card(btn: BaseButton, title: String, mini: Texture2D, color: Color, selected: Color, state: String = "") -> void:
 	if btn is Button:
 		(btn as Button).text = ""
@@ -449,16 +451,11 @@ static func Card(btn: BaseButton, title: String, mini: Texture2D, color: Color, 
 	for st in ["normal", "hover", "pressed", "focus", "hover_pressed", "disabled"]:
 		btn.add_theme_stylebox_override(st, empty)
 	btn.custom_minimum_size = Vector2(CardW, CardH) * K
+	btn.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	btn.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 	btn.set_meta("card", true)
 	_picture_stack(btn, mini, state)
-	var frame := ReferenceRect.new()
-	frame.name = "Frame"
-	frame.editor_only = false
-	frame.border_color = selected
-	frame.border_width = K
-	frame.position = Vector2(-1, -1) * K
-	frame.size = Vector2(63, 27) * K
-	frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var frame := SelectionFrame(0, 0, selected)
 	btn.add_child(frame)
 	var name := _card_name(btn, title, color)
 	var show := func(on: bool) -> void:
@@ -473,12 +470,32 @@ static func Card(btn: BaseButton, title: String, mini: Texture2D, color: Color, 
 static func StaticCard(list: Container, title: String, mini: Texture2D, color: Color, tip: String = "", state: String = "") -> Control:
 	var c := Control.new()
 	c.custom_minimum_size = Vector2(CardW, CardH) * K
+	c.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	c.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 	c.mouse_filter = Control.MOUSE_FILTER_PASS
 	c.tooltip_text = tip
 	_picture_stack(c, mini, state)
 	_card_name(c, title, color)
 	list.add_child(c)
 	return c
+
+
+## THE SELECTION FRAME the original draws on a picked card: one pixel of the
+## side's colour on the 61x25 picture's own outline, over its edge pixels
+## (measured on TeeJ's screenshot of the original's Coruscant Personnel page,
+## 2026-09-23 - not outside it, where a grid's first row and column cut it
+## off). Hidden until the card is picked.
+static func SelectionFrame(x: float, y: float, color: Color) -> ReferenceRect:
+	var frame := ReferenceRect.new()
+	frame.name = "Frame"
+	frame.editor_only = false
+	frame.border_color = color
+	frame.border_width = K
+	frame.position = Vector2(x, y) * K
+	frame.size = Vector2(61, 25) * K
+	frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	frame.visible = false
+	return frame
 
 
 ## A card's name under its picture: 11-pixel Arial, the lines 14 pixels
