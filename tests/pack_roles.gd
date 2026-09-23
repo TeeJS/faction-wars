@@ -111,7 +111,7 @@ func _init() -> void:
 	_check(FacilityCatalog.ProcessingRateForRole("extracts_raw") == FacilityCatalog.ProcessingRate("mine"), "the extractor's rate is the mine's")
 	_check(FacilityCatalog.ProcessingRateForRole("refines") == FacilityCatalog.ProcessingRate("refinery"), "the refiner's rate is the refinery's")
 	_check(FacilityCatalog.FamilyForRole("no_such_role").is_empty(), "an unknown role has no family")
-	_check(IntelManager._producer_word("produces_unit", "x") == "shipyard", "the intel queue word is 'shipyard'")
+	_check(IntelManager._producer_word("produces_unit", "x") == "orbital shipyard", "the intel queue word is 'orbital shipyard' (the original's name, TEXTSTRA 8448)")
 	_check(IntelManager._producer_word("produces_troop", "x") == "training facility", "the intel queue word is 'training facility'")
 
 	print("[pack_roles] %d checks, %d failed: %s" % [_checks, _fails, "PASS" if _fails == 0 else "FAIL"])

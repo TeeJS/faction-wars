@@ -3999,6 +3999,7 @@
       "idle_training_facilities",
       "idle_construction_yards"
     ],
+    "Icons": {},
     "LoyaltyBar": [
       "empire",
       "alliance"
@@ -4076,7 +4077,7 @@
         "empire"
       ],
       "ConstructionCost": 20,
-      "DisplayName": "Shipyard",
+      "DisplayName": "Orbital Shipyard",
       "Family": "shipyard",
       "Id": "shipyard",
       "MaintenanceCost": 13,
@@ -4252,7 +4253,7 @@
         "empire"
       ],
       "ConstructionCost": 4,
-      "DisplayName": "Ion Cannon",
+      "DisplayName": "KDY-150",
       "Family": "ion_cannon",
       "Id": "ion_cannon",
       "MaintenanceCost": 4,
@@ -4276,7 +4277,7 @@
         "empire"
       ],
       "ConstructionCost": 7,
-      "DisplayName": "Turbolaser Battery",
+      "DisplayName": "LNR Series I",
       "Family": "turbolaser_battery",
       "Id": "turbolaser_battery",
       "MaintenanceCost": 7,
@@ -4300,7 +4301,7 @@
         "empire"
       ],
       "ConstructionCost": 12,
-      "DisplayName": "Planetary Shield",
+      "DisplayName": "GenCore Level I",
       "Family": "planetary_shield",
       "Id": "planetary_shield",
       "MaintenanceCost": 12,
@@ -4347,7 +4348,7 @@
         "empire"
       ],
       "ConstructionCost": 10,
-      "DisplayName": "Advanced Turbolaser Battery",
+      "DisplayName": "LNR Series II",
       "Family": "turbolaser_battery",
       "Id": "advanced_turbolaser_battery",
       "MaintenanceCost": 4,
@@ -4371,7 +4372,7 @@
         "empire"
       ],
       "ConstructionCost": 20,
-      "DisplayName": "Advanced Planetary Shield",
+      "DisplayName": "GenCore Level II",
       "Family": "planetary_shield",
       "Id": "advanced_planetary_shield",
       "MaintenanceCost": 7,
