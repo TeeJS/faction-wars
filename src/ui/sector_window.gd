@@ -51,7 +51,7 @@ var _originalTitle: Label
 
 static func CanBuildOriginal() -> bool:
 	return Art.PlanetSprite(1) != null and Art.ButtonIcon("sector_switch") != null \
-		and Art.ButtonIcon("title_close") != null
+		and Art.ButtonIcon("title_close") != null and Art.ButtonIcon("title_minimize") != null
 
 
 ## Where the original's window sits: against the right or the left edge of
@@ -74,8 +74,8 @@ static func _OriginalNameColor(planet: Planet) -> Color:
 
 ## The window itself in the original's look: no title bar; see-through grey
 ## with the light frame and no shadow; the sector's name; the box that
-## switches sides and the close box. Built once - Populate runs again on
-## every repaint.
+## switches sides and the close box - plus our minimize box and a drag on
+## the name. Built once - Populate runs again on every repaint.
 func _BuildOriginalChrome(sector: Sector) -> void:
 	if _originalTitle == null:
 		(get_node("%TitleBar") as Control).visible = false
@@ -94,6 +94,13 @@ func _BuildOriginalChrome(sector: Sector) -> void:
 		# Right-click on it: the pin menu (UIManager._WireSectorPinMenu).
 		_originalTitle = OUI.Text(chrome, "", 0, 4.5, OW, 16, 13, OTitleColor, HORIZONTAL_ALIGNMENT_CENTER, false, "SectorTitle")
 		_originalTitle.mouse_filter = Control.MOUSE_FILTER_STOP
+		# OURS, NOT THE ORIGINAL'S (TeeJ, 2026-09-23: "allow them to be moved
+		# and minimized, that was stupid UI in the original"; manual p063 has
+		# Sector windows fixed and never minimized). Dragged by the name strip
+		# like any title bar; the original's minimize box, left of the switch
+		# box so the original's two boxes stay where they were.
+		_originalTitle.gui_input.connect(OnTitleBarGuiInput)
+		OUI.PictureButton(chrome, "title_minimize", 190, 2, "Minimize").pressed.connect(MinimizeWindow)
 		OUI.PictureButton(chrome, "sector_switch", 204, 2, "Switch window to other side of screen").pressed.connect(_SwitchSide)
 		OUI.PictureButton(chrome, "title_close", 218, 2, "Close").pressed.connect(CloseWindow)
 	_originalTitle.text = sector.Name
