@@ -10,6 +10,7 @@ namespace RebellionArtImporter;
 /// </summary>
 public sealed class PeResources
 {
+    private const int RtBitmap = 2;
     private const int RtString = 6;
     private const int RtRcData = 10;
 
@@ -19,6 +20,9 @@ public sealed class PeResources
 
     /// <summary>id -> (offset, size) for every RT_RCDATA entry.</summary>
     public IReadOnlyDictionary<int, (int Offset, int Size)> RcData { get; }
+
+    /// <summary>id -> (offset, size) for every RT_BITMAP entry (a DIB: BITMAPINFOHEADER + palette + pixels, no file header).</summary>
+    public IReadOnlyDictionary<int, (int Offset, int Size)> Bitmaps { get; }
 
     /// <summary>String table entries by string id, as the game reads them.</summary>
     public IReadOnlyDictionary<int, string> Strings { get; }
@@ -44,13 +48,14 @@ public sealed class PeResources
         }
 
         var rcdata = new Dictionary<int, (int, int)>();
+        var bitmaps = new Dictionary<int, (int, int)>();
         var strings = new Dictionary<int, string>();
         if (_resourceRva != 0)
         {
             int root = RvaToOffset(_resourceRva);
             foreach (var (typeId, typeDir) in Entries(root))
             {
-                if (typeId != RtString && typeId != RtRcData) continue;
+                if (typeId != RtString && typeId != RtRcData && typeId != RtBitmap) continue;
                 foreach (var (nameId, nameDir) in Entries(typeDir))
                 {
                     foreach (var (_, dataEntry) in Entries(nameDir, leaf: true))
@@ -60,6 +65,8 @@ public sealed class PeResources
                         int offset = RvaToOffset((uint)dataRva);
                         if (typeId == RtRcData)
                             rcdata[nameId] = (offset, size);
+                        else if (typeId == RtBitmap)
+                            bitmaps[nameId] = (offset, size);
                         else
                             ReadStringBlock(nameId, offset, size, strings);
                         break;   // first language only
@@ -68,7 +75,28 @@ public sealed class PeResources
             }
         }
         RcData = rcdata;
+        Bitmaps = bitmaps;
         Strings = strings;
+    }
+
+    /// <summary>
+    /// An RT_BITMAP as a complete .bmp file in memory: the 14-byte BITMAPFILEHEADER
+    /// the resource form leaves out, then the DIB as stored.
+    /// </summary>
+    public byte[] BitmapFile(int id)
+    {
+        var (offset, size) = Bitmaps[id];
+        int headerSize = ReadInt32(offset);
+        int bitsPerPixel = ReadUInt16(offset + 14);
+        int colours = ReadInt32(offset + 32);
+        if (colours == 0 && bitsPerPixel <= 8) colours = 1 << bitsPerPixel;
+        int pixelOffset = 14 + headerSize + colours * 4;
+        var file = new byte[14 + size];
+        file[0] = (byte)'B'; file[1] = (byte)'M';
+        BitConverter.GetBytes(14 + size).CopyTo(file, 2);
+        BitConverter.GetBytes(pixelOffset).CopyTo(file, 10);
+        Buffer.BlockCopy(_bytes, offset, file, 14, size);
+        return file;
     }
 
     /// <summary>The bytes of one RT_RCDATA entry.</summary>

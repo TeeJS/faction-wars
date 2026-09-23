@@ -5,6 +5,10 @@ extends DraggableWindow
 
 var _sector: Sector
 
+## The player's own artwork overlay (tools/RebellionArtImporter). Preloaded by
+## path: a class_name can lag the editor's class cache after a pull.
+const Art := preload("res://src/ui/artwork.gd")
+
 
 # The planet markers were built once when the window opened and never
 # rebuilt, so the mission icon showed whatever was true at that instant -
@@ -97,6 +101,26 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 		planetMapNode.size = Vector2(32, 32)
 		planetMapNode.position = Vector2(finalX - 16, finalY - 16)
 		planetMapNode.tooltip_text = planet.Name
+
+		# THE PLANET ITSELF, when the player has the original's sprites (manual
+		# p025: "planet artwork with the system name beneath, coloured by
+		# controlling faction"). The disc's colour moves to the name; the HQ
+		# ring stays. Without a sprite the coloured disc is drawn as before.
+		var sprite: Texture2D = Art.PlanetSprite(planet.ArtworkId)
+		var nameColor := Color(0.8, 0.8, 0.8, 0.9)
+		if sprite != null:
+			planetMapNode.icon = sprite
+			planetMapNode.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			planetMapNode.expand_icon = true
+			planetMapNode.set_meta("sprite", true)
+			nameColor = planet.GetFactionColor()
+			var ring := StyleBoxFlat.new()
+			ring.bg_color = Color(0, 0, 0, 0)
+			ring.set_corner_radius_all(16)
+			if Gid.ShowHqHighlight(planet):
+				ring.border_color = Gid.CHighlight
+				ring.set_border_width_all(3)
+			planetCircle = ring
 
 		planetMapNode.add_theme_stylebox_override("normal", planetCircle)
 		planetMapNode.add_theme_stylebox_override("hover", planetCircle)
@@ -212,6 +236,9 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 				var cornerBtn := Button.new()
 				cornerBtn.set_meta("corner", cornerGlyphs[i])
 				cornerBtn.icon = FactionRegistry.CornerIcon(cornerGlyphs[i])
+				# The owner's side, for the original's per-side icon colours.
+				var ownerSeen: Faction = IntelManager.OwnerSeen(GameSettings.LocalFaction(), planet)
+				var ownerId: String = ownerSeen.Id if ownerSeen != null else "unknown"
 				cornerBtn.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
 				cornerBtn.expand_icon = false
 				cornerBtn.custom_minimum_size = Vector2(cornerSize, cornerSize)
@@ -222,6 +249,7 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 				var tight := StyleBoxEmpty.new()
 				cornerBtn.add_theme_stylebox_override("focus", tight)
 				_TintIcon(cornerBtn, planet.GetFactionColor())
+				_OriginalIcon(cornerBtn, cornerGlyphs[i], ownerId, 1.0)
 
 				# WHOSE fleet, not just that there is one. Fig 3.7 (manual p070)
 				# puts SEPARATE Imperial and Alliance fleet icons in this
@@ -239,6 +267,7 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 
 					var tint: Color = flagged.FactionColor if flagged != null else Color.GRAY
 					_TintIcon(cornerBtn, tint)
+					_OriginalIcon(cornerBtn, "fleet", flagged.Id if flagged != null else "unknown", 1.0)
 					cornerBtn.tooltip_text = "In orbit: " + ", ".join(Lq.select(fleetsHere,
 						func(f: Fleet) -> String: return "%s (%s)" % [f.Name, f.Faction.DisplayName if f.Faction != null else "unknown"]))
 
@@ -256,6 +285,7 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 					# the corner is still the way to the Mission window.
 					var mine: Color = GameSettings.PlayerFaction.FactionColor
 					_TintIcon(cornerBtn, mine if missionHere else Color(mine.r, mine.g, mine.b, 0.35))
+					_OriginalIcon(cornerBtn, "mission", GameSettings.PlayerFaction.Id, 1.0 if missionHere else 0.35)
 				if missionHere:
 					cornerBtn.tooltip_text = "Mission in progress - right-click for orders"
 
@@ -338,7 +368,7 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 		# Shift down further to clear the bottom corner buttons (20 -> 30)
 		nameLabel.position = Vector2(finalX - 50, nameY)
 		nameLabel.add_theme_font_size_override("font_size", 15)
-		nameLabel.add_theme_color_override("font_color", Color(0.8, 0.8, 0.8, 0.9))
+		nameLabel.add_theme_color_override("font_color", nameColor)
 
 		sectorMap.add_child(nameLabel)
 
@@ -357,6 +387,23 @@ static func _TintIcon(btn: Button, color: Color) -> void:
 ## The tint a corner glyph was given (for the tests).
 static func IconTint(btn: Button) -> Color:
 	return btn.get_theme_color("icon_normal_color")
+
+
+## THE ORIGINAL'S OWN ICON, when the player imported it: drawn in its own
+## shaded colours (so no tint beyond the alpha), with the highlighted version
+## on hover. Leaves the button alone when the overlay has nothing.
+static func _OriginalIcon(btn: Button, glyph: String, faction_id: String, alpha: float) -> bool:
+	var tex: Texture2D = Art.CornerIcon(glyph, faction_id)
+	if tex == null:
+		return false
+	btn.icon = tex
+	btn.set_meta("original_icon", true)
+	_TintIcon(btn, Color(1, 1, 1, alpha))
+	var hover: Texture2D = Art.CornerIcon(glyph, faction_id, true)
+	if hover != null:
+		btn.mouse_entered.connect(func() -> void: btn.icon = hover)
+		btn.mouse_exited.connect(func() -> void: btn.icon = tex)
+	return true
 
 
 # ---- THE THREE BARS UNDER A SYSTEM (manual p025 Fig 2.9, p084 Fig 3.26) ----
