@@ -2,6 +2,8 @@ class_name SectorWindow
 extends DraggableWindow
 ## frontend/SectorWindow.cs - the Sector window (manual p025, Fig 2.8): every
 ## system in the sector, its four corner icons, and the mirrored GID star.
+## While the crosshairs are up, a click anywhere on a system - its picture,
+## corner icons, star, bars or name - names that system (SystemAt).
 
 var _sector: Sector
 
@@ -29,6 +31,12 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 
 	for child in sectorMap.get_children():
 		child.queue_free()
+
+	# WHILE THE CROSSHAIRS ARE UP the parts of a system that are not buttons
+	# (star, bars, name) let the click through to the map, which names the
+	# system - see SystemAt. Once only: Populate runs again on every repaint.
+	if not sectorMap.gui_input.is_connected(_OnSectorMapInput):
+		sectorMap.gui_input.connect(_OnSectorMapInput)
 
 	var minX: float = sector.MinX
 	var maxX: float = sector.MaxX
@@ -70,6 +78,9 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 	var usableHeight: float = mapSize.y - padding - paddingBottom
 
 	for planet in sector.Planets:
+		# Everything added from here to the name label is this system's entry.
+		var firstPart: int = sectorMap.get_child_count()
+
 		var normalizedX: float = (planet.MapX - minX) / sectorWidth
 		var normalizedY: float = (planet.MapY - minY) / sectorHeight
 
@@ -253,7 +264,7 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 				cornerStyle.corner_radius_bottom_left = 4
 				cornerStyle.corner_radius_bottom_right = 4
 
-				var cornerBtn := Button.new()
+				var cornerBtn := CornerButton.new()   # takes the mouse on its drawn pixels only
 				cornerBtn.set_meta("corner", cornerGlyphs[i])
 				cornerBtn.icon = FactionRegistry.CornerIcon(cornerGlyphs[i])
 				# The owner's side, for the original's per-side icon colours.
@@ -361,6 +372,13 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 
 				var actionIndex: int = i
 				cornerBtn.pressed.connect(func() -> void:
+					# CROSSHAIRS UP: the icon is part of the system, so the click names
+					# the system exactly as a click on the planet does. It opened this
+					# icon's window instead (TeeJ, 2026-09-23: "it just won't choose the
+					# planet").
+					if uiManager.IsTargeting:
+						uiManager.OnPlanetClicked(planet)
+						return
 					# "F", "E", "M", "D"
 					if cornerLabels[actionIndex] == "D":
 						uiManager.OnDefenseClicked(planet)
@@ -394,6 +412,54 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 
 		sectorMap.add_child(nameLabel)
 
+		# THE SYSTEM'S ENTRY - picture, star, corner icons, bars, name: what a
+		# crosshair click anywhere on names this system (SystemAt).
+		for k in range(firstPart, sectorMap.get_child_count()):
+			sectorMap.get_child(k).set_meta("system", planet)
+
+
+## A CROSSHAIR CLICK ANYWHERE ON A SYSTEM NAMES THAT SYSTEM: "click on the
+## system's icon in that system's Sector window" (manual p102 TIP), "click
+## on the system where you want a new facility" (p087). The picture and the
+## corner icons are buttons and answer for themselves; a click on the star,
+## the bars, the name or an icon's transparent part off the picture goes
+## through to the map and lands here. Blank space names nothing and the
+## crosshair stays up; outside targeting this does nothing at all.
+func _OnSectorMapInput(event: InputEvent) -> void:
+	if _uiManager == null or not _uiManager.IsTargeting:
+		return
+	if not (event is InputEventMouseButton) or not event.pressed or event.button_index != MOUSE_BUTTON_LEFT:
+		return
+	var planet: Planet = SystemAt(event.position)
+	if planet == null:
+		return
+	(get_node("%SectorMap") as Control).accept_event()
+	_uiManager.OnPlanetClicked(planet)
+
+
+## The system with a part of its entry - picture, corner icon, star, bar row
+## or name - under `at` (sector-map coordinates), or null. Where two systems'
+## parts overlap there, the one whose centre is nearer wins.
+func SystemAt(at: Vector2) -> Planet:
+	var best: Planet = null
+	var bestDist: float = INF
+	var centres: Dictionary = {}   # Planet -> its picture's centre
+	var under: Array = []
+	for c in get_node("%SectorMap").get_children():
+		if not (c is Control) or c.is_queued_for_deletion() or not c.has_meta("system"):
+			continue
+		var box := Rect2(c.position, c.size)
+		if c is PlanetMapButton:
+			centres[c.get_meta("system")] = box.get_center()
+		if box.has_point(at) and not under.has(c.get_meta("system")):
+			under.append(c.get_meta("system"))
+	for p: Planet in under:
+		var d: float = at.distance_to(centres.get(p, at))
+		if d < bestDist:
+			best = p
+			bestDist = d
+	return best
+
 
 ## The uprising flame's own colour (manual p091: "a flaming icon").
 const CUprising := Color(1.0, 0.55, 0.12)
@@ -411,6 +477,9 @@ const CUprising := Color(1.0, 0.55, 0.12)
 ## is simply laid with its inner corner on the centre. Our own 16 px glyphs
 ## have no baked margin, so they are anchored by their inner corner at the
 ## same spot the original's glyphs reach: (+-15, +-9) from the centre.
+##
+## Either way a cell overlaps the planet's picture, so a corner takes the
+## mouse only on its drawn pixels - see CornerButton.
 const GlyphInnerX := 15.0
 const GlyphInnerY := 9.0
 
@@ -755,6 +824,65 @@ static func AddGidStar(sectorMap: Control, planet: Planet, centerX: float, cente
 # left; the star sits inboard of it, as the figure shows.
 const StarOffsetX: float = 6.0
 const StarOffsetY: float = 24.0
+
+
+## A CORNER ICON TAKES THE MOUSE ONLY ON ITS DRAWN PIXELS.
+##
+## The original's Manufacturing, Fleet, Defenses and Mission icons are
+## quadrant cells whose glyph sits in the cell's outer corner - 48 to 90 of
+## some 500 pixels drawn - and the transparent rest lies over the planet's
+## picture (_PlaceCorner); the uprising flame is drawn edge to edge, so all
+## of it answers. As a plain Button the whole cell took the mouse, so a
+## click, a hover or a drop meant for the planet landed on an icon: it
+## opened the icon's window, lit the icon, and refused a character dragged
+## onto the system. Our own glyphs' buttons are padded past the glyph and
+## clip the picture's edge the same way.
+##
+## This is the test a TextureButton's click mask makes - the picture's alpha,
+## BitMap.create_from_image_alpha - made here because the corners are
+## Buttons, which carry the tint and the hover picture as their icon. It
+## reads the picture showing NOW, so the original's hover picture, which
+## adds an outline to the glyph, answers on the outline while it is lit.
+## Anywhere else the point falls through to what is under it: the planet,
+## or the sector map. The mouse-over test is the same one, so the hover
+## follows the drawn pixels too.
+class CornerButton extends Button:
+	## BitMap.create_from_image_alpha's own default.
+	const AlphaThreshold := 0.1
+	## Texture instance id -> BitMap of its drawn pixels, or null when the
+	## picture has no image to read (then the whole button answers, as before).
+	static var _masks: Dictionary = {}
+
+	func _has_point(point: Vector2) -> bool:
+		var mask: BitMap = MaskFor(icon)
+		if mask == null:
+			return Rect2(Vector2.ZERO, size).has_point(point)
+		# Where a Button draws its icon with no text, expand_icon off and no
+		# stylebox margins (the corners' own): at its own size, centred, floored.
+		var drawn: Vector2 = icon.get_size()
+		var at: Vector2 = point - ((size - drawn) / 2.0).floor()
+		if at.x < 0.0 or at.y < 0.0 or at.x >= drawn.x or at.y >= drawn.y:
+			return false
+		# Scaled like the picture, should it ever be drawn at another size.
+		var bits: Vector2i = mask.get_size()
+		return mask.get_bit(int(at.x * bits.x / drawn.x), int(at.y * bits.y / drawn.y))
+
+	## The picture's drawn pixels, read once per picture.
+	static func MaskFor(tex: Texture2D) -> BitMap:
+		if tex == null:
+			return null
+		var key: int = tex.get_instance_id()
+		if _masks.has(key):
+			return _masks[key]
+		var mask: BitMap = null
+		var img: Image = tex.get_image()
+		if img != null and not img.is_empty():
+			if img.is_compressed():
+				img.decompress()
+			mask = BitMap.new()
+			mask.create_from_image_alpha(img, AlphaThreshold)
+		_masks[key] = mask
+		return mask
 
 
 ## C#: public partial class PlanetMapButton : Button - a top-level class in
