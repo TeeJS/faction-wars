@@ -490,14 +490,11 @@ func RefreshStatusBar() -> void:
 	var econ: Economy.FactionEconomy = Economy.For(player)
 
 	# "Message Notification: shows which types of unread messages are waiting"
-	# (manual p068). Named categories rather than a bare count.
-	var waiting: PackedStringArray = PackedStringArray()
-	for c in Enums.MessageCategory.values():
-		if c != Enums.MessageCategory.All and EventBus.UnreadCount(c) > 0:
-			waiting.append("%s %d" % [JsonUtil.enum_name(Enums.MessageCategory, c), EventBus.UnreadCount(c)])
-
-	_dayLabel.text = ("Day: %d" % currentDay) if waiting.is_empty() \
-		else "Day: %d    ✉ %s" % [currentDay, ", ".join(waiting)]
+	# (manual p068). WHICH types is the Message Alert bar's job (its icons light
+	# per category); here a count, so the box never widens over the Raw readout
+	# (TeeJ, 2026-09-22: "Missions 3, Defense 2, Conflict 1" ran into it).
+	var unread: int = EventBus.UnreadTotal()
+	_dayLabel.text = ("Day: %d" % currentDay) if unread == 0 else "Day: %d    ✉ %d" % [currentDay, unread]
 	_availMines.text = "Raw: %d  (%d %s)" % [econ.RawMaterials, Economy.TotalMines(player), Terms.label("mines")]
 	_availRefineries.text = "Refined: %d  (%d %s)" % [econ.RefinedMaterials, Economy.TotalRefineries(player), Terms.label("refineries")]
 	# Maintenance is a pool, so it reads as remaining/total rather than a rate.

@@ -98,7 +98,7 @@ offset_left = 4.0
 offset_top = 104.1
 offset_right = 147.0
 offset_bottom = -371.0
-grow_vertical = 2
+grow_vertical = 1
 
 [node name="Margin" type="MarginContainer" parent="UIManager/CommsPanel" unique_id=727933679]
 layout_mode = 2

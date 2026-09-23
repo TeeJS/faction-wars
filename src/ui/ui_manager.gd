@@ -143,10 +143,13 @@ func _exit_tree() -> void:
 ## The Message Alert bar (manual p022, p081): a category's original icon when
 ## the player imported it - the lit one while that category has unread mail,
 ## the dim one otherwise - else the text button, yellow when mail waits.
-## The icon scales to the button's EXISTING height (expand_icon), so the
-## column keeps the layout the text buttons had (TeeJ, 2026-09-22: sizing the
-## buttons to the bitmap pushed the column up over the day panel).
+## The icons are drawn at exactly 2x (crisp pixel doubling of the original's
+## 27x22) and the column grows DOWNWARD into the free space under it - the
+## panel's grow direction in Main.tscn, which used to be "both" and pushed it
+## up over the day panel (TeeJ, 2026-09-22: "we have vertical space, why don't
+## we make the images bigger?").
 const Art := preload("res://src/ui/artwork.gd")
+const AlertIconScale := 2.0
 
 
 func RefreshCommsHighlights() -> void:
@@ -154,25 +157,34 @@ func RefreshCommsHighlights() -> void:
 	if commsList == null:
 		return
 	var side: String = GameSettings.PlayerFaction.Id if GameSettings.PlayerFaction != null else ""
+	var showing: String = CommsCategory()
 	for btn in commsList.get_children():
 		if not (btn is Button):
 			continue
+		# The column is the docked Comms Center's tab bar: the category on show
+		# reads as pressed.
+		var active: bool = btn.name == showing
+		if active and not btn.has_meta("active_tab"):
+			btn.set_meta("active_tab", true)
+			btn.add_theme_stylebox_override("normal", btn.get_theme_stylebox("pressed"))
+			btn.add_theme_stylebox_override("hover", btn.get_theme_stylebox("pressed"))
+		elif not active and btn.has_meta("active_tab"):
+			btn.remove_meta("active_tab")
+			btn.remove_theme_stylebox_override("normal")
+			btn.remove_theme_stylebox_override("hover")
 		var waiting: bool = Enums.MessageCategory.has(btn.name) \
 			and EventBus.UnreadCount(Enums.MessageCategory[btn.name]) > 0
 		var icon: Texture2D = Art.AlertIcon(side, btn.name, waiting) if btn.name != "All" else null
 		if icon != null:
 			if not btn.has_meta("alert_icon"):
-				# The text button's own height (font + padding), measured before the
-				# text goes, so the column keeps the layout it had.
-				var height: float = btn.get_combined_minimum_size().y
 				btn.set_meta("alert_icon", true)
 				btn.set_meta("label", btn.text)
 				btn.tooltip_text = btn.text
 				btn.text = ""
 				btn.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
 				btn.expand_icon = true
-				btn.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR   # a 1.4x blow-up, smoothed rather than blocky
-				btn.custom_minimum_size = Vector2(0, height)
+				btn.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST   # an exact 2x: pixel-doubled, not smeared
+				btn.custom_minimum_size = Vector2(0, icon.get_height() * AlertIconScale + 8)
 			btn.icon = icon
 			btn.remove_theme_color_override("font_color")
 			btn.modulate = Color.WHITE
@@ -221,12 +233,41 @@ func OpenComposeChatMessage() -> void:
 		Vector2(120, 120))
 
 
+## THE COMMS CENTER IS DOCKED (TeeJ, 2026-09-23): it opens on the left edge of
+## the map frame at the frame's full height, with no tab strip of its own - the
+## Message Alert column IS its tab bar (the column's buttons switch the
+## category and the current one shows pressed), so the list gets the room the
+## tabs took. Still a window: minimise and close work, and it re-docks on
+## every open rather than drifting. Manual p079 Fig 3.20 has the Message
+## Index over the whole display.
+const CommsRect := Rect2(150, 99, 1000, 671)
+
+
 func OnMessageIndexClicked(category: String = "All") -> void:
 	OpenWindow("Communications", MessageWindowTemplate,
 		func(window) -> void:
 			window.Setup(self)   # without this the window's _uiManager is null and Go To is a no-op
-			window.OpenToCategory(category),
-		Vector2(50, 50))
+			window.custom_minimum_size = CommsRect.size
+			window.size = CommsRect.size
+			window.position = CommsRect.position
+			window._tabContainer.tabs_visible = false
+			window.OpenToCategory(category)
+			# Docked: after OpenWindow has placed it (it nudges new windows), so
+			# the dock position is the one that stands.
+			window.set_deferred("position", CommsRect.position)
+			RefreshCommsHighlights(),
+		CommsRect.position)
+
+
+## The category the docked Comms Center is showing, or "" when it is not open.
+func CommsCategory() -> String:
+	var w: DraggableWindow = _openWindows.get("Communications")
+	if w == null or not is_instance_valid(w) or not w.visible:
+		return ""
+	var tabs: TabContainer = w._tabContainer
+	if tabs == null or tabs.current_tab < 0:
+		return ""
+	return tabs.get_child(tabs.current_tab).name
 
 
 func OnSectorClicked(sector: Sector) -> void:
