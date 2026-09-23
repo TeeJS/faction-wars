@@ -498,7 +498,7 @@ func RefreshStatusBar() -> void:
 	# per category); here a count, so the box never widens over the Raw readout
 	# (TeeJ, 2026-09-22: "Missions 3, Defense 2, Conflict 1" ran into it).
 	var unread: int = EventBus.UnreadTotal()
-	_dayLabel.text = ("Day: %d" % currentDay) if unread == 0 else "Day: %d    ✉ %d" % [currentDay, unread]
+	_dayLabel.text = ("Day: %d" % currentDay) if unread == 0 else "Day: %d    %d unread" % [currentDay, unread]
 	_availMines.text = "Raw: %d  (%d %s)" % [econ.RawMaterials, Economy.TotalMines(player), Terms.label("mines")]
 	_availRefineries.text = "Refined: %d  (%d %s)" % [econ.RefinedMaterials, Economy.TotalRefineries(player), Terms.label("refineries")]
 	# Maintenance is a pool, so it reads as remaining/total rather than a rate.

@@ -72,7 +72,7 @@ func _init() -> void:
 	EventBus.Tell(GameSettings.PlayerFaction, GameMessage.new("B", "b", Enums.MessageCategory.Conflict, StrategicTickManager.Today, null, null))
 	gm.RefreshStatusBar()
 	var text: String = gm._dayLabel.text
-	_check(not text.contains("Defense") and not text.contains("Conflict") and text.contains("✉"), "the day box shows an unread count, not category names ('%s')" % text)
+	_check(not text.contains("Defense") and not text.contains("Conflict") and text.contains("unread"), "the day box shows an unread count, not category names ('%s')" % text)
 
 	print("[comms_dock] %d checks, %d failed" % [_checks, _fails])
 	quit(1 if _fails > 0 else 0)

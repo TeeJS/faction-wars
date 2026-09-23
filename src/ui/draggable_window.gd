@@ -132,7 +132,7 @@ func RegisterPopupMenu(popup: PopupMenu) -> void:
 # =======================================================================
 
 ## ONE ROW BUILDER FOR EVERY CHARACTER on this tab, yours and theirs.
-func DrawCharacterRow(list: VBoxContainer, character: Character, uiManager: UIManager) -> void:
+func DrawCharacterRow(list: Container, character: Character, uiManager: UIManager) -> void:
 	var nameColor: Color = character.Faction.FactionColor
 	# RANK IS A PREFIX: "Admiral Ackbar", "General Madine" (TEXTSTRA.DLL).
 	var displayText: String = character.Name if character.Rank == Enums.Rank.None \
@@ -414,7 +414,7 @@ func ShowRefusal(title: String, text: String) -> void:
 	box.canceled.connect(box.queue_free)
 
 
-func CreateEmptyLabel(list: VBoxContainer, text: String, color: Color) -> void:
+func CreateEmptyLabel(list: Container, text: String, color: Color) -> void:
 	var lbl := Label.new()
 	lbl.text = text
 	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -472,7 +472,7 @@ func SetupMenuButton(btn: Button, entityData: Variant, selectionList: Array, pop
 			child.id_pressed.connect(fire)
 
 
-func AddCharacterToList(list: VBoxContainer, characterData: Character, text: String, color: Color, uiManager: UIManager) -> void:
+func AddCharacterToList(list: Container, characterData: Character, text: String, color: Color, uiManager: UIManager) -> void:
 	if characterData == null:
 		CreateEmptyLabel(list, text, color)
 		return
@@ -487,6 +487,8 @@ func AddCharacterToList(list: VBoxContainer, characterData: Character, text: Str
 	if mini != null:
 		characterBtn.icon = mini
 		characterBtn.set_meta("miniature", true)
+	if list is HFlowContainer:
+		CardStyle(characterBtn, mini)
 	characterBtn.CharacterData = characterData
 	characterBtn.UIManagerRef = uiManager
 	characterBtn.ParentWindow = self
@@ -666,3 +668,98 @@ func ConfirmRetire(what: String, refund: int, onConfirm: Callable) -> void:
 
 	add_child(dialog)
 	dialog.popup_centered()
+
+
+# ---- THE ORIGINAL'S WINDOW CHROME, when the player imported it (TeeJ,
+# 2026-09-23: the Manufacturing and System Defenses windows "need to match
+# the original"). Without the files nothing here changes a window.
+
+## The system's own sprite in the title bar, left of the name, as the
+## original's Manufacturing, Defenses and system windows carry it.
+func SetTitleIcon(planet: Planet) -> void:
+	var label: Label = get_node_or_null("%TitleBarLabel")
+	if label == null or planet == null:
+		return
+	var hbox: Node = label.get_parent()
+	var icon: TextureRect = hbox.get_node_or_null("TitleIcon")
+	var tex: Texture2D = Art.PlanetSprite(planet.ArtworkId)
+	if tex == null:
+		if icon != null:
+			icon.queue_free()
+		return
+	if icon == null:
+		icon = TextureRect.new()
+		icon.name = "TitleIcon"
+		icon.custom_minimum_size = Vector2(24, 24)
+		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		icon.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		hbox.add_child(icon)
+		hbox.move_child(icon, 0)
+	icon.texture = tex
+
+
+## ICON TABS (manual p084 Fig 3.27, p126 Fig 3.73): each tab shows the
+## original's 36x33 picture, pixel-doubled, in place of its title - the
+## pressed picture on the current tab, the greyed one on a disabled tab
+## ("grayed-out tabs indicate no facilities of that type", p084) - and the
+## title moves to the tooltip. `names` are the overlay names in tab order;
+## the per-side pictures get `side`.
+func ApplyTabIcons(tabs: TabContainer, names: Array, side: String) -> void:
+	tabs.set_meta("tab_icon_names", names)
+	tabs.set_meta("tab_icon_side", side)
+	if not tabs.has_meta("tab_icons_wired"):
+		tabs.set_meta("tab_icons_wired", true)
+		tabs.tab_changed.connect(func(_i: int) -> void: RefreshTabIcons(tabs))
+	RefreshTabIcons(tabs)
+
+
+func RefreshTabIcons(tabs: TabContainer) -> void:
+	var names: Array = tabs.get_meta("tab_icon_names", [])
+	var side: String = tabs.get_meta("tab_icon_side", "")
+	for i in mini(names.size(), tabs.get_tab_count()):
+		var state := ""
+		if tabs.is_tab_disabled(i):
+			state = "grey"
+		elif tabs.current_tab == i:
+			state = "pressed"
+		var tex: Texture2D = Art.TabIcon(names[i], side, state)
+		if tex == null and not state.is_empty():
+			tex = Art.TabIcon(names[i], side)
+		if tex == null:
+			continue
+		if not tabs.has_meta("tab_titles"):
+			var titles: Array = []
+			for k in tabs.get_tab_count():
+				titles.append(tabs.get_tab_title(k))
+			tabs.set_meta("tab_titles", titles)
+		tabs.set_tab_icon(i, Art.Scaled(tex, 2))
+		tabs.set_tab_title(i, "")
+		tabs.set_tab_tooltip(i, str(tabs.get_meta("tab_titles")[i]))
+
+
+## The tab's name, written above its contents, since an icon tab has no
+## title of its own (Fig 3.73: "Personnel" under the strip).
+static func AddCaption(list: Container, text: String) -> void:
+	var cap := Label.new()
+	cap.text = text
+	cap.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	cap.add_theme_font_size_override("font_size", 14)
+	cap.add_theme_color_override("font_color", Color(0.85, 0.9, 1.0))
+	list.add_child(cap)
+
+
+## A personnel CARD (manual p126 Fig 3.73): the miniature above the name in a
+## flowing grid, as the System Defenses window lays its people out. The
+## menu, selection and drag stay the button's.
+static func CardStyle(btn: Button, mini: Texture2D) -> void:
+	btn.alignment = HORIZONTAL_ALIGNMENT_CENTER
+	btn.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	btn.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP
+	if mini != null:
+		btn.icon = Art.Scaled(mini, 2)
+		btn.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	btn.custom_minimum_size = Vector2(134, 0)
+	btn.add_theme_font_size_override("font_size", 12)
+	btn.add_theme_constant_override("h_separation", 0)

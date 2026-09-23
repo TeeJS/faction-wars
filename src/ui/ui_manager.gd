@@ -184,7 +184,11 @@ func RefreshCommsHighlights() -> void:
 				btn.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
 				btn.expand_icon = true
 				btn.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST   # an exact 2x: pixel-doubled, not smeared
-				btn.custom_minimum_size = Vector2(0, icon.get_height() * AlertIconScale + 8)
+				# The button is the icon plus a 4 px frame, centred in the
+				# column - not a column-wide bar (TeeJ, 2026-09-23: "make the
+				# rectangles fit the icons they are behind").
+				btn.custom_minimum_size = Vector2(icon.get_width() * AlertIconScale + 8, icon.get_height() * AlertIconScale + 8)
+				btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 			btn.icon = icon
 			btn.remove_theme_color_override("font_color")
 			btn.modulate = Color.WHITE
@@ -195,6 +199,7 @@ func RefreshCommsHighlights() -> void:
 			btn.text = btn.get_meta("label")
 			btn.expand_icon = false
 			btn.custom_minimum_size = Vector2.ZERO
+			btn.size_flags_horizontal = Control.SIZE_FILL
 		if waiting:
 			btn.add_theme_color_override("font_color", Color.YELLOW)
 			btn.modulate = Color(1.5, 1.5, 0.5)

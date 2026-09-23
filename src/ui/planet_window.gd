@@ -13,6 +13,10 @@ func Populate(planet: Planet) -> void:
 	var _facility: VBoxContainer = get_node("%facilities")
 
 	_title.text = planet.Name
+	SetTitleIcon(planet)
+	# The system's picture above its facts (TeeJ, 2026-09-23), when imported;
+	# an unexplored world shows none.
+	Art.Fill(get_node_or_null("%picture"), Art.Picture("planets", planet.PackId) if planet.IsExplored else null)
 	var player: Faction = GameSettings.PlayerFaction
 
 	# ALWAYS CLEAR PREVIOUS UI DATA FIRST

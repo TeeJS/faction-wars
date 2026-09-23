@@ -15,9 +15,25 @@ func Populate(planet: Planet) -> void:
 	_tabbedFor = planet
 
 	_associatedPlanet = planet
-	(get_node("%TitleBarLabel") as Label).text = " %s Economy" % planet.Name
+	# The original titles the window with the system's name and its sprite
+	# (Fig 3.24), puts the three row pictures left of their queues, and shows
+	# its tabs as pictures (Fig 3.27).
+	(get_node("%TitleBarLabel") as Label).text = " %s" % planet.Name
+	SetTitleIcon(planet)
+	_RowPicture("%ShipCapLabel", "ship_construction")
+	_RowPicture("%TroopCapLabel", "troops_in_training")
+	_RowPicture("%FacCapLabel", "facilities_under_construction")
 
 	var tabs: TabContainer = get_node("%EconomyTabs")
+	var side: String = GameSettings.PlayerFaction.Id if GameSettings.PlayerFaction != null else ""
+	ApplyTabIcons(tabs, ["manufacturing", "shipyards", "training_facilities", "construction_yards", "refineries", "mines"], side)
+	# The row headers in the viewer's own colour (green on the original's
+	# Imperial window).
+	if GameSettings.PlayerFaction != null:
+		for q in ["ShipQueue", "TroopQueue", "FacQueue"]:
+			var header: ColorRect = tabs.get_node_or_null("Manufacturing/%s/Header" % q)
+			if header != null:
+				header.color = GameSettings.PlayerFaction.FactionColor.darkened(0.3)
 	# Only jump to the first tab when this window is opened on a NEW
 	# subject. A refresh must leave the player where they were: once
 	# repaints moved onto a four-times-a-second poll, resetting here
@@ -49,9 +65,10 @@ func Populate(planet: Planet) -> void:
 		(get_node("%TroopCapLabel") as Label).text = Pair(training, planet, "produces_troop")
 		(get_node("%FacCapLabel") as Label).text = Pair(construction, planet, "produces_facility")
 
-		(get_node("%ShipQueueLabel") as Label).text = QueueSummary(planet.ShipyardQueue)
-		(get_node("%TroopQueueLabel") as Label).text = QueueSummary(planet.TrainingQueue)
-		(get_node("%FacQueueLabel") as Label).text = QueueSummary(planet.BuildingQueue)
+		# The original's own idle lines (its Manufacturing window, verbatim).
+		(get_node("%ShipQueueLabel") as Label).text = QueueSummary(planet.ShipyardQueue, "No Ships are being built")
+		(get_node("%TroopQueueLabel") as Label).text = QueueSummary(planet.TrainingQueue, "No Troops in training")
+		(get_node("%FacQueueLabel") as Label).text = QueueSummary(planet.BuildingQueue, "No Facilities are being built")
 
 		# "THIS PROGRESS BAR shows how far along the current construction
 		# progress is" (manual p084). A percentage in text is not a progress
@@ -156,6 +173,39 @@ func Populate(planet: Planet) -> void:
 		StaleFacilityTab(tabs, "Construction Yards", "construction_yard", yards)
 		StaleFacilityTab(tabs, Terms.cap("refineries"), "refinery", yards)
 		StaleFacilityTab(tabs, Terms.cap("mines"), "mine", yards)
+	RefreshTabIcons(tabs)
+
+
+## The row's picture (Fig 3.24: the ship, the walled compound, the hangar,
+## on their starfields) above the yards ratio, left of the queue - when the
+## player imported it. Moves the ratio label into a column under the picture
+## once; a second call finds it moved and does nothing.
+func _RowPicture(capPath: String, name: String) -> void:
+	var cap: Label = get_node_or_null(capPath)
+	if cap == null:
+		return
+	var body: HBoxContainer = cap.get_parent() as HBoxContainer
+	if body == null:
+		return
+	var tex: Texture2D = Art.WindowPicture(name)
+	if tex == null:
+		return
+	var box := VBoxContainer.new()
+	box.name = "PictureBox"
+	box.add_theme_constant_override("separation", 0)
+	var pic := TextureRect.new()
+	pic.name = "Picture"
+	pic.texture = Art.Scaled(tex, 2)
+	pic.custom_minimum_size = pic.texture.get_size()
+	pic.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
+	pic.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	box.add_child(pic)
+	body.add_child(box)
+	body.move_child(box, 0)
+	# reparent(), not remove + add: it keeps the label's owner, so the
+	# scene's %ShipCapLabel lookups still find it.
+	cap.reparent(box, false)
+	cap.custom_minimum_size = Vector2(pic.custom_minimum_size.x, 0)
 
 
 # The manual's progress bar, under the queue's own line (p084). Shows the
@@ -497,14 +547,14 @@ static func Pair(built: int, planet: Planet, producer_role: String) -> String:
 	return "%d:%d" % [built, built + building]
 
 
-static func QueueSummary(queue: Array) -> String:
+static func QueueSummary(queue: Array, idle: String = "Idle") -> String:
 	# The original's own wording: the item's NAME on one line and
 	# "Building: N" beneath it - the count of that item on order. Not a
 	# percentage; how far along it is belongs to the progress bar, which is
 	# what the manual gives that job to ("this progress bar shows how far
 	# along the current construction progress is", p084).
 	if queue.size() == 0:
-		return "Idle"
+		return idle
 
 	var head: ConstructionTask = queue[0]
 

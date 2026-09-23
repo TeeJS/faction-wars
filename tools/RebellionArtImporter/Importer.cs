@@ -30,6 +30,11 @@ namespace RebellionArtImporter;
 ///     crest; each normal then highlighted), 10779-10786 the Imperial set,
 ///     10787-10790 the neutral factory and tower; 10212-10237 the 26 planet
 ///     sprites by artwork_id (10240 is the asteroid field).
+///     9006/9021/9025 the Manufacturing window's three row pictures (67x35).
+///     10311-10334 the Manufacturing window's six tab icons (36x33; normal,
+///     pressed, greyed), the Manufacturing one per side; 10550-10575 the
+///     System Defenses window's five (shield, battery, and fighters, troops,
+///     personnel per side).
 ///
 /// Output, under the pack folder (gitignored - never committed):
 ///   original/characters/&lt;id&gt;.png   original/units/&lt;id&gt;.png
@@ -42,6 +47,8 @@ namespace RebellionArtImporter;
 ///   original/gid/&lt;faction&gt;.&lt;tier&gt;.png, gid/unexplored.&lt;tier&gt;.png   the GID stars
 ///   original/alerts/&lt;faction&gt;.&lt;category&gt;.png (+ .lit.png)   the Message Alert bar
 ///   original/planet_sprites/&lt;artwork_id&gt;.png              the map's planets
+///   original/windows/&lt;name&gt;.png                            window pictures
+///   original/tabs/&lt;name&gt;[.&lt;faction&gt;].png (+ .pressed / .grey)   window tab icons
 /// </summary>
 public sealed class Importer
 {
@@ -76,6 +83,31 @@ public sealed class Importer
         ("manufacturing", "empire", 10779, 10780), ("defenses", "empire", 10781, 10782),
         ("fleet", "empire", 10783, 10784), ("mission", "empire", 10785, 10786),
         ("manufacturing", "neutral", 10787, 10788), ("defenses", "neutral", 10789, 10790),
+    };
+
+    // STRATEGY.DLL: the Manufacturing window's row pictures (manual p083 Fig
+    // 3.24), read off the original's window: the ship over a planet's edge, the
+    // walled compound and the hangar, each on its starfield.
+    private static readonly (string Name, int Id)[] WindowPictures =
+    {
+        ("ship_construction", 9006), ("troops_in_training", 9021), ("facilities_under_construction", 9025),
+    };
+
+    // STRATEGY.DLL: window tab icons (36x33) as (name, faction or "", normal,
+    // pressed, greyed). The Manufacturing window's six (p084 Fig 3.27) and the
+    // System Defenses window's five (p126 Fig 3.73). Matched against the
+    // original's own windows (TeeJ's screenshots, 2026-09-23).
+    private static readonly (string Name, string Faction, int Normal, int Pressed, int Grey)[] TabIcons =
+    {
+        ("manufacturing", "alliance", 10311, 10312, 10313), ("manufacturing", "empire", 10314, 10315, 10316),
+        ("manufacturing", "neutral", 10317, 10318, 10319),
+        ("mines", "", 10320, 10321, 10322), ("training_facilities", "", 10323, 10324, 10325),
+        ("shipyards", "", 10326, 10327, 10328), ("refineries", "", 10329, 10330, 10331),
+        ("construction_yards", "", 10332, 10333, 10334),
+        ("planetary_shield", "", 10550, 10551, 10552), ("planetary_battery", "", 10553, 10554, 10555),
+        ("fighters", "alliance", 10556, 10557, 10558), ("fighters", "empire", 10559, 10560, 10561),
+        ("troops", "alliance", 10563, 10564, 10565), ("troops", "empire", 10566, 10567, 10568),
+        ("personnel", "alliance", 10570, 10571, 10572), ("personnel", "empire", 10573, 10574, 10575),
     };
 
     public sealed record Result(int Pictures, int Descriptions, List<string> Missing, List<string> Log);
@@ -217,7 +249,22 @@ public sealed class Importer
                 else missing.Add($"alerts/{faction}.{AlertCategories[k]}: no bitmap {dim + k} in STRATEGY.DLL");
                 if (SaveSprite(strategy, lit + k, Path.Combine(outRoot, "alerts", $"{faction}.{AlertCategories[k]}.lit.png"))) { alerts++; pictureCount++; }
             }
-        Say($"sprites: {icons} corner icons, {sprites} planet sprites, {stars} GID stars, the uprising flame, {alerts} alert icons.");
+        int windows = 0;
+        foreach (var (name, id) in WindowPictures)
+        {
+            if (SaveSprite(strategy, id, Path.Combine(outRoot, "windows", $"{name}.png"))) { windows++; pictureCount++; }
+            else missing.Add($"windows/{name}: no bitmap {id} in STRATEGY.DLL");
+        }
+        int tabs = 0;
+        foreach (var (name, faction, normal, pressed, grey) in TabIcons)
+        {
+            var stem = faction.Length == 0 ? name : $"{name}.{faction}";
+            if (SaveSprite(strategy, normal, Path.Combine(outRoot, "tabs", $"{stem}.png"))) { tabs++; pictureCount++; }
+            else missing.Add($"tabs/{stem}: no bitmap {normal} in STRATEGY.DLL");
+            if (SaveSprite(strategy, pressed, Path.Combine(outRoot, "tabs", $"{stem}.pressed.png"))) pictureCount++;
+            if (SaveSprite(strategy, grey, Path.Combine(outRoot, "tabs", $"{stem}.grey.png"))) pictureCount++;
+        }
+        Say($"sprites: {icons} corner icons, {sprites} planet sprites, {stars} GID stars, the uprising flame, {alerts} alert icons, {windows} window pictures, {tabs} tab icons.");
 
         // Portraits and list miniatures: GOKRES.DLL, by the shipped id map.
         var mapPath = Path.Combine(AppContext.BaseDirectory, "gokres_map.json");

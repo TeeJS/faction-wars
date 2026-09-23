@@ -19,28 +19,31 @@ var _title: Button
 var _body: VBoxContainer
 static var _folded: bool = true
 
+const ColumnBottom := -80.0      # just above the two bottom rows (TeeJ, room #182)
 const ColumnTop := -367.0        # 4 px under the comms panel's bottom edge
+const FoldedHeight := 40.0
 
 
-## Folded: a plain 'Feedback' button in the column's style; open: the note box
-## hangs from the same top edge.
+## Folded: a plain 'Feedback' button at the bottom of the column; open: the
+## note box grows UPWARD from that same bottom edge, up to the comms panel
+## (TeeJ, 2026-09-23: "move the feedback to the bottom and have it expand up").
 func set_folded(folded: bool) -> void:
 	_folded = folded
 	_body.visible = not folded
-	_title.text = "Feedback" if folded else "Feedback  ▴"
+	_title.text = "Feedback" if folded else "Feedback  ▾"
 	_title.flat = not folded
 	_title.alignment = HORIZONTAL_ALIGNMENT_CENTER if folded else HORIZONTAL_ALIGNMENT_LEFT
-	# Open, it fills the column down to just above the two bottom rows (TeeJ, room #182).
-	offset_top = ColumnTop
-	offset_bottom = ColumnTop + 40.0 if folded else -80.0
+	offset_bottom = ColumnBottom
+	offset_top = ColumnBottom - FoldedHeight if folded else ColumnTop
 
 
 func _ready() -> void:
 	name = "FeedbackPanel"
-	# Directly under the grey message-category panel in the left column, the
-	# same width as that panel, and collapsed to a plain 'Feedback' button until
-	# clicked (TeeJ, room #164). The comms panel is anchored to the bottom edge
-	# and ends 371 px above it (Main.tscn), so this is anchored the same way.
+	# At the bottom of the left column, the same width as the grey
+	# message-category panel above it, and collapsed to a plain 'Feedback'
+	# button until clicked (TeeJ, room #164; moved to the bottom 2026-09-23).
+	# The comms panel is anchored to the bottom edge and ends 371 px above it
+	# (Main.tscn), so this is anchored the same way.
 	set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
 	offset_left = 4.0
 	offset_right = 147.0

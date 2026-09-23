@@ -43,9 +43,23 @@ const RegionHitSize := 18.0
 ## The theatre name on hover (TeeJ, 2026-09-22: "larger and darker", but not
 ## so big it spills far past its theatre). Only the hovered one shows.
 const TitleFontSize := 17   # 20 less 15% (TeeJ, 2026-09-22)
-const TitleColor := Color(0.12, 0.08, 0.05, 1)
+## Black letters with a thin light rim, drawn ABOVE the stars (TeeJ,
+## 2026-09-23: "in the foreground and darker so they can be SEEN" - the
+## 4 px cream outline had swallowed the letters, and the GID stars, at
+## z_index 1, drew over the name).
+const TitleColor := Color(0.02, 0.02, 0.02, 1)
 const TitleOutline := Color(1, 0.97, 0.88, 0.95)
-const TitleOutlineSize := 4
+const TitleOutlineSize := 2
+const TitleZIndex := 3
+## Emboldened, so the black strokes carry the name and the rim stays a rim.
+static var _titleFont: FontVariation = null
+
+static func TitleFont() -> Font:
+	if _titleFont == null:
+		_titleFont = FontVariation.new()
+		_titleFont.base_font = ThemeDB.fallback_font
+		_titleFont.variation_embolden = 0.9
+	return _titleFont
 ## The map area on screen, in this node's space: the rectangle the scene used
 ## to give the Star Wars picture (Main.tscn, 1070.67 x 803 at 150,99).
 const Frame := Vector2(1070.6666, 803.0)
@@ -98,7 +112,9 @@ func InitializeMap(galaxyData: Array, uiManager: UIManager) -> void:
 		# A theme outline draws even on transparent text, which put every name on
 		# screen at once; so the outline is switched on and off with the mouse.
 		sectorButton.add_theme_font_size_override("font_size", TitleFontSize)
+		sectorButton.add_theme_font_override("font", TitleFont())
 		sectorButton.add_theme_color_override("font_outline_color", TitleOutline)
+		sectorButton.z_index = TitleZIndex
 		_title_visible(sectorButton, false)
 		sectorButton.mouse_entered.connect(_title_visible.bind(sectorButton, true))
 		sectorButton.mouse_exited.connect(_title_visible.bind(sectorButton, false))

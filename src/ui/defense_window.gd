@@ -1,7 +1,9 @@
 class_name DefenseWindow
 extends DraggableWindow
 ## frontend/DefenseWindow.cs - the System Defenses window (manual p126, fig
-## 3.73): Personnel, Troops, Fighters and Orbital Defenses tabs.
+## 3.73): Personnel, Troops, Fighters, Planetary Shield and Planetary Battery
+## tabs - the five the manual lists - as icon tabs with the system's own
+## picture behind them when the player imported the original's art.
 
 var _associatedPlanet: Planet
 
@@ -43,7 +45,7 @@ var SelectedSpecForces: Array[Unit] = []
 # below counts only what the intel gate yields - and that is everybody
 # EXCEPT us. Two of your own officers standing on the world are not "no
 # personnel".
-func DrawOwnPersonnel(list: VBoxContainer, planet: Planet, uiManager: UIManager) -> int:
+func DrawOwnPersonnel(list: Container, planet: Planet, uiManager: UIManager) -> int:
 	var us: Faction = GameSettings.PlayerFaction
 	if us == null or GameState.ActiveRoster == null:
 		return 0
@@ -70,7 +72,7 @@ func DrawOwnPersonnel(list: VBoxContainer, planet: Planet, uiManager: UIManager)
 # a mission read as idle on the Troops tab while a commando on the very same
 # job read correctly on Personnel. The unit menu offers Mission to all three
 # (manual p045), so all three can be on one.
-func DrawUnitRow(list: VBoxContainer, unit: Unit, uiManager: UIManager,
+func DrawUnitRow(list: Container, unit: Unit, uiManager: UIManager,
 		selectionList: Array) -> void:
 	var nameColor: Color = unit.Faction.FactionColor if unit.Faction != null else Color.WHITE
 	var displayText: String = unit.Name
@@ -111,7 +113,7 @@ func DrawUnitRow(list: VBoxContainer, unit: Unit, uiManager: UIManager,
 #
 # Returns the count, because every emptiness test below is written against
 # what the gate yields - which is deliberately everybody EXCEPT us.
-func DrawOwnUnits(list: VBoxContainer, here: Array,
+func DrawOwnUnits(list: Container, here: Array,
 		uiManager: UIManager, selectionList: Array) -> int:
 	var us: Faction = GameSettings.PlayerFaction
 	if us == null or here == null:
@@ -126,7 +128,7 @@ func DrawOwnUnits(list: VBoxContainer, here: Array,
 
 # Returns true when the caller should go on and draw live rows. Otherwise the
 # panel has already been filled in.
-static func ShowLive(list: VBoxContainer, planet: Planet,
+static func ShowLive(list: Container, planet: Planet,
 		section: int, emptyText: String) -> bool:
 	var view: IntelManager.IntelView = IntelManager.View(GameSettings.PlayerFaction, planet, section)
 	if view.Live:
@@ -176,9 +178,14 @@ func Populate(planet: Planet, uiManager: UIManager) -> void:
 
 	var _titleBarLabel: Label = get_node("%TitleBarLabel")
 	var _tabs: TabContainer = get_node("%DefenseTabs")
-	var _personnelList: VBoxContainer = get_node_or_null("%PersonnelList")
+	var _personnelList: Container = get_node_or_null("%PersonnelList")
 
-	_titleBarLabel.text = " %s Defenses" % planet.Name
+	# The original titles the window with the system's name and its sprite.
+	_titleBarLabel.text = " %s" % planet.Name
+	SetTitleIcon(planet)
+	var side: String = GameSettings.PlayerFaction.Id if GameSettings.PlayerFaction != null else ""
+	ApplyTabIcons(_tabs, ["personnel", "troops", "fighters", "planetary_shield", "planetary_battery"], side)
+	_Backdrop(planet, _tabs)
 
 	PopulateOrbitalDefenses(_tabs, planet)
 	PopulateTroops(_tabs, planet, uiManager)
@@ -286,7 +293,7 @@ func Populate(planet: Planet, uiManager: UIManager) -> void:
 					"No special forces seen on the system.")
 
 
-func AddUnitToList(list: VBoxContainer, unitData: Unit, text: String, color: Color, uiManager: UIManager, selectionList: Array) -> void:
+func AddUnitToList(list: Container, unitData: Unit, text: String, color: Color, uiManager: UIManager, selectionList: Array) -> void:
 	if unitData == null:
 		CreateEmptyLabel(list, text, color)
 		return
@@ -300,6 +307,8 @@ func AddUnitToList(list: VBoxContainer, unitData: Unit, text: String, color: Col
 	if mini != null:
 		unitBtn.icon = mini
 		unitBtn.set_meta("miniature", true)
+	if list is HFlowContainer:
+		CardStyle(unitBtn, mini)
 	unitBtn.UnitData = unitData
 	unitBtn.UIManagerRef = uiManager
 	unitBtn.ParentWindow = self
@@ -386,8 +395,36 @@ func _drop_data(_at_position: Vector2, data: Variant) -> void:
 		_uiManager.ExecuteUnitMove(dragGroup, _associatedPlanet, false)
 
 
+## "Planetary Shield: shields protecting the system. Planetary Battery:
+## batteries protecting the system" (manual p126 Fig 3.73) - two tabs, as the
+## manual has them, split by the facility's role.
 func PopulateOrbitalDefenses(tabs: TabContainer, planet: Planet) -> void:
-	var container: MarginContainer = tabs.get_node_or_null("Orbital Defenses")
+	PopulateDefenceTab(tabs, "Planetary Shield", planet, ["shield"], Terms.lower("planetary_shields"))
+	PopulateDefenceTab(tabs, "Planetary Battery", planet, ["anti_ship", "disable"], Terms.lower("orbital_batteries"))
+
+
+static func _HasAnyRole(f: Facility, roles: Array) -> bool:
+	for r in roles:
+		if f.HasRole(r):
+			return true
+	return false
+
+
+## Which tab a sighting's line belongs on; a line naming no known family
+## lands with the batteries.
+static func _LineHasAnyRole(line: String, roles: Array) -> bool:
+	var t := _defence_type_of(line)
+	var d = FacilityCatalog.Get(t, 1) if not t.is_empty() else null
+	if d == null:
+		return "anti_ship" in roles
+	for r in roles:
+		if d.HasRole(r):
+			return true
+	return false
+
+
+func PopulateDefenceTab(tabs: TabContainer, tabName: String, planet: Planet, roles: Array, what: String) -> void:
+	var container: MarginContainer = tabs.get_node_or_null(tabName)
 	if container == null:
 		return
 
@@ -396,6 +433,7 @@ func PopulateOrbitalDefenses(tabs: TabContainer, planet: Planet) -> void:
 
 	var list := VBoxContainer.new()
 	container.add_child(list)
+	AddCaption(list, tabName)
 
 	# ROWS, NOT LABELS - because these are SABOTAGE TARGETS. A shield, battery
 	# or ion cannon is a facility, and "a sabotage mission destroys a facility"
@@ -414,9 +452,9 @@ func PopulateOrbitalDefenses(tabs: TabContainer, planet: Planet) -> void:
 		return
 
 	if view.Live:
-		var defenses: Array = Lq.where(planet.Facilities, IntelManager.IsDefensive)
+		var defenses: Array = Lq.where(planet.Facilities, func(f: Facility) -> bool: return IntelManager.IsDefensive(f) and _HasAnyRole(f, roles))
 		if defenses.size() == 0:
-			_empty_defences(list, "No %s or %s detected." % [Terms.lower("orbital_batteries"), Terms.lower("planetary_shields")])
+			_empty_defences(list, "No %s detected." % what)
 			return
 		for def in defenses:
 			_defence_row(list, def.Name() + " (Tier %d)" % def.Tier, def.Family(),
@@ -425,15 +463,16 @@ func PopulateOrbitalDefenses(tabs: TabContainer, planet: Planet) -> void:
 				func() -> Facility: return def)
 		return
 
-	if view.Lines.size() == 0:
-		_empty_defences(list, "No %s or %s seen." % [Terms.lower("orbital_batteries"), Terms.lower("planetary_shields")])
+	var lines: Array = Lq.where(view.Lines, func(line) -> bool: return _LineHasAnyRole(str(line), roles))
+	if lines.size() == 0:
+		_empty_defences(list, "No %s seen." % what)
 		return
 
 	# The snapshot: one row per line, re-resolving the nth defence of that
 	# type standing there NOW when the crosshair lands on it.
 	var world: Planet = planet
 	var counted: Dictionary = {}
-	for line in view.Lines:
+	for line in lines:
 		var type := _defence_type_of(str(line))
 		if type.is_empty():
 			_defence_row(list, str(line), "", "", Color.LIGHT_GRAY, Callable())
@@ -454,7 +493,7 @@ static func _defence_type_of(line: String) -> String:
 	return ""
 
 
-static func _empty_defences(list: VBoxContainer, text: String) -> void:
+static func _empty_defences(list: Container, text: String) -> void:
 	var empty := Label.new()
 	empty.text = text
 	empty.add_theme_font_size_override("font_size", 12)
@@ -465,7 +504,7 @@ static func _empty_defences(list: VBoxContainer, text: String) -> void:
 ## One defence row: a flat button the mission crosshair can land on, with its
 ## status beside it. `resolve` returns the facility to target when clicked
 ## (null when the sighting is stale and nothing stands there any more).
-func _defence_row(list: VBoxContainer, text: String, family: String, status: String, statusColor: Color, resolve: Callable) -> void:
+func _defence_row(list: Container, text: String, family: String, status: String, statusColor: Color, resolve: Callable) -> void:
 	var row := HBoxContainer.new()
 	var rowBtn := Button.new()
 	rowBtn.text = text
@@ -503,7 +542,7 @@ func _defence_row(list: VBoxContainer, text: String, family: String, status: Str
 ## sighting is stale and it has since moved. The "(seen day N)" marker makes the
 ## snapshot's age plain, so a unit that has moved is not mistaken for being in two
 ## places at once.
-func _intel_target_row(list: VBoxContainer, text: String, day: int, resolve: Callable) -> void:
+func _intel_target_row(list: Container, text: String, day: int, resolve: Callable) -> void:
 	var row := HBoxContainer.new()
 	var rowBtn := Button.new()
 	rowBtn.text = text
@@ -555,8 +594,8 @@ static func _enemy_here(planet: Planet, section: int) -> Array:
 ## rows (each resolves to the live nth object of its kind). Used for the Personnel,
 ## Troops and Fighters tabs so the mission crosshair can land on an enemy character
 ## (abduction/assassination) or regiment/squadron (sabotage) - the same treatment
-## the Orbital Defenses tab already gives facilities.
-func _draw_intel_units(list: VBoxContainer, planet: Planet, view: IntelManager.IntelView, section: int, emptyText: String) -> void:
+## the Planetary Shield and Battery tabs already give facilities.
+func _draw_intel_units(list: Container, planet: Planet, view: IntelManager.IntelView, section: int, emptyText: String) -> void:
 	if not view.Known:
 		var none := Label.new()
 		none.text = "Sensors detect no data."
@@ -631,6 +670,7 @@ func PopulateTroops(tabs: TabContainer, planet: Planet, uiManager: UIManager) ->
 
 	var list := VBoxContainer.new()
 	container.add_child(list)
+	AddCaption(list, "Troops")
 
 	# THE GATE IS READ, NOT RETURNED ON. Your own regiments are drawn either
 	# way; only the garrison readout and the opponent's units depend on the
@@ -716,6 +756,7 @@ func PopulateFighters(tabs: TabContainer, planet: Planet, uiManager: UIManager) 
 
 	var list := VBoxContainer.new()
 	container.add_child(list)
+	AddCaption(list, "Fighters")
 
 	# THE CLEAREST CASE OF THE LOT. Neither the uprising flip nor an assault
 	# touches FighterSquadrons - the flip counts trooper regiments and the
@@ -829,3 +870,26 @@ func OnUnitMenuAction(actionId: int, units: Array, uiManager: UIManager) -> void
 
 		_:
 			print("Unhandled unit menu action %d" % actionId)
+
+
+## The system's own picture across the bottom of the window, behind the
+## tabs (Fig 3.73), when imported - and the tab panel goes translucent so it
+## shows through.
+func _Backdrop(planet: Planet, tabs: TabContainer) -> void:
+	var rect: TextureRect = get_node_or_null("%Backdrop")
+	if rect == null:
+		return
+	var tex: Texture2D = Art.Picture("planets", planet.PackId)
+	rect.texture = tex
+	rect.visible = tex != null
+	if tex == null:
+		return
+	var host: Control = get_node_or_null("%BackdropHost")
+	var width: float = maxf(host.size.x if host != null else 0.0, tabs.custom_minimum_size.x)
+	rect.offset_top = -width / 2.0
+	if not tabs.has_meta("translucent"):
+		tabs.set_meta("translucent", true)
+		var sb := StyleBoxFlat.new()
+		sb.bg_color = Color(0.05, 0.07, 0.1, 0.55)
+		sb.set_content_margin_all(4)
+		tabs.add_theme_stylebox_override("panel", sb)

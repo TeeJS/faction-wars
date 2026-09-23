@@ -212,6 +212,21 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 
 			var oursInOrbit: bool = Lq.any(fleetsHere, func(f: Fleet) -> bool: return f.Faction == GameSettings.PlayerFaction)
 
+			# THE OTHER THREE CORNERS ARE CONDITIONAL TOO (TeeJ, 2026-09-23,
+			# against the original's own sector window): the Manufacturing
+			# icon is there only when the system has production facilities you
+			# know of, the Defenses icon only when it has defenses you know of,
+			# and the Mission icon only while a mission runs. In the original a
+			# freshly explored enemy world shows its factory and nothing else,
+			# because its garrison has not been scouted; ours drew all four on
+			# every explored world, so the corners said nothing.
+			#
+			# "Know of" is the fogged intel, the same readers the windows use:
+			# live on a world we hold, else the last sighting, else nothing.
+			var viewer: Faction = GameSettings.PlayerFaction
+			var hasManufacturing: bool = _KnownManufacturing(viewer, planet)
+			var hasDefenses: bool = _KnownDefenses(viewer, planet)
+
 			for i in 4:
 				# Unexplored: the mission icon only. See above.
 				if not planet.IsExplored and cornerLabels[i] != "M":
@@ -219,6 +234,14 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 
 				# Nothing in orbit, nothing to draw.
 				if cornerLabels[i] == "F" and fleetsHere.size() == 0:
+					continue
+				if cornerLabels[i] == "E" and not hasManufacturing:
+					continue
+				if cornerLabels[i] == "D" and not hasDefenses:
+					continue
+				# The mission corner: our running mission, or the uprising flame.
+				var uprisingHere: bool = planet.IsExplored and IntelManager.UprisingSeen(viewer, planet)
+				if cornerLabels[i] == "M" and not myMissionHere and not uprisingHere:
 					continue
 
 				# The glyph sits straight on the map like the original's; a
@@ -242,7 +265,7 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 				cornerBtn.size = Vector2(cornerSize, cornerSize)
 				cornerBtn.position = cornerPositions[i]
 				cornerBtn.flat = true   # Removes background
-				# No inner padding: a 16 px glyph in a 16 px button.
+				# No inner padding: the glyph fills the button.
 				var tight := StyleBoxEmpty.new()
 				cornerBtn.add_theme_stylebox_override("focus", tight)
 				_TintIcon(cornerBtn, planet.GetFactionColor())
@@ -277,12 +300,12 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 				# active list until the next day tick, so the icon used to stay
 				# lit on a mission that had just been called off.
 				var missionHere: bool = cornerLabels[i] == "M" and myMissionHere
-				if cornerLabels[i] == "M":
-					# Lit in our colour while a mission runs, faint otherwise -
-					# the corner is still the way to the Mission window.
+				if missionHere:
+					# Lit in our colour while a mission runs (the corner is
+					# only drawn then - see the presence rules above).
 					var mine: Color = GameSettings.PlayerFaction.FactionColor
-					_TintIcon(cornerBtn, mine if missionHere else Color(mine.r, mine.g, mine.b, 0.35))
-					_OriginalIcon(cornerBtn, "mission", GameSettings.PlayerFaction.Id, 1.0 if missionHere else 0.35)
+					_TintIcon(cornerBtn, mine)
+					_OriginalIcon(cornerBtn, "mission", GameSettings.PlayerFaction.Id, 1.0)
 				if missionHere:
 					cornerBtn.tooltip_text = "Mission in progress - right-click for orders"
 
@@ -319,7 +342,7 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 				# Fogged: an uprising is shown only where we have SEEN one (live on a
 				# world we hold, else the last sighting) - not read live off an enemy
 				# world we merely explored once. IsInUprising -> IntelManager.UprisingSeen.
-				if cornerLabels[i] == "M" and planet.IsExplored and IntelManager.UprisingSeen(GameSettings.PlayerFaction, planet):
+				if cornerLabels[i] == "M" and uprisingHere:
 					cornerBtn.set_meta("corner", "uprising")
 					cornerBtn.icon = FactionRegistry.CornerIcon("uprising")
 					_TintIcon(cornerBtn, CUprising)
@@ -334,6 +357,7 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 				hoverStyle.bg_color = Color(1, 1, 1, 0.18)
 				cornerBtn.add_theme_stylebox_override("hover", hoverStyle)
 				cornerBtn.add_theme_stylebox_override("pressed", hoverStyle)
+				_PlaceCorner(cornerBtn, i, finalX, finalY)
 
 				var actionIndex: int = i
 				cornerBtn.pressed.connect(func() -> void:
@@ -373,6 +397,73 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 
 ## The uprising flame's own colour (manual p091: "a flaming icon").
 const CUprising := Color(1.0, 0.55, 0.12)
+
+
+## WHERE A CORNER SITS: TIGHT AGAINST THE PLANET, AS THE ORIGINAL DRAWS IT
+## (TeeJ, 2026-09-23: "tighter to the planet and more like the original").
+##
+## The original's corner bitmaps are not glyphs but QUADRANT CELLS, 27x19 or
+## so, with the glyph drawn in the cell's outer corner (STRATEGY.DLL 10771-
+## 10790, measured from their alpha), and the four cells tile around the
+## system's centre. Measured on the original at 640x480: the factory's inner
+## corner sits 15 px left of and 9 px above the centre, the tower 16 px left
+## and 9 px below, the fleet 10 px right and 10 px above. So an imported cell
+## is simply laid with its inner corner on the centre. Our own 16 px glyphs
+## have no baked margin, so they are anchored by their inner corner at the
+## same spot the original's glyphs reach: (+-15, +-9) from the centre.
+const GlyphInnerX := 15.0
+const GlyphInnerY := 9.0
+
+## Called after the button's styleboxes are set: a Button pads its icon by
+## its theme's margins, so the ICON's rectangle - not the button's - is what
+## gets anchored, and the button is laid around it.
+static func _PlaceCorner(btn: Button, corner: int, cx: float, cy: float) -> void:
+	var left: bool = corner == 0 or corner == 2      # Top-Left, Bottom-Left
+	var top: bool = corner == 0 or corner == 1       # Top-Left, Top-Right
+	var icon: Vector2 = btn.icon.get_size() if btn.icon != null else btn.custom_minimum_size
+	var original: bool = btn.has_meta("original_icon")
+	# The icon's inner corner goes here.
+	var ax: float = cx if original else (cx - GlyphInnerX if left else cx + GlyphInnerX)
+	var ay: float = cy if original else (cy - GlyphInnerY if top else cy + GlyphInnerY)
+	btn.custom_minimum_size = icon
+	var box: Vector2 = btn.get_combined_minimum_size()
+	var pad: Vector2 = (box - icon).max(Vector2.ZERO) / 2.0
+	btn.size = box
+	btn.position = Vector2(
+		(ax - icon.x - pad.x) if left else (ax - pad.x),
+		(ay - icon.y - pad.y) if top else (ay - pad.y))
+
+
+## The Manufacturing icon's rule: a production facility of any family you
+## know of - the Manufacturing and Production window's contents (manual p084
+## Fig 3.26: mines, refineries, construction yards, shipyards, training).
+## Read from the fogged ProductionFacilities sighting, else the mines the
+## status sighting carries (the bars' own reader), so the icon and the yellow
+## squares under it never disagree.
+static func _KnownManufacturing(viewer: Faction, planet: Planet) -> bool:
+	var counts: Dictionary = IntelManager.SeenData(viewer, planet, Enums.IntelSection.ProductionFacilities).get("counts", {})
+	for family in counts:
+		if int(counts[family]) > 0:
+			return true
+	return int(IntelManager.StatusSeen(viewer, planet).get("mines", 0)) > 0
+
+
+## The Defenses icon's rule: anything the System Defenses window would list
+## (manual p126 Fig 3.73: personnel and Special Forces, troops, fighters,
+## shields, batteries) that you know of.
+static func _KnownDefenses(viewer: Faction, planet: Planet) -> bool:
+	if not IntelManager.SeenData(viewer, planet, Enums.IntelSection.Troopers).get("regiments", []).is_empty():
+		return true
+	if int(IntelManager.SeenData(viewer, planet, Enums.IntelSection.Fighters).get("squadrons", 0)) > 0:
+		return true
+	if int(IntelManager.SeenData(viewer, planet, Enums.IntelSection.SpecForces).get("units", 0)) > 0:
+		return true
+	if not IntelManager.SeenData(viewer, planet, Enums.IntelSection.Characters).get("people", []).is_empty():
+		return true
+	var d: Dictionary = IntelManager.SeenData(viewer, planet, Enums.IntelSection.DefensiveFacilities)
+	var guns: Variant = d.get("guns", [])
+	return int(d.get("shields", 0)) > 0 or int(d.get("batteries", 0)) > 0 \
+		or (guns is Array and not guns.is_empty())
 
 
 ## A corner glyph is white on alpha; the button's icon colours carry the tint,

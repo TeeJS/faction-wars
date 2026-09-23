@@ -34,7 +34,12 @@ func _init() -> void:
 		_main = load("res://Main.tscn").instantiate()
 		root.add_child(_main)
 	else:
-		_engine = GameSession.new_game("alliance", Enums.Difficulty.Medium, Enums.GalaxySize.Large, 12345)
+		# The player's side is the pack's first playable faction - the same default
+		# Main.tscn takes (game_manager.gd) - so this runs under --pack=ww2 too;
+		# "alliance" for the seed-12345 Star Wars fixture. --faction=<id> overrides.
+		FactionRegistry.EnsureLoaded()
+		var side := _arg("--faction=", FactionRegistry.Playable[0].Id)
+		_engine = GameSession.new_game(side, Enums.Difficulty.Medium, Enums.GalaxySize.Large, 12345)
 		_ui = UIManager.new()
 		_ui.name = "UIManager"
 		var panel := PanelContainer.new()
@@ -102,7 +107,7 @@ func _run(wanted: Array) -> void:
 			"GalaxyOverviewWindow": _ui.OpenGalaxyOverview()
 			"ObjectivesWindow": _ui.OpenObjectives()
 			"BattleAlertWindow", "BattleResultsWindow", "TacticalView":
-				_battle_windows(w)
+				await _battle_windows(w)
 			_:
 				push_error("[ui_smoke] unknown window %s" % w)
 		await process_frame
@@ -129,6 +134,11 @@ func _battle_windows(w: String) -> void:
 	while not FleetBattleManager.HasPendingBattle() and days < 120:
 		_engine.AdvanceDay()
 		days += 1
+		# A frame per day, as in play: every open window rebuilds its rows on
+		# Refresh(), and the freed rows' deferred layout calls only leave the
+		# message queue when a frame runs. 120 days with no frame (the WWII
+		# pack raises no fleet battle) overflowed the 32 MB queue and crashed.
+		await process_frame
 		while FleetBattleManager.HasPendingBattle() and _battle_is_not_ours():
 			FleetBattleManager.SimulateResults(FleetBattleManager.AwaitingOrders()[0], StrategicTickManager.Today)
 	if not FleetBattleManager.HasPendingBattle():
