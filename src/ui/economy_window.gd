@@ -330,6 +330,42 @@ func QueueBar(labelPath: String, queue: Array, _planet: Planet) -> void:
 		+ ((", %d more queued" % (queue.size() - 1)) if queue.size() > 1 else "")
 
 
+## A manufacturing queue's Status window (manual p086, Fig 3.29: it "tells you
+## the day on which construction will be finished") with the fields TeeJ's
+## screenshot of the original shows (Facilities Under Construction on
+## Xyquine): Location, Status, Items to Build, Estimated Day of Completion,
+## then the queue's picture and name (GOKRES.DLL 263 / "Construction"; the
+## ship and troop queues' 262 / 264 and "Shipyard" / "Training" are their
+## neighbours in the DLLs, not yet on a screenshot). The day is when the
+## whole queue is done, each item in turn at a point a day per producing
+## facility.
+const QueueStatus := {
+	"produces_unit": ["Ship Construction", "queue.ships", "Shipyard", "Building"],
+	"produces_troop": ["Troops in Training", "queue.troops", "Training", "Training"],
+	"produces_facility": ["Facilities Under Construction", "queue.facilities", "Construction", "Building"],
+}
+
+
+static func QueueStatusData(planet: Planet, producer: String) -> Dictionary:
+	var info: Array = QueueStatus.get(producer, ["Status", "", "", "Building"])
+	var q: Variant = planet.QueueFor(producer)
+	var queue: Array = q if q != null else []
+	var workers: int = Lq.count(planet.Facilities, func(f: Facility) -> bool: return f.HasRole(producer))
+	var days: int = 0
+	for t in queue:
+		var task: ConstructionTask = t
+		days += ceili(float(maxi(0, task.TotalWork - task.Progress)) / float(maxi(1, workers)))
+	var done: String = str(StrategicTickManager.Today + days) if not queue.is_empty() and workers > 0 else "n/a"
+	return {
+		"title": info[0],
+		"fields": [["Location:", planet.Name], ["Status:", info[3] if not queue.is_empty() else "Idle"],
+			["Items to Build:", str(queue.size())], ["Estimated Day of Completion:", done]],
+		"picture": OUI.Pic(info[1]) if not str(info[1]).is_empty() else null,
+		"name": info[2],
+		"encyclopedia": ["facilities", FacilityCatalog.FamilyForRole(producer)],
+	}
+
+
 # A production queue entry carries the orders. "Right-click a production
 # entry" gives Build, Stop, Destination (manual p084) - the same menu the
 # original shows, minus the parts that need systems we do not have.
@@ -354,6 +390,10 @@ func AttachQueueMenu(labelPath: String, planet: Planet, producer: String, queue:
 	menu.add_item("Destination...", 2)
 	menu.add_separator()
 	menu.add_item("Encyclopedia", 3)
+	# "When you right-click on the Facilities Under Construction area ... one
+	# of the options is Status. This brings up the Facilities Under
+	# Construction window" (manual p086, Fig 3.29) - each queue has its own.
+	menu.add_item("Status", 4)
 	label.add_child(menu)
 	RegisterPopupMenu(menu)
 
@@ -371,6 +411,10 @@ func AttachQueueMenu(labelPath: String, planet: Planet, producer: String, queue:
 				var ui3: UIManager = get_parent() as UIManager
 				if ui3 != null:
 					ui3.OpenEncyclopedia("facilities", FacilityCatalog.FamilyForRole(producer))
+			4:   # Status - the queue's own Status window (Fig 3.29)
+				var ui4: UIManager = get_parent() as UIManager
+				if ui4 != null:
+					ui4.OpenQueueStatusWindow(planet, producer)
 			1:
 				CommandBus.issue("cancel_build", { "planet": planet.Name, "producer": producer })
 				Populate(planet)

@@ -123,6 +123,21 @@ public sealed class Importer
         ("mission_plate", 11100), ("mission_decoy_plate", 11101), ("mission_list", 11102),
         ("mission_agents.alliance", 11121), ("mission_decoys.alliance", 11122),
         ("mission_agents.empire", 11123), ("mission_decoys.empire", 11124),
+        // A Status window (manual p064: modal, no title bar, closed by its
+        // diamond): the 379x272 plate per side - the field panel with the
+        // side's emblem, the picture and name grids, the button sockets - and
+        // the grey spotlight behind a trooper regiment's picture (122x50).
+        ("status_plate.alliance", 11554), ("status_plate.empire", 11558),
+        ("status_backdrop.troops", 11514),
+    };
+
+    // GOKRES.DLL: the picture of a manufacturing queue in its Status window
+    // (Fig 3.29), keyed by its own bottom-left colour as the original draws it:
+    // 263 Facilities Under Construction (matched on TeeJ's screenshot), 262
+    // and 264 the ship and troop queues (their neighbours, not yet seen).
+    private static readonly (string Name, int Id)[] QueuePictures =
+    {
+        ("queue.facilities", 263), ("queue.ships", 262), ("queue.troops", 264),
     };
 
     // STRATEGY.DLL: window tab icons as (name, faction or "", normal, current,
@@ -173,6 +188,8 @@ public sealed class Importer
         ("scroll_thumb_top", 10666, 0, 0), ("scroll_thumb_mid", 10668, 0, 0), ("scroll_thumb_bottom", 10669, 0, 0),
         // Create Mission's Decoy tab: move the selected to the decoys / agents (16x16).
         ("mission_to_decoys", 11117, 11118, 0), ("mission_to_agents", 11119, 11120, 0),
+        // A Status window's Encyclopedia button (32x31); its close is ency_close.alliance.
+        ("status_encyclopedia", 11552, 11553, 11612),
     };
 
     // STRATEGY.DLL: buttons drawn CLIPPED to their control, as (name, normal,
@@ -200,7 +217,9 @@ public sealed class Importer
     // Bitmaps the original draws WHOLE, pure blue included: the Create Mission
     // plates' blue line under the tabs and the tabs' blue edges are on TeeJ's
     // screenshot of the original, pixel for pixel (2026-09-23).
-    private static readonly HashSet<int> DrawnWhole = new() { 11100, 11101, 11103, 11104, 11105, 11106, 11107, 11108, 11109, 11110 };
+    private static readonly HashSet<int> DrawnWhole = new() { 11100, 11101, 11103, 11104, 11105, 11106, 11107, 11108, 11109, 11110,
+        // The Status plates are opaque; the pressed Encyclopedia button keeps its blue face.
+        11554, 11558, 11553 };
 
     public sealed record Result(int Pictures, int Descriptions, List<string> Missing, List<string> Log);
 
@@ -389,6 +408,11 @@ public sealed class Importer
             }
         }
         Say($"mission pictures for Create Mission: {missionCards} (GOKRES.DLL).");
+        foreach (var (name, id) in QueuePictures)
+        {
+            if (SaveSprite(cards, id, Path.Combine(outRoot, "windows", $"{name}.png"), keyCorner: true)) pictureCount++;
+            else missing.Add($"windows/{name}: no bitmap {id} in GOKRES.DLL");
+        }
 
         // Portraits and list miniatures: GOKRES.DLL, by the shipped id map.
         var mapPath = Path.Combine(AppContext.BaseDirectory, "gokres_map.json");
@@ -438,7 +462,8 @@ public sealed class Importer
     /// A clip rectangle crops the bitmap to the part the original draws; a
     /// clipped button's second magenta shade (204,28,205) is keyed as well
     /// (never elsewhere: the Manufacturing tab pictures draw it).</summary>
-    private static bool SaveSprite(PeResources dll, int bitmapId, string outPath, bool keyMagenta = false, Rectangle? clip = null)
+    private static bool SaveSprite(PeResources dll, int bitmapId, string outPath, bool keyMagenta = false, Rectangle? clip = null,
+        bool keyCorner = false)
     {
         if (!dll.Bitmaps.ContainsKey(bitmapId))
             return false;
@@ -446,12 +471,16 @@ public sealed class Importer
         using var stream = new MemoryStream(dll.BitmapFile(bitmapId));
         using var bmp = new Bitmap(stream);
         var r = clip ?? new Rectangle(0, 0, bmp.Width, bmp.Height);
+        // keyCorner: the bitmap's own bottom-left colour is its transparent
+        // colour, in place of blue (a queue picture keys its asphalt).
+        var corner = bmp.GetPixel(0, bmp.Height - 1);
         using var rgba = new Bitmap(r.Width, r.Height, PixelFormat.Format32bppArgb);
         for (int y = 0; y < r.Height; y++)
             for (int x = 0; x < r.Width; x++)
             {
                 var c = bmp.GetPixel(r.X + x, r.Y + y);
-                bool key = (c.R == 0 && c.G == 0 && c.B == 255 && !DrawnWhole.Contains(bitmapId))
+                bool key = keyCorner ? c.ToArgb() == corner.ToArgb() :
+                    (c.R == 0 && c.G == 0 && c.B == 255 && !DrawnWhole.Contains(bitmapId))
                     || (keyMagenta && c.R == 255 && c.G == 0 && c.B == 255)
                     || (clip != null && c.R == 204 && c.G == 28 && c.B == 205);
                 rgba.SetPixel(x, y, key ? Color.Transparent : Color.FromArgb(255, c.R, c.G, c.B));

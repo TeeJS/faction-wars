@@ -110,17 +110,18 @@ static func Place(parent: Control, tex: Texture2D, x: float, y: float, name: Str
 	return r
 
 
-## The original's text style on a label: face, size in original pixels.
-static func Style(l: Control, px: int, color: Color, bold: bool = false) -> void:
+## The original's text style on a label: face, size in original pixels (a
+## half pixel where our Arial runs wider than the original's hinted one).
+static func Style(l: Control, px: float, color: Color, bold: bool = false) -> void:
 	l.add_theme_font_override("font", Face(bold))
-	l.add_theme_font_size_override("font_size", px * K)
+	l.add_theme_font_size_override("font_size", roundi(px * K))
 	l.add_theme_color_override("font_color", color)
 	if l is Label:
 		l.add_theme_constant_override("line_spacing", -K)
 
 
 ## A line of text in an original-pixel box.
-static func Text(parent: Control, text: String, x: float, y: float, w: float, h: float, px: int,
+static func Text(parent: Control, text: String, x: float, y: float, w: float, h: float, px: float,
 		color: Color = Color.WHITE, align: HorizontalAlignment = HORIZONTAL_ALIGNMENT_LEFT,
 		bold: bool = false, name: String = "") -> Label:
 	var l := Label.new()
@@ -278,7 +279,7 @@ static func _title_button(b: Button, icon: String) -> void:
 ## position (x, y).
 static func PictureButton(parent: Control, name: String, x: float, y: float, tip: String = "") -> TextureButton:
 	var b := TextureButton.new()
-	b.name = name
+	b.name = name.validate_node_name()   # "ency_close.alliance" -> "ency_close_alliance"
 	b.texture_normal = Btn(name)
 	b.texture_pressed = Btn(name, "pressed")
 	b.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
@@ -294,6 +295,109 @@ static func _gap(px: int) -> Control:
 	c.custom_minimum_size = Vector2(px * K, 0)
 	c.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	return c
+
+
+# ---- modal windows -------------------------------------------------------------
+
+## MODAL, as the manual has Status windows and dialogs (p064: "you must dismiss
+## the window before you can go do anything else in the game"): a clear
+## blocker under the window takes every other click, and goes with it. Esc
+## closes the window ("Cancel/Close Window", p064). A window opened from it
+## (the Encyclopedia) comes up over both.
+static func Modal(window: Control) -> void:
+	var parent: Node = window.get_parent()
+	if parent == null or window.has_meta("modal_blocker"):
+		return
+	var blocker := Control.new()
+	blocker.name = "ModalBlocker"
+	blocker.set_anchors_preset(Control.PRESET_FULL_RECT)
+	blocker.mouse_filter = Control.MOUSE_FILTER_STOP
+	parent.add_child(blocker)
+	parent.move_child(blocker, window.get_index())
+	window.set_meta("modal_blocker", blocker)
+	if "CloseOnEscape" in window:
+		window.set("CloseOnEscape", true)
+	window.tree_exiting.connect(func() -> void:
+		if is_instance_valid(blocker):
+			blocker.queue_free())
+
+
+## Lines of a wrapping label `pitch` original pixels apart.
+static func LinePitch(l: Label, px: float, pitch: int, bold: bool = false) -> void:
+	l.add_theme_constant_override("line_spacing", pitch * K - int(ceil(Face(bold).get_height(roundi(px * K)))))
+
+
+# ---- the Status window -------------------------------------------------------
+
+## THE ORIGINAL'S STATUS WINDOW (manual p064: modal, known by its diamond
+## close button; Figs 3.28, 3.29, 3.61), rebuilt from its bitmaps at the
+## places measured on TeeJ's screenshots of the original - a Trooper Regiment,
+## Facilities Under Construction, Spec Forces and a Manufacturing Status, each
+## rebuilt pixel for pixel (2026-09-23). No title bar: the 379x272 plate per
+## side; the title (Arial bold 13) centred over the field panel at y 18; the
+## fields in Arial 11 (drawn 10.5: ours runs wider than the original's hinted
+## face - "Bombardment Value:" is 98 pixels to its 99), a line every 14
+## pixels from y 47, labels from x 18 wrapping at 103 and each value at x 121
+## on its label's last line; the
+## picture centred in the grid panel (x 242-371, y 15-112), a regiment's over
+## its grey spotlight; the name (Arial bold 13) centred under it from y 137, a
+## line every 16; the Encyclopedia button at (258, 218) and the diamond that
+## closes the window at (324, 218).
+const StatusW := 379
+const StatusH := 272
+const StatusFieldPx := 10.5
+
+
+## True when the player imported the Status window's art.
+static func HasStatus() -> bool:
+	return Has(["status_plate.empire", "status_plate.alliance"]) and Art.ButtonIcon("status_encyclopedia") != null
+
+
+## Paint a Status window on `window` (a DraggableWindow scene) from `data`:
+## title, fields ([label, value] pairs), picture and backdrop (drawn size),
+## name. Returns the canvas; its buttons are "status_encyclopedia" and
+## "ency_close_alliance".
+static func StatusPlate(window: Control, f: Faction, data: Dictionary) -> Control:
+	var bar: Control = window.get_node_or_null("%TitleBar")
+	if bar != null:
+		bar.visible = false
+	var plate: Texture2D = Pic("status_plate.%s" % Side(f))
+	var sb := StyleBoxTexture.new()
+	sb.texture = plate if plate != null else Pic("status_plate.empire")
+	window.add_theme_stylebox_override("panel", sb)
+	window.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	var area: MarginContainer = Flatten(window)
+	for c in area.get_children():
+		area.remove_child(c)
+		c.queue_free()
+	var canvas := Control.new()
+	canvas.name = "StatusCanvas"
+	canvas.custom_minimum_size = Vector2(StatusW, StatusH) * K
+	canvas.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	area.add_child(canvas)
+	Text(canvas, str(data.get("title", "")), 9, 18, 223, 16, 13, Color.WHITE, HORIZONTAL_ALIGNMENT_CENTER, true, "Title")
+	var y := 47
+	var n := 0
+	for pair in data.get("fields", []):
+		var label := Text(canvas, str(pair[0]), 18, y, 103, 56, StatusFieldPx, Color.WHITE, HORIZONTAL_ALIGNMENT_LEFT, false, "Label%d" % n)
+		label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		LinePitch(label, StatusFieldPx, 14)
+		var lines: int = maxi(1, label.get_line_count())
+		Text(canvas, str(pair[1]), 121, y + 14 * (lines - 1), 109, 14, StatusFieldPx, Color.WHITE, HORIZONTAL_ALIGNMENT_LEFT, false, "Value%d" % n)
+		y += 14 * lines
+		n += 1
+	for key in ["backdrop", "picture"]:
+		var tex: Texture2D = data.get(key)
+		if tex != null:
+			var w: int = int(tex.get_size().x) / K
+			var h: int = int(tex.get_size().y) / K
+			Place(canvas, tex, 242 + (130 - w) / 2, 15 + (98 - h) / 2, key.capitalize())
+	var name := Text(canvas, str(data.get("name", "")), 242, 137, 130, 48, 13, Color.WHITE, HORIZONTAL_ALIGNMENT_CENTER, true, "Name")
+	name.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	LinePitch(name, 13, 16, true)
+	PictureButton(canvas, "status_encyclopedia", 258, 218, "Encyclopedia")
+	PictureButton(canvas, "ency_close.alliance", 324, 218, "Close")
+	return canvas
 
 
 ## THE PLATE RUNS UNDER THE TITLE BAR, as in the original: its first rows

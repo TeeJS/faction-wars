@@ -26,6 +26,14 @@ func _check(cond: bool, what: String) -> void:
 		print("[original_windows] FAIL %s" % what)
 
 
+func _status_window(ui: UIManager) -> Control:
+	for k in ui._openWindows:
+		var w: Variant = ui._openWindows[k]
+		if str(k).begins_with("Status_") and is_instance_valid(w) and not (w as Node).is_queued_for_deletion():
+			return w
+	return null
+
+
 func _cards(node: Node) -> Array:
 	var out: Array = []
 	if node.has_meta("card") and node is Control:
@@ -212,7 +220,7 @@ func _init() -> void:
 			_check(cm.size == Vector2(259, 355) * K, "the 259x355 plate is the window (%s)" % str(cm.size / K))
 			_check((cm.get_node("%TitleBar") as ColorRect).color == side and not (cm.get_node("%MinimizeButton") as Control).visible,
 				"a title bar in the side's colour with only the close box")
-			_check(ui.get_node_or_null("CreateMissionBlocker") != null, "modal, like the dialog it replaces")
+			_check(cm.has_meta("modal_blocker") and is_instance_valid(cm.get_meta("modal_blocker")) and cm.CloseOnEscape, "modal, like the dialog it replaces; Esc closes it")
 			_check(cm._tabs[0].position == Vector2(7, 20) * K and cm._tabs[1].position == Vector2(137, 20) * K, "the two tabs at (7, 20) and (137, 20)")
 			var places: Array = []
 			for n in ["mission_encyclopedia", "mission_ok", "mission_cancel"]:
@@ -238,10 +246,69 @@ func _init() -> void:
 			(cm.find_child("mission_ok", true, false) as TextureButton).pressed.emit()
 			for _i in 3:
 				await process_frame
-			_check(ui._openWindows.get("Create Mission") == null and ui.get_node_or_null("CreateMissionBlocker") == null, "assign closes it")
+			_check(ui._openWindows.get("Create Mission") == null and ui.get_node_or_null("ModalBlocker") == null, "assign closes it, and its blocker goes too")
 			_check(team[0].Status == Enums.Status.OnMission or team[0].Status == Enums.Status.Enroute,
 				"%s is sent (status %s)" % [team[0].Name, Enums.Status.keys()[team[0].Status]])
 		host.CloseWindow()
+
+	# ---- Status windows (manual p064: modal, no title bar, the diamond closes) ----
+	var regiment: Unit = null
+	for p in GameState.AllPlanets():
+		for u in p.Garrison:
+			if regiment == null and u.Faction == us and u.Type == Enums.UnitType.Troop and not u.PackId.is_empty():
+				regiment = u
+	_check(regiment != null, "a trooper regiment of ours")
+	if regiment != null:
+		ui.OpenUnitStatusWindow(regiment)
+		for _i in 3:
+			await process_frame
+		var sw: Control = _status_window(ui)
+		_check(sw != null and sw.find_child("StatusCanvas", true, false) != null, "a regiment's Status window is the original's")
+		if sw != null and sw.find_child("StatusCanvas", true, false) != null:
+			_check(sw.size == Vector2(379, 272) * K and not (sw.get_node("%TitleBar") as Control).visible, "the 379x272 plate, no title bar (%s)" % str(sw.size / K))
+			_check(sw.has_meta("modal_blocker") and sw.CloseOnEscape, "modal; Esc closes it")
+			var title: Label = sw.find_child("Title", true, false)
+			_check(title != null and title.text == "Trooper Regiment Status", "titled as the original: %s" % (title.text if title != null else "?"))
+			var l0: Label = sw.find_child("Label0", true, false)
+			var v0: Label = sw.find_child("Value0", true, false)
+			_check(l0 != null and l0.text == "Attached:" and l0.position == Vector2(18, 47) * K and v0.position == Vector2(121, 47) * K,
+				"the first field at (18, 47), its value at (121, 47)")
+			var l5: Label = sw.find_child("Label5", true, false)
+			_check(l5 != null and l5.text == "Bombardment Value:", "the original's \"Bombardment Value:\" (%s)" % (l5.text if l5 != null else "?"))
+			var v1: Label = sw.find_child("Value1", true, false)
+			_check(v1 != null and v1.text == "Awaiting Orders", "the status in the original's words (%s)" % (v1.text if v1 != null else "?"))
+			var pic: TextureRect = sw.find_child("Picture", true, false)
+			var back: TextureRect = sw.find_child("Backdrop", true, false)
+			_check(pic != null and pic.position == Vector2(246, 39) * K and back != null and back.position == Vector2(246, 39) * K,
+				"the regiment's picture over its spotlight at (246, 39)")
+			var nm: Label = sw.find_child("Name", true, false)
+			_check(nm != null and nm.text == regiment.Name and nm.position == Vector2(242, 137) * K, "its name under the picture")
+			var encBtn: TextureButton = sw.find_child("status_encyclopedia", true, false)
+			var shut: TextureButton = sw.find_child("ency_close_alliance", true, false)
+			_check(encBtn != null and encBtn.position == Vector2(258, 218) * K and shut != null and shut.position == Vector2(324, 218) * K,
+				"the Encyclopedia button and the diamond at (258, 218) and (324, 218)")
+			shut.pressed.emit()
+			for _i in 2:
+				await process_frame
+			_check(_status_window(ui) == null and ui.get_node_or_null("ModalBlocker") == null, "the diamond closes it")
+	# The Facilities Under Construction queue's Status window (Fig 3.29).
+	ui.OpenQueueStatusWindow(home, "produces_facility")
+	for _i in 3:
+		await process_frame
+	var qw: Control = _status_window(ui)
+	_check(qw != null and qw.find_child("StatusCanvas", true, false) != null, "the queue's Status window exists, as the original's")
+	if qw != null and qw.find_child("StatusCanvas", true, false) != null:
+		var qt: Label = qw.find_child("Title", true, false)
+		_check(qt.text == "Facilities Under Construction", "titled Facilities Under Construction")
+		var q3: Label = qw.find_child("Label3", true, false)
+		var qv3: Label = qw.find_child("Value3", true, false)
+		_check(q3 != null and q3.text == "Estimated Day of Completion:" and qv3.position == Vector2(121, 103) * K,
+			"Estimated Day of Completion wraps, its value on the second line at (121, 103)")
+		var qp: TextureRect = qw.find_child("Picture", true, false)
+		_check(qp != null and qp.position == Vector2(244, 20) * K, "the queue's 126x88 picture at (244, 20)")
+		(qw.find_child("ency_close_alliance", true, false) as TextureButton).pressed.emit()
+		for _i in 2:
+			await process_frame
 
 	# ---- the Message Index column ----
 	ui.RefreshCommsHighlights()
