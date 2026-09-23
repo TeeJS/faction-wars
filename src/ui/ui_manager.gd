@@ -545,6 +545,11 @@ func OnMenuButtonClicked() -> void:
 
 
 func OpenCharacterStatusWindow(character: Character) -> void:
+	# The original's Status window with the imported art (CharacterStatusWindow.StatusData).
+	if OUI.HasStatus():
+		OpenStatusPlate("Status_%s" % character.Name.replace(" ", ""),
+			func() -> Dictionary: return CharacterStatusWindow.StatusData(character))
+		return
 	# Spawns slightly offset so it doesn't perfectly overlap the Defense Window.
 	var targetPos := Vector2(300, 200)
 	OpenWindow("Status_%s" % character.Name.replace(" ", ""),   # so several can open at once
@@ -1306,6 +1311,11 @@ func EndFleetDrag() -> void:
 
 func OpenFleetStatusWindow(fleet: Fleet) -> void:
 	if fleet == null:
+		return
+	# The original's Status window with the imported art (FleetStatusWindow.StatusData).
+	if OUI.HasStatus() and OUI.Has(["status_fleet.alliance", "status_fleet.empire"]):
+		OpenStatusPlate("FleetStatus_%s_%d" % [fleet.Name.replace(" ", ""), fleet.get_instance_id()],
+			func() -> Dictionary: return FleetStatusWindow.StatusData(fleet))
 		return
 	# The export is honoured if wired in the inspector; falling back to the
 	# resource path is what makes Status work without one.
