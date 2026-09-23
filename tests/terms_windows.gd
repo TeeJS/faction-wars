@@ -6,6 +6,8 @@ extends SceneTree
 ##
 ##   Godot_console.exe --headless --path . -s tests/terms_windows.gd
 
+const Art := preload("res://src/ui/artwork.gd")
+
 var _fails := 0
 var _checks := 0
 var _ui: UIManager
@@ -39,6 +41,10 @@ func _open(window_class: String, opener: Callable) -> Array:
 
 func _init() -> void:
 	await process_frame
+	# The PLAIN windows are the ones that carry the pack's words; with the
+	# original's art imported the Status windows are the original's instead
+	# (OUI.StatusPlate, tests/original_windows.gd).
+	Art.IgnoreProjectFolder = true
 	GameSession.new_game("alliance", Enums.Difficulty.Medium, Enums.GalaxySize.Large, 12345)
 	_ui = UIManager.new()
 	_ui.name = "UIManager"

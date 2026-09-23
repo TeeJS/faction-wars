@@ -1,0 +1,390 @@
+extends DraggableWindow
+## THE CREATE MISSION WINDOW (manual p042 Fig 2.34; p102-p104, Figs 3.47 and
+## 3.48), rebuilt from the original's bitmaps at the places measured on
+## TeeJ's screenshot of the original (2026-09-23), like the other original
+## windows (original_ui.gd). Two tabs:
+##   Select Mission - "the currently selected mission" (its name over its
+##     picture), the arrow that "brings down the drop-down list of available
+##     missions", and the target (its picture and name);
+##   Decoy - the team in two columns, agents and decoys, with the arrows that
+##     move the selected between them ("Decoys must be selected before you
+##     click on the checkbox", p103).
+## Under both: the mission's Encyclopedia entry, assign (the check) and cancel
+## (the X). Modal, like the dialog it replaces. UIManager.OpenCreateMission
+## opens it only when the player imported the art; the plain dialog in
+## DraggableWindow.OpenCreateMission stays otherwise.
+##
+## Preloaded by path: a new script can lag the editor's class cache.
+
+## OUI (original_ui.gd) comes from DraggableWindow.
+const K := OUI.K
+
+## The plate is the window, 259 x 355; every position is in its pixels.
+const PlateW := 259
+const PlateH := 355
+const TabXs := [7, 137]
+const TabY := 20
+## The mission's name (Arial 13) is centred on the picture's middle.
+const NameCentreX := 135
+const NameY := 63
+const PictureAt := Vector2(70, 86)
+const ListOpenAt := Vector2(101, 175)
+const TargetWordAt := Vector2(36, 196)
+## The Target box (inside its inner brackets); its picture is centred in it,
+## the target's name (Arial bold 13) on the window's middle.
+const TargetBox := Rect2(50, 210, 167, 81)
+const TargetNameY := 295
+const ButtonXs := [33, 102, 170]
+const ButtonY := 320
+## The Decoy tab: two dotted columns, 108 pixels wide inside, the head
+## (108x27) at y 65 and the list under it, y 93 to 306.
+const ColumnXs := [8, 136]
+const HeadY := 65
+const ListY := 93
+const ListH := 214
+## Measured on TeeJ's screenshot of the original's Decoy tab (2026-09-23):
+## the arrows (normal pictures; the pressed ones draw the arrow 2 pixels
+## down and right at the same place) and a column's rows - 59 apart, the
+## picture on its grey plate 17 into the row (the first at y 110), 23 in
+## from the column's left, the name (Arial 13, grey) under it.
+const ToDecoysAt := Vector2(120, 136)
+const ToAgentsAt := Vector2(120, 221)
+const RowH := 59
+const RowPictureY := 17
+const RowNameY := 43
+const MemberGrey := Color(120 / 255.0, 120 / 255.0, 120 / 255.0)
+## The tab strip is the Select plate's on both tabs (5 pixels differ).
+const TabStrip := Rect2(7, 20, 246, 33)
+## The list the arrow drops (measured on TeeJ's screenshot of the original's,
+## rebuilt to 0 differing pixels): OUI.DropList over the Target box - each
+## mission's name (Arial 13) centred across the panel, its 130x65 picture 24
+## pixels under it, a mission every 113 pixels, one showing at a time. While
+## it is down the arrow is drawn whole, its top row too, a pixel higher.
+const ListRect := Rect2(38, 201, 200, 117)
+const ListLayout := {"top": 2, "pitch": 113, "picture_x": 37, "picture_y": 24, "name_y": 1, "name_px": 13}
+const ListOpenedAt := Vector2(101, 174)
+
+var _team: Array = []
+var _origin: Planet
+var _target: Planet
+var _victim: Character
+var _thing: Variant
+var _legal: Array = []
+var _launch: Callable
+var _faction: Faction
+var _side: String = ""
+var _choice: int = 0
+## The team members on the Decoy column, and the members picked in either.
+var _decoys: Array = []
+var _picked: Array = []
+
+var _canvas: Control
+var _pages: Array = []
+var _tabs: Array = []
+var _name: Label
+var _picture: TextureRect
+var _list: Control
+var _listRows: Array = []
+var _listArrow: TextureButton
+var _columns: Array = []
+
+
+## True when the player imported the art this window is made of.
+static func CanBuild() -> bool:
+	return OUI.Has(["mission_plate", "mission_decoy_plate", "list_starfield"]) \
+		and Art.ButtonIcon("mission_ok") != null and Art.TabIcon("mission_select", "empire") != null
+
+
+func Setup(ui: UIManager, team: Array, origin: Planet, target: Planet, victim: Character, thing: Variant,
+		legal: Array, launch: Callable) -> void:
+	_uiManager = ui
+	_team = team.duplicate()
+	_origin = origin
+	_target = target
+	_victim = victim
+	_thing = thing
+	_legal = legal.duplicate()
+	_launch = launch
+	_choice = 0
+	_decoys.clear()
+	_picked.clear()
+	_faction = team[0].Faction
+	_side = OUI.Side(_faction)
+	_build()
+	OUI.Modal(self)
+	_show_page(0)
+	_show_mission(0)
+
+
+func _build() -> void:
+	OUI.DialogFrame(self, _faction, OUI.Pic("mission_plate"))
+	var area: MarginContainer = OUI.Flatten(self)
+	for c in area.get_children():
+		area.remove_child(c)
+		c.queue_free()
+	var body := Control.new()
+	body.name = "OriginalBody"
+	body.custom_minimum_size = Vector2(PlateW - 2 * OUI.DialogBevel, PlateH - 2 * OUI.DialogBevel - OUI.DialogBarH) * K
+	body.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	area.add_child(body)
+	# Everything below is placed in the plate's own pixels: the canvas starts
+	# at the window's corner, under the bevel and the title bar.
+	_canvas = Control.new()
+	_canvas.name = "Canvas"
+	_canvas.position = -Vector2(OUI.DialogBevel, OUI.DialogBevel + OUI.DialogBarH) * K
+	_canvas.size = Vector2(PlateW, PlateH) * K
+	_canvas.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	body.add_child(_canvas)
+	_pages = [_page_control("SelectMission"), _page_control("Decoy")]
+	_build_select(_pages[0])
+	_build_decoy(_pages[1])
+	_tabs.clear()
+	for i in 2:
+		var stem: String = ["mission_select", "mission_decoy"][i]
+		var b := TextureButton.new()
+		b.name = ["TabSelect", "TabDecoy"][i]
+		b.set_meta("normal", OUI.Tab(stem, _side))
+		b.set_meta("current", OUI.Tab(stem, _side, "pressed"))
+		b.texture_normal = b.get_meta("normal")
+		b.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		b.position = Vector2(TabXs[i], TabY) * K
+		b.size = (b.texture_normal as Texture2D).get_size()
+		b.tooltip_text = ["Select Mission", "Decoy"][i]
+		var index := i
+		b.pressed.connect(func() -> void: _show_page(index))
+		_canvas.add_child(b)
+		_tabs.append(b)
+	OUI.PictureButton(_canvas, "mission_encyclopedia", ButtonXs[0], ButtonY,
+		"Bring up the Encyclopedia entry for this mission").pressed.connect(_on_encyclopedia)
+	# The original's words (TEXTSTRA 34050, 34051).
+	OUI.PictureButton(_canvas, "mission_ok", ButtonXs[1], ButtonY, "Begin Mission").pressed.connect(_on_assign)
+	OUI.PictureButton(_canvas, "mission_cancel", ButtonXs[2], ButtonY, "Cancel").pressed.connect(CloseWindow)
+
+
+func _page_control(page_name: String) -> Control:
+	var p := Control.new()
+	p.name = page_name
+	p.size = Vector2(PlateW, PlateH) * K
+	p.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_canvas.add_child(p)
+	return p
+
+
+# ---- Select Mission ----------------------------------------------------------
+
+func _build_select(page: Control) -> void:
+	_name = OUI.Text(page, "", NameCentreX - 100, NameY, 200, 16, 13, Color.WHITE, HORIZONTAL_ALIGNMENT_CENTER, false, "MissionName")
+	_picture = OUI.Place(page, null, PictureAt.x, PictureAt.y, "MissionPicture")
+	_listArrow = OUI.PictureButton(page, "mission_list_open", ListOpenAt.x, ListOpenAt.y, "Bring up the Mission Type list")
+	_listArrow.pressed.connect(func() -> void: _open_list(_list == null or not _list.visible))
+	OUI.Text(page, "Target", TargetWordAt.x, TargetWordAt.y, 80, 16, 13, Color.WHITE, HORIZONTAL_ALIGNMENT_LEFT, true, "TargetWord")
+	var tex: Texture2D = _target_picture()
+	var pic := OUI.Place(page, tex, 0, 0, "TargetPicture")
+	if tex != null:
+		# Centred in the box in whole original pixels: x = 50 + (167 - w) // 2.
+		var w: int = int(tex.get_size().x) / K
+		var h: int = int(tex.get_size().y) / K
+		pic.position = Vector2(TargetBox.position.x + (int(TargetBox.size.x) - w) / 2,
+			TargetBox.position.y + (int(TargetBox.size.y) - h) / 2) * K
+	OUI.Text(page, _target_name(), 0, TargetNameY, PlateW, 16, 13, Color.WHITE, HORIZONTAL_ALIGNMENT_CENTER, true, "TargetName")
+	# Transit is real, and orders cannot be given in hyperspace (p109). The
+	# original's window does not print how far it is; the target says it on hover.
+	var box := Control.new()
+	box.name = "TargetBox"
+	box.position = TargetBox.position * K
+	box.size = TargetBox.size * K
+	var days: int = _origin.DeploymentDaysTo(_target)
+	box.tooltip_text = ("Transit: %d days each way" % days) if days > 0 else "Already on station"
+	page.add_child(box)
+
+
+## What the mission is aimed at: the system's sprite, or - for an object
+## target - its class picture (the original's Sabotage of a KDY-150 shows
+## the facility's 122x50 picture, GOKRES 512). A character target's 80x80
+## portrait is INFERRED from the same set: no screenshot shows one.
+func _target_picture() -> Texture2D:
+	if _victim != null:
+		return Art.Scaled(Art.Portrait("characters", _victim.PackId), K)
+	if _thing is Facility:
+		var fac: Facility = _thing
+		return Art.Scaled(Art.Portrait("facilities", fac.Def.Id if fac.Def != null else fac.Family()), K)
+	if _thing is Unit:
+		return Art.Scaled(Art.Portrait("units", (_thing as Unit).PackId), K)
+	return Art.Scaled(Art.PlanetSprite(_target.ArtworkId), K)
+
+
+func _target_name() -> String:
+	if _victim != null:
+		return _victim.Name
+	if _thing is Facility:
+		return (_thing as Facility).Name()   # Facility.Name is a METHOD
+	if _thing is Unit:
+		return (_thing as Unit).Name
+	return _target.Name
+
+
+## Drops the list of the missions this team may run here (built afresh, so
+## the mission on show is the grey one - INFERRED from the Build list: the
+## original's capture has the current mission's name scrolled out of view)
+## or puts it away. Picking one shows it and puts the list away.
+func _open_list(open: bool) -> void:
+	if _listArrow != null:
+		_listArrow.texture_normal = OUI.Btn("mission_list_opened" if open else "mission_list_open")
+		_listArrow.texture_pressed = OUI.Btn("mission_list_opened" if open else "mission_list_open", "pressed")
+		var at: Vector2 = ListOpenedAt if open else ListOpenAt
+		_listArrow.position = at * K
+		_listArrow.size = _listArrow.texture_normal.get_size() if _listArrow.texture_normal != null else _listArrow.size
+	if not open:
+		if _list != null:
+			_list.visible = false
+		return
+	if _list != null:
+		_list.queue_free()
+	var items: Array = []
+	for type in _legal:
+		var d: PackDefs.MissionDefPack = MissionCatalog.DefFor(type)
+		items.append({"name": MissionCatalog.DisplayNameFor(type),
+			"picture": Art.Scaled(Art.MissionCard(d.Id, _side), K) if d != null else null})
+	_list = OUI.DropList(_pages[0], ListRect, items, _choice, ListLayout, func(index: int) -> void:
+		_show_mission(index)
+		_open_list(false))
+	_listRows = _list.get_meta("rows")
+
+
+func _show_mission(index: int) -> void:
+	if _legal.is_empty():
+		return
+	_choice = clampi(index, 0, _legal.size() - 1)
+	_name.text = MissionCatalog.DisplayNameFor(_legal[_choice])
+	var d: PackDefs.MissionDefPack = MissionCatalog.DefFor(_legal[_choice])
+	var tex: Texture2D = Art.Scaled(Art.MissionCard(d.Id, _side), K) if d != null else null
+	_picture.texture = tex
+	_picture.size = tex.get_size() if tex != null else Vector2.ZERO
+
+
+# ---- Decoy -------------------------------------------------------------------
+
+func _build_decoy(page: Control) -> void:
+	# The tab strip stays the Select plate's (under the tabs, drawn after).
+	var select: Texture2D = OUI.Pic("mission_plate")
+	if select != null:
+		var strip := AtlasTexture.new()
+		strip.atlas = select
+		strip.region = Rect2(TabStrip.position * K, TabStrip.size * K)
+		OUI.Place(page, strip, TabStrip.position.x, TabStrip.position.y, "TabStrip")
+	var heads: Array = [OUI.Place(page, OUI.Pic("mission_agents.%s" % _side), ColumnXs[0], HeadY, "AgentsHead"),
+		OUI.Place(page, OUI.Pic("mission_decoys.%s" % _side), ColumnXs[1], HeadY, "DecoysHead")]
+	for i in 2:   # the original's words (TEXTSTRA 34048, 34049)
+		(heads[i] as Control).tooltip_text = ["Agents", "Decoys"][i]
+		(heads[i] as Control).mouse_filter = Control.MOUSE_FILTER_PASS
+	_columns.clear()
+	for i in 2:
+		var scroll := ScrollContainer.new()
+		scroll.name = ["AgentsScroll", "DecoysScroll"][i]
+		scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+		scroll.position = Vector2(ColumnXs[i], ListY) * K
+		scroll.size = Vector2(108, ListH) * K
+		page.add_child(scroll)
+		var column := VBoxContainer.new()
+		column.name = ["Agents", "Decoys"][i]
+		column.add_theme_constant_override("separation", 0)
+		scroll.add_child(column)
+		_columns.append(column)
+	# The original's words (TEXTSTRA 34053, 34054).
+	OUI.PictureButton(page, "mission_to_decoys", ToDecoysAt.x, ToDecoysAt.y,
+		"Use Selected Agents as Decoys").pressed.connect(func() -> void: _move(true))
+	OUI.PictureButton(page, "mission_to_agents", ToAgentsAt.x, ToAgentsAt.y,
+		"Use Selected Decoys as Agents").pressed.connect(func() -> void: _move(false))
+
+
+func _fill_columns() -> void:
+	for column in _columns:
+		for c in column.get_children():
+			column.remove_child(c)
+			c.queue_free()
+	for m in _team:
+		(_columns[1 if _decoys.has(m) else 0] as Control).add_child(_member_card(m))
+
+
+## One of the team in a column: the miniature on its grey plate, the name
+## under it in Arial 13, grey (measured). Picked, the frame on the picture's
+## outline and the name in the side's colour, as in the Defenses grid - OURS:
+## no screenshot shows a picked member.
+func _member_card(m: Unit) -> Control:
+	var b := Button.new()
+	b.name = "Member_%s" % m.Name.validate_node_name()
+	b.toggle_mode = true
+	b.flat = true
+	b.focus_mode = Control.FOCUS_NONE
+	b.tooltip_text = m.Name
+	b.custom_minimum_size = Vector2(108, RowH) * K
+	var empty := StyleBoxEmpty.new()
+	for st in ["normal", "hover", "pressed", "focus", "hover_pressed", "disabled"]:
+		b.add_theme_stylebox_override(st, empty)
+	var x: int = 23
+	var plate: Texture2D = OUI.Pic("card_plate")
+	if plate != null:
+		OUI.Place(b, plate, x, RowPictureY, "Plate")
+	var mini: Texture2D = OUI.Mini("characters" if m is Character else "units", m.PackId)
+	if mini != null:
+		OUI.Place(b, mini, x, RowPictureY, "Picture")
+	var frame := OUI.SelectionFrame(x, RowPictureY, OUI.SideColor(_faction))
+	b.add_child(frame)
+	var name_label := OUI.Text(b, m.Name, 0, RowNameY, 108, 16, 13, MemberGrey, HORIZONTAL_ALIGNMENT_CENTER, false, "Name")
+	name_label.clip_text = true
+	var show := func(on: bool) -> void:
+		frame.visible = on
+		name_label.add_theme_color_override("font_color", OUI.SideColor(_faction) if on else MemberGrey)
+	b.button_pressed = _picked.has(m)
+	show.call(b.button_pressed)
+	b.toggled.connect(func(on: bool) -> void:
+		if on and not _picked.has(m):
+			_picked.append(m)
+		elif not on:
+			_picked.erase(m)
+		show.call(on))
+	return b
+
+
+## The arrows: the picked agents to the decoys, or the picked decoys back.
+func _move(to_decoys: bool) -> void:
+	var moved: Array = []
+	for m in _picked:
+		var decoy: bool = _decoys.has(m)
+		if to_decoys and not decoy:
+			_decoys.append(m)
+			moved.append(m)
+		elif not to_decoys and decoy:
+			_decoys.erase(m)
+			moved.append(m)
+	for m in moved:
+		_picked.erase(m)
+	_fill_columns()
+
+
+# ---- the tabs, the buttons ---------------------------------------------------
+
+func _show_page(index: int) -> void:
+	for i in _pages.size():
+		(_pages[i] as Control).visible = i == index
+	for i in _tabs.size():
+		(_tabs[i] as TextureButton).texture_normal = _tabs[i].get_meta("current" if i == index else "normal")
+	OUI.SetPlate(self, OUI.Pic("mission_plate" if index == 0 else "mission_decoy_plate"))
+	_open_list(false)
+	if index == 1:
+		_fill_columns()
+
+
+func _on_encyclopedia() -> void:
+	var d: PackDefs.MissionDefPack = MissionCatalog.DefFor(_legal[_choice])
+	if d != null and _uiManager != null:
+		_uiManager.OpenEncyclopedia("missions", d.Id)
+
+
+func _on_assign() -> void:
+	var type: int = _legal[_choice]
+	var decoys: Array = _decoys.duplicate()
+	var launch: Callable = _launch
+	CloseWindow()
+	if launch.is_valid():
+		launch.call(type, decoys)
