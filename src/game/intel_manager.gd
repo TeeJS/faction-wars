@@ -431,8 +431,9 @@ static func DescribeTask(t: ConstructionTask, where: String, home: Planet = null
 	if t.UnitRule != null:
 		what = t.UnitRule.DisplayName
 	else:
-		var type_name := Facility.NameOf(t.Family, t.Tier)
-		what = "Advanced %s" % type_name if t.Tier > 1 else type_name
+		# The tier's own name ("Advanced Shipyard", "GenCore Level II"): it was
+		# prefixed with "Advanced" again, reading "Advanced Advanced Shipyard".
+		what = Facility.NameOf(t.Family, t.Tier)
 	# Espionage reveals where production is headed (manual/guide; the Empire's only
 	# documented HQ-finding method). Show the destination only when the order ships
 	# elsewhere - a build-in-place order (Destination null or the producing world
