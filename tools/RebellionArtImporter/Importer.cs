@@ -165,15 +165,21 @@ public sealed class Importer
 
     // STRATEGY.DLL: Message Index parts keyed by BLACK as well as blue, as the
     // original draws them (matched on TeeJ's screenshots of both sides' Advice
-    // tab): the selected row's bar per side (356x21) and the rows' 15x15
-    // category icons - Advice per side seen; the others are the same set's
-    // pictures, matched to their category by what they show (not yet seen).
+    // tab): the selected row's bar per side (356x21) and the rows' 15x15 /
+    // 15x16 category icons, chosen by the message's category. Seen on TeeJ's
+    // screenshots: Advice per side, the Alliance's Mission (10910) and
+    // Manufacturing (10908), Defense (10963). The rest are the same set's
+    // pictures matched by what they show - the side's crest as the Loyalty
+    // tab has it, the two emblems for Chat, the Empire's twins.
     private static readonly (string Name, int Id)[] BlackKeyed =
     {
         ("msgindex_selection.empire", 10915), ("msgindex_selection.alliance", 10914),
         ("msgicon.advice.empire", 10969), ("msgicon.advice.alliance", 10968),
-        ("msgicon.loyalty", 10916), ("msgicon.fleets.empire", 10965), ("msgicon.fleets.alliance", 10964),
-        ("msgicon.resources", 10966),
+        ("msgicon.loyalty.alliance", 10906), ("msgicon.loyalty.empire", 10907),
+        ("msgicon.fleets.empire", 10965), ("msgicon.fleets.alliance", 10964),
+        ("msgicon.missions.alliance", 10910), ("msgicon.missions.empire", 10913),
+        ("msgicon.manufacturing.alliance", 10908), ("msgicon.manufacturing.empire", 10909),
+        ("msgicon.resources", 10966), ("msgicon.chat", 10916),
         ("msgicon.conflict", 10967), ("msgicon.defense", 10963),
     };
 
@@ -473,6 +479,9 @@ public sealed class Importer
         {
             if (SaveSprite(strategy, id, Path.Combine(outRoot, "windows", $"{name}.png"), keyBlack: true)) { windows++; pictureCount++; }
             else missing.Add($"windows/{name}: no bitmap {id} in STRATEGY.DLL");
+            // On a picked row the original keys only the black: a 15x16 icon's
+            // blue last row shows, across the bar's edge (measured).
+            if (name.StartsWith("msgicon.") && SaveSprite(strategy, id, Path.Combine(outRoot, "windows", $"{name}.picked.png"), keyBlack: true, keepBlue: true)) pictureCount++;
         }
         foreach (var (name, normal, pressed, x, y, w, h) in ClippedButtons)
         {
@@ -586,7 +595,7 @@ public sealed class Importer
     /// clipped button's second magenta shade (204,28,205) is keyed as well
     /// (never elsewhere: the Manufacturing tab pictures draw it).</summary>
     private static bool SaveSprite(PeResources dll, int bitmapId, string outPath, bool keyMagenta = false, Rectangle? clip = null,
-        bool keyCorner = false, bool keyBlack = false, bool keyShade = false)
+        bool keyCorner = false, bool keyBlack = false, bool keyShade = false, bool keepBlue = false)
     {
         if (!dll.Bitmaps.ContainsKey(bitmapId))
             return false;
@@ -603,7 +612,7 @@ public sealed class Importer
             {
                 var c = bmp.GetPixel(r.X + x, r.Y + y);
                 bool key = keyCorner ? c.ToArgb() == corner.ToArgb() :
-                    (c.R == 0 && c.G == 0 && c.B == 255 && !DrawnWhole.Contains(bitmapId))
+                    (c.R == 0 && c.G == 0 && c.B == 255 && !DrawnWhole.Contains(bitmapId) && !keepBlue)
                     || (keyMagenta && c.R == 255 && c.G == 0 && c.B == 255)
                     || (keyBlack && c.R == 0 && c.G == 0 && c.B == 0)
                     || ((clip != null || keyShade) && c.R == 204 && c.G == 28 && c.B == 205);
