@@ -5,6 +5,9 @@ extends PanelContainer
 ## row builder with its menu (manual p045, Fig 2.40) shared by every window that
 ## lists people.
 
+## The player's own artwork overlay (tools/RebellionArtImporter).
+const Art := preload("res://src/ui/artwork.gd")
+
 var _pendingRefresh: bool = false
 
 ## Shared by every window that lists people or units.
@@ -458,6 +461,12 @@ func AddCharacterToList(list: VBoxContainer, characterData: Character, text: Str
 	var characterBtn := CharacterMenuButton.new()
 	characterBtn.text = text
 	characterBtn.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	# "right-click the character's portrait" (manual p100): the original's
+	# list miniature beside the name, when the player imported it.
+	var mini: Texture2D = Art.Miniature("characters", characterData.PackId)
+	if mini != null:
+		characterBtn.icon = mini
+		characterBtn.set_meta("miniature", true)
 	characterBtn.CharacterData = characterData
 	characterBtn.UIManagerRef = uiManager
 	characterBtn.ParentWindow = self
