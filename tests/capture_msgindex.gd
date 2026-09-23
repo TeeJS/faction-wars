@@ -6,6 +6,9 @@ extends SceneTree
 ##
 ##   Godot_console.exe --path . --resolution 1440x850 -s tests/capture_msgindex.gd -- --out=C:/tmp/mi.png [--faction=alliance] [--tab=Advice]
 ##   writes <out minus .png>_index.png and _summary.png, each the window
+##
+## --extra=N posts N read Conflict messages first (a tab long enough for the
+## scroll bar); --pick=K picks the K-th row instead of the first.
 
 func _init() -> void:
 	await process_frame
@@ -26,6 +29,12 @@ func _init() -> void:
 		engine.AdvanceDay()
 		await process_frame
 	var tab := _arg("--tab=", "Advice")
+	for i in int(_arg("--extra=", "0")):
+		var filler := GameMessage.new("Filler message %d" % (i + 1), "A message to fill the tab.", Enums.MessageCategory.Conflict)
+		EventBus.BroadcastMessage(filler)
+	for m in MessageWindow.MessagesFor("All"):
+		if (m as GameMessage).Title.begins_with("Filler"):
+			(m as GameMessage).IsRead = true
 	ui.OnMessageIndexClicked(tab)
 	for _i in 4:
 		await process_frame
@@ -33,8 +42,9 @@ func _init() -> void:
 	var ok: bool = w != null and w._original
 	if ok:
 		var messages: Array = MessageWindow.MessagesFor(tab)
+		var pick: int = clampi(int(_arg("--pick=", "0")), 0, maxi(0, messages.size() - 1))
 		if not messages.is_empty():
-			w._o_pick(messages[0], false, false)
+			w._o_pick(messages[pick], false, false)
 		for _i in 3:
 			await process_frame
 		ok = _shot(w, out + "_index.png") and ok
