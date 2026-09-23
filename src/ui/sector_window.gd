@@ -380,6 +380,10 @@ static func IconTint(btn: Button) -> Color:
 # The sides' order on the loyalty bar is the pack's `loyalty_bar` (SCHEMA §10):
 # the Star Wars pack puts the Empire on the left, as Fig 2.9 has it.
 const BarsTop: float = 38.0        # clear of the lower corner icons (22 + 8, plus a gap; +2 for icons to come, TeeJ 2026-09-22)
+# The rows share one LEFT edge, as Fig 2.9 and the original's sector window
+# have them, so the squares line up row over row (TeeJ, 2026-09-22); the
+# edge sits under the lower-left icon column.
+const BarsLeft: float = 24.0       # from the planet centre to the rows' left edge
 const SquareSize: float = 6.0
 const SquareGap: float = 1.0
 const RowGap: float = 2.0
@@ -392,8 +396,9 @@ const CMineBuilt := Color(1.0, 0.9, 0.2)
 const CMineFree := Color(0.9, 0.15, 0.1)
 
 
-## Draws the rows at (centerX, top) and returns the height used, so the name
-## label can sit under them. Rows whose figures are unknown are skipped.
+## Draws the rows from (centerX - BarsLeft, top) and returns the height used,
+## so the name label can sit under them. Rows whose figures are unknown are
+## skipped.
 static func AddResourceBars(sectorMap: Control, planet: Planet, centerX: float, top: float) -> float:
 	var viewer: Faction = GameSettings.PlayerFaction
 	var seen: Dictionary = IntelManager.StatusSeen(viewer, planet)
@@ -433,7 +438,7 @@ static func _AddSquareRow(sectorMap: Control, kind: String, centerX: float, y: f
 	row.set_meta("filled", filled)
 	var width: float = _RowWidth(total)
 	row.size = Vector2(maxf(width, 1.0), SquareSize)
-	row.position = Vector2(centerX - width / 2.0, y)
+	row.position = Vector2(centerX - BarsLeft, y)
 	row.tooltip_text = tip
 	row.mouse_filter = Control.MOUSE_FILTER_PASS
 	for i in total:
@@ -476,7 +481,7 @@ static func _AddLoyaltyBar(sectorMap: Control, centerX: float, y: float, support
 	bar.set_meta("bar_row", "loyalty")
 	bar.set_meta("support", support.duplicate())
 	bar.size = Vector2(width, LoyaltyHeight)
-	bar.position = Vector2(centerX - width / 2.0, y)
+	bar.position = Vector2(centerX - BarsLeft, y)
 	bar.mouse_filter = Control.MOUSE_FILTER_PASS
 	var words: PackedStringArray = PackedStringArray()
 	var x: float = 0.0
