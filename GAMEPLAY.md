@@ -3419,6 +3419,27 @@ a bare day number. And Fig. 3.25's callouts pair as
 destination is different system)**", so deployment is unambiguously **travel
 time**, added on.
 
+**Implemented** (2026-09-23): a queue's right-click menu has **Status**
+(manual p086: "right-click on the Facilities Under Construction area ... one
+of the options is Status"), which opens that queue's Status window
+(`EconomyWindow.QueueStatusData`). The shipped game differs from Fig. 3.29:
+TeeJ's screenshot of the original (Xyquine) reads **Location, Status
+(Building), Items to Build, Estimated Day of Completion**, with the queue's
+picture (GOKRES.DLL 263) and name ("Construction"), and that is what is
+built. The day is when the whole queue is done (not settled by a screenshot:
+the one sample has one item).
+
+**Every Status window is the original's** with the imported art
+(`OUI.StatusPlate`, `StatusPlateWindow`): modal, as the manual has Status
+windows (p064: "you must dismiss the window before you can go do anything
+else"), no title bar, the 379x272 plate per side (STRATEGY.DLL 11554 / 11558),
+the fields in the original's words (TEXTSTRA.DLL), the class picture and name,
+the Encyclopedia button and the diamond that closes it; Esc closes it too.
+Matched on screenshots of a Trooper Regiment, Spec Forces, a Manufacturing
+Status and Facilities Under Construction. Not yet seen: fighters, capital
+ships, defence facilities (their rows are ours), characters and fleets (their
+windows are still the plain ones).
+
 ### ★ Maintenance is charged up front, for the whole order *(PDF p082 / manual p084)*
 
 > NOTE: When you order **multiple units** to be built, **maintenance capacity for
