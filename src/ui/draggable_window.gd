@@ -355,6 +355,14 @@ func OpenCreateMission(team: Array, origin: Planet, target: Planet, picked: Vari
 	var dialog := ConfirmationDialog.new()
 	dialog.title = "Create Mission"
 	dialog.exclusive = true
+	# "Bring up Encyclopedia entry for this mission" (Fig 2.34's i button).
+	var encyBtn: Button = dialog.add_button("Encyclopedia", false, "encyclopedia")
+	encyBtn.tooltip_text = "Bring up the Encyclopedia entry for this mission."
+	dialog.custom_action.connect(func(action: StringName) -> void:
+		if action == &"encyclopedia":
+			var d: PackDefs.MissionDefPack = MissionCatalog.DefFor(legal[picker.selected])
+			if d != null:
+				_uiManager.OpenEncyclopedia("missions", d.Id))
 
 	var pad := MarginContainer.new()
 	pad.add_theme_constant_override("margin_left", 12)
@@ -593,6 +601,10 @@ func OnCharacterMenuAction(actionId: int, characters: Array, uiManager: UIManage
 				print("Some of those characters cannot act - in transit or captured.")
 				return
 			StartMissionTargeting(characters, uiManager)
+
+		4:   # Encyclopedia (manual p101: the character's entry)
+			if not characters.is_empty():
+				uiManager.OpenEncyclopedia("characters", characters[0].PackId)
 
 		5:
 			for c in characters:

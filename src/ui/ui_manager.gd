@@ -259,6 +259,25 @@ func OnMessageIndexClicked(category: String = "All") -> void:
 		CommsRect.position)
 
 
+## THE GALACTIC ENCYCLOPEDIA (manual p073-p074). One entry point: no
+## arguments opens the Index view (the Encyclopedia control, F7); a kind and
+## an id open that topic (right-click -> Encyclopedia, the i button). Kinds
+## are the overlay's: planets, units, facilities, missions, characters.
+## Preloaded by path: a new class_name can lag the editor's class cache.
+const EncyclopediaScene := preload("res://src/ui/EncyclopediaWindow.tscn")
+const EncyclopediaRect := Rect2(185, 99, 1000, 671)
+
+
+func OpenEncyclopedia(kind: String = "", id: String = "") -> void:
+	OpenWindow("Encyclopedia", EncyclopediaScene,
+		func(window) -> void:
+			window.Setup(self)
+			if not kind.is_empty():
+				window.ShowTopic(kind, id)
+			window.set_deferred("position", EncyclopediaRect.position),
+		EncyclopediaRect.position)
+
+
 ## The category the docked Comms Center is showing, or "" when it is not open.
 func CommsCategory() -> String:
 	var w: DraggableWindow = _openWindows.get("Communications")
@@ -886,6 +905,10 @@ func _unhandled_input(event: InputEvent) -> void:
 					return
 				KEY_F6:                       # F6 Message index (defaults to All - manual p079)
 					OnMessageIndexClicked("All")
+					get_viewport().set_input_as_handled()
+					return
+				KEY_F7:                       # F7 Encyclopedia (manual p081)
+					OpenEncyclopedia()
 					get_viewport().set_input_as_handled()
 					return
 

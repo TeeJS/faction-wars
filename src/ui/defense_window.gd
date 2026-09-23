@@ -786,8 +786,8 @@ func OnUnitMenuAction(actionId: int, units: Array, uiManager: UIManager) -> void
 			if TransitEligible(units):
 				StartMissionTargeting(units, uiManager)
 
-		4:   # Encyclopedia
-			print("Opening Encyclopedia for %s" % units[0].Name)
+		4:   # Encyclopedia - the unit's entry (manual p045 Fig 2.40)
+			uiManager.OpenEncyclopedia("units", units[0].PackId)
 
 		5:   # Status
 			for u in units:

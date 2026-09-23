@@ -133,7 +133,9 @@ func _OnHqMenuAction(id: int, planet: Planet) -> void:
 				var r: Result = CommandBus.issue("move_hq", { "destination": dest.Name })
 				if not r.ok:
 					print("[HQ] %s" % r.error))
-		4:   # Encyclopedia - stubbed, as for all facilities.
-			print("[HQ] Encyclopedia for the headquarters at %s." % planet.Name)
+		4:   # Encyclopedia - the headquarters building's entry
+			var hq: Facility = Lq.first_or_null(planet.Facilities, func(f: Facility) -> bool: return f.HasRole("headquarters"))
+			if hq != null and hq.Def != null:
+				_uiManager.OpenEncyclopedia("facilities", hq.Def.Id)
 		5:   # Status
 			print("[HQ] Headquarters at %s." % planet.Name)

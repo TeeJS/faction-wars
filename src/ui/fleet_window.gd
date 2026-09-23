@@ -611,10 +611,11 @@ func OnFleetMenuAction(actionId: int, fleets: Array, uiManager: UIManager) -> vo
 		3:
 			for fleet in fleets:
 				uiManager.OpenFleetStatusWindow(fleet)
-		4:
-			for fleet in fleets:
-				# uiManager.OpenUnitEncyclopedia(fleet);
-				pass
+		4:   # Encyclopedia - a fleet has no entry of its own; the Ship database
+			uiManager.OpenEncyclopedia()
+			var w: EncyclopediaWindow = uiManager._openWindows.get("Encyclopedia")
+			if w != null:
+				w.ShowIndex(2)
 
 
 func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:

@@ -574,7 +574,6 @@ static func AttachMissionMenu(icon: Button, planet: Planet, uiManager: UIManager
 		# Present because the original's menu has it, disabled because no
 		# Encyclopedia window exists yet - a visible gap beats a dead click.
 		popup.add_item("Encyclopedia", 1)
-		popup.set_item_disabled(popup.get_item_index(1), true)
 
 		popup.add_separator()
 		for m in mine.size():
@@ -592,6 +591,12 @@ static func AttachMissionMenu(icon: Button, planet: Planet, uiManager: UIManager
 		popup.id_pressed.connect(func(id: int) -> void:
 			if id == 0:
 				uiManager.OnMissionClicked(planet)
+			elif id == 1:   # Encyclopedia - the running mission's entry (manual p109)
+				var d: PackDefs.MissionDefPack = MissionCatalog.DefFor(mine[0].Type) if not mine.is_empty() else null
+				if d != null:
+					uiManager.OpenEncyclopedia("missions", d.Id)
+				else:
+					uiManager.OpenEncyclopedia()
 			elif id >= 100 and id - 100 < mine.size():
 				CommandBus.issue("abort_mission", { "mission": mine[id - 100].Serial }))
 		icon.accept_event())

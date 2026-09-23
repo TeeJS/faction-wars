@@ -115,10 +115,39 @@ static func Fill(rect: Control, picture: Texture2D) -> TextureRect:
 	return existing
 
 
+## The imported Encyclopedia description of one pack row, or "" - from
+## original/descriptions.json ({ "characters": { id: text }, ... }), read once.
+static var _descriptions: Dictionary = {}
+static var _descriptions_loaded: bool = false
+
+static func Description(kind: String, id: String) -> String:
+	if not _descriptions_loaded:
+		_descriptions_loaded = true
+		_descriptions = {}
+		var pack_id: String = FactionRegistry.Pack.Manifest.Id if FactionRegistry.Pack != null else ""
+		var roots: Array[String] = ["user://original/%s" % pack_id]
+		if not IgnoreProjectFolder:
+			roots.push_front("%s/%s/original" % [FactionRegistry.PACKS_ROOT, pack_id])
+		for base in roots:
+			var path := "%s/descriptions.json" % base
+			var parsed: Variant = null
+			if FileAccess.file_exists(path):
+				parsed = JSON.parse_string(FileAccess.get_file_as_string(path))
+			elif ResourceLoader.exists(path):
+				var res: Variant = load(path)   # an export packs the JSON as a resource
+				parsed = res.data if res != null and "data" in res else null
+			if parsed is Dictionary:
+				_descriptions = parsed
+				break
+	var section: Variant = _descriptions.get(kind)
+	return str(section.get(id, "")) if section is Dictionary else ""
+
+
 ## Forget everything loaded (a new pack, or a test that wrote files).
 static func Reset() -> void:
 	_cache.clear()
 	_cache_pack = ""
+	_descriptions_loaded = false
 
 
 static func _texture(rel: String) -> Texture2D:
