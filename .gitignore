@@ -11,8 +11,13 @@ version.txt
 # Manual scans, PDFs and digests are copyrighted - never commit any of it.
 manual/
 
-# Artwork copied out of the installed game by tools/RebellionArtImporter.
+# Artwork copied out of the installed game by tools/FactionWarsExporter.
 # Committed for the beta build (TeeJ, 2026-09-23); to be dealt with before a public release.
 packs/*/original/import.log
-tools/RebellionArtImporter/bin/
-tools/RebellionArtImporter/obj/
+tools/FactionWarsExporter/bin/
+tools/FactionWarsExporter/obj/
+# The exporter's packaged build (tools/FactionWarsExporter/build.ps1).
+tools/FactionWarsExporter/dist/
+tools/FactionWarsExporter/*.zip
+# Azure Trusted Signing material (dlib + metadata.json) - machine-local, never committed.
+/.signing/

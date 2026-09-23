@@ -9,7 +9,7 @@ extends RefCounted
 ## the callers is in the ORIGINAL's pixels; everything is drawn K times as
 ## large, nearest-neighbour, so a pixel stays a crisp square.
 ##
-## Only when the player imported the art (tools/RebellionArtImporter). A
+## Only when the player imported the art (tools/FactionWarsExporter). A
 ## window without it keeps its plain look - the WWII pack has none.
 ##
 ## Preloaded by path (as OUI): a new class_name can lag the editor's class cache.
