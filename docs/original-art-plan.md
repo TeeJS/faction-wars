@@ -74,6 +74,20 @@ art set (by `art` reference, else the same id), then the engine's plain look.
   them. If there are none, the Star Wars pack falls back: the button menu (the `menu`
   field is optional) and a map with no backdrop.
 
+**Phase 0 results (2026-09-23, done):**
+
+| File | Source in the player's install | How it was confirmed | What the exporter writes |
+|---|---|---|---|
+| `cockpit.png` (1442x1080) | `COMMON.DLL` bitmap **20001**, 640x480 | shrunk to 640x480, it differs from 20001 by 4.6/255 on average; the rest is the scale-up and the scrubbed brackets (`5918997`) | 20001 as it is. The `menu` regions are in picture pixels and scale with the picture, so the pack's rects need scaling by 640/1442. |
+| `galaxyShaded.bmp` (640x480) | `STRATEGY.DLL` bitmap **903**, 607x437 | template match at (0,0) at 1:1: the same spiral and star field, visually identical in shape. It is an **edited** copy: shaded bluer and extended by 33 px right and 43 px down (7% of pixels identical). The edit's source is unknown. | 903 as it is. `map_image_rect` is scaled by 607/640 and 437/480, so 903 lands exactly where the edit's top-left 607x437 does today. The shading and the extended strip are lost; it will look like the original's own map. |
+| `packs/star-wars-rebellion/original/` | the importer's output (all traced to DLL ids in `Importer.cs`) | by construction | the art set |
+
+Nothing else original-derived is committed: all 9 images outside `original/` were
+checked (the 5 corner icons and the splash are ours, `world_1941.jpg` is public domain),
+and no other media type (fonts, video, audio, gif, svg) is in the repo.
+Full-screen bitmaps in the install, for later use: `COMMON.DLL` 10100-10103, 20001-20002;
+`STRATEGY.DLL` 900-903; `TACTICAL.DLL` 1000.
+
 ### Phase 1: the exporter (`tools/RebellionArtImporter`, renamed)
 - Outputs:
   - an art-set pack file (the default);
