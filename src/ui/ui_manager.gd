@@ -409,6 +409,22 @@ func ApplyOriginalCursors() -> void:
 		Input.set_custom_mouse_cursor(null, Input.CURSOR_CROSS)
 
 
+## THE BUILD SELECTION WINDOW as the original draws it (manual p045, p112 Fig
+## 3.58), centred and modal like the dialog it replaces. `items` are the
+## catalogue rows EconomyWindow.OpenBuildChooser prepared.
+## Preloaded by path: a new script can lag the editor's class cache.
+const BuildSelectionScene := preload("res://src/ui/BuildSelectionWindow.tscn")
+const BuildSelectionScript := preload("res://src/ui/build_selection_window.gd")
+
+
+func OpenBuildSelection(f: Faction, items: Array, deployDays: int, destination: String, helpers: int, onDone: Callable) -> void:
+	var size := Vector2(BuildSelectionScript.PlateW, BuildSelectionScript.PlateH) * BuildSelectionScript.K
+	var at: Vector2 = ((get_viewport().get_visible_rect().size - size) / 2.0).floor()
+	OpenWindow("Build Selection", BuildSelectionScene,
+		func(window) -> void: window.Setup(self, f, items, deployDays, destination, helpers, onDone),
+		at)
+
+
 ## THE CREATE MISSION WINDOW as the original draws it (manual p042 Fig 2.34,
 ## p103-p104 Figs 3.47 / 3.48), centred and modal like the dialog it replaces,
 ## when the player imported its art. False when not: the caller then shows
