@@ -4264,6 +4264,24 @@ mission types**; the **target**; and Encyclopedia / assign / cancel. The
 **Mission Status** window (Fig. 2.35) mirrors it with **separate tabs for agents
 and decoys** and the **moving starfield** hyperspace indicator.
 
+**Implemented** (`src/ui/create_mission_window.gd`, 2026-09-23). With the
+player's imported art it is **the original's window, composed from its own
+bitmaps** at the places template matching found on TeeJ's screenshot of the
+original (the Emperor recruiting on Coruscant): the 259x355 plate is the
+window (STRATEGY.DLL 11100; 11101 on the Decoy tab), the title bar inside its
+bevel with only the close box, the two 116x33 tabs (11103-11110 per side), the
+mission's name over its 130x65 picture (GOKRES.DLL, the row's string_id less
+4096 for the Empire, less 8192 for the Alliance), the drop-down arrow
+(10606/10607), the target's sprite and name in the Target box, and the
+Encyclopedia / assign / cancel buttons (10592-10597, drawn clipped to 64x32 as
+the original draws them). The plates and tabs are drawn whole, their pure blue
+included. The Decoy tab lays the team in the agent and decoy columns under
+their heads (11121-11124) with the arrows between them (11117-11120). Text is
+Arial 13 as measured. **Provisional** (no screenshot of the original yet):
+the Decoy tab's arrow places and rows, the open mission list (on the 200x113
+starfield 11102), and an object target's picture (its miniature). Without the
+art the plain dialog stays.
+
 ### The standing risk warning *(PDF p043 / manual p044)*
 
 > NOTE: **Any time you send a character on a mission to a system that you don't
