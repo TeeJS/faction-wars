@@ -1,6 +1,6 @@
 # Plan: the original's art out of the repo, imported by owners (Option A)
 
-Status: **signed off by TeeJ, 2026-09-23. Nothing built yet.**
+Status: **signed off by TeeJ, 2026-09-23.** Phases 0-2 done; see each phase.
 Stop after every phase with a go/no-go read-out.
 
 ## Charter
@@ -99,6 +99,10 @@ Full-screen bitmaps in the install, for later use: `COMMON.DLL` 10100-10103, 200
 - Still only reads the DLLs' bytes; it runs nothing from the game.
 
 ### Phase 2: art sets and skins in the engine
+**Done 2026-09-23** (`tests/art_sets.gd`, `tests/pack_validation.gd` rule 18). The member is
+`ArtSkin` in code (`Skin` is a Godot class); the JSON key is `skin`. Packs also load from
+`user://packs/` already (phase 3 fills it). SCHEMA.md section 14.
+
 - `pack.json` `art_sets`, `factions.json` `skin`, row `art` references, and the pack's own `art/` folder. SCHEMA.md and the validator get the rules.
 - Replace the five hard-coded `"alliance"`/`"empire"` sites and the faction-keyed art lookups with `skin`.
 - The Star Wars pack declares `art_sets: ["swr-original"]` and skins its two sides.

@@ -270,7 +270,7 @@ func JumpTo(text: String) -> void:
 
 static func PictureFor(e: Entry) -> Texture2D:
 	if e.Kind == KindMission:
-		var side: String = GameSettings.PlayerFaction.Id if GameSettings.PlayerFaction != null else ""
+		var side: String = GameSettings.PlayerFaction.ArtSkin if GameSettings.PlayerFaction != null else ""
 		return Art.MissionPicture(e.Id, side)
 	return Art.Picture(e.Kind, e.Id)
 

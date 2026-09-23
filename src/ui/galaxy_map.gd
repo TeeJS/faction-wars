@@ -367,20 +367,25 @@ func RegionButtons() -> Dictionary:
 	return _regionHits
 
 
-## The pack's map picture, fitted into Frame from the top-left corner. A pack
-## whose picture is missing draws nothing and places markers unscaled.
+## The pack's map picture, fitted into Frame from the top-left corner. The
+## picture may come from an art set the player has not imported: the map is
+## still placed by map_image_rect, with no picture under it. A pack with
+## neither a picture nor a rect places markers unscaled.
 func _load_backdrop() -> void:
 	var pack := FactionRegistry.Pack
 	if pack == null or pack.Manifest.MapImage.is_empty():
 		return
-	var tex: Texture2D = load("%s/%s/%s" % [FactionRegistry.PACKS_ROOT, pack.Manifest.Id, pack.Manifest.MapImage])
+	var tex: Texture2D = Art.PackImage(pack.Manifest.MapImage)
+	var rect := pack.Manifest.MapImageRect
 	if tex == null:
-		push_error("[GalaxyMap] map_image '%s' could not be loaded." % pack.Manifest.MapImage)
+		print("[GalaxyMap] map_image '%s' is not available - no backdrop." % pack.Manifest.MapImage)
+		if rect.size.x > 0.0 and rect.size.y > 0.0:
+			_scale = minf(Frame.x / rect.size.x, Frame.y / rect.size.y)
+			_origin = rect.position
 		return
 	var size := tex.get_size()
 	if size.x <= 0.0 or size.y <= 0.0:
 		return
-	var rect := pack.Manifest.MapImageRect
 	if rect.size.x <= 0.0 or rect.size.y <= 0.0:
 		rect = Rect2(Vector2.ZERO, size)   # no rect: coordinates are picture pixels
 	_scale = minf(Frame.x / rect.size.x, Frame.y / rect.size.y)

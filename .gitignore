@@ -19,5 +19,8 @@ tools/FactionWarsExporter/obj/
 # The exporter's packaged build (tools/FactionWarsExporter/build.ps1).
 tools/FactionWarsExporter/dist/
 tools/FactionWarsExporter/*.zip
+# A checkout's exported art sets (FactionWarsExporter --folder art/<set>): the
+# player's own copy of the original's art, read by src/ui/artwork.gd. Never committed.
+/art/
 # Azure Trusted Signing material (dlib + metadata.json) - machine-local, never committed.
 /.signing/

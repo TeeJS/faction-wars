@@ -1,5 +1,6 @@
 extends SceneTree
-## PackLoader._validate_map - SCHEMA.md section 11 rules 3, 7, 9, 10.
+## PackLoader._validate_map - SCHEMA.md section 11 rules 3, 7, 9, 10 (and the
+## others below, through rule 18).
 ##
 ## A validator nobody has watched reject anything is not a validator. This feeds
 ## it deliberately broken packs and asserts it says so. The real pack must pass
@@ -176,6 +177,28 @@ func _init() -> void:
 	_case("map_image names a file the pack does not ship",
 		_pack({}, {}, {"map_image": "no-such-file.bmp"}), "is not in res://packs")
 
+	# Rule 18 - art sets, skins and art references (SCHEMA.md section 13).
+	var art := {"art_sets": ["swr-original"], "skin": "empire"}
+	_clean("an art-set pack: a skin, art references, art-set pictures",
+		_pack({}, {"art": "swr-original:planets/coruscant"}, art.merged({"char_art": "characters/luke_skywalker",
+			"map_image": "swr-original:screens/galaxy.png"})))
+	_case("an art set the engine does not know",
+		_pack({}, {}, {"art_sets": ["lotr-original"]}), "'lotr-original' is not an art set the engine knows")
+	_case("art sets declared, a faction with no skin",
+		_pack({}, {}, {"art_sets": ["swr-original"]}), "'skin' is required when the pack declares art_sets")
+	_case("a skin the art set does not have",
+		_pack({}, {}, art.merged({"skin": "republic"}, true)), "skin 'republic' is not a side look of swr-original")
+	_case("a skin with no art set",
+		_pack({}, {}, {"skin": "empire"}), "skin 'empire' needs pack.json art_sets")
+	_case("an art reference that is not <kind>/<id>",
+		_pack({}, {}, art.merged({"char_art": "luke_skywalker"})), "must be [<art set>:]<kind>/<id>")
+	_case("an art reference to an art set the pack does not declare",
+		_pack({}, {"art": "other-set:planets/coruscant"}, art), "must be [<art set>:]<kind>/<id>")
+	_case("an art reference with no art set declared",
+		_pack({}, {}, {"char_art": "characters/luke_skywalker"}), "'characters/luke_skywalker' needs pack.json art_sets")
+	_case("a map_image in an art set the pack does not declare",
+		_pack({}, {}, {"map_image": "swr-original:screens/galaxy.png"}), "names art set 'swr-original', which art_sets does not declare")
+
 	_mission_join_resolves()
 	_rank_labels_resolve()
 
@@ -339,6 +362,7 @@ func _pack(sector_over: Dictionary, planet_over: Dictionary, other: Dictionary) 
 		"neutral": {"id": "neutral", "display_name": "Neutral", "color": "#5499ff"},
 		"unexplored_color": "#cccccc",
 		"map_image": other.get("map_image", "galaxyShaded.bmp"),
+		"art_sets": other.get("art_sets", []),
 		"setup": {"difficulty_default": "medium", "galaxy_sizes": ["standard", "large", "huge"],
 			"galaxy_size_default": other.get("size_default", "standard")},
 	}
@@ -371,6 +395,7 @@ func _pack(sector_over: Dictionary, planet_over: Dictionary, other: Dictionary) 
 		"starting_planets": [{"planet": other.get("starting", "core_world"),
 			"support": 100, "explored": true, "garrison": ""}],
 		"victory": {"capture_characters": [other.get("victory", "second_person")]},
+		"skin": other.get("skin", ""),
 	}
 	p.Factions = [PackDefs.FactionDef.from_dict(faction)]
 
@@ -382,6 +407,7 @@ func _pack(sector_over: Dictionary, planet_over: Dictionary, other: Dictionary) 
 		"wont_betray": true,
 		"roles": other.get("char_roles", ["pilgrim"]),
 		"starts_at": other.get("char_starts_at", ""),
+		"art": other.get("char_art", ""),
 		"special_power": {"probability": 0, "is_known_user": false,
 			"level": {"base": 0, "var": 0}, "can_train": false}}
 	var c2 := {"id": "second_person", "display_name": "Second Person",
@@ -458,6 +484,22 @@ func _pack(sector_over: Dictionary, planet_over: Dictionary, other: Dictionary) 
 	return p
 
 
+## A pack that must validate with no error at all.
+func _clean(what: String, pack: PackLoader.LoadedPack) -> void:
+	_ran += 1
+	var errors: Array[String] = []
+	PackLoader._validate_map(pack, PACK_DIR, errors)
+	PackLoader._validate_characters(pack, errors)
+	PackLoader._validate_menu(pack, PACK_DIR, errors)
+	PackLoader._validate_art(pack, errors)
+	if errors.is_empty():
+		_ok += 1
+		print("[pack_validation] ok   %s" % what)
+	else:
+		_failed += 1
+		print("[pack_validation] FAIL %s - expected no error, got: %s" % [what, ", ".join(errors)])
+
+
 func _case(what: String, pack: PackLoader.LoadedPack, expect: String) -> void:
 	_ran += 1
 	var errors: Array[String] = []
@@ -471,6 +513,7 @@ func _case(what: String, pack: PackLoader.LoadedPack, expect: String) -> void:
 	PackLoader._validate_icons(pack, PACK_DIR, errors)
 	PackLoader._validate_roles(pack, errors)
 	PackLoader._validate_setup(pack, errors)
+	PackLoader._validate_art(pack, errors)
 	for e in errors:
 		if e.contains(expect):
 			_ok += 1

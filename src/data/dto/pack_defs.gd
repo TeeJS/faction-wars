@@ -78,6 +78,9 @@ class FactionDef:
 	var Seed: FactionSeedDef
 	var Victory: VictoryDef
 	var AgentName: String
+	## SCHEMA.md section 14: which of the art set's side looks this faction
+	## wears ("alliance" / "empire" for swr-original). Blank = its own id.
+	var ArtSkin: String
 
 	static func from_dict(d: Dictionary) -> FactionDef:
 		var o := FactionDef.new()
@@ -94,6 +97,7 @@ class FactionDef:
 		o.Seed = FactionSeedDef.from_dict(JsonUtil.get_ci(d, "seed"))
 		o.Victory = VictoryDef.from_dict(JsonUtil.get_ci(d, "victory"))
 		o.AgentName = JsonUtil.str_or(d, "agent_name", "")
+		o.ArtSkin = JsonUtil.str_or(d, "skin", "")
 		return o
 
 
@@ -249,6 +253,9 @@ class PackManifest:
 	var Menu: MenuDef
 	## SCHEMA.md section 2: the p162 win-condition tooltips. Null = no tooltip.
 	var VictoryTips: VictoryTipsDef
+	## SCHEMA.md section 14: the art sets this pack's original look comes from
+	## (the player's own, imported - never shipped). Empty = the engine's own art.
+	var ArtSets: Array[String] = []
 
 	static func from_dict(d: Dictionary) -> PackManifest:
 		var o := PackManifest.new()
@@ -266,6 +273,7 @@ class PackManifest:
 		o.Setup = PackSetupDef.from_dict(JsonUtil.get_ci(d, "setup"))
 		o.Menu = MenuDef.from_dict(JsonUtil.get_ci(d, "menu"))
 		o.VictoryTips = VictoryTipsDef.from_dict(JsonUtil.get_ci(d, "victory_tips"))
+		o.ArtSets = JsonUtil.str_list(d, "art_sets", [])
 		return o
 
 
@@ -316,6 +324,9 @@ class SectorDef:
 
 
 class PlanetDef:
+	## SCHEMA.md section 14: this row's pictures come from another row of an
+	## art set, "[set:]<kind>/<id>". Blank = the row's own id.
+	var Art: String = ""
 	var Id: String
 	var DisplayName: String
 	var Sector: String        # a SectorDef id
@@ -327,6 +338,7 @@ class PlanetDef:
 
 	static func from_dict(d: Dictionary) -> PlanetDef:
 		var o := PlanetDef.new()
+		o.Art = JsonUtil.str_or(d, "art", "")
 		o.Id = JsonUtil.str_or(d, "id", "")
 		o.DisplayName = JsonUtil.str_or(d, "display_name", "")
 		o.Sector = JsonUtil.str_or(d, "sector", "")
@@ -396,6 +408,9 @@ class SpecialPowerDef:
 
 
 class CharacterDef:
+	## SCHEMA.md section 14: this row's pictures come from another row of an
+	## art set, "[set:]<kind>/<id>". Blank = the row's own id.
+	var Art: String = ""
 	var Id: String
 	var DisplayName: String
 	var FactionId: String
@@ -418,6 +433,7 @@ class CharacterDef:
 
 	static func from_dict(d: Dictionary) -> CharacterDef:
 		var o := CharacterDef.new()
+		o.Art = JsonUtil.str_or(d, "art", "")
 		o.Id = JsonUtil.str_or(d, "id", "")
 		o.DisplayName = JsonUtil.str_or(d, "display_name", "")
 		o.FactionId = JsonUtil.str_or(d, "faction", "")
@@ -456,6 +472,9 @@ class CharactersFile:
 ## THIS FILE REPLACES Enums.FacilityType. The engine selects on ROLES - it asks
 ## what a facility does, never what it is called.
 class FacilityDef:
+	## SCHEMA.md section 14: this row's pictures come from another row of an
+	## art set, "[set:]<kind>/<id>". Blank = the row's own id.
+	var Art: String = ""
 	var Id: String
 	var DisplayName: String
 	## Tiers are variants of ONE family: Shipyard and Advanced Shipyard share the
@@ -475,6 +494,7 @@ class FacilityDef:
 
 	static func from_dict(d: Dictionary) -> FacilityDef:
 		var o := FacilityDef.new()
+		o.Art = JsonUtil.str_or(d, "art", "")
 		o.Id = JsonUtil.str_or(d, "id", "")
 		o.DisplayName = JsonUtil.str_or(d, "display_name", "")
 		o.Family = JsonUtil.str_or(d, "family", "")
@@ -594,6 +614,9 @@ class UnitWeaponDef:
 
 
 class UnitDef:
+	## SCHEMA.md section 14: this row's pictures come from another row of an
+	## art set, "[set:]<kind>/<id>". Blank = the row's own id.
+	var Art: String = ""
 	var Id: String
 	var DisplayName: String
 	## "capital_ship" | "fighter" | "troop" | "spec_force". Which producer and
@@ -615,6 +638,7 @@ class UnitDef:
 
 	static func from_dict(d: Dictionary) -> UnitDef:
 		var o := UnitDef.new()
+		o.Art = JsonUtil.str_or(d, "art", "")
 		o.Id = JsonUtil.str_or(d, "id", "")
 		o.DisplayName = JsonUtil.str_or(d, "display_name", "")
 		o.Kind = JsonUtil.str_or(d, "kind", "")
@@ -663,6 +687,9 @@ class UnitsFile:
 
 ## SCHEMA.md section 9. Built once from the original tables, hand-edited since.
 class MissionDefPack:
+	## SCHEMA.md section 14: this row's pictures come from another row of an
+	## art set, "[set:]<kind>/<id>". Blank = the row's own id.
+	var Art: String = ""
 	var Id: String
 	var DisplayName: String
 	## Replaces the raw table's `Alliance` / `Empire` integer pair - the exact
@@ -682,6 +709,7 @@ class MissionDefPack:
 
 	static func from_dict(d: Dictionary) -> MissionDefPack:
 		var o := MissionDefPack.new()
+		o.Art = JsonUtil.str_or(d, "art", "")
 		o.Id = JsonUtil.str_or(d, "id", "")
 		o.DisplayName = JsonUtil.str_or(d, "display_name", "")
 		o.AvailableTo = JsonUtil.str_list(d, "available_to", [])

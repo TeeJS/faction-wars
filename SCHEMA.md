@@ -105,13 +105,14 @@ with the extraction tooling, not shipped in a pack.
 | `faction_count` | Must equal the entries in `factions.json`; 2–4. |
 | `neutral` | The uncontrolled side. Pack data, not a hardcoded singleton, because its name and color are setting-specific. **Not** playable, not counted in `faction_count`. |
 | `unexplored_color` | Color for systems the viewing faction has no knowledge of. A display convention, not a rule. |
-| `map_image` | **★ DECIDED (TeeJ, 2026-09-21).** The galaxy backdrop, as a filename relative to the pack folder. Required; a pack that declares none is a **load error**, not a blank screen. Named here rather than fixed by convention so the engine never assumes a filename. |
+| `map_image` | **★ DECIDED (TeeJ, 2026-09-21).** The galaxy backdrop, as a filename relative to the pack folder. Required; a pack that declares none is a **load error**, not a blank screen. Named here rather than fixed by convention so the engine never assumes a filename. **Or `"<art set>:<path>"`**, a picture in one of the pack's `art_sets` (§14): the player's own, so the pack does not ship it and the loader does not look for it; without it the map is placed by `map_image_rect` with nothing under it. |
+| `art_sets` | **★ 2026-09-23 (docs/original-art-plan.md).** The art sets the pack's original look comes from, e.g. `["swr-original"]` - see §14. Optional; without it the pack has the engine's own art. |
 | `map_image_rect` | **★ 2026-09-22.** Where the picture sits in the pack's map coordinate space, `[x, y, w, h]`: `x, y` is the map-space point at the picture's (and the map frame's) top-left corner, `w, h` the picture's extent in map units. The map view scales the space so that rectangle fills its frame, draws the picture there, and places every marker at `(coordinate − (x, y)) × scale`. Absent: the picture's own pixels are the space. Star Wars: `[-5, 110, 1070.67, 803]`, exactly where `Main.tscn` used to bake the picture, so nothing moved. WWII: `[0, 0, 700, 420]` for a 1750×1050 picture. |
 | `setup.galaxy_sizes` | The size names offered on the menu. **Which sectors each size includes is declared per sector** in `map.json` (`min_size`), not here — see §4. |
 | `setup.galaxy_size_default` | The size pre-selected on the Cockpit. Optional; the first of `galaxy_sizes` when absent. Must be one of them. |
 | `summary` | **★ DECIDED (TeeJ, 2026-09-22).** One sentence on what the setting is, shown on the pack picker's card under the name. Optional; blank when absent. The card's other content (name, sides and their colours, the map picture) already comes from `display_name`, `factions.json` and `map_image`. |
 | `victory_tips` | The two win-condition tooltips on the Multiplayer Options screen — `standard` and `hq_only` (manual p162; the Star Wars pack carries its sentences verbatim). Optional; both texts required when present. The last setting text engine code carried (TeeJ, 2026-09-22). |
-| `menu` | **The Shuttle Cockpit as the pack's picture** (manual p021, Fig. 2.2). Optional: a pack without it gets the engine's labelled-button menu. `image` is a file in the pack folder; `regions` lays one clickable area per menu function over it, `rect` = `[x, y, w, h]` in the picture's own pixels (the engine scales them with the picture, keeping aspect). `action` is engine vocabulary — `difficulty` (`value` easy/medium/hard), `galaxy_size` (`value` from `setup.galaxy_sizes`), `start` (`value` a faction id), `load_game`, `credits`, `hq_only_victory`, `multiplayer`, `exit`. **Every function must have exactly one region** — one per difficulty, per offered size, per playable faction, and one each of the rest — so the picture cannot lose a function the button menu has (validation rule 11). `readout` is the text panel the engine paints `standard` / `hq_only` on as the victory toggle changes; `selected_color` is the corner-bracket colour on the chosen difficulty and size; a region may override it with its own `selected_color` (the original marks difficulty in red, galaxy size in yellow). **The picture must carry no selection state of its own** — the engine draws the brackets; the Star Wars capture had the original's marks scrubbed from the easy and standard screens. `credits` is the lines "View credits" shows. |
+| `menu` | **The Shuttle Cockpit as the pack's picture** (manual p021, Fig. 2.2). Optional: a pack without it gets the engine's labelled-button menu. `image` is a file in the pack folder, or `"<art set>:<path>"` (§14) - without that art set the pack gets the button menu; `regions` lays one clickable area per menu function over it, `rect` = `[x, y, w, h]` in the picture's own pixels (the engine scales them with the picture, keeping aspect). `action` is engine vocabulary — `difficulty` (`value` easy/medium/hard), `galaxy_size` (`value` from `setup.galaxy_sizes`), `start` (`value` a faction id), `load_game`, `credits`, `hq_only_victory`, `multiplayer`, `exit`. **Every function must have exactly one region** — one per difficulty, per offered size, per playable faction, and one each of the rest — so the picture cannot lose a function the button menu has (validation rule 11). `readout` is the text panel the engine paints `standard` / `hq_only` on as the victory toggle changes; `selected_color` is the corner-bracket colour on the chosen difficulty and size; a region may override it with its own `selected_color` (the original marks difficulty in red, galaxy size in yellow). **The picture must carry no selection state of its own** — the engine draws the brackets; the Star Wars capture had the original's marks scrubbed from the easy and standard screens. `credits` is the lines "View credits" shows. |
 
 ---
 
@@ -735,6 +736,10 @@ passes.
     exactly once and nothing else.
 17. ✅ `display.json` `icons` names only the five corner glyphs, each a file the
     pack ships.
+18. ✅ Art sets (§14): every `art_sets` entry is one the engine knows; with art
+    sets, every faction names a `skin` the sets have (and without them, none
+    does); every row's `art` is `[<set>:]<kind>/<id>` with a declared set and a
+    known kind; an art-set `map_image` or `menu.image` names a declared set.
 
 ## 12. Open questions for sign-off
 
@@ -908,3 +913,32 @@ What changed from the source repo's 2026-07-25 draft, and why.
 | 54 | **`starts_at`** on a character (§7): a declared opening world, winning over the placement roles; validation rule 15; day zero places it before the roles with no PRNG draw | TeeJ, 2026-09-22: every Allied leader opened at Britain because it was both first world and HQ |
 | 55 | **`loyalty_bar`** in `display.json` (§10): the sides' order on the sector window's loyalty bar; rule 16; the Star Wars pack puts the Empire on the left | TeeJ, 2026-09-22: the bar followed faction order (Alliance left), which "will mess up long-time players awfully" against Fig 2.9 |
 | 56 | **Corner glyphs** (§10 `icons`, rule 17): the sector window's four corner letters E/F/D/M and the "▲" uprising mark are pictures now - the engine's `assets/icons/` (our own silhouettes, tinted by faction) or the pack's own | TeeJ, 2026-09-22: "create the needed icons" |
+| 57 | **Art sets** (§14, rule 18): the original's pictures leave the pack for the player's own art set; `art_sets`, per-faction `skin`, per-row `art`; packs load from `user://packs/` too | TeeJ, 2026-09-23: docs/original-art-plan.md, signed off |
+
+---
+
+## 14. Art sets — the original's pictures, from the player's own copy
+
+**★ 2026-09-23 (docs/original-art-plan.md, TeeJ signed off).** The original
+game's pictures are never shipped. A player who owns it exports them with
+`tools/FactionWarsExporter` into an **art set** and imports that into the game;
+a pack **declares** the art sets its original look comes from. A pack that
+declares none - or whose art set the player has not imported - plays with the
+engine's own art.
+
+| Where | Field | Meaning |
+|---|---|---|
+| `pack.json` | `art_sets` | e.g. `["swr-original"]`. Known sets: `swr-original` (skins `alliance`, `empire`). |
+| `factions.json`, per faction | `skin` | Which of the set's side looks the faction wears: title-bar colour, tab sets, message icons, GID stars, the Encyclopedia column. **Required when `art_sets` is declared.** A custom side can wear either: Separatists as `empire`, the Trade Federation as `alliance`. |
+| any row (`characters`, `units`, `facilities`, `missions`, `map.json` planets) | `art` | `"[<set>:]<kind>/<id>"` - this row's pictures (Encyclopedia picture, portrait, miniature, mission pictures, description) are that row's in the art set. Optional: a row without it is looked up by its own id, so rows that keep the original's ids (a `shipyard`, a `mine`) need nothing. |
+| `<pack>/art/...` | the pack's own pictures | The art set's layout (`portraits/<kind>/<id>.png`, ...), searched **first**. Only pictures the pack's author may share - never the art set's (the exporter's pack builder and the game's import refuse them). |
+| `map_image`, `menu.image` | `"<set>:<path>"` | A picture from the art set (`swr-original:screens/galaxy.png`, `swr-original:screens/cockpit.png`). |
+
+Where the engine looks (`src/ui/artwork.gd`): the pack's own `art/`, then for each
+declared set `res://art/<set>/` (a checkout's exported folder, gitignored),
+`user://art/<set>/` (imported), and until plan phase 5 the Star Wars pack's
+committed `original/` folder. The art set's layout is the exporter's
+(`tools/FactionWarsExporter/README.md`).
+
+Packs load from `res://packs/<id>/` (shipped) and `user://packs/<id>/`
+(imported; a shipped pack of the same id wins).

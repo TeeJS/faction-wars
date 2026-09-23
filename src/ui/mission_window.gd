@@ -65,7 +65,7 @@ func Populate(planet: Planet) -> void:
 	var lead: Mission = mine[0] if mine.size() > 0 else null
 	var missionDef: PackDefs.MissionDefPack = MissionCatalog.DefFor(lead.Type) if lead != null else null
 	Art.Fill(get_node_or_null(MissionPicturePath),
-		Art.MissionPicture(missionDef.Id, GameSettings.PlayerFaction.Id) if missionDef != null else null)
+		Art.MissionPicture(missionDef.Id, GameSettings.PlayerFaction.ArtSkin) if missionDef != null else null)
 
 	if mine.size() == 0:
 		# An unexplored world with nothing of yours running on it is still

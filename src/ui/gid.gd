@@ -73,14 +73,14 @@ static func FlareName(size: int) -> String:
 	return "none"
 
 
-## The side a world's star is drawn for: the owner as this player knows it,
-## "unexplored" when the mode reveals nothing, and the pack's neutral id for
-## nobody. The original's stars come in exactly those colours.
+## The side a world's star is drawn for: the owner's skin as this player knows
+## it, "unexplored" when the mode reveals nothing, and "neutral" for nobody.
+## The original's stars come in exactly those colours.
 static func StarSide(p: Planet, known: bool) -> String:
 	if not known:
 		return "unexplored"
 	var owner: Faction = IntelManager.OwnerSeen(GameSettings.LocalFaction(), p)
-	return owner.Id if owner != null else "unexplored"
+	return owner.ArtSkin if owner != null else "unexplored"
 # HQ highlight - DRAWN as geometry rather than set as a glyph in a Label.
 const HaloSpan := 52.0        # tip-to-tip of the straight rays
 const HaloThickness := 2.0    # ray width

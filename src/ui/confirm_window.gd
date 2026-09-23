@@ -26,7 +26,7 @@ func Setup(ui: UIManager, f: Faction, picture: Texture2D, text: String, okTip: S
 	_uiManager = ui
 	_faction = f
 	_onConfirm = onConfirm
-	var side: String = "alliance" if f != null and f.Id == "alliance" else "empire"
+	var side: String = "alliance" if f != null and f.ArtSkin == "alliance" else "empire"
 	var bar: Control = get_node_or_null("%TitleBar")
 	if bar != null:
 		bar.visible = false
