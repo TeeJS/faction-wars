@@ -57,6 +57,7 @@ static func LoadFromPack(pack: PackLoader.LoadedPack, size: int) -> Array[Sector
 		p.IsInhabited = pd.StartsInhabited
 		p.MapX = float(pd.MapX)
 		p.MapY = float(pd.MapY)
+		p.ArtworkId = pd.ArtworkId
 		# The source does NOT set Planet.SectorId here; mirrored exactly (it is
 		# what BombardmentManager.SectorPeers reads, so the omission is behaviour).
 		sector_map[pd.Sector].Planets.append(p)

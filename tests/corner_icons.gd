@@ -7,6 +7,8 @@ extends SceneTree
 ##   .\tools\run-gd.ps1 tests/corner_icons.gd -- --pack=ww2
 ##   .\tools\run-gd.ps1 tests/corner_icons.gd              (Star Wars)
 
+const Art := preload("res://src/ui/artwork.gd")
+
 var _fails := 0
 var _checks := 0
 
@@ -22,6 +24,7 @@ func _check(cond: bool, what: String) -> void:
 
 func _init() -> void:
 	await process_frame
+	Art.IgnoreProjectFolder = true   # the engine's own glyphs, whatever the developer imported
 	FactionRegistry.EnsureLoaded()
 	MpSetup.reset()
 	GameSettings.SelectedDifficulty = Enums.Difficulty.Medium
