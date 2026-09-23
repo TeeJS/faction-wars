@@ -1,5 +1,5 @@
 extends SceneTree
-## The player's own artwork overlay (src/ui/artwork.gd, tools/RebellionArtImporter):
+## The player's own artwork overlay (src/ui/artwork.gd, tools/FactionWarsExporter):
 ## when user://original/<pack>/ holds a corner icon or a planet sprite, the
 ## sector window draws it - the icon untinted in its own colours, the planet as
 ## its sprite with the name in the side's colour - and falls back to the

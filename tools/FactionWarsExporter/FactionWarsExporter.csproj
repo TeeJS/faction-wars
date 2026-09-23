@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Faction Wars Exporter: a small Windows utility for people who own Star
+       Wars: Rebellion. It reads the pictures and text out of THEIR installed
+       copy into one art-set file they import into Faction Wars (browser or
+       desktop), and builds faction-pack files from a folder. The repo never
+       distributes the original's art (docs/original-art-plan.md).
+
+       Build, package and sign: build.ps1 beside this file (see README.md). -->
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>FactionWarsExporter</AssemblyName>
+    <RootNamespace>FactionWarsExporter</RootNamespace>
+    <Version>2.0.0</Version>
+    <Product>Faction Wars Exporter</Product>
+    <Description>Exports the original artwork from your own copy of Star Wars: Rebellion into a file Faction Wars imports.</Description>
+    <PublishSingleFile>false</PublishSingleFile>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- pack row id -> GOKRES.DLL portrait / miniature bitmap ids (see README). -->
+    <None Include="gokres_map.json" CopyToOutputDirectory="PreserveNewest" />
+    <!-- The Star Wars pack's rows (ids, string_id, artwork_id): which picture
+         belongs to which row. Copied from the pack at build time, so the
+         exporter a player downloads needs no repo checkout. -->
+    <None Include="..\..\packs\star-wars-rebellion\characters.json" Link="pack\characters.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\packs\star-wars-rebellion\units.json" Link="pack\units.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\packs\star-wars-rebellion\facilities.json" Link="pack\facilities.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\packs\star-wars-rebellion\missions.json" Link="pack\missions.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\packs\star-wars-rebellion\map.json" Link="pack\map.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

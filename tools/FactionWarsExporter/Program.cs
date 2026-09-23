@@ -1,0 +1,89 @@
+namespace FactionWarsExporter;
+
+internal static class Program
+{
+    /// <summary>
+    /// Double-click: the window. From a script, without a window:
+    ///   FactionWarsExporter.exe --gamedir "C:\...\Star Wars - Rebellion" --out "D:\...\swr-original.art.zip"
+    ///       the art-set file (log: &lt;out&gt;.log)
+    ///   FactionWarsExporter.exe --gamedir "..." --folder "D:\...\swr-original"
+    ///       the art set as a folder (log: &lt;folder&gt;\export.log)
+    ///   FactionWarsExporter.exe --gamedir "..." --pack "D:\...\packs\star-wars-rebellion"
+    ///       the same set under &lt;pack&gt;\original, rows read from that pack - TeeJ's
+    ///       checkout, until the engine reads art sets (log: original\import.log)
+    ///   FactionWarsExporter.exe --build "D:\...\my-pack" --out "D:\...\my-pack.zip" [--art "...art.zip"] [--gamedir "..."]
+    ///       a faction-pack file, refused if it carries the original's art (log: &lt;out&gt;.log)
+    /// Exit code 0 = done, 1 = a problem (the log says which), 2 = failed.
+    /// </summary>
+    [STAThread]
+    private static int Main(string[] args)
+    {
+        var opt = new Dictionary<string, string>();
+        for (int i = 0; i + 1 < args.Length; i++)
+            if (args[i].StartsWith("--"))
+                opt[args[i]] = args[++i];
+        string Get(string k) => opt.TryGetValue(k, out var v) ? v : "";
+
+        if (opt.ContainsKey("--build") && opt.ContainsKey("--out"))
+            return Build(Get("--build"), Get("--out"), Get("--art"), Get("--gamedir"));
+        if (opt.ContainsKey("--gamedir") && opt.ContainsKey("--pack"))
+            return Export(Get("--gamedir"), Get("--pack"), () => new FolderSink(Path.Combine(Get("--pack"), "original")),
+                Path.Combine(Get("--pack"), "original", "import.log"));
+        if (opt.ContainsKey("--gamedir") && opt.ContainsKey("--folder"))
+            return Export(Get("--gamedir"), Importer.BundledRows, () => new FolderSink(Get("--folder")),
+                Path.Combine(Get("--folder"), "export.log"));
+        if (opt.ContainsKey("--gamedir") && opt.ContainsKey("--out"))
+            return Export(Get("--gamedir"), Importer.BundledRows, () => new ZipSink(Get("--out")), Get("--out") + ".log");
+
+        ApplicationConfiguration.Initialize();
+        Application.Run(new MainForm());
+        return 0;
+    }
+
+    private static int Export(string gameDir, string rowsDir, Func<ArtSink> sinkFor, string logPath)
+    {
+        var problem = Importer.Problem(gameDir, rowsDir);
+        if (problem != null)
+            return Log(logPath, problem, 1);
+        try
+        {
+            using var sink = sinkFor();
+            var result = Exporter.ExportArtSet(gameDir, rowsDir, sink, _ => { });
+            File.WriteAllLines(logPath, result.Log.Concat(result.Missing.Select(m => "  - " + m)).Concat(new[] { $"{sink.Hashes.Count} files in the art set.", "", "Done." }));
+            return 0;
+        }
+        catch (Exception ex)
+        {
+            return Log(logPath, "FAILED: " + ex, 2);
+        }
+    }
+
+    private static int Build(string folder, string outZip, string art, string gameDir)
+    {
+        var logPath = outZip + ".log";
+        var lines = new List<string>();
+        try
+        {
+            if (gameDir.Length == 0)
+                gameDir = GameFolders.Find();
+            var hashes = Exporter.ArtSetHashes(art, gameDir, lines.Add);
+            var result = PackBuilder.Build(folder, outZip, hashes, lines.Add);
+            lines.Add(result.Message);
+            if (result.Ok)
+                lines.AddRange(new[] { "", "Done." });
+            return Log(logPath, string.Join("\n", lines), result.Ok ? 0 : 1);
+        }
+        catch (Exception ex)
+        {
+            lines.Add("FAILED: " + ex);
+            return Log(logPath, string.Join("\n", lines), 2);
+        }
+    }
+
+    private static int Log(string path, string text, int code)
+    {
+        Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(path))!);
+        File.WriteAllText(path, text + "\n");
+        return code;
+    }
+}

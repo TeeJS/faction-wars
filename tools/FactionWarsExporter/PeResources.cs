@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace RebellionArtImporter;
+namespace FactionWarsExporter;
 
 /// <summary>
 /// Reads the resource table of a Win32 DLL straight from its bytes - no
