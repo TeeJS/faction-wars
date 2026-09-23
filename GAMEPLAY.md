@@ -2260,8 +2260,16 @@ picture (GOKRES class bitmap) and name, the drop-down arrow, the refined and
 maintenance costs centred in their icon boxes, the two times right-aligned,
 Number to build with its spinner, and the Encyclopedia / build / cancel
 buttons drawn whole (10592-10597; 11620 the greyed build). An order that
-cannot be placed greys the build button and says why on it. **Provisional**:
-the open list's look (no screenshot yet).
+cannot be placed greys the build button and says why on it. **The open list**
+(measured on TeeJ's Alliance screenshot, rebuilt to 0 differing pixels): the
+195x61 starfield (10598) tiled down from (9,111), a white one-pixel frame, each
+item's 122x50 picture every 70 pixels from y 119 with its name (Arial 11)
+centred over the picture's last rows, grey for the item on show, and the
+original's scroll bar (10658-10669, 12 of 13 columns drawn) inside the frame's
+right edge. **Inferred**: the thumb is the shown share of the track (41 of 122
+for 2 of 6 - it fits, the total was not visible), the arrows step a row.
+**Not matched**: the order - the original lists the Alliance Army and Fleet
+Regiments first, ours the special forces first (catalogue order).
 
 ### New ships always create a fleet *(PDF p112 / manual p114)*
 
@@ -4355,10 +4363,25 @@ Encyclopedia / assign / cancel buttons (10592-10597, drawn clipped to 64x32 as
 the original draws them). The plates and tabs are drawn whole, their pure blue
 included. The Decoy tab lays the team in the agent and decoy columns under
 their heads (11121-11124) with the arrows between them (11117-11120). Text is
-Arial 13 as measured. **Provisional** (no screenshot of the original yet):
-the Decoy tab's arrow places and rows, the open mission list (on the 200x113
-starfield 11102), and an object target's picture (its miniature). Without the
-art the plain dialog stays.
+Arial 13 as measured. **Decoy tab and object targets** (measured on TeeJ's
+Alliance screenshots, rebuilt to 0 differing pixels): the arrows at (120,136)
+and (120,221); a member every 59 pixels from y 110, the miniature on the grey
+plate 11500 23 in from the column, the name in grey (120,120,120) Arial 13
+under it; the tab strip stays the Select plate's; an object target shows its
+122x50 class picture (Sabotage of a KDY-150: GOKRES 512) centred in the box
+as x = 50 + (167 - w) // 2; tooltips are the original's (TEXTSTRA
+34048-34054). **Ours / inferred**: a picked member's look (never seen), a
+character target's picture (its 80x80 portrait, by the same set). **Not
+matched**: a facility target is named from the pack ("Ion Cannon") where the
+original says "KDY-150" (TEXTSTRA 8704). **The open mission list** (measured,
+0 differing pixels): the Build list's starfield, frame and scroll bar at
+(38,201), 200x117, over the Target box; one mission showing at a time, its
+name (Arial 13) centred above its 130x65 picture, a mission every 113
+pixels; the arrow drawn whole (its top row too) a pixel higher while the list
+is down. **Inferred**: it opens scrolled to the current mission, whose name is
+grey (the original's capture has it scrolled part-way, the current name out of
+view); the order is ours (the original's is not known). Without the art the
+plain dialog stays.
 
 ### The standing risk warning *(PDF p043 / manual p044)*
 

@@ -122,6 +122,9 @@ public sealed class Importer
         // 200x113 starfield the mission list drops down on, and the columns'
         // 108x27 heads per side (agents, decoys).
         ("mission_plate", 11100), ("mission_decoy_plate", 11101), ("mission_list", 11102),
+        // The starfield a drop-down picture list is drawn on (195x61, tiled
+        // down; the Build Selection window's item list).
+        ("list_starfield", 10598),
         ("mission_agents.alliance", 11121), ("mission_decoys.alliance", 11122),
         ("mission_agents.empire", 11123), ("mission_decoys.empire", 11124),
         // A Status window (manual p064: modal, no title bar, closed by its
@@ -266,6 +269,8 @@ public sealed class Importer
         ("mission_cancel", 10596, 10597, 0, 0, 64, 32),
         // The arrow that drops the mission list down (65x18 drawn as 65x17).
         ("mission_list_open", 10606, 10607, 0, 1, 65, 17),
+        // ...and drawn whole, its top row too, while the list is down (measured).
+        ("mission_list_opened", 10606, 10607, 0, 0, 65, 18),
     };
 
     // GOKRES.DLL: the 130x65 picture of each mission in the Create Mission
@@ -278,7 +283,7 @@ public sealed class Importer
     // Bitmaps the original draws WHOLE, pure blue included: the Create Mission
     // plates' blue line under the tabs and the tabs' blue edges are on TeeJ's
     // screenshot of the original, pixel for pixel (2026-09-23).
-    private static readonly HashSet<int> DrawnWhole = new() { 11100, 11101, 11103, 11104, 11105, 11106, 11107, 11108, 11109, 11110,
+    private static readonly HashSet<int> DrawnWhole = new() { 10598, 11100, 11101, 11103, 11104, 11105, 11106, 11107, 11108, 11109, 11110,
         // The Status plates are opaque; the pressed Encyclopedia button keeps its blue face.
         11554, 11558, 11553,
         // Build Selection's plate is opaque; so are the Scrap pictures.
