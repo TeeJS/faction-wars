@@ -39,7 +39,8 @@ namespace RebellionArtImporter;
 /// Output, under the pack folder (gitignored - never committed):
 ///   original/characters/&lt;id&gt;.png   original/units/&lt;id&gt;.png
 ///   original/facilities/&lt;id&gt;.png   original/planets/&lt;id&gt;.png
-///   original/missions/&lt;id&gt;.&lt;faction&gt;.png (alliance / empire)
+///   original/missions/&lt;id&gt;.&lt;faction&gt;.png (alliance / empire), and
+///     .small.png: the 130x65 Create Mission picture (GOKRES.DLL)
 ///   original/descriptions.json     { "characters": { id: text }, ... }
 ///   original/portraits/&lt;kind&gt;/&lt;id&gt;.png   original/miniatures/&lt;kind&gt;/&lt;id&gt;.png
 ///   original/icons/&lt;glyph&gt;.&lt;faction&gt;.png (+ .hover.png)   sector-window corners
@@ -50,6 +51,7 @@ namespace RebellionArtImporter;
 ///   original/windows/&lt;name&gt;.png                            window pictures
 ///   original/tabs/&lt;name&gt;[.&lt;faction&gt;].png (+ .pressed / .grey)   window tab icons
 ///   original/buttons/&lt;name&gt;.png (+ .pressed / .disabled)       window buttons
+///   original/cursors/pointer.png, crosshair.png, hotspots.json   the mouse pointers (REBEXE.EXE)
 /// </summary>
 public sealed class Importer
 {
@@ -114,6 +116,70 @@ public sealed class Importer
         // and the side's grid over one being built.
         ("card_plate", 11500), ("card_enroute", 11505),
         ("card_building.alliance", 11570), ("card_building.empire", 11572),
+        // Create Mission (p042 Fig 2.34, p103 Fig 3.47, p104 Fig 3.48): the
+        // 259x355 plate of the Select Mission tab (the mission box, the Target
+        // brackets) and of the Decoy tab (the agent and decoy columns), the
+        // 200x113 starfield the mission list drops down on, and the columns'
+        // 108x27 heads per side (agents, decoys).
+        ("mission_plate", 11100), ("mission_decoy_plate", 11101), ("mission_list", 11102),
+        // The starfield a drop-down picture list is drawn on (195x61, tiled
+        // down; the Build Selection window's item list).
+        ("list_starfield", 10598),
+        ("mission_agents.alliance", 11121), ("mission_decoys.alliance", 11122),
+        ("mission_agents.empire", 11123), ("mission_decoys.empire", 11124),
+        // A Status window (manual p064: modal, no title bar, closed by its
+        // diamond): the 379x272 plate per side - the field panel with the
+        // side's emblem, the picture and name grids, the button sockets - and
+        // the grey spotlight behind a trooper regiment's picture (122x50).
+        ("status_plate.alliance", 11554), ("status_plate.empire", 11558),
+        ("status_backdrop.troops", 11514),
+        // The Message Index (p078 Fig 3.18): the Alliance's socket column over
+        // the frame's right strip, and the plate under a read message (p080
+        // Fig 3.19, the band across its top - not yet on a screenshot).
+        ("msgindex_side.alliance", 10820), ("msgsummary_plate", 10823),
+        // Build Selection (p045, p112 Fig 3.58): the 210x261 plate - the frame,
+        // the picture box, the two cost boxes with their icons, the times box
+        // and the number box (TeeJ's screenshot of the original, Empire).
+        ("build_plate", 10800),
+        // The confirmation dialog (TeeJ's screenshot of the original's Scrap,
+        // Empire, rebuilt pixel for pixel): the 424x331 frame per side (no title
+        // bar; the Alliance's 11125 inferred), and Scrap's 400x200 console picture
+        // per side, drawn whole (the Alliance's 1032 inferred).
+        ("confirm_frame.empire", 11126), ("confirm_frame.alliance", 11125),
+        ("scrap_picture.empire", 1033), ("scrap_picture.alliance", 1032),
+    };
+
+    // STRATEGY.DLL: buttons drawn WHOLE with both magenta shades keyed, as
+    // Build Selection draws them (its screenshot shows each 66x33 button's
+    // drop shadow, which Create Mission clips off): (name, normal, pressed,
+    // disabled). The spinner's arrows key blue.
+    private static readonly (string Name, int Normal, int Pressed, int Disabled)[] ShadedButtons =
+    {
+        ("build_encyclopedia", 10592, 10593, 0), ("build_ok", 10594, 10595, 11620), ("build_cancel", 10596, 10597, 0),
+        ("build_list_open", 10606, 10607, 0), ("build_up", 10610, 10611, 0), ("build_down", 10612, 10613, 0),
+    };
+
+    // STRATEGY.DLL: Message Index parts keyed by BLACK as well as blue, as the
+    // original draws them (matched on TeeJ's screenshots of both sides' Advice
+    // tab): the selected row's bar per side (356x21) and the rows' 15x15
+    // category icons - Advice per side seen; the others are the same set's
+    // pictures, matched to their category by what they show (not yet seen).
+    private static readonly (string Name, int Id)[] BlackKeyed =
+    {
+        ("msgindex_selection.empire", 10915), ("msgindex_selection.alliance", 10914),
+        ("msgicon.advice.empire", 10969), ("msgicon.advice.alliance", 10968),
+        ("msgicon.loyalty", 10916), ("msgicon.fleets.empire", 10965), ("msgicon.fleets.alliance", 10964),
+        ("msgicon.resources", 10966),
+        ("msgicon.conflict", 10967), ("msgicon.defense", 10963),
+    };
+
+    // GOKRES.DLL: the picture of a manufacturing queue in its Status window
+    // (Fig 3.29), keyed by its own bottom-left colour as the original draws it:
+    // 263 Facilities Under Construction (matched on TeeJ's screenshot), 262
+    // and 264 the ship and troop queues (their neighbours, not yet seen).
+    private static readonly (string Name, int Id)[] QueuePictures =
+    {
+        ("queue.facilities", 263), ("queue.ships", 262), ("queue.troops", 264),
     };
 
     // STRATEGY.DLL: window tab icons as (name, faction or "", normal, current,
@@ -142,13 +208,14 @@ public sealed class Importer
         ("msg_defense", "", 10856, 10857, 0), ("msg_conflict", "", 10854, 10855, 0),
         ("msg_chat", "", 10850, 10851, 0),
         ("msg_advice", "alliance", 10846, 10847, 0), ("msg_advice", "empire", 10848, 10849, 0),
+        // Create Mission's two tabs, 116x33: Select Mission and Decoy.
+        ("mission_select", "alliance", 11103, 11104, 0), ("mission_select", "empire", 11105, 11106, 0),
+        ("mission_decoy", "alliance", 11107, 11108, 0), ("mission_decoy", "empire", 11109, 11110, 0),
     };
 
     // STRATEGY.DLL: buttons as (name, normal, pressed/current, disabled).
     private static readonly (string Name, int Normal, int Pressed, int Disabled)[] Buttons =
     {
-        // A window's title bar: the system box, minimise, close (14x14).
-        ("title_system", 10209, 0, 0), ("title_minimize", 10253, 0, 0), ("title_close", 10108, 0, 0),
         // The Encyclopedia's browse arrows (21x17).
         ("ency_prev", 10385, 10386, 10387), ("ency_next", 10382, 10383, 10384),
         // The frame's side column: the Empire's 44x41, the Alliance's 32x31.
@@ -159,7 +226,68 @@ public sealed class Importer
         // The original's scrollbar (13 wide): arrows and the thumb's three parts.
         ("scroll_up", 10658, 0, 0), ("scroll_down", 10662, 0, 0),
         ("scroll_thumb_top", 10666, 0, 0), ("scroll_thumb_mid", 10668, 0, 0), ("scroll_thumb_bottom", 10669, 0, 0),
+        // Create Mission's Decoy tab: move the selected to the decoys / agents (16x16).
+        ("mission_to_decoys", 11117, 11118, 0), ("mission_to_agents", 11119, 11120, 0),
+        // A Status window's Encyclopedia button (32x31); its close is ency_close.alliance.
+        ("status_encyclopedia", 11552, 11553, 11612),
+        // The Message Index (Fig 3.18): the band's Select All and Delete
+        // (56x20, opaque), and the side column under Close, per side - Message
+        // Summary, Post Messages with Alert (normal) / Silently (pressed), Open
+        // Window, Compose Chat (Empire 44x41, Alliance 32x31).
+        ("msgindex_select_all", 10900, 10901, 0), ("msgindex_delete", 10902, 10903, 0),
+        ("msgindex_summary.empire", 10738, 10739, 10962), ("msgindex_summary.alliance", 10870, 10871, 10961),
+        ("msgindex_post.empire", 10874, 10875, 0), ("msgindex_post.alliance", 10872, 10873, 0),
+        ("msgindex_open.empire", 10520, 10521, 10960), ("msgindex_open.alliance", 10518, 10519, 10959),
+        ("msgindex_compose.empire", 10879, 10880, 10881), ("msgindex_compose.alliance", 10876, 10877, 10878),
+        // A read message's band: scroll up / down through the tab (19x15), and
+        // the tick and cross of a report that asks (51x35, Fig 2.38).
+        ("msgsummary_up", 10948, 10949, 10950), ("msgsummary_down", 10919, 10920, 10921),
+        ("decision_ok", 10926, 10927, 10928), ("decision_cancel", 10929, 10930, 10931),
     };
+
+    // STRATEGY.DLL: the 14x14 boxes, keyed by their own bottom-left pixel (a
+    // green one): the original shows what is under the box there - the title
+    // bar's colour, the Sector window's see-through grey (measured).
+    private static readonly (string Name, int Normal, int Pressed, int Disabled)[] CornerKeyedButtons =
+    {
+        // A window's title bar: the system box, minimise, close.
+        ("title_system", 10209, 0, 0), ("title_minimize", 10253, 0, 0), ("title_close", 10108, 0, 0),
+        // The Sector window's "switch window to other side of screen" box (p025 Fig 2.8).
+        ("sector_switch", 10210, 10211, 0),
+    };
+
+    // STRATEGY.DLL: buttons drawn CLIPPED to their control, as (name, normal,
+    // pressed, clip x, y, w, h). Read off TeeJ's screenshot of the original's
+    // Create Mission window (2026-09-23): both pictures are drawn at the same
+    // spot, and the normal one's last columns and row - the room the face moves
+    // into when pressed - never show; nor does the pressed one's first. Both
+    // magenta shades, (255,0,255) and (204,28,205), are keyed.
+    private static readonly (string Name, int Normal, int Pressed, int X, int Y, int W, int H)[] ClippedButtons =
+    {
+        // The Encyclopedia, assign and cancel buttons (66x33 drawn as 64x32).
+        ("mission_encyclopedia", 10592, 10593, 0, 0, 64, 32), ("mission_ok", 10594, 10595, 0, 0, 64, 32),
+        ("mission_cancel", 10596, 10597, 0, 0, 64, 32),
+        // The arrow that drops the mission list down (65x18 drawn as 65x17).
+        ("mission_list_open", 10606, 10607, 0, 1, 65, 17),
+        // ...and drawn whole, its top row too, while the list is down (measured).
+        ("mission_list_opened", 10606, 10607, 0, 0, 65, 18),
+    };
+
+    // GOKRES.DLL: the 130x65 picture of each mission in the Create Mission
+    // window, per side, at the row's string_id less these (Recruitment's
+    // 11286 - 4096 = 7190 matched TeeJ's Imperial screenshot pixel for pixel;
+    // all 21 were checked by eye, the Alliance set 4096 below the Empire's).
+    private const int MissionCardEmpire = 4096;
+    private const int MissionCardAlliance = 8192;
+
+    // Bitmaps the original draws WHOLE, pure blue included: the Create Mission
+    // plates' blue line under the tabs and the tabs' blue edges are on TeeJ's
+    // screenshot of the original, pixel for pixel (2026-09-23).
+    private static readonly HashSet<int> DrawnWhole = new() { 10598, 11100, 11101, 11103, 11104, 11105, 11106, 11107, 11108, 11109, 11110,
+        // The Status plates are opaque; the pressed Encyclopedia button keeps its blue face.
+        11554, 11558, 11553,
+        // Build Selection's plate is opaque; so are the Scrap pictures.
+        10800, 1032, 1033 };
 
     public sealed record Result(int Pictures, int Descriptions, List<string> Missing, List<string> Log);
 
@@ -323,7 +451,81 @@ public sealed class Importer
             if (pressed > 0 && SaveSprite(strategy, pressed, Path.Combine(outRoot, "buttons", $"{name}.pressed.png"), true)) pictureCount++;
             if (disabled > 0 && SaveSprite(strategy, disabled, Path.Combine(outRoot, "buttons", $"{name}.disabled.png"), true)) pictureCount++;
         }
+        foreach (var (name, normal, pressed, disabled) in CornerKeyedButtons)
+        {
+            if (SaveSprite(strategy, normal, Path.Combine(outRoot, "buttons", $"{name}.png"), keyCorner: true)) { buttons++; pictureCount++; }
+            else missing.Add($"buttons/{name}: no bitmap {normal} in STRATEGY.DLL");
+            if (pressed > 0 && SaveSprite(strategy, pressed, Path.Combine(outRoot, "buttons", $"{name}.pressed.png"), keyCorner: true)) pictureCount++;
+            if (disabled > 0 && SaveSprite(strategy, disabled, Path.Combine(outRoot, "buttons", $"{name}.disabled.png"), keyCorner: true)) pictureCount++;
+        }
+        foreach (var (name, normal, pressed, disabled) in ShadedButtons)
+        {
+            if (SaveSprite(strategy, normal, Path.Combine(outRoot, "buttons", $"{name}.png"), true, keyShade: true)) { buttons++; pictureCount++; }
+            else missing.Add($"buttons/{name}: no bitmap {normal} in STRATEGY.DLL");
+            if (pressed > 0 && SaveSprite(strategy, pressed, Path.Combine(outRoot, "buttons", $"{name}.pressed.png"), true, keyShade: true)) pictureCount++;
+            if (disabled > 0 && SaveSprite(strategy, disabled, Path.Combine(outRoot, "buttons", $"{name}.disabled.png"), true, keyShade: true)) pictureCount++;
+        }
+        foreach (var (name, id) in BlackKeyed)
+        {
+            if (SaveSprite(strategy, id, Path.Combine(outRoot, "windows", $"{name}.png"), keyBlack: true)) { windows++; pictureCount++; }
+            else missing.Add($"windows/{name}: no bitmap {id} in STRATEGY.DLL");
+        }
+        foreach (var (name, normal, pressed, x, y, w, h) in ClippedButtons)
+        {
+            var clip = new Rectangle(x, y, w, h);
+            if (SaveSprite(strategy, normal, Path.Combine(outRoot, "buttons", $"{name}.png"), true, clip)) { buttons++; pictureCount++; }
+            else missing.Add($"buttons/{name}: no bitmap {normal} in STRATEGY.DLL");
+            if (SaveSprite(strategy, pressed, Path.Combine(outRoot, "buttons", $"{name}.pressed.png"), true, clip)) pictureCount++;
+        }
         Say($"sprites: {icons} corner icons, {sprites} planet sprites, {stars} GID stars, the uprising flame, {alerts} alert icons, {windows} window pictures, {tabs} tab icons, {buttons} buttons.");
+
+        // The Create Mission window's mission pictures: GOKRES.DLL, per side.
+        var cards = new PeResources(Path.Combine(_gameDir, "GOKRES.DLL"));
+        int missionCards = 0;
+        foreach (var row in ReadRows(Path.Combine(_packDir, "missions.json"), "missions"))
+        {
+            string id = row["id"]!.GetValue<string>();
+            if (row["string_id"]?.GetValue<int>() is not int sid)
+                continue;
+            foreach (var (faction, less) in new[] { ("empire", MissionCardEmpire), ("alliance", MissionCardAlliance) })
+            {
+                if (SaveSprite(cards, sid - less, Path.Combine(outRoot, "missions", $"{id}.{faction}.small.png"))) { missionCards++; pictureCount++; }
+                else if (!id.StartsWith("unnamed"))
+                    missing.Add($"missions/{id}.{faction}.small: no bitmap {sid - less} in GOKRES.DLL");
+            }
+        }
+        Say($"mission pictures for Create Mission: {missionCards} (GOKRES.DLL).");
+        // The mouse pointers: REBEXE.EXE's RT_CURSOR 3 (group 1001, the arrow -
+        // all 179 of its pixels matched TeeJ's screenshot of the original) and 4
+        // (group 1002, the targeting crosshair). Their hotspots go beside them.
+        var exe = Path.Combine(_gameDir, "REBEXE.EXE");
+        if (File.Exists(exe))
+        {
+            var rebexe = new PeResources(exe);
+            var hotspots = new JsonObject();
+            foreach (var (name, id) in new[] { ("pointer", 3), ("crosshair", 4) })
+            {
+                if (!rebexe.Cursors.ContainsKey(id)) { missing.Add($"cursors/{name}: no cursor {id} in REBEXE.EXE"); continue; }
+                var (hx, hy, w, h, argb) = rebexe.Cursor(id);
+                Directory.CreateDirectory(Path.Combine(outRoot, "cursors"));
+                using var bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
+                for (int y = 0; y < h; y++)
+                    for (int x = 0; x < w; x++)
+                        bmp.SetPixel(x, y, Color.FromArgb(argb[y * w + x]));
+                bmp.Save(Path.Combine(outRoot, "cursors", $"{name}.png"), ImageFormat.Png);
+                hotspots[name] = new JsonArray(hx, hy);
+                pictureCount++;
+            }
+            File.WriteAllText(Path.Combine(outRoot, "cursors", "hotspots.json"), hotspots.ToJsonString() + "\n");
+        }
+        else
+            missing.Add("REBEXE.EXE not found - no mouse pointers");
+
+        foreach (var (name, id) in QueuePictures)
+        {
+            if (SaveSprite(cards, id, Path.Combine(outRoot, "windows", $"{name}.png"), keyCorner: true)) pictureCount++;
+            else missing.Add($"windows/{name}: no bitmap {id} in GOKRES.DLL");
+        }
 
         // Portraits and list miniatures: GOKRES.DLL, by the shipped id map.
         var mapPath = Path.Combine(AppContext.BaseDirectory, "gokres_map.json");
@@ -369,20 +571,32 @@ public sealed class Importer
     /// <summary>A STRATEGY.DLL bitmap as a PNG with the blue colour key made transparent.</summary>
     /// <summary>A bitmap as a PNG with the key colour transparent: pure blue
     /// everywhere, and pure magenta too for the window tabs and buttons, whose
-    /// corners the original keys out the same way.</summary>
-    private static bool SaveSprite(PeResources dll, int bitmapId, string outPath, bool keyMagenta = false)
+    /// corners the original keys out the same way.
+    /// A clip rectangle crops the bitmap to the part the original draws; a
+    /// clipped button's second magenta shade (204,28,205) is keyed as well
+    /// (never elsewhere: the Manufacturing tab pictures draw it).</summary>
+    private static bool SaveSprite(PeResources dll, int bitmapId, string outPath, bool keyMagenta = false, Rectangle? clip = null,
+        bool keyCorner = false, bool keyBlack = false, bool keyShade = false)
     {
         if (!dll.Bitmaps.ContainsKey(bitmapId))
             return false;
         Directory.CreateDirectory(Path.GetDirectoryName(outPath)!);
         using var stream = new MemoryStream(dll.BitmapFile(bitmapId));
         using var bmp = new Bitmap(stream);
-        using var rgba = new Bitmap(bmp.Width, bmp.Height, PixelFormat.Format32bppArgb);
-        for (int y = 0; y < bmp.Height; y++)
-            for (int x = 0; x < bmp.Width; x++)
+        var r = clip ?? new Rectangle(0, 0, bmp.Width, bmp.Height);
+        // keyCorner: the bitmap's own bottom-left colour is its transparent
+        // colour, in place of blue (a queue picture keys its asphalt).
+        var corner = bmp.GetPixel(0, bmp.Height - 1);
+        using var rgba = new Bitmap(r.Width, r.Height, PixelFormat.Format32bppArgb);
+        for (int y = 0; y < r.Height; y++)
+            for (int x = 0; x < r.Width; x++)
             {
-                var c = bmp.GetPixel(x, y);
-                bool key = (c.R == 0 && c.G == 0 && c.B == 255) || (keyMagenta && c.R == 255 && c.G == 0 && c.B == 255);
+                var c = bmp.GetPixel(r.X + x, r.Y + y);
+                bool key = keyCorner ? c.ToArgb() == corner.ToArgb() :
+                    (c.R == 0 && c.G == 0 && c.B == 255 && !DrawnWhole.Contains(bitmapId))
+                    || (keyMagenta && c.R == 255 && c.G == 0 && c.B == 255)
+                    || (keyBlack && c.R == 0 && c.G == 0 && c.B == 0)
+                    || ((clip != null || keyShade) && c.R == 204 && c.G == 28 && c.B == 205);
                 rgba.SetPixel(x, y, key ? Color.Transparent : Color.FromArgb(255, c.R, c.G, c.B));
             }
         rgba.Save(outPath, ImageFormat.Png);

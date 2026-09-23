@@ -59,6 +59,18 @@ func CloseWindow() -> void:
 	queue_free()
 
 
+## A modal window (OUI.Modal) closes on Esc: "Cancel/Close Window - cancels
+## the current command (same as clicking Close or Cancel)" (manual p064).
+var CloseOnEscape: bool = false
+
+
+func _unhandled_key_input(event: InputEvent) -> void:
+	if CloseOnEscape and visible and event.is_pressed() and not event.is_echo() \
+			and (event as InputEventKey).keycode == KEY_ESCAPE:
+		get_viewport().set_input_as_handled()
+		CloseWindow()
+
+
 func MinimizeWindow() -> void:
 	# Hide the entire window and tell the UIManager to create a taskbar button.
 	visible = false
@@ -275,6 +287,12 @@ func OpenCreateMission(team: Array, origin: Planet, target: Planet, picked: Vari
 		refuse.canceled.connect(refuse.queue_free)
 		return
 
+	# The original's own window when the player imported its art (Figs 2.34,
+	# 3.47, 3.48); the plain dialog below otherwise.
+	if _uiManager != null and _uiManager.OpenCreateMission(team, origin, target, victim, thing, legal,
+			_Launcher(_uiManager, team, origin, target, victim, thing)):
+		return
+
 	# Fixed content width, so an autowrapping label has something to wrap against.
 	const ContentWidth := 376
 
@@ -379,18 +397,7 @@ func OpenCreateMission(team: Array, origin: Planet, target: Planet, picked: Vari
 		for i in decoyBoxes.size():
 			if decoyBoxes[i].button_pressed:
 				decoys.append(team[i])
-		# Everyone cannot be a decoy - somebody has to do the job.
-		if decoys.size() == team.size():
-			decoys.clear()
-		var args := { "type": legal[picker.selected], "team": EntityIndex.ids_of_units(team), "origin": origin.Name,
-			"target": target.Name, "decoys": EntityIndex.ids_of_units(decoys), "victim": victim.Name if victim != null else "" }
-		if thing is Facility:
-			args["facility"] = thing.Serial
-		elif thing is Unit:
-			args["unit"] = thing.Serial
-		var r: Result = CommandBus.issue("launch_mission", args)
-		if not r.ok:
-			ShowRefusal("Mission Refused", r.error)
+		LaunchMission(self, legal[picker.selected], team, origin, target, victim, thing, decoys)
 		dialog.queue_free())
 	dialog.canceled.connect(dialog.queue_free)
 
@@ -401,14 +408,43 @@ func OpenCreateMission(team: Array, origin: Planet, target: Planet, picked: Vari
 	dialog.popup_centered(Vector2i(ContentWidth + 24, contentHeight))
 
 
+## Send the team the Create Mission window assembled; the engine's refusal,
+## if any, goes up on `host`.
+static func LaunchMission(host: Node, type: int, team: Array, origin: Planet, target: Planet,
+		victim: Character, thing: Variant, decoys: Array) -> void:
+	# Everyone cannot be a decoy - somebody has to do the job.
+	if decoys.size() == team.size():
+		decoys = []
+	var args := { "type": type, "team": EntityIndex.ids_of_units(team), "origin": origin.Name,
+		"target": target.Name, "decoys": EntityIndex.ids_of_units(decoys), "victim": victim.Name if victim != null else "" }
+	if thing is Facility:
+		args["facility"] = thing.Serial
+	elif thing is Unit:
+		args["unit"] = thing.Serial
+	var r: Result = CommandBus.issue("launch_mission", args)
+	if not r.ok and host != null and is_instance_valid(host):
+		RefusalOn(host, "Mission Refused", r.error)
+
+
+## LaunchMission for one team and target, waiting for the mission and the
+## decoys. Made in a static function, so it holds no window that may close.
+static func _Launcher(host: Node, team: Array, origin: Planet, target: Planet, victim: Character, thing: Variant) -> Callable:
+	return func(type: int, decoys: Array) -> void:
+		LaunchMission(host, type, team, origin, target, victim, thing, decoys)
+
+
 ## An order the engine turned down, in front of the player rather than on
 ## the console (TeeJ, 2026-09-22).
 func ShowRefusal(title: String, text: String) -> void:
+	RefusalOn(self, title, text)
+
+
+static func RefusalOn(host: Node, title: String, text: String) -> void:
 	var box := AcceptDialog.new()
 	box.title = title
 	box.dialog_text = text
 	box.exclusive = true
-	add_child(box)
+	host.add_child(box)
 	box.popup_centered()
 	box.confirmed.connect(box.queue_free)
 	box.canceled.connect(box.queue_free)
@@ -656,6 +692,25 @@ func OnCharacterMenuAction(actionId: int, characters: Array, uiManager: UIManage
 
 		_:
 			print("Unhandled menu action %d" % actionId)
+
+
+## SCRAP ASKS FIRST, in the original's own dialog when the art is imported:
+## "Are you sure you want to scrap the following units?" (TEXTSTRA.DLL 28752)
+## and each unit on its own line (28756), over the console picture, with the
+## tick and the cross (TeeJ's screenshot of the original, 2026-09-23). What
+## scrapping gives back is not in the original's dialog; it is on the tick.
+## `plain` is the caller's own dialog, for a player without the art.
+func ConfirmScrapUnits(names: Array, refundNote: String, onConfirm: Callable, plain: Callable) -> void:
+	var ui: UIManager = _uiManager if _uiManager != null else get_parent() as UIManager
+	if ui == null or not ui.ConfirmScript.CanBuild():
+		plain.call()
+		return
+	var text: String = "Are you sure you want to scrap the following units?"
+	for n in names:
+		text += "\n" + str(n)
+	var f: Faction = GameSettings.PlayerFaction
+	var side: String = "alliance" if f != null and f.Id == "alliance" else "empire"
+	ui.OpenConfirmation(f, OUI.Pic("scrap_picture." + side), text, refundNote, onConfirm)
 
 
 ## Retiring is irreversible and gives back only half the material, so it asks

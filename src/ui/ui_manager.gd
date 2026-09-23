@@ -62,6 +62,7 @@ func IsTargetingObject() -> bool:
 
 
 func _ready() -> void:
+	ApplyOriginalCursors()
 	_taskbarList = get_node("%TaskbarList")
 	var menuButton: Button = get_node_or_null("../MenuButton")
 	if menuButton == null:
@@ -174,6 +175,17 @@ static func Socket(category: String, side: String, current: bool) -> Texture2D:
 	if img.is_compressed():
 		img.decompress()
 	img = img.get_region(Rect2i(0, 0, img.get_width(), mini(SocketRows, img.get_height())))
+	# A raised button's four corner pixels are the plate's grey in the bitmap:
+	# clear them, so it stands on whatever is behind the column. The current
+	# (blue) tile's bottom corners are its own fill - it fuses into the band.
+	img.convert(Image.FORMAT_RGBA8)
+	var w: int = img.get_width()
+	var h: int = img.get_height()
+	var corners: Array = [Vector2i(0, 0), Vector2i(w - 1, 0)]
+	if not current:
+		corners.append_array([Vector2i(0, h - 1), Vector2i(w - 1, h - 1)])
+	for c in corners:
+		img.set_pixelv(c, Color(0, 0, 0, 0))
 	img.resize(SocketSize.x, SocketSize.y, Image.INTERPOLATE_NEAREST)
 	var out := ImageTexture.create_from_image(img)
 	_sockets[key] = out
@@ -258,14 +270,12 @@ func _StyleCommsColumn(commsList: VBoxContainer) -> void:
 	if margin != null:
 		for sideName in ["left", "top", "right", "bottom"]:
 			margin.add_theme_constant_override("margin_" + sideName, 3)
+	# No panel behind the sockets: each is the original's own raised button,
+	# standing on the screen (TeeJ, 2026-09-23: "get rid of the black
+	# background - these should look like buttons").
 	var panel: PanelContainer = get_node_or_null("CommsPanel")
 	if panel != null:
-		var sb := StyleBoxFlat.new()
-		sb.bg_color = Color(0.03, 0.03, 0.05, 1)
-		sb.set_border_width_all(2)
-		sb.border_color = Color(0.45, 0.47, 0.52, 1)
-		sb.set_corner_radius_all(3)
-		panel.add_theme_stylebox_override("panel", sb)
+		panel.add_theme_stylebox_override("panel", StyleBoxEmpty.new())
 
 
 ## The unread count on a socket's corner, yellow with a black edge; hidden at
@@ -336,8 +346,10 @@ func OnMessageIndexClicked(category: String = "All") -> void:
 	OpenWindow("Communications", MessageWindowTemplate,
 		func(window) -> void:
 			window.Setup(self)   # without this the window's _uiManager is null and Go To is a no-op
-			window.custom_minimum_size = CommsRect.size
-			window.size = CommsRect.size
+			# The original's Message Index is its 470x330 frame, drawn 2x.
+			var dock: Vector2 = window.OriginalSize() if window._original else CommsRect.size
+			window.custom_minimum_size = dock
+			window.size = dock
 			window.position = CommsRect.position
 			window._tabContainer.tabs_visible = false
 			window.OpenToCategory(category)
@@ -377,6 +389,78 @@ func EncyclopediaPosition(window: Control) -> Vector2:
 	return (frame.get_center() - size / 2.0).floor().max(Vector2(150, 99))
 
 
+## THE ORIGINAL'S MOUSE POINTERS (TeeJ, 2026-09-23: "we need the cursor to
+## match"): its arrow everywhere, and its crosshair while a target is being
+## picked (targeting switches the shape to CURSOR_CROSS), drawn 2x like the
+## rest of the original's art, each at its own hotspot. Without the imported
+## art (or on another pack) the system's pointers come back.
+func ApplyOriginalCursors() -> void:
+	var pointer: Texture2D = Art.CursorPicture("pointer")
+	var cross: Texture2D = Art.CursorPicture("crosshair")
+	var k: int = 2
+	for shape in [Input.CURSOR_ARROW, Input.CURSOR_POINTING_HAND]:
+		if pointer != null:
+			Input.set_custom_mouse_cursor(Art.Scaled(pointer, k), shape, Art.CursorHotspot("pointer") * k)
+		else:
+			Input.set_custom_mouse_cursor(null, shape)
+	if cross != null:
+		Input.set_custom_mouse_cursor(Art.Scaled(cross, k), Input.CURSOR_CROSS, Art.CursorHotspot("crosshair") * k)
+	else:
+		Input.set_custom_mouse_cursor(null, Input.CURSOR_CROSS)
+
+
+## THE ORIGINAL'S CONFIRMATION DIALOG (confirm_window.gd), centred over the
+## map frame and modal. Preloaded by path: a new script can lag the class cache.
+const ConfirmScene := preload("res://src/ui/ConfirmWindow.tscn")
+const ConfirmScript := preload("res://src/ui/confirm_window.gd")
+
+
+func OpenConfirmation(f: Faction, picture: Texture2D, text: String, okTip: String, onConfirm: Callable) -> void:
+	var size := Vector2(ConfirmScript.FrameW, ConfirmScript.FrameH) * ConfirmScript.K
+	var frame := Rect2(150, 99, 1070, get_viewport().get_visible_rect().size.y - 99)
+	var at: Vector2 = (frame.get_center() - size / 2.0).floor().max(Vector2(150, 99))
+	OpenWindow("Confirm", ConfirmScene,
+		func(window) -> void: window.Setup(self, f, picture, text, okTip, onConfirm),
+		at)
+
+
+## THE BUILD SELECTION WINDOW as the original draws it (manual p045, p112 Fig
+## 3.58), centred and modal like the dialog it replaces. `items` are the
+## catalogue rows EconomyWindow.OpenBuildChooser prepared.
+## Preloaded by path: a new script can lag the editor's class cache.
+const BuildSelectionScene := preload("res://src/ui/BuildSelectionWindow.tscn")
+const BuildSelectionScript := preload("res://src/ui/build_selection_window.gd")
+
+
+func OpenBuildSelection(f: Faction, items: Array, deployDays: int, destination: String, helpers: int, onDone: Callable) -> void:
+	var size := Vector2(BuildSelectionScript.PlateW, BuildSelectionScript.PlateH) * BuildSelectionScript.K
+	var at: Vector2 = ((get_viewport().get_visible_rect().size - size) / 2.0).floor()
+	OpenWindow("Build Selection", BuildSelectionScene,
+		func(window) -> void: window.Setup(self, f, items, deployDays, destination, helpers, onDone),
+		at)
+
+
+## THE CREATE MISSION WINDOW as the original draws it (manual p042 Fig 2.34,
+## p103-p104 Figs 3.47 / 3.48), centred and modal like the dialog it replaces,
+## when the player imported its art. False when not: the caller then shows
+## the plain dialog. `launch` takes (mission type, decoys).
+## Preloaded by path: a new script can lag the editor's class cache.
+const CreateMissionScene := preload("res://src/ui/CreateMissionWindow.tscn")
+const CreateMissionScript := preload("res://src/ui/create_mission_window.gd")
+
+
+func OpenCreateMission(team: Array, origin: Planet, target: Planet, victim: Character, thing: Variant,
+		legal: Array, launch: Callable) -> bool:
+	if not CreateMissionScript.CanBuild():
+		return false
+	var size := Vector2(CreateMissionScript.PlateW, CreateMissionScript.PlateH) * CreateMissionScript.K
+	var at: Vector2 = ((get_viewport().get_visible_rect().size - size) / 2.0).floor()
+	OpenWindow("Create Mission", CreateMissionScene,
+		func(window) -> void: window.Setup(self, team, origin, target, victim, thing, legal, launch),
+		at)
+	return true
+
+
 ## The category the docked Comms Center is showing, or "" when it is not open.
 func CommsCategory() -> String:
 	var w: DraggableWindow = _openWindows.get("Communications")
@@ -390,18 +474,30 @@ func CommsCategory() -> String:
 
 func OnSectorClicked(sector: Sector) -> void:
 	var targetPos := Vector2(100 + randf() * 50, 100 + randf() * 50)
+	# The original's sector window docks against the map frame's right edge;
+	# its box moves it to the left and back (SectorWindow._SwitchSide).
+	if SectorWindow.CanBuildOriginal():
+		targetPos = SectorWindow.DockPosition(true)
 	OpenWindow(sector.Name, SectorWindowTemplate,
 		func(window) -> void:
 			window.get_node("%Title").text = sector.Name
 			window.Populate(sector, self)
-			# Right-click on the title bar: "Pin to menu" / "Unpin from menu".
-			# Setup runs again on every restore, so wire it once.
-			if not window.has_meta("pin_menu_wired"):
-				window.set_meta("pin_menu_wired", true)
-				(window.get_node("%TitleBar") as Control).gui_input.connect(func(ev: InputEvent) -> void:
-					if ev is InputEventMouseButton and ev.button_index == MOUSE_BUTTON_RIGHT and ev.pressed:
-						ShowPinMenu(sector)),
+			_WireSectorPinMenu(window, sector),
 		targetPos)
+
+
+## Right-click on the title bar: "Pin to menu" / "Unpin from menu". Setup
+## runs again on every restore, so this wires it once. The original's window
+## has no bar: its title takes the right-click.
+func _WireSectorPinMenu(window: Control, sector: Sector) -> void:
+	if window.has_meta("pin_menu_wired"):
+		return
+	window.set_meta("pin_menu_wired", true)
+	for bar in [window.get_node("%TitleBar"), window.get("_originalTitle")]:
+		if bar is Control:
+			(bar as Control).gui_input.connect(func(ev: InputEvent) -> void:
+				if ev is InputEventMouseButton and ev.button_index == MOUSE_BUTTON_RIGHT and ev.pressed:
+					ShowPinMenu(sector))
 
 
 func OnPlanetClicked(planetData: Planet) -> void:
@@ -1152,19 +1248,52 @@ func EndUnitDrag() -> void:
 
 
 func OpenUnitStatusWindow(unit: Unit) -> void:
+	var windowName := "Status_%s_%d" % [unit.Name.replace(" ", ""), unit.get_instance_id()]   # several X-Wings can open at once
+	if OUI.HasStatus():
+		OpenStatusPlate(windowName, func() -> Dictionary: return UnitStatusWindow.StatusData(unit))
+		return
 	var targetPos := Vector2(350, 250)
-	OpenWindow("Status_%s_%d" % [unit.Name.replace(" ", ""), unit.get_instance_id()],   # several X-Wings can open at once
+	OpenWindow(windowName,
 		UnitStatusWindowTemplate,
 		func(window) -> void: window.Populate(unit),
 		targetPos)
 
 
 func OpenDefenseFacilityStatusWindow(facility: Facility) -> void:
+	var windowName := "Status_%s_%d" % [facility.Name().replace(" ", ""), facility.get_instance_id()]
+	if OUI.HasStatus():
+		OpenStatusPlate(windowName, func() -> Dictionary: return DefenseFacilityStatusWindow.StatusData(facility))
+		return
 	var targetPos: Vector2 = get_viewport().get_mouse_position()
-	OpenWindow("Status_%s_%d" % [facility.Name().replace(" ", ""), facility.get_instance_id()],
+	OpenWindow(windowName,
 		DefenseFacilityStatusWindowTemplate,
 		func(window) -> void: window.Populate(facility),
 		targetPos)
+
+
+## A manufacturing queue's Status window (manual p086, Fig 3.29): the queue's
+## right-click menu -> Status. The original's look with the imported art, the
+## same fields in a plain window without it.
+func OpenQueueStatusWindow(planet: Planet, producer: String) -> void:
+	OpenStatusPlate("Status_%s_%s" % [planet.Name.replace(" ", ""), producer],
+		func() -> Dictionary: return EconomyWindow.QueueStatusData(planet, producer))
+
+
+## A STATUS WINDOW (StatusPlateWindow): modal, as the manual has them (p064),
+## centred over the map frame like the Encyclopedia. `source` returns its
+## content and is asked again on every refresh.
+## Preloaded by path: a new script can lag the editor's class cache.
+const OUI := preload("res://src/ui/original_ui.gd")
+const StatusPlateScene := preload("res://src/ui/StatusPlateWindow.tscn")
+
+
+func OpenStatusPlate(windowName: String, source: Callable) -> void:
+	var size: Vector2 = Vector2(OUI.StatusW, OUI.StatusH) * OUI.K if OUI.HasStatus() else Vector2(460, 260)
+	var frame := Rect2(150, 99, 1070, get_viewport().get_visible_rect().size.y - 99)
+	var at: Vector2 = (frame.get_center() - size / 2.0).floor().max(Vector2(150, 99))
+	OpenWindow(windowName, StatusPlateScene,
+		func(window) -> void: window.Setup(self, GameSettings.PlayerFaction, source),
+		at)
 
 
 func StartFleetDrag(dragGroup: Array) -> void:

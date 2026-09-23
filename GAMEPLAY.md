@@ -358,6 +358,23 @@ Objectives, Manage Garrisons, Manage Production, Translate Counterpart, Agent
 Advice.** The message droid (R2-D2 / SD-7) carries **Messages** and **Message
 Alerts**; messages other than Agent Advice eventually expire.
 
+**The Message Index is the original's** (`src/ui/message_window.gd`,
+2026-09-23; manual p078 Fig 3.18, p079, p080 Fig 3.19, p043 Fig 2.38). With
+the imported art the Comms Center is composed from its bitmaps at the places
+matched on TeeJ's screenshots of both sides (Advice with nine rows, Popular
+Support empty; each rebuilt pixel for pixel): the side's frame, the plate with
+its band and starfield list, the ten category tabs, the band's caption,
+**Select All** and **Delete Selected Messages**, rows of the category icon and
+the title (a row every 21 pixels, the side's bar under a picked one; click,
+ctrl-click, shift-click, double-click to read), and the side buttons **Close,
+Message Summary, Post Messages with Alert / Silently, Open Window, Compose
+Chat**. A message is read in the same frame (Figs 2.38 / 3.19): title on the
+band, the arrows through the tab, the picture, the text, and the tick and
+cross of a mission report that asks to continue. **Provisional** (no
+screenshot of the original yet): the reading view's layout, the read rows'
+"lighter type", the row icons of Mission, Manufacturing and Chat, and Post
+Silently has nothing to silence (no message sounds yet).
+
 ---
 
 ## 4. The sector window
@@ -2210,8 +2227,8 @@ The Build Selection window's own callouts settle a reading that §3a left open:
 
 | Field | Fig. 3.58 value | The manual's callout |
 |---|---|---|
-| Maintenance cost | 26 | — |
-| Refined material cost | 24 | — |
+| Refined material cost (the left box) | 26 | "Refined material cost" |
+| Maintenance cost (the right box, the wrench) | 24 | "Maintenance cost" |
 | **Best Time To Completion** | **Days: 104** | "**Denotes the day task will be completed**" |
 | **Best Time To Deployment** | Days: 0 | "**Additional** number of days until unit is deployed to destination system" |
 | Number to build | 1 | "Number of units to build **consecutively**" |
@@ -2223,6 +2240,36 @@ these are optimistic estimates that can slip.
 
 "Number to build" queues **consecutive** copies — one order, N units, built in
 series, not in parallel.
+
+(The two cost rows were the other way round here until 2026-09-23. The
+callout lines run "Refined material cost" to the left box and "Maintenance
+cost" to the wrench, and the pack's Carrack costs 26 to build and 24 to
+maintain: two sources, **Confirmed**.)
+
+**The shipped game shows a duration, not a date.** TeeJ's screenshot of the
+original's Build Selection (a Construction Yard, 2026-09-23) reads "Best Time
+To Completion: 40 Days" - the yard's refined cost 10 at 4 days a point - where
+the manual's pre-release figure reads "Days: 104" and its callout says "the
+day". The window is built to the shipped screen.
+
+**Implemented** (`src/ui/build_selection_window.gd`, 2026-09-23): with the
+imported art it is the original's window, rebuilt from its bitmaps at the
+places matched on that screenshot (every part pixel for pixel): the 210x261
+plate (STRATEGY.DLL 10800) with its title bar inside the bevel, the item's
+picture (GOKRES class bitmap) and name, the drop-down arrow, the refined and
+maintenance costs centred in their icon boxes, the two times right-aligned,
+Number to build with its spinner, and the Encyclopedia / build / cancel
+buttons drawn whole (10592-10597; 11620 the greyed build). An order that
+cannot be placed greys the build button and says why on it. **The open list**
+(measured on TeeJ's Alliance screenshot, rebuilt to 0 differing pixels): the
+195x61 starfield (10598) tiled down from (9,111), a white one-pixel frame, each
+item's 122x50 picture every 70 pixels from y 119 with its name (Arial 11)
+centred over the picture's last rows, grey for the item on show, and the
+original's scroll bar (10658-10669, 12 of 13 columns drawn) inside the frame's
+right edge. **Inferred**: the thumb is the shown share of the track (41 of 122
+for 2 of 6 - it fits, the total was not visible), the arrows step a row.
+**Not matched**: the order - the original lists the Alliance Army and Fleet
+Regiments first, ours the special forces first (catalogue order).
 
 ### New ships always create a fleet *(PDF p112 / manual p114)*
 
@@ -3419,6 +3466,27 @@ a bare day number. And Fig. 3.25's callouts pair as
 destination is different system)**", so deployment is unambiguously **travel
 time**, added on.
 
+**Implemented** (2026-09-23): a queue's right-click menu has **Status**
+(manual p086: "right-click on the Facilities Under Construction area ... one
+of the options is Status"), which opens that queue's Status window
+(`EconomyWindow.QueueStatusData`). The shipped game differs from Fig. 3.29:
+TeeJ's screenshot of the original (Xyquine) reads **Location, Status
+(Building), Items to Build, Estimated Day of Completion**, with the queue's
+picture (GOKRES.DLL 263) and name ("Construction"), and that is what is
+built. The day is when the whole queue is done (not settled by a screenshot:
+the one sample has one item).
+
+**Every Status window is the original's** with the imported art
+(`OUI.StatusPlate`, `StatusPlateWindow`): modal, as the manual has Status
+windows (p064: "you must dismiss the window before you can go do anything
+else"), no title bar, the 379x272 plate per side (STRATEGY.DLL 11554 / 11558),
+the fields in the original's words (TEXTSTRA.DLL), the class picture and name,
+the Encyclopedia button and the diamond that closes it; Esc closes it too.
+Matched on screenshots of a Trooper Regiment, Spec Forces, a Manufacturing
+Status and Facilities Under Construction. Not yet seen: fighters, capital
+ships, defence facilities (their rows are ours), characters and fleets (their
+windows are still the plain ones).
+
 ### ★ Maintenance is charged up front, for the whole order *(PDF p082 / manual p084)*
 
 > NOTE: When you order **multiple units** to be built, **maintenance capacity for
@@ -3813,6 +3881,24 @@ quoted in **days** and why Pause is a first-class command.
 
 - **Sector windows cannot be moved or minimized** — only closed, or flipped to
   the other side of the screen. **At most two Sector windows at a time.**
+
+  **Implemented** (`src/ui/sector_window.gd`, 2026-09-23, with the imported
+  art, measured on TeeJ's screenshot of the original's Corellian sector): no
+  title bar; 235×360 of see-through grey
+  with a one-pixel light frame (dotted down the sides) and no shadow; the
+  sector's name in yellow Arial 13; the ↔ box (STRATEGY 10210) and the close
+  box at the top right; docked at the map frame's right edge, ↔ flips it to the
+  left. Each system's 37×37 picture sits with its top-left at
+  round(20 + 147·x, 24 + 271·y) for its place (x, y) in the sector's box
+  (all ten Corellian systems to the pixel); the star, corner cells, bars (2×3
+  squares, the loyalty bar the picture's width) and name are at the original's
+  offsets from it. **Not implemented: the two-window limit** — the manual does
+  not say what opening a third does (or where the second opens).
+
+  **Deliberately NOT the original (TeeJ, 2026-09-23: "allow them to be moved
+  and minimized, that was stupid UI in the original"):** ours is dragged by its
+  name strip and has the original's minimize box at (190, 2), left of the ↔
+  box; it restores from the Window Reference Bar like any other window.
 - **Any number of System windows** may be open.
 - **Up to 12 windows can be minimized**, parked in slots on the **Window
   Reference Bar** down the side of the screen.
@@ -4263,6 +4349,39 @@ and a **Decoy tab**; the currently selected mission; a **drop-down of available
 mission types**; the **target**; and Encyclopedia / assign / cancel. The
 **Mission Status** window (Fig. 2.35) mirrors it with **separate tabs for agents
 and decoys** and the **moving starfield** hyperspace indicator.
+
+**Implemented** (`src/ui/create_mission_window.gd`, 2026-09-23). With the
+player's imported art it is **the original's window, composed from its own
+bitmaps** at the places template matching found on TeeJ's screenshot of the
+original (the Emperor recruiting on Coruscant): the 259x355 plate is the
+window (STRATEGY.DLL 11100; 11101 on the Decoy tab), the title bar inside its
+bevel with only the close box, the two 116x33 tabs (11103-11110 per side), the
+mission's name over its 130x65 picture (GOKRES.DLL, the row's string_id less
+4096 for the Empire, less 8192 for the Alliance), the drop-down arrow
+(10606/10607), the target's sprite and name in the Target box, and the
+Encyclopedia / assign / cancel buttons (10592-10597, drawn clipped to 64x32 as
+the original draws them). The plates and tabs are drawn whole, their pure blue
+included. The Decoy tab lays the team in the agent and decoy columns under
+their heads (11121-11124) with the arrows between them (11117-11120). Text is
+Arial 13 as measured. **Decoy tab and object targets** (measured on TeeJ's
+Alliance screenshots, rebuilt to 0 differing pixels): the arrows at (120,136)
+and (120,221); a member every 59 pixels from y 110, the miniature on the grey
+plate 11500 23 in from the column, the name in grey (120,120,120) Arial 13
+under it; the tab strip stays the Select plate's; an object target shows its
+122x50 class picture (Sabotage of a KDY-150: GOKRES 512) centred in the box
+as x = 50 + (167 - w) // 2; tooltips are the original's (TEXTSTRA
+34048-34054). **Ours / inferred**: a picked member's look (never seen), a
+character target's picture (its 80x80 portrait, by the same set). **Not
+matched**: a facility target is named from the pack ("Ion Cannon") where the
+original says "KDY-150" (TEXTSTRA 8704). **The open mission list** (measured,
+0 differing pixels): the Build list's starfield, frame and scroll bar at
+(38,201), 200x117, over the Target box; one mission showing at a time, its
+name (Arial 13) centred above its 130x65 picture, a mission every 113
+pixels; the arrow drawn whole (its top row too) a pixel higher while the list
+is down. **Inferred**: it opens scrolled to the current mission, whose name is
+grey (the original's capture has it scrolled part-way, the current name out of
+view); the order is ours (the original's is not known). Without the art the
+plain dialog stays.
 
 ### The standing risk warning *(PDF p043 / manual p044)*
 

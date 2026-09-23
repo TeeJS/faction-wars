@@ -110,17 +110,18 @@ static func Place(parent: Control, tex: Texture2D, x: float, y: float, name: Str
 	return r
 
 
-## The original's text style on a label: face, size in original pixels.
-static func Style(l: Control, px: int, color: Color, bold: bool = false) -> void:
+## The original's text style on a label: face, size in original pixels (a
+## half pixel where our Arial runs wider than the original's hinted one).
+static func Style(l: Control, px: float, color: Color, bold: bool = false) -> void:
 	l.add_theme_font_override("font", Face(bold))
-	l.add_theme_font_size_override("font_size", px * K)
+	l.add_theme_font_size_override("font_size", roundi(px * K))
 	l.add_theme_color_override("font_color", color)
 	if l is Label:
 		l.add_theme_constant_override("line_spacing", -K)
 
 
 ## A line of text in an original-pixel box.
-static func Text(parent: Control, text: String, x: float, y: float, w: float, h: float, px: int,
+static func Text(parent: Control, text: String, x: float, y: float, w: float, h: float, px: float,
 		color: Color = Color.WHITE, align: HorizontalAlignment = HORIZONTAL_ALIGNMENT_LEFT,
 		bold: bool = false, name: String = "") -> Label:
 	var l := Label.new()
@@ -213,11 +214,192 @@ static func TitleBar(window: Control, f: Faction) -> void:
 		vbox.add_theme_constant_override("separation", 0)
 
 
+## A DIALOG'S FRAME, as the original draws Create Mission: the plate IS the
+## window, with its own 2-pixel bevel round the edge, and the title bar sits
+## inside the bevel - 16 rows of the side's colour, the name in black bold
+## Arial 13 from 4 pixels in, and only the close box, 1 pixel from the end
+## (measured on TeeJ's screenshot of the original, 2026-09-23).
+const DialogBevel := 2
+const DialogBarH := 16
+
+
+static func DialogFrame(window: Control, f: Faction, plate: Texture2D, titlePx: int = 13, titleGap: int = 4, centred: bool = false) -> void:
+	var bar: ColorRect = window.get_node_or_null("%TitleBar")
+	var label: Label = window.get_node_or_null("%TitleBarLabel")
+	if bar == null or label == null:
+		return
+	bar.color = SideColor(f)
+	bar.custom_minimum_size = Vector2(0, DialogBarH * K)
+	Style(label, titlePx, Color.BLACK, true)
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	if centred:
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	var hbox: HBoxContainer = label.get_parent() as HBoxContainer
+	if hbox != null and not bar.has_meta("original"):
+		bar.set_meta("original", true)
+		hbox.add_theme_constant_override("separation", 0)
+		hbox.add_child(_gap(titleGap))
+		hbox.move_child(hbox.get_child(hbox.get_child_count() - 1), 0)
+		var mini: Control = window.get_node_or_null("%MinimizeButton")
+		if mini != null:
+			mini.visible = false
+		var close: Button = window.get_node_or_null("%CloseButton")
+		if close != null:
+			_title_button(close, "title_close")
+		hbox.add_child(_gap(1))
+	SetPlate(window, plate)
+	window.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	var vbox: Control = window.get_node_or_null("MainVBox")
+	if vbox != null:
+		vbox.add_theme_constant_override("separation", 0)
+
+
+## The dialog's plate, drawn as the window's own panel (a tab can swap it).
+static func SetPlate(window: Control, plate: Texture2D) -> void:
+	var sb := StyleBoxTexture.new()
+	sb.texture = plate
+	sb.set_content_margin_all(DialogBevel * K)
+	window.add_theme_stylebox_override("panel", sb)
+
+
+## A title-bar button drawn as the original's 14x14 box.
+static func _title_button(b: Button, icon: String) -> void:
+	b.text = ""
+	b.icon = Btn(icon)
+	b.flat = true
+	b.expand_icon = false
+	b.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	b.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	b.custom_minimum_size = Vector2(14, 14) * K
+	b.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	var empty := StyleBoxEmpty.new()
+	for st in ["normal", "hover", "pressed", "focus", "hover_pressed"]:
+		b.add_theme_stylebox_override(st, empty)
+
+
+## A button drawn with the original's (normal, pressed) pictures, at original
+## position (x, y).
+static func PictureButton(parent: Control, name: String, x: float, y: float, tip: String = "") -> TextureButton:
+	var b := TextureButton.new()
+	b.name = name.validate_node_name()   # "ency_close.alliance" -> "ency_close_alliance"
+	b.texture_normal = Btn(name)
+	b.texture_pressed = Btn(name, "pressed")
+	b.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	b.position = Vector2(x, y) * K
+	b.size = b.texture_normal.get_size() if b.texture_normal != null else Vector2.ZERO
+	b.tooltip_text = tip
+	parent.add_child(b)
+	return b
+
+
 static func _gap(px: int) -> Control:
 	var c := Control.new()
 	c.custom_minimum_size = Vector2(px * K, 0)
 	c.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	return c
+
+
+# ---- modal windows -------------------------------------------------------------
+
+## MODAL, as the manual has Status windows and dialogs (p064: "you must dismiss
+## the window before you can go do anything else in the game"): a clear
+## blocker under the window takes every other click, and goes with it. Esc
+## closes the window ("Cancel/Close Window", p064). A window opened from it
+## (the Encyclopedia) comes up over both.
+static func Modal(window: Control) -> void:
+	var parent: Node = window.get_parent()
+	if parent == null or window.has_meta("modal_blocker"):
+		return
+	var blocker := Control.new()
+	blocker.name = "ModalBlocker"
+	blocker.set_anchors_preset(Control.PRESET_FULL_RECT)
+	blocker.mouse_filter = Control.MOUSE_FILTER_STOP
+	parent.add_child(blocker)
+	parent.move_child(blocker, window.get_index())
+	window.set_meta("modal_blocker", blocker)
+	if "CloseOnEscape" in window:
+		window.set("CloseOnEscape", true)
+	window.tree_exiting.connect(func() -> void:
+		if is_instance_valid(blocker):
+			blocker.queue_free())
+
+
+## Lines of a wrapping label `pitch` original pixels apart.
+static func LinePitch(l: Label, px: float, pitch: int, bold: bool = false) -> void:
+	l.add_theme_constant_override("line_spacing", pitch * K - int(ceil(Face(bold).get_height(roundi(px * K)))))
+
+
+# ---- the Status window -------------------------------------------------------
+
+## THE ORIGINAL'S STATUS WINDOW (manual p064: modal, known by its diamond
+## close button; Figs 3.28, 3.29, 3.61), rebuilt from its bitmaps at the
+## places measured on TeeJ's screenshots of the original - a Trooper Regiment,
+## Facilities Under Construction, Spec Forces and a Manufacturing Status, each
+## rebuilt pixel for pixel (2026-09-23). No title bar: the 379x272 plate per
+## side; the title (Arial bold 13) centred over the field panel at y 18; the
+## fields in Arial 11 (drawn 10.5: ours runs wider than the original's hinted
+## face - "Bombardment Value:" is 98 pixels to its 99), a line every 14
+## pixels from y 47, labels from x 18 wrapping at 103 and each value at x 121
+## on its label's last line; the
+## picture centred in the grid panel (x 242-371, y 15-112), a regiment's over
+## its grey spotlight; the name (Arial bold 13) centred under it from y 137, a
+## line every 16; the Encyclopedia button at (258, 218) and the diamond that
+## closes the window at (324, 218).
+const StatusW := 379
+const StatusH := 272
+const StatusFieldPx := 10.5
+
+
+## True when the player imported the Status window's art.
+static func HasStatus() -> bool:
+	return Has(["status_plate.empire", "status_plate.alliance"]) and Art.ButtonIcon("status_encyclopedia") != null
+
+
+## Paint a Status window on `window` (a DraggableWindow scene) from `data`:
+## title, fields ([label, value] pairs), picture and backdrop (drawn size),
+## name. Returns the canvas; its buttons are "status_encyclopedia" and
+## "ency_close_alliance".
+static func StatusPlate(window: Control, f: Faction, data: Dictionary) -> Control:
+	var bar: Control = window.get_node_or_null("%TitleBar")
+	if bar != null:
+		bar.visible = false
+	var plate: Texture2D = Pic("status_plate.%s" % Side(f))
+	var sb := StyleBoxTexture.new()
+	sb.texture = plate if plate != null else Pic("status_plate.empire")
+	window.add_theme_stylebox_override("panel", sb)
+	window.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	var area: MarginContainer = Flatten(window)
+	for c in area.get_children():
+		area.remove_child(c)
+		c.queue_free()
+	var canvas := Control.new()
+	canvas.name = "StatusCanvas"
+	canvas.custom_minimum_size = Vector2(StatusW, StatusH) * K
+	canvas.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	area.add_child(canvas)
+	Text(canvas, str(data.get("title", "")), 9, 18, 223, 16, 13, Color.WHITE, HORIZONTAL_ALIGNMENT_CENTER, true, "Title")
+	var y := 47
+	var n := 0
+	for pair in data.get("fields", []):
+		var label := Text(canvas, str(pair[0]), 18, y, 103, 56, StatusFieldPx, Color.WHITE, HORIZONTAL_ALIGNMENT_LEFT, false, "Label%d" % n)
+		label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		LinePitch(label, StatusFieldPx, 14)
+		var lines: int = maxi(1, label.get_line_count())
+		Text(canvas, str(pair[1]), 121, y + 14 * (lines - 1), 109, 14, StatusFieldPx, Color.WHITE, HORIZONTAL_ALIGNMENT_LEFT, false, "Value%d" % n)
+		y += 14 * lines
+		n += 1
+	for key in ["backdrop", "picture"]:
+		var tex: Texture2D = data.get(key)
+		if tex != null:
+			var w: int = int(tex.get_size().x) / K
+			var h: int = int(tex.get_size().y) / K
+			Place(canvas, tex, 242 + (130 - w) / 2, 15 + (98 - h) / 2, key.capitalize())
+	var name := Text(canvas, str(data.get("name", "")), 242, 137, 130, 48, 13, Color.WHITE, HORIZONTAL_ALIGNMENT_CENTER, true, "Name")
+	name.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	LinePitch(name, 13, 16, true)
+	PictureButton(canvas, "status_encyclopedia", 258, 218, "Encyclopedia")
+	PictureButton(canvas, "ency_close.alliance", 324, 218, "Close")
+	return canvas
 
 
 ## THE PLATE RUNS UNDER THE TITLE BAR, as in the original: its first rows
@@ -243,6 +425,8 @@ static func Canvas(area: Control, w: int, h: int) -> Control:
 ## The content area laid flat for a plate: no margins, no background.
 static func Flatten(window: Control) -> MarginContainer:
 	var area: MarginContainer = window.get_node_or_null("%ContentArea")
+	if area == null:
+		area = window.get_node_or_null("MainVBox/ContentArea")   # a scene that did not mark it unique
 	if area == null:
 		return null
 	for side in ["left", "top", "right", "bottom"]:
@@ -361,9 +545,11 @@ static func _picture_stack(parent: Control, mini: Texture2D, state: String) -> v
 
 
 ## Turn a list button into a CARD (Fig 3.73): the miniature at the top-left,
-## the name under it in white, wrapping; selected, a one-pixel frame round
-## the picture and the name in the side's colour. The button keeps its
-## menu, selection and drag; its text moves to the Name label.
+## the name under it in white, wrapping; selected, a one-pixel frame on the
+## picture's own outline and the name in the side's colour. The button keeps
+## its menu, selection and drag; its text moves to the Name label. A card is
+## exactly one grid cell: it never stretches, so every row keeps the grid
+## (TeeJ, 2026-09-23: "ITEMS NEED TO ALIGN IN A GRID").
 static func Card(btn: BaseButton, title: String, mini: Texture2D, color: Color, selected: Color, state: String = "") -> void:
 	if btn is Button:
 		(btn as Button).text = ""
@@ -373,16 +559,11 @@ static func Card(btn: BaseButton, title: String, mini: Texture2D, color: Color, 
 	for st in ["normal", "hover", "pressed", "focus", "hover_pressed", "disabled"]:
 		btn.add_theme_stylebox_override(st, empty)
 	btn.custom_minimum_size = Vector2(CardW, CardH) * K
+	btn.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	btn.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 	btn.set_meta("card", true)
 	_picture_stack(btn, mini, state)
-	var frame := ReferenceRect.new()
-	frame.name = "Frame"
-	frame.editor_only = false
-	frame.border_color = selected
-	frame.border_width = K
-	frame.position = Vector2(-1, -1) * K
-	frame.size = Vector2(63, 27) * K
-	frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var frame := SelectionFrame(0, 0, selected)
 	btn.add_child(frame)
 	var name := _card_name(btn, title, color)
 	var show := func(on: bool) -> void:
@@ -397,12 +578,32 @@ static func Card(btn: BaseButton, title: String, mini: Texture2D, color: Color, 
 static func StaticCard(list: Container, title: String, mini: Texture2D, color: Color, tip: String = "", state: String = "") -> Control:
 	var c := Control.new()
 	c.custom_minimum_size = Vector2(CardW, CardH) * K
+	c.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	c.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 	c.mouse_filter = Control.MOUSE_FILTER_PASS
 	c.tooltip_text = tip
 	_picture_stack(c, mini, state)
 	_card_name(c, title, color)
 	list.add_child(c)
 	return c
+
+
+## THE SELECTION FRAME the original draws on a picked card: one pixel of the
+## side's colour on the 61x25 picture's own outline, over its edge pixels
+## (measured on TeeJ's screenshot of the original's Coruscant Personnel page,
+## 2026-09-23 - not outside it, where a grid's first row and column cut it
+## off). Hidden until the card is picked.
+static func SelectionFrame(x: float, y: float, color: Color) -> ReferenceRect:
+	var frame := ReferenceRect.new()
+	frame.name = "Frame"
+	frame.editor_only = false
+	frame.border_color = color
+	frame.border_width = K
+	frame.position = Vector2(x, y) * K
+	frame.size = Vector2(61, 25) * K
+	frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	frame.visible = false
+	return frame
 
 
 ## A card's name under its picture: 11-pixel Arial, the lines 14 pixels
@@ -413,3 +614,233 @@ static func _card_name(card: Control, title: String, color: Color) -> Label:
 	name.clip_text = true
 	name.add_theme_constant_override("line_spacing", 3 * K / 2)
 	return name
+
+
+# ---- the drop-down picture list and the scroll bar ---------------------------
+
+## THE ORIGINAL'S DROP-DOWN LIST OF PICTURES (the Build Selection window's
+## items, measured on TeeJ's screenshot of the original, rebuilt to 0
+## differing pixels): the 195x61 starfield (STRATEGY 10598) tiled down from
+## the panel's corner; a white one-pixel frame, one pixel short of it on the
+## right and the bottom; a row every `pitch` pixels - its picture at
+## (picture_x, picture_y) in the row, its name (Arial `name_px`) centred
+## across the panel at `name_y` (the Build list's over the picture's last
+## rows, Create Mission's above it), grey for the current item and white for
+## the rest; the rows cut two pixels inside the frame's top; the scroll bar
+## inside its right edge. The rows are Buttons named "Row<i>" (pressing one
+## picks it); the panel's "rows" meta holds them. `rect` is the starfield's,
+## in original pixels; `layout` = {top, pitch, picture_x, picture_y, name_y,
+## name_px}, `top` being the first row's in the panel, unscrolled. Items are
+## {picture: Texture2D (drawn size), name}. It opens scrolled to show the
+## current item (INFERRED).
+static func DropList(parent: Control, rect: Rect2, items: Array, current: int, layout: Dictionary,
+		on_pick: Callable) -> Control:
+	var panel := DropListPanel.new()
+	panel.name = "DropList"
+	panel.k = K
+	panel.star = Pic("list_starfield")
+	panel.position = rect.position * K
+	panel.size = rect.size * K
+	parent.add_child(panel)
+	var inner := Control.new()   # inside the frame: the rows are cut there
+	inner.name = "Rows"
+	inner.position = Vector2(1, 2) * K
+	inner.size = (rect.size - Vector2(3, 5)) * K
+	inner.clip_contents = true
+	inner.mouse_filter = Control.MOUSE_FILTER_PASS
+	panel.add_child(inner)
+	var rows: Array = []
+	var empty := StyleBoxEmpty.new()
+	var grey := Color(128 / 255.0, 128 / 255.0, 128 / 255.0)
+	for i in items.size():
+		var row := Button.new()
+		row.name = "Row%d" % i
+		row.flat = true
+		row.focus_mode = Control.FOCUS_NONE
+		row.size = Vector2(rect.size.x - 3 - ScrollBar12.W, float(layout.pitch)) * K
+		row.tooltip_text = str(items[i].name)
+		for st in ["normal", "hover", "pressed", "focus", "hover_pressed"]:
+			row.add_theme_stylebox_override(st, empty)
+		var pic: Texture2D = items[i].get("picture")
+		if pic != null:
+			var p := Place(row, pic, float(layout.picture_x) - 1, float(layout.get("picture_y", 0)), "Picture")
+			p.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var label := Text(row, str(items[i].name), -1, float(layout.name_y), rect.size.x, 16,
+			float(layout.name_px), grey if i == current else Color.WHITE, HORIZONTAL_ALIGNMENT_CENTER, false, "Name")
+		label.clip_text = true
+		var index := i
+		row.pressed.connect(func() -> void: on_pick.call(index))
+		inner.add_child(row)
+		rows.append(row)
+	panel.set_meta("rows", rows)
+	panel.rows = rows
+	panel.top = float(layout.top) - 2
+	panel.pitch = float(layout.pitch)
+	# The scroll bar: the up arrow 2 rows under the frame's top, the down
+	# arrow's last row on the row above the frame's bottom, its 13th column
+	# under the frame's right edge (measured on both lists: x 190, y 113-252
+	# in the Build panel at 9,111 of 195x144; x 224, y 203-315 in Create
+	# Mission's at 38,201 of 200x117).
+	var bar := ScrollBar12.new()
+	bar.name = "ScrollBar"
+	bar.k = K
+	bar.parts = [Btn("scroll_up"), Btn("scroll_down"), Btn("scroll_thumb_top"), Btn("scroll_thumb_mid"), Btn("scroll_thumb_bottom")]
+	bar.position = Vector2(rect.size.x - 1 - ScrollBar12.W, 2) * K
+	bar.size = Vector2(ScrollBar12.W - 1, rect.size.y - 4) * K
+	panel.add_child(bar)
+	panel.bar = bar
+	var shown: int = maxi(1, roundi((rect.size.y - float(layout.top)) / float(layout.pitch)))
+	bar.set_rows(0, shown, items.size())
+	bar.scrolled.connect(panel.scroll_to)
+	panel.scroll_to(clampi(current - shown + 1, 0, maxi(0, items.size() - shown)) if current >= shown else 0)
+	return panel
+
+
+class DropListPanel extends Control:
+	var k: int = 2
+	var star: Texture2D
+	var rows: Array = []
+	var top: float = 0.0
+	var pitch: float = 1.0
+	var bar: ScrollBar12
+	var first: int = 0
+
+	func _init() -> void:
+		clip_contents = true
+		mouse_filter = Control.MOUSE_FILTER_STOP
+		texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+
+	func _draw() -> void:
+		if star != null:
+			var y := 0.0
+			while y < size.y:
+				draw_texture(star, Vector2(0, y))
+				y += star.get_height()
+		else:
+			draw_rect(Rect2(Vector2.ZERO, size), Color.BLACK)
+		# The frame, one pixel short of the starfield on the right and bottom.
+		var w: float = size.x - k
+		var h: float = size.y - k
+		draw_rect(Rect2(0, 0, w, k), Color.WHITE)
+		draw_rect(Rect2(0, h - k, w, k), Color.WHITE)
+		draw_rect(Rect2(0, 0, k, h), Color.WHITE)
+		draw_rect(Rect2(w - k, 0, k, h), Color.WHITE)
+
+	func scroll_to(p_first: int) -> void:
+		first = p_first
+		for i in rows.size():
+			(rows[i] as Control).position = Vector2(0, (top + (i - first) * pitch) * k)
+		if bar != null and bar.first != first:
+			bar.set_rows(first, bar.shown, bar.total)
+
+	func _gui_input(event: InputEvent) -> void:
+		if event is InputEventMouseButton and event.pressed and bar != null \
+				and (event.button_index == MOUSE_BUTTON_WHEEL_UP or event.button_index == MOUSE_BUTTON_WHEEL_DOWN):
+			bar.step(-1 if event.button_index == MOUSE_BUTTON_WHEEL_UP else 1)
+			accept_event()
+
+
+## THE ORIGINAL'S SCROLL BAR (STRATEGY 10658-10669; measured on the Build
+## Selection list, the Encyclopedia's index and the Message Index): the up
+## arrow (13x9) at the top, the down arrow at the bottom, the black track
+## between them and the thumb on it - a cap, its middle repeated, a cap. The
+## parts are 13 wide; the original never draws their last column. The
+## thumb's length is the shown share of the track, never under 12 pixels, and
+## the arrows step a row (both INFERRED: they fit the samples, whose totals
+## are not known). `parts` = [up, down, thumb top, thumb middle, thumb
+## bottom] at the drawn scale.
+class ScrollBar12 extends Control:
+	signal scrolled(first: int)
+	const W := 13
+	const Arrow := 9
+	const MinThumb := 12
+	var k: int = 2
+	var parts: Array = []
+	var first: int = 0
+	var shown: int = 1
+	var total: int = 1
+	var _grab: float = -1.0
+	var _grab_first: int = 0
+
+	func _init() -> void:
+		mouse_filter = Control.MOUSE_FILTER_STOP
+		texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+
+	func set_rows(p_first: int, p_shown: int, p_total: int) -> void:
+		shown = maxi(1, p_shown)
+		total = maxi(1, p_total)
+		first = clampi(p_first, 0, maxi(0, total - shown))
+		queue_redraw()
+
+	func _track() -> Rect2:
+		return Rect2(0, Arrow * k, (W - 1) * k, size.y - 2 * Arrow * k)
+
+	## The thumb, in drawn pixels, on whole original pixels.
+	func Thumb() -> Rect2:
+		var t := _track()
+		if total <= shown:
+			return t
+		var span: int = int(t.size.y) / k
+		var length: int = mini(span, maxi(MinThumb, roundi(float(span) * shown / total)))
+		var y: int = roundi(float(span - length) * first / (total - shown))
+		return Rect2(t.position.x, t.position.y + y * k, t.size.x, length * k)
+
+	func _draw() -> void:
+		draw_rect(_track(), Color.BLACK)
+		if parts.size() < 5:
+			return
+		_part(parts[0], 0.0)
+		_part(parts[1], size.y - Arrow * k)
+		var th := Thumb()
+		var cap_top: Texture2D = parts[2]
+		var mid: Texture2D = parts[3]
+		var cap_bottom: Texture2D = parts[4]
+		if cap_top == null or mid == null or cap_bottom == null:
+			return
+		var y: float = th.position.y + cap_top.get_height()
+		var end: float = th.end.y - cap_bottom.get_height()
+		while y < end:
+			_part(mid, y, minf(mid.get_height(), end - y))
+			y += mid.get_height()
+		_part(cap_top, th.position.y)
+		_part(cap_bottom, end)
+
+	func _part(tex: Texture2D, y: float, h: float = -1.0) -> void:
+		if tex == null:
+			return
+		var hh: float = tex.get_height() if h < 0.0 else h
+		draw_texture_rect_region(tex, Rect2(0, y, (W - 1) * k, hh), Rect2(0, 0, (W - 1) * k, hh))
+
+	func _gui_input(event: InputEvent) -> void:
+		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+			if not event.pressed:
+				_grab = -1.0
+				return
+			var y: float = event.position.y
+			var th := Thumb()
+			if y < Arrow * k:
+				step(-1)
+			elif y >= size.y - Arrow * k:
+				step(1)
+			elif y < th.position.y:
+				step(-shown)
+			elif y >= th.end.y:
+				step(shown)
+			else:
+				_grab = y
+				_grab_first = first
+			accept_event()
+		elif event is InputEventMouseMotion and _grab >= 0.0 and total > shown:
+			var free: float = _track().size.y - Thumb().size.y
+			if free > 0.0:
+				_scroll_to(_grab_first + roundi((event.position.y - _grab) / free * (total - shown)))
+			accept_event()
+
+	func step(rows: int) -> void:
+		_scroll_to(first + rows)
+
+	func _scroll_to(f: int) -> void:
+		var was := first
+		set_rows(f, shown, total)
+		if first != was:
+			scrolled.emit(first)

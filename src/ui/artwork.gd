@@ -88,6 +88,8 @@ static func Scaled(tex: Texture2D, factor: int) -> Texture2D:
 		img.decompress()
 	img.resize(img.get_width() * factor, img.get_height() * factor, Image.INTERPOLATE_NEAREST)
 	var out := ImageTexture.create_from_image(img)
+	# What it was made from (a scaled picture has no path of its own).
+	out.set_meta("source", tex.resource_path if not tex.resource_path.is_empty() else str(tex.get_meta("source", "")))
 	_scaled[key] = out
 	return out
 
@@ -109,6 +111,12 @@ static func Picture(kind: String, id: String) -> Texture2D:
 static func MissionPicture(mission_id: String, faction_id: String) -> Texture2D:
 	var tex: Texture2D = _texture("missions/%s.%s.png" % [mission_id, faction_id])
 	return tex if tex != null else _texture("missions/%s.png" % mission_id)
+
+
+## A mission's 130x65 picture in the Create Mission window, for a side:
+## original/missions/<mission id>.<faction id>.small.png (GOKRES.DLL).
+static func MissionCard(mission_id: String, faction_id: String) -> Texture2D:
+	return _texture("missions/%s.%s.small.png" % [mission_id, faction_id])
 
 
 ## The original's 80x80 portrait of a character, unit or facility:
@@ -188,6 +196,36 @@ static func Description(kind: String, id: String) -> String:
 				break
 	var section: Variant = _descriptions.get(kind)
 	return str(section.get(id, "")) if section is Dictionary else ""
+
+
+## The original's mouse pointers (REBEXE.EXE; see the importer): "pointer"
+## and "crosshair" - original/cursors/<name>.png - and each one's hotspot,
+## from cursors/hotspots.json.
+static func CursorPicture(name: String) -> Texture2D:
+	return _texture("cursors/%s.png" % name)
+
+
+static func CursorHotspot(name: String) -> Vector2:
+	var spots: Variant = _json("cursors/hotspots.json")
+	var at: Variant = spots.get(name) if spots is Dictionary else null
+	return Vector2(float(at[0]), float(at[1])) if at is Array and at.size() == 2 else Vector2.ZERO
+
+
+## A JSON file from the imported folder (the project's, else user://), or null.
+static func _json(rel: String) -> Variant:
+	var pack_id: String = FactionRegistry.Pack.Manifest.Id if FactionRegistry.Pack != null else ""
+	var roots: Array[String] = ["user://original/%s" % pack_id]
+	if not IgnoreProjectFolder:
+		roots.push_front("%s/%s/original" % [FactionRegistry.PACKS_ROOT, pack_id])
+	for base in roots:
+		var path := "%s/%s" % [base, rel]
+		if FileAccess.file_exists(path):
+			return JSON.parse_string(FileAccess.get_file_as_string(path))
+		if ResourceLoader.exists(path):
+			var res: Variant = load(path)   # an export packs the JSON as a resource
+			if res != null and "data" in res:
+				return res.data
+	return null
 
 
 ## Forget everything loaded (a new pack, or a test that wrote files).
