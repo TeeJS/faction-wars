@@ -220,6 +220,8 @@ func OpenToCategory(categoryName: String) -> void:
 			break
 
 	if _original:
+		if _oCategory != categoryName:
+			_oFirst = 0   # a new tab opens at its top
 		_oCategory = categoryName
 		_o_show_index()
 		return
@@ -495,10 +497,14 @@ func Refresh() -> void:
 # Silently, Open Window, Compose Chat. Reading a message (double-click, or
 # Message Summary) shows it in the same frame (Figs 2.38, 3.19): its title on
 # the band, its picture, its text, the arrows that step through the tab, and
-# the tick and cross of a report that asks. PROVISIONAL until there is a
-# screenshot of the original's: that view's layout (it follows the
-# Encyclopedia's topic view and the Scrap dialog), the read rows' "lighter
-# type", and the row icons of Mission, Manufacturing and Chat.
+# the tick and cross of a report that asks. Measured on TeeJ's screenshots of
+# the original's Mission and All tabs and a message read (2026-09-23, each
+# rebuilt to 0 differing pixels): the row icon is the message CATEGORY's; a
+# tab of more than 9 has the original's scroll bar; the reading view is plain
+# black under the band, the subject's 400x200 picture, the text. INFERRED:
+# the unread rows' look (every captured row is bold grey, so read; unread
+# ones are drawn white, the manual's read ones being the "lighter type"), the
+# Empire's Mission / Manufacturing / Loyalty icons, Chat's.
 
 const OriginalW := 470
 const OriginalH := 330
@@ -513,12 +519,21 @@ const OBandCaptions := {"All": "All Messages", "Loyalty": "Popular Support Messa
 	"Fleets": "Fleet Messages", "Missions": "Mission Messages", "Resources": "Resource Messages",
 	"Manufacturing": "Manufacturing Messages", "Defense": "Defense Messages",
 	"Conflict": "Conflict Messages", "Chat": "Chat Messages", "Advice": "Advice Messages"}
-## A row's 15x15 category icon (Advice per side seen; the others matched by
-## what they show; Mission, Manufacturing and Chat have none identified yet).
-const ORowIcons := {"Loyalty": "msgicon.loyalty", "Fleets": "msgicon.fleets.%s",
-	"Resources": "msgicon.resources", "Conflict": "msgicon.conflict", "Defense": "msgicon.defense"}
+## A row's category icon, 15x15 or 15x16 (seen: Advice per side, the
+## Alliance's Mission and Manufacturing, Defense; the rest matched by what
+## they show). An unpicked row draws its first 14 columns with blue and black
+## clear; a picked one the whole icon with only black clear, over the list's
+## own background (its blue last row crosses the bar's edge).
+const ORowIcons := {"Loyalty": "msgicon.loyalty.%s", "Fleets": "msgicon.fleets.%s",
+	"Missions": "msgicon.missions.%s", "Manufacturing": "msgicon.manufacturing.%s",
+	"Resources": "msgicon.resources", "Defense": "msgicon.defense", "Conflict": "msgicon.conflict",
+	"Chat": "msgicon.chat", "Advice": "msgicon.advice.%s"}
 const OListRect := Rect2(23, 108, 373, 194)
 const ORowPitch := 21
+## Nine rows show; a tab with more gets the scroll bar at (381, 108).
+const ORowsShown := 9
+const OBarAt := Vector2(381, 108)
+const OIconAt := Vector2(3, 1)
 const OGrey := Color(120 / 255.0, 120 / 255.0, 120 / 255.0)
 ## The side buttons: the Empire's 44x41 at x 426, the Alliance's 32x31 at x 423.
 const OSideX := {"empire": 426, "alliance": 423}
@@ -531,8 +546,9 @@ var _oIndex: Control
 var _oSummary: Control
 var _oTabs: Array = []
 var _oCaption: Label
-var _oRows: VBoxContainer
-var _oScroll: ScrollContainer
+var _oRows: Control
+var _oBar: Control
+var _oFirst: int = 0
 var _oSummaryBtn: TextureButton
 var _oOpenBtn: TextureButton
 var _oPostBtn: TextureButton
@@ -614,33 +630,64 @@ func _build_original() -> void:
 		_picked.clear()
 		_selectedMessage = null
 		_o_show_index())
-	_oScroll = ScrollContainer.new()
-	_oScroll.name = "List"
-	_oScroll.position = OListRect.position * K
-	_oScroll.size = OListRect.size * K
-	_oScroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	_oIndex.add_child(_oScroll)
-	EncyclopediaWindow.StyleScrollBar(_oScroll.get_v_scroll_bar())
-	_oRows = VBoxContainer.new()
-	_oRows.add_theme_constant_override("separation", 0)
-	_oScroll.add_child(_oRows)
+	# The list: rows cut at its bottom (the 10th shows its top 4 rows), and
+	# the original's scroll bar when there are more than 9.
+	var listClip := Control.new()
+	listClip.name = "List"
+	listClip.position = OListRect.position * K
+	listClip.size = OListRect.size * K
+	listClip.clip_contents = true
+	listClip.mouse_filter = Control.MOUSE_FILTER_PASS
+	_oIndex.add_child(listClip)
+	_oRows = Control.new()
+	_oRows.name = "Rows"
+	_oRows.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	listClip.add_child(_oRows)
+	var listBar := OUI.ScrollBar12.new()
+	listBar.name = "ScrollBar"
+	listBar.k = K
+	listBar.parts = [OUI.Btn("scroll_up"), OUI.Btn("scroll_down"), OUI.Btn("scroll_thumb_top"), OUI.Btn("scroll_thumb_mid"), OUI.Btn("scroll_thumb_bottom")]
+	listBar.position = OBarAt * K
+	listBar.size = Vector2(OUI.ScrollBar12.W - 1, OListRect.size.y) * K
+	listBar.visible = false
+	listBar.scrolled.connect(_o_place_rows)
+	_oIndex.add_child(listBar)
+	_oBar = listBar
+	listClip.gui_input.connect(func(e: InputEvent) -> void:
+		if e is InputEventMouseButton and e.pressed and listBar.visible \
+				and (e.button_index == MOUSE_BUTTON_WHEEL_UP or e.button_index == MOUSE_BUTTON_WHEEL_DOWN):
+			listBar.step(-1 if e.button_index == MOUSE_BUTTON_WHEEL_UP else 1))
 
-	# ---- a message, read (Figs 2.38, 3.19; PROVISIONAL) ----
-	_oSummary = _o_view(body, "SummaryView", "ency_topic_plate")
+	# ---- a message, read (Figs 2.38, 3.19; measured on TeeJ's screenshot) ----
+	# No plate: black under the band and the text, the row's icon at (16, 17),
+	# the title (Arial 13) from (40, 13), the subject's picture at (12, 33),
+	# the text from (17, 234) a line every 16, the arrows at (367, 15) and
+	# (390, 15).
+	_oSummary = Control.new()
+	_oSummary.name = "SummaryView"
+	_oSummary.size = OriginalSize()
+	_oSummary.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	body.add_child(_oSummary)
+	var black := ColorRect.new()
+	black.name = "Black"
+	black.color = Color.BLACK
+	black.position = Vector2(12, 14) * K
+	black.size = Vector2(400, 305) * K
+	black.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_oSummary.add_child(black)
 	_oSummary.visible = false
-	_oSumIcon = OUI.Place(_oSummary, null, 30, 15, "Icon")
-	_oSumTitle = OUI.Text(_oSummary, "", 49, 14, 290, 17, 13, Color.WHITE, HORIZONTAL_ALIGNMENT_LEFT, true, "Title")
-	_oSumTitle.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_oSumIcon = OUI.Place(_oSummary, null, 16, 17, "Icon")
+	_oSumTitle = OUI.Text(_oSummary, "", 40, 14, 325, 17, 13, Color.WHITE, HORIZONTAL_ALIGNMENT_LEFT, false, "Title")
 	_oSumTitle.clip_text = true
 	_oSumPicture = TextureRect.new()
 	_oSumPicture.name = "Picture"
-	_oSumPicture.position = Vector2(12, 31) * K
+	_oSumPicture.position = Vector2(12, 33) * K
 	_oSumPicture.size = Vector2(400, 200) * K
 	_oSumPicture.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
 	_oSumPicture.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	_oSumPicture.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_oSummary.add_child(_oSumPicture)
-	_oSumText = OUI.Text(_oSummary, "", 24, 242, 380, 76, 13, Color.WHITE, HORIZONTAL_ALIGNMENT_LEFT, false, "Text")
+	_oSumText = OUI.Text(_oSummary, "", 17, 235, 394, 76, 13, Color.WHITE, HORIZONTAL_ALIGNMENT_LEFT, false, "Text")
 	_oSumText.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	OUI.LinePitch(_oSumText, 13, 16)
 	_oOk = OUI.PictureButton(_oSummary, "decision_ok", 355, 244, "Continue the mission")
@@ -654,9 +701,9 @@ func _build_original() -> void:
 			CommandBus.issue("abort_mission", { "mission": _selectedMessage.PendingMission.Serial })
 			_selectedMessage.PendingMission = null
 			_o_show_summary(_selectedMessage))
-	_oUp = OUI.PictureButton(_oSummary, "msgsummary_up", 352, 15, "Scroll through messages")
+	_oUp = OUI.PictureButton(_oSummary, "msgsummary_up", 367, 15, "Scroll through messages")
 	_oUp.pressed.connect(func() -> void: _o_step(-1))
-	_oDown = OUI.PictureButton(_oSummary, "msgsummary_down", 373, 15, "Scroll through messages")
+	_oDown = OUI.PictureButton(_oSummary, "msgsummary_down", 390, 15, "Scroll through messages")
 	_oDown.pressed.connect(func() -> void: _o_step(1))
 
 	# ---- the frame over both, and its side buttons ----
@@ -728,15 +775,48 @@ func _o_show_index() -> void:
 		c.queue_free()
 	for m in messages:
 		_oRows.add_child(_o_row(m))
+	_oBar.visible = messages.size() > ORowsShown
+	(_oBar as OUI.ScrollBar12).set_rows(_oFirst, ORowsShown, messages.size())
+	_o_place_rows((_oBar as OUI.ScrollBar12).first)
+	_o_side_summary(false)
 	_o_update_buttons()
 
 
-## A row: the category icon, the title; picked, the side's bar under it and
-## the title in white. Unread titles bold, read ones regular - the manual's
-## "lighter type" (p079; not yet on a screenshot).
+## The rows from `first` down, a row every 21 pixels; a picked row's icon
+## cell shows the list's own background where it now sits.
+func _o_place_rows(first: int) -> void:
+	_oFirst = first
+	var plate: Texture2D = OUI.Pic("msgindex_plate")
+	var k := 0
+	for row in _oRows.get_children():
+		var at := Vector2(0, (k - first) * ORowPitch)
+		(row as Control).position = at * OUI.K
+		var cell: TextureRect = row.get_node_or_null("IconCell")
+		if cell != null and plate != null:
+			# The plate sits at (12, 13) on the window, the list at (23, 108).
+			var on_plate: Vector2 = OListRect.position + at + OIconAt - Vector2(12, 13)
+			(cell.texture as AtlasTexture).region = Rect2(on_plate * OUI.K, cell.size)
+		k += 1
+
+
+## The second side button: Message Summary on the index, the Encyclopedia's
+## View Index art ("Display Message Index") while a message is read.
+func _o_side_summary(reading: bool) -> void:
+	var art: String = ("ency_view_index." if reading else "msgindex_summary.") + _oSide
+	_oSummaryBtn.texture_normal = OUI.Btn(art)
+	_oSummaryBtn.texture_pressed = OUI.Btn(art, "pressed")
+	_oSummaryBtn.texture_disabled = OUI.Btn(art, "disabled")
+	_oSummaryBtn.tooltip_text = "Display Message Index" if reading else "Message Summary"
+
+
+## A row: the category icon, the title in bold Arial; picked, the side's bar
+## under it and the title in white. A read row's title is grey, as every row
+## on TeeJ's screenshots; an unread one white (INFERRED - the manual's read
+## rows are the "lighter type", p079).
 func _o_row(m: GameMessage) -> Control:
 	var row := Control.new()
 	row.custom_minimum_size = Vector2(OListRect.size.x, ORowPitch) * OUI.K
+	row.size = row.custom_minimum_size
 	row.mouse_filter = Control.MOUSE_FILTER_STOP
 	var picked: bool = _picked.has(m)
 	if picked:
@@ -744,8 +824,19 @@ func _o_row(m: GameMessage) -> Control:
 	var cat: String = JsonUtil.enum_name(Enums.MessageCategory, m.Category)
 	var icon: String = _o_icon(cat)
 	if not icon.is_empty():
-		OUI.Place(row, OUI.Pic(icon), 3, 1, "Icon")
-	var title := OUI.Text(row, m.Title, 35, 1, 338, 19, 10, Color.WHITE if picked else OGrey, HORIZONTAL_ALIGNMENT_LEFT, not m.IsRead, "Title")
+		if picked:
+			var whole: Texture2D = OUI.Pic(icon + ".picked")
+			var plate: Texture2D = OUI.Pic("msgindex_plate")
+			if whole != null and plate != null:
+				var bg := AtlasTexture.new()   # region set by _o_place_rows
+				bg.atlas = plate
+				bg.region = Rect2(Vector2.ZERO, whole.get_size())
+				var cell := OUI.Place(row, bg, OIconAt.x, OIconAt.y, "IconCell")
+				cell.size = whole.get_size()
+			OUI.Place(row, whole if whole != null else OUI.Pic(icon), OIconAt.x, OIconAt.y, "Icon")
+		else:
+			OUI.Place(row, _o_icon14(icon), OIconAt.x, OIconAt.y, "Icon")
+	var title := OUI.Text(row, m.Title, 35, 1, 338, 19, 10, Color.WHITE if picked or not m.IsRead else OGrey, HORIZONTAL_ALIGNMENT_LEFT, true, "Title")
 	title.clip_text = true
 	row.tooltip_text = "Day %d: %s" % [m.DayReceived, m.Title]
 	row.gui_input.connect(func(e: InputEvent) -> void:
@@ -762,10 +853,19 @@ func _o_row(m: GameMessage) -> Control:
 
 ## A category's row icon for our side, or "" where none is identified.
 func _o_icon(cat: String) -> String:
-	if cat == "Advice":
-		return "msgicon.advice." + _oSide
 	var icon: String = str(ORowIcons.get(cat, ""))
 	return icon % _oSide if icon.contains("%s") else icon
+
+
+## An icon's first 14 columns: all an unpicked row or the band draws.
+static func _o_icon14(icon: String) -> Texture2D:
+	var tex: Texture2D = OUI.Pic(icon)
+	if tex == null:
+		return null
+	var cut := AtlasTexture.new()
+	cut.atlas = tex
+	cut.region = Rect2(0, 0, 14 * OUI.K, tex.get_height())
+	return cut
 
 
 ## Click picks one; ctrl-click adds or removes one; shift-click picks the run
@@ -804,9 +904,10 @@ func _o_show_summary(m: GameMessage) -> void:
 	m.IsRead = true
 	if wasUnread:
 		EventBus.BroadcastChanged()
+	_o_side_summary(true)
 	var cat: String = JsonUtil.enum_name(Enums.MessageCategory, m.Category)
 	var icon: String = _o_icon(cat)
-	_oSumIcon.texture = OUI.Pic(icon) if not icon.is_empty() else null
+	_oSumIcon.texture = _o_icon14(icon) if not icon.is_empty() else null
 	_oSumIcon.size = _oSumIcon.texture.get_size() if _oSumIcon.texture != null else Vector2.ZERO
 	_oSumTitle.text = m.Title
 	var pic: Texture2D = MessagePicture(m)
@@ -814,12 +915,10 @@ func _o_show_summary(m: GameMessage) -> void:
 	var asks: bool = m.AwaitsDecision()
 	_oOk.visible = asks
 	_oCancel.visible = asks
-	_oSumText.size.x = (325 if asks else 380) * OUI.K
+	_oSumText.size.x = (331 if asks else 394) * OUI.K
 	_oSumText.text = m.Body
-	var messages: Array = MessagesFor(_oCategory)
-	var at: int = messages.find(m)
-	_oUp.disabled = at <= 0
-	_oDown.disabled = at < 0 or at >= messages.size() - 1
+	# Both arrows stay lit, as on the original's (it showed them on the
+	# tab's first message); a step past either end does nothing.
 	_o_update_buttons()
 
 

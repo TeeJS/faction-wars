@@ -370,10 +370,23 @@ ctrl-click, shift-click, double-click to read), and the side buttons **Close,
 Message Summary, Post Messages with Alert / Silently, Open Window, Compose
 Chat**. A message is read in the same frame (Figs 2.38 / 3.19): title on the
 band, the arrows through the tab, the picture, the text, and the tick and
-cross of a mission report that asks to continue. **Provisional** (no
-screenshot of the original yet): the reading view's layout, the read rows'
-"lighter type", the row icons of Mission, Manufacturing and Chat, and Post
-Silently has nothing to silence (no message sounds yet).
+cross of a mission report that asks to continue. **Measured since** (TeeJ's
+Alliance Mission tab, All tab and a message read, each rebuilt to 0 differing
+pixels): the row icon is chosen by the message's CATEGORY (Mission 10910,
+Manufacturing 10908, Defense 10963 seen - a deployed SpecForce and a deployed
+fighter squadron get different icons); an unpicked row draws the icon's first
+14 columns, a picked one the whole icon over the list's background; a tab of
+more than nine gets the original's scroll bar at (381,108), the tenth row cut
+at y 301; the reading view has no plate - black under the band and the text,
+the row's icon at (16,17), the title (Arial 13) from (40,13), the arrows at
+(367,15) and (390,15), the subject's 400x200 Encyclopedia picture at (12,33),
+the text from (17,234) a line every 16 - and the second side button becomes
+the Encyclopedia's View Index art ("Display Message Index"). **Inferred**: an
+unread row is white (every captured row is bold grey, i.e. read), the
+Empire's Mission / Manufacturing / Loyalty icons, Chat's (10916). **Not
+matched**: a deployment's or an idle yard's message shows the system's
+picture, not the unit's or facility's (our messages carry no subject), and
+Post Silently has nothing to silence (no message sounds yet).
 
 ---
 
