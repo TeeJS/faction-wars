@@ -30,6 +30,8 @@ runs without a window and writes `original\import.log` (exit 0 = done).
 | Planets | 26 portraits shared by `artwork_id` | string 11100 + artwork_id − 1; no text |
 | Missions | two pictures each | id − 4096 (Alliance), id (Empire) |
 | Portraits and list miniatures | `GOKRES.DLL` bitmaps, 80×80 and 61×25 | per character, unit and facility, by the ids in `gokres_map.json` (from [open-rebellion](https://github.com/tdimino/open-rebellion)'s Ghidra-derived entity catalog; the 60 character portraits were checked by face) |
+| GID stars | `STRATEGY.DLL` bitmaps 10146–10157, 10169–10181 | four sizes per side (red / green / blue) and in grey for unexplored worlds |
+| Uprising flame | `STRATEGY.DLL` bitmaps 11608–11609 | two frames |
 | Sector-window corner icons | `STRATEGY.DLL` bitmaps 10771–10790 | factory, tower, ship, crest per side, normal + highlighted; blue = transparent |
 | Planet sprites | `STRATEGY.DLL` bitmaps 10212–10237 | 26 by `artwork_id` (two ids ship no bitmap) |
 
@@ -45,6 +47,7 @@ packs/star-wars-rebellion/original/
   planets/<id>.png      missions/<id>.png  missions/<id>.empire.png
   icons/<glyph>.<faction>.png (+ .hover.png)   planet_sprites/<artwork_id>.png
   portraits/<kind>/<id>.png (80x80)   miniatures/<kind>/<id>.png (61x25)
+  gid/<faction>.<tier>.png  gid/unexplored.<tier>.png  icons/uprising.png (+ .hover.png)
   descriptions.json     { "characters": { "<id>": "text" }, "units": ..., ... }
   README.txt            the do-not-redistribute note
 ```

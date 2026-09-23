@@ -20,6 +20,11 @@ var _planetStars: Dictionary = {}    # Planet -> Label
 ## size. Coordinates are never rescaled to the picture: Planet.DistanceTo
 ## reads them, so they are travel time.
 var _backdrop: Sprite2D = null
+## The player's own artwork overlay (tools/RebellionArtImporter).
+const Art := preload("res://src/ui/artwork.gd")
+## The original drew its 15 px stars on a 640-wide screen; ours is 1440.
+const StarScale := 2.0
+var _planetSprites: Dictionary = {}   # Planet -> TextureRect (the original's star)
 var _scale: float = 1.0
 ## The map-space point at the frame's top-left corner (map_image_rect's x, y).
 ## Star Wars: (-5, 110), so its unscaled coordinates land exactly where the
@@ -121,6 +126,17 @@ func InitializeMap(galaxyData: Array, uiManager: UIManager) -> void:
 			planetStar.z_index = 1
 			add_child(planetStar)
 			_planetStars[planet] = planetStar
+
+			# The original's star bitmap, used instead of both labels when the
+			# player imported it (src/ui/artwork.gd); hidden otherwise.
+			var sprite := TextureRect.new()
+			sprite.z_index = 1
+			sprite.visible = false
+			sprite.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+			sprite.stretch_mode = TextureRect.STRETCH_SCALE
+			add_child(sprite)
+			_planetSprites[planet] = sprite
 
 			if planet.MapX < sector.MinX:
 				sector.MinX = planet.MapX
@@ -257,6 +273,24 @@ func RefreshVisuals() -> void:
 		# Independent of the active mode and of Display Off: your HQ stays marked.
 		if Gid.ShowHqHighlight(planet):
 			_hqPlanet = planet
+
+		# THE ORIGINAL'S STAR, when imported: the side's colour and the tier's
+		# size are the bitmap's own. Display Off and an unknown world draw the
+		# smallest star; nothing found means the labels below, as before.
+		var tierName: String = "none"
+		if known and not displayOff:
+			tierName = Gid.FlareName(_mode().TierFor(_mode().Magnitude.call(planet)).FlareSize)
+		var starTex: Texture2D = Art.GidStar(Gid.StarSide(planet, known), tierName)
+		var sprite: TextureRect = _planetSprites[planet]
+		if starTex != null:
+			sprite.texture = starTex
+			sprite.size = starTex.get_size() * StarScale
+			sprite.position = MapPos(planet.MapX, planet.MapY) - sprite.size / 2.0
+			sprite.visible = true
+			flare.visible = false
+			dot.visible = false
+			continue
+		sprite.visible = false
 
 		if not known:
 			# Unexplored: grey "+" only.
