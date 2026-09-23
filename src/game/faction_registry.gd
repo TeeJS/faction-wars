@@ -119,6 +119,7 @@ static func Unload() -> void:
 	_by_id.clear()
 	_character_roles.clear()
 	_character_starts.clear()
+	_icons.clear()
 	PackHash = ""
 
 
@@ -153,6 +154,7 @@ static func HeaderMismatch(header: Dictionary) -> String:
 static func Load(pack: PackLoader.LoadedPack) -> void:
 	Pack = pack
 	_by_id.clear()
+	_icons.clear()
 	_character_roles.clear()
 	_character_starts.clear()
 	for c in pack.Characters:
@@ -247,6 +249,26 @@ static func CharacterNameOf(id: String) -> String:
 ## The roles characters.json gives this character (SCHEMA.md section 7).
 static func CharacterRoles(id: String) -> Array:
 	return _character_roles.get(id, [])
+
+
+const ICONS_ROOT := "res://assets/icons"
+static var _icons: Dictionary = {}   # glyph name -> Texture2D
+
+
+## A sector-window corner glyph (manual p070 Fig 3.7): the pack's own picture
+## when display.json `icons` names one, else the engine's assets/icons/<name>.png.
+## White on alpha; the map tints it with the faction colour.
+static func CornerIcon(name: String) -> Texture2D:
+	if _icons.has(name):
+		return _icons[name]
+	var path := "%s/%s.png" % [ICONS_ROOT, name]
+	if Pack != null and Pack.Display != null and Pack.Display.Icons.has(name):
+		path = "%s/%s/%s" % [PACKS_ROOT, Pack.Manifest.Id, Pack.Display.Icons[name]]
+	var tex: Texture2D = load(path) as Texture2D
+	if tex == null:
+		push_error("[FactionRegistry] corner icon '%s' could not be loaded from %s." % [name, path])
+	_icons[name] = tex
+	return tex
 
 
 ## The playable sides left to right on the sector window's loyalty bar:

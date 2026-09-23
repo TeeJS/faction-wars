@@ -86,6 +86,9 @@ func _init() -> void:
 			_check(order[0].Id == "empire", "Star Wars: the Empire is on the left (Fig 2.9)")
 		var first: Control = bar.get_child(0)
 		_check((first.get_theme_stylebox("panel") as StyleBoxFlat).corner_radius_top_left == SectorWindow.CornerRadius, "the bar's corners are rounded")
+	if rows.size() == 3:
+		_check(rows["energy"].position.x == rows["materials"].position.x and rows["materials"].position.x == rows["loyalty"].position.x,
+			"the three rows share one left edge, so the squares line up (x=%.0f)" % rows["energy"].position.x)
 	var name_lbl: Label = _name_label(ui, home)
 	_check(name_lbl != null and rows.has("loyalty") and name_lbl.position.y >= rows["loyalty"].position.y + SectorWindow.LoyaltyHeight,
 		"the name sits below the bars")
@@ -121,11 +124,11 @@ func _rows_for(ui: UIManager, planet: Planet) -> Dictionary:
 	var w: DraggableWindow = _window_titled(ui, sector.Name)
 	var map: Control = w.get_node("%SectorMap")
 	var out := {}
-	# The rows of THIS planet: the ones centred under its button.
+	# The rows of THIS planet: the ones on its left edge (BarsLeft from its centre).
 	var btn: Control = Lq.first_or_null(map.get_children(), func(c) -> bool: return c is SectorWindow.PlanetMapButton and c.AssociatedPlanet == planet)
-	var cx: float = btn.position.x + 16
+	var left: float = btn.position.x + 16 - SectorWindow.BarsLeft
 	for c in map.get_children():
-		if c is Control and c.has_meta("bar_row") and absf(c.position.x + c.size.x / 2.0 - cx) < 1.0 \
+		if c is Control and c.has_meta("bar_row") and absf(c.position.x - left) < 0.5 \
 				and c.position.y > btn.position.y and c.position.y < btn.position.y + 80:
 			out[c.get_meta("bar_row")] = c
 	return out
