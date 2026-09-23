@@ -30,11 +30,11 @@ namespace RebellionArtImporter;
 ///     crest; each normal then highlighted), 10779-10786 the Imperial set,
 ///     10787-10790 the neutral factory and tower; 10212-10237 the 26 planet
 ///     sprites by artwork_id (10240 is the asteroid field).
-///     9006/9021/9025 the Manufacturing window's three row pictures (67x35).
-///     10311-10334 the Manufacturing window's six tab icons (36x33; normal,
-///     pressed, greyed), the Manufacturing one per side; 10550-10575 the
-///     System Defenses window's five (shield, battery, and fighters, troops,
-///     personnel per side).
+///     The window plates and parts (Manufacturing 10290-10298, Defenses
+///     10577, the Encyclopedia / Message Index frame 10335/10336 and plates
+///     10337/10338/10822), the tab icons of the Manufacturing, Defenses and
+///     Message Index windows, and the title-bar, Encyclopedia and scrollbar
+///     buttons - see the tables below for every id.
 ///
 /// Output, under the pack folder (gitignored - never committed):
 ///   original/characters/&lt;id&gt;.png   original/units/&lt;id&gt;.png
@@ -49,6 +49,7 @@ namespace RebellionArtImporter;
 ///   original/planet_sprites/&lt;artwork_id&gt;.png              the map's planets
 ///   original/windows/&lt;name&gt;.png                            window pictures
 ///   original/tabs/&lt;name&gt;[.&lt;faction&gt;].png (+ .pressed / .grey)   window tab icons
+///   original/buttons/&lt;name&gt;.png (+ .pressed / .disabled)       window buttons
 /// </summary>
 public sealed class Importer
 {
@@ -85,29 +86,79 @@ public sealed class Importer
         ("manufacturing", "neutral", 10787, 10788), ("defenses", "neutral", 10789, 10790),
     };
 
-    // STRATEGY.DLL: the Manufacturing window's row pictures (manual p083 Fig
-    // 3.24), read off the original's window: the ship over a planet's edge, the
-    // walled compound and the hangar, each on its starfield.
+    // STRATEGY.DLL: the plates and parts the original composes its windows
+    // from. Every id was placed by masked template matching on TeeJ's own
+    // screenshots of the original (2026-09-23): the Manufacturing window
+    // (Chandrila, Duros, Mon Calamari), the System Defenses window (Chandrila,
+    // Coruscant, Yaga Minor, Drall, Ajan Kloss), the Galactic Encyclopedia
+    // (both sides) and the Message Index (both sides).
     private static readonly (string Name, int Id)[] WindowPictures =
     {
-        ("ship_construction", 9006), ("troops_in_training", 9021), ("facilities_under_construction", 9025),
+        // Manufacturing and Production (p083 Fig 3.24): the 226x304 plate, the
+        // 46x226 left column (three 46x46 pictures, three 46x16 ratio boxes),
+        // the 166x79 row frame (header, body, progress-bar track).
+        ("mfg_background", 10297), ("mfg_column", 10298), ("mfg_row", 10290),
+        // The row headers (162x13): normal, and lit (a list's selected row).
+        ("header.alliance", 10292), ("header.empire", 10294), ("header.neutral", 10296),
+        ("header.alliance.lit", 10291), ("header.empire.lit", 10293), ("header.neutral.lit", 10295),
+        // System Defenses (p126 Fig 3.73): the 235x304 plate.
+        ("defense_background", 10577),
+        // The Encyclopedia / Message Index frame (470x331) per side, and the
+        // 400x306 plates laid inside it at (12, 13): Topic view, Index view,
+        // Message Index.
+        ("frame.alliance", 10335), ("frame.empire", 10336),
+        ("ency_topic_plate", 10337), ("ency_index_plate", 10338), ("msgindex_plate", 10822),
+        // A card's 61x25 plates (manual p084: "the image for these units shows
+        // whether the unit is completed, being built, or en route"): the grey
+        // plate behind a completed one, hyperspace streaks behind one en route,
+        // and the side's grid over one being built.
+        ("card_plate", 11500), ("card_enroute", 11505),
+        ("card_building.alliance", 11570), ("card_building.empire", 11572),
     };
 
-    // STRATEGY.DLL: window tab icons (36x33) as (name, faction or "", normal,
-    // pressed, greyed). The Manufacturing window's six (p084 Fig 3.27) and the
-    // System Defenses window's five (p126 Fig 3.73). Matched against the
-    // original's own windows (TeeJ's screenshots, 2026-09-23).
-    private static readonly (string Name, string Faction, int Normal, int Pressed, int Grey)[] TabIcons =
+    // STRATEGY.DLL: window tab icons as (name, faction or "", normal, current,
+    // greyed). Which of each triplet is which was read off the screenshots:
+    // the Manufacturing set draws its CURRENT tab from the first bitmap, the
+    // Defenses set from the second.
+    private static readonly (string Name, string Faction, int Normal, int Current, int Grey)[] TabIcons =
     {
-        ("manufacturing", "alliance", 10311, 10312, 10313), ("manufacturing", "empire", 10314, 10315, 10316),
-        ("manufacturing", "neutral", 10317, 10318, 10319),
-        ("mines", "", 10320, 10321, 10322), ("training_facilities", "", 10323, 10324, 10325),
-        ("shipyards", "", 10326, 10327, 10328), ("refineries", "", 10329, 10330, 10331),
-        ("construction_yards", "", 10332, 10333, 10334),
-        ("planetary_shield", "", 10550, 10551, 10552), ("planetary_battery", "", 10553, 10554, 10555),
-        ("fighters", "alliance", 10556, 10557, 10558), ("fighters", "empire", 10559, 10560, 10561),
-        ("troops", "alliance", 10563, 10564, 10565), ("troops", "empire", 10566, 10567, 10568),
+        // Manufacturing (p084 Fig 3.27), 36x33, in the window's order.
+        ("manufacturing", "alliance", 10312, 10311, 10313), ("manufacturing", "empire", 10315, 10314, 10316),
+        ("manufacturing", "neutral", 10318, 10317, 10319),
+        ("shipyards", "", 10327, 10326, 10328), ("training_facilities", "", 10330, 10329, 10331),
+        ("construction_yards", "", 10333, 10332, 10334), ("refineries", "", 10324, 10323, 10325),
+        ("mines", "", 10321, 10320, 10322),
+        // System Defenses (p126 Fig 3.73), 36x33.
         ("personnel", "alliance", 10570, 10571, 10572), ("personnel", "empire", 10573, 10574, 10575),
+        ("troops", "alliance", 10563, 10564, 10565), ("troops", "empire", 10566, 10567, 10568),
+        ("fighters", "alliance", 10556, 10557, 10558), ("fighters", "empire", 10559, 10560, 10561),
+        ("planetary_shield", "", 10553, 10554, 10555), ("planetary_battery", "", 10550, 10551, 10552),
+        // The Message Index's strip (p079 Fig 3.19), 36x41 sockets; no greyed state.
+        ("msg_all", "", 10830, 10831, 0),
+        ("msg_loyalty", "alliance", 10832, 10833, 0), ("msg_loyalty", "empire", 10834, 10835, 0),
+        ("msg_fleets", "empire", 10838, 10839, 0), ("msg_fleets", "alliance", 10840, 10841, 0),
+        ("msg_missions", "alliance", 10842, 10843, 0), ("msg_missions", "empire", 10844, 10845, 0),
+        ("msg_resources", "", 10836, 10837, 0), ("msg_manufacturing", "", 10852, 10853, 0),
+        ("msg_defense", "", 10856, 10857, 0), ("msg_conflict", "", 10854, 10855, 0),
+        ("msg_chat", "", 10850, 10851, 0),
+        ("msg_advice", "alliance", 10846, 10847, 0), ("msg_advice", "empire", 10848, 10849, 0),
+    };
+
+    // STRATEGY.DLL: buttons as (name, normal, pressed/current, disabled).
+    private static readonly (string Name, int Normal, int Pressed, int Disabled)[] Buttons =
+    {
+        // A window's title bar: the system box, minimise, close (14x14).
+        ("title_system", 10209, 0, 0), ("title_minimize", 10253, 0, 0), ("title_close", 10108, 0, 0),
+        // The Encyclopedia's browse arrows (21x17).
+        ("ency_prev", 10385, 10386, 10387), ("ency_next", 10382, 10383, 10384),
+        // The frame's side column: the Empire's 44x41, the Alliance's 32x31.
+        ("ency_close.empire", 10376, 10377, 0), ("ency_view_topic.empire", 10380, 10381, 10391),
+        ("ency_view_index.empire", 10378, 10379, 10390),
+        ("ency_close.alliance", 10370, 10371, 0), ("ency_view_topic.alliance", 10374, 10375, 10389),
+        ("ency_view_index.alliance", 10372, 10373, 10388),
+        // The original's scrollbar (13 wide): arrows and the thumb's three parts.
+        ("scroll_up", 10658, 0, 0), ("scroll_down", 10662, 0, 0),
+        ("scroll_thumb_top", 10666, 0, 0), ("scroll_thumb_mid", 10668, 0, 0), ("scroll_thumb_bottom", 10669, 0, 0),
     };
 
     public sealed record Result(int Pictures, int Descriptions, List<string> Missing, List<string> Log);
@@ -256,15 +307,23 @@ public sealed class Importer
             else missing.Add($"windows/{name}: no bitmap {id} in STRATEGY.DLL");
         }
         int tabs = 0;
-        foreach (var (name, faction, normal, pressed, grey) in TabIcons)
+        foreach (var (name, faction, normal, current, grey) in TabIcons)
         {
             var stem = faction.Length == 0 ? name : $"{name}.{faction}";
-            if (SaveSprite(strategy, normal, Path.Combine(outRoot, "tabs", $"{stem}.png"))) { tabs++; pictureCount++; }
+            if (SaveSprite(strategy, normal, Path.Combine(outRoot, "tabs", $"{stem}.png"), true)) { tabs++; pictureCount++; }
             else missing.Add($"tabs/{stem}: no bitmap {normal} in STRATEGY.DLL");
-            if (SaveSprite(strategy, pressed, Path.Combine(outRoot, "tabs", $"{stem}.pressed.png"))) pictureCount++;
-            if (SaveSprite(strategy, grey, Path.Combine(outRoot, "tabs", $"{stem}.grey.png"))) pictureCount++;
+            if (SaveSprite(strategy, current, Path.Combine(outRoot, "tabs", $"{stem}.pressed.png"), true)) pictureCount++;
+            if (grey > 0 && SaveSprite(strategy, grey, Path.Combine(outRoot, "tabs", $"{stem}.grey.png"), true)) pictureCount++;
         }
-        Say($"sprites: {icons} corner icons, {sprites} planet sprites, {stars} GID stars, the uprising flame, {alerts} alert icons, {windows} window pictures, {tabs} tab icons.");
+        int buttons = 0;
+        foreach (var (name, normal, pressed, disabled) in Buttons)
+        {
+            if (SaveSprite(strategy, normal, Path.Combine(outRoot, "buttons", $"{name}.png"), true)) { buttons++; pictureCount++; }
+            else missing.Add($"buttons/{name}: no bitmap {normal} in STRATEGY.DLL");
+            if (pressed > 0 && SaveSprite(strategy, pressed, Path.Combine(outRoot, "buttons", $"{name}.pressed.png"), true)) pictureCount++;
+            if (disabled > 0 && SaveSprite(strategy, disabled, Path.Combine(outRoot, "buttons", $"{name}.disabled.png"), true)) pictureCount++;
+        }
+        Say($"sprites: {icons} corner icons, {sprites} planet sprites, {stars} GID stars, the uprising flame, {alerts} alert icons, {windows} window pictures, {tabs} tab icons, {buttons} buttons.");
 
         // Portraits and list miniatures: GOKRES.DLL, by the shipped id map.
         var mapPath = Path.Combine(AppContext.BaseDirectory, "gokres_map.json");
@@ -308,7 +367,10 @@ public sealed class Importer
     }
 
     /// <summary>A STRATEGY.DLL bitmap as a PNG with the blue colour key made transparent.</summary>
-    private static bool SaveSprite(PeResources dll, int bitmapId, string outPath)
+    /// <summary>A bitmap as a PNG with the key colour transparent: pure blue
+    /// everywhere, and pure magenta too for the window tabs and buttons, whose
+    /// corners the original keys out the same way.</summary>
+    private static bool SaveSprite(PeResources dll, int bitmapId, string outPath, bool keyMagenta = false)
     {
         if (!dll.Bitmaps.ContainsKey(bitmapId))
             return false;
@@ -320,7 +382,7 @@ public sealed class Importer
             for (int x = 0; x < bmp.Width; x++)
             {
                 var c = bmp.GetPixel(x, y);
-                bool key = c.R == 0 && c.G == 0 && c.B == 255;
+                bool key = (c.R == 0 && c.G == 0 && c.B == 255) || (keyMagenta && c.R == 255 && c.G == 0 && c.B == 255);
                 rgba.SetPixel(x, y, key ? Color.Transparent : Color.FromArgb(255, c.R, c.G, c.B));
             }
         rgba.Save(outPath, ImageFormat.Png);

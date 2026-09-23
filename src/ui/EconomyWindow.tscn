@@ -3,8 +3,8 @@
 [ext_resource type="Script" path="res://src/ui/economy_window.gd" id="1_ecowin"]
 
 [node name="EconomyWindow" type="PanelContainer" unique_id=18695123]
-custom_minimum_size = Vector2(600, 350)
-offset_right = 400.0
+custom_minimum_size = Vector2(420, 0)
+offset_right = 420.0
 offset_bottom = 350.0
 script = ExtResource("1_ecowin")
 
@@ -71,7 +71,7 @@ current_tab = 0
 
 [node name="Manufacturing" type="VBoxContainer" parent="MainVBox/ContentArea/EconomyTabs" unique_id=1172976735]
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 6
 metadata/_tab_index = 0
 
 [node name="ShipQueue" type="VBoxContainer" parent="MainVBox/ContentArea/EconomyTabs/Manufacturing" unique_id=2099440238]

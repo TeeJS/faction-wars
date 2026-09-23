@@ -64,6 +64,12 @@ static func TabIcon(name: String, faction_id: String, state: String = "") -> Tex
 	return tex
 
 
+## A window button's picture: original/buttons/<name>[.pressed].png.
+## A window button's picture: original/buttons/<name>[.pressed|.disabled].png.
+static func ButtonIcon(name: String, state: String = "") -> Texture2D:
+	return _texture("buttons/%s%s.png" % [name, "" if state.is_empty() else "." + state])
+
+
 ## The same picture pixel-doubled (nearest neighbour), for the 2x the HUD
 ## draws the original's small bitmaps at. Cached per texture and factor.
 static var _scaled: Dictionary = {}

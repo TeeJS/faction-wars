@@ -62,29 +62,9 @@ theme_override_constants/margin_bottom = 10
 layout_mode = 2
 color = Color(0.121569, 0.160784, 0.215686, 1)
 
-[node name="BackdropHost" type="Control" parent="MainVBox/ContentArea"]
-unique_name_in_owner = true
-layout_mode = 2
-mouse_filter = 2
-
-[node name="Backdrop" type="TextureRect" parent="MainVBox/ContentArea/BackdropHost"]
-unique_name_in_owner = true
-visible = false
-layout_mode = 1
-anchors_preset = 12
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = -200.0
-grow_horizontal = 2
-grow_vertical = 0
-mouse_filter = 2
-expand_mode = 1
-stretch_mode = 6
-
 [node name="DefenseTabs" type="TabContainer" parent="MainVBox/ContentArea" unique_id=443553807]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(480, 400)
+custom_minimum_size = Vector2(400, 400)
 layout_mode = 2
 offset_transform_enabled = true
 texture_filter = 1
@@ -112,13 +92,11 @@ horizontal_alignment = 1
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="PersonnelList" type="HFlowContainer" parent="MainVBox/ContentArea/DefenseTabs/Personnel/Box/ScrollContainer" unique_id=1573294022]
+[node name="PersonnelList" type="VBoxContainer" parent="MainVBox/ContentArea/DefenseTabs/Personnel/Box/ScrollContainer" unique_id=1573294022]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/h_separation = 8
-theme_override_constants/v_separation = 8
 
 [node name="Troops" type="MarginContainer" parent="MainVBox/ContentArea/DefenseTabs" unique_id=1808209773]
 visible = false
