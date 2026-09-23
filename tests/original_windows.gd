@@ -402,10 +402,29 @@ func _init() -> void:
 			await process_frame
 		_check(mw._oSummary.visible and not mw._oIndex.visible and mw._oSumTitle.text == "A test of the index" and target.IsRead,
 			"Message Summary reads it in the same frame, and marks it read")
+		_check(mw._oSumPicture.position == Vector2(12, 33) * K and mw._oUp.position == Vector2(367, 15) * K
+			and mw._oDown.position == Vector2(390, 15) * K and mw._oSumIcon.position == Vector2(16, 17) * K,
+			"read: the picture at (12, 33), the arrows at (367, 15) and (390, 15), the icon at (16, 17)")
+		var sumBtn: TextureButton = mw.find_child("msgindex_summary_%s" % us.Id, true, false)
+		_check(sumBtn.texture_normal == OUI.Btn("ency_view_index." + us.Id), "its second side button is Display Message Index")
 		(mw.find_child("msgindex_summary_%s" % us.Id, true, false) as TextureButton).pressed.emit()
 		for _i in 2:
 			await process_frame
 		_check(mw._oIndex.visible, "and brings the index back")
+		# A tab of more than nine: the original's scroll bar at (381, 108).
+		for i in 10:
+			EventBus.BroadcastMessage(GameMessage.new("Scroll test %d" % i, "", Enums.MessageCategory.Conflict))
+		mw.OpenToCategory("Conflict")
+		for _i in 2:
+			await process_frame
+		var mbar: Control = mw._oBar
+		_check(mbar.visible and mbar.position == Vector2(381, 108) * K, "more than nine messages: the scroll bar at (381, 108)")
+		var before: float = (mw._oRows.get_child(1) as Control).position.y
+		mbar.step(1)
+		_check((mw._oRows.get_child(1) as Control).position.y == before - 21 * K, "a step moves the list a row")
+		mw.OpenToCategory("All")
+		for _i in 2:
+			await process_frame
 		(mw.find_child("ency_close_%s" % us.Id, true, false) as TextureButton).pressed.emit()
 		for _i in 3:
 			await process_frame
