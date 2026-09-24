@@ -318,8 +318,11 @@ func _build_cockpit(menu: PackDefs.MenuDef) -> void:
 		b.set_meta("rect", r.rect2())
 		b.set_meta("color", r.SelectedColorHex)
 		b.pressed.connect(_on_region.bind(r))
-		if r.Action == "exit":
-			b.visible = not OS.has_feature("web")
+		# THE EJECTOR HANDLE WORKS IN THE BROWSER TOO (TeeJ, 2026-09-24: "does
+		# not take you to the main menu"). It goes back to the pack picker
+		# (a5932ba), which the web always reaches - there is no desktop to
+		# quit to, but there is somewhere to go. It was hidden on the web when
+		# the Cockpit became the pack's picture, as if it still quit.
 		_regions.add_child(b)
 		_regionButtons[key] = b
 
@@ -416,7 +419,8 @@ func _paint_monitors() -> void:
 		var fw: float = strip.get_width() / float(frames)
 		var atlas: AtlasTexture = pic.texture
 		atlas.atlas = strip
-		atlas.region = Rect2(fw * (_monitorFrame % frames), 0, fw, strip.get_height())
+		var frame: int = m.Still if m.Still >= 0 else _monitorFrame % frames
+		atlas.region = Rect2(fw * frame, 0, fw, strip.get_height())
 		var r := _scaled(Rect2(m.At[0], m.At[1], fw, strip.get_height()))
 		pic.position = r.position
 		pic.size = r.size

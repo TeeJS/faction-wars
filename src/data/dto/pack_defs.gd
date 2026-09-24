@@ -202,10 +202,12 @@ class MenuReadoutDef:
 ## loop at menu.monitor_fps with its top-left at `at` ([x, y], the picture's
 ## own pixels). With `region` (a region's "action" or "action:value") and
 ## `selected_image`, that picture shows instead while the region is chosen.
+## With `still` (a frame, from 0) it holds that frame and does not move.
 class MenuMonitorDef:
 	var ImageFile: String
 	var At: Array = []         # [x, y]
 	var Frames: int = 1
+	var Still: int = -1
 	var Region: String
 	var SelectedImageFile: String
 
@@ -217,6 +219,7 @@ class MenuMonitorDef:
 			for v in a:
 				o.At.append(int(v))
 		o.Frames = int(JsonUtil.get_ci(d, "frames") if JsonUtil.get_ci(d, "frames") != null else 1)
+		o.Still = int(JsonUtil.get_ci(d, "still") if JsonUtil.get_ci(d, "still") != null else -1)
 		o.Region = JsonUtil.str_or(d, "region", "")
 		o.SelectedImageFile = JsonUtil.str_or(d, "selected_image", "")
 		return o

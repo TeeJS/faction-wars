@@ -117,12 +117,19 @@ func _init() -> void:
 		var frame: Rect2 = menu.call("_picture_frame")
 		for pic in shown:
 			_check(frame.encloses(Rect2(pic.position, pic.size).grow(-0.5)), "%s lies inside the picture" % pic.name)
-	var spinning: TextureRect = Lq.first_or_null(shown, func(p: TextureRect) -> bool: return (p.get_meta("def") as PackDefs.MenuMonitorDef).Frames > 1)
+	var spinning: TextureRect = Lq.first_or_null(shown, func(p: TextureRect) -> bool:
+		var d: PackDefs.MenuMonitorDef = p.get_meta("def")
+		return d.Frames > 1 and d.Still < 0)
+	var still: TextureRect = Lq.first_or_null(shown, func(p: TextureRect) -> bool: return (p.get_meta("def") as PackDefs.MenuMonitorDef).Still >= 0)
 	if spinning != null:
 		var before: Rect2 = (spinning.texture as AtlasTexture).region
+		var held: Rect2 = (still.texture as AtlasTexture).region if still != null else Rect2()
 		menu.set("_monitorFrame", int(menu.get("_monitorFrame")) + 1)
 		menu.call("_paint_monitors")
 		_check((spinning.texture as AtlasTexture).region != before, "%s moves on to its next frame" % spinning.name)
+		if still != null:
+			# The LucasArts logo does not move in the original (TeeJ, 2026-09-24).
+			_check((still.texture as AtlasTexture).region == held, "%s holds its one frame" % still.name)
 	var hq: TextureRect = Lq.first_or_null(shown, func(p: TextureRect) -> bool: return (p.get_meta("def") as PackDefs.MenuMonitorDef).Region == "hq_only_victory")
 	if hq != null and hq.has_meta("selected"):
 		var standard: Texture2D = (hq.texture as AtlasTexture).atlas
@@ -144,9 +151,10 @@ func _init() -> void:
 	_check(menu.get_node_or_null("LoadGameWindow") != null or menu.get_node_or_null("OptionsScreen") != null,
 		"pressing load opens the slot picker (the Game Options screen with the art imported)")
 
-	# The web build has no desktop to exit to; the desktop build does.
+	# The ejector handle goes back to the pack picker, which the web build
+	# reaches too (TeeJ, 2026-09-24): it is shown on every build.
 	var exit_btn: Button = regions.get_node("Region_exit")
-	_check(exit_btn.visible == (not OS.has_feature("web")), "exit is shown exactly when there is a desktop")
+	_check(exit_btn.visible, "the ejector handle is shown on every build")
 
 	print("[cockpit_menu] %d checks, %d failed: %s" % [_checks, _fails, "PASS" if _fails == 0 else "FAIL"])
 	quit(1 if _fails > 0 else 0)
