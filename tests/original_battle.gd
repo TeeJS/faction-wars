@@ -54,8 +54,9 @@ func _init() -> void:
 			_png("%s/tabs/%s.%s.png" % [dir, t, side], 44, 41, Color(0.5, 0.5, 0.5))
 			_png("%s/tabs/%s.%s.pressed.png" % [dir, t, side], 44, 41, Color(0.8, 0.8, 0.8))
 		for t in ["ency_tab_ship", "battle_filter_fighter", "ency_tab_troop", "ency_tab_personnel"]:
-			_png("%s/tabs/%s.%s.png" % [dir, t, side], 49, 41, Color(0.5, 0.5, 0.5))
-			_png("%s/tabs/%s.%s.pressed.png" % [dir, t, side], 49, 41, Color(0.2, 0.2, 0.9))
+			var h: int = 57 if t == "ency_tab_personnel" else 41   # the Encyclopedia's own is taller
+			_png("%s/tabs/%s.%s.png" % [dir, t, side], 49, h, Color(0.5, 0.5, 0.5))
+			_png("%s/tabs/%s.%s.pressed.png" % [dir, t, side], 49, h, Color(0.2, 0.2, 0.9))
 	for t in ["battle_table2", "battle_table3", "battle_result_none"]:
 		_png("%s/windows/%s.png" % [dir, t], 400, 310, Color(0.1, 0.1, 0.4))
 	Art.Reset()
@@ -150,6 +151,10 @@ func _init() -> void:
 	for i in 4:
 		tabs.append(body.get_node_or_null("Filter%d" % i))
 	_check(not tabs.has(null), "four filter tabs: capital ships, fighters, troops, personnel")
+	var tab_h: float = (tabs[0] as Control).size.y if tabs[0] != null else -1.0
+	if not tabs.has(null):
+		_check((tabs[3] as Control).size.y == tab_h,
+			"the Personnel tab is cut to the others' height, clear of the band (%.0f)" % (tabs[3] as Control).size.y)
 	_check(_text(body, "Band") == "Capital Ships", "the table's band: 'Capital Ships' ('%s')" % _text(body, "Band"))
 	_check(_text(body, "Head0") == "Operational" and _text(body, "Head1") == "Destroyed", "the columns: Operational, Destroyed")
 	var ships: int = r.TheirLosses.CapitalShipsOperational.size()
@@ -160,6 +165,11 @@ func _init() -> void:
 	await process_frame
 	_check(results._tab == 3 and _text(body, "Band") == "Personnel" and _text(body, "Head2") == "Killed",
 		"the personnel filter: Survivors, Captured, Killed")
+	var chosen: Control = null   # the page is rebuilt: the live tab, not the freed one
+	for c in body.get_children():
+		if c.name == "Filter3" and not c.is_queued_for_deletion():
+			chosen = c
+	_check(chosen != null and chosen.size.y == tab_h, "chosen, the Personnel tab is still cut to the others' height")
 	_check(_text(body, "Empty2") == "No Casualties" and _text(body, "Empty1") == "None", "empty personnel columns: None, No Casualties")
 	results.queue_free()
 	_finish()
