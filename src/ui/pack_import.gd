@@ -39,10 +39,13 @@ const REASONS_SHOWN := 8
 ## use, per art set. 2.1.0: the galaxy map mirrored out to 640x480, which the
 ## Star Wars pack's map_image_rect needs. 2.3.0: the Mission window, the
 ## cockpit's monitors, Game Options, the Speed Control and pause box, the
-## resource displays and the battle windows (2026-09-23). Raise it when the game
-## needs pictures an older exporter did not write; the picker then asks for a
-## new export.
-const MIN_EXPORTER := {"swr-original": "2.3.0"}
+## resource displays and the battle windows (2026-09-23). 2.4.0: the Fleet
+## window and the in-transit icon, the System, Fleet and Ship Finders, the
+## battle results' forces pages, the character status icons and the blue
+## hyperspace engine glow (released 2026-09-24). Raise it when the game needs
+## pictures an older exporter did not write; the picker then asks for a new
+## export.
+const MIN_EXPORTER := {"swr-original": "2.4.0"}
 
 
 ## Called with each import's result (the pack picker refreshes its cards).
