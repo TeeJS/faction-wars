@@ -12,8 +12,8 @@ extends RefCounted
 
 ## NOT MISSION TYPES - the contests a mission passes THROUGH.
 const Foil               := "foil"                 # id 12
-const Decoy              := "decoy"                # id 10
-const TroopDecoy         := "troop_decoy"          # id 11
+const Decoy              := "decoy"                # id 11 (FDECOYTB)
+const TroopDecoy         := "troop_decoy"          # id 10 (TDECOYTB)
 const Evasion            := "evasion"              # id 13
 const Escape             := "escape"               # id 44
 
