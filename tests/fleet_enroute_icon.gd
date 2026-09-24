@@ -45,8 +45,13 @@ func _init() -> void:
 				fleet = f
 				from = p
 	var sector: Sector = Lq.first_or_null(GameState.ActiveGalaxy, func(s: Sector) -> bool: return s.Planets.has(from))
-	var to: Planet = Lq.first_or_null(sector.Planets, func(p: Planet) -> bool:
+	# An UNCHARTED one when there is one: ours on the way show there too (it
+	# passed only by luck before, on a charted world).
+	var free: Array = Lq.where(sector.Planets, func(p: Planet) -> bool:
 		return p != from and not Lq.any(p.OrbitingFleets, func(f: Fleet) -> bool: return f.Faction == us))
+	var to: Planet = Lq.first_or_null(free, func(p: Planet) -> bool: return not p.IsExplored)
+	if to == null:
+		to = Lq.first_or_null(free, func(_p: Planet) -> bool: return true)
 	_check(fleet != null and to != null, "a fleet of ours and a world in its sector with none of ours")
 	if fleet == null or to == null:
 		_finish()
