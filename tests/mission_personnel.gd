@@ -3,7 +3,8 @@ extends SceneTree
 ## Mission window instead, as in the original (TeeJ's screenshots of it,
 ## 2026-09-23: the Emperor recruiting on Coruscant is gone from Coruscant's
 ## Personnel page). Called off, they are listed again. A team on its way to
-## another world is not listed there as inbound either.
+## another world is not listed there as inbound either. Special Forces the
+## same (TeeJ, 2026-09-24: "they behave the same as characters").
 ##
 ##   .\tools\run-gd.ps1 tests/mission_personnel.gd
 
@@ -69,7 +70,43 @@ func _init() -> void:
 		_check(not _listed(ui, from).has(agent.Name), "nor on %s, left behind" % from.Name)
 	else:
 		_check(false, "an agent and a world to send them to")
+
+	# Special Forces: off the Personnel page while on a mission.
+	var sent := false
+	for p: Planet in GameState.AllPlanets():
+		if sent or p.ControllingFaction != us:
+			continue
+		for u: Unit in p.SpecForces():
+			if sent or u.Faction != us or MissionManager.IsOnMissionTeam(u):
+				continue
+			for t in MissionCatalog.SpecForceMissions(u.PackId):
+				if sent or MissionManager.NeedsCharacterTarget(t) or MissionManager.NeedsObjectTarget(t):
+					continue
+				var target: Planet = Lq.first_or_null(GameState.AllPlanets(), func(q: Planet) -> bool: return MissionManager.CanTarget(t, us, q).ok)
+				if target == null:
+					continue
+				var before: int = _units_listed(ui, p)
+				var m3: Mission = MissionManager.Launch(t, [u], p, target)
+				if m3 == null:
+					continue
+				sent = true
+				_check(_units_listed(ui, p) == before - 1, "%s on %s leaves %s's Personnel page (%d -> %d)"
+					% [u.Name, MissionCatalog.DisplayNameFor(t), p.Name, before, _units_listed(ui, p)])
+	_check(sent, "a Special Forces unit of ours could be sent on a mission")
 	_finish()
+
+
+## How many of our Special Forces the Personnel page lists on a world.
+func _units_listed(ui: UIManager, planet: Planet) -> int:
+	ui.OnDefenseClicked(planet)
+	var w: DraggableWindow = ui._openWindows.get(planet.Name + " Defenses")
+	if w == null:
+		return -1
+	var list := VBoxContainer.new()
+	w.add_child(list)
+	var n: int = w.DrawOwnUnits(list, planet.SpecForces(), ui, [])
+	list.queue_free()
+	return n
 
 
 ## The names on a world's Personnel tab, as the Defenses window draws them.
