@@ -24,9 +24,9 @@ func _init() -> void:
 		"system":
 			ui.OpenPlanetFinder()
 		"fleet":
-			ui.call("OpenFleetFinder")
+			ui.call("OpenFleetFinder", false)
 		"ship":
-			ui.call("OpenShipFinder")
+			ui.call("OpenFleetFinder", true)
 		"troop":
 			ui.call("OpenTroopFinder")
 		"personnel":
