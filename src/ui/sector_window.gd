@@ -589,6 +589,85 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 		for k in range(firstPart, sectorMap.get_child_count()):
 			sectorMap.get_child(k).set_meta("system", planet)
 
+	# No system's name, bars or icons over another's (TeeJ, 2026-09-23).
+	var room := Rect2(Vector2(2, 22) * K, Vector2(OW - 4, OH - 24) * K) if original else Rect2(Vector2.ZERO, mapSize)
+	SeparateEntries(sectorMap, room)
+
+
+## NO ENTRY OVER ANOTHER (TeeJ, 2026-09-23: "there are areas where the text
+## and icons overlap, this should be avoided"). Every system sits where its
+## sector coordinates put it - the original's own placement - so in a crowded
+## sector one system's name or bars ran into its neighbour's icons. Where two
+## entries' boxes (picture, star, corner icons, bars, name) cross, both are
+## pushed apart along the shorter way out, half each, then kept inside `room`;
+## repeated until nothing crosses or the room is used up. OURS, NOT THE
+## ORIGINAL'S: the original lays the systems out without this.
+const EntryGap := 2.0
+const SeparatePasses := 60
+
+
+static func SeparateEntries(sectorMap: Control, room: Rect2) -> void:
+	var parts: Dictionary = {}   # Planet -> its Controls
+	var order: Array = []
+	for c in sectorMap.get_children():
+		if not (c is Control) or c.is_queued_for_deletion() or not c.has_meta("system") or not (c as Control).visible:
+			continue
+		var p: Planet = c.get_meta("system")
+		if not parts.has(p):
+			parts[p] = []
+			order.append(p)
+		parts[p].append(c)
+	if order.size() < 2:
+		return
+	var boxes: Array = []
+	for p in order:
+		var box := Rect2()
+		var first := true
+		for c: Control in parts[p]:
+			var r := Rect2(c.position, c.size)
+			box = r if first else box.merge(r)
+			first = false
+		boxes.append(box)
+	var moves: Array = []
+	for i in order.size():
+		moves.append(Vector2.ZERO)
+	for _pass in SeparatePasses:
+		var moved := false
+		for i in boxes.size():
+			for j in range(i + 1, boxes.size()):
+				var a: Rect2 = (boxes[i] as Rect2).grow(EntryGap / 2.0)
+				var b: Rect2 = (boxes[j] as Rect2).grow(EntryGap / 2.0)
+				if not a.intersects(b):
+					continue
+				var ox: float = minf(a.end.x, b.end.x) - maxf(a.position.x, b.position.x)
+				var oy: float = minf(a.end.y, b.end.y) - maxf(a.position.y, b.position.y)
+				var push := Vector2.ZERO
+				if ox < oy:
+					push.x = (ox / 2.0 + 0.5) * (1.0 if a.get_center().x <= b.get_center().x else -1.0)
+				else:
+					push.y = (oy / 2.0 + 0.5) * (1.0 if a.get_center().y <= b.get_center().y else -1.0)
+				_ShiftEntry(boxes, moves, i, -push, room)
+				_ShiftEntry(boxes, moves, j, push, room)
+				moved = true
+		if not moved:
+			break
+	for i in order.size():
+		var d: Vector2 = (moves[i] as Vector2).round()
+		if d == Vector2.ZERO:
+			continue
+		for c: Control in parts[order[i]]:
+			c.position += d
+
+
+## Move entry i by `by`, kept inside `room`.
+static func _ShiftEntry(boxes: Array, moves: Array, i: int, by: Vector2, room: Rect2) -> void:
+	var box: Rect2 = boxes[i]
+	var to: Vector2 = box.position + by
+	to.x = clampf(to.x, room.position.x, maxf(room.position.x, room.end.x - box.size.x))
+	to.y = clampf(to.y, room.position.y, maxf(room.position.y, room.end.y - box.size.y))
+	moves[i] = (moves[i] as Vector2) + (to - box.position)
+	boxes[i] = Rect2(to, box.size)
+
 
 ## A CROSSHAIR CLICK ANYWHERE ON A SYSTEM NAMES THAT SYSTEM: "click on the
 ## system's icon in that system's Sector window" (manual p102 TIP), "click
