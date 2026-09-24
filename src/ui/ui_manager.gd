@@ -279,20 +279,23 @@ func _StyleCommsColumn(commsList: VBoxContainer) -> void:
 
 
 ## The unread count on a socket's corner, yellow with a black edge; hidden at
-## zero.
-static func _Badge(btn: Button, count: int) -> void:
+## zero. `width` is the socket's, for a socket that is not the column's (the
+## Message Index's tabs).
+static func _Badge(btn: Control, count: int, width: float = SocketSize.x) -> void:
 	var badge: Label = btn.get_node_or_null("Badge")
 	if count <= 0:
 		if badge != null:
 			badge.visible = false
 		return
 	if badge == null:
+		# Sized with the socket: the column's are 54 wide, the index's 72.
+		var scale: float = width / float(SocketSize.x)
 		badge = Label.new()
 		badge.name = "Badge"
-		badge.position = Vector2(SocketSize.x - 22, -2)
-		badge.size = Vector2(22, 16)
+		badge.position = Vector2(width - 22 * scale, -2)
+		badge.size = Vector2(22, 16) * scale
 		badge.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		badge.add_theme_font_size_override("font_size", 13)
+		badge.add_theme_font_size_override("font_size", roundi(13 * scale))
 		badge.add_theme_color_override("font_color", Color.YELLOW)
 		badge.add_theme_color_override("font_outline_color", Color.BLACK)
 		badge.add_theme_constant_override("outline_size", 4)

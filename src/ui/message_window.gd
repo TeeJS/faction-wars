@@ -229,6 +229,12 @@ func OpenToCategory(categoryName: String) -> void:
 
 
 func OnTabManuallyChanged(tabIndex: int) -> void:
+	# The original's index has its own tabs; the plain ones are hidden under
+	# it, and repainting them picked (and so READ) the newest message the
+	# moment a category was opened (TeeJ, 2026-09-23: the counts cleared on
+	# viewing the list).
+	if _original:
+		return
 	# If the user clicks a tab, populate it on the fly
 	var newCategory: String = _tabContainer.get_child(tabIndex).name
 	RefreshCategory(newCategory)
@@ -314,9 +320,12 @@ func RefreshCategory(categoryFilter: String) -> void:
 	# Keep the player's manually-selected message in focus across a repaint; only
 	# fall back to the newest transmission when nothing was selected or the prior
 	# selection is no longer in this list. (The prior is already read, so no button
-	# needs re-greying and ShowDetail will not re-broadcast.)
+	# needs re-greying and ShowDetail will not re-broadcast.) Shown, NOT read:
+	# a message counts as read only once the player opens it (TeeJ,
+	# 2026-09-23: "only clear when the message is read or deleted, not when
+	# the message list is viewed").
 	var toShow: GameMessage = prior if (prior != null and filteredMessages.has(prior)) else filteredMessages[0]
-	ShowDetail(toShow, null)
+	ShowDetail(toShow, null, false)
 
 
 # "Click the button on the bottom right-hand side of the window to send a
@@ -406,7 +415,7 @@ func RefreshCurrentTab() -> void:
 	RefreshCategory(_tabContainer.get_child(_tabContainer.current_tab).name)
 
 
-func ShowDetail(message: GameMessage, clickedButton: Button) -> void:
+func ShowDetail(message: GameMessage, clickedButton: Button, markRead: bool = true) -> void:
 	_selectedMessage = message
 
 	# Mark as read and dim the button text in the list if they clicked it directly
@@ -423,8 +432,9 @@ func ShowDetail(message: GameMessage, clickedButton: Button) -> void:
 	# unconditional broadcast re-entered forever. Guarding on the
 	# transition breaks it: the second pass finds the message already read,
 	# says nothing, and the recursion stops one level deep.
-	var wasUnread: bool = not message.IsRead
-	message.IsRead = true
+	var wasUnread: bool = markRead and not message.IsRead
+	if markRead:
+		message.IsRead = true
 
 	# Reading clears the unread count, so the alert bar has to repaint now
 	# rather than at the next day tick.
@@ -764,6 +774,11 @@ func _o_show_index() -> void:
 	_oSummary.visible = false
 	for i in _oTabs.size():
 		(_oTabs[i] as TextureButton).texture_normal = _oTabs[i].get_meta("current" if OTabCategories[i] == _oCategory else "normal")
+		# The unread count on each tab, as on the column's sockets (TeeJ,
+		# 2026-09-23: "replicated in the top row of the message index").
+		var cat: String = OTabCategories[i]
+		UIManager._Badge(_oTabs[i], EventBus.UnreadCount(Enums.MessageCategory[cat]) if Enums.MessageCategory.has(cat) else 0,
+			(_oTabs[i] as Control).size.x)
 	_oCaption.text = OBandCaptions.get(_oCategory, "")
 	_oPostBtn.set_pressed_no_signal(bool(_silent.get(_oCategory, false)))
 	var messages: Array = MessagesFor(_oCategory)
