@@ -24,6 +24,7 @@ $leftToTools = @('capture_', 'bench_', 'soak', 'dto_parity', 'lockstep_client', 
 $harness = @{
     'pack_plumbing' = @('--pack=ww2')
     'pack_switch'   = @('--pack=ww2 --write', '')
+    'validate_pack' = @('--dir=res://packs/star-wars-rebellion')
 }
 
 function Invoke-Test([string]$name, [string[]]$extra) {
