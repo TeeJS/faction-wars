@@ -63,6 +63,13 @@ static func CanPerform(u: Unit, type: int) -> bool:
 			Enums.MissionType.ShipDesignResearch:    return rc.ShipDesign > 0
 			Enums.MissionType.TroopTrainingResearch: return rc.TroopTraining > 0
 		return rc.FacilityDesign > 0
+	# "Only a major character can perform it" (Recruitment, manual p105-p108),
+	# and every member has to be able to do the job (p102-p103): a minor
+	# character on the team - agent or decoy - takes Recruitment off the list
+	# (TeeJ, 2026-09-23: "group-selected with a character that can NOT
+	# recruit ... it is not an option at all").
+	if type == Enums.MissionType.Recruitment:
+		return u is Character and (u as Character).IsMajor
 	# "ONLY Longprobe Y-wing Recon Teams and Imperial Probe Droids may perform it" (p107).
 	if u is Character:
 		return type != Enums.MissionType.Reconnaissance
@@ -97,14 +104,20 @@ static func CanTeachSpecialPower(u: Unit) -> bool:
 ## somebody else Force-aware (Encyclopedia; manual mission table; character tables).
 static func TeamMeetsExtraRule(team: Array, type: int) -> Result:
 	# "Only a major character can perform it" (GAMEPLAY.md mission table,
-	# manual p105-p108): Recruitment is not offered to a team without one.
+	# manual p105-p108), and every member has to be able to do the job
+	# (p102-p103): Recruitment is offered only to a team of major characters.
 	if type == Enums.MissionType.Recruitment:
-		if Lq.any(Lq.of_type_character(team), func(c): return c.IsMajor):
+		var minors: Array = Lq.where(team, func(u): return not (u is Character and (u as Character).IsMajor))
+		if minors.is_empty():
 			return Result.success()
+		var mission_name: String = MissionCatalog.DisplayNameFor(Enums.MissionType.Recruitment)
+		if minors.size() < team.size():
+			return Result.fail("Only major characters can go on a %s mission - %s %s not one." % [mission_name,
+				", ".join(Lq.select(minors, func(u): return u.Name)), "is" if minors.size() == 1 else "are"])
 		var side: Faction = team[0].Faction
 		var majors := Lq.select(Lq.where(GameState.ActiveRoster,
 			func(c): return c.Faction == side and c.IsMajor and c.Status != Enums.Status.Dead), func(c): return c.Name)
-		return Result.fail("Only a major character can lead a %s mission%s." % [MissionCatalog.DisplayNameFor(Enums.MissionType.Recruitment),
+		return Result.fail("Only a major character can lead a %s mission%s." % [mission_name,
 			"" if majors.is_empty() else " - " + ", ".join(majors)])
 	if type != Enums.MissionType.SpecialPowerTraining:
 		return Result.success()

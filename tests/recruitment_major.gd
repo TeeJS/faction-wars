@@ -1,6 +1,7 @@
 extends SceneTree
 ## "Only a major character can perform it" (GAMEPLAY.md mission table, manual
-## p105-p108): Recruitment is not offered to a team without a major character,
+## p105-p108): Recruitment is offered only to a team of major characters -
+## every member has to be able to do the job (p102-p103; TeeJ, 2026-09-23),
 ## a refused launch comes back as a refused order with the reason, a major's
 ## Recruitment on their own world puts them On Mission at once, and the status
 ## bar reads the engine's day from the first frame (TeeJ, 2026-09-22: WWII
@@ -56,7 +57,19 @@ func _init() -> void:
 	_check(rule.error.contains(major.Name), "the refusal names the side's major characters")
 	_check(not MissionManager.TeamCanPerform([minor], Enums.MissionType.Recruitment), "Recruitment is not on a minor's mission list")
 	_check(MissionManager.TeamCanPerform([major], Enums.MissionType.Recruitment), "Recruitment is on a major's mission list")
-	_check(MissionManager.TeamCanPerform([minor, major], Enums.MissionType.Recruitment), "a mixed team with a major qualifies")
+	_check(not MissionManager.TeamCanPerform([minor, major], Enums.MissionType.Recruitment), "a mixed team does not: the minor cannot recruit")
+	var mixed: Result = MissionManager.TeamMeetsExtraRule([major, minor], Enums.MissionType.Recruitment)
+	_check(not mixed.ok and mixed.error.contains(minor.Name), "the mixed team's refusal names the minor: '%s'" % mixed.error)
+
+	# Create Mission lists Recruitment first when the team can run it, and not
+	# at all when a member cannot.
+	var seat0: Planet = major.Attached
+	var listed: Array[int] = DraggableWindow.LegalMissions([major], seat0, null, null)
+	_check(not listed.is_empty() and listed[0] == Enums.MissionType.Recruitment,
+		"Create Mission lists Recruitment first for %s (%s)" % [major.Name, str(Lq.select(listed, func(t: int) -> String: return MissionCatalog.DisplayNameFor(t)))])
+	var together: Array[int] = DraggableWindow.LegalMissions([major, minor], seat0, null, null)
+	_check(not together.has(Enums.MissionType.Recruitment) and not together.is_empty(),
+		"with %s alongside, Recruitment is not listed and the rest are" % minor.Name)
 
 	# A refused launch is a refused order, with the reason.
 	var home: Planet = minor.Attached
