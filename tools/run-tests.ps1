@@ -2,6 +2,11 @@
 #
 #   .\tools\run-tests.ps1                 all of them (about 25 minutes)
 #   .\tools\run-tests.ps1 -Match fleet    only tests whose name contains "fleet"
+#   .\tools\run-tests.ps1 -Seed 3         every game seeded 3, not by the clock
+#
+# A test that starts Main.tscn gets a galaxy seeded from the clock, so a test
+# that assumes something of the galaxy passes on some runs only. -Seed pins it
+# (--seed=N) to reproduce one, or to sweep a few seeds for such assumptions.
 #
 # Tests with their own harness are run the way their headers say, or left to
 # their tool: never one that talks to a server (feedback_smoke posts a report -
@@ -13,7 +18,7 @@
 # One run at a time: every checkout of this project shares one user:// folder,
 # so two runs side by side read each other's settings and saves.
 
-param([string]$Match = "", [int]$TimeoutSeconds = 300)
+param([string]$Match = "", [int]$TimeoutSeconds = 300, [int]$Seed = 0)
 
 $repo = Split-Path -Parent $PSScriptRoot
 Set-Location $repo
@@ -53,6 +58,7 @@ foreach ($f in Get-ChildItem tests -Filter *.gd | Sort-Object Name) {
     foreach ($spec in $runs) {
         $a = @()
         if ($spec) { $a = $spec -split ' ' }
+        if ($Seed -ne 0) { $a += "--seed=$Seed" }
         $r = Invoke-Test $n $a
     }
     # The test's own verdict line ("[name] 12 checks, 0 failed"), else any.

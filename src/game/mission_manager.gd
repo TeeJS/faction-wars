@@ -76,10 +76,21 @@ static func CanPerform(u: Unit, type: int) -> bool:
 	return MissionCatalog.SpecForceCanRun(u.PackId, type)
 
 
-## EVERY member has to be able to do the job, decoys included (p102-p103).
+## EVERY member has to be able to do the job, decoys included (p102-p103) -
+## and their side has to run that mission at all (SideRuns).
 static func TeamCanPerform(team: Array, type: int) -> bool:
-	return team != null and team.size() > 0 and Lq.all(team, func(u): return CanPerform(u, type)) \
-		and TeamMeetsExtraRule(team, type).ok
+	return team != null and team.size() > 0 and SideRuns(team[0].Faction, type) \
+		and Lq.all(team, func(u): return CanPerform(u, type)) and TeamMeetsExtraRule(team, type).ok
+
+
+## WHICH SIDE RUNS WHICH MISSION: missions.json `available_to` - the original's
+## per-side columns in MISSNSD.DAT, and the manual's own words for the two
+## one-sided missions: Assassination "Only the Empire may perform this
+## mission" (p105), Death Star Sabotage the Alliance's (p106, its Special
+## Forces roster). It was enforced for Assassination alone, so a pack that gave
+## any other mission to one side had it run by both (TeeJ, 2026-09-24).
+static func SideRuns(side: Faction, type: int) -> bool:
+	return MissionCatalog.AvailableTo(type, side)
 
 
 ## A FORCE USER IS ONE WHO KNOWS IT (manual p094).
@@ -552,9 +563,6 @@ static func CanTargetPerson(type: int, actor: Faction, victim: Character) -> Res
 				return Result.fail("%s is one of yours." % victim.Name)
 			if victim.IsCaptured():
 				return Result.fail("%s is already captured." % victim.Name)
-			# Side-locked by the pack: missions.json `available_to` (manual p106).
-			if type == Enums.MissionType.Assassination and not MissionCatalog.AvailableTo(type, actor):
-				return Result.fail("%s does not carry out assassinations." % actor.DisplayName)
 			return Result.success()
 		Enums.MissionType.Rescue:
 			if not victim.IsCaptured():
@@ -580,6 +588,8 @@ static func Launch(type: int, team: Array, from: Planet, target: Planet, decoys:
 	var actor: Faction = team[0].Faction
 	if actor == null or Lq.any(team, func(c): return c.Faction != actor):
 		return _refuse("A mission team must all belong to the same faction.")
+	if not SideRuns(actor, type):
+		return _refuse("%s does not carry out %s." % [actor.DisplayName, MissionCatalog.DisplayNameFor(type)])
 
 	var why := CanTarget(type, actor, target)
 	if not why.ok:

@@ -72,38 +72,46 @@ func _init() -> void:
 		_check(false, "an agent and a world to send them to")
 
 	# Special Forces: off the Personnel page while on a mission. Day zero's
-	# seeding is random, and some galaxies deal us none (seed 3's Alliance):
-	# then raise one of ours on a world we hold, as training would.
-	var ours_sf: bool = Lq.any(GameState.AllPlanets(), func(p: Planet) -> bool:
-		return p.ControllingFaction == us and Lq.any(p.SpecForces(), func(u: Unit) -> bool: return u.Faction == us))
-	if not ours_sf:
+	# seeding is random: some galaxies deal us none (seed 3's Alliance), some
+	# only units whose every mission needs a person or a facility to aim at.
+	# Then raise one of ours that has a mission aimed at a world, as training
+	# would, and send that.
+	var sent: bool = _send_one(ui, us)
+	if not sent:
 		var def: PackDefs.UnitDef = Lq.first_or_null(MilitaryCatalog.All(), func(d: PackDefs.UnitDef) -> bool:
-			return d.Kind == "spec_force" and d.BuildableBy.has(us.Id) and not MissionCatalog.SpecForceMissions(d.Id).is_empty())
+			return d.Kind == "spec_force" and d.BuildableBy.has(us.Id) \
+				and Lq.any(MissionCatalog.SpecForceMissions(d.Id), func(t: int) -> bool:
+					return not MissionManager.NeedsCharacterTarget(t) and not MissionManager.NeedsObjectTarget(t)))
 		var held: Planet = Lq.first_or_null(GameState.AllPlanets(), func(p: Planet) -> bool: return p.ControllingFaction == us)
 		if def != null and held != null:
 			DayZeroGenerator.AssignUnitToPlanet(held, MilitaryCatalog.Create(def, us, held))
-	var sent := false
+			sent = _send_one(ui, us)
+	_check(sent, "a Special Forces unit of ours could be sent on a mission")
+	_finish()
+
+
+## Sends the first of our Special Forces that has a mission aimed at a world;
+## checks it leaves its world's Personnel page. Whether one went.
+func _send_one(ui: UIManager, us: Faction) -> bool:
 	for p: Planet in GameState.AllPlanets():
-		if sent or p.ControllingFaction != us:
+		if p.ControllingFaction != us:
 			continue
 		for u: Unit in p.SpecForces():
-			if sent or u.Faction != us or MissionManager.IsOnMissionTeam(u):
+			if u.Faction != us or MissionManager.IsOnMissionTeam(u):
 				continue
 			for t in MissionCatalog.SpecForceMissions(u.PackId):
-				if sent or MissionManager.NeedsCharacterTarget(t) or MissionManager.NeedsObjectTarget(t):
+				if MissionManager.NeedsCharacterTarget(t) or MissionManager.NeedsObjectTarget(t):
 					continue
 				var target: Planet = Lq.first_or_null(GameState.AllPlanets(), func(q: Planet) -> bool: return MissionManager.CanTarget(t, us, q).ok)
 				if target == null:
 					continue
 				var before: int = _units_listed(ui, p)
-				var m3: Mission = MissionManager.Launch(t, [u], p, target)
-				if m3 == null:
+				if MissionManager.Launch(t, [u], p, target) == null:
 					continue
-				sent = true
 				_check(_units_listed(ui, p) == before - 1, "%s on %s leaves %s's Personnel page (%d -> %d)"
 					% [u.Name, MissionCatalog.DisplayNameFor(t), p.Name, before, _units_listed(ui, p)])
-	_check(sent, "a Special Forces unit of ours could be sent on a mission")
-	_finish()
+				return true
+	return false
 
 
 ## How many of our Special Forces the Personnel page lists on a world.
