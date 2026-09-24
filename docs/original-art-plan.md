@@ -1,6 +1,8 @@
 # Plan: the original's art out of the repo, imported by owners (Option A)
 
-Status: **signed off by TeeJ, 2026-09-23.** Phases 0-4 done; see each phase.
+Status: **done, 2026-09-23.** Every phase is complete (PRs #114-#118, the exporter-v2.1.0
+release, the history rewrite and the GHCR purge). One optional follow-up is TeeJ's: the
+GitHub Support ticket (see 5b).
 Stop after every phase with a go/no-go read-out.
 
 ## Charter
@@ -79,7 +81,7 @@ art set (by `art` reference, else the same id), then the engine's plain look.
 | File | Source in the player's install | How it was confirmed | What the exporter writes |
 |---|---|---|---|
 | `cockpit.png` (1442x1080) | `COMMON.DLL` bitmap **20001**, 640x480 | shrunk to 640x480, it differs from 20001 by 4.6/255 on average; the rest is the scale-up and the scrubbed brackets (`5918997`) | 20001 as it is. The `menu` regions are in picture pixels and scale with the picture, so the pack's rects need scaling by 640/1442. |
-| `galaxyShaded.bmp` (640x480) | `STRATEGY.DLL` bitmap **903**, 607x437 | template match at (0,0) at 1:1: the same spiral and star field, visually identical in shape. It is an **edited** copy: shaded bluer and extended by 33 px right and 43 px down (7% of pixels identical). The edit's source is unknown. | 903 as it is. `map_image_rect` is scaled by 607/640 and 437/480, so 903 lands exactly where the edit's top-left 607x437 does today. The shading and the extended strip are lost; it will look like the original's own map. |
+| `galaxyShaded.bmp` (640x480) | `STRATEGY.DLL` bitmap **903**, 607x437 | template match at (0,0) at 1:1: the same spiral and star field, visually identical in shape. It is an **edited** copy: shaded bluer and extended by 33 px right and 43 px down (7% of pixels identical). The edit's source is unknown. | 903 with its edges mirrored out to 640x480 (exporter 2.1.0), so `map_image_rect` is unchanged and the map sits exactly where it did. The bluer shading is lost; it looks like the original's own map. (First planned as rect scaling; that zoomed the map 5% and left a strip, so it was changed.) |
 | `packs/star-wars-rebellion/original/` | the importer's output (all traced to DLL ids in `Importer.cs`) | by construction | the art set |
 
 Nothing else original-derived is committed: all 9 images outside `original/` were
@@ -143,21 +145,45 @@ same pack is built in `tests/art_sets.gd`.
 - TeeJ's Separatists vs Trade Federation, or a minimal one: imported from a pack file into the web build, wearing the original look.
 
 ### Phase 5: take the art out (destructive; a separate go for each step)
-- **5a (a normal PR):** *prepared 2026-09-23, not merged.* Also: the Star Wars `pack.json` takes
+- **5a (a normal PR):** **Done: #117, merged 2026-09-23** after the exporter-v2.1.0 release; its CI
+  build passed both art checks. The picker's download link went in with it; #118 added the
+  exporter's version to its title and the picker, and `MIN_EXPORTER` (2.1.0) to the game. Also: the Star Wars `pack.json` takes
   `swr-original:screens/galaxy.png` and `swr-original:screens/cockpit.png` (menu rects divided by
   2.25, x less 1: cockpit.png was 20001 at x2.25 from x 1); Artwork's legacy roots are gone; the
   exporter's `--pack` mode is refused (a checkout uses `--folder <repo>\art\swr-original`).
-  **Merge only after the exporter release is published**, or the testers have no way to get
-  the art.
+  It was merged only after the exporter release was published, so the testers always had a
+  way to get the art.
   - delete the Phase 0 files and re-ignore them;
   - add `export_presets.cfg` exclusions;
   - add a CI step that **fails the build** if anything from the art set is in the export.
   - After merge, the beta testers import their file.
-- **5b (history rewrite):**
-  - take the mirror backup, then run `git filter-repo` on those paths and force-push;
-  - every clone and worktree re-clones, and the shared `D:\Github\faction-wars` tree has to be idle first.
-  - 0 forks (checked). Old commits stay reachable by SHA through PR refs until GitHub Support purges them.
-- **5c (GHCR):** delete every `wars-relay` version built while the art was committed. Unraid keeps pulling the new, art-free `:latest`.
+- **5b (history rewrite):** **Done 2026-09-23.**
+  - Backup: `D:\Backup\faction-wars\faction-wars-20260923-1518.git` (a full mirror: 27 branches,
+    the tag, 118 PR refs).
+  - `git filter-repo --invert-paths` on `packs/star-wars-rebellion/original/`, `cockpit.png`,
+    `galaxyShaded.bmp` (both under the pack and the old `data/`) and their `.import` files.
+    Every art path that ever existed was checked first.
+  - Checked before the push:
+    - no art object left;
+    - every branch and tag differed from the old only by those paths;
+    - main's tree was byte-identical;
+    - 7 art-only commits dropped (391 to 384);
+    - the pack went from 14.7 MB to 3.3 MB.
+  - The agent's force-push was blocked by its permissions, so TeeJ pushed all 27 branches and
+    the tag. Main is now `fa9206d`, and the exporter-v2.1.0 release followed its tag.
+  - Checked after the push: a fresh clone holds no art object, GitHub lists no commit touching
+    `original/`, and CI passed on `fa9206d`. TeeJ's checkout was reset to the new main.
+  - **Still open (optional, TeeJ):** the old commits stay reachable by SHA through PR refs
+    #1-#118 until GitHub Support dereferences them. The first changed commit is `961029e`
+    (it added the old galaxy map), so all 118 PRs are affected. Support handles "sensitive
+    data" at its discretion and may decline artwork.
+- **5c (GHCR):** **Done 2026-09-23.** TeeJ ran the purge script (scratchpad `ghcr-purge.ps1`),
+  granting the gh token `read:packages,delete:packages` for the run only.
+  - 159 versions were deleted, every build from before #117.
+  - Kept: `latest` and the builds of `fa9206d`, `58d3b4b` and `68a7ab5`, each of which passed
+    the CI art check.
+  - Confirmed anonymously against the registry: those 4 tags are all that remain, and `latest`
+    pulls. Unraid keeps pulling `latest`.
 
 ## Not in this plan
 - **Cutscenes:**
@@ -179,12 +205,12 @@ same pack is built in `tests/art_sets.gd`.
 | 4 | Signing | Locally with the existing Azure Trusted Signing identity. A CI service principal is a user-only setup step. |
 | 5 | Mirror backup location before 5b | `D:\Backup\faction-wars\faction-wars-<yyyyMMdd-HHmm>.git` |
 
-## Verification
-- Fresh browser profile, no import: the engine look everywhere, no errors.
-- Import the art-set file: the original look without a reload. Close and reopen the browser: still there.
-- Clear the site's data: gone. Re-import the saved file: back.
-- A tablet imports it through the file picker.
-- The fixture custom pack with new factions: the original look with its skins. The shipyard shows the original's picture, and its own character shows its own picture.
-- A faction pack containing an art-set picture is refused by the exporter and by the game.
-- CI fails a build containing any art-set file. After 5b, `git log --all` over those paths is empty. After 5c, no GHCR version contains them.
-- The exporter: `Get-AuthenticodeSignature` reports Valid, and SmartScreen names the publisher.
+## Verification (results 2026-09-23 in brackets)
+- Fresh browser profile, no import: the engine look everywhere, no errors. [yes: button menu, plain map in the same layout]
+- Import the art-set file: the original look without a reload. Close and reopen the browser: still there. [yes, Browser pane]
+- Clear the site's data: gone. Re-import the saved file: back. [Remove survived a reload; a re-import replaced the set]
+- A tablet imports it through the file picker. [not tested]
+- The fixture custom pack with new factions: the original look with its skins. The shipyard shows the original's picture, and its own character shows its own picture. [yes: tests/art_sets.gd, and phase 4 in the browser]
+- A faction pack containing an art-set picture is refused by the exporter and by the game. [yes, both]
+- CI fails a build containing any art-set file. After 5b, `git log --all` over those paths is empty. After 5c, no GHCR version contains them. [the guard pattern matched real art paths and passed an art-free pck; 5b and 5c as above]
+- The exporter: `Get-AuthenticodeSignature` reports Valid, and SmartScreen names the publisher. [Valid, CN=Thomas Schmitz; SmartScreen not observed]
