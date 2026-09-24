@@ -27,6 +27,7 @@ func _init() -> void:
 	MpSetup.reset()
 	GameSettings.SelectedDifficulty = Enums.Difficulty.Medium
 	GameSettings.SelectedSize = Enums.GalaxySize.Huge
+	GameSettings.ProvideFeedback = true   # the box the docked key sits above
 	var main: Node = load("res://Main.tscn").instantiate()
 	root.add_child(main)
 	for _i in 10:
@@ -37,20 +38,31 @@ func _init() -> void:
 	var galaxy: Array = GameState.ActiveGalaxy
 	var pins := ui.PinnedSectors()
 	_check(pins.size() == galaxy.size(), "one pinned button per sector (%d of %d)" % [pins.size(), galaxy.size()])
-	# The docked GID key button is first; the pins follow it, contiguous, in map order.
+	# The pins start the panel, contiguous, in map order. The docked GID key is
+	# not on this panel: it is in the left column (TeeJ, 2026-09-24).
 	var first := -1
 	for i in list.get_child_count():
 		if list.get_child(i) == pins[galaxy[0].Name]:
 			first = i
-	_check(first >= 0 and first <= 1, "the pins start at the top of the panel, after the docked key at most (index %d)" % first)
+	_check(first == 0, "the pins start at the top of the panel (index %d)" % first)
 	var in_order := true
 	for i in galaxy.size():
 		var b: Button = list.get_child(first + i)
 		if b.text != galaxy[i].Name:
 			in_order = false
 	_check(in_order, "the pinned buttons are contiguous and in map order")
-	if first == 1:
-		_check(not pins.values().has(list.get_child(0)), "the item above them is the panel's own (the docked key)")
+	var key: Button = ui.AddToTaskbar("Loyalty to the Test", func() -> void: pass)
+	await process_frame
+	var column: Control = ui.get_node("%CommsPanel")
+	var key_rect := key.get_global_rect()
+	_check(key.get_parent() != list, "the docked key's button is not on the right-hand panel")
+	_check(key_rect.position.x < column.get_global_rect().end.x and key_rect.end.x <= column.get_global_rect().end.x + 1,
+		"the docked key's button is in the left column (%s)" % str(key_rect))
+	var feedback: Control = ui.get_node_or_null("FeedbackPanel")
+	if feedback != null:
+		_check(key_rect.end.y <= feedback.get_global_rect().position.y, "... just above the Feedback box (%.0f <= %.0f)" % [key_rect.end.y, feedback.get_global_rect().position.y])
+	ui.RemoveFromTaskbar(key)
+	await process_frame
 	var panel_before := list.get_child_count()
 
 	# Press one: its window opens.

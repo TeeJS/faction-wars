@@ -617,9 +617,8 @@ func PinSectors(galaxy: Array) -> void:
 	_pinOrder.clear()
 	for sector in galaxy:
 		_pinOrder.append(sector.Name)
-	# At the top, in map order. The GID key docks itself later and takes index
-	# 0 (AddToTaskbar), so the panel reads: key, the theatres, then whatever
-	# windows are minimised.
+	# At the top, in map order, so the panel reads: the theatres, then whatever
+	# windows are minimised. (The docked GID key is in the left column.)
 	var index := 0
 	for sector in galaxy:
 		_taskbarList.move_child(_pin_button(sector), index)
@@ -670,15 +669,10 @@ func UnpinSector(name: String) -> void:
 
 
 ## "Pin to menu": the mirror. The button returns to its place in map order,
-## after the docked key and before any minimised window.
+## before any minimised window.
 func PinSector(sector: Sector) -> void:
 	if _pinnedSectors.has(sector.Name):
 		return
-	var base := 0
-	if _taskbarList.get_child_count() > 0:
-		var first: Node = _taskbarList.get_child(0)
-		if not _pinnedSectors.values().has(first) and not _taskbarButtons.values().has(first):
-			base = 1   # the docked GID key
 	var before := 0
 	for name in _pinOrder:
 		if name == sector.Name:
@@ -686,7 +680,7 @@ func PinSector(sector: Sector) -> void:
 		if _pinnedSectors.has(name):
 			before += 1
 	var btn := _pin_button(sector)
-	_taskbarList.move_child(btn, base + before)
+	_taskbarList.move_child(btn, before)
 	# If its window is minimised on a normal button, that button is now redundant.
 	if _openWindows.has(sector.Name):
 		var w: DraggableWindow = _openWindows[sector.Name]
@@ -721,15 +715,37 @@ func PinMenu() -> PopupMenu:
 	return _pinMenu
 
 
+## The docked GID key's button sits at the bottom of the LEFT column, just
+## above the Feedback box - or in its place when there is none (TeeJ,
+## 2026-09-24: moved from the top of the right-hand panel). As wide as the
+## column, in the Feedback button's size of type so a long title fits.
+const KeyButtonHeight := 30.0
+const KeyButtonGap := 4.0
+
+
 func AddToTaskbar(title: String, onRestore: Callable) -> Button:
 	var btn := Button.new()
+	btn.name = "MapKeyButton"
 	btn.text = title
+	btn.tooltip_text = title
+	btn.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	btn.add_theme_font_size_override("font_size", 12)
 	btn.pressed.connect(func() -> void:
 		if onRestore.is_valid():
 			onRestore.call())
-	_taskbarList.add_child(btn)
-	# The docked GID key is the panel's first item, above the pinned theatres.
-	_taskbarList.move_child(btn, 0)
+	btn.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
+	var bottom: float = FeedbackPanel.ColumnBottom
+	var feedback: Node = get_node_or_null("FeedbackPanel")
+	if feedback != null:
+		bottom -= FeedbackPanel.FoldedHeight + KeyButtonGap
+	btn.offset_left = 4.0
+	btn.offset_right = 147.0
+	btn.offset_bottom = bottom
+	btn.offset_top = bottom - KeyButtonHeight
+	add_child(btn)
+	# Under the Feedback box, which grows up over it while open.
+	if feedback != null:
+		move_child(btn, feedback.get_index())
 	return btn
 
 
