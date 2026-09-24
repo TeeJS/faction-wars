@@ -340,8 +340,8 @@ public sealed class Importer
     /// <summary>The five pack files the rows are read from.</summary>
     public static readonly string[] RowFiles = { "characters.json", "units.json", "facilities.json", "missions.json", "map.json" };
 
-    /// <param name="rowsDir">a folder holding the Star Wars pack's RowFiles: the
-    /// copy beside the exe (pack\), or a pack folder.</param>
+    /// <param name="rowsDir">where the Star Wars pack's RowFiles are: BundledRows
+    /// (built into the exe), or a pack folder.</param>
     public Importer(string gameDir, string rowsDir, ArtSink sink, Action<string> report)
     {
         _gameDir = gameDir;
@@ -350,8 +350,24 @@ public sealed class Importer
         _report = report;
     }
 
-    /// <summary>The Star Wars pack's rows shipped beside the exe (see the csproj).</summary>
-    public static string BundledRows => Path.Combine(AppContext.BaseDirectory, "pack");
+    /// <summary>The Star Wars pack's rows built into the exe (see the csproj):
+    /// the exporter is one file, with nothing beside it to lose.</summary>
+    public const string BundledRows = "(built in)";
+
+    /// <summary>A file built into the exe (an EmbeddedResource's LogicalName), or null.</summary>
+    public static string? BuiltIn(string name)
+    {
+        using var stream = typeof(Importer).Assembly.GetManifestResourceStream(name);
+        if (stream == null)
+            return null;
+        using var reader = new StreamReader(stream);
+        return reader.ReadToEnd();
+    }
+
+    /// <summary>One of the RowFiles, from the exe or from a pack folder.</summary>
+    private static string? RowText(string rowsDir, string file) =>
+        rowsDir == BundledRows ? BuiltIn("pack/" + file)
+        : File.Exists(Path.Combine(rowsDir, file)) ? File.ReadAllText(Path.Combine(rowsDir, file)) : null;
 
     public static string? Problem(string gameDir, string rowsDir)
     {
@@ -362,8 +378,8 @@ public sealed class Importer
             return $"There is no EData folder in {gameDir}. An install from the CD leaves the pictures on the disc - " +
                    @"pick the REBELLION folder on the CD instead (for example D:\REBELLION).";
         foreach (var f in RowFiles)
-            if (!File.Exists(Path.Combine(rowsDir, f)))
-                return $"{f} is missing from {rowsDir} - the exporter's own folder is incomplete; download it again.";
+            if (RowText(rowsDir, f) == null)
+                return $"{f} is missing from {rowsDir} - the exporter is incomplete; download it again.";
         return null;
     }
 
@@ -382,7 +398,7 @@ public sealed class Importer
 
         foreach (var (file, kind) in new[] { ("characters.json", "characters"), ("units.json", "units"), ("facilities.json", "facilities"), ("missions.json", "missions") })
         {
-            var rows = ReadRows(Path.Combine(_rowsDir, file), kind);
+            var rows = ReadRows(file, kind);
             var texts = new JsonObject();
             int got = 0;
             foreach (var row in rows)
@@ -421,7 +437,7 @@ public sealed class Importer
         }
 
         // Planets: 26 portraits shared by artwork_id; no Encyclopedia text.
-        var map = JsonNode.Parse(File.ReadAllText(Path.Combine(_rowsDir, "map.json")))!.AsObject();
+        var map = JsonNode.Parse(RowText(_rowsDir, "map.json")!)!.AsObject();
         int planets = 0, planetRows = 0;
         foreach (var p in map["planets"]!.AsArray())
         {
@@ -536,7 +552,7 @@ public sealed class Importer
         // The Create Mission window's mission pictures: GOKRES.DLL, per side.
         var cards = new PeResources(Path.Combine(_gameDir, "GOKRES.DLL"));
         int missionCards = 0;
-        foreach (var row in ReadRows(Path.Combine(_rowsDir, "missions.json"), "missions"))
+        foreach (var row in ReadRows("missions.json", "missions"))
         {
             string id = row["id"]!.GetValue<string>();
             if (row["string_id"]?.GetValue<int>() is not int sid)
@@ -586,12 +602,12 @@ public sealed class Importer
         if (SaveGalaxy(strategy, P("screens", "galaxy.png"))) pictureCount++;
         else missing.Add($"screens/galaxy: no bitmap {GalaxyBitmap} in STRATEGY.DLL");
 
-        // Portraits and list miniatures: GOKRES.DLL, by the shipped id map.
-        var mapPath = Path.Combine(AppContext.BaseDirectory, "gokres_map.json");
-        if (File.Exists(mapPath))
+        // Portraits and list miniatures: GOKRES.DLL, by the id map built into the exe.
+        var idMapText = BuiltIn("gokres_map.json");
+        if (idMapText != null)
         {
             var gokres = new PeResources(Path.Combine(_gameDir, "GOKRES.DLL"));
-            var idMap = JsonNode.Parse(File.ReadAllText(mapPath))!.AsObject();
+            var idMap = JsonNode.Parse(idMapText)!.AsObject();
             int portraits = 0, minis = 0;
             foreach (var (kind, rowsNode) in idMap)
             {
@@ -613,7 +629,7 @@ public sealed class Importer
             Say($"portraits: {portraits}, list miniatures: {minis} (GOKRES.DLL).");
         }
         else
-            missing.Add("gokres_map.json is not beside the importer - no portraits or miniatures");
+            missing.Add("gokres_map.json is not built into the exporter - no portraits or miniatures");
 
         _sink.WriteText(P("descriptions.json"),
             descriptions.ToJsonString(new JsonSerializerOptions { WriteIndented = true, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping }) + "\n");
@@ -627,9 +643,9 @@ public sealed class Importer
         return new Result(pictureCount, textCount, missing, log);
     }
 
-    private static List<JsonObject> ReadRows(string path, string key)
+    private List<JsonObject> ReadRows(string file, string key)
     {
-        var doc = JsonNode.Parse(File.ReadAllText(path))!.AsObject();
+        var doc = JsonNode.Parse(RowText(_rowsDir, file)!)!.AsObject();
         return doc[key]!.AsArray().Select(n => n!.AsObject()).ToList();
     }
 

@@ -9,9 +9,8 @@ folder, for people making their own packs.
 
 ## Use
 
-Download `FactionWarsExporter-win-x64.zip` from the GitHub Release, unzip it
-anywhere, and double-click `FactionWarsExporter.exe`. Nothing needs installing
-and nothing needs admin rights.
+Download `FactionWarsExporter.exe` from the GitHub Release and double-click it.
+It is one file: nothing to unzip, nothing to install, no admin rights.
 
 1. **Game folder** is found automatically (see below). Change it if needed.
 2. **Save to** defaults to `Documents\Faction Wars\swr-original.art.zip`.
@@ -115,7 +114,7 @@ README.txt            keep it; do not share or upload it
 
 Which row each picture belongs to comes from the Star Wars pack's own
 `characters.json`, `units.json`, `facilities.json`, `missions.json` and
-`map.json`, copied beside the exe at build time (`pack\`).
+`map.json`, built into the exe at build time (with `gokres_map.json`).
 
 ## What it reads, and how (verified against the installed game, 2026-09-22)
 
@@ -144,9 +143,11 @@ program and opens no network connection.
 
 ## Build
 
-.NET 10 SDK. `build.ps1` publishes a self-contained win-x64 folder (a normal exe
-beside its DLLs, nothing self-extracting; ~47 MB zipped) and zips it as
-`FactionWarsExporter-win-x64.zip`:
+.NET 10 SDK. `build.ps1` publishes ONE exe, `dist\FactionWarsExporter.exe`
+(~47 MB): self-contained, compressed, its data built in. It extracts nothing to
+disk when it runs - a WinForms app has no native libraries to unpack (checked:
+nothing appears under `%TEMP%\.net`). The script fails if anything lands beside
+the exe:
 
 ```powershell
 .\tools\FactionWarsExporter\build.ps1
@@ -161,6 +162,7 @@ For a release, sign it with Azure Trusted Signing. That needs the dlib and
 .\tools\FactionWarsExporter\build.ps1 -Sign
 ```
 
-It signs `FactionWarsExporter.exe` and `FactionWarsExporter.dll` (the runtime's
-DLLs already carry Microsoft's signature), verifies both, and prints each file's
-signature status.
+It signs the exe after it is bundled, so the signature covers everything in it,
+verifies it, and prints its status. The release asset is the exe itself, under a
+version-free name, so `/releases/latest/download/FactionWarsExporter.exe` (the
+link in the game) always gets the newest.
