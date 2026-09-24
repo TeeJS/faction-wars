@@ -252,7 +252,7 @@ text = "Fleet Finder"
 
 [node name="TroopInfo" type="Button" parent="UIManager/HBoxContainer" unique_id=1194457671]
 layout_mode = 2
-text = "Troop Info."
+text = "Troop Finder"
 
 [node name="CharInfo" type="Button" parent="UIManager/HBoxContainer" unique_id=1706451177]
 unique_name_in_owner = true

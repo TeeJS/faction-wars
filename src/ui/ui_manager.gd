@@ -887,6 +887,12 @@ func OpenFleetFinder(ships: bool = false) -> void:
 		func(window) -> void: window.Setup(self, ships), Vector2(100, 150))
 
 
+## The Troop Finder (manual p132 Fig. 3.80).
+func OpenTroopFinder() -> void:
+	OpenWindow("TroopFinder", load("res://src/ui/TroopFinder.tscn"),
+		func(window) -> void: window.Setup(self), Vector2(100, 150))
+
+
 ## F1 Game Options - the six-slot save screen (single-player). Head-to-head uses
 ## its own relay Save, so this is offered only when there is no MP session. Guards
 ## against opening a second copy.

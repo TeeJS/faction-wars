@@ -215,3 +215,184 @@ static func Locate(list: Control, text: String) -> int:
 		list.call("select", hit)
 		list.call("ensure_current_is_visible")
 	return hit
+
+
+## THE ORIGINAL'S GRID LIST (the Troop Finder, manual p132 Fig. 3.80; the
+## Personnel Finder's special forces, p099 Fig. 3.42; TeeJ's screenshots,
+## 2026-09-24): a location's name, then under each type's icon on the band a
+## count - white in a 21x16 red box - or a dash, a row every 25 pixels, six
+## showing. It answers the list calls the finders make (as
+## EncyclopediaWindow.OriginalIndex does).
+class OriginalGrid extends Control:
+	signal item_activated(index: int)
+	const Pitch := 25
+	const Shown := 6
+	const TextTop := 3
+	const Grey := Color(120 / 255.0, 120 / 255.0, 120 / 255.0)
+	## Each column's left edge (its dotted rule), from the grid's left; the
+	## count centred 17 in, its box 4 in and 4 down, its capitals 7 down.
+	var columns: Array = []
+	var k: int = 2
+	var font: Font
+	var bar: Control
+	var _names: Array[String] = []
+	var _rows: Array = []
+	var _selected: int = -1
+	var _first: int = 0
+	var item_count: int:
+		get:
+			return _names.size()
+
+	func _init() -> void:
+		clip_contents = true
+		mouse_filter = Control.MOUSE_FILTER_STOP
+		focus_mode = Control.FOCUS_CLICK
+
+	func clear() -> void:
+		for r in _rows:
+			(r as Node).queue_free()
+		_rows.clear()
+		_names.clear()
+		_selected = -1
+		_first = 0
+		_sync_bar()
+
+	func add_item(text: String, counts: Array = []) -> int:
+		var i: int = _names.size()
+		_names.append(text)
+		var row := Control.new()
+		row.mouse_filter = Control.MOUSE_FILTER_STOP
+		row.size = Vector2(size.x, Pitch * k)
+		var l := Label.new()
+		l.name = "Name"
+		l.text = text
+		l.clip_text = true
+		l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		l.add_theme_font_override("font", font)
+		l.add_theme_font_size_override("font_size", 13 * k)
+		l.add_theme_color_override("font_color", Grey)
+		l.position = Vector2(0, TextTop * k)
+		l.size = Vector2(((columns[0] if not columns.is_empty() else size.x / k) - 2) * k, 18 * k)
+		row.add_child(l)
+		for c in columns.size():
+			var n: int = int(counts[c]) if c < counts.size() else 0
+			var x: float = columns[c]
+			if n > 0:
+				var box := ColorRect.new()
+				box.color = Color(1, 0, 0)
+				box.position = Vector2(x + 4, 4) * k
+				box.size = Vector2(21, 16) * k
+				box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				row.add_child(box)
+			var t := Label.new()
+			t.name = "Count%d" % c
+			t.text = str(n) if n > 0 else "-"
+			t.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			t.add_theme_font_override("font", font)
+			t.add_theme_font_size_override("font_size", 11 * k)
+			t.add_theme_color_override("font_color", Color.WHITE)
+			t.position = Vector2(x + 17 - 10, 7 - 0.19 * 11) * k
+			t.size = Vector2(20, 14) * k
+			row.add_child(t)
+		row.gui_input.connect(func(e: InputEvent) -> void:
+			if e is InputEventMouseButton and e.pressed and e.button_index == MOUSE_BUTTON_LEFT:
+				select(i)
+				grab_focus()
+				if e.double_click:
+					item_activated.emit(i))
+		add_child(row)
+		_rows.append(row)
+		_place()
+		_sync_bar()
+		return i
+
+	func get_item_text(i: int) -> String:
+		return _names[i] if i >= 0 and i < _names.size() else ""
+
+	func select(i: int, _single: bool = true) -> void:
+		if _selected >= 0 and _selected < _rows.size():
+			(_rows[_selected].get_node("Name") as Label).add_theme_color_override("font_color", Grey)
+		_selected = i
+		if i >= 0 and i < _rows.size():
+			(_rows[i].get_node("Name") as Label).add_theme_color_override("font_color", Color.WHITE)
+
+	func get_selected_items() -> PackedInt32Array:
+		return PackedInt32Array([_selected]) if _selected >= 0 else PackedInt32Array()
+
+	func ensure_current_is_visible() -> void:
+		if _selected < 0:
+			return
+		if _selected < _first:
+			scroll_to(_selected)
+		elif _selected >= _first + Shown:
+			scroll_to(_selected - Shown + 1)
+
+	func scroll_to(first: int) -> void:
+		_first = clampi(first, 0, maxi(0, _names.size() - Shown))
+		_place()
+		if bar != null and int(bar.get("first")) != _first:
+			bar.call("set_rows", _first, Shown, _names.size())
+
+	func _place() -> void:
+		for i in _rows.size():
+			(_rows[i] as Control).position = Vector2(0, (i - _first) * Pitch) * k
+
+	func _sync_bar() -> void:
+		if bar != null:
+			bar.call("set_rows", _first, Shown, _names.size())
+
+	func _gui_input(event: InputEvent) -> void:
+		if event is InputEventMouseButton and event.pressed and bar != null \
+				and (event.button_index == MOUSE_BUTTON_WHEEL_UP or event.button_index == MOUSE_BUTTON_WHEEL_DOWN):
+			bar.call("step", -1 if event.button_index == MOUSE_BUTTON_WHEEL_UP else 1)
+			accept_event()
+		if event is InputEventKey and event.pressed and not _names.is_empty():
+			var to: int = _selected
+			match event.keycode:
+				KEY_UP:
+					to = maxi(0, _selected - 1)
+				KEY_DOWN:
+					to = mini(_names.size() - 1, _selected + 1)
+				KEY_HOME:
+					to = 0
+				KEY_END:
+					to = _names.size() - 1
+				KEY_ENTER, KEY_KP_ENTER:
+					if _selected >= 0:
+						item_activated.emit(_selected)
+					accept_event()
+					return
+				_:
+					return
+			select(to)
+			ensure_current_is_visible()
+			accept_event()
+
+
+## Swap the finder's list for a grid (the Troop Finder, the special forces
+## view): at (41, top), its columns at the band's rules (frame x), the scroll
+## bar from (374, top + 2). Returns the grid.
+static func UseGrid(parts: Dictionary, top: float, columns_frame_x: Array) -> Control:
+	var body: Control = parts["body"]
+	var old: Control = parts["list"]
+	var grid := OriginalGrid.new()
+	grid.name = "Grid"
+	grid.k = OUI.K
+	grid.font = OUI.Face()
+	grid.position = Vector2(ListAt.x, top) * OUI.K
+	grid.size = Vector2(ListSize.x, ListSize.y + 1) * OUI.K
+	for x in columns_frame_x:
+		grid.columns.append(float(x) - ListAt.x)
+	body.add_child(grid)
+	body.move_child(grid, old.get_index())
+	old.queue_free()
+	var bar: Control = parts["bar"]
+	bar.position = Vector2(BarAt.x, top + 2) * OUI.K
+	grid.bar = bar
+	for c in bar.get_signal_connection_list("scrolled"):
+		bar.disconnect("scrolled", c["callable"])
+	bar.connect("scrolled", grid.scroll_to)
+	parts["list"] = grid
+	parts["old_list"] = null
+	return grid
