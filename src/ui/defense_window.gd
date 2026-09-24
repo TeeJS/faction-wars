@@ -78,9 +78,8 @@ func DrawOwnPersonnel(list: Container, planet: Planet, uiManager: UIManager) -> 
 	# Emperor recruiting on Coruscant, gone from Coruscant's Personnel page
 	# and shown in its Mission window instead - and the Mission window's
 	# "starfield background indicates character is in hyperspace" (p109 Fig
-	# 3.51) keeps a team on its way there too. Characters only: Special
-	# Forces on a mission keep their "(On Mission)" row (not yet seen in the
-	# original).
+	# 3.51) keeps a team on its way there too. Special Forces the same
+	# (DrawOwnUnits).
 	var ours: Array = Lq.where(
 		Lq.where(GameState.ActiveRoster, func(c: Character) -> bool: return c.Faction == us and not c.IsOffMap()),
 		func(c: Character) -> bool: return ((c.Attached == planet and c.Status != Enums.Status.Enroute) \
@@ -147,7 +146,10 @@ func DrawOwnUnits(list: Container, here: Array,
 	if us == null or here == null:
 		return 0
 
-	var ours: Array = Lq.where(here, func(u: Unit) -> bool: return u.Faction == us)
+	# A unit on a mission is in the Mission window, not here - the same as a
+	# character (TeeJ, 2026-09-24: Special Forces "behave the same as
+	# characters"; see DrawOwnPersonnel).
+	var ours: Array = Lq.where(here, func(u: Unit) -> bool: return u.Faction == us and not MissionManager.IsOnMissionTeam(u))
 	for u in ours:
 		DrawUnitRow(list, u, uiManager, selectionList)
 
