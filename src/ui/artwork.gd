@@ -128,6 +128,12 @@ static func MissionCard(mission_id: String, side: String) -> Texture2D:
 	return _row("missions", mission_id, "{k}/{i}.%s.small.png" % side)
 
 
+## A mission's 73x48 picture in the Mission window's column, for a side:
+## missions/<mission id>.<side>.tile.png (GOKRES.DLL).
+static func MissionTile(mission_id: String, side: String) -> Texture2D:
+	return _row("missions", mission_id, "{k}/{i}.%s.tile.png" % side)
+
+
 ## The original's 80x80 portrait of a character, unit or facility:
 ## portraits/<kind>/<id>.png (GOKRES.DLL, see the exporter's README). An id
 ## with a suffix ("<id>.damage", a ship's flames) keeps it through an `art`

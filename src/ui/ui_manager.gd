@@ -531,9 +531,16 @@ func OnEconomyClicked(planetData: Planet) -> void:
 		targetPos)
 
 
+## The original's Mission window (p109 Fig 3.51) when the player imported its
+## art; the plain one otherwise. Preloaded by path, like Create Mission's.
+const OriginalMissionScene := preload("res://src/ui/OriginalMissionWindow.tscn")
+const OriginalMissionScript := preload("res://src/ui/original_mission_window.gd")
+
+
 func OnMissionClicked(planetData: Planet) -> void:
 	var targetPos: Vector2 = get_viewport().get_mouse_position() + Vector2(20, 20)
-	OpenWindow(planetData.Name + " Missions", MissionWindowTemplate,
+	OpenWindow(planetData.Name + " Missions",
+		OriginalMissionScene if OriginalMissionScript.CanBuild() else MissionWindowTemplate,
 		func(window) -> void: window.Populate(planetData),
 		targetPos)
 

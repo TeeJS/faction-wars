@@ -219,12 +219,15 @@ static func TitleBar(window: Control, f: Faction) -> void:
 ## window, with its own 2-pixel bevel round the edge, and the title bar sits
 ## inside the bevel - 16 rows of the side's colour, the name in black bold
 ## Arial 13 from 4 pixels in, and only the close box, 1 pixel from the end
-## (measured on TeeJ's screenshot of the original, 2026-09-23).
+## (measured on TeeJ's screenshot of the original, 2026-09-23). With `boxes`
+## (the Mission window) the bar also has the system box 1 pixel in, the name
+## `titleGap` pixels after it, and minimise beside close.
 const DialogBevel := 2
 const DialogBarH := 16
 
 
-static func DialogFrame(window: Control, f: Faction, plate: Texture2D, titlePx: int = 13, titleGap: int = 4, centred: bool = false) -> void:
+static func DialogFrame(window: Control, f: Faction, plate: Texture2D, titlePx: int = 13, titleGap: int = 4, centred: bool = false,
+		boxes: bool = false) -> void:
 	var bar: ColorRect = window.get_node_or_null("%TitleBar")
 	var label: Label = window.get_node_or_null("%TitleBarLabel")
 	if bar == null or label == null:
@@ -241,9 +244,25 @@ static func DialogFrame(window: Control, f: Faction, plate: Texture2D, titlePx: 
 		hbox.add_theme_constant_override("separation", 0)
 		hbox.add_child(_gap(titleGap))
 		hbox.move_child(hbox.get_child(hbox.get_child_count() - 1), 0)
-		var mini: Control = window.get_node_or_null("%MinimizeButton")
+		if boxes:
+			var sys := TextureRect.new()
+			sys.name = "SystemBox"
+			sys.texture = Btn("title_system")
+			sys.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
+			sys.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+			sys.custom_minimum_size = Vector2(14, 14) * K
+			sys.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			hbox.add_child(sys)
+			hbox.move_child(sys, 0)
+			hbox.add_child(_gap(1))
+			hbox.move_child(hbox.get_child(hbox.get_child_count() - 1), 0)
+		var mini: Button = window.get_node_or_null("%MinimizeButton")
 		if mini != null:
-			mini.visible = false
+			if boxes:
+				mini.visible = true
+				_title_button(mini, "title_minimize")
+			else:
+				mini.visible = false
 		var close: Button = window.get_node_or_null("%CloseButton")
 		if close != null:
 			_title_button(close, "title_close")
