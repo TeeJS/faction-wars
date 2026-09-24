@@ -36,7 +36,11 @@ public sealed class MainForm : Form
         Controls.Add(Row("Save to:", _outFile, 116, BrowseOutFile));
 
         _export.Location = new Point(15, 158);
-        _export.Click += (_, _) => Run(() => ExportTo(() => new ZipSink(_outFile.Text), _outFile.Text));
+        _export.Click += (_, _) =>
+        {
+            if (ConfirmReplace(_outFile.Text))
+                Run(() => ExportTo(() => new ZipSink(_outFile.Text), _outFile.Text));
+        };
         Controls.Add(_export);
         _exportFolder.Location = new Point(145, 158);
         _exportFolder.Click += (_, _) => Run(ExportFolder);
@@ -92,6 +96,25 @@ public sealed class MainForm : Form
     {
         if (PickZip("Save the art set as", _outFile.Text) is string picked)
             _outFile.Text = picked;
+    }
+
+    /// <summary>An art set already at the "Save to" path is the player's backup:
+    /// ask before Export replaces it (TeeJ, 2026-09-24). Browse's dialog asks
+    /// already; typing or keeping the default path went straight over it. "No"
+    /// is the default, as in Windows' own prompt. The file is replaced only
+    /// once the new one is complete (ZipSink), so a failed export keeps it.</summary>
+    private bool ConfirmReplace(string path)
+    {
+        if (!File.Exists(path))
+            return true;
+        var answer = MessageBox.Show(this,
+            $"{Path.GetFileName(path)} already exists in {Path.GetDirectoryName(Path.GetFullPath(path))}.\n\nReplace it with a new export?",
+            "Replace the art set?", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+        if (answer == DialogResult.Yes)
+            return true;
+        _log.Clear();
+        Say($"Not exported: {path} was kept. Pick another file with Browse... to export beside it.");
+        return false;
     }
 
     private void Say(string line)
