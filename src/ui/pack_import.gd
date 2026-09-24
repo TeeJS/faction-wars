@@ -268,7 +268,8 @@ static func Installed() -> Array[Dictionary]:
 		for id in DirAccess.get_directories_at(pair[1]):
 			if id.ends_with(".importing"):
 				continue
-			var m: Variant = JSON.parse_string(FileAccess.get_file_as_string("%s/%s/manifest.json" % [pair[1], id]))
+			var manifest := "%s/%s/manifest.json" % [pair[1], id]
+			var m: Variant = JSON.parse_string(FileAccess.get_file_as_string(manifest)) if FileAccess.file_exists(manifest) else null
 			var entry := {"kind": pair[0], "id": id, "title": id, "files": 0, "created_utc": "", "exporter": "", "outdated": false}
 			if m is Dictionary:
 				entry["title"] = str(m.get("title", id))

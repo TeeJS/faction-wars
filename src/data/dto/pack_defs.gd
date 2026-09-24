@@ -307,6 +307,10 @@ class PackManifest:
 	## SCHEMA.md section 2: one sentence on what the setting is, for the pack
 	## picker's card. Optional; blank when absent.
 	var Summary: String
+	## SCHEMA.md section 2: the picker card's picture when map_image cannot be
+	## shown (its art set not imported), a file in the pack. Optional, and a
+	## missing file is no load error - the card just has no picture.
+	var CardImage: String
 	var Setup: PackSetupDef
 	## SCHEMA.md section 2: the Cockpit picture and its regions. Null = button menu.
 	var Menu: MenuDef
@@ -334,6 +338,7 @@ class PackManifest:
 		if r is Array and r.size() == 4:
 			o.MapImageRect = Rect2(float(r[0]), float(r[1]), float(r[2]), float(r[3]))
 		o.Summary = JsonUtil.str_or(d, "summary", "")
+		o.CardImage = JsonUtil.str_or(d, "card_image", "")
 		o.Setup = PackSetupDef.from_dict(JsonUtil.get_ci(d, "setup"))
 		o.Menu = MenuDef.from_dict(JsonUtil.get_ci(d, "menu"))
 		o.VictoryTips = VictoryTipsDef.from_dict(JsonUtil.get_ci(d, "victory_tips"))

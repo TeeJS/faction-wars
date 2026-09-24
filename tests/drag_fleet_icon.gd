@@ -93,7 +93,10 @@ func _init() -> void:
 	_check(str(root.gui_get_drag_data()) == "fleet_move", "dragging the fleet icon is a fleet drag")
 	_check(ui.DraggedFleets.size() == ours.size() and Lq.all(ours, func(f: Fleet) -> bool: return ui.DraggedFleets.has(f)),
 		"it carries our %d fleet(s) in orbit there" % ours.size())
-	_check(drop._can_drop_data(Vector2.ZERO, "fleet_move"), "%s takes the drop" % target.Name)
+	# The window may have repainted meanwhile (the clock runs): the system's
+	# button as it is now.
+	drop = _planet_button(win, target)
+	_check(drop != null and drop._can_drop_data(Vector2.ZERO, "fleet_move"), "%s takes the drop" % target.Name)
 	var release := press.duplicate()
 	release.pressed = false
 	release.position = to
@@ -154,7 +157,7 @@ static func _corner(win: Node, p: Planet, kind: String) -> Button:
 
 static func _planet_button(win: Node, p: Planet) -> Control:
 	for c in win.find_children("*", "Button", true, false):
-		if "AssociatedPlanet" in c and c.AssociatedPlanet == p:
+		if "AssociatedPlanet" in c and c.AssociatedPlanet == p and not c.is_queued_for_deletion():
 			return c
 	return null
 

@@ -149,7 +149,7 @@ public sealed class MainForm : Form
         }
         Say("");
         Say($"Saved: {where}");
-        Say("Import it into Faction Wars (Import pack file..., or drag it onto the game). Keep it as your backup.");
+        Say("Import it into Faction Wars: press Play on Star Wars: Rebellion, then Import artwork file... (or drag it onto the game). Keep it as your backup.");
     }
 
     private void ExportFolder()

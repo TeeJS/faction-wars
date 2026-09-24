@@ -56,9 +56,11 @@ art set (by `art` reference, else the same id), then the engine's plain look.
    mounted `.iso`; `GameFolders.cs` already does this). Program Files is no problem,
    because it runs natively. Click **Export**. It writes
    `swr-original.art.zip` (~15 MB) to `Documents\Faction Wars\`. **That file is their backup.**
-3. In the game (browser or desktop), click **Import pack file...** or drag the file onto
-   the game. The original look appears without a reload and stays until they clear
-   the site's data.
+3. In the game (browser or desktop), press **Play** on Star Wars: Rebellion; with no
+   art set yet, the artwork window opens: click **Import artwork file...** there, or
+   drag the file onto the game (2026-09-24: the launch screen lost its import list).
+   The original look appears without a reload and stays until they clear the site's
+   data.
 4. Lost it, or moved to a new device or tablet? Import the same file again. On a tablet:
    copy it via iCloud or Google Drive, then tap Import.
 5. Custom faction pack: import its pack file the same way. If it declares
@@ -121,7 +123,7 @@ exercised in the browser (the engine's own drop handler feeds the same import).
 The exporter (2.1.0) mirrors the galaxy map's edges out to 640x480 so the map keeps
 its placement.
 
-- An **Import pack file...** button on the pack picker. Drag and drop anywhere (the web build accepts dropped files; `display_server_web.cpp`). Desktop uses the native file dialog. Web uses the browser's file picker, which works on tablets too.
+- An **Import pack file...** button on the pack picker (since 2026-09-24: **Import artwork file...** in the artwork window a card's Play opens when its art set is missing or too old). Drag and drop anywhere (the web build accepts dropped files; `display_server_web.cpp`). Desktop uses the native file dialog. Web uses the browser's file picker, which works on tablets too.
 - Unzip, check `manifest.json` and every SHA-256, then write:
   - an art set to `user://art/<set>/`;
   - a faction pack to `user://packs/<id>/`, which the picker lists.
