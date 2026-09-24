@@ -28,6 +28,13 @@ const OSprite := 37
 const OTitleColor := Color(240 / 255.0, 240 / 255.0, 0)
 const ONeutral := Color(0, 1, 1)
 const OBackground := Color(72 / 255.0, 72 / 255.0, 72 / 255.0, 0.78)
+## OURS, NOT THE ORIGINAL'S (TeeJ, 2026-09-24: "with sectors being movable,
+## they need to be less transparent - can we make them more opaque with a
+## generic starfield background"): the original's see-through grey let the
+## galaxy - and a second sector window - show through, which reads badly once
+## they are moved over each other. Deep space, opaque, with its own stars.
+const OSpace := Color(4 / 255.0, 5 / 255.0, 12 / 255.0, 1.0)
+const StarCount := 170
 const OBorder := Color(192 / 255.0, 192 / 255.0, 192 / 255.0)
 ## From each system's picture's top-left, in original pixels: the GID star's
 ## top-left, the energy and materials rows' tops (one pixel in), the loyalty
@@ -93,12 +100,19 @@ func _BuildOriginalChrome(sector: Sector) -> void:
 	if _originalTitle == null:
 		(get_node("%TitleBar") as Control).visible = false
 		var sb := StyleBoxFlat.new()
-		sb.bg_color = OBackground
+		sb.bg_color = OSpace
 		sb.shadow_size = 0
 		sb.set_content_margin_all(0)
 		add_theme_stylebox_override("panel", sb)
 		texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		var area: MarginContainer = OUI.Flatten(self)
+		# The starfield, under everything else in the window.
+		var sky := Control.new()
+		sky.name = "Starfield"
+		sky.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		sky.draw.connect(_DrawStars.bind(sky, sector.Name))
+		area.add_child(sky)
+		area.move_child(sky, 0)
 		var chrome := Control.new()
 		chrome.name = "OriginalChrome"
 		chrome.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -117,6 +131,26 @@ func _BuildOriginalChrome(sector: Sector) -> void:
 		OUI.PictureButton(chrome, "sector_switch", 204, 2, "Switch window to other side of screen").pressed.connect(_SwitchSide)
 		OUI.PictureButton(chrome, "title_close", 218, 2, "Close").pressed.connect(CloseWindow)
 	_originalTitle.text = sector.Name
+
+
+## A generic starfield: points of light, most dim and white, a few bright,
+## some faintly blue, one original pixel each (a bright one two). The same
+## sky every time for a sector - its own generator, seeded by its name, so
+## the game's random numbers are untouched.
+static func _DrawStars(c: Control, seed_name: String) -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash(seed_name)
+	for i in StarCount:
+		var x: int = rng.randi_range(1, OW - 2)
+		var y: int = rng.randi_range(1, OH - 2)
+		var b: float = rng.randf_range(0.4, 0.9)
+		var blue: bool = rng.randf() < 0.18
+		var color := Color(b * (0.8 if blue else 1.0), b * (0.85 if blue else 1.0), b, 1.0)
+		var big: bool = rng.randf() < 0.05
+		if big:
+			color = Color(1, 1, 1, 1)
+		var px: float = (2 if big else 1) * K
+		c.draw_rect(Rect2(Vector2(x, y) * K, Vector2(px, px)), color)
 
 
 ## The frame: one light pixel all round, solid along the top and bottom and
