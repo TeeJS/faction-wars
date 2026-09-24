@@ -92,8 +92,11 @@ func Populate(planet: Planet, uiManager: UIManager) -> void:
 			if original:
 				_TileRemembered(row, captured)
 
-		# As the live branch does: show the first one - yours first.
-		if mine.size() > 0:
+		# As the live branch does: show the first one - yours first. The
+		# original's opens with the tiles alone (below).
+		if original:
+			_PanelVisible(false)
+		elif mine.size() > 0:
 			DisplayFleetContents(mine[0])
 		else:
 			DisplayRememberedFleet(view.Groups[0])
@@ -113,12 +116,17 @@ func Populate(planet: Planet, uiManager: UIManager) -> void:
 	for fleet in orbitingFleets:
 		AddFleetToList(fleet, fleetList, _uiManager)
 
-	# Automatically display the first fleet's contents - in the original's
-	# look, what was shown stays shown (an opened fleet's ship too).
+	# Automatically display the first fleet's contents. The original's opens
+	# with the fleets' tiles alone, the contents panel appearing when one is
+	# clicked (Fig. 3.54; TeeJ's screenshot of Xyquine, 2026-09-24); what was
+	# shown stays shown (an opened fleet's ship too).
 	if original and _shown is Unit and Lq.any(orbitingFleets, func(f: Fleet) -> bool: return f.Ships.has(_shown)):
 		_ShowShip(_shown)
 	elif original and _shown is Fleet and orbitingFleets.has(_shown):
 		DisplayFleetContents(_shown)
+	elif original:
+		_shown = null
+		_PanelVisible(false)
 	elif orbitingFleets.size() > 0:
 		DisplayFleetContents(orbitingFleets[0])
 
@@ -872,6 +880,7 @@ func _TileFleet(btn: Button, fleet: Fleet, list: VBoxContainer) -> void:
 ## The panel for a fleet (every tab its whole contents, Fig. 3.55).
 func _ShowFleet(fleet: Fleet) -> void:
 	_shown = fleet
+	_PanelVisible(true)
 	var side: String = _FleetSide(fleet)
 	var damaged: bool = Lq.any(fleet.Ships, func(s: Unit) -> bool: return s.IsDamaged())
 	_SetPicture(OUI.Pic("status_fleet." + side), null,
@@ -886,6 +895,7 @@ func _ShowFleet(fleet: Fleet) -> void:
 ## troops and personnel - three tabs, no capital ships tab.
 func _ShowShip(ship: Unit) -> void:
 	_shown = ship
+	_PanelVisible(true)
 	get_node("%SelectedFleetName").text = ship.Name
 	var tabs: TabContainer = get_node("%FleetTabs")
 	var fighters: Array = Lq.where(ship.Hangar, func(u: Unit) -> bool: return u.Type == Enums.UnitType.Fighter)
@@ -1044,6 +1054,7 @@ func _TileRemembered(btn: Button, group: IntelManager.IntelGroup) -> void:
 
 func _ShowRemembered(group: IntelManager.IntelGroup) -> void:
 	_shown = group
+	_PanelVisible(true)
 	var side: String = "alliance" if OUI.Side(GameSettings.PlayerFaction) == "empire" else "empire"
 	var tabs: TabContainer = get_node("%FleetTabs")
 	for i in tabs.get_tab_count():
@@ -1085,6 +1096,25 @@ func _PageList(tab: Control) -> VBoxContainer:
 	tab.add_child(scroll)
 	scroll.add_child(list)
 	return list
+
+
+## The contents panel and everything on it - the frame, the name, the
+## counts, the picture, the tabs and their pages - shown or not.
+func _PanelVisible(on: bool) -> void:
+	if not _original:
+		return
+	var tabs: TabContainer = get_node("%FleetTabs")
+	var body: Node = tabs.get_parent()
+	for n in ["Panel", "PictureUnder", "Picture", "PictureOver", "Carried", "Capacity"]:
+		var c: CanvasItem = body.get_node_or_null(n)
+		if c != null:
+			c.visible = on
+	(get_node("%SelectedFleetName") as CanvasItem).visible = on
+	tabs.visible = on
+	for b in tabs.get_meta("tab_strip", []):
+		(b as CanvasItem).visible = on
+	if not on:
+		_FrameShown()
 
 
 ## Nothing to show: the panel empty, every tab greyed.
