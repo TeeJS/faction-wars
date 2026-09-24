@@ -102,6 +102,10 @@ public sealed class Importer
         ("manufacturing", "empire", 10779, 10780), ("defenses", "empire", 10781, 10782),
         ("fleet", "empire", 10783, 10784), ("mission", "empire", 10785, 10786),
         ("manufacturing", "neutral", 10787, 10788), ("defenses", "neutral", 10789, 10790),
+        // The side's ship in hyperspace (20x20, beside the uprising flame):
+        // the sector legend's "Units Enroute to System" (TEXTSTRA 0x01c54c).
+        // INFERRED from the pair and its neighbours - no screenshot yet.
+        ("enroute", "alliance", 11613, 0), ("enroute", "empire", 11614, 0),
     };
 
     // STRATEGY.DLL: the plates and parts the original composes its windows

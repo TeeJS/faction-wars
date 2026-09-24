@@ -382,6 +382,17 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 
 			var oursInOrbit: bool = Lq.any(fleetsHere, func(f: Fleet) -> bool: return f.Faction == GameSettings.PlayerFaction)
 
+			# OURS ON THE WAY (TeeJ, 2026-09-24: "I moved a fleet from
+			# Coruscant to Yaga Minor - it did not show up until it arrived").
+			# The original's sector legend names an icon for "Units Enroute to
+			# System" (TEXTSTRA 0x01c54c); with none of ours in orbit, the
+			# fleet corner shows it - the side's ship in hyperspace (STRATEGY
+			# 11613/11614). INFERRED placement: no screenshot shows it. Only
+			# our own: the opponent's inbound fleets are fog we have not
+			# earned (inbound_fog).
+			var inbound: Array = Lq.where(planet.OrbitingFleets, func(f: Fleet) -> bool:
+				return f.Status == Enums.Status.Enroute and f.Destination == planet and f.Faction == GameSettings.PlayerFaction)
+
 			# THE OTHER THREE CORNERS ARE CONDITIONAL TOO (TeeJ, 2026-09-23,
 			# against the original's own sector window): the Manufacturing
 			# icon is there only when the system has production facilities you
@@ -399,11 +410,11 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 
 			for i in 4:
 				# Unexplored: the mission icon only. See above.
-				if not planet.IsExplored and cornerLabels[i] != "M":
+				if not planet.IsExplored and cornerLabels[i] != "M" and not (cornerLabels[i] == "F" and not inbound.is_empty()):
 					continue
 
 				# Nothing in orbit, nothing to draw.
-				if cornerLabels[i] == "F" and fleetsHere.size() == 0:
+				if cornerLabels[i] == "F" and fleetsHere.size() == 0 and inbound.is_empty():
 					continue
 				if cornerLabels[i] == "E" and not hasManufacturing:
 					continue
@@ -453,7 +464,7 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 				# the blockade case, and your own force is the one you are
 				# looking for - and the tooltip names them all either way.
 				if cornerLabels[i] == "F":
-					var flagged: Faction = GameSettings.PlayerFaction if oursInOrbit else fleetsHere[0].Faction
+					var flagged: Faction = GameSettings.PlayerFaction if oursInOrbit or fleetsHere.is_empty() else fleetsHere[0].Faction
 
 					var tint: Color = flagged.FactionColor if flagged != null else Color.GRAY
 					_TintIcon(cornerBtn, tint)
@@ -464,6 +475,16 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 					# the original's, 2026-09-24) for the side the icon shows -
 					# ours when ours are here.
 					var menuFleets: Array = Lq.where(fleetsHere, func(f: Fleet) -> bool: return f.Faction == flagged)
+					if fleetsHere.is_empty():
+						# Only ours inbound: the hyperspace icon, their arrival.
+						menuFleets = inbound
+						cornerBtn.set_meta("corner", "enroute")
+						_TintIcon(cornerBtn, Color(GameSettings.PlayerFaction.FactionColor, 0.6))
+						_OriginalIcon(cornerBtn, "enroute", GameSettings.PlayerFaction.Id, 1.0)
+					if not inbound.is_empty():
+						cornerBtn.tooltip_text = ((cornerBtn.tooltip_text + "
+") if not fleetsHere.is_empty() else "") 							+ "En route: " + ", ".join(Lq.select(inbound, func(f: Fleet) -> String:
+								return "%s (arrives day %d)" % [f.Name, StrategicTickManager.Today + f.DaysToDestination]))
 					AttachFleetMenu(cornerBtn, menuFleets, planet, uiManager)
 
 				# "A ... icon to the lower right of a planet indicates a
