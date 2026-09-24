@@ -433,9 +433,12 @@ func _ShowPage() -> void:
 			columns = [["Operational", "TroopsOperational"], ["Destroyed", "TroopsDestroyed"]]
 		_:
 			columns = [["Survivors", "PersonnelSurvivors"], ["Captured", "PersonnelCaptured"], ["Killed", "PersonnelKilled"]]
-	# What each column holds: {name, picture, flames}. Fire means DAMAGED -
-	# a survivor that was hit (manual p153: "burn marks indicate they are
-	# damaged"; TeeJ, 2026-09-24: "fire means damaged, not destroyed").
+	# What each column holds: {name, picture, flames}. A damaged survivor burns
+	# (manual p153: "burn marks indicate they are damaged"), and so does every
+	# destroyed craft (TeeJ, 2026-09-24, his screenshot of the original: the
+	# lost Y-wing in flames - "destroyed ships should have explosions/fire
+	# around them"). Destroyed ships are gone from play all the same; they
+	# are not repaired (tests/battle_wrecks.gd).
 	var lists: Array = []
 	for col in columns:
 		var items: Array = []
@@ -443,7 +446,7 @@ func _ShowPage() -> void:
 		var who: Array = losses.Who.get(col[1], []) if losses != null else []
 		for j in texts.size():
 			var w: Dictionary = who[j] if j < who.size() else {}
-			var burning: bool = bool(w.get("damaged", false))
+			var burning: bool = str(col[1]).ends_with("Destroyed") or bool(w.get("damaged", false))
 			items.append({"name": _PlainName(str(texts[j])), "picture": _Picture(w),
 				"flames": _Flames(w) if burning else null})
 		lists.append(items)
@@ -567,8 +570,8 @@ static func _Picture(w: Dictionary) -> Texture2D:
 	return Art.Portrait("units", id)
 
 
-## The flames drawn under a damaged craft's picture (as the Status window
-## draws them; TeeJ's screenshot: a damaged TIE).
+## The flames drawn under a damaged or destroyed craft's picture (as the
+## Status window draws them; TeeJ's screenshots: a damaged TIE, the lost Y-wing).
 static func _Flames(w: Dictionary) -> Texture2D:
 	var id: String = str(w.get("id", ""))
 	if id.is_empty() or str(w.get("kind", "")) == "characters":

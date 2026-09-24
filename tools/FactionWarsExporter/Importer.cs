@@ -845,8 +845,8 @@ public sealed class Importer
                     if (portrait is int p && SaveSprite(gokres, p, P("portraits", kind, id + ".png"))) { portraits++; pictureCount++; }
                     else missing.Add($"portraits/{kind}/{id}: no bitmap {portrait} in GOKRES.DLL");
                     // A capital ship's or fighter's flames, drawn UNDER its
-                    // picture when it is damaged (the Status window, the
-                    // battle results): GOKRES picture + 8192 (measured:
+                    // picture when it is damaged (the Status window) or
+                    // damaged or lost (the battle results): GOKRES picture + 8192 (measured:
                     // 10053 under the Corellian Corvette's 1861, 9795 under
                     // the Y-wing's 1603; every craft's flames follow its hull).
                     if (portrait is int pd && entry["family"]?.GetValue<string>() is "capital_ship" or "fighter"

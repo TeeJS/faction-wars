@@ -96,6 +96,19 @@ func _init() -> void:
 	for s in r.Theirs.Ships:
 		if s.Type == Enums.UnitType.CapitalShip:
 			r.TheirLosses.add("CapitalShipsOperational", s.Name, "units", s.PackId, false)
+	# A lost Alliance ship, undamaged before it went, with its picture and its
+	# flames: a destroyed craft burns (TeeJ, 2026-09-24, the original's lost Y-wing).
+	var lost: Unit = null
+	for s in r.Ours.Ships:
+		if s.Type == Enums.UnitType.CapitalShip:
+			lost = s
+			break
+	if lost != null:
+		DirAccess.make_dir_recursive_absolute("%s/portraits/units" % dir)
+		_png("%s/portraits/units/%s.png" % [dir, lost.PackId], 122, 50, Color(0.7, 0.7, 0.7))
+		_png("%s/portraits/units/%s.damage.png" % [dir, lost.PackId], 122, 50, Color(1, 0.5, 0))
+		Art.Reset()
+		r.OurLosses.add("CapitalShipsDestroyed", lost.Name, "units", lost.PackId, false)
 
 	var alert := BattleAlertWindow.new()
 	alert.name = "BattleAlertWindow"
@@ -171,6 +184,17 @@ func _init() -> void:
 			chosen = c
 	_check(chosen != null and chosen.size.y == tab_h, "chosen, the Personnel tab is still cut to the others' height")
 	_check(_text(body, "Empty2") == "No Casualties" and _text(body, "Empty1") == "None", "empty personnel columns: None, No Casualties")
+	if lost != null:
+		results._tab = 0
+		(results._oButtons[1] as TextureButton).pressed.emit()
+		await process_frame
+		var live := func(n: String) -> Node:
+			for c in body.find_children(n, "", true, false):
+				if not c.is_queued_for_deletion():
+					return c
+			return null
+		_check(live.call("Picture1_0") != null and live.call("Flames1_0") != null,
+			"the Alliance's lost %s burns in the Destroyed column" % lost.Name)
 	results.queue_free()
 	_finish()
 
