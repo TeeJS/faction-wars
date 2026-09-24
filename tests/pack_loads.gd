@@ -1,5 +1,6 @@
 extends SceneTree
-## Every pack under res://packs/ loads and validates - the modularity proof
+## Every pack under res://packs/ loads and validates, and its JSON is LF on
+## disk (the pack hash is of the bytes) - the modularity proof
 ## (BACKLOG #24). A second pack on the same binary is what SCHEMA.md section 1
 ## ("names are never behaviour") exists for; this is the test that says whether
 ## the engine can still read a pack it was not written against.
@@ -44,6 +45,13 @@ func _load_one(pack_dir: String) -> void:
 		for e in errors:
 			print("    %s" % e)
 		return
+	# The hash multiplayer compares is of the files' bytes: they must be the
+	# same on every machine, so LF (.gitattributes), never CRLF.
+	for f in FactionRegistry.PACK_FILES:
+		if FileAccess.get_file_as_bytes("%s/%s" % [pack_dir, f]).has(13):
+			_failed += 1
+			print("[pack_loads] FAIL %s/%s has CRLF line endings; its hash would differ from an LF checkout's." % [pack_dir, f])
+			return
 	_ok += 1
 	print("[pack_loads] ok   %s (%d sectors, %d planets, %d characters, %d facilities, %d units, %d weapons, %d missions, %d tables, %d rules, %d GID modes)"
 		% [pack_dir, pack.Map.Sectors.size(), pack.Map.Planets.size(), pack.Characters.size(),

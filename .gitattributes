@@ -1,3 +1,9 @@
 # Godot rewrites .import files with LF on every import; with core.autocrlf on,
 # git would otherwise flag them modified forever. Keep them LF on disk.
 *.import text eol=lf
+
+# A pack's JSON files are hashed byte for byte (FactionRegistry.ContentHash),
+# and multiplayer compares the hash: a Windows checkout (core.autocrlf) gave
+# them CRLF and a different hash from the same pack built on Linux. Keep them
+# LF everywhere (the editor handoff, 2026-09-23, item 7).
+packs/**/*.json text eol=lf
