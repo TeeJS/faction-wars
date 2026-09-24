@@ -214,6 +214,18 @@ public sealed class Importer
         // The Alliance's three-socket column down the Encyclopedia's right
         // edge (58x330), drawn whole (its one blue pixel shows).
         ("ency_side.alliance", 10585),
+        // The Finders (manual p075 Fig. 3.12, p124-p126), placed on TeeJ's
+        // screenshots of the original's (2026-09-24): each finder's 400x306
+        // plate - the System's, the Ship's and Fleet's per side, the Troop's
+        // and Personnel's (characters, special forces) per side listed - and
+        // the Alliance's socketed strip for two buttons or four.
+        ("finder_systems", 10522),
+        ("finder_ships.alliance", 10524), ("finder_ships.empire", 10525),
+        ("finder_fleets.alliance", 10526), ("finder_fleets.empire", 10527),
+        ("finder_personnel.alliance", 10536), ("finder_personnel.empire", 10537),
+        ("finder_specforces.alliance", 10538), ("finder_specforces.empire", 10539),
+        ("finder_troops.alliance", 10540), ("finder_troops.empire", 10541),
+        ("finder_side2.alliance", 10584), ("finder_side4.alliance", 10586),
         // Build Selection (p045, p112 Fig 3.58): the 210x261 plate - the frame,
         // the picture box, the two cost boxes with their icons, the times box
         // and the number box (TeeJ's screenshot of the original, Empire).
@@ -327,6 +339,11 @@ public sealed class Importer
         ("fleet_tab_fighter", "alliance", 10410, 10417, 10413), ("fleet_tab_fighter", "empire", 10460, 10467, 10463),
         ("fleet_tab_troop", "alliance", 10411, 10418, 10414), ("fleet_tab_troop", "empire", 10461, 10468, 10464),
         ("fleet_tab_personnel", "alliance", 10412, 10419, 10415), ("fleet_tab_personnel", "empire", 10462, 10469, 10465),
+        // The Finders' tabs (both sides'): all, Rebel, Imperial, neutral,
+        // unexplored - normal, current, greyed.
+        ("finder_tab_all", "", 10500, 10501, 0), ("finder_tab_rebel", "", 10502, 10503, 10504),
+        ("finder_tab_imperial", "", 10505, 10506, 10507), ("finder_tab_neutral", "", 10508, 10509, 10510),
+        ("finder_tab_unexplored", "", 10511, 10512, 10513),
     };
 
     // STRATEGY.DLL: buttons as (name, normal, pressed/current, disabled).
@@ -339,6 +356,16 @@ public sealed class Importer
         ("ency_view_index.empire", 10378, 10379, 10390),
         ("ency_close.alliance", 10370, 10371, 0), ("ency_view_topic.alliance", 10374, 10375, 10389),
         ("ency_view_index.alliance", 10372, 10373, 10388),
+        // The Finders' buttons: Display (the Alliance's 32x31, the Empire's
+        // 44x41), and the switches between the Fleet and Ship Finders and
+        // between characters and special forces - their "pressed" picture is
+        // the one lit while that view is on (matched on TeeJ's screenshots;
+        // the Empire's by the same order, not seen).
+        ("finder_display.alliance", 10518, 10519, 0), ("finder_display.empire", 10520, 10521, 0),
+        ("finder_btn_fleets.alliance", 10531, 10530, 0), ("finder_btn_ships.alliance", 10529, 10528, 0),
+        ("finder_btn_fleets.empire", 10535, 10534, 0), ("finder_btn_ships.empire", 10533, 10532, 0),
+        ("finder_btn_characters.alliance", 10542, 10543, 0), ("finder_btn_specforces.alliance", 10546, 10547, 0),
+        ("finder_btn_characters.empire", 10544, 10545, 0), ("finder_btn_specforces.empire", 10548, 10549, 0),
         // The original's scrollbar (13 wide): arrows and the thumb's three parts.
         ("scroll_up", 10658, 0, 0), ("scroll_down", 10662, 0, 0),
         ("scroll_thumb_top", 10666, 0, 0), ("scroll_thumb_mid", 10668, 0, 0), ("scroll_thumb_bottom", 10669, 0, 0),

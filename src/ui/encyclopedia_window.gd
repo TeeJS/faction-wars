@@ -619,6 +619,7 @@ class OriginalIndex extends Control:
 	func _init() -> void:
 		clip_contents = true
 		mouse_filter = Control.MOUSE_FILTER_STOP
+		focus_mode = Control.FOCUS_CLICK
 
 	func clear() -> void:
 		for r in _rows:
@@ -642,6 +643,7 @@ class OriginalIndex extends Control:
 		l.gui_input.connect(func(e: InputEvent) -> void:
 			if e is InputEventMouseButton and e.pressed and e.button_index == MOUSE_BUTTON_LEFT:
 				select(i)
+				grab_focus()
 				if e.double_click:
 					item_activated.emit(i))
 		add_child(l)
@@ -689,6 +691,29 @@ class OriginalIndex extends Control:
 		if event is InputEventMouseButton and event.pressed and bar != null \
 				and (event.button_index == MOUSE_BUTTON_WHEEL_UP or event.button_index == MOUSE_BUTTON_WHEEL_DOWN):
 			bar.call("step", -1 if event.button_index == MOUSE_BUTTON_WHEEL_UP else 1)
+			accept_event()
+		# "Scroll down the list ... by using the cursor keys: Up, Down, Home,
+		# or End" (manual p075, Fig. 3.12); Enter opens the one picked.
+		if event is InputEventKey and event.pressed and not _names.is_empty():
+			var to: int = _selected
+			match event.keycode:
+				KEY_UP:
+					to = maxi(0, _selected - 1)
+				KEY_DOWN:
+					to = mini(_names.size() - 1, _selected + 1)
+				KEY_HOME:
+					to = 0
+				KEY_END:
+					to = _names.size() - 1
+				KEY_ENTER, KEY_KP_ENTER:
+					if _selected >= 0:
+						item_activated.emit(_selected)
+					accept_event()
+					return
+				_:
+					return
+			select(to)
+			ensure_current_is_visible()
 			accept_event()
 
 
