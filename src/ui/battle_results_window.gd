@@ -433,8 +433,9 @@ func _ShowPage() -> void:
 			columns = [["Operational", "TroopsOperational"], ["Destroyed", "TroopsDestroyed"]]
 		_:
 			columns = [["Survivors", "PersonnelSurvivors"], ["Captured", "PersonnelCaptured"], ["Killed", "PersonnelKilled"]]
-	# What each column holds: {name, picture}. A destroyed unit burns, as a
-	# damaged one does (TeeJ's screenshot: the lost Y-wing).
+	# What each column holds: {name, picture, flames}. Fire means DAMAGED -
+	# a survivor that was hit (manual p153: "burn marks indicate they are
+	# damaged"; TeeJ, 2026-09-24: "fire means damaged, not destroyed").
 	var lists: Array = []
 	for col in columns:
 		var items: Array = []
@@ -442,7 +443,7 @@ func _ShowPage() -> void:
 		var who: Array = losses.Who.get(col[1], []) if losses != null else []
 		for j in texts.size():
 			var w: Dictionary = who[j] if j < who.size() else {}
-			var burning: bool = str(col[1]).ends_with("Destroyed") or bool(w.get("damaged", false))
+			var burning: bool = bool(w.get("damaged", false))
 			items.append({"name": _PlainName(str(texts[j])), "picture": _Picture(w),
 				"flames": _Flames(w) if burning else null})
 		lists.append(items)
@@ -550,8 +551,8 @@ static func _Picture(w: Dictionary) -> Texture2D:
 	return Art.Portrait("units", id)
 
 
-## The flames drawn under a damaged or lost craft's picture (as the Status
-## window draws them; TeeJ's screenshots: the lost Y-wing, a damaged TIE).
+## The flames drawn under a damaged craft's picture (as the Status window
+## draws them; TeeJ's screenshot: a damaged TIE).
 static func _Flames(w: Dictionary) -> Texture2D:
 	var id: String = str(w.get("id", ""))
 	if id.is_empty() or str(w.get("kind", "")) == "characters":
