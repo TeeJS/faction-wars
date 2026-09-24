@@ -717,8 +717,7 @@ func _build_original() -> void:
 	_oDown.pressed.connect(func() -> void: _o_step(1))
 
 	# ---- the frame over both, and its side buttons ----
-	var frame := OUI.Place(body, OUI.Pic("frame." + _oSide), 0, 0, "Frame")
-	frame.mouse_filter = Control.MOUSE_FILTER_PASS
+	var frame := OUI.PlaceHit(body, OUI.Pic("frame." + _oSide), 0, 0, "Frame")
 	frame.gui_input.connect(OnTitleBarGuiInput)
 	if _oSide == "alliance":
 		OUI.Place(body, OUI.Pic("msgindex_side.alliance"), 412, 0, "SideColumn")
