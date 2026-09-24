@@ -3,8 +3,8 @@ extends SceneTree
 ## the map frame - at full frame height with no tab strip of its own, or, with
 ## the imported art, as the original's Message Index with its own tabs; the Message
 ## Alert column's buttons are its tabs and the one on show reads as pressed;
-## minimised and reopened, it re-docks. Also: the day box shows an unread
-## COUNT rather than a list of category names.
+## minimised and reopened, it re-docks. Also: the day box shows the day only -
+## no unread count and no list of category names (TeeJ, 2026-09-23).
 ##
 ##   .\tools\run-gd.ps1 tests/comms_dock.gd -- --pack=ww2
 ##   .\tools\run-gd.ps1 tests/comms_dock.gd              (Star Wars)
@@ -79,7 +79,8 @@ func _init() -> void:
 	EventBus.Tell(GameSettings.PlayerFaction, GameMessage.new("B", "b", Enums.MessageCategory.Conflict, StrategicTickManager.Today, null, null))
 	gm.RefreshStatusBar()
 	var text: String = gm._dayLabel.text
-	_check(not text.contains("Defense") and not text.contains("Conflict") and text.contains("unread"), "the day box shows an unread count, not category names ('%s')" % text)
+	# ...and no count either (TeeJ, 2026-09-23: "not needed there").
+	_check(not text.contains("Defense") and not text.contains("Conflict") and not text.contains("unread"), "the day box shows the day only ('%s')" % text)
 
 	print("[comms_dock] %d checks, %d failed" % [_checks, _fails])
 	quit(1 if _fails > 0 else 0)

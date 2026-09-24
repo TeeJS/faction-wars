@@ -389,6 +389,32 @@ public sealed class Importer
         ("options_knob", 10054),
     };
 
+    // The Command Center's Speed Control (manual p071 Fig. 3.8), cut from each
+    // side's frame - STRATEGY 900 the Alliance's, 901 the Empire's (TeeJ's
+    // screenshot of the Empire's matched 901 at (474, 6), every pixel but the
+    // day and the bars): (name, frame, x, y, w, h), the see-through blue kept
+    // out. Its bars per side, one picture per speed: Pause, Very Slow, Slow,
+    // Medium, Fast (none lit, none, one, two, three; TeeJ's at Slow, one lit).
+    private static readonly (string Name, int Frame, int X, int Y, int W, int H)[] FrameCuts =
+    {
+        ("hud_speed.alliance", 900, 90, 11, 106, 23), ("hud_speed.empire", 901, 488, 13, 102, 24),
+    };
+    private static readonly (string Side, int[] Ids)[] SpeedBars =
+    {
+        ("alliance", new[] { 11580, 11581, 11582, 11583, 11588 }), ("empire", new[] { 11584, 11585, 11586, 11587, 11589 }),
+    };
+    // REBDLOG.DLL: the original's alert box (TeeJ's screenshot of "Resume Game
+    // Play?"): the 412x176 plate with no, one and two button sockets, and its
+    // check and cross buttons (normal, pressed).
+    private static readonly (string Name, int Id)[] DialogPlates =
+    {
+        ("dialog_plate0", 10621), ("dialog_plate1", 10622), ("dialog_plate2", 10623),
+    };
+    private static readonly (string Name, int Normal, int Pressed)[] DialogButtons =
+    {
+        ("dialog_ok", 10625, 10624), ("dialog_cancel", 10627, 10626),
+    };
+
     public sealed record Result(int Pictures, int Descriptions, List<string> Missing, List<string> Log);
 
     private readonly string _gameDir;
@@ -729,6 +755,39 @@ public sealed class Importer
             }
             Say($"Game Options: the screen and {optionParts} parts (COMMON.DLL).");
         }
+
+        // The Speed Control and the alert box.
+        int hud = 0;
+        foreach (var (name, frame, x, y, w, h) in FrameCuts)
+        {
+            if (SaveSprite(strategy, frame, P("windows", $"{name}.png"), false, new Rectangle(x, y, w, h))) { hud++; pictureCount++; }
+            else missing.Add($"windows/{name}: no bitmap {frame} in STRATEGY.DLL");
+        }
+        foreach (var (side, ids) in SpeedBars)
+            for (int n = 0; n < ids.Length; n++)
+            {
+                if (SaveSprite(strategy, ids[n], P("windows", $"speed_bars.{side}.{n}.png"))) { hud++; pictureCount++; }
+                else missing.Add($"windows/speed_bars.{side}.{n}: no bitmap {ids[n]} in STRATEGY.DLL");
+            }
+        var dlogDll = Path.Combine(_gameDir, "REBDLOG.DLL");
+        if (File.Exists(dlogDll))
+        {
+            var dlog = new PeResources(dlogDll);
+            foreach (var (name, id) in DialogPlates)
+            {
+                if (SaveSprite(dlog, id, P("windows", $"{name}.png"))) { hud++; pictureCount++; }
+                else missing.Add($"windows/{name}: no bitmap {id} in REBDLOG.DLL");
+            }
+            foreach (var (name, normal, pressed) in DialogButtons)
+            {
+                if (SaveSprite(dlog, normal, P("buttons", $"{name}.png"))) { hud++; pictureCount++; }
+                else missing.Add($"buttons/{name}: no bitmap {normal} in REBDLOG.DLL");
+                if (SaveSprite(dlog, pressed, P("buttons", $"{name}.pressed.png"))) pictureCount++;
+            }
+        }
+        else
+            missing.Add("REBDLOG.DLL not found - no alert box");
+        Say($"Speed Control and alert box: {hud} pictures.");
 
         _sink.WriteText(P("descriptions.json"),
             descriptions.ToJsonString(new JsonSerializerOptions { WriteIndented = true, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping }) + "\n");
