@@ -1,19 +1,48 @@
 <!-- reconciled from sol-conflict-revolution commit 167e2ad (SCHEMA.md, 2026-07-25) -->
 
-# Faction Pack Schema v1 — DRAFT (awaiting sign-off)
+# Faction Pack Schema v1
 
 The contract between the engine and a faction pack. Everything that describes
 *content* lives here; everything that describes *how the simulation runs* lives
-in engine code. See the source repo's `PROJECT.md` for why.
+in engine code.
 
-> **This is the live copy.** First drafted 2026-07-25 in the C# repo, reconciled
-> here against the real data folder, and implemented here. Every correction is
-> listed in §13. The source repo carries a synced mirror (`f2ca03c`, 2026-09-21) —
-> edit here, then re-sync there.
+> **This is the only live copy.** First drafted 2026-07-25 in the old C# repo,
+> reconciled here against the real data and implemented here; every correction
+> is listed in §13. The old repo's copy is history and is never synced.
 
-**Status:** every file below is **built, loaded, validated and live** (PR #38,
-merged 2026-09-21). Sections marked **`[later]`** are reserved — a pack may
-declare them and a v1 engine ignores them.
+**Status:** every file below is **built, loaded, validated and live**. Sections
+marked **`[later]`** are reserved — a pack may declare them and a v1 engine
+ignores them. The examples are excerpts of the shipped Star Wars pack
+(`packs/star-wars-rebellion/`); open its files for the full picture.
+
+---
+
+## Making your own pack
+
+Rebellion has a long modding history; a faction pack is how this game carries
+it on. Most packs start **from the original**, for the player's own use:
+
+1. **Copy a shipped pack.** The pack editor (`TeeJS/faction-wars-editor`)
+   does it with *Make my own copy*; by hand, copy `packs/star-wars-rebellion/`
+   to a folder named after your new id and set that id in `pack.json` (rule 1:
+   the folder name **is** the id). A copy keeps the original's rules, units,
+   characters and missions exactly, and plays identically.
+2. **Keep `art_sets: ["swr-original"]`.** The pictures then come from the
+   player's **own** art set, exported from their copy of the game (§14). A pack
+   never carries the original's pictures or text: the editor's export and the
+   game's import both refuse one that does. Your own pictures go in the pack's
+   `art/` folder and win over the art set's.
+3. **Change what you like** - the rest of this document is every field. A key
+   starting with `_` (`"_comment"`) is yours: it is never read as data, anywhere.
+4. **Load it.** Export the pack as a `.zip` (the editor's *Export*) and import it
+   from the pack picker. The import checks it with the same validator the game
+   uses (§11) and refuses it, with the reasons, if the game could not load it.
+   A pack with the same id as a shipped one is never used - give yours its own.
+
+No engine rule selects on a pack's id, so a renamed copy behaves the same.
+What a pack can **not** do is add a new kind of mechanic: every behaviour it
+names (a facility role, a mission `behaviour`, a GID `quantity.kind`) is one
+the engine implements. The loader refuses an unknown one rather than ignore it.
 
 ---
 
@@ -28,22 +57,30 @@ declare them and a v1 engine ignores them.
 - **Durations are in ticks. 1 tick = 1 in-game day.**
 - **N factions (2–4).** Nothing in a pack or the engine may assume two sides.
   Anything that was a two-sided pair becomes a map keyed by faction id.
-- Unknown fields are ignored (forward-compatible). Missing required fields are a
-  load error.
-- A pack is a folder under `packs/<pack_id>/`. The Star Wars content currently in
-  `data/` becomes `packs/star-wars-rebellion/`.
+- Unknown fields are ignored (forward-compatible).
+- **A missing file is a load error; a missing field is one only where §11 checks
+  it.** Everywhere else an absent field takes its default (0, empty, `false`) -
+  so a typo in an optional field's name is silently the default. The pack
+  editor warns about fields it does not know.
+- **A key starting with `_` is a comment**, in any object and any keyed map
+  (`JsonUtil.data_keys`): `"_comment"`, `"_note"`, `"_monitors_comment"`. The
+  shipped packs use them.
+- A pack is a folder: `packs/<id>/` (shipped with the game) or `user://packs/<id>/`
+  (imported). The folder name is the pack's id. A shipped pack wins over an
+  imported one with the same id.
 
 ### Files in a pack
 
-Fifteen JSON files and one bitmap live in `data/` today. Every one of them is
-accounted for below — that is what this reconciliation was for.
+Twelve JSON files, all required. The "Current source" column is provenance:
+the original data files each was first built from (they are gone; the pack
+files are hand-edited now and are the contract).
 
 | File | Purpose | Current source | Built? |
 |---|---|---|---|
 | `pack.json` | Manifest + setup defaults | *(new)* | ✅ |
 | `factions.json` | The sides: identity, color, HQ config, asymmetry flags | *(new)* | ✅ |
 | `map.json` | Sectors and planets: position, ring, artwork | `sectors_data.json` (20) + `planets_data.json` (200) | ✅ |
-| *(the map bitmap)* | The galaxy backdrop the map is drawn on — a **`pack.json` field**, `map_image`, not a file of its own (§2) | now `packs/star-wars-rebellion/galaxyShaded.bmp` | ✅ |
+| *(the map picture)* | The galaxy backdrop the map is drawn on — a **`pack.json` field**, `map_image`, not a file of its own (§2): a picture in the pack, or one from an art set | the Star Wars pack: `swr-original:screens/galaxy.png`, the player's own | ✅ |
 | `facilities.json` | Static structures + **role tags** | `production_facilities.json` (9) + `defensive_facilities.json` (6) + the `FacilityType` enum | ✅ |
 | `units.json` | Mobile units and their stats | `military_units.json` (57) | ✅ |
 | `weapons.json` | Weapon classes + **role tags** | `military_units.json` weapon columns + the four-class vocabulary in `tactical_battle.gd` | ✅ |
@@ -64,46 +101,53 @@ with the extraction tooling, not shipped in a pack.
 
 ## 2. `pack.json` — manifest
 
-**Built.** Matches `packs/star-wars-rebellion/pack.json`.
+An excerpt of `packs/star-wars-rebellion/pack.json` (regions, monitors and the
+credits shortened; the tips abridged).
 
 ```json
 {
   "id": "star-wars-rebellion",
   "display_name": "Star Wars: Rebellion",
+  "summary": "The Galactic Civil War: the Rebel Alliance's hidden headquarters against the Empire's Coruscant, ...",
   "schema_version": 1,
   "faction_count": 2,
   "neutral": { "id": "neutral", "display_name": "Neutral", "color": "#5499ff" },
   "unexplored_color": "#cccccc",
-  "map_image": "galaxyShaded.bmp",
+  "art_sets": ["swr-original"],
+  "map_image": "swr-original:screens/galaxy.png",
+  "map_image_rect": [-5, 110, 1070.6666, 803],
   "setup": {
     "difficulty_default": "easy",
     "galaxy_sizes": ["standard", "large", "huge"],
     "galaxy_size_default": "standard"
   },
+  "victory_tips": {
+    "_comment": "The Multiplayer Options tooltips, manual p162, verbatim.",
+    "standard": "Rebel Win Conditions: Capture Coruscant and ...",
+    "hq_only": "Rebel Win Conditions: Capture Coruscant. ..."
+  },
   "menu": {
-    "image": "cockpit.png",
+    "image": "swr-original:screens/cockpit.png",
     "selected_color": "#ffd23c",
-    "readout": { "rect": [609, 842, 244, 34], "standard": "Standard Game", "hq_only": "Headquarters Only Victory", "color": "#40ff40" },
+    "readout": { "rect": [270.2, 374.2, 108.4, 15.1], "standard": "Standard Game",
+                 "hq_only": "Headquarters Only Victory", "color": "#40ff40" },
     "regions": [
-      { "action": "difficulty",      "value": "easy",     "rect": [133, 82, 120, 110], "tooltip": "Set game difficulty to easy.", "selected_color": "#ff3030" },
-      { "action": "galaxy_size",     "value": "standard", "rect": [649, 652, 64, 64],  "tooltip": "...", "selected_color": "#ffd23c" },
-      { "action": "start",           "value": "empire",   "rect": [333, 680, 170, 150] },
-      { "action": "load_game",       "rect": [923, 518, 90, 94] },
-      { "action": "credits",         "rect": [1029, 542, 80, 74] },
-      { "action": "hq_only_victory", "rect": [689, 748, 96, 74] },
-      { "action": "multiplayer",     "rect": [141, 872, 136, 142] },
-      { "action": "exit",            "rect": [1237, 884, 126, 126] }
+      { "action": "difficulty", "value": "easy", "rect": [58.7, 36.4, 53.3, 48.9],
+        "tooltip": "Set game difficulty to easy.", "selected_color": "#ff3030" },
+      { "action": "start", "value": "empire", "rect": [147.6, 302.2, 75.6, 66.7],
+        "tooltip": "Start the game as the Empire." }
     ],
     "monitor_fps": 10,
     "monitors": [
-      { "image": "swr-original:menu/alliance.png", "at": [437, 307], "frames": 15 },
-      { "image": "swr-original:menu/standard_game.png", "at": [305, 333], "frames": 1,
-        "region": "hq_only_victory", "selected_image": "swr-original:menu/hq_only.png" }
+      { "image": "swr-original:menu/easy.png", "at": [61, 40], "frames": 30 }
     ],
     "credits": ["..."]
   }
 }
 ```
+
+Rects are in the menu picture's own pixels - the original's cockpit is
+640×480.
 
 | Field | Notes |
 |---|---|
@@ -208,22 +252,16 @@ This also closes the original §10 Q1 (an open resource vocabulary implying a
 a third means adding rule entries **and** an engine consumer, not just a pack
 file. Re-open only if that is actually wanted.
 
-### Galaxy size is currently a hardcoded sector list in engine code
+### Galaxy size — `min_size` on each sector
 
-**⚠ Absent from the original draft.** Which sectors a `standard` / `large` /
-`huge` galaxy contains is not data at all — it is twenty literal sector names
-in [galaxy_factory.gd:14-25](src/game/galaxy_factory.gd:14):
+Which sectors a `standard` / `large` / `huge` galaxy contains is `map.json`
+data: each sector's `min_size`. (It was once twenty literal sector names in
+`galaxy_factory.gd`; that list is gone.) The game offers **three** sizes - the
+menu's buttons and a multiplayer room's setting - so `setup.galaxy_sizes` needs
+at least three entries (rule 22); a fourth and later can be chosen only from a
+pack's own Cockpit picture.
 
-```gdscript
-var sectors := { "Corellian": true, "Sesswenna": true, "Sluis": true, ... }
-if size == Enums.GalaxySize.Large or size == Enums.GalaxySize.Huge:
-    for n in ["Farfin", "Glythe", "Jospro", "Kanchen", "Quelli"]:
-```
-
-`pack.json` declares the size *names*; the engine holds the *membership*. That
-is setting content in code, and it is `map.json`'s job.
-
-The counts reconcile exactly with `sectors_data.json`:
+The Star Wars counts, which reconcile with the original's sector table:
 
 | Size | Sectors added | Running total |
 |---|---|---|
@@ -243,10 +281,11 @@ already drops planets whose sector was filtered out
 
 ### `map_image`
 
-**★ DECIDED (TeeJ, 2026-09-21) — named in `pack.json`.** `data/galaxyShaded.bmp`
-is the backdrop the galaxy map draws over; the original draft had nowhere to put
-it. The manifest names it (§2) rather than the engine assuming a path, and a
-pack that omits it fails to load.
+**★ DECIDED (TeeJ, 2026-09-21) — named in `pack.json`.** The backdrop the
+galaxy map draws over. The manifest names it (§2) rather than the engine
+assuming a path, and a pack that omits it fails to load. It is a picture in the
+pack folder, or `"<art set>:<path>"` (the Star Wars pack's is the player's own
+`swr-original:screens/galaxy.png`).
 
 ---
 
@@ -272,28 +311,26 @@ exactly what an open `stats` map absorbs.
 ```json
 {
   "facilities": [
-    { "id": "ion_cannon", "display_name": "Ion Cannon", "tier": 1,
-      "family": 34,
+    { "id": "ion_cannon", "display_name": "KDY-150", "family": "ion_cannon", "tier": 1,
       "roles": ["planet_defense", "disable"],
-      "buildable_by": ["empire", "alliance"],
+      "buildable_by": ["alliance", "empire"],
       "construction_cost": 4, "maintenance_cost": 4,
-      "research_order": 2, "research_cost": 120,
-      "stats": { "weapon_rating": 2000, "shield_strength": 0,
-                 "bombardment_defense": 0 } },
-
-    { "id": "mine", "display_name": "Mine", "tier": 1,
-      "roles": ["extracts_raw"], "buildable_by": ["empire", "alliance"],
-      "construction_cost": 2, "maintenance_cost": 1,
-      "stats": { "processing_rate": 1 } }
+      "research_order": 0, "research_cost": 0,
+      "stats": { "bombardment_defense": 5, "weapon_rating": 2000, "shield_strength": 0 },
+      "source_family_id": 34, "source_id": 1, "string_id": 8704 }
   ]
 }
 ```
 
+`family` is a **string**; the facilities of one family are its tiers.
+`source_family_id`, `source_id` and
+`string_id` are provenance - the original's table numbers - and nothing
+selects on them.
+
 | Field | Notes |
 |---|---|
 | `roles` | The engine's selection vocabulary. v1 role set: `headquarters`, `extracts_raw`, `refines`, `produces_unit`, `produces_troop`, `produces_facility`, `planet_defense`, `shield`, `disable`, `anti_ship`, `superweapon_shield` (the structure that shelters the `superweapon` unit while docked; counts as military for bombardment). The loader rejects unknown roles so a typo cannot silently create an inert facility. |
-| `buildable_by` | A list of faction ids; absent means all. **Already migrated** in the real data. |
-| `roles` | **★ APPROVED (TeeJ, 2026-09-22).** The engine's special cases for a unit, so no rule names one: `superweapon` (the Death Star — Superweapon Sabotage's target, and what plain Sabotage refuses), `garrison_troop` (the regiment the mission score's garrison term counts). Unknown roles are a load error. |
+| `buildable_by` | A list of faction ids; absent means all. |
 | `stats` | A map keyed by the engine's **stat vocabulary** — `shield`, `hull`, `hyperdrive`, `sublight`, `detection`, `weapon_rating`, `shield_strength`, `bombardment_defense`, `processing_rate`, … — read by name in `military_catalog.gd` and `facility_catalog.gd`. **⚠ Corrected 2026-09-22:** this row used to say the engine has no built-in stat vocabulary; it does, exactly as it has a role vocabulary. The pack supplies the values here and the on-screen **words** in `display.json` `terms` (§10). Absorbs the production/defensive column split. |
 
 ---
@@ -306,28 +343,39 @@ From `military_units.json`, 57 rows, 44 columns.
 {
   "units": [
     { "id": "mon_calamari_cruiser", "display_name": "Mon Calamari Cruiser",
-      "family": "capital_ship", "roles": ["capital_ship"],
-      "buildable_by": ["alliance"],
+      "kind": "capital_ship", "buildable_by": ["alliance"],
       "construction_cost": 92, "maintenance_cost": 70,
-      "stats": { "shield": 300, "hull": 2400, "turbolaser": 360,
-                 "ion_cannon": 200, "sublight": 4, "hyperdrive": 60,
-                 "fighter_capacity": 3, "troop_capacity": 1 } }
+      "research_order": 2, "research_cost": 24,
+      "weapons": {
+        "ion_cannon": { "arcs": { "fore": 40, "aft": 40, "starboard": 60, "port": 60 }, "range": 35 },
+        "turbolaser": { "arcs": { "fore": 60, "aft": 60, "starboard": 120, "port": 120 }, "range": 50 }
+      },
+      "stats": { "detection": 10, "shield": 300, "sublight": 4, "maneuverability": 2,
+                 "hyperdrive": 60, "hull": 2400, "fighter_capacity": 3, "troop_capacity": 1 } },
+
+    { "id": "b_wing", "display_name": "B-wing", "kind": "fighter", "buildable_by": ["alliance"],
+      "weapons": {
+        "ion_cannon": { "arcs": { "fore": 6, "aft": 0, "starboard": 0, "port": 0 } },
+        "laser":      { "arcs": { "fore": 8, "aft": 0, "starboard": 0, "port": 0 } },
+        "torpedo":    { "amount": 12, "range": 7 }
+      },
+      "stats": { "shield": 9, "sublight": 7, "hyperdrive": 60, "squadron_size": 12 } }
   ]
 }
 ```
 
-- `buildable_by` **is already a list of faction ids** in the real data
-  (`"BuildableBy": ["alliance"]`). Phase 2 landed this; the original draft still
-  described it as pending.
-- **Stats that do not apply are omitted, not `null`.** The current file writes
-  `null` for inapplicable stats, which is what crashed `SeedManager` after the
-  `json_gui` merge. An open `stats` map makes absence the natural encoding.
-- **Rows do not share a key set.** Only the five torpedo-carrying fighters have
-  `Torpedoes` / `TorpedoRange` at all; capital ships omit them entirely. Any
-  tooling that infers the schema from the first row will miss columns — the
-  omission is not `null`, it is absence, which is the encoding §6 asks for.
+| Field | Notes |
+|---|---|
+| `kind` | `capital_ship`, `fighter`, `troop` or `spec_force` - what the unit IS to the engine. |
+| `roles` | **★ APPROVED (TeeJ, 2026-09-22).** The engine's special cases for a unit, so no rule names one: `superweapon` (the Death Star — Superweapon Sabotage's target, and what plain Sabotage refuses), `garrison_troop` (the regiment the mission score's garrison term counts). Usually absent. Unknown roles are a load error. |
+| `weapons` | A map keyed by **weapon id** (`weapons.json`). A weapon with firing arcs gives `arcs` (`fore`, `aft`, `starboard`, `port`) and a `range`; one without (a torpedo) gives an `amount` and a `range`. **The range is the unit's, per weapon** - the same weapon class reaches differently on different hulls. |
+| `stats` | Keyed by the engine's stat vocabulary (§5). **A stat that does not apply is omitted**, never `null`. |
 
-### Weapons are a Phase 3 vocabulary item
+**Order matters:** the tactical engine sums a unit's weapons in `weapons.json`
+declaration order, rounding per weapon, so reordering weapons changes battle
+results (and the pack hash).
+
+### Weapons — `weapons.json`
 
 The weapon columns carry **two independent axes**, and only one of them is a
 schema question.
@@ -365,43 +413,26 @@ weapon affect fighters, is it accuracy-scaled when it does, does it require the
 target's shields to be down* — plus a range. Role-shaped, exactly like
 facilities.
 
-#### Proposed `weapons.json`
+#### The file (live)
 
 ```json
 {
   "weapons": [
     { "id": "ion_cannon", "display_name": "Ion Cannon",
-      "roles": ["no_fighter_effect"], "arcs": true, "range": 35 },
+      "roles": ["no_fighter_effect"], "arcs": true, "observed_ranges": [35, 40, 60] },
     { "id": "turbolaser", "display_name": "Turbolaser",
-      "roles": ["fighter_accuracy_scaled"], "arcs": true, "range": 60 },
-    { "id": "torpedo", "display_name": "Proton Torpedo",
+      "roles": ["fighter_accuracy_scaled"], "arcs": true, "observed_ranges": [35, 50, 60, 65, 70, 75] },
+    { "id": "torpedo", "display_name": "Torpedo",
       "roles": ["no_fighter_effect", "requires_shields_down", "squadron_only"],
-      "arcs": false, "range": 7 }
+      "arcs": false, "observed_ranges": [7, 10] }
   ]
 }
 ```
 
-A unit's `stats` then keys by weapon id rather than by a fixed column name, and
-the engine stops containing the word "turbolaser".
-
-#### Why this is Phase 3 and not a `units.json` detail
-
-Phase 3 is *"open the vocabulary"* — replacing closed engine enums with
-pack-declared defs carrying role tags. `FacilityType` is the named example;
-weapons are the same job on the same schedule, and doing them separately means
-touching the tactical engine twice. **Blocked behind the same decision**, and
-verified the same way: a pack declares a weapon class the Star Wars pack does
-not have, with no recompile.
-
-#### Still open under this item
-
-- **The redundancy.** Port and Starboard are identical in all 57 rows, and each
-  summary column is exactly the sum of its four arcs. A pack could store
-  `fore` / `aft` / `broadside` and let the engine mirror, dropping the summaries
-  as derived — but that is behaviour-visible if any consumer reads a summary
-  directly, and those consumers have not been enumerated.
-- **The role names above are descriptions of observed behaviour**, not a
-  ratified vocabulary. They need the same sign-off the facility role set gets.
+The engine selects on the `roles`; the words are the pack's. `observed_ranges`
+is a note of the ranges the original's units use - **nothing reads it**; a
+unit's `weapons` entry carries the range that counts (above). The three summary
+columns of the original's table are gone: each was exactly the sum of its arcs.
 
 ---
 
@@ -528,7 +559,7 @@ already nested maps keyed by faction id, and the extractors that generate them
 (`parse_rules.py`, `parse_side_lottery.py`, `parse_military.py` in the old
 repo) were updated in the same change. (Historical: the pack is hand-edited now.)
 
-Real shape of `game_rules.json`, 213 rows:
+`rules.json` is a **top-level array** of 213 rows, one per rule entry:
 
 ```json
 { "EntryId": 1,
@@ -567,6 +598,47 @@ facility row places tier 1 of that facility's family (the original's
 and an empty one means "no carrier" — dropping it would reorder the garrison
 and move the replay hash. Validation rule 13 rejects a row that resolves to
 nothing, and refuses `FamilyId` outright.
+
+#### `setup.json` logistics tables
+
+`setup.json` is `{"side_lottery": [...], "logistics": {<table id>: {...}}}`.
+A logistics table is what day zero places on a world:
+
+```json
+"alliance_fleet": {
+  "Type": "CMUN/FACL (Hierarchical)", "Description": "SeedFamilyTableEntry",
+  "source_file": "CMUNAFTB.DAT", "fixed_range": [90, 91],
+  "Entries": [
+    { "ParentId": 1, "ProbabilityThreshold": 1, "Multiplier": 1, "ChildrenCount": 1,
+      "Assets": [{ "unit": "corellian_corvette" }] },
+    { "ParentId": 2, "ProbabilityThreshold": 2, "Multiplier": 1, "ChildrenCount": 3,
+      "Assets": [{ "unit": "medium_transport" }, { "unit": "alliance_fleet_regiment" },
+                 { "unit": "alliance_fleet_regiment" }] }
+  ] },
+"core_system_facilities": {
+  "Type": "SYFC (Flat)", "source_file": "SYFCCRTB.DAT",
+  "Entries": [
+    { "ParentId": 1, "ProbabilityThreshold": 0, "SpawnChancePercent": 0, "Asset": null },
+    { "ParentId": 2, "ProbabilityThreshold": 36, "SpawnChancePercent": 64, "Asset": { "facility": "refinery" } }
+  ] }
+```
+
+| Field | Read by the engine? | Meaning |
+|---|---|---|
+| `Type` | **yes** | A table whose `Type` contains `SYFC` seeds a world's **facilities** slot by slot (each energy slot rolls against the entries' `ProbabilityThreshold`, placing that entry's `Asset`). Any other table places **units** (below). |
+| `Entries` | **yes** | The rows, in order. |
+| `fixed_range` | **yes** | `[first, max]` rule-entry ids (`rules.json` `EntryId`s): the table is a fixed list and entries `first..max` (read from those rules) are all placed. Absent: one entry is drawn - the last whose `ProbabilityThreshold` is at or under a 1-100 roll. |
+| `ProbabilityThreshold` | **yes** | The roll an entry needs (above). |
+| `Asset` | **yes** (SYFC) | `{"facility": id}` or `{"unit": id}`; `null` places nothing. |
+| `Assets` | **yes** (unit tables) | A carrier and what it carries: the first is placed; when it is a capital ship the rest (fighters, troops) ride in it, otherwise they stand on the world. A `null` first entry is "no carrier". |
+| `Multiplier` | **yes** | How many times the entry's `Assets` are placed. Default 1. |
+| `ParentId`, `SpawnChancePercent` | parsed, **not used** | The original's columns, kept for provenance. |
+| `ChildrenCount`, `Description`, `source_file` | **no** | Provenance. |
+
+**Tables the engine reads by name:** `core_system_facilities` (every inhabited
+world in a ring-1 sector) and `rim_system_facilities` (every other) - rule 20.
+Every other table is named by `factions.json` `seed` or a starting world's
+`garrison`.
 
 `side_lottery.json` (35 rows) is an **N×N matrix** —
 `by_faction[side][difficulty][side]` — plus flat `dev` and `mp` maps. Today 2×2.
@@ -619,7 +691,10 @@ last un-migrated instance.
 
 *(Values above are shape illustration, not transcribed from the table.)*
 
-- `available_to` replaces the `Alliance` / `Empire` integer pair.
+- `available_to` replaces the `Alliance` / `Empire` integer pair. **Code state
+  (2026-09-24): only Assassination reads it** (`MissionManager` refuses the
+  mission to a side not listed); for every other mission it is **not
+  implemented** - either side can run it whatever the list says.
 - `behaviour` **★ APPROVED (TeeJ, 2026-09-22)** names the ENGINE behaviour this
   row is the pack's flavour of — `Enums.MissionType` in snake_case
   (`superweapon_sabotage`, `special_power_training`, …) plus the two scripted
@@ -648,17 +723,25 @@ last un-migrated instance.
 - Seven `UnknownN` columns remain undecoded. They stay as-is; a pack author
   never sets them.
 
-### `mission_tables.json` — 12 tables
+### `mission_tables.json` — 20 tables
 
-Outcome tables, keyed by original `.DAT` filename (`ABDCMSTB.DAT`,
-`ASSNMSTB.DAT`, …), each `{field1, entries_count, info, entries, description}`.
-**Keys are role ids with `source_file` kept alongside** (§12 Q2, decided).
+```json
+{ "tables": {
+    "diplomacy": { "source_file": "DIPLMSTB.DAT", "description": "Diplomacy - mission success %",
+      "entries": [ { "id": 1, "field2": 1, "threshold": -39, "value": 1 },
+                   { "id": 2, "field2": 1, "threshold": -29, "value": 3 } ] } } }
+```
 
-**★ RESOLVED — nothing had to be guessed.** There are **20** tables, not 12, and
-every one carries its own `description` field. Sixteen already had a readable
-constant in `mission_table_manager.gd` carrying the id the original registers
-them by; the other four are named from their descriptions: `character_search`,
-`resource_event`, `uprising_start`, `uprising_end`.
+A table maps a score to a value: the value of the last entry whose `threshold`
+the score reaches (the first entry's when none). `id` and `field2` are the
+original's columns. Keys are role ids, `source_file` kept for provenance
+(§12 Q2).
+
+| Tables | Read by |
+|---|---|
+| one per mission, **named by the mission's id** (`diplomacy`, `sabotage`, `death_star_sabotage`, …) | that mission's success roll (`MissionManager.TableFor`) |
+| `foil`, `decoy`, `evasion`, `escape`, `informants`, `uprising_start` | the mechanic of that name. **Missing, the mechanic switches off** without an error: nothing is foiled, no decoy fools, a pursued character always escapes, captives never try, informants never report, and no uprising ever starts (the last logs an error). The loader does not require them. |
+| `troop_decoy`, `character_search`, `resource_event`, `uprising_end` | **nothing - not implemented.** The Star Wars pack carries them from the original; editing them changes nothing. |
 
 ---
 
@@ -694,7 +777,7 @@ threshold and flare, all 21 modes — by dumping both and diffing.
 | `title_from` | `loyalty_label` — the key-panel title is the player's faction's `loyalty_label` from `factions.json`, resolved per side. |
 | `galaxy_display_modes` | Mode ids in the original's Alt+1..9 order. |
 | `loyalty_bar` | **Optional.** The playable sides left to right on the sector window's loyalty bar (manual p025 Fig 2.9 has the Empire on the left, the Alliance on the right, so the Star Wars pack says `["empire", "alliance"]`). When given it must name every faction exactly once (rule 16); left out, the bar follows the pack's faction order. |
-| `icons` | **Optional per key.** The pack's own picture for a sector-window corner glyph: `manufacturing` (top left), `fleet` (upper right), `defenses` (lower left), `mission` and `uprising` (lower right) - manual p070 Fig 3.7. A file in the pack folder, white on alpha (the map tints it with the faction colour), 16 px. A glyph the pack does not name comes from the engine's `assets/icons/` (drawn by `tools/draw_corner_icons.py`). Rule 17. A player's own `original/` overlay (`tools/FactionWarsExporter`) wins over both when present - see `src/ui/artwork.gd`. |
+| `icons` | **Optional per key.** The pack's own picture for a sector-window corner glyph: `manufacturing` (top left), `fleet` (upper right), `defenses` (lower left), `mission` and `uprising` (lower right) - manual p070 Fig 3.7. A file in the pack folder, white on alpha (the map tints it with the faction colour), 16 px. A glyph the pack does not name comes from the engine's `assets/icons/` (drawn by `tools/draw_corner_icons.py`). Rule 17. In the original's look, the sector window draws the art set's own corner pictures instead (§14). |
 | `special_power_ranks` | The band labels for §7's special power: `none`, `novice`, `trainee`, `student`, `knight`, `master`. |
 | `terms` | **★ APPROVED (TeeJ, 2026-09-22).** What this setting calls the engine's concepts on screen — the unit stats (`hyperdrive`, `sublight`, `shield`, `hull`, `detection`, `weapons`, `bombardment`, `bombardment_defense`, `bombardment_modifier`, `maintenance`, `squadron_size`, `fighter_capacity`, `troop_capacity`), the economy (`energy`, `raw_materials`, `refined_materials`, `mine`/`mines`, `refinery`/`refineries`), the two defence kinds as prose plurals (`planetary_shields`, `orbital_batteries`), the unit kinds (`fighter_squadron(s)`, `trooper_regiment(s)`), `in_transit` ("in hyperspace") and the five ship systems tactical damage tracks (`system_shield_recharge`, `system_weapon_recharge`, `system_tractor`, `system_engines`, `system_hyperdrive`; manual p128) and a standing defence's state tag in the Defenses window (`shield_active`, `weapon_armed`). The key set is engine vocabulary (`PackLoader.KNOWN_TERMS`); an unknown key is a load error (rule 14). **Optional**: a key the pack leaves out takes the engine's neutral default, so a pack labels only what it wants to. Read through one helper, like the rank labels. Note the two speeds are distinct concepts: `hyperdrive` is movement *between* systems (a time multiplier, lower is faster, and 0 means "cannot"), `sublight` is speed *in* a battle. |
 
@@ -708,16 +791,17 @@ GID legend stops being hardcoded rows.
 The loader reports **every** error before play, not the first. Implemented in
 [pack_loader.gd](src/data/pack_loader.gd); each live rule has a negative test in
 `tests/pack_validation.gd` that proves it rejects, not merely that the real pack
-passes.
+passes. The pack picker lists a pack that fails with its errors and no Play,
+and the import refuses one (§14).
 
 1. ✅ `pack.json.id` equals the folder name; `schema_version` ≤ engine-supported.
 2. ✅ `faction_count` equals the entries in `factions.json`, and is 2–4.
-3. ⚠ **Map cross-references live** — every planet resolves to a declared sector,
-   ids are unique. Facilities, units, characters and missions await their files.
+3. ✅ Cross-references resolve and ids are unique: planets to sectors; facility,
+   unit, character and mission rows to what they name.
 4. ✅ Every facility `roles` entry, weapon role and `display.quantity.kind` is in
    the engine's known set for this `schema_version`.
-5. ⚠ **Character `faction` and `can_command` checked.** `buildable_by` /
-   `available_to` await the facility, unit and mission files.
+5. ✅ Faction references resolve: a character's `faction` and `can_command`
+   ranks; facility and unit `buildable_by`; mission `available_to`.
 6. ✅ Each faction's `hq` is internally consistent: a `fixed` HQ names a planet;
    a `hidden` HQ declares a `placement`.
 7. ✅ Every `starting_planets` entry is a planet id, a `fixed` HQ's `planet` is a planet
@@ -729,12 +813,15 @@ passes.
 10. ✅ Every sector's `min_size` is one of `setup.galaxy_sizes`, and the smallest
     declared size has at least one sector — otherwise that menu option yields an
     empty galaxy.
+11. ✅ The Cockpit picture (`menu`), when a pack has one, reaches every menu
+    function with exactly one region each (§2); its readout, monitors and
+    colours are well-formed.
+12. ✅ Character roles, unit roles and mission behaviours are in the engine's
+    set; each story role is cast at most once; each mission behaviour appears
+    at most once.
 13. ✅ Every seeding row in `setup.json` names a `unit` or `facility` id the pack
     declares (a `null` child is the empty carrier slot); a row carrying the
     original's `FamilyId` / `AssetId` is refused.
-
----
-
 14. ✅ Every `display.json` `terms` key is one of the engine's known terms and
     its label is non-empty.
 15. ✅ A character's `starts_at` names a planet on the map that its side holds at
@@ -747,6 +834,22 @@ passes.
     sets, every faction names a `skin` the sets have (and without them, none
     does); every row's `art` is `[<set>:]<kind>/<id>` with a declared set and a
     known kind; an art-set `map_image` or `menu.image` names a declared set.
+
+What day zero reads without asking - each of these once passed the loader and
+then stopped the game on its first day (the editor handoff, 2026-09-23):
+
+19. ✅ A seeded side (`factions.json` `seed`) with a headquarters names
+    `hq_facilities`, `hq_garrison` and `fleet`; one whose starting worlds carry
+    a `garrison` names `fleet`.
+20. ✅ `setup.json` logistics has `core_system_facilities` when the map has a
+    ring-1 sector and `rim_system_facilities` when it has any other.
+21. ✅ Every logistics table is an object.
+22. ✅ `setup.galaxy_sizes` has at least three entries.
+
+**Not checked by the loader** (the engine copes, but a pack author should know):
+the named mission tables of §9 (missing, their mechanic switches off); a
+`galaxy_sizes` entry past the third (reachable only from the pack's own Cockpit
+picture); a logistics table's `Type` (only `SYFC` in it changes anything, §8).
 
 ## 12. Open questions for sign-off
 
@@ -924,6 +1027,7 @@ What changed from the source repo's 2026-07-25 draft, and why.
 | 58 | **`menu.monitors`** and `menu.monitor_fps` (§2): the Cockpit's monitor pictures, animated, from the art set; validated with rule 11 | TeeJ, 2026-09-23: "most of the icons are missing from the main menu" |
 | 59 | **`adjective`** per faction (§3): the side as the battle sentences name it | TeeJ, 2026-09-24: the battle screens in the original's words |
 | 60 | **`still`** on a `menu.monitors` entry (§2): a monitor that holds one frame | TeeJ, 2026-09-24: "lucas arts logo twitches, it does not move in the original" |
+| 61 | **Brought up to date for pack authors.** "DRAFT" dropped; a *Making your own pack* section; §1's missing-field rule made accurate and `_` comments documented; §2's example is the real `pack.json`; §5 `family` a string, the unit-roles row moved to §6; §6 the real units and `weapons.json` (`kind`, per-unit weapon ranges, `observed_ranges` unread); §8 `rules.json` an array, the logistics fields and what reads them; §9 the real mission-table shape, which tables are read and which are not implemented, `available_to` read only by Assassination; §11 rules 11 and 12 in the list, 3 and 5 marked done, rules 19-22 | The pack editor's handoff (2026-09-23), item 5; TeeJ, 2026-09-24: help players make their own packs from the original, for their own use |
 
 ---
 
