@@ -8717,7 +8717,8 @@
           "Frames": 30,
           "ImageFile": "swr-original:menu/easy.png",
           "Region": "",
-          "SelectedImageFile": ""
+          "SelectedImageFile": "",
+          "Still": -1
         },
         {
           "At": [
@@ -8727,7 +8728,8 @@
           "Frames": 30,
           "ImageFile": "swr-original:menu/medium.png",
           "Region": "",
-          "SelectedImageFile": ""
+          "SelectedImageFile": "",
+          "Still": -1
         },
         {
           "At": [
@@ -8737,7 +8739,8 @@
           "Frames": 30,
           "ImageFile": "swr-original:menu/hard.png",
           "Region": "",
-          "SelectedImageFile": ""
+          "SelectedImageFile": "",
+          "Still": -1
         },
         {
           "At": [
@@ -8747,7 +8750,8 @@
           "Frames": 15,
           "ImageFile": "swr-original:menu/empire.png",
           "Region": "",
-          "SelectedImageFile": ""
+          "SelectedImageFile": "",
+          "Still": -1
         },
         {
           "At": [
@@ -8757,7 +8761,8 @@
           "Frames": 15,
           "ImageFile": "swr-original:menu/alliance.png",
           "Region": "",
-          "SelectedImageFile": ""
+          "SelectedImageFile": "",
+          "Still": -1
         },
         {
           "At": [
@@ -8767,7 +8772,8 @@
           "Frames": 30,
           "ImageFile": "swr-original:menu/load.png",
           "Region": "",
-          "SelectedImageFile": ""
+          "SelectedImageFile": "",
+          "Still": -1
         },
         {
           "At": [
@@ -8777,7 +8783,8 @@
           "Frames": 2,
           "ImageFile": "swr-original:menu/credits.png",
           "Region": "",
-          "SelectedImageFile": ""
+          "SelectedImageFile": "",
+          "Still": 1
         },
         {
           "At": [
@@ -8787,7 +8794,8 @@
           "Frames": 30,
           "ImageFile": "swr-original:menu/multiplayer.png",
           "Region": "",
-          "SelectedImageFile": ""
+          "SelectedImageFile": "",
+          "Still": -1
         },
         {
           "At": [
@@ -8797,7 +8805,8 @@
           "Frames": 30,
           "ImageFile": "swr-original:menu/exit.png",
           "Region": "",
-          "SelectedImageFile": ""
+          "SelectedImageFile": "",
+          "Still": -1
         },
         {
           "At": [
@@ -8807,7 +8816,8 @@
           "Frames": 1,
           "ImageFile": "swr-original:menu/standard_game.png",
           "Region": "hq_only_victory",
-          "SelectedImageFile": "swr-original:menu/hq_only.png"
+          "SelectedImageFile": "swr-original:menu/hq_only.png",
+          "Still": -1
         }
       ],
       "Readout": {

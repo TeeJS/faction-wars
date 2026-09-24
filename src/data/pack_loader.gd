@@ -351,6 +351,8 @@ static func _validate_menu(pack: LoadedPack, pack_dir: String, errors: Array[Str
 			errors.append("%s: 'at' must be [x, y]." % ctx)
 		if m.Frames < 1:
 			errors.append("%s: 'frames' must be 1 or more." % ctx)
+		if m.Still >= m.Frames:
+			errors.append("%s: 'still' must be a frame of the strip (0 to %d)." % [ctx, m.Frames - 1])
 		if not m.Region.is_empty() and not seen.has(m.Region):
 			errors.append("%s: region '%s' is not a region of the menu." % [ctx, m.Region])
 		if not m.SelectedImageFile.is_empty() and m.Region.is_empty():

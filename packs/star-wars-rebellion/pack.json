@@ -204,7 +204,7 @@
       {"image": "swr-original:menu/empire.png", "at": [153, 307], "frames": 15},
       {"image": "swr-original:menu/alliance.png", "at": [437, 307], "frames": 15},
       {"image": "swr-original:menu/load.png", "at": [411, 231], "frames": 30},
-      {"image": "swr-original:menu/credits.png", "at": [459, 242], "frames": 2},
+      {"image": "swr-original:menu/credits.png", "at": [459, 242], "frames": 2, "still": 1},
       {"image": "swr-original:menu/multiplayer.png", "at": [67, 381], "frames": 30},
       {"image": "swr-original:menu/exit.png", "at": [535, 392], "frames": 30},
       {"image": "swr-original:menu/standard_game.png", "at": [305, 333], "frames": 1, "region": "hq_only_victory", "selected_image": "swr-original:menu/hq_only.png"}
