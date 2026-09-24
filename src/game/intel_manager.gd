@@ -137,7 +137,7 @@ static func Capture(viewer: Faction, planet: Planet, day: int, categories: Array
 			continue
 		var snap := IntelSnapshot.new()
 		snap.Day = day
-		for l in Render(planet, section):
+		for l in Render(planet, section, viewer):
 			snap.Lines.append(l)
 		for g in RenderGroups(planet, section):
 			snap.Groups.append(g)
@@ -360,7 +360,12 @@ static func RenderGroups(p: Planet, section: int) -> Array:
 
 
 ## One category of one system, as text - a copy of what was on the screen.
-static func Render(p: Planet, section: int) -> Array:
+## A sighting (`viewer` given) leaves out the viewer's own characters and
+## special forces: where they are is never a question, and a stale sighting
+## put them in two places at once - the world seen and the world they had
+## since gone to (TeeJ, 2026-09-24: Labansat at Uvena "last seen day 10" and
+## on Coruscant). The windows draw ours live, wherever they stand.
+static func Render(p: Planet, section: int, viewer: Faction = null) -> Array:
 	var lines: Array = []
 	match section:
 		Enums.IntelSection.SystemStatus:
@@ -391,10 +396,14 @@ static func Render(p: Planet, section: int) -> Array:
 					lines.append(Describe(f))
 		Enums.IntelSection.SpecForces:
 			for u in p.SpecForces():
+				if viewer != null and u.Faction == viewer:
+					continue
 				lines.append(u.Name)
 		Enums.IntelSection.Characters:
 			for c in GameState.ActiveRoster:
 				if c.IsOffMap() or c.Attached != p or c.Status == Enums.Status.Dead:
+					continue
+				if viewer != null and c.Faction == viewer:
 					continue
 				lines.append(c.Name if c.Rank == Enums.Rank.None else "%s %s" % [JsonUtil.enum_name(Enums.Rank, c.Rank), c.Name])
 		Enums.IntelSection.Manufacturing:

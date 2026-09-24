@@ -255,9 +255,10 @@ func Populate(planet: Planet, uiManager: UIManager) -> void:
 
 		var charView: IntelManager.IntelView = IntelManager.View(GameSettings.PlayerFaction, planet, Enums.IntelSection.Characters)
 		if original:
+			# The page's name alone: no "Last seen day N" under it (TeeJ,
+			# 2026-09-24; the original's intel is undated, IntelManager).
 			var personnelPage: Node = _personnelList.get_parent().get_parent()
-			OUI.Captions(personnelPage, [OriginalCaptions[0]] if charView.Live or not charView.Known \
-				else [OriginalCaptions[0], "Last seen day %d" % charView.Day], PlateW)
+			OUI.Captions(personnelPage, [OriginalCaptions[0]], PlateW)
 		if charView.Live:
 			# Query the GameManager's static roster for characters on this planet.
 			# OURS ARE ALREADY DRAWN above and unconditionally, so this lists
@@ -402,15 +403,14 @@ func _GreyEmptyTabs(newSubject: bool) -> void:
 
 
 ## A page's list: the original's captions over its grid of cards, or the
-## plain list headed by the tab's name. A snapshot's day is the second
-## caption line (the plain rows carry it themselves).
-func _page_list(container: Control, index: int, plainTitle: String, view: IntelManager.IntelView, second: String = "") -> Container:
+## plain list headed by the tab's name. A sighting's day is not captioned
+## (TeeJ, 2026-09-24: the "Last seen day N" line goes; the plain rows carry
+## it themselves).
+func _page_list(container: Control, index: int, plainTitle: String, _view: IntelManager.IntelView, second: String = "") -> Container:
 	if _original:
 		var lines: Array = [OriginalCaptions[index]]
 		if not second.is_empty():
 			lines.append(second)
-		elif view != null and view.Known and not view.Live:
-			lines.append("Last seen day %d" % view.Day)
 		return OUI.Page(container, lines, PlateW, PlateH - PagesTop)
 	for child in container.get_children():
 		child.queue_free()
@@ -731,8 +731,8 @@ func _intel_target_row(list: Container, text: String, day: int, resolve: Callabl
 			return
 		_uiManager.ResolveObjectTarget(current))
 	if IsCardList(list):
-		# THE ORIGINAL'S CARD for a sighting; the day it was seen is the
-		# page's second caption line.
+		# THE ORIGINAL'S CARD for a sighting; the day it was seen is in
+		# its tooltip only.
 		OUI.Card(rowBtn, text, mini, Color.WHITE, OUI.SideColor(GameSettings.PlayerFaction))
 		rowBtn.tooltip_text = "%s (seen day %d)\n%s" % [text, day, rowBtn.tooltip_text]
 		list.add_child(rowBtn)

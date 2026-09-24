@@ -997,7 +997,7 @@ func StaleFacilityTab(tabs: TabContainer, tabName: String, family: String, yards
 	var container: VBoxContainer = tabs.get_node_or_null(tabName)
 	if container == null:
 		return
-	var list: Container = _facility_list(container, tabName, "Last seen day %d" % yards.Day)
+	var list: Container = _facility_list(container, tabName)
 
 	var world: Planet = _associatedPlanet
 	var index: int = 0

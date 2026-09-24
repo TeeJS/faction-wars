@@ -3,9 +3,9 @@ extends SceneTree
 ## intel-seen personnel, troops and fighters - so you can abduct a character or
 ## sabotage a regiment/squadron, not just a facility. Before this, those tabs drew
 ## plain non-clickable labels (reported from play: "can't sabotage a TIE fighter /
-## troops", "can't target enemy personnel for abduction"). The rows are also dated
-## "(seen day N)" so a unit that has since moved is not mistaken for being in two
-## places at once.
+## troops", "can't target enemy personnel for abduction"). A sighting keeps its
+## day: "(seen day N)" beside a plain row, in a card's tooltip (the page has no
+## "Last seen day N" caption - TeeJ, 2026-09-24).
 ##
 ##   Godot_console.exe --headless --path . -s tests/enemy_intel_targeting.gd
 
@@ -77,8 +77,9 @@ func _init() -> void:
 		var fighterRows := _intel_rows(tabs.get_node("Fighters"))
 		_check(fighterRows.size() >= 1, "Fighters tab offers clickable enemy sabotage targets")
 
-	# Staleness is dated somewhere (fixes the "in two places" confusion).
+	# Staleness is dated somewhere: a plain row's label, a card's tooltip.
 	_check(_has_seen_day_label(w), "intel rows are dated '(seen day N)'")
+	_check(not _has_caption(w, "Last seen"), "no 'Last seen day N' caption on the page")
 
 	# Before intel, nothing is offered (fog holds).
 	IntelManager.Reset()
@@ -113,8 +114,19 @@ func _intel_rows(node: Node) -> Array:
 func _has_seen_day_label(node: Node) -> bool:
 	if node is Label and (node as Label).text.contains("seen day"):
 		return true
+	if node is Button and (node as Button).tooltip_text.contains("seen day"):
+		return true
 	for c in node.get_children():
 		if _has_seen_day_label(c):
+			return true
+	return false
+
+
+func _has_caption(node: Node, text: String) -> bool:
+	if node is Label and (node as Label).text.contains(text):
+		return true
+	for c in node.get_children():
+		if _has_caption(c, text):
 			return true
 	return false
 
