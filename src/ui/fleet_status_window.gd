@@ -154,7 +154,7 @@ static func StatusData(fleet: Fleet) -> Dictionary:
 		"title": "Fleet Status",
 		"fields": rows,
 		"picture": OUI.Pic("status_fleet.%s" % side),
-		"backdrop": OUI.Pic("status_fleet_damage") if damaged > 0 else null,
+		"backdrop": _Flames(side) if damaged > 0 else null,
 		"name": fleet.Name,
 	}
 
@@ -207,3 +207,10 @@ func Refresh() -> void:
 		return
 	if _fleet != null:
 		Populate(_fleet)
+
+
+## A damaged fleet's flames for its side (STRATEGY 10427 / 10477); the one
+## picture both sides used before the side's own was exported.
+static func _Flames(side: String) -> Texture2D:
+	var pic: Texture2D = OUI.Pic("status_fleet_damage.%s" % side)
+	return pic if pic != null else OUI.Pic("status_fleet_damage")
