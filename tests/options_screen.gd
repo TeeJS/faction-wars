@@ -81,6 +81,11 @@ func _init() -> void:
 	_check(music != null and music.get_theme_color("font_color") == Screen.Greyed and music.tooltip_text.begins_with("Not in this game"),
 		"Play Music is greyed: there is no sound yet")
 	_check(toggle != null and toggle.text == "Show Starfield" and toggle.get_theme_color("font_color") == Screen.Greyed, "the tactical toggles are greyed")
+	for head in ["Head_SoundOptions", "Head_TacticalDisplayOptions"]:
+		var l: Label = screen._canvas.get_node_or_null(head)
+		_check(l != null and l.get_theme_color("font_color") == Screen.Greyed, "%s is greyed with its options" % head)
+	var saved: Label = screen._canvas.get_node_or_null("Head_SavedGames")
+	_check(saved != null and saved.get_theme_color("font_color") == Screen.Green, "Saved Games, which works, stays green")
 
 	screen._restart()
 	var confirm: Node = screen.get_node_or_null("Confirm")

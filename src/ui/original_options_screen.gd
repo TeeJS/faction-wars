@@ -45,7 +45,9 @@ const HeadPx := 14.5
 const Green := Color(0, 1, 0)
 const DimGreen := Color(0, 128 / 255.0, 0)
 const Greyed := Color(0.42, 0.42, 0.42)
-const Headings := [["Saved Games", 177.5, 41], ["Sound Options", 481.5, 41], ["Tactical Display Options", 482, 277]]
+## Each heading's text, centre x, cap top, and whether its section works yet:
+## the two that do not are greyed with their options (TeeJ, 2026-09-24).
+const Headings := [["Saved Games", 177.5, 41, true], ["Sound Options", 481.5, 41, false], ["Tactical Display Options", 482, 277, false]]
 const MusicSwitchAt := Vector2(352, 76)
 const MusicLabelAt := Vector2(377, 89)
 const StateRight := 602.0
@@ -134,7 +136,9 @@ func _build() -> void:
 	_canvas.position = _origin
 	_place(Art.Screen("options"), 0, 0, "Plate")
 	for h in Headings:
-		_text(h[0], h[1] - 150, h[2], 300, HeadPx, Green, HORIZONTAL_ALIGNMENT_CENTER, true, "Head_" + str(h[0]).replace(" ", ""))
+		var head := _text(h[0], h[1] - 150, h[2], 300, HeadPx, Green if h[3] else Greyed, HORIZONTAL_ALIGNMENT_CENTER, true, "Head_" + str(h[0]).replace(" ", ""))
+		if not h[3]:
+			head.tooltip_text = "Not in this game yet."
 
 	# ---- Save Game / Load Game ------------------------------------------------
 	_names.clear()
