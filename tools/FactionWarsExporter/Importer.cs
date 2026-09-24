@@ -149,6 +149,23 @@ public sealed class Importer
         // inside). Placed by template matching on TeeJ's four screenshots of
         // the original's (Mon Calamari, Umgul twice, Coruscant; 2026-09-23).
         ("mission_window", 11165), ("mission_frame.alliance", 11127), ("mission_frame.empire", 11128),
+        // The Battle Alert window (manual p141 Fig. 4.1, p142 Fig. 4.2) and the
+        // battle's results (p152-p153), placed by template matching on TeeJ's
+        // five screenshots of the Empire's (2026-09-23): the alert's 470x331
+        // frame per side (the Alliance's 10710 by its twin); the 400x310
+        // pictures under it - the alert's per side, the dimmed one behind the
+        // forces and system pages; the results' scenes (10757 on TeeJ's
+        // "The Imperial fleet is victorious"; the others by their content);
+        // the results' two- and three-column tables (Fig. 4.18); the forces
+        // lists' scroll thumb per side.
+        ("battle_frame.alliance", 10710), ("battle_frame.empire", 10711),
+        ("battle_alert.alliance", 10712), ("battle_alert.empire", 10713),
+        ("battle_forces.alliance", 10714), ("battle_forces.empire", 10715),
+        ("battle_result.alliance", 10757), ("battle_result.empire", 10758),
+        ("battle_result_burning.empire", 10759), ("battle_result_burning.alliance", 10760),
+        ("battle_result_none", 10763), ("battle_table2", 10761), ("battle_table3", 10762),
+        ("battle_thumb_top.alliance", 10706), ("battle_thumb_mid.alliance", 10707), ("battle_thumb_bottom.alliance", 10708),
+        ("battle_thumb_top.empire", 10754), ("battle_thumb_mid.empire", 10755), ("battle_thumb_bottom.empire", 10756),
         // A Status window (manual p064: modal, no title bar, closed by its
         // diamond): the 379x272 plate per side - the field panel with the
         // side's emblem, the picture and name grids, the button sockets - and
@@ -262,6 +279,13 @@ public sealed class Importer
         // emblem), not yet seen.
         ("mission_agents_tab", "alliance", 11560, 11561, 0), ("mission_decoys_tab", "alliance", 11562, 11563, 11564),
         ("mission_agents_tab", "empire", 11565, 11566, 0), ("mission_decoys_tab", "empire", 11567, 11568, 11569),
+        // The battle windows' right-hand column (p141 Fig. 4.1): Battle
+        // Summary, Alliance Forces, Imperial Forces, System Summary - the
+        // Empire's 44x41 measured, the Alliance's 41x41 by their pictures.
+        ("battle_summary", "alliance", 10728, 10729, 0), ("battle_summary", "empire", 10738, 10739, 0),
+        ("battle_alliance_forces", "alliance", 10730, 10731, 0), ("battle_alliance_forces", "empire", 10740, 10741, 0),
+        ("battle_empire_forces", "alliance", 10732, 10733, 0), ("battle_empire_forces", "empire", 10742, 10743, 0),
+        ("battle_system", "alliance", 10734, 10735, 0), ("battle_system", "empire", 10744, 10745, 0),
     };
 
     // STRATEGY.DLL: buttons as (name, normal, pressed/current, disabled).
@@ -277,6 +301,17 @@ public sealed class Importer
         // The original's scrollbar (13 wide): arrows and the thumb's three parts.
         ("scroll_up", 10658, 0, 0), ("scroll_down", 10662, 0, 0),
         ("scroll_thumb_top", 10666, 0, 0), ("scroll_thumb_mid", 10668, 0, 0), ("scroll_thumb_bottom", 10669, 0, 0),
+        // The Battle Alert's buttons (p141 Fig. 4.1): Retreat, Simulate Results,
+        // Take Command, per side (the Empire's measured, the Alliance's by their
+        // pictures); the results' close box and Goto System; the forces lists'
+        // scroll arrows.
+        ("battle_retreat.empire", 10971, 10972, 10973), ("battle_retreat.alliance", 10974, 10975, 10976),
+        ("battle_simulate.empire", 10716, 10717, 10718), ("battle_simulate.alliance", 10722, 10723, 10724),
+        ("battle_command.empire", 10719, 10720, 10721), ("battle_command.alliance", 10725, 10726, 10727),
+        ("battle_close.empire", 10516, 10517, 0), ("battle_close.alliance", 10514, 10515, 0),
+        ("battle_goto.empire", 10520, 10521, 0), ("battle_goto.alliance", 10791, 10792, 0),
+        ("battle_scroll_up.empire", 10750, 10751, 0), ("battle_scroll_down.empire", 10752, 10753, 0),
+        ("battle_scroll_up.alliance", 10702, 10703, 0), ("battle_scroll_down.alliance", 10704, 10705, 0),
         // Create Mission's Decoy tab: move the selected to the decoys / agents (16x16).
         ("mission_to_decoys", 11117, 11118, 0), ("mission_to_agents", 11119, 11120, 0),
         // A Status window's Encyclopedia button (32x31); its close is ency_close.alliance.

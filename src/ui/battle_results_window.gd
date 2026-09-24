@@ -14,9 +14,25 @@ var _body: VBoxContainer
 var _page: int = 0   # 0 = summary, 1 = ours, 2 = theirs
 var _tab: int = 0    # within a force page
 
+## THE ORIGINAL'S LOOK with the art imported (src/ui/original_battle.gd): the
+## Encyclopedia's frame, a scene, the title and the outcome; the column's close
+## box, the summary, the two sides' forces and Goto System. Its forces pages
+## are PROVISIONAL: no screenshot shows the original's (Fig. 4.18 is too
+## small to measure) - the tables are its pictures, the rest ours.
+const OB := preload("res://src/ui/original_battle.gd")
+const OUI := preload("res://src/ui/original_ui.gd")
+var _o: Control = null
+var _oBody: Control = null
+var _oPicture: TextureRect = null
+var _oButtons: Array = []
+var _oSide: String = ""
+
 
 func Setup(report: FleetBattleManager.BattleReport) -> void:
 	_r = report
+	if OB.CanBuild() and OUI.Pic("frame.%s" % OUI.Side(GameSettings.LocalFaction())) != null:
+		_BuildOriginal()
+		return
 
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	set_anchors_preset(Control.PRESET_CENTER)
@@ -98,6 +114,9 @@ func GotoSystem() -> void:
 
 
 func Redraw() -> void:
+	if _o != null:
+		_ShowPage()
+		return
 	for child in _body.get_children():
 		child.queue_free()
 
@@ -113,6 +132,31 @@ func Redraw() -> void:
 ## The composed outcome, clause by clause, in the original's own words.
 func Summary() -> void:
 	var viewer: Faction = GameSettings.LocalFaction()
+	var mine: Fleet = _r.Mine(viewer)
+	var enemy: Fleet = _r.Enemy(viewer)
+	var us: String = mine.Faction.DisplayName if mine.Faction != null else "Our"
+	var them: String = enemy.Faction.DisplayName if enemy.Faction != null else "Enemy"
+	var lines: Array[String] = OutcomeLines(_r, viewer)
+
+	for line in lines:
+		var l := Label.new()
+		l.text = line
+		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		l.custom_minimum_size = Vector2(450, 0)
+		l.add_theme_font_size_override("font_size", 15)
+		l.add_theme_color_override("font_color", Color(0.92, 0.94, 1.0))
+		_body.add_child(l)
+
+	_body.add_child(HSeparator.new())
+
+	Row("%s strength" % us, str(_r.MyStrength(viewer)))
+	Row("%s strength" % them, str(_r.EnemyStrength(viewer)))
+
+
+## The composed outcome, clause by clause, in the original's own words: the
+## victory clause first (the original's large line), then the system and the
+## forces.
+static func OutcomeLines(_r: FleetBattleManager.BattleReport, viewer: Faction) -> Array[String]:
 	var mine: Fleet = _r.Mine(viewer)
 	var enemy: Fleet = _r.Enemy(viewer)
 	var us: String = mine.Faction.DisplayName if mine.Faction != null else "Our"
@@ -144,20 +188,7 @@ func Summary() -> void:
 			+ "It could not withdraw, and has been completely destroyed.")
 	elif _r.LoserWithdrew:
 		lines.append("The losing fleet has withdrawn.")
-
-	for line in lines:
-		var l := Label.new()
-		l.text = line
-		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		l.custom_minimum_size = Vector2(450, 0)
-		l.add_theme_font_size_override("font_size", 15)
-		l.add_theme_color_override("font_color", Color(0.92, 0.94, 1.0))
-		_body.add_child(l)
-
-	_body.add_child(HSeparator.new())
-
-	Row("%s strength" % us, str(_r.MyStrength(viewer)))
-	Row("%s strength" % them, str(_r.EnemyStrength(viewer)))
+	return lines
 
 
 ## Fig 4.18 - four tabs, two columns. The headings change for people.
@@ -265,3 +296,136 @@ func Row(left: String, right: String) -> void:
 	row.add_child(Cell(left))
 	row.add_child(Cell(right))
 	_body.add_child(row)
+
+
+# ---- the original's look ------------------------------------------------------
+
+func _BuildOriginal() -> void:
+	mouse_filter = Control.MOUSE_FILTER_STOP
+	var viewer: Faction = GameSettings.LocalFaction()
+	_oSide = OUI.Side(viewer)
+	_o = OB.Canvas(self)
+	_oPicture = OUI.Place(_o, null, OB.PictureAt.x, OB.PictureAt.y, "Picture")
+	OUI.Place(_o, OUI.Pic("frame.%s" % _oSide), 0, 0, "Frame")
+	_oBody = Control.new()
+	_oBody.name = "Page"
+	_oBody.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_o.add_child(_oBody)
+	# The column (TeeJ's screenshot): close, the summary, the Alliance's and
+	# the Empire's forces, Goto System.
+	OB.Button3(_o, "battle_close.%s" % _oSide, OB.ColumnX, OB.ResultYs[0], "Close").pressed.connect(queue_free)
+	var stems: Array = ["battle_summary", "battle_alliance_forces", "battle_empire_forces"]
+	var tips: Array = ["Summary", "%s Forces" % _SideName("alliance"), "%s Forces" % _SideName("empire")]
+	_oButtons.clear()
+	for i in stems.size():
+		var b := OB.PageButton(_o, stems[i], _oSide, OB.ColumnX, OB.ResultYs[i + 1], tips[i])
+		var page := i
+		b.pressed.connect(func() -> void:
+			_page = page
+			_tab = 0
+			_ShowPage())
+		_oButtons.append(b)
+	OB.Button3(_o, "battle_goto.%s" % _oSide, OB.ColumnX, OB.ResultYs[4], "Goto System").pressed.connect(GotoSystem)
+	OB.Centre(self)
+	_ShowPage()
+
+
+func _FleetOf(skin: String) -> Fleet:
+	for f in [_r.Ours, _r.Theirs]:
+		if f != null and OUI.Side(f.Faction) == skin:
+			return f
+	return _r.Ours if skin == "alliance" else _r.Theirs
+
+
+func _SideName(skin: String) -> String:
+	var f: Fleet = _FleetOf(skin)
+	return f.Faction.DisplayName if f != null and f.Faction != null else skin.capitalize()
+
+
+## The scene: the side the viewer fought (TeeJ's Imperial victory over an
+## Alliance attack shows the Alliance's, 10757), burning where that fleet was
+## destroyed, an empty system when both were lost. INFERRED from one
+## screenshot and the pictures' content.
+func _Scene() -> Texture2D:
+	if _r.DrawBothLost:
+		return OUI.Pic("battle_result_none")
+	var viewer: Faction = GameSettings.LocalFaction()
+	var enemy: Fleet = _r.Enemy(viewer)
+	var side: String = OUI.Side(enemy.Faction) if enemy != null else "alliance"
+	var gone: bool = not _r.Lost(viewer) and (_r.HeldByGravityWell or not _r.LoserWithdrew)
+	var pic: Texture2D = OUI.Pic(("battle_result_burning.%s" if gone else "battle_result.%s") % side)
+	return pic if pic != null else OUI.Pic("battle_result.%s" % side)
+
+
+func _ShowPage() -> void:
+	OB.SetCurrent(_oButtons, _page)
+	for c in _oBody.get_children():
+		_oBody.remove_child(c)
+		c.queue_free()
+	var viewer: Faction = GameSettings.LocalFaction()
+	var colour: Color = OUI.SideColor(viewer)
+	var pic: Texture2D = _Scene() if _page == 0 else OUI.Pic("battle_table%d" % (3 if _tab == 3 else 2))
+	_oPicture.texture = pic
+	_oPicture.size = pic.get_size() if pic != null else Vector2.ZERO
+	OB.Line(_oBody, "Battle at %s" % _r.Where.Name, OB.ResultTitleCentre - 190, 22, 380, OB.TitlePx, colour,
+		HORIZONTAL_ALIGNMENT_CENTER, false, "Title")
+	if _page == 0:
+		var lines: Array[String] = OutcomeLines(_r, viewer)
+		OB.Line(_oBody, lines[0] if not lines.is_empty() else "", OB.OutcomeCentre - 200, OB.OutcomeY, 400, OB.OutcomePx, colour,
+			HORIZONTAL_ALIGNMENT_CENTER, false, "Outcome")
+		OB.Block(_oBody, " ".join(lines.slice(1)), OB.RestAt, 390, OB.TextPx, 18, colour, "Rest")
+		return
+	# A side's forces (Fig. 4.18) - PROVISIONAL, see the header.
+	var skin: String = "alliance" if _page == 1 else "empire"
+	var fleet: Fleet = _FleetOf(skin)
+	var losses: FleetBattleManager.Casualties = _r.MyLosses(viewer) if fleet == _r.Mine(viewer) else _r.EnemyLosses(viewer)
+	OB.Line(_oBody, "%s Forces" % _SideName(skin), OB.ResultTitleCentre - 190, 44, 380, 13, Color.WHITE,
+		HORIZONTAL_ALIGNMENT_CENTER, false, "PageName")
+	var names: Array = ["Capital Ships", Terms.label("fighter_squadrons"), Terms.label("trooper_regiments"), "Personnel"]
+	for i in names.size():
+		var tab := Button.new()
+		tab.name = "Filter%d" % i
+		tab.text = names[i]
+		tab.flat = true
+		tab.focus_mode = Control.FOCUS_NONE
+		OUI.Style(tab, 10, colour if i == _tab else Color(0.7, 0.7, 0.7), i == _tab)
+		tab.position = Vector2(36 + i * 90, 64) * OUI.K
+		tab.size = Vector2(88, 16) * OUI.K
+		var which := i
+		tab.pressed.connect(func() -> void:
+			_tab = which
+			_ShowPage())
+		_oBody.add_child(tab)
+	OB.Line(_oBody, names[_tab], 40, 102, 300, 11, Color.WHITE, HORIZONTAL_ALIGNMENT_LEFT, true, "Band")
+	var columns: Array = []
+	match _tab:
+		0:
+			columns = [["Operational", losses.CapitalShipsOperational], ["Destroyed", losses.CapitalShipsDestroyed]]
+		1:
+			columns = [["Operational", losses.SquadronsOperational], ["Destroyed", losses.SquadronsDestroyed]]
+		2:
+			var troops: Array = []
+			if fleet != null:
+				for s in fleet.Ships:
+					if s.Hangar != null:
+						for h in s.Hangar:
+							if h.Type == Enums.UnitType.Troop:
+								troops.append(h.Name)
+			columns = [["Operational", troops], ["Destroyed", []]]
+		_:
+			columns = [["Survivors", losses.PersonnelSurvivors], ["Captured", losses.PersonnelCaptured], ["Killed", losses.PersonnelKilled]]
+	# The table's columns (measured on its pictures): 24-191-374, or
+	# 24-136-247-374; the heads from y 105, the rows from 121 to 290.
+	var edges: Array = [24, 191, 374] if columns.size() == 2 else [24, 136, 247, 374]
+	for i in columns.size():
+		var x0: float = edges[i] + OB.PictureAt.x
+		var w: float = edges[i + 1] - edges[i]
+		OB.Line(_oBody, columns[i][0], x0, 105 + OB.PictureAt.y + 3, w, 11, Color.WHITE, HORIZONTAL_ALIGNMENT_CENTER, false, "Head%d" % i)
+		var items: Array = columns[i][1]
+		var shown: int = mini(items.size(), 10)
+		for j in shown:
+			OB.Line(_oBody, str(items[j]), x0 + 4, 121 + OB.PictureAt.y + 4 + j * 16, w - 8, 11, Color.WHITE,
+				HORIZONTAL_ALIGNMENT_LEFT, false, "Cell%d_%d" % [i, j])
+		if items.size() > shown:
+			OB.Line(_oBody, "... and %d more" % (items.size() - shown), x0 + 4, 121 + OB.PictureAt.y + 4 + shown * 16, w - 8, 11,
+				Color(0.7, 0.7, 0.7), HORIZONTAL_ALIGNMENT_LEFT, false, "More%d" % i)
