@@ -591,10 +591,19 @@ static func Captions(page: Control, captions: Array, width: int) -> void:
 
 ## The card's picture stack: the plate for its state (manual p084: "the
 ## image for these units shows whether the unit is completed, being built,
-## or en route" - the grey plate, hyperspace streaks), the miniature on it,
-## and the side's grid over something being built.
-static func _picture_stack(parent: Control, mini: Texture2D, state: String) -> void:
-	var plate: Texture2D = Pic("card_enroute" if state == "enroute" else "card_plate")
+## or en route" - the grey plate, hyperspace streaks; p096's character
+## status icons: the ship's windows behind a character in transit), the
+## miniature on it, then over it the side's grid for something being built,
+## the green trace for an injured character, a captured one's bars.
+static func _picture_stack(parent: Control, mini: Texture2D, state: String, over: Texture2D = null) -> void:
+	var plate: Texture2D = null
+	match state:
+		"enroute":
+			plate = Pic("card_enroute")
+		"transit":
+			plate = Pic("card_transit")
+	if plate == null:
+		plate = Pic("card_plate")
 	if plate != null:
 		Place(parent, plate, 0, 0, "Plate")
 	if mini != null:
@@ -603,6 +612,35 @@ static func _picture_stack(parent: Control, mini: Texture2D, state: String) -> v
 		var grid: Texture2D = Pic("card_building.%s" % Side(GameSettings.PlayerFaction))
 		if grid != null:
 			Place(parent, grid, 0, 0, "Building")
+	if state == "injured":
+		var trace: Texture2D = Pic("card_injured")
+		if trace != null:
+			Place(parent, trace, 0, 0, "Injured")
+	if over != null:
+		Place(parent, over, 0, 0, "Over")
+
+
+## A character's state on its card (manual p096, "Character Status Icons"):
+## captured, injured, in transit, else ready (""). Captured first: a prisoner
+## sits in a cell whether or not also hurt (the Status window's order).
+static func CharacterState(c: Character) -> String:
+	if c == null:
+		return ""
+	if c.IsCaptured():
+		return "captured"
+	if c.IsInjured():
+		return "injured"
+	if c.Status == Enums.Status.Enroute:
+		return "transit"
+	return ""
+
+
+## The bars over a captured character's miniature (its own, GOKRES), at the
+## drawn scale; null for anyone else.
+static func CharacterOver(c: Character) -> Texture2D:
+	if c == null or not c.IsCaptured():
+		return null
+	return Mini("characters", c.PackId + ".captured")
 
 
 ## Turn a list button into a CARD (Fig 3.73): the miniature at the top-left,
@@ -611,7 +649,7 @@ static func _picture_stack(parent: Control, mini: Texture2D, state: String) -> v
 ## its menu, selection and drag; its text moves to the Name label. A card is
 ## exactly one grid cell: it never stretches, so every row keeps the grid
 ## (TeeJ, 2026-09-23: "ITEMS NEED TO ALIGN IN A GRID").
-static func Card(btn: BaseButton, title: String, mini: Texture2D, color: Color, selected: Color, state: String = "") -> void:
+static func Card(btn: BaseButton, title: String, mini: Texture2D, color: Color, selected: Color, state: String = "", over: Texture2D = null) -> void:
 	if btn is Button:
 		(btn as Button).text = ""
 		(btn as Button).icon = null
@@ -623,7 +661,7 @@ static func Card(btn: BaseButton, title: String, mini: Texture2D, color: Color, 
 	btn.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	btn.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 	btn.set_meta("card", true)
-	_picture_stack(btn, mini, state)
+	_picture_stack(btn, mini, state, over)
 	var frame := SelectionFrame(0, 0, selected)
 	btn.add_child(frame)
 	var name := _card_name(btn, title, color)

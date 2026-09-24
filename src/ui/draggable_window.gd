@@ -544,7 +544,7 @@ func AddCharacterToList(list: Container, characterData: Character, text: String,
 		# White, as the original's names are - unless a status colours it.
 		var cardColor: Color = Color.WHITE if characterData.Faction != null and color == characterData.Faction.FactionColor else color
 		OUI.Card(characterBtn, characterData.Name, OUI.Mini("characters", characterData.PackId), cardColor,
-			OUI.SideColor(GameSettings.PlayerFaction), "enroute" if characterData.Status == Enums.Status.Enroute else "")
+			OUI.SideColor(GameSettings.PlayerFaction), OUI.CharacterState(characterData), OUI.CharacterOver(characterData))
 		characterBtn.tooltip_text = text
 	characterBtn.CharacterData = characterData
 	characterBtn.UIManagerRef = uiManager
