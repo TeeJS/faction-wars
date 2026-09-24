@@ -43,6 +43,12 @@ func _init() -> void:
 		if w == null:
 			_check(false, "%s's window opens" % sector.Name)
 			continue
+		# Opaque, over its own starfield (TeeJ, 2026-09-24: "with sectors being
+		# movable, they need to be less transparent").
+		var sky: Node = w.find_child("Starfield", true, false)
+		if sky != null:
+			var sb: StyleBox = w.get_theme_stylebox("panel")
+			_check(sb is StyleBoxFlat and (sb as StyleBoxFlat).bg_color.a == 1.0, "%s: opaque, over a starfield" % sector.Name)
 		var crossing: Array = _Crossing(w.get_node("%SectorMap"))
 		_check(crossing.is_empty(), "%s: no two systems' entries cross%s" % [sector.Name,
 			"" if crossing.is_empty() else " (" + ", ".join(crossing) + ")"])
