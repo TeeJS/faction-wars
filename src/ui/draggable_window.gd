@@ -648,7 +648,7 @@ func OnCharacterMenuAction(actionId: int, characters: Array, uiManager: UIManage
 						if fleet == null:
 							print("[Move] That is not a place a character can go.")
 							return
-						var r: Result = CommandBus.issue("board_fleet", { "characters": EntityIndex.names_of(characters), "fleet": fleet.Name })
+						var r: Result = CommandBus.issue("board_fleet", { "characters": EntityIndex.names_of(characters), "fleet": fleet.ID })
 						if not r.ok:
 							print("[Move] %s" % r.error))
 

@@ -91,6 +91,17 @@ static func Load(path: String) -> bool:
 	Fleet.ResetSerials()
 	for i in highest:
 		Fleet.NextSerial()
+	# The original's names ("Fleet 4", "Victory Destroyer 2"): each side's and
+	# each class's numbering goes on past the snapshot's; a fleet whose name
+	# carries no serial takes the next one as its ID (orders name it by that).
+	for p in GameState.AllPlanets():
+		for f in p.OrbitingFleets:
+			Fleet.NoteName(f.Faction, f.Name)
+			if f.ID.is_empty():
+				f.ID = Fleet.IdFor(Fleet.NextSerial())
+			for sh in f.Ships:
+				if sh.Type == Enums.UnitType.CapitalShip:
+					Unit.NoteClassName(sh.Faction, sh.PackId, _class_name(sh.PackId), sh.Name)
 
 	print("[Snapshot] %d sectors, %d planets, %d characters from %s (seed %d)." % [galaxy.size(), _planets_by_name.size(), roster.size(), path, GameSettings.Seed])
 	return true
@@ -220,6 +231,16 @@ static func _hydrate_unit_fields(u: Unit, ud: Dictionary) -> void:
 		var def: Variant = Lq.first_or_null(MilitaryCatalog.All(), func(d): return d.DisplayName == u.Name)
 		if def != null:
 			u.PackId = def.Id
+
+
+## A unit class's display name from the pack ("" when unknown).
+static func _class_name(unit_id: String) -> String:
+	var pack: PackLoader.LoadedPack = FactionRegistry.Pack
+	if pack != null:
+		for u in pack.Units:
+			if u.Id == unit_id:
+				return u.DisplayName
+	return ""
 
 
 static func _unit(ud: Dictionary, deferred: Array) -> Unit:

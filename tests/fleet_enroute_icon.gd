@@ -71,7 +71,10 @@ func _init() -> void:
 		var w: FleetWindow = Lq.first_or_null(ui.get_children(), func(n: Node) -> bool: return n is FleetWindow)
 		_check(w != null, "clicking it opens the destination's Fleet window")
 
-	# An opponent's inbound fleet does not show.
+	# An opponent's inbound fleet does not show: the corner reads as it did.
+	# (Its name is no test - each side numbers its own, so both have a
+	# "Fleet 1".)
+	var ours_only: String = icon.tooltip_text if icon != null else ""
 	var enemy: Fleet = null
 	for p in GameState.AllPlanets():
 		for f in p.OrbitingFleets:
@@ -85,7 +88,7 @@ func _init() -> void:
 		enemy.Status = Enums.Status.Enroute
 		enemy.DaysToDestination = 5
 		icon = await _fleet_corner(ui, sector, to)
-		_check(icon == null or not icon.tooltip_text.contains(enemy.Name), "an opponent's inbound fleet is not shown")
+		_check(icon != null and icon.tooltip_text == ours_only, "an opponent's inbound fleet is not shown ('%s')" % (icon.tooltip_text if icon != null else ""))
 	_finish()
 
 

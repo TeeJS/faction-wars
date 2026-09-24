@@ -25,6 +25,32 @@ static var _next_serial: int = 0
 
 static func ResetSerials() -> void:
 	_next_serial = 0
+	_numbers.clear()
+
+
+## THE ORIGINAL'S NAMES: "Fleet 1", "Fleet 2", ... - each side numbering its
+## own (TeeJ's screenshots: the Alliance's Fleet 1-5, the Empire's Fleet 1 at
+## Chandrila; TeeJ, 2026-09-24: "switch to original"). A number is not reused
+## when its fleet is gone (INFERRED - no source says either way). Both sides
+## may hold a "Fleet 1", so orders name a fleet by its ID, never its name.
+static var _numbers: Dictionary = {}   # faction id -> the last number given
+
+
+static func NextName(side: Faction) -> String:
+	var key: String = side.Id if side != null else ""
+	_numbers[key] = int(_numbers.get(key, 0)) + 1
+	return "Fleet %d" % _numbers[key]
+
+
+## A loaded fleet's name: the side's numbering goes on past it.
+static func NoteName(side: Faction, name: String) -> void:
+	if not name.begins_with("Fleet "):
+		return
+	var tail: String = name.substr(6)
+	if not tail.is_valid_int():
+		return
+	var key: String = side.Id if side != null else ""
+	_numbers[key] = maxi(int(_numbers.get(key, 0)), int(tail))
 
 
 static func NextSerial() -> int:

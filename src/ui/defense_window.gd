@@ -994,7 +994,7 @@ func OnUnitMenuAction(actionId: int, units: Array, uiManager: UIManager) -> void
 						if fleet == null:
 							print("[Move] That is not somewhere a unit can be sent.")
 							return
-						var r: Result = CommandBus.issue("load_aboard", { "units": EntityIndex.ids_of_units(units), "fleet": fleet.Name })
+						var r: Result = CommandBus.issue("load_aboard", { "units": EntityIndex.ids_of_units(units), "fleet": fleet.ID })
 						if r.value == 0 and not r.error.is_empty():
 							print("[Move] %s" % r.error))
 

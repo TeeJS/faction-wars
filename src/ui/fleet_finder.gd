@@ -56,15 +56,6 @@ static func Known(ships: bool) -> Array:
 	var seen: Dictionary = {}    # a sighted name -> the latest day seen
 	if GameState.ActiveGalaxy == null:
 		return out
-	# Ours are never a sighting: a stale one of a fleet of ours that has
-	# since moved must not list it as theirs, somewhere it no longer is.
-	var ourNames: Dictionary = {}
-	for p in GameState.AllPlanets():
-		for f in p.OrbitingFleets:
-			if f.Faction == viewer:
-				ourNames[f.Name] = true
-				for s in f.Ships:
-					ourNames[s.Name] = true
 	for p in GameState.AllPlanets():
 		var live: bool = IntelManager.IsLive(viewer, p)
 		for f in p.OrbitingFleets:
@@ -85,20 +76,22 @@ static func Known(ships: bool) -> Array:
 		var view: IntelManager.IntelView = IntelManager.View(viewer, p, Enums.IntelSection.OrbitingShips)
 		if not view.Known:
 			continue
-		var them: Faction = _other(viewer)
 		for g in view.Groups:
-			if ourNames.has(g.Name):
+			# Ours are never a sighting: a stale one of a fleet of ours that
+			# has since moved must not list it as theirs, somewhere it no
+			# longer is. The sighting says whose it was ("Fleet 1" is both
+			# sides' name).
+			var them: Faction = FactionRegistry.ById(g.Side) if not g.Side.is_empty() else _other(viewer)
+			if them == viewer:
 				continue
 			var names: Array = g.Lines if ships else [g.Name]
 			for n in names:
-				var key: String = str(n)
-				if ourNames.has(key):
-					continue
+				var key: String = "%s|%s" % [them.Id if them != null else "", str(n)]
 				if seen.has(key) and int(seen[key][0]) >= view.Day:
 					continue
 				if seen.has(key):
 					out.erase(seen[key][1])
-				var e := _entry(key, them, p, false)
+				var e := _entry(str(n), them, p, false)
 				seen[key] = [view.Day, e]
 				out.append(e)
 	out.sort_custom(func(a: Entry, b: Entry) -> bool: return a.Name.naturalnocasecmp_to(b.Name) < 0)

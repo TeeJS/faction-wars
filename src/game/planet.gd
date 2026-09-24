@@ -898,8 +898,8 @@ func DetachIntoOwnFleet(ship: Unit) -> Fleet:
 	var serial := Fleet.NextSerial()
 	var split := Fleet.new()
 	split.ID = Fleet.IdFor(serial)
-	split.Name = "%s Fleet_%04d" % [ControllingFaction.DisplayName if ControllingFaction != null else "", serial]
 	split.Faction = ship.Faction if ship.Faction != null else ControllingFaction
+	split.Name = Fleet.NextName(split.Faction)
 	split.Attached = self
 	split.Status = Enums.Status.AwaitingOrders
 	split.AddShip(ship)
@@ -915,7 +915,7 @@ func AddCapitalShip(unit: Unit) -> void:
 		var serial := Fleet.NextSerial()
 		var fleet := Fleet.new()
 		fleet.ID = Fleet.IdFor(serial)
-		fleet.Name = "%s Fleet_%04d" % [ControllingFaction.DisplayName, serial]
+		fleet.Name = Fleet.NextName(ControllingFaction)
 		fleet.Faction = ControllingFaction
 		fleet.Attached = self
 		fleet.Status = Enums.Status.AwaitingOrders

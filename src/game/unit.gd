@@ -16,6 +16,30 @@ static var _next_serial: int = 0
 
 static func ResetSerials() -> void:
 	_next_serial = 0
+	_class_numbers.clear()
+
+
+## A capital ship's number within its class and side ("Corellian Corvette 1",
+## "Corellian Corvette 2" - TeeJ's screenshots of the original's Ship Finder;
+## fighters and regiments carry none). Never reused (INFERRED).
+static var _class_numbers: Dictionary = {}   # "faction|unit id" -> the last number
+
+
+static func NextClassNumber(side: Faction, unit_id: String) -> int:
+	var key: String = "%s|%s" % [side.Id if side != null else "", unit_id]
+	_class_numbers[key] = int(_class_numbers.get(key, 0)) + 1
+	return _class_numbers[key]
+
+
+## A loaded ship's name: its class's numbering goes on past it.
+static func NoteClassName(side: Faction, unit_id: String, class_name_: String, name: String) -> void:
+	if not name.begins_with(class_name_ + " "):
+		return
+	var tail: String = name.substr(class_name_.length() + 1)
+	if not tail.is_valid_int():
+		return
+	var key: String = "%s|%s" % [side.Id if side != null else "", unit_id]
+	_class_numbers[key] = maxi(int(_class_numbers.get(key, 0)), int(tail))
 
 
 static func NextSerial() -> int:

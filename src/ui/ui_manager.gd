@@ -1274,7 +1274,7 @@ func ExecuteFleetMove(fleets: Array, destination: Planet, _requireConfirmation: 
 		return
 	# requireConfirmation is accepted and ignored, exactly as in the source:
 	# Confirmed Move for fleets is not built yet.
-	var r: Result = CommandBus.issue("move_fleets", { "fleets": EntityIndex.names_of(fleets), "destination": destination.Name })
+	var r: Result = CommandBus.issue("move_fleets", { "fleets": EntityIndex.ids_of_fleets(fleets), "destination": destination.Name })
 	if r.ok:
 		RefreshAfterMove(currentPlanet, destination)
 	elif not r.error.is_empty():

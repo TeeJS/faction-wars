@@ -9,6 +9,8 @@ extends RefCounted
 ## A named group inside a snapshot - a fleet, and the ships it held when seen.
 class IntelGroup:
 	var Name: String
+	## Whose fleet it is (a faction id): each side names its own "Fleet 1".
+	var Side: String = ""
 	var Lines: Array[String] = []
 
 
@@ -353,6 +355,7 @@ static func RenderGroups(p: Planet, section: int) -> Array:
 	for f in p.OrbitingFleets:
 		var g := IntelGroup.new()
 		g.Name = f.Name
+		g.Side = f.Faction.Id if f.Faction != null else ""
 		for s in f.Ships:
 			g.Lines.append(s.Name)
 		groups.append(g)
