@@ -7071,7 +7071,7 @@
       "SourceFile": "ASSNMSTB.DAT"
     },
     "character_search": {
-      "Description": "Character search / hit table",
+      "Description": "Capital-ship damage category, 1-7, picked by a random roll - not a character search (single source: the Deep-Dive wiki, CSCRHTTB.DAT). Not read by this engine.",
       "Entries": [
         {
           "Threshold": 0,
@@ -7891,7 +7891,7 @@
       "SourceFile": "TDECOYTB.DAT"
     },
     "uprising_end": {
-      "Description": "Uprising end / subdue probability %",
+      "Description": "Read with uprising_start from one score; values 0, 3, 4, 5. What the original does with them is unknown - no source supports 'uprising end' (the Deep-Dive wiki, UPRIS2TB.DAT). Not read by this engine.",
       "Entries": [
         {
           "Threshold": 1,
