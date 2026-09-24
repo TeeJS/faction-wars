@@ -555,7 +555,10 @@ func _init() -> void:
 			await process_frame
 			_check(sw.visible and ui._openWindows.get(sector.Name) == sw, "opening the sector again restores it")
 		var sb: StyleBoxFlat = sw.get_theme_stylebox("panel") as StyleBoxFlat
-		_check(sb != null and sb.bg_color.a < 1.0 and sb.shadow_size == 0, "see-through, no shadow")
+		# Opaque over its own starfield, no shadow (TeeJ, 2026-09-24: movable
+		# sector windows "need to be less transparent"; #156).
+		_check(sb != null and sb.bg_color.a == 1.0 and sb.shadow_size == 0 and sw.find_child("Starfield", true, false) != null,
+			"opaque over a starfield, no shadow")
 		var sname: Label = sw.find_child("SectorTitle", true, false)
 		_check(sname != null and sname.text == sector.Name, "the sector's name across the top")
 		var swap: TextureButton = sw.find_child("sector_switch", true, false)

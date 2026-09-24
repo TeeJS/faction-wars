@@ -38,27 +38,37 @@ func _init() -> void:
 	w.OpenToCategory("Missions")
 	await process_frame
 
-	# It opens on the newest transmission, as before.
-	_check(w._selectedMessage == m3, "opens on the newest message")
+	# The plain window opens on the newest transmission. The original's Message
+	# Index opens on the list with nothing picked: viewing the list reads
+	# nothing (TeeJ, 2026-09-23: "only clear when the message is read or
+	# deleted, not when the message list is viewed").
+	if w._original:
+		_check(w._selectedMessage == null, "the index opens with nothing picked")
+	else:
+		_check(w._selectedMessage == m3, "opens on the newest message")
 
 	# The player selects an OLDER message.
 	w.ShowDetail(m1, null)
 	_check(w._selectedMessage == m1, "manual selection focuses the older message")
 
-	# A new message arrives and the list repaints.
+	# A new message arrives and the window repaints (as on EventBus's change).
 	var m4 := _tell(alliance, "Fourth report", 4)
-	w.RefreshCurrentTab()
+	w.Refresh()
 	await process_frame
 
 	# The player's selection is preserved - NOT yanked to the newest (m4).
 	_check(w._selectedMessage == m1, "selection is preserved across a repaint (not reset to newest)")
 	_check(w._selectedMessage != m4, "a newly arrived message does not steal focus")
 
-	# But if the selection is deleted, the pane falls back to the newest.
+	# But if the selection is deleted: the plain pane falls back to the
+	# newest; the index to nothing picked.
 	CommandBus.issue("delete_messages", { "messages": [m1.Serial] })
-	w.RefreshCurrentTab()
+	w.Refresh()
 	await process_frame
-	_check(w._selectedMessage == m4, "after the selection is gone, it falls back to the newest")
+	if w._original:
+		_check(w._selectedMessage == null, "after the selection is gone, nothing is picked")
+	else:
+		_check(w._selectedMessage == m4, "after the selection is gone, it falls back to the newest")
 
 	w.free()
 	ui.free()

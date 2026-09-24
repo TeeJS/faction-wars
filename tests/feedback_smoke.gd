@@ -7,6 +7,18 @@ extends SceneTree
 
 func _init() -> void:
 	await process_frame
+	# THIS POSTS A REPORT, SO ONLY EVER TO A LOCAL RELAY. With no --relay the
+	# game's own address is the live one, and a sweep of every test posted this
+	# note to it three times (2026-09-24). tools/feedback-local.ps1 starts a
+	# relay on this machine and passes its address.
+	var relay := ""
+	for a in OS.get_cmdline_user_args():
+		if a.begins_with("--relay="):
+			relay = a.substr(8)
+	if not (relay.begins_with("ws://127.0.0.1:") or relay.begins_with("ws://localhost:")):
+		print("[feedback_smoke] SKIP: needs a local relay (--relay=ws://127.0.0.1:<port>/ws) - run tools/feedback-local.ps1")
+		quit(0)
+		return
 	FactionRegistry.EnsureLoaded()
 	MpSetup.reset()
 	GameSettings.ProvideFeedback = true

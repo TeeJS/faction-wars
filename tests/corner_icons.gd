@@ -40,15 +40,21 @@ func _init() -> void:
 		var tex: Texture2D = FactionRegistry.CornerIcon(name)
 		_check(tex != null and tex.get_width() == 16 and tex.get_height() == 16, "glyph '%s' loads at 16 px (%s)" % [name, tex.resource_path if tex != null else "-"])
 
-	# A world we hold, with a fleet in orbit: Manufacturing, Fleet, Defenses, Mission corners.
+	# A world we hold, with a fleet in orbit and some defense: Manufacturing,
+	# Fleet, Defenses, Mission corners. (The galaxy is the clock's: a world
+	# with a fleet and nothing else - Duros on seed 1 - rightly has no
+	# Defenses corner, so one with a defense is preferred.)
 	var home: Planet = Lq.first_or_null(GameState.AllPlanets(), func(p: Planet) -> bool:
-		return p.ControllingFaction == us and not p.FleetsInOrbit().is_empty())
+		return p.ControllingFaction == us and not p.FleetsInOrbit().is_empty() and _defended(p))
+	if home == null:
+		home = Lq.first_or_null(GameState.AllPlanets(), func(p: Planet) -> bool:
+			return p.ControllingFaction == us and not p.FleetsInOrbit().is_empty())
 	if home == null:
 		home = Lq.first_or_null(GameState.AllPlanets(), func(p: Planet) -> bool: return p.ControllingFaction == us)
 	_check(home != null, "%s holds a world (%s)" % [us.Id, home.Name if home != null else "-"])
 	var corners: Dictionary = await _corners_for(ui, home)
-	for name in ["manufacturing", "defenses"]:
-		_check(corners.has(name), "the %s corner is drawn under %s" % [name, home.Name])
+	_check(corners.has("manufacturing"), "the manufacturing corner is drawn under %s" % home.Name)
+	_check(corners.has("defenses") == _defended(home), "the defenses corner is drawn under %s exactly when it has a defense" % home.Name)
 	_check(not corners.has("mission"), "no mission corner while no mission runs (TeeJ, 2026-09-23)")
 	if not home.FleetsInOrbit().is_empty():
 		_check(corners.has("fleet"), "the fleet corner is drawn where a fleet is in orbit")
@@ -71,10 +77,7 @@ func _init() -> void:
 
 	# A world we know has no defenses shows no Defenses corner.
 	var bare: Planet = Lq.first_or_null(GameState.AllPlanets(), func(p: Planet) -> bool:
-		return p.ControllingFaction == us and p.Troopers().is_empty() and p.FighterSquadrons.is_empty() \
-			and p.SpecForces().is_empty() \
-			and not Lq.any(GameState.ActiveRoster, func(c: Character) -> bool: return c.Attached == p and not c.IsOffMap()) \
-			and not Lq.any(p.Facilities, func(f: Facility) -> bool: return IntelManager.IsDefensive(f)))
+		return p.ControllingFaction == us and not _defended(p))
 	if bare != null:
 		_check(not (await _corners_for(ui, bare)).has("defenses"), "no Defenses corner on %s, which has none" % bare.Name)
 
@@ -109,6 +112,14 @@ func _init() -> void:
 
 
 var _lastCentre: Vector2 = Vector2.ZERO
+
+
+## Any defense on a world: troops, fighters, Special Forces, a character, or
+## a defensive facility.
+func _defended(p: Planet) -> bool:
+	return not (p.Troopers().is_empty() and p.FighterSquadrons.is_empty() and p.SpecForces().is_empty() \
+		and not Lq.any(GameState.ActiveRoster, func(c: Character) -> bool: return c.Attached == p and not c.IsOffMap()) \
+		and not Lq.any(p.Facilities, func(f: Facility) -> bool: return IntelManager.IsDefensive(f)))
 
 ## Opens the planet's sector window and returns its corner buttons by glyph name.
 func _corners_for(ui: UIManager, planet: Planet) -> Dictionary:

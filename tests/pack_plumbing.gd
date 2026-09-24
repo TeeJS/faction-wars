@@ -18,6 +18,10 @@ var _ok := 0
 
 
 func _init() -> void:
+	if not OS.get_cmdline_user_args().has("--pack=ww2"):
+		print("[pack_plumbing] SKIP: run with -- --pack=ww2 (the argument path is what it proves)")
+		quit(0)
+		return
 	_check("--pack= wins over active.json", FactionRegistry.DefaultPackId() == "ww2",
 		"DefaultPackId() = '%s'" % FactionRegistry.DefaultPackId())
 

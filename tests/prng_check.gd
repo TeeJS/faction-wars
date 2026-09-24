@@ -6,7 +6,8 @@ extends SceneTree
 
 
 func _init() -> void:
-	var fixture := FileAccess.get_file_as_string("res://tests/fixtures/prng-12345.txt").split("\n", false)
+	# A Windows checkout gives the fixture CRLF endings; the numbers are the same.
+	var fixture := FileAccess.get_file_as_string("res://tests/fixtures/prng-12345.txt").replace("\r", "").split("\n", false)
 	var ours := Prng.dump(12345, 1000)
 	var bad := 0
 	for i in ours.size():

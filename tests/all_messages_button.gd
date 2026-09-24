@@ -42,7 +42,10 @@ func _init() -> void:
 		_check(first is Button, "the first entry is a Button")
 		_check(first.name == "All", "the first entry is named 'All' (top of the list)")
 		if first is Button:
-			_check((first as Button).text == "All Messages", "the first entry reads 'All Messages'")
+			# With the original's art the name moves off the button onto its
+			# socket's hover (ui_manager.gd RefreshCommsHighlights).
+			var label: String = (first as Button).text if not (first as Button).text.is_empty() 				else str(first.get_meta("label", (first as Button).tooltip_text))
+			_check(label == "All Messages", "the first entry reads 'All Messages' ('%s')" % label)
 		# The original nine category buttons are still there, after All.
 		_check(commsList.get_node_or_null("Loyalty") != null, "the Loyalty category button is still present")
 		_check(commsList.get_node_or_null("Advice") != null, "the Advice category button is still present")

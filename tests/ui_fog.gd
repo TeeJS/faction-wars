@@ -102,21 +102,18 @@ func _personnel_finder(alliance: Faction, empire: Faction) -> void:
 	enemy.DaysToDestination = 0
 
 	# Not yet seen there: the finder must NOT list them.
-	pf.PopulateLists("")
-	_check(not _mentions(_all_text(pf), enemy.Name), "an enemy we have not seen is NOT listed")
+	_check(not _mentions(_texts(pf, empire), enemy.Name), "an enemy we have not seen is NOT listed")
 
 	# Espionage sees them at w: now they are listed, AT w.
 	StrategicTickManager.Today = 7
 	IntelManager.Capture(alliance, w, 7, IntelManager.EspionageCategories)
-	pf.PopulateLists("")
-	var texts: Array = _all_text(pf)
+	var texts: Array = _texts(pf, empire)
 	_check(_mentions(texts, enemy.Name), "after espionage, the enemy IS listed")
-	_check(_row_for(pf, enemy.Name).contains(w.Name), "listed at the world we saw them on (%s)" % w.Name)
+	_check(_row_in(texts, enemy.Name).contains(w.Name), "listed at the world we saw them on (%s)" % w.Name)
 
 	# They move on, unseen: the finder still shows the world we SAW them at, not the new one.
 	enemy.Attached = w2
-	pf.PopulateLists("")
-	var row: String = _row_for(pf, enemy.Name)
+	var row: String = _row_in(_texts(pf, empire), enemy.Name)
 	_check(row.contains(w.Name) and not row.contains(w2.Name), "after they move unseen, the finder still shows %s, not their live world" % w.Name)
 
 	pf.free()
@@ -154,9 +151,18 @@ func _all_text(node: Node, out: Array = []) -> Array:
 	return out
 
 
+## The finder's rows for a side: the original's (CharactersOf - its list
+## shows one side's page at a time) or the plain window's two lists.
+func _texts(pf: Node, side: Faction) -> Array:
+	if pf.get("_allianceList") == null:
+		return pf.CharactersOf(side).map(func(e) -> String: return e.Text)
+	pf.PopulateLists("")
+	return _all_text(pf)
+
+
 ## The first row text that names `who` (a personnel row is "Name - World ...").
-func _row_for(node: Node, who: String) -> String:
-	for t in _all_text(node):
+func _row_in(texts: Array, who: String) -> String:
+	for t in texts:
 		if str(t).contains(who):
 			return str(t)
 	return ""
