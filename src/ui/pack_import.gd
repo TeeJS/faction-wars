@@ -27,9 +27,12 @@ const KIND_FACTION_PACK := "faction_pack"
 const STAGING := "user://import-staging.zip"
 ## The oldest Faction Wars Exporter whose art set this version of the game can
 ## use, per art set. 2.1.0: the galaxy map mirrored out to 640x480, which the
-## Star Wars pack's map_image_rect needs. Raise it when the game needs pictures
-## an older exporter did not write; the picker then asks for a new export.
-const MIN_EXPORTER := {"swr-original": "2.1.0"}
+## Star Wars pack's map_image_rect needs. 2.3.0: the Mission window, the
+## cockpit's monitors, Game Options, the Speed Control and pause box, the
+## resource displays and the battle windows (2026-09-23). Raise it when the game
+## needs pictures an older exporter did not write; the picker then asks for a
+## new export.
+const MIN_EXPORTER := {"swr-original": "2.3.0"}
 
 
 ## Called with each import's result (the pack picker refreshes its cards).
