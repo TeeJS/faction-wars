@@ -217,6 +217,10 @@ static func _import(zip: ZIPReader) -> Dictionary:
 			var more: String = "\n  ... and %d more" % (errors.size() - REASONS_SHOWN) if errors.size() > REASONS_SHOWN else ""
 			return _fail("Not imported: the game would refuse to load it.\n  %s%s" % ["\n  ".join(shown), more])
 	_remove(dest)
+	# A faction pack is staged outside user://packs, so on a player's first
+	# import that folder does not exist yet and the move would fail (the
+	# editor's game check, 2026-09-24).
+	DirAccess.make_dir_recursive_absolute(dest.get_base_dir())
 	if DirAccess.rename_absolute(staging, dest) != OK:
 		return _fail("Could not move the import into place at %s." % dest)
 	Art.Reset()
