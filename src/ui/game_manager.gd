@@ -36,6 +36,8 @@ const DefaultSpeed := 2   # Slow - the slider's old default
 var _timeControls: PanelContainer
 var _speedReadout: Label
 var _speedMenu: PopupMenu
+var _oSpeedMenu: PopupPanel = null   # the original's, with its art
+const OriginalMenu := preload("res://src/ui/original_menu.gd")
 var _pauseBox: AcceptDialog
 
 # THE ORIGINAL'S SPEED CONTROL AND ALERT BOX, with the art imported (TeeJ,
@@ -316,6 +318,11 @@ func BuildSpeedMenu() -> void:
 		_speedMenu.add_radio_check_item(SpeedNames[i], i)
 	add_child(_speedMenu)
 	_speedMenu.id_pressed.connect(func(id: int) -> void: SetSpeed(id))
+	# The original's: each speed's bars and name, the one in force in the
+	# side's colour (original_menu.gd; TeeJ, 2026-09-24).
+	_oSpeedMenu = OriginalMenu.SpeedMenu(OUI.Side(GameSettings.PlayerFaction), SpeedNames, SetSpeed)
+	if _oSpeedMenu != null:
+		add_child(_oSpeedMenu)
 
 	# A CLICK ON THE TIME DISPLAY PULLS THE MENU DOWN under it. The manual
 	# says right-click (p071); TeeJ asked for a pull-down (2026-09-23), so
@@ -323,8 +330,12 @@ func BuildSpeedMenu() -> void:
 	_timeControls.gui_input.connect(func(event: InputEvent) -> void:
 		if event is InputEventMouseButton and event.pressed 				and (event.button_index == MOUSE_BUTTON_RIGHT or event.button_index == MOUSE_BUTTON_LEFT):
 			var at: Vector2 = _timeControls.global_position + Vector2(0, _timeControls.size.y)
-			_speedMenu.position = Vector2i(int(at.x), int(at.y))
-			_speedMenu.popup()
+			var menu: Window = _speedMenu
+			if _oSpeedMenu != null:
+				OriginalMenu.MarkSpeed(_oSpeedMenu, _speed)
+				menu = _oSpeedMenu
+			menu.position = Vector2i(int(at.x), int(at.y))
+			menu.popup()
 			_timeControls.accept_event())
 	_BuildOriginalSpeed()
 	_BuildOriginalResources()
