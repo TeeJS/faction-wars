@@ -1,6 +1,6 @@
-# Builds the Faction Wars Exporter for players: a self-contained win-x64 folder
-# (no .NET install, no admin), optionally Authenticode-signed with Azure Trusted
-# Signing, zipped as FactionWarsExporter-win-x64.zip beside this script.
+# Builds the Faction Wars Exporter for players: ONE exe, FactionWarsExporter.exe,
+# self-contained (no .NET install, no admin) and compressed, its data built in,
+# optionally Authenticode-signed with Azure Trusted Signing. It lands in dist\.
 #
 #   .\tools\FactionWarsExporter\build.ps1            unsigned (for testing)
 #   .\tools\FactionWarsExporter\build.ps1 -Sign      signed (for a release)
@@ -11,10 +11,12 @@
 #   the Windows 10/11 SDK's signtool.exe
 #   a live Azure session in PowerShell 7: Connect-AzAccount -UseDeviceAuthentication
 #
-# Not single-file: a normal exe beside its DLLs, nothing self-extracting, so
-# endpoint protection sees an ordinary signed program. The zip's name carries no
-# version, so /releases/latest/download/FactionWarsExporter-win-x64.zip stays a
-# permanent link; the version is in the exe and the release tag.
+# Endpoint protection: the exe is signed after it is bundled, so its signature
+# covers everything in it, and it extracts nothing to disk when it runs (a
+# WinForms app has no native libraries to unpack; checked 2026-09-23 - nothing
+# appears under %TEMP%\.net). The file name carries no version, so
+# /releases/latest/download/FactionWarsExporter.exe stays a permanent link; the
+# version is in the exe (its title bar) and the release tag.
 param(
     [switch]$Sign,
     [string]$SigningDir = (Join-Path (Resolve-Path "$PSScriptRoot\..\..") ".signing")
@@ -22,16 +24,17 @@ param(
 $ErrorActionPreference = "Stop"
 
 $project = Join-Path $PSScriptRoot "FactionWarsExporter.csproj"
-$dist = Join-Path $PSScriptRoot "dist\FactionWarsExporter"
-$zip = Join-Path $PSScriptRoot "FactionWarsExporter-win-x64.zip"
+$dist = Join-Path $PSScriptRoot "dist"
+$exe = Join-Path $dist "FactionWarsExporter.exe"
 
 if (Test-Path $dist) { Remove-Item $dist -Recurse -Force }
-Write-Host "Publishing (self-contained, win-x64)..."
-& dotnet publish $project -c Release -r win-x64 --self-contained true -p:PublishSingleFile=false -o $dist -nologo -v q
+Write-Host "Publishing (one exe, self-contained, win-x64)..."
+& dotnet publish $project -c Release -r win-x64 --self-contained true -o $dist -nologo -v q
 if ($LASTEXITCODE -ne 0) { throw "dotnet publish failed" }
 
-# Our two files; the runtime's own DLLs already carry Microsoft's signature.
-$ours = @("FactionWarsExporter.exe", "FactionWarsExporter.dll") | ForEach-Object { Join-Path $dist $_ }
+# One file and nothing beside it, or the player gets a folder again.
+$extra = Get-ChildItem $dist | Where-Object { $_.Name -ne "FactionWarsExporter.exe" }
+if ($extra) { throw "publish left files beside the exe: $($extra.Name -join ', ')" }
 
 if ($Sign) {
     $dlib = Join-Path $SigningDir "dlib-x64\Azure.CodeSigning.Dlib.dll"
@@ -48,21 +51,13 @@ if ($Sign) {
     $env:AZURE_TENANT_ID = "a4ae2122-9515-4f85-abc8-71c29ccc261f"
     if (Test-Path "$env:LOCALAPPDATA\pwsh7\pwsh.exe") { $env:PATH = "$env:LOCALAPPDATA\pwsh7;$env:PATH" }
 
-    foreach ($file in $ours) {
-        Write-Host "Signing $(Split-Path $file -Leaf)..."
-        & $signtool sign /v /fd SHA256 /tr "http://timestamp.acs.microsoft.com" /td SHA256 /dlib $dlib /dmdf $metadata $file
-        if ($LASTEXITCODE -ne 0) { throw "signing failed: $file" }
-        & $signtool verify /pa $file
-        if ($LASTEXITCODE -ne 0) { throw "signature verification failed: $file" }
-    }
+    Write-Host "Signing FactionWarsExporter.exe..."
+    & $signtool sign /v /fd SHA256 /tr "http://timestamp.acs.microsoft.com" /td SHA256 /dlib $dlib /dmdf $metadata $exe
+    if ($LASTEXITCODE -ne 0) { throw "signing failed: $exe" }
+    & $signtool verify /pa $exe
+    if ($LASTEXITCODE -ne 0) { throw "signature verification failed: $exe" }
 }
 
-foreach ($file in $ours) {
-    $sig = Get-AuthenticodeSignature $file
-    Write-Host ("{0}: {1} {2}" -f (Split-Path $file -Leaf), $sig.Status, $sig.SignerCertificate.Subject)
-}
-
-if (Test-Path $zip) { Remove-Item $zip -Force }
-Compress-Archive -Path $dist -DestinationPath $zip
-$version = (Get-Item (Join-Path $dist "FactionWarsExporter.exe")).VersionInfo.ProductVersion
-Write-Host ("`nBuilt {0}  ({1:N1} MB, version {2}, {3})" -f $zip, ((Get-Item $zip).Length / 1MB), $version, $(if ($Sign) { "signed" } else { "UNSIGNED" }))
+$sig = Get-AuthenticodeSignature $exe
+$version = (Get-Item $exe).VersionInfo.ProductVersion
+Write-Host ("`nBuilt {0}  ({1:N1} MB, version {2}, {3} {4})" -f $exe, ((Get-Item $exe).Length / 1MB), $version, $sig.Status, $sig.SignerCertificate.Subject)

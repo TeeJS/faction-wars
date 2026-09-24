@@ -26,8 +26,9 @@ const PackImport := preload("res://src/ui/pack_import.gd")
 
 const MENU_SCENE := "res://Menu.tscn"
 const LastFile := "user://pack.cfg"
-## The Faction Wars Exporter's download: always the newest release's zip.
-const EXPORTER_URL := "https://github.com/TeeJS/faction-wars/releases/latest/download/FactionWarsExporter-win-x64.zip"
+## The Faction Wars Exporter's download: always the newest release's exe (one
+## file, from exporter 2.2.0 on).
+const EXPORTER_URL := "https://github.com/TeeJS/faction-wars/releases/latest/download/FactionWarsExporter.exe"
 
 ## pack id -> the Play button, for the test and the keyboard.
 var _play: Dictionary = {}
@@ -272,7 +273,7 @@ func _imports() -> Control:
 	get_it.add_child(lead)
 	if OS.has_feature("web"):
 		var link := LinkButton.new()
-		link.text = "FactionWarsExporter-win-x64.zip"
+		link.text = "FactionWarsExporter.exe"
 		link.tooltip_text = EXPORTER_URL
 		link.pressed.connect(func() -> void: JavaScriptBridge.eval("window.open('%s', '_blank')" % EXPORTER_URL, true))
 		get_it.add_child(link)
