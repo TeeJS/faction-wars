@@ -80,6 +80,13 @@ func _init() -> void:
 	var tile: Button = _tile_for(w, fleet)
 	_check(tile != null and tile.get_node_or_null("Picture") != null and (tile.get_node("Name") as Label).text == fleet.Name,
 		"the fleet's tile: its picture and its name")
+	# It opens with the tiles alone (Fig. 3.54; TeeJ's Xyquine screenshot).
+	var panel: CanvasItem = (w.get_node("%FleetTabs") as Node).get_parent().get_node("Panel")
+	_check(not panel.visible and not (w.get_node("%FleetTabs") as CanvasItem).visible and w._shown == null
+		and tile != null and not tile.get_node("Frame").visible, "it opens with the fleets' tiles alone, no contents panel")
+	tile.button_pressed = true
+	await process_frame
+	_check(panel.visible and w._shown == fleet, "clicking a fleet brings up its contents")
 	_check(tile != null and tile.get_node("Frame").visible, "the shown fleet's tile is framed")
 	var c: Dictionary = FleetWindow.Carried(fleet)
 	_check(tile != null and (tile.get_node_or_null("Badge_fighter") != null) == (c["fighters"] > 0)
