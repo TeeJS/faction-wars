@@ -210,20 +210,15 @@ static func PlanetOf(picked: Variant) -> Planet:
 
 
 ## The Create Mission window (manual p102, figs 2.34 and 3.47).
-func OpenCreateMission(team: Array, origin: Planet, target: Planet, picked: Variant = null) -> void:
-	if target == null:
-		print("[Mission] That target is nowhere we can reach.")
-		return
-	var actor: Faction = team[0].Faction
-
-	# A person is one kind of object; a facility or a unit is the other.
-	var victim: Character = picked as Character
-	var thing: Variant = null if picked is Character else picked
-
+## The missions this team may run against this target, in the order Create
+## Mission lists them. Three filters: what the TEAM can do, what the SYSTEM
+## accepts, and - when a person was clicked - what may be done to THEM
+## (manual p102). Recruitment heads the list whenever the team can run it
+## (TeeJ, 2026-09-23; the original's Create Mission opens on it - his
+## screenshot of the Emperor on Coruscant), so it is the mission shown first.
+static func LegalMissions(team: Array, target: Planet, victim: Character, thing: Variant) -> Array[int]:
 	var legal: Array[int] = []
-
-	# Three filters: what the TEAM can do, what the SYSTEM accepts, and - when a
-	# person was clicked - what may be done to THEM (manual p102).
+	var actor: Faction = team[0].Faction
 	for t in Enums.MissionType.values():
 		if not MissionManager.TeamCanPerform(team, t):
 			continue
@@ -240,6 +235,24 @@ func OpenCreateMission(team: Array, origin: Planet, target: Planet, picked: Vari
 		if needsThing and not MissionManager.CanSabotage(actor, thing, target).ok:
 			continue
 		legal.append(t)
+	var recruit: int = Enums.MissionType.Recruitment
+	if legal.has(recruit):
+		legal.erase(recruit)
+		legal.push_front(recruit)
+	return legal
+
+
+func OpenCreateMission(team: Array, origin: Planet, target: Planet, picked: Variant = null) -> void:
+	if target == null:
+		print("[Mission] That target is nowhere we can reach.")
+		return
+	var actor: Faction = team[0].Faction
+
+	# A person is one kind of object; a facility or a unit is the other.
+	var victim: Character = picked as Character
+	var thing: Variant = null if picked is Character else picked
+
+	var legal: Array[int] = LegalMissions(team, target, victim, thing)
 
 	if legal.is_empty():
 		# Say WHY, and say the RIGHT why.
