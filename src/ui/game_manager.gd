@@ -73,7 +73,7 @@ var _oPause: Control = null
 # tooltip.
 const ResourceLayout := {
 	"empire": {"rights": [104, 202, 300], "cap": 11},
-	"alliance": {"rights": [94, 189, 287], "cap": 11},
+	"alliance": {"rights": [94, 188, 286], "cap": 10},   # TeeJ's Alliance screenshots, 2026-09-24
 }
 var _oResources: Control = null
 var _oFigures: Array = []
@@ -324,6 +324,7 @@ func BuildSpeedMenu() -> void:
 			_timeControls.accept_event())
 	_BuildOriginalSpeed()
 	_BuildOriginalResources()
+	_PlaceHud()
 
 	# PAUSE IS MODAL. "An alert box comes up, LOCKING YOU OUT OF GAME CONTROLS
 	# UNTIL YOU RESUME PLAY" (manual p071). ✅ CONFIRMED AGAINST THE ORIGINAL:
@@ -365,8 +366,41 @@ func _BuildOriginalSpeed() -> void:
 	_oBars = HudPlace(_oSpeed, null, bars.x, bars.y, "Bars")
 
 
-## The resource displays as the original draws them, centred at the top in
-## place of the plain row.
+## WHERE THE SPEED CONTROL AND THE RESOURCE DISPLAYS SIT: as the side's frame
+## has them - "alliance and empire screen layouts are mirrored" (TeeJ,
+## 2026-09-24): the Alliance's Speed Control left of its resources, the
+## Empire's right of them - the pair centred at the top. Their places in the
+## frames (STRATEGY 900 / 901), the same cuts the exporter makes.
+const HudFrame := {
+	"alliance": {"speed": Vector2(90, 11), "resources": Vector2(232, 10)},
+	"empire": {"speed": Vector2(488, 13), "resources": Vector2(132, 12)},
+}
+
+
+func _PlaceHud() -> void:
+	var side: String = OUI.Side(GameSettings.PlayerFaction)
+	if not HudFrame.has(side) or (_oSpeed == null and _oResources == null):
+		return
+	var f: Dictionary = HudFrame[side]
+	var parts: Array = []   # [control, frame position, size in frame pixels]
+	if _oSpeed != null:
+		parts.append([_timeControls, f["speed"], _oSpeed.custom_minimum_size / HudScale])
+	if _oResources != null:
+		parts.append([_oResources, f["resources"], _oResources.size / HudScale])
+	var left: float = INF
+	var right: float = -INF
+	var top: float = INF
+	for part in parts:
+		left = minf(left, part[1].x)
+		right = maxf(right, part[1].x + part[2].x)
+		top = minf(top, part[1].y)
+	var x0: float = floorf((get_viewport().get_visible_rect().size.x - (right - left) * HudScale) / 2.0)
+	for part in parts:
+		(part[0] as Control).position = Vector2(x0 + (part[1].x - left) * HudScale, (part[1].y - top) * HudScale).floor()
+
+
+## The resource displays as the original draws them, in place of the plain
+## row (placed with the Speed Control by _PlaceHud).
 func _BuildOriginalResources() -> void:
 	var side: String = OUI.Side(GameSettings.PlayerFaction)
 	var strip: Texture2D = Art.WindowPicture("hud_resources.%s" % side)

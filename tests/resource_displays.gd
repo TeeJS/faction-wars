@@ -3,7 +3,10 @@ extends SceneTree
 ## with the art imported the plain row gives way to the strip from the side's
 ## Command Center frame - raw material, refined material and maintenance
 ## AVAILABLE, each a number in its panel, the counts and the capacity on the
-## panels' tooltips - centred at the top, clear of the docked sector window.
+## panels' tooltips - beside the Speed Control as the side's frame has them
+## (the Alliance's box left of its resources, the Empire's right: "mirrored",
+## TeeJ 2026-09-24), the pair centred at the top, clear of the docked sector
+## window.
 ## Writes and removes its own test art, never the player's own.
 ##
 ##   .\tools\run-gd.ps1 tests/resource_displays.gd
@@ -36,6 +39,7 @@ func _init() -> void:
 	DirAccess.make_dir_recursive_absolute("%s/windows" % dir)
 	for side in ["alliance", "empire"]:
 		_png("%s/windows/hud_resources.%s.png" % [dir, side], 320, 30, Color(0.2, 0.2, 0.2))
+		_png("%s/windows/hud_speed.%s.png" % [dir, side], 102, 24, Color(0.3, 0.3, 0.3))
 	Art.Reset()
 
 	var main: Node = load("res://Main.tscn").instantiate()
@@ -56,8 +60,14 @@ func _init() -> void:
 		"raw, refined and maintenance available, as numbers alone (%s)" % str(figures))
 	var tip: String = (gm._oResources.get_node("Hover2") as Control).tooltip_text
 	_check(tip.contains(str(Economy.MaintenanceCapacity(us))), "the maintenance panel's tooltip gives the capacity ('%s')" % tip)
-	var mid: float = gm._oResources.position.x + gm._oResources.size.x / 2.0
-	_check(absf(mid - main.get_viewport().get_visible_rect().size.x / 2.0) <= 1.0, "centred at the top")
+	var speed := Rect2(gm._timeControls.position, gm._oSpeed.custom_minimum_size)
+	var res := Rect2(gm._oResources.position, gm._oResources.size)
+	var side: String = us.ArtSkin
+	var placed: bool = (speed.end.x <= res.position.x) if side == "alliance" else (speed.position.x >= res.end.x)
+	_check(placed, "the %s's Speed Control sits %s its resources, as its frame has it"
+		% [side, "left of" if side == "alliance" else "right of"])
+	var pair: Rect2 = speed.merge(res)
+	_check(absf(pair.get_center().x - main.get_viewport().get_visible_rect().size.x / 2.0) <= 1.0, "the pair centred at the top")
 	var bottom: float = gm._oResources.position.y + gm._oResources.size.y
 	_check(bottom <= SectorWindow.DockPosition(true).y, "clear of the docked sector window (%.0f <= %.0f)" % [bottom, SectorWindow.DockPosition(true).y])
 	_finish()
