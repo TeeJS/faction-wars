@@ -244,7 +244,7 @@ size_flags_horizontal = 3
 
 [node name="PlanetInfo" type="Button" parent="UIManager/HBoxContainer" unique_id=838270983]
 layout_mode = 2
-text = "Planet Info."
+text = "System Finder"
 
 [node name="ShipInfo" type="Button" parent="UIManager/HBoxContainer" unique_id=446048230]
 layout_mode = 2
