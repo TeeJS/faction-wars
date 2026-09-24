@@ -47,6 +47,12 @@ func _init() -> void:
 			for _i in 3:
 				await process_frame
 			ok = _shot(w, "%s_%s_%d.png" % [out, which, t]) and ok
+		if w.has_method("SetSpecForces"):
+			for t in tabs.size():
+				w.SetSpecForces(true, t)
+				for _i in 3:
+					await process_frame
+				ok = _shot(w, "%s_%s_sf_%d.png" % [out, which, t]) and ok
 	print("[capture_finder] %s -> %s" % [which, "ok" if ok else "error"])
 	quit(0 if ok else 1)
 
