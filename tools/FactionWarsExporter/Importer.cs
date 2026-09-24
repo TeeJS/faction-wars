@@ -836,6 +836,14 @@ public sealed class Importer
                     if (portrait is int pd && entry["family"]?.GetValue<string>() is "capital_ship" or "fighter"
                         && SaveSprite(gokres, pd + 8192, P("portraits", kind, id + ".damage.png"))) pictureCount++;
                     if (mini is int m && SaveSprite(gokres, m, P("miniatures", kind, id + ".png"))) { minis++; pictureCount++; }
+                    // A ship's or fighter's blue engine glow while it is in
+                    // hyperspace (TeeJ, 2026-09-24: "for ships in motion there
+                    // should be blue 'fire' coming out of the back"): GOKRES
+                    // picture + 4096 and miniature + 4096, at the craft's back
+                    // (6021 behind the Imperial Star Destroyer's 1925).
+                    bool craft = entry["family"]?.GetValue<string>() is "capital_ship" or "fighter";
+                    if (craft && portrait is int pg && SaveSprite(gokres, pg + 4096, P("portraits", kind, id + ".moving.png"))) pictureCount++;
+                    if (craft && mini is int mg && SaveSprite(gokres, mg + 4096, P("miniatures", kind, id + ".moving.png"))) pictureCount++;
                     // A character's bars, drawn over the miniature while
                     // captured (manual p096): GOKRES miniature + 12288
                     // (30786 over Luke's 18498; every character has its own).

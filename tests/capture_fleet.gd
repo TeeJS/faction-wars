@@ -62,6 +62,21 @@ func _init() -> void:
 			str(range(4).map(func(i): return FleetWindow._RowsOn(tabs.get_child(i)))),
 			str(range(4).map(func(i): return tabs.is_tab_disabled(i)))])
 		ok = _shot(w, out + "_ship.png") and ok
+	# In motion: the fleet and every craft in it in hyperspace - the engine
+	# glow on the tile, the rows and the pictures.
+	fleet.Status = Enums.Status.Enroute
+	fleet.Destination = home
+	for s2 in fleet.Ships:
+		s2.Status = Enums.Status.Enroute
+		for h in s2.Hangar:
+			h.Status = Enums.Status.Enroute
+	w._opened.erase(fleet)
+	w.Populate(home, ui)
+	w.DisplayFleetContents(fleet)
+	(w.get_node("%FleetTabs") as TabContainer).current_tab = 0
+	for _i in 3:
+		await process_frame
+	ok = _shot(w, out + "_moving.png") and ok
 	print("[capture_fleet] %s at %s -> %s" % [fleet.Name, home.Name, "ok" if ok else "error"])
 	quit(0 if ok else 1)
 

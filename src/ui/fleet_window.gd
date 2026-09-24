@@ -874,7 +874,7 @@ func _TileFleet(btn: Button, fleet: Fleet, list: VBoxContainer) -> void:
 		list.add_child(row)
 		var cargo: Array = [Lq.any(s.Hangar, func(h: Unit) -> bool: return h.Type == Enums.UnitType.Fighter),
 			Lq.any(s.Hangar, func(h: Unit) -> bool: return h.Type == Enums.UnitType.Troop or h.Type == Enums.UnitType.SpecForce)]
-		_Tile(row, s, s.Name, OUI.Mini("units", s.PackId), null, cargo, side)
+		_Tile(row, s, s.Name, OUI.Mini("units", s.PackId), Glow(s, true), cargo, side)
 
 
 ## The panel for a fleet (every tab its whole contents, Fig. 3.55).
@@ -908,7 +908,7 @@ func _ShowShip(ship: Unit) -> void:
 		personnel.remove_child(child)
 		child.queue_free()
 	var flames: Texture2D = Art.Scaled(Art.Portrait("units", ship.PackId + ".damage"), OUI.K) if ship.IsDamaged() else null
-	_SetPicture(Art.Scaled(Art.Portrait("units", ship.PackId), OUI.K), flames, null)
+	_SetPicture(Art.Scaled(Art.Portrait("units", ship.PackId), OUI.K), flames, Glow(ship, false))
 	_ShowTabs(false)
 	_FrameShown()
 	_ShowCounts()
@@ -987,7 +987,7 @@ func _ShowCounts() -> void:
 
 ## A row on the panel: the picture centred, its badges, its name under it.
 ## The button keeps its menu, drag and selection.
-func _Row(btn: Button, title: String, picture: Texture2D, badges: Array, side: String, selected: Color) -> void:
+func _Row(btn: Button, title: String, picture: Texture2D, badges: Array, side: String, selected: Color, over: Texture2D = null) -> void:
 	btn.text = ""
 	btn.icon = null
 	btn.flat = true
@@ -1002,6 +1002,8 @@ func _Row(btn: Button, title: String, picture: Texture2D, badges: Array, side: S
 	var left: float = RowCentre - ListRect.position.x - w / 2.0
 	if picture != null:
 		OUI.Place(btn, picture, left, top, "Picture")
+	if over != null:
+		OUI.Place(btn, over, left, top, "Moving")
 	var kinds := ["fighter", "troop"]
 	for i in 2:
 		if i < badges.size() and badges[i]:
@@ -1024,7 +1026,20 @@ func _RowUnit(btn: Button, unit: Unit) -> void:
 		badges = [Lq.any(unit.Hangar, func(h: Unit) -> bool: return h.Type == Enums.UnitType.Fighter),
 			Lq.any(unit.Hangar, func(h: Unit) -> bool: return h.Type == Enums.UnitType.Troop or h.Type == Enums.UnitType.SpecForce)]
 	_Row(btn, unit.Name, OUI.Mini("units", unit.PackId), badges, side if side != "" else "empire",
-		OUI.SideColor(GameSettings.PlayerFaction))
+		OUI.SideColor(GameSettings.PlayerFaction), Glow(unit, true))
+
+
+## A craft's blue engine glow while it is in hyperspace (GOKRES + 4096; TeeJ,
+## 2026-09-24: "for ships in motion there should be blue 'fire' coming out of
+## the back"), at the drawn scale - its miniature's, or its 122x50 picture's.
+## Null for one not moving, or not a ship or fighter.
+static func Glow(u: Unit, miniature: bool) -> Texture2D:
+	if u == null or u.Status != Enums.Status.Enroute:
+		return null
+	if u.Type != Enums.UnitType.CapitalShip and u.Type != Enums.UnitType.Fighter:
+		return null
+	return OUI.Mini("units", u.PackId + ".moving") if miniature \
+		else Art.Scaled(Art.Portrait("units", u.PackId + ".moving"), OUI.K)
 
 
 ## A person's row: the miniature in its status (manual p096), the name.

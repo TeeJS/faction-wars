@@ -96,13 +96,16 @@ static func StatusFields(unit: Unit) -> Array:
 
 ## Everything the original's Status window shows for a unit (OUI.StatusPlate):
 ## the class picture (GOKRES.DLL, 122x50) - a regiment's over the grey
-## spotlight, a damaged ship's over its flames (GOKRES picture + 8192).
+## spotlight, a damaged ship's over its flames (GOKRES picture + 8192), one in
+## hyperspace over its blue engine glow (+ 4096).
 static func StatusData(unit: Unit) -> Dictionary:
 	var backdrop: Texture2D = null
 	if unit.Type == Enums.UnitType.Troop:
 		backdrop = OUI.Pic("status_backdrop.troops")
 	elif unit.Type == Enums.UnitType.CapitalShip and unit.IsDamaged():
 		backdrop = Art.Scaled(Art.Portrait("units", unit.PackId + ".damage"), OUI.K)
+	elif unit.Status == Enums.Status.Enroute:
+		backdrop = FleetWindow.Glow(unit, false)
 	return {
 		"title": StatusTitle(unit),
 		"fields": PlateFields(unit),
