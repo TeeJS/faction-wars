@@ -8705,6 +8705,109 @@
         "Faction Wars engine: TeeJS."
       ],
       "ImageFile": "swr-original:screens/cockpit.png",
+      "MonitorFps": 10.0,
+      "Monitors": [
+        {
+          "At": [
+            61,
+            40
+          ],
+          "Frames": 30,
+          "ImageFile": "swr-original:menu/easy.png",
+          "Region": "",
+          "SelectedImageFile": ""
+        },
+        {
+          "At": [
+            124,
+            40
+          ],
+          "Frames": 30,
+          "ImageFile": "swr-original:menu/medium.png",
+          "Region": "",
+          "SelectedImageFile": ""
+        },
+        {
+          "At": [
+            187,
+            40
+          ],
+          "Frames": 30,
+          "ImageFile": "swr-original:menu/hard.png",
+          "Region": "",
+          "SelectedImageFile": ""
+        },
+        {
+          "At": [
+            153,
+            307
+          ],
+          "Frames": 15,
+          "ImageFile": "swr-original:menu/empire.png",
+          "Region": "",
+          "SelectedImageFile": ""
+        },
+        {
+          "At": [
+            437,
+            307
+          ],
+          "Frames": 15,
+          "ImageFile": "swr-original:menu/alliance.png",
+          "Region": "",
+          "SelectedImageFile": ""
+        },
+        {
+          "At": [
+            411,
+            231
+          ],
+          "Frames": 30,
+          "ImageFile": "swr-original:menu/load.png",
+          "Region": "",
+          "SelectedImageFile": ""
+        },
+        {
+          "At": [
+            459,
+            242
+          ],
+          "Frames": 2,
+          "ImageFile": "swr-original:menu/credits.png",
+          "Region": "",
+          "SelectedImageFile": ""
+        },
+        {
+          "At": [
+            67,
+            381
+          ],
+          "Frames": 30,
+          "ImageFile": "swr-original:menu/multiplayer.png",
+          "Region": "",
+          "SelectedImageFile": ""
+        },
+        {
+          "At": [
+            535,
+            392
+          ],
+          "Frames": 30,
+          "ImageFile": "swr-original:menu/exit.png",
+          "Region": "",
+          "SelectedImageFile": ""
+        },
+        {
+          "At": [
+            305,
+            333
+          ],
+          "Frames": 1,
+          "ImageFile": "swr-original:menu/standard_game.png",
+          "Region": "hq_only_victory",
+          "SelectedImageFile": "swr-original:menu/hq_only.png"
+        }
+      ],
       "Readout": {
         "ColorHex": "#40ff40",
         "HqOnly": "Headquarters Only Victory",

@@ -312,6 +312,23 @@ public sealed class Importer
         ("mission_list_opened", 10606, 10607, 0, 0, 65, 18),
     };
 
+    // COMMON.DLL: the Shuttle Cockpit's monitors (manual p021 Fig. 2.2 - "the
+    // rotating red Alliance icon"), each a run of frames saved as ONE strip,
+    // the frames side by side: (name, first bitmap, frames). Where each goes
+    // (pack.json menu.monitors) was found by fitting every frame's outline to
+    // the cockpit's dark screens: each lands, to the pixel, on the monitor
+    // Fig. 2.2 labels - the three difficulties (an X-wing, a Star Destroyer,
+    // the Death Star), the two sides' emblems, load (a disc), credits,
+    // head-to-head, exit (the lever), and the victory-condition screen (a
+    // picture per condition, no animation).
+    private static readonly (string Name, int First, int Frames)[] CockpitMonitors =
+    {
+        ("easy", 11061, 30), ("medium", 11091, 30), ("hard", 11121, 30),
+        ("empire", 11001, 15), ("alliance", 11031, 15),
+        ("load", 11241, 30), ("credits", 11271, 2), ("multiplayer", 11151, 30), ("exit", 11181, 30),
+        ("standard_game", 10158, 1), ("hq_only", 10159, 1),
+    };
+
     // GOKRES.DLL: the 130x65 picture of each mission in the Create Mission
     // window, per side, at the row's string_id less these (Recruitment's
     // 11286 - 4096 = 7190 matched TeeJ's Imperial screenshot pixel for pixel;
@@ -599,6 +616,17 @@ public sealed class Importer
         var commonDll = Path.Combine(_gameDir, "COMMON.DLL");
         if (File.Exists(commonDll) && SaveSprite(new PeResources(commonDll), CockpitBitmap, P("screens", "cockpit.png"))) pictureCount++;
         else missing.Add($"screens/cockpit: no bitmap {CockpitBitmap} in COMMON.DLL");
+        if (File.Exists(commonDll))
+        {
+            var common = new PeResources(commonDll);
+            int monitors = 0;
+            foreach (var (name, first, frames) in CockpitMonitors)
+            {
+                if (SaveStrip(common, first, frames, P("menu", $"{name}.png"))) { monitors++; pictureCount++; }
+                else missing.Add($"menu/{name}: no bitmaps {first}-{first + frames - 1} in COMMON.DLL");
+            }
+            Say($"cockpit monitors: {monitors} (COMMON.DLL).");
+        }
         if (SaveGalaxy(strategy, P("screens", "galaxy.png"))) pictureCount++;
         else missing.Add($"screens/galaxy: no bitmap {GalaxyBitmap} in STRATEGY.DLL");
 
@@ -680,6 +708,41 @@ public sealed class Importer
             }
         _sink.Write(outPath, Png(rgba));
         return true;
+    }
+
+    /// <summary>Frames first..first+frames-1, all one size, side by side in one
+    /// PNG (pure blue keyed out), for the engine to play as an animation.</summary>
+    private bool SaveStrip(PeResources dll, int first, int frames, string outPath)
+    {
+        var bitmaps = new List<Bitmap>();
+        try
+        {
+            for (int i = 0; i < frames; i++)
+            {
+                if (!dll.Bitmaps.ContainsKey(first + i))
+                    return false;
+                bitmaps.Add(new Bitmap(new MemoryStream(dll.BitmapFile(first + i))));
+            }
+            int w = bitmaps[0].Width, h = bitmaps[0].Height;
+            if (bitmaps.Any(b => b.Width != w || b.Height != h))
+                return false;
+            using var strip = new Bitmap(w * frames, h, PixelFormat.Format32bppArgb);
+            for (int f = 0; f < frames; f++)
+                for (int y = 0; y < h; y++)
+                    for (int x = 0; x < w; x++)
+                    {
+                        var c = bitmaps[f].GetPixel(x, y);
+                        bool key = c.R == 0 && c.G == 0 && c.B == 255;
+                        strip.SetPixel(f * w + x, y, key ? Color.Transparent : Color.FromArgb(255, c.R, c.G, c.B));
+                    }
+            _sink.Write(outPath, Png(strip));
+            return true;
+        }
+        finally
+        {
+            foreach (var b in bitmaps)
+                b.Dispose();
+        }
     }
 
     private bool SavePicture(PeResources pictures, int encyId, string outPath)

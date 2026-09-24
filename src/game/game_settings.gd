@@ -44,7 +44,8 @@ static var HQOnlyVictory: bool = false
 static var SpeedRule: String = "slowest"
 ## "Provide feedback" on the Cockpit (TeeJ, room #80): show the feedback box
 ## in any game this client starts. Remembered in user:// (MpSetup prefs).
-static var ProvideFeedback: bool = false
+## Ticked until the player unticks it (TeeJ, 2026-09-23).
+static var ProvideFeedback: bool = true
 
 ## The session's PRNG seed - see Prng. Printed at start; --seed=N replays.
 static var Seed: int = 0

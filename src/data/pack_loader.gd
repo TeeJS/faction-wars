@@ -331,6 +331,31 @@ static func _validate_menu(pack: LoadedPack, pack_dir: String, errors: Array[Str
 		elif n > 1:
 			errors.append("pack.json menu: '%s' has %d regions; one each." % [key, n])
 
+	# The monitors' pictures (manual p021, Fig. 2.2): a strip of frames, where
+	# it sits, and - for a picture that changes with a choice - the region.
+	if menu.MonitorFps <= 0:
+		errors.append("pack.json menu.monitor_fps: must be above 0.")
+	for i in menu.Monitors.size():
+		var m := menu.Monitors[i]
+		var ctx := "pack.json menu.monitors[%d]" % i
+		for pair in [["image", m.ImageFile], ["selected_image", m.SelectedImageFile]]:
+			if pair[1].is_empty():
+				if pair[0] == "image":
+					errors.append("%s: 'image' is required." % ctx)
+				continue
+			if SplitArtRef(pair[1])[0].is_empty():
+				var path := "%s/%s" % [pack_dir, pair[1]]
+				if not (ResourceLoader.exists(path) or FileAccess.file_exists(path)):
+					errors.append("%s: %s '%s' is not in %s." % [ctx, pair[0], pair[1], pack_dir])
+		if m.At.size() != 2:
+			errors.append("%s: 'at' must be [x, y]." % ctx)
+		if m.Frames < 1:
+			errors.append("%s: 'frames' must be 1 or more." % ctx)
+		if not m.Region.is_empty() and not seen.has(m.Region):
+			errors.append("%s: region '%s' is not a region of the menu." % [ctx, m.Region])
+		if not m.SelectedImageFile.is_empty() and m.Region.is_empty():
+			errors.append("%s: 'selected_image' needs the 'region' it shows for." % ctx)
+
 
 ## SCHEMA.md section 11 rules 4 and 8 for the display catalog.
 static func _validate_display(pack: LoadedPack, errors: Array[String]) -> void:
@@ -764,7 +789,12 @@ static func _validate_art(pack: LoadedPack, errors: Array[String]) -> void:
 				errors.append("%s: '%s' needs pack.json art_sets." % [ctx, row.Art])
 			elif ParseArtRef(row.Art, sets).is_empty():
 				errors.append("%s: '%s' must be [<art set>:]<kind>/<id>, the art set one of %s and the kind one of %s." % [ctx, row.Art, ", ".join(sets), ", ".join(ART_KINDS)])
-	for pair in [["map_image", pack.Manifest.MapImage], ["menu.image", pack.Manifest.Menu.ImageFile if pack.Manifest.Menu != null else ""]]:
+	var images: Array = [["map_image", pack.Manifest.MapImage], ["menu.image", pack.Manifest.Menu.ImageFile if pack.Manifest.Menu != null else ""]]
+	if pack.Manifest.Menu != null:
+		for m in pack.Manifest.Menu.Monitors:
+			images.append(["menu.monitors image", m.ImageFile])
+			images.append(["menu.monitors selected_image", m.SelectedImageFile])
+	for pair in images:
 		var split := SplitArtRef(pair[1])
 		if not split[0].is_empty() and not sets.has(split[0]):
 			errors.append("pack.json %s: '%s' names art set '%s', which art_sets does not declare." % [pair[0], pair[1], split[0]])

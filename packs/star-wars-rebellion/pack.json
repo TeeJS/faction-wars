@@ -195,6 +195,20 @@
         "tooltip": "Exit."
       }
     ],
+    "_monitors_comment": "The monitors' pictures (Fig. 2.2: 'the rotating red Alliance icon'), from the player's art set: each a strip of frames side by side, played in a loop at monitor_fps, its top-left at [x, y] in the picture's pixels. Placed by fitting every frame's outline to the cockpit's dark screens. The victory-condition screen shows standard_game, or hq_only while Headquarters Only Victory is chosen.",
+    "monitor_fps": 10,
+    "monitors": [
+      {"image": "swr-original:menu/easy.png", "at": [61, 40], "frames": 30},
+      {"image": "swr-original:menu/medium.png", "at": [124, 40], "frames": 30},
+      {"image": "swr-original:menu/hard.png", "at": [187, 40], "frames": 30},
+      {"image": "swr-original:menu/empire.png", "at": [153, 307], "frames": 15},
+      {"image": "swr-original:menu/alliance.png", "at": [437, 307], "frames": 15},
+      {"image": "swr-original:menu/load.png", "at": [411, 231], "frames": 30},
+      {"image": "swr-original:menu/credits.png", "at": [459, 242], "frames": 2},
+      {"image": "swr-original:menu/multiplayer.png", "at": [67, 381], "frames": 30},
+      {"image": "swr-original:menu/exit.png", "at": [535, 392], "frames": 30},
+      {"image": "swr-original:menu/standard_game.png", "at": [305, 333], "frames": 1, "region": "hq_only_victory", "selected_image": "swr-original:menu/hq_only.png"}
+    ],
     "credits": [
       "Star Wars: Rebellion (1998) - LucasArts Entertainment Company / Coolhand Interactive.",
       "This faction pack: unit, facility, character, mission and map tables from the original GData files; rules and screens from the manual.",

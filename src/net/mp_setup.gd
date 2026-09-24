@@ -83,14 +83,17 @@ static func load_names() -> void:
 		game_name = str(cfg.get_value("names", "game", "")) if remembered else ""
 	if game_name.is_empty():
 		game_name = "%s's game" % player_name
-	GameSettings.ProvideFeedback = bool(cfg.get_value("options", "provide_feedback", false)) if remembered else false
+	# Ticked by default (TeeJ, 2026-09-23). Under a new key: the old one was
+	# written as false for every player who never touched the box, so reading
+	# it would have kept them unticked.
+	GameSettings.ProvideFeedback = bool(cfg.get_value("options", "feedback", true)) if remembered else true
 
 
 static func remember_names() -> void:
 	var cfg := ConfigFile.new()
 	cfg.set_value("names", "player", player_name)
 	cfg.set_value("names", "game", game_name)
-	cfg.set_value("options", "provide_feedback", GameSettings.ProvideFeedback)
+	cfg.set_value("options", "feedback", GameSettings.ProvideFeedback)
 	cfg.save(NamesFile)
 
 

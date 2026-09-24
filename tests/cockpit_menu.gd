@@ -5,6 +5,8 @@ extends SceneTree
 ##
 ##   Godot_console.exe --headless --path . -s tests/cockpit_menu.gd
 
+const Art := preload("res://src/ui/artwork.gd")
+
 var _fails := 0
 var _checks := 0
 
@@ -103,6 +105,31 @@ func _init() -> void:
 	(regions.get_node("Region_hq_only_victory") as Button).pressed.emit()
 	sel = menu.call("SelectedSettings")
 	_check(sel["hq_only"] == false and readout.text == menu_def.Readout.Standard, "pressing it again turns it off")
+
+	# The monitors' pictures (Fig. 2.2: "the rotating red Alliance icon"): one
+	# per declared monitor the art set holds, inside the picture, playing.
+	var monitors: Control = menu.get_node_or_null("Monitors")
+	var shown: Array = monitors.get_children() if monitors != null else []
+	var have: int = Lq.count(menu_def.Monitors, func(m: PackDefs.MenuMonitorDef) -> bool:
+		return Art.PackImage(m.ImageFile) != null)
+	_check(monitors != null and shown.size() == have, "a picture on every monitor the art set has (%d of %d)" % [shown.size(), menu_def.Monitors.size()])
+	if picture != null:
+		var frame: Rect2 = menu.call("_picture_frame")
+		for pic in shown:
+			_check(frame.encloses(Rect2(pic.position, pic.size).grow(-0.5)), "%s lies inside the picture" % pic.name)
+	var spinning: TextureRect = Lq.first_or_null(shown, func(p: TextureRect) -> bool: return (p.get_meta("def") as PackDefs.MenuMonitorDef).Frames > 1)
+	if spinning != null:
+		var before: Rect2 = (spinning.texture as AtlasTexture).region
+		menu.set("_monitorFrame", int(menu.get("_monitorFrame")) + 1)
+		menu.call("_paint_monitors")
+		_check((spinning.texture as AtlasTexture).region != before, "%s moves on to its next frame" % spinning.name)
+	var hq: TextureRect = Lq.first_or_null(shown, func(p: TextureRect) -> bool: return (p.get_meta("def") as PackDefs.MenuMonitorDef).Region == "hq_only_victory")
+	if hq != null and hq.has_meta("selected"):
+		var standard: Texture2D = (hq.texture as AtlasTexture).atlas
+		(regions.get_node("Region_hq_only_victory") as Button).pressed.emit()
+		_check((hq.texture as AtlasTexture).atlas == hq.get_meta("selected"), "Headquarters Only Victory shows its own picture on the victory screen")
+		(regions.get_node("Region_hq_only_victory") as Button).pressed.emit()
+		_check((hq.texture as AtlasTexture).atlas == standard, "and back to the standard game's picture")
 
 	# Credits and Load open their windows.
 	(regions.get_node("Region_credits") as Button).pressed.emit()
