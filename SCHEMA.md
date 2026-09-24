@@ -160,6 +160,7 @@ with the extraction tooling, not shipped in a pack.
 | `occupation_support_policy` | `garrison_bonus` (troops raise support over time) or `occupation_penalty` (first occupation lowers it). Asymmetry as a flag. |
 | `loyalty_label` | Display string for the GID loyalty mode. |
 | `agent_name` | What the side's agent droid / adviser is called (manual p030, Fig. 2.16; C-3PO and IMP-22). Optional; "Agent" when absent. Was an id branch in engine code. |
+| `adjective` | The side's name as an adjective in the game's own sentences - "the **Imperial** fleet", "**Alliance** forces" (the battle alert and results, TEXTSTRA's battle block). Optional; the `display_name` when absent. |
 | `starting_planets[]` | `{planet, support, explored, garrison}`. `planet` is a **planet id** (`map.json`); `garrison` a logistics table id (`setup.json`). |
 | `seed` | Which day-zero logistics table seeds this side's HQ, garrison and fleets — **table ids** from `setup.json` (§12 Q2). |
 | `victory.capture_characters` | **Character ids** (`characters.json`) this side must hold captive to win. The Objectives window looks the display name up (`FactionRegistry.CharacterNameOf`). |
@@ -921,6 +922,7 @@ What changed from the source repo's 2026-07-25 draft, and why.
 | 56 | **Corner glyphs** (§10 `icons`, rule 17): the sector window's four corner letters E/F/D/M and the "▲" uprising mark are pictures now - the engine's `assets/icons/` (our own silhouettes, tinted by faction) or the pack's own | TeeJ, 2026-09-22: "create the needed icons" |
 | 57 | **Art sets** (§14, rule 18): the original's pictures leave the pack for the player's own art set; `art_sets`, per-faction `skin`, per-row `art`; packs load from `user://packs/` too | TeeJ, 2026-09-23: docs/original-art-plan.md, signed off |
 | 58 | **`menu.monitors`** and `menu.monitor_fps` (§2): the Cockpit's monitor pictures, animated, from the art set; validated with rule 11 | TeeJ, 2026-09-23: "most of the icons are missing from the main menu" |
+| 59 | **`adjective`** per faction (§3): the side as the battle sentences name it | TeeJ, 2026-09-24: the battle screens in the original's words |
 
 ---
 

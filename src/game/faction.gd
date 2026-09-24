@@ -23,6 +23,9 @@ var AgentName: String = ""
 ## docs/original-art-plan.md): the original's pictures are keyed by it, never
 ## by the id, so a Separatist side can wear the Empire's. Defaults to the id.
 var ArtSkin: String = ""
+## "The Imperial fleet", "Alliance forces": factions.json `adjective`, else the
+## display name.
+var Adjective: String = ""
 
 
 static func FromPack(def: PackDefs.FactionDef) -> Faction:
@@ -38,6 +41,7 @@ static func FromPack(def: PackDefs.FactionDef) -> Faction:
 	f.Victory = def.Victory
 	f.AgentName = def.AgentName
 	f.ArtSkin = def.ArtSkin if not def.ArtSkin.is_empty() else def.Id
+	f.Adjective = def.Adjective if not def.Adjective.is_empty() else def.DisplayName
 	return f
 
 
@@ -48,6 +52,7 @@ static func Simple(id: String, display_name: String, color: Color) -> Faction:
 	f.DisplayName = display_name
 	f.FactionColor = color
 	f.ArtSkin = id
+	f.Adjective = display_name
 	return f
 
 

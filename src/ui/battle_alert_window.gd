@@ -348,20 +348,32 @@ func _ShowPage(page: int, refusal: String = "") -> void:
 			OB.List(_oBody, OB.SystemRows(_battle.Where), _oSide)
 
 
-## The situation in the original's own sentences (TEXTSTRA's alert block).
-## INFERRED which applies: the report does not say who arrived, so a side's
-## own world is taken as the one defended - "The <them> fleet has entered the
-## <system> system. <us> forces have been detected on an intercept course" -
-## and a world neither holds gets "<a> and <b> forces are about to engage in
-## battle near the <system> system".
+## The situation in the original's own sentences (TEXTSTRA's alert block),
+## by who moved in (the report's Arriving - the later arrival) and whose world
+## it is, as the manual shows them:
+##   they moved in on our world - "The Imperial fleet is threatening <world>.
+##     Alliance forces are moving to intercept." (p021 Fig. 2.1);
+##   we moved in on theirs - "The Alliance fleet has entered the Coruscant
+##     system. Imperial forces have been detected on an intercept course."
+##     (p141 Fig. 4.1: "move a fleet to Coruscant");
+##   a side moved in on its own world, the other's fleet there - "The Alliance
+##     fleet is attempting to break the Imperial blockade at Chandrila."
+##     (TeeJ's screenshot);
+##   otherwise - "<a> and <b> forces are about to engage in battle near the
+##     <world> system."
 func _Situation() -> String:
-	var a: Fleet = _battle.Ours
-	var b: Fleet = _battle.Theirs
+	var world: String = _battle.Where.Name
+	var arriving: Fleet = _battle.Arriving
 	var owner: Faction = _battle.Where.ControllingFaction
-	var an: String = a.Faction.DisplayName if a != null and a.Faction != null else "Our"
-	var bn: String = b.Faction.DisplayName if b != null and b.Faction != null else "Enemy"
-	if a != null and owner == a.Faction:
-		return "The %s fleet has entered the %s system. %s forces have been detected on an intercept course." % [bn, _battle.Where.Name, an]
-	if b != null and owner == b.Faction:
-		return "The %s fleet has entered the %s system. %s forces have been detected on an intercept course." % [an, _battle.Where.Name, bn]
-	return "%s and %s forces are about to engage in battle near the %s system." % [an, bn, _battle.Where.Name]
+	if arriving != null:
+		var other: Fleet = _battle.Theirs if arriving == _battle.Ours else _battle.Ours
+		var a: String = BattleResultsWindow.Adj(arriving)
+		var o: String = BattleResultsWindow.Adj(other)
+		if owner == arriving.Faction:
+			return "The %s fleet is attempting to break the %s blockade at %s." % [a, o, world]
+		if other != null and owner == other.Faction:
+			if arriving.Faction == GameSettings.LocalFaction():
+				return "The %s fleet has entered the %s system. %s forces have been detected on an intercept course." % [a, world, o]
+			return "The %s fleet is threatening %s. %s forces are moving to intercept." % [a, world, o]
+	return "%s and %s forces are about to engage in battle near the %s system." \
+		% [BattleResultsWindow.Adj(_battle.Ours), BattleResultsWindow.Adj(_battle.Theirs), world]

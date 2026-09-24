@@ -81,6 +81,10 @@ class FactionDef:
 	## SCHEMA.md section 14: which of the art set's side looks this faction
 	## wears ("alliance" / "empire" for swr-original). Blank = its own id.
 	var ArtSkin: String
+	## The side's name as an adjective in the game's own sentences ("the
+	## Imperial fleet", "Alliance forces" - TEXTSTRA's battle block). Blank =
+	## the display name.
+	var Adjective: String
 
 	static func from_dict(d: Dictionary) -> FactionDef:
 		var o := FactionDef.new()
@@ -98,6 +102,7 @@ class FactionDef:
 		o.Victory = VictoryDef.from_dict(JsonUtil.get_ci(d, "victory"))
 		o.AgentName = JsonUtil.str_or(d, "agent_name", "")
 		o.ArtSkin = JsonUtil.str_or(d, "skin", "")
+		o.Adjective = JsonUtil.str_or(d, "adjective", "")
 		return o
 
 

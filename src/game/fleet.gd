@@ -12,6 +12,11 @@ var Attached: Planet
 var Hangar: Variant = null   # IEnumerable<object>, never populated by the source
 var Faction: Faction
 var DaysToDestination: int
+## The day it last came into orbit where it is (-1: built there, or never
+## moved). A battle's alert says which side moved in (manual p021 Fig. 2.1:
+## "the Imperial fleet is threatening..."; p141 Fig. 4.1: "the Alliance fleet
+## has entered the ... system") - the later arrival of the two.
+var ArrivedDay: int = -1
 
 ## FLEET SERIALS ARE DETERMINISTIC (HANDOFF step 0b): a per-game counter gives the
 ## same "Fleet_0007" on every replay.

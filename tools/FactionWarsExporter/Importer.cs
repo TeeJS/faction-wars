@@ -286,6 +286,10 @@ public sealed class Importer
         ("battle_alliance_forces", "alliance", 10730, 10731, 0), ("battle_alliance_forces", "empire", 10740, 10741, 0),
         ("battle_empire_forces", "alliance", 10732, 10733, 0), ("battle_empire_forces", "empire", 10742, 10743, 0),
         ("battle_system", "alliance", 10734, 10735, 0), ("battle_system", "empire", 10744, 10745, 0),
+        // The results' Filters (p153 Fig. 4.18; TeeJ's screenshots, 2026-09-24):
+        // the Encyclopedia's ship, troop and personnel tabs, and these fighter
+        // tabs - the Alliance's X-wing, the Empire's TIE.
+        ("battle_filter_fighter", "alliance", 10354, 10353, 0), ("battle_filter_fighter", "empire", 10364, 10363, 0),
     };
 
     // STRATEGY.DLL: buttons as (name, normal, pressed/current, disabled).
@@ -758,11 +762,12 @@ public sealed class Importer
                     int? mini = entry["miniature"]?.GetValue<int>();
                     if (portrait is int p && SaveSprite(gokres, p, P("portraits", kind, id + ".png"))) { portraits++; pictureCount++; }
                     else missing.Add($"portraits/{kind}/{id}: no bitmap {portrait} in GOKRES.DLL");
-                    // A capital ship's flames, drawn UNDER its picture on the
-                    // Status window when it is damaged: GOKRES picture + 8192
-                    // (measured: 10053 under the Corellian Corvette's 1861;
-                    // every ship's flames follow its own hull).
-                    if (portrait is int pd && entry["family"]?.GetValue<string>() == "capital_ship"
+                    // A capital ship's or fighter's flames, drawn UNDER its
+                    // picture when it is damaged (the Status window, the
+                    // battle results): GOKRES picture + 8192 (measured:
+                    // 10053 under the Corellian Corvette's 1861, 9795 under
+                    // the Y-wing's 1603; every craft's flames follow its hull).
+                    if (portrait is int pd && entry["family"]?.GetValue<string>() is "capital_ship" or "fighter"
                         && SaveSprite(gokres, pd + 8192, P("portraits", kind, id + ".damage.png"))) pictureCount++;
                     if (mini is int m && SaveSprite(gokres, m, P("miniatures", kind, id + ".png"))) { minis++; pictureCount++; }
                 }

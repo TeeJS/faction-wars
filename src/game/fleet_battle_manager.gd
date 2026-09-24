@@ -9,9 +9,35 @@ class Casualties:
 	var CapitalShipsDestroyed: Array = []
 	var SquadronsOperational: Array = []
 	var SquadronsDestroyed: Array = []
+	## The troops aboard (they do not fight in space; lost with a fleet that is
+	## completely destroyed).
+	var TroopsOperational: Array = []
+	var TroopsDestroyed: Array = []
 	var PersonnelSurvivors: Array = []
 	var PersonnelCaptured: Array = []
 	var PersonnelKilled: Array = []
+	## Who each entry is, for the results' pictures: per list's name, in the
+	## same order, {kind, id, damaged} (manual p153 Fig. 4.18: "burn marks
+	## indicate they are damaged").
+	var Who: Dictionary = {}
+
+	func add(list: String, text: String, kind: String, id: String, damaged: bool) -> void:
+		(get(list) as Array).append(text)
+		if not Who.has(list):
+			Who[list] = []
+		Who[list].append({"kind": kind, "id": id, "damaged": damaged})
+
+	## A fleet completely destroyed: whatever was still operational is lost too.
+	func LoseAll() -> void:
+		for pair in [["CapitalShipsOperational", "CapitalShipsDestroyed"], ["SquadronsOperational", "SquadronsDestroyed"],
+				["TroopsOperational", "TroopsDestroyed"]]:
+			(get(pair[1]) as Array).append_array(get(pair[0]))
+			(get(pair[0]) as Array).clear()
+			if Who.has(pair[0]):
+				if not Who.has(pair[1]):
+					Who[pair[1]] = []
+				Who[pair[1]].append_array(Who[pair[0]])
+				Who.erase(pair[0])
 
 
 class BattleReport:
@@ -51,6 +77,11 @@ class BattleReport:
 		return OurLosses if (Theirs != null and Theirs.Faction == viewer) else TheirLosses
 	var LoserWithdrew: bool
 	var HeldByGravityWell: bool
+	## Which fleet moved in - the later arrival (null: neither, or both the
+	## same day): what the alert's sentence turns on (manual p021 Fig. 2.1,
+	## p141 Fig. 4.1). A fleet arriving at its own side's world, the other
+	## already in orbit there, is breaking that fleet's blockade.
+	var Arriving: Fleet
 	var Destroyed: Array = []
 	var Summary: String = ""
 	var OurLosses := Casualties.new()
@@ -167,6 +198,8 @@ static func Engage(where: Planet, a: Fleet, b: Fleet, day: int) -> void:
 	report.Theirs = b if first_a else a
 	report.OurStrength = StrengthOf(report.Ours)
 	report.TheirStrength = StrengthOf(report.Theirs)
+	if a.ArrivedDay != b.ArrivedDay:
+		report.Arriving = a if a.ArrivedDay > b.ArrivedDay else b
 
 	# No human in it: resolved on the spot. A human side waits for its answer.
 	if not GameSettings.IsHuman(a.Faction) and not GameSettings.IsHuman(b.Faction):
@@ -272,13 +305,26 @@ static func Simulate(r: BattleReport, day: int) -> void:
 
 static func Tally(side: TacticalBattle.TacticalSide, into: Casualties, fleet: Fleet) -> void:
 	for u in side.Ships:
-		(into.CapitalShipsDestroyed if u.Destroyed() else into.CapitalShipsOperational).append(Describe(u))
+		into.add("CapitalShipsDestroyed" if u.Destroyed() else "CapitalShipsOperational", Describe(u),
+			"units", u.Source.PackId if u.Source != null else "", Damaged(u))
 	for u in side.Squadrons:
-		(into.SquadronsDestroyed if u.Destroyed() else into.SquadronsOperational).append(Describe(u))
+		into.add("SquadronsDestroyed" if u.Destroyed() else "SquadronsOperational", Describe(u),
+			"units", u.Source.PackId if u.Source != null else "", Damaged(u))
+	if fleet != null:
+		for ship in fleet.Ships:
+			for carried in ship.Hangar:
+				if carried.Type == Enums.UnitType.Troop:
+					into.add("TroopsOperational", carried.Name, "units", carried.PackId, false)
 	# ⚠ The injured/captured/killed split is NOT reproduced: everyone aboard survives.
 	for c in GameState.ActiveRoster:
 		if c.Attached == fleet and c.Status != Enums.Status.Dead:
-			into.PersonnelSurvivors.append(c.Name if c.Rank == Enums.Rank.None else "%s %s" % [JsonUtil.enum_name(Enums.Rank, c.Rank), c.Name])
+			into.add("PersonnelSurvivors", c.Name if c.Rank == Enums.Rank.None else "%s %s" % [JsonUtil.enum_name(Enums.Rank, c.Rank), c.Name],
+				"characters", c.PackId, false)
+
+
+## Still flying, but hit.
+static func Damaged(u: TacticalBattle.TacticalUnit) -> bool:
+	return not u.Destroyed() and u.Damage != null and (u.Damage.Hull < u.Damage.MaxHull or u.Damage.IsDamaged())
 
 
 static func Describe(u: TacticalBattle.TacticalUnit) -> String:
@@ -297,6 +343,7 @@ static func ResolveLoser(r: BattleReport, loser: Fleet, winner: Fleet, into: Bat
 		Withdraw(loser, r.Where)
 		return
 	into.HeldByGravityWell = EnemyHoldsThemHere(winner)
+	(r.OurLosses if loser == r.Ours else r.TheirLosses).LoseAll()
 	for ship in loser.Ships.duplicate():
 		into.Destroyed.append(ship.Name)
 		for carried in ship.Hangar.duplicate():
@@ -315,6 +362,7 @@ static func Withdraw(fleet: Fleet, from: Planet) -> void:
 	fleet.Destination = null
 	fleet.DaysToDestination = 0
 	fleet.Status = Enums.Status.AwaitingOrders
+	fleet.ArrivedDay = StrategicTickManager.Today
 	for ship in fleet.Ships:
 		ship.Attached = refuge
 		ship.Destination = null
