@@ -474,6 +474,7 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 				cornerStyle.corner_radius_bottom_right = 4
 
 				var cornerBtn := CornerButton.new()   # takes the mouse on its drawn pixels only
+				cornerBtn.DropTarget = planetMapNode   # a drop on the icon is a drop on the system
 				cornerBtn.set_meta("corner", cornerGlyphs[i])
 				cornerBtn.icon = FactionRegistry.CornerIcon(cornerGlyphs[i])
 				# The owner's side, for the original's per-side icon colours.
@@ -525,6 +526,13 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 ") if not fleetsHere.is_empty() else "") 							+ "En route: " + ", ".join(Lq.select(inbound, func(f: Fleet) -> String:
 								return "%s (arrives day %d)" % [f.Name, StrategicTickManager.Today + f.DaysToDestination]))
 					AttachFleetMenu(cornerBtn, menuFleets, planet, uiManager)
+					# DRAGGED TO ANOTHER SYSTEM, the icon moves our fleets here -
+					# the ones its menu's Move moves ("anything movable - character,
+					# fleet, troop, SpecForce - can be dragged to its destination
+					# instead of using Move", manual p046-p052; TeeJ, 2026-09-24).
+					if oursInOrbit:
+						cornerBtn.DragFleets = menuFleets
+						cornerBtn.UIManagerRef = uiManager
 
 				# "A ... icon to the lower right of a planet indicates a
 				# mission is in progress there" (manual p109). Lit only for
@@ -1254,6 +1262,33 @@ class CornerButton extends Button:
 	## Texture instance id -> BitMap of its drawn pixels, or null when the
 	## picture has no image to read (then the whole button answers, as before).
 	static var _masks: Dictionary = {}
+	## The fleet icon of ours: the fleets a drag of it moves (else empty).
+	var DragFleets: Array = []
+	var UIManagerRef: UIManager = null
+	## The system's own button: a drop on an icon is a drop on the system.
+	var DropTarget: Control = null
+
+	func _get_drag_data(_at_position: Vector2) -> Variant:
+		if UIManagerRef == null or UIManagerRef.IsTargeting:
+			return null
+		var group: Array = Lq.where(DragFleets, func(f: Fleet) -> bool: return is_instance_valid(f) and f.Status != Enums.Status.Enroute)
+		if group.is_empty():
+			return null
+		UIManagerRef.StartFleetDrag(group)
+		# The icon itself follows the mouse, as in the original.
+		var preview := TextureRect.new()
+		preview.texture = icon
+		preview.modulate = get_theme_color("icon_normal_color")
+		preview.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		set_drag_preview(preview)
+		return "fleet_move"
+
+	func _can_drop_data(at_position: Vector2, data: Variant) -> bool:
+		return DropTarget != null and is_instance_valid(DropTarget) and DropTarget._can_drop_data(at_position, data)
+
+	func _drop_data(at_position: Vector2, data: Variant) -> void:
+		if DropTarget != null and is_instance_valid(DropTarget):
+			DropTarget._drop_data(at_position, data)
 
 	func _has_point(point: Vector2) -> bool:
 		var mask: BitMap = MaskFor(icon)
