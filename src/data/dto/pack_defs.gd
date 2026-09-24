@@ -482,7 +482,7 @@ class CharacterDef:
 		o.IsMajor = JsonUtil.bool_or(d, "is_major")
 		var r: Variant = JsonUtil.get_ci(d, "ratings")
 		if r is Dictionary:
-			for k in r.keys():
+			for k in JsonUtil.data_keys(r):
 				o.Ratings[str(k)] = RatingDef.from_dict(r[k])
 		o.CanCommand = JsonUtil.str_list(d, "can_command", [])
 		o.WontBetray = JsonUtil.bool_or(d, "wont_betray")
@@ -549,7 +549,7 @@ class FacilityDef:
 		o.ResearchCost = JsonUtil.int_or(d, "research_cost")
 		var st: Variant = JsonUtil.get_ci(d, "stats")
 		if st is Dictionary:
-			for k in st.keys():
+			for k in JsonUtil.data_keys(st):
 				o.Stats[str(k)] = st[k]
 		o.SourceFamilyId = JsonUtil.int_or(d, "source_family_id")
 		return o
@@ -692,11 +692,11 @@ class UnitDef:
 		o.ResearchCost = JsonUtil.int_or(d, "research_cost")
 		var w: Variant = JsonUtil.get_ci(d, "weapons")
 		if w is Dictionary:
-			for k in w.keys():
+			for k in JsonUtil.data_keys(w):
 				o.Weapons[str(k)] = UnitWeaponDef.from_dict(w[k])
 		var st: Variant = JsonUtil.get_ci(d, "stats")
 		if st is Dictionary:
-			for k in st.keys():
+			for k in JsonUtil.data_keys(st):
 				o.Stats[str(k)] = st[k]
 		o.SourceFamilyId = JsonUtil.int_or(d, "source_family_id")
 		o.SourceId = JsonUtil.int_or(d, "source_id")
@@ -763,11 +763,11 @@ class MissionDefPack:
 			o.LengthSpread = JsonUtil.int_or(l, "spread")
 		var fl: Variant = JsonUtil.get_ci(d, "flags")
 		if fl is Dictionary:
-			for k in fl.keys():
+			for k in JsonUtil.data_keys(fl):
 				o.Flags[str(k)] = bool(fl[k])
 		var tg: Variant = JsonUtil.get_ci(d, "targets")
 		if tg is Dictionary:
-			for k in tg.keys():
+			for k in JsonUtil.data_keys(tg):
 				o.Targets[str(k)] = bool(tg[k])
 		o.SourceId = JsonUtil.int_or(d, "source_id")
 		return o
@@ -834,7 +834,7 @@ class MissionTablesFile:
 		var o := MissionTablesFile.new()
 		var t: Variant = JsonUtil.get_ci(d, "tables")
 		if t is Dictionary:
-			for k in t.keys():
+			for k in JsonUtil.data_keys(t):
 				o.Tables[str(k)] = MissionTableDef.from_dict(str(k), t[k])
 		return o
 
@@ -856,7 +856,7 @@ class SetupFile:
 			o.SideLottery = sl
 		var lg: Variant = JsonUtil.get_ci(d, "logistics")
 		if lg is Dictionary:
-			for k in lg.keys():
+			for k in JsonUtil.data_keys(lg):
 				o.Logistics[str(k)] = lg[k]
 		return o
 
@@ -895,7 +895,7 @@ class GidModeDef:
 		var q: Variant = JsonUtil.get_ci(d, "quantity")
 		if q is Dictionary:
 			o.Kind = JsonUtil.str_or(q, "kind", "")
-			for k in q.keys():
+			for k in JsonUtil.data_keys(q):
 				if str(k) != "kind":
 					o.Args[str(k)] = q[k]
 		var t: Variant = JsonUtil.get_ci(d, "tiers")
@@ -948,9 +948,7 @@ class DisplayDef:
 		o.LoyaltyBar = JsonUtil.str_list(d, "loyalty_bar", [])
 		var ic: Variant = JsonUtil.get_ci(d, "icons")
 		if ic is Dictionary:
-			for k in ic.keys():
-				if str(k).begins_with("_"):
-					continue
+			for k in JsonUtil.data_keys(ic):
 				o.Icons[str(k)] = str(ic[k])
 		var c: Variant = JsonUtil.get_ci(d, "categories")
 		if c != null:
@@ -959,13 +957,11 @@ class DisplayDef:
 		o.GalaxyDisplayModes = JsonUtil.str_list(d, "galaxy_display_modes", [])
 		var r: Variant = JsonUtil.get_ci(d, "special_power_ranks")
 		if r is Dictionary:
-			for k in r.keys():
+			for k in JsonUtil.data_keys(r):
 				o.SpecialPowerRanks[str(k)] = str(r[k])
 		var t: Variant = JsonUtil.get_ci(d, "terms")
 		if t is Dictionary:
-			for k in t.keys():
-				if str(k).begins_with("_"):   # a _comment, like everywhere else in the pack
-					continue
+			for k in JsonUtil.data_keys(t):
 				o.Terms[str(k)] = str(t[k])
 		return o
 

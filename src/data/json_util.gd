@@ -31,6 +31,19 @@ static func parse(path: String) -> Variant:
 	return json.data
 
 
+## A keyed map's entries, without its comments: a key starting with "_" (a
+## "_comment", a "_note") is the pack author's, never data - anywhere a map's
+## keys are ids, names or stats (SCHEMA.md section 1; the editor handoff,
+## 2026-09-23: a "_comment" in mission_tables.tables was a script error, in
+## setup's logistics a crash at game start).
+static func data_keys(d: Dictionary) -> Array:
+	var out: Array = []
+	for k in d.keys():
+		if not str(k).begins_with("_"):
+			out.append(k)
+	return out
+
+
 ## Case-insensitive key lookup - exact match first, then a case-folded scan.
 static func get_ci(d: Dictionary, key: String, default: Variant = null) -> Variant:
 	if d.has(key):
@@ -103,7 +116,7 @@ static func str_int_dict(d: Dictionary, key: String) -> Dictionary:
 	var out := {}
 	if v == null:
 		return out
-	for k in v.keys():
+	for k in data_keys(v):
 		out[str(k)] = int(v[k])
 	return out
 
