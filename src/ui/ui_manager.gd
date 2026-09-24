@@ -880,6 +880,13 @@ func OpenPlanetFinder() -> void:
 		func(window) -> void: window.Setup(self), Vector2(100, 150))
 
 
+## The Fleet Finder (manual p125 Fig. 3.70), or the Ship Finder the same
+## dialog switches to (p126 Fig. 3.72).
+func OpenFleetFinder(ships: bool = false) -> void:
+	OpenWindow("FleetFinder", load("res://src/ui/FleetFinder.tscn"),
+		func(window) -> void: window.Setup(self, ships), Vector2(100, 150))
+
+
 ## F1 Game Options - the six-slot save screen (single-player). Head-to-head uses
 ## its own relay Save, so this is offered only when there is no MP session. Guards
 ## against opening a second copy.

@@ -360,10 +360,12 @@ public sealed class Importer
         // 44x41), and the switches between the Fleet and Ship Finders and
         // between characters and special forces - their "pressed" picture is
         // the one lit while that view is on (matched on TeeJ's screenshots;
-        // the Empire's by the same order, not seen).
+        // the Empire's by the same order, not seen). The lit picture marks the
+        // finder on show: Switch to Ship Finder 10530 / lit 10531, Switch back
+        // to Fleet Finder 10528 / lit 10529.
         ("finder_display.alliance", 10518, 10519, 0), ("finder_display.empire", 10520, 10521, 0),
-        ("finder_btn_fleets.alliance", 10531, 10530, 0), ("finder_btn_ships.alliance", 10529, 10528, 0),
-        ("finder_btn_fleets.empire", 10535, 10534, 0), ("finder_btn_ships.empire", 10533, 10532, 0),
+        ("finder_btn_ships.alliance", 10530, 10531, 0), ("finder_btn_fleets.alliance", 10528, 10529, 0),
+        ("finder_btn_ships.empire", 10534, 10535, 0), ("finder_btn_fleets.empire", 10532, 10533, 0),
         ("finder_btn_characters.alliance", 10542, 10543, 0), ("finder_btn_specforces.alliance", 10546, 10547, 0),
         ("finder_btn_characters.empire", 10544, 10545, 0), ("finder_btn_specforces.empire", 10548, 10549, 0),
         // The original's scrollbar (13 wide): arrows and the thumb's three parts.

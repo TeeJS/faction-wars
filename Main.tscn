@@ -248,7 +248,7 @@ text = "System Finder"
 
 [node name="ShipInfo" type="Button" parent="UIManager/HBoxContainer" unique_id=446048230]
 layout_mode = 2
-text = "Ship Info."
+text = "Fleet Finder"
 
 [node name="TroopInfo" type="Button" parent="UIManager/HBoxContainer" unique_id=1194457671]
 layout_mode = 2
