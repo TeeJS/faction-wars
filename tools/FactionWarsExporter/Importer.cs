@@ -181,7 +181,28 @@ public sealed class Importer
         // A fleet's Status picture per side (122x50; the Empire's inferred),
         // and the flames drawn UNDER it when a ship of it is damaged
         // (measured on TeeJ's Alliance Fleet Status).
-        ("status_fleet.alliance", 10425), ("status_fleet.empire", 10426), ("status_fleet_damage", 10427),
+        // (The Empire's was 10426 - the Alliance's engine glow - until the
+        // Fleet window's screenshot placed 10475 exactly, 2026-09-24.)
+        ("status_fleet.alliance", 10425), ("status_fleet.empire", 10475), ("status_fleet_damage", 10427),
+        ("status_fleet_damage.alliance", 10427), ("status_fleet_damage.empire", 10477),
+        // The Fleet window (manual p112-p113 Figs 3.54-3.56), placed on TeeJ's
+        // screenshot of the original's Chandrila window by template matching:
+        // the 235x304 backdrop; per side the 132x266 contents panel, a fleet's
+        // 73x47 tile frame (on the selected one), its 66x25 picture in the
+        // tile and 122x50 on the panel, each with the blue engine glow of a
+        // fleet in hyperspace and the flames of a damaged one drawn over it,
+        // and the 15x11 badges for a fleet or ship carrying fighters, troops,
+        // personnel.
+        ("fleet_background", 10770),
+        ("fleet_panel.alliance", 10407), ("fleet_panel.empire", 10457),
+        ("fleet_tile.alliance", 10401), ("fleet_tile.empire", 10451),
+        ("fleet_small.alliance", 10400), ("fleet_small.empire", 10450),
+        ("fleet_small_glow.alliance", 10423), ("fleet_small_glow.empire", 10473),
+        ("fleet_small_damage.alliance", 10424), ("fleet_small_damage.empire", 10474),
+        ("fleet_large_glow.alliance", 10426), ("fleet_large_glow.empire", 10476),
+        ("fleet_badge_fighter.alliance", 10404), ("fleet_badge_fighter.empire", 10454),
+        ("fleet_badge_troop.alliance", 10405), ("fleet_badge_troop.empire", 10455),
+        ("fleet_badge_personnel.alliance", 10406), ("fleet_badge_personnel.empire", 10456),
         // The Message Index (p078 Fig 3.18): the Alliance's socket column over
         // the frame's right strip, and the plate under a read message (p080
         // Fig 3.19, the band across its top - not yet on a screenshot).
@@ -296,6 +317,12 @@ public sealed class Importer
         // the Encyclopedia's ship, troop and personnel tabs, and these fighter
         // tabs - the Alliance's X-wing, the Empire's TIE.
         ("battle_filter_fighter", "alliance", 10354, 10353, 0), ("battle_filter_fighter", "empire", 10364, 10363, 0),
+        // The Fleet window's four tabs (capital ships, fighters, troops,
+        // personnel): normal, current, and greyed (none for capital ships).
+        ("fleet_tab_ship", "alliance", 10409, 10416, 0), ("fleet_tab_ship", "empire", 10459, 10466, 0),
+        ("fleet_tab_fighter", "alliance", 10410, 10417, 10413), ("fleet_tab_fighter", "empire", 10460, 10467, 10463),
+        ("fleet_tab_troop", "alliance", 10411, 10418, 10414), ("fleet_tab_troop", "empire", 10461, 10468, 10464),
+        ("fleet_tab_personnel", "alliance", 10412, 10419, 10415), ("fleet_tab_personnel", "empire", 10462, 10469, 10465),
     };
 
     // STRATEGY.DLL: buttons as (name, normal, pressed/current, disabled).
