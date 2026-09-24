@@ -74,7 +74,7 @@ func _init() -> void:
 	_check(_labels(picker).has("Art set: Test art - 1 files, exporter 2.0.0") and _labels(picker).has("Imported the art set."),
 		"the import is listed with its exporter's version, with Remove, and its result shown")
 	var outdated: Label = picker.find_child("Outdated", true, false)
-	_check(outdated != null and outdated.text.contains("needs 2.1.0 or later"), "an art set older than the game needs says to export again")
+	_check(outdated != null and outdated.text.contains("needs %s or later" % Importer.MIN_EXPORTER["swr-original"]), "an art set older than the game needs says to export again")
 	Importer._remove(ArtScript.UserArtRoot)
 	ArtScript.IgnoreProjectFolder = false
 	ArtScript.UserArtRoot = "user://art"

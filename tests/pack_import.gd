@@ -80,14 +80,14 @@ func _init() -> void:
 		and not PackImport.IsOlder("2.10.0", "2.9.9") and PackImport.IsOlder("", "2.1.0"), "versions compare part by part")
 	_zip(TMP + "/old-art.zip", "art_set", "swr-original", art, {}, "2.0.0")
 	r = PackImport.ImportFile(TMP + "/old-art.zip")
-	_check(r.ok and r.message.contains("made by exporter 2.0.0") and r.message.contains("needs 2.1.0 or later"),
+	_check(r.ok and r.message.contains("made by exporter 2.0.0") and r.message.contains("needs %s or later" % PackImport.MIN_EXPORTER["swr-original"]),
 		"an art set from exporter 2.0.0 imports, and says to export again (%s)" % r.message)
 	var old_entry: Dictionary = PackImport.Installed()[0]
 	_check(old_entry.exporter == "2.0.0" and old_entry.outdated, "... and is listed as outdated")
-	_zip(TMP + "/new-art.zip", "art_set", "swr-original", art, {}, "2.1.0")
+	_zip(TMP + "/new-art.zip", "art_set", "swr-original", art, {}, PackImport.MIN_EXPORTER["swr-original"])
 	r = PackImport.ImportFile(TMP + "/new-art.zip")
 	_check(r.ok and not r.message.contains("export again") and not PackImport.Installed()[0].outdated,
-		"one from exporter 2.1.0 is current")
+		"one from the exporter the game needs is current")
 
 	# ---- a faction pack ----
 	var pack_files := {}
@@ -148,7 +148,7 @@ func _init() -> void:
 
 ## A pack file as the exporter writes it: the files, and manifest.json listing
 ## each one's SHA-256 (`bad_hashes` overrides some, to damage it).
-func _zip(path: String, kind: String, id: String, files: Dictionary, bad_hashes: Dictionary = {}, exporter: String = "2.1.0") -> void:
+func _zip(path: String, kind: String, id: String, files: Dictionary, bad_hashes: Dictionary = {}, exporter: String = "2.3.0") -> void:
 	var hashes := {}
 	for rel in files:
 		hashes[rel] = bad_hashes.get(rel, PackImport._sha256(files[rel]))
