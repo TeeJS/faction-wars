@@ -131,6 +131,12 @@ public sealed class Importer
         // plate behind a completed one, hyperspace streaks behind one en route,
         // and the side's grid over one being built.
         ("card_plate", 11500), ("card_enroute", 11505),
+        // A character's status icons (manual p096, "Character Status
+        // Icons": Ready, In transit, Captured, Injured): the ship's windows
+        // behind one in transit between systems, the green trace over one
+        // injured. The bars over a captured one are the character's own
+        // (GOKRES, below).
+        ("card_transit", 11501), ("card_injured", 11502),
         ("card_building.alliance", 11570), ("card_building.empire", 11572),
         // Create Mission (p042 Fig 2.34, p103 Fig 3.47, p104 Fig 3.48): the
         // 259x355 plate of the Select Mission tab (the mission box, the Target
@@ -770,6 +776,11 @@ public sealed class Importer
                     if (portrait is int pd && entry["family"]?.GetValue<string>() is "capital_ship" or "fighter"
                         && SaveSprite(gokres, pd + 8192, P("portraits", kind, id + ".damage.png"))) pictureCount++;
                     if (mini is int m && SaveSprite(gokres, m, P("miniatures", kind, id + ".png"))) { minis++; pictureCount++; }
+                    // A character's bars, drawn over the miniature while
+                    // captured (manual p096): GOKRES miniature + 12288
+                    // (30786 over Luke's 18498; every character has its own).
+                    if (mini is int mc && kind == "characters"
+                        && SaveSprite(gokres, mc + 12288, P("miniatures", kind, id + ".captured.png"))) pictureCount++;
                 }
             }
             Say($"portraits: {portraits}, list miniatures: {minis} (GOKRES.DLL).");
