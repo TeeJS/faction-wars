@@ -72,10 +72,20 @@ func DrawOwnPersonnel(list: Container, planet: Planet, uiManager: UIManager) -> 
 	# Narrowing this to Attached-only dropped your own characters EN ROUTE
 	# to a world from that world's Personnel tab, where they had always been
 	# listed greyed.
+	#
+	# A character on a mission is not listed: the ORIGINAL moves them into the
+	# Mission window. TeeJ's screenshots of the original (2026-09-23): the
+	# Emperor recruiting on Coruscant, gone from Coruscant's Personnel page
+	# and shown in its Mission window instead - and the Mission window's
+	# "starfield background indicates character is in hyperspace" (p109 Fig
+	# 3.51) keeps a team on its way there too. Characters only: Special
+	# Forces on a mission keep their "(On Mission)" row (not yet seen in the
+	# original).
 	var ours: Array = Lq.where(
 		Lq.where(GameState.ActiveRoster, func(c: Character) -> bool: return c.Faction == us and not c.IsOffMap()),
-		func(c: Character) -> bool: return (c.Attached == planet and c.Status != Enums.Status.Enroute) \
-			or (c.Destination == planet and c.Status == Enums.Status.Enroute))
+		func(c: Character) -> bool: return ((c.Attached == planet and c.Status != Enums.Status.Enroute) \
+			or (c.Destination == planet and c.Status == Enums.Status.Enroute)) \
+			and not MissionManager.IsOnMissionTeam(c))
 
 	for c in ours:
 		DrawCharacterRow(list, c, uiManager)
