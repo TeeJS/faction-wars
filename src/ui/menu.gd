@@ -340,6 +340,7 @@ func _build_cockpit(menu: PackDefs.MenuDef) -> void:
 		b.set_meta("cockpit_region", true)
 		b.set_meta("rect", r.rect2())
 		b.set_meta("color", r.SelectedColorHex)
+		b.set_meta("quad", r.Quad)
 		b.pressed.connect(_on_region.bind(r))
 		# THE EJECTOR HANDLE WORKS IN THE BROWSER TOO (TeeJ, 2026-09-24: "does
 		# not take you to the main menu"). It goes back to the pack picker
@@ -490,7 +491,12 @@ func _draw_marks() -> void:
 			continue
 		var b: Button = _regionButtons[key]
 		var own: String = str(b.get_meta("color", ""))
-		_bracket(Rect2(b.position, b.size), FactionRegistry.ParseColor(own) if not own.is_empty() else default_color)
+		var color: Color = FactionRegistry.ParseColor(own) if not own.is_empty() else default_color
+		var quad: PackedVector2Array = b.get_meta("quad", PackedVector2Array())
+		if quad.size() == 4:
+			_bracket_quad(_scaled_points(quad), color)
+		else:
+			_bracket(Rect2(b.position, b.size), color)
 
 
 ## Corner brackets, the original's selection mark (red corners on the chosen
@@ -516,6 +522,40 @@ func _bracket(region: Rect2, color: Color) -> void:
 		var width := w + 2.0 if pass_color.a < 1.0 else w
 		for a in arms:
 			_marks.draw_line(a[0], a[1], pass_color, width)
+
+
+## The same brackets on a screen seen at an angle (pack.json region `quad`;
+## TeeJ, 2026-09-24): each corner's arms run along the screen's own edges, a
+## little inside them so they land on the glass.
+func _bracket_quad(q: PackedVector2Array, color: Color) -> void:
+	var centre: Vector2 = (q[0] + q[1] + q[2] + q[3]) / 4.0
+	var shortest := INF
+	for i in 4:
+		shortest = minf(shortest, q[i].distance_to(q[(i + 1) % 4]))
+	var p := PackedVector2Array()
+	for c in q:
+		p.append(c.lerp(centre, 0.06))
+	var l := shortest * 0.32
+	var w := maxf(3.0, shortest * 0.07)
+	var arms := []
+	for i in 4:
+		arms.append([p[i], p[i] + (p[(i + 1) % 4] - p[i]).normalized() * l])
+		arms.append([p[i], p[i] + (p[(i + 3) % 4] - p[i]).normalized() * l])
+	for pass_color in [Color(0, 0, 0, 0.85), color]:
+		var width := w + 2.0 if pass_color.a < 1.0 else w
+		for a in arms:
+			_marks.draw_line(a[0], a[1], pass_color, width)
+
+
+## Picture pixels to screen pixels, point by point (as _scaled does rects).
+func _scaled_points(q: PackedVector2Array) -> PackedVector2Array:
+	var frame := _picture_frame()
+	var tex: Vector2 = _picture.texture.get_size() if _picture != null and _picture.texture != null else Vector2.ONE
+	var scale := frame.size.x / tex.x
+	var out := PackedVector2Array()
+	for p in q:
+		out.append(frame.position + p * scale)
+	return out
 
 
 func _on_region(r: PackDefs.MenuRegionDef) -> void:

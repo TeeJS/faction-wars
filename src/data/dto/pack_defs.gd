@@ -151,6 +151,13 @@ class MenuRegionDef:
 	## Optional: this region's bracket colour when chosen (the original marks
 	## difficulty in red and galaxy size in yellow). Empty = menu.selected_color.
 	var SelectedColorHex: String
+	## Optional: the screen this region shows, as its four corners in the
+	## picture's pixels - top-left, top-right, bottom-right, bottom-left - so
+	## the selection brackets lie on a screen seen at an angle (TeeJ,
+	## 2026-09-24: the Cockpit's difficulty monitors lean). Empty = the rect's
+	## corners. QuadGiven: the key was there (validation checks its shape).
+	var Quad: PackedVector2Array = PackedVector2Array()
+	var QuadGiven: bool = false
 
 	static func from_dict(d: Dictionary) -> MenuRegionDef:
 		var o := MenuRegionDef.new()
@@ -162,6 +169,16 @@ class MenuRegionDef:
 				o.Rect.append(int(v))
 		o.Tooltip = JsonUtil.str_or(d, "tooltip", "")
 		o.SelectedColorHex = JsonUtil.str_or(d, "selected_color", "")
+		var q: Variant = JsonUtil.get_ci(d, "quad")
+		if q != null:
+			o.QuadGiven = true
+			var pts := PackedVector2Array()
+			if q is Array and q.size() == 4:
+				for p in q:
+					if p is Array and p.size() == 2:
+						pts.append(Vector2(float(p[0]), float(p[1])))
+			if pts.size() == 4:
+				o.Quad = pts
 		return o
 
 	func rect2() -> Rect2:

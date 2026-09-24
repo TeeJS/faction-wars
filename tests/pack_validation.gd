@@ -63,6 +63,8 @@ func _init() -> void:
 		_pack({}, {}, {"menu": _menu({"image": "no-such-cockpit.png"})}), "is not in res://packs")
 	_case("menu region rect with no height",
 		_pack({}, {}, {"menu": _menu({"flat_rect": true})}), "rect must be [x, y, w, h]")
+	_case("menu region with a quad of three corners",
+		_pack({}, {}, {"menu": _menu({"bad_quad": true})}), "quad must be four [x, y] corners")
 	_case("menu region with a bad selected_color",
 		_pack({}, {}, {"menu": _menu({"bad_color": true})}), "selected_color: 'red' is not a #rrggbb color")
 	_case("victory_tips missing a text",
@@ -372,6 +374,8 @@ func _menu(over: Dictionary) -> Dictionary:
 		regions[0]["rect"] = [0, 0, 10, 0]
 	if over.has("bad_color"):
 		regions[0]["selected_color"] = "red"
+	if over.has("bad_quad"):
+		regions[0]["quad"] = [[0, 0], [10, 0], [10, 10]]
 	var m := {
 		"image": over.get("image", "galaxyShaded.bmp"),
 		"selected_color": "#ffd23c",

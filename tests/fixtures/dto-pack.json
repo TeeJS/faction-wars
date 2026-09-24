@@ -8835,6 +8835,8 @@
       "Regions": [
         {
           "Action": "difficulty",
+          "Quad": "[(61.3, 39.3), (103.1, 40.9), (113.4, 76.9), (73.0, 75.3)]",
+          "QuadGiven": true,
           "Rect": [
             58,
             36,
@@ -8847,6 +8849,8 @@
         },
         {
           "Action": "difficulty",
+          "Quad": "[(124.6, 39.6), (165.9, 40.4), (173.8, 76.9), (133.2, 75.2)]",
+          "QuadGiven": true,
           "Rect": [
             120,
             36,
@@ -8859,6 +8863,8 @@
         },
         {
           "Action": "difficulty",
+          "Quad": "[(186.4, 40.0), (228.5, 40.0), (233.2, 76.0), (192.6, 76.0)]",
+          "QuadGiven": true,
           "Rect": [
             183,
             36,
@@ -8871,6 +8877,8 @@
         },
         {
           "Action": "galaxy_size",
+          "Quad": "[(288.9, 291.3), (316.3, 290.8), (315.5, 315.2), (287.4, 315.4)]",
+          "QuadGiven": true,
           "Rect": [
             288,
             289,
@@ -8883,6 +8891,8 @@
         },
         {
           "Action": "galaxy_size",
+          "Quad": "[(323.7, 291.8), (351.5, 291.7), (352.3, 315.6), (324.5, 315.3)]",
+          "QuadGiven": true,
           "Rect": [
             322,
             289,
@@ -8895,6 +8905,8 @@
         },
         {
           "Action": "galaxy_size",
+          "Quad": "[(359.5, 291.4), (388.0, 290.7), (388.0, 315.4), (360.9, 315.1)]",
+          "QuadGiven": true,
           "Rect": [
             357,
             289,
@@ -8907,6 +8919,8 @@
         },
         {
           "Action": "load_game",
+          "Quad": "[]",
+          "QuadGiven": false,
           "Rect": [
             409,
             230,
@@ -8919,6 +8933,8 @@
         },
         {
           "Action": "credits",
+          "Quad": "[]",
+          "QuadGiven": false,
           "Rect": [
             456,
             240,
@@ -8931,6 +8947,8 @@
         },
         {
           "Action": "start",
+          "Quad": "[]",
+          "QuadGiven": false,
           "Rect": [
             147,
             302,
@@ -8943,6 +8961,8 @@
         },
         {
           "Action": "start",
+          "Quad": "[]",
+          "QuadGiven": false,
           "Rect": [
             430,
             302,
@@ -8955,6 +8975,8 @@
         },
         {
           "Action": "hq_only_victory",
+          "Quad": "[(308.0, 335.0), (344.0, 335.0), (344.5, 361.4), (308.0, 361.8)]",
+          "QuadGiven": true,
           "Rect": [
             305,
             332,
@@ -8967,6 +8989,8 @@
         },
         {
           "Action": "multiplayer",
+          "Quad": "[]",
+          "QuadGiven": false,
           "Rect": [
             62,
             387,
@@ -8979,6 +9003,8 @@
         },
         {
           "Action": "exit",
+          "Quad": "[]",
+          "QuadGiven": false,
           "Rect": [
             549,
             392,
