@@ -69,6 +69,10 @@ func _ready() -> void:
 	# Every menu in play in the original's style (original_menu.gd), as it
 	# enters the tree - not a text field's or a drop-down's own.
 	get_tree().node_added.connect(_StyleMenu)
+	# A window opened is the window in focus (Esc closes it).
+	child_entered_tree.connect(func(n: Node) -> void:
+		if _IsEscWindow(n):
+			_focusedWindow = n)
 	_taskbarList = get_node("%TaskbarList")
 	var menuButton: Button = get_node_or_null("../MenuButton")
 	if menuButton == null:
@@ -774,6 +778,7 @@ func RestoreWindow(window: DraggableWindow) -> void:
 		window.Refresh()
 		window.visible = true
 		window.move_to_front()
+		_focusedWindow = window
 	# Destroy the taskbar button.
 	if _taskbarButtons.has(window):
 		var btn: Button = _taskbarButtons[window]
@@ -1102,6 +1107,7 @@ func OpenGalaxyOverview() -> void:
 	if existing != null:
 		existing.Refresh()
 		existing.move_to_front()
+		_focusedWindow = existing
 		return
 	var win := GalaxyOverviewWindow.new()
 	win.name = "GalaxyOverviewWindow"
@@ -1115,6 +1121,7 @@ func OpenObjectives() -> void:
 	if existing != null:
 		existing.Refresh()
 		existing.move_to_front()
+		_focusedWindow = existing
 		return
 	var win := ObjectivesWindow.new()
 	win.name = "ObjectivesWindow"
@@ -1192,6 +1199,76 @@ func _unhandled_input(event: InputEvent) -> void:
 		elif event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
 			CancelTargeting()
 			print("Move command cancelled.")
+			get_viewport().set_input_as_handled()   # that Esc closes no window
+
+
+# --- Esc closes the window in focus ---------------------------------------------
+## "Cancel/Close Window - cancels the current command (same as clicking Close
+## or Cancel)" (manual p064), and in the original Esc closes the window in
+## focus (TeeJ, 2026-09-24): the one last clicked, opened or brought back.
+## With that one gone, the front-most open window is next. Not the Battle
+## Alert: it waits for an answer, and would only come straight back.
+var _focusedWindow: Node = null
+
+
+func _IsEscWindow(n: Node) -> bool:
+	return n is DraggableWindow or n is GalaxyOverviewWindow or n is ObjectivesWindow \
+		or n is GameOptionsWindow or n is LoadGameWindow or n is BattleResultsWindow
+
+
+## A click anywhere in a window focuses it - seen here, not taken.
+func _input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed:
+		var w: Node = _WindowAt(get_final_transform().affine_inverse() * (event as InputEventMouseButton).position)
+		if w != null:
+			_focusedWindow = w
+
+
+## The front-most open window under a point.
+func _WindowAt(at: Vector2) -> Node:
+	for i in range(get_child_count() - 1, -1, -1):
+		var c: Node = get_child(i)
+		if _IsEscWindow(c) and (c as Control).visible and (c as Control).get_global_rect().has_point(at):
+			return c
+	return null
+
+
+## The window Esc would close now, or null.
+func FocusedWindow() -> Node:
+	if is_instance_valid(_focusedWindow) and _focusedWindow.get_parent() == self \
+			and (_focusedWindow as Control).visible and not _focusedWindow.is_queued_for_deletion():
+		return _focusedWindow
+	for i in range(get_child_count() - 1, -1, -1):
+		var c: Node = get_child(i)
+		if _IsEscWindow(c) and (c as Control).visible and not c.is_queued_for_deletion():
+			return c
+	return null
+
+
+## After everything in front has had its say: the Options screen, a Status
+## window and the tactical view each take their own Esc first. While
+## targeting, Esc is the targeting's to cancel (_unhandled_input, which Godot
+## calls after this).
+func _unhandled_key_input(event: InputEvent) -> void:
+	if not (event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_ESCAPE):
+		return
+	if IsTargeting:
+		return
+	var w: Node = FocusedWindow()
+	if w == null:
+		return
+	get_viewport().set_input_as_handled()
+	_focusedWindow = null
+	if w is DraggableWindow:
+		(w as DraggableWindow).CloseWindow()
+	elif w is GameOptionsWindow:
+		(w as GameOptionsWindow).Closed.emit()   # as its Close button does
+		w.queue_free()
+	elif w is LoadGameWindow:
+		(w as LoadGameWindow).Cancelled.emit()   # as its Cancel button does
+		w.queue_free()
+	else:
+		w.queue_free()
 
 
 func OpenTransitConfirm(characters: Array, daysRemaining: int, onConfirmCallback: Callable) -> void:
