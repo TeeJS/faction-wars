@@ -283,8 +283,9 @@ static func Remove(kind: String, id: String) -> void:
 
 ## Files of a faction pack that are the original's: anything under original/
 ## (any case - the exporter's PackBuilder checks it so), and any file identical
-## to one in an art set: the player's imported ones, and one in the project's
-## art/ folder (where the web build carries its art).
+## to one in an art set: the player's imported ones, and a checkout's exported
+## one in the project's art/ folder (gitignored and never exported - a
+## developer's own copy).
 static func _leaks(contents: Dictionary) -> Array[String]:
 	var known := {}   # sha256 -> true, from every art set's manifest
 	for root in [Art.UserArtRoot, "res://art"]:
