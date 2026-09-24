@@ -28,8 +28,9 @@ namespace FactionWarsExporter;
 ///     10169 the same in grey (unexplored); 11608/11609 the uprising flame.
 ///     10771-10778 the Alliance sector-window icons (factory, tower, ship,
 ///     crest; each normal then highlighted), 10779-10786 the Imperial set,
-///     10787-10790 the neutral factory and tower; 10212-10237 the 26 planet
-///     sprites by artwork_id (10240 is the asteroid field).
+///     10787-10790 the neutral factory and tower; the 26 planet sprites by
+///     artwork_id - 10212-10234, then 10239, 10237, 10238 (PlanetSpriteId;
+///     10240 is the asteroid field).
 ///     The window plates and parts (Manufacturing 10290-10298, Defenses
 ///     10577, the Encyclopedia / Message Index frame 10335/10336 and plates
 ///     10337/10338/10822), the tab icons of the Manufacturing, Defenses and
@@ -64,6 +65,21 @@ public sealed class Importer
     public const int PlanetPictureBase = 11100;
     public const int PlanetSpriteBase = 10212;
     public const int PlanetSpriteCount = 26;
+
+    /// <summary>A planet picture's STRATEGY.DLL sprite. The original's own
+    /// switch (FUN_0045c970, open-rebellion's Ghidra notes) maps pictures 1-23
+    /// to 10212-10234 in order and 24, 25, 26 to 10239, 10237, 10238 - there
+    /// is no 10235 or 10236. TeeJ's screenshot of the original's Sluis sector
+    /// agrees: Umgul (25) is 10237, Bpfassh (24) is 10239. Base + picture - 1
+    /// lost 24 and 25 (drawn as plain circles) and gave Flax (26) Umgul's.</summary>
+    public static int PlanetSpriteId(int art) => art switch
+    {
+        <= 23 => PlanetSpriteBase + art - 1,
+        24 => 10239,
+        25 => 10237,
+        26 => 10238,
+        _ => PlanetSpriteBase,
+    };
 
     // STRATEGY.DLL: the GID stars, big / mid / low / none per side (measured
     // extents 15, 9, 7 and 3 px), and the grey set for unexplored worlds.
@@ -666,8 +682,8 @@ public sealed class Importer
         int sprites = 0;
         for (int art = 1; art <= PlanetSpriteCount; art++)
         {
-            if (SaveSprite(strategy, PlanetSpriteBase + art - 1, P("planet_sprites", $"{art}.png"))) { sprites++; pictureCount++; }
-            else missing.Add($"planet_sprites/{art}: no bitmap {PlanetSpriteBase + art - 1} in STRATEGY.DLL");
+            if (SaveSprite(strategy, PlanetSpriteId(art), P("planet_sprites", $"{art}.png"))) { sprites++; pictureCount++; }
+            else missing.Add($"planet_sprites/{art}: no bitmap {PlanetSpriteId(art)} in STRATEGY.DLL");
         }
         int stars = 0;
         foreach (var (faction, big, mid, low, none) in GidStars)
