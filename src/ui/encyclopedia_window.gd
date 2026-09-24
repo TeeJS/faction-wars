@@ -564,12 +564,11 @@ func _build_original() -> void:
 	StyleScrollBar(_text.get_v_scroll_bar())
 
 	# ---- the frame over both, its arrows and buttons ----
-	var frame := OUI.Place(body, OUI.Pic("frame." + side), 0, 0, "Frame")
-	frame.mouse_filter = Control.MOUSE_FILTER_PASS
+	# Dragged by where it is drawn; a click on the index inside goes through.
+	var frame := OUI.PlaceHit(body, OUI.Pic("frame." + side), 0, 0, "Frame")
 	frame.gui_input.connect(OnTitleBarGuiInput)
 	if side == "alliance":   # the Alliance's three-socket column over the frame's strip
-		var column := OUI.Place(body, OUI.Pic("ency_side.alliance"), 412, 0, "SideColumn")
-		column.mouse_filter = Control.MOUSE_FILTER_PASS
+		var column := OUI.PlaceHit(body, OUI.Pic("ency_side.alliance"), 412, 0, "SideColumn")
 		column.gui_input.connect(OnTitleBarGuiInput)
 	_arrow_button(_topicView, "ency_prev", 28, Prev)
 	_arrow_button(_topicView, "ency_next", 380, Next)

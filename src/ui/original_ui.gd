@@ -111,6 +111,45 @@ static func Place(parent: Control, tex: Texture2D, x: float, y: float, name: Str
 	return r
 
 
+## A picture that takes the mouse only where it is drawn: a window's frame,
+## laid over its contents to be dragged by, that lets a click on the list
+## inside it through. A TextureRect takes its whole rectangle, so the frame
+## over the Encyclopedia's index swallowed every click on a name (TeeJ,
+## 2026-09-24: "we need to be able to double click entries in the
+## encyclopedia"). Returns it taking the mouse (PASS).
+static func PlaceHit(parent: Control, tex: Texture2D, x: float, y: float, name: String = "") -> TextureRect:
+	var r := AlphaHit.new()
+	if not name.is_empty():
+		r.name = name
+	r.texture = tex
+	r.position = Vector2(x, y) * K
+	r.size = tex.get_size() if tex != null else Vector2.ZERO
+	r.stretch_mode = TextureRect.STRETCH_KEEP
+	r.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	r.mouse_filter = Control.MOUSE_FILTER_PASS
+	parent.add_child(r)
+	return r
+
+
+class AlphaHit extends TextureRect:
+	var _img: Image
+
+	func _has_point(point: Vector2) -> bool:
+		if texture == null:
+			return false
+		if _img == null:
+			_img = texture.get_image()
+			if _img == null:
+				return false
+			if _img.is_compressed():
+				_img.decompress()
+		var x: int = int(point.x * _img.get_width() / maxf(1.0, size.x))
+		var y: int = int(point.y * _img.get_height() / maxf(1.0, size.y))
+		if x < 0 or y < 0 or x >= _img.get_width() or y >= _img.get_height():
+			return false
+		return _img.get_pixel(x, y).a > 0.5
+
+
 ## The original's text style on a label: face, size in original pixels (a
 ## half pixel where our Arial runs wider than the original's hinted one).
 static func Style(l: Control, px: float, color: Color, bold: bool = false) -> void:

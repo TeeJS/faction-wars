@@ -149,14 +149,13 @@ static func Build(window: DraggableWindow, title: String, label: String, plate: 
 	parts["bar"] = scroll
 
 	# The frame over the plate, dragged by; the Alliance's socketed strip.
-	var frame := OUI.Place(body, OUI.Pic("frame." + side), 0, 0, "Frame")
-	frame.mouse_filter = Control.MOUSE_FILTER_PASS
+	# Dragged by where it is drawn; a click on the list inside goes through.
+	var frame := OUI.PlaceHit(body, OUI.Pic("frame." + side), 0, 0, "Frame")
 	frame.gui_input.connect(window.OnTitleBarGuiInput)
 	if side == "alliance":
 		var strip: Texture2D = OUI.Pic("finder_side%d.alliance" % (2 if buttons.size() <= 1 else 4))
 		if strip != null:
-			var column := OUI.Place(body, strip, StripAt.x, StripAt.y, "SideColumn")
-			column.mouse_filter = Control.MOUSE_FILTER_PASS
+			var column := OUI.PlaceHit(body, strip, StripAt.x, StripAt.y, "SideColumn")
 			column.gui_input.connect(window.OnTitleBarGuiInput)
 	var named := {}
 	named["close"] = _Button(body, "ency_close", side, 0, "Close the %s." % title)
