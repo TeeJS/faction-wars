@@ -11,8 +11,12 @@ extends RefCounted
 ##   a faction pack  -> user://packs/<id>/          (listed by the pack picker)
 ## A faction pack is shareable, so it may carry none of the original's art: one
 ## with a file matching an installed art set, or anything under original/, is
-## refused. Nothing is written until the whole file checks out; the old copy is
-## replaced only then.
+## refused. A faction pack must also be one the game will load: its pack.json
+## names the same id as its manifest, and it passes the loader's checks
+## (PackLoader.Load) from a staging folder named after it - so a pack that would
+## only ever show as a broken card is refused here, with the reasons (the
+## editor handoff, 2026-09-23). Nothing is written into place until the whole
+## file checks out; the old copy is replaced only then.
 ##
 ## Preloaded by path (as PackImport): a new class_name can lag the editor's
 ## class cache.
@@ -25,6 +29,12 @@ const KIND_FACTION_PACK := "faction_pack"
 ## Where a picked file is staged for the zip reader (user://, so it is never an
 ## OS temp folder).
 const STAGING := "user://import-staging.zip"
+## Where a faction pack is unpacked to be checked: a folder named after the
+## pack, since the loader's rule 1 compares the id with the folder name. Not
+## under user://packs, where the picker would list it.
+const PACK_STAGING := "user://import-staging"
+## How many of the loader's reasons a refusal lists.
+const REASONS_SHOWN := 8
 ## The oldest Faction Wars Exporter whose art set this version of the game can
 ## use, per art set. 2.1.0: the galaxy map mirrored out to 640x480, which the
 ## Star Wars pack's map_image_rect needs. 2.3.0: the Mission window, the
@@ -170,10 +180,16 @@ static func _import(zip: ZIPReader) -> Dictionary:
 			return _fail("It is a faction pack with no pack.json.")
 		if FileAccess.file_exists("%s/%s/pack.json" % [FactionRegistry.PACKS_ROOT, id]):
 			return _fail("'%s' is a pack that comes with the game; an imported copy would never be used." % id)
+		var pj: Variant = JSON.parse_string((contents["pack.json"] as PackedByteArray).get_string_from_utf8())
+		if not pj is Dictionary:
+			return _fail("Its pack.json is not valid JSON.")
+		if str(pj.get("id", "")) != id:
+			return _fail("Its pack.json names the pack '%s' but its manifest '%s'; they must be the same." % [str(pj.get("id", "")), id])
 		dest = "%s/%s" % [FactionRegistry.USER_PACKS_ROOT, id]
 
 	# Write beside the old copy, then swap, so a failure leaves the old intact.
-	var staging := dest + ".importing"
+	# A faction pack is written where the loader can check it first.
+	var staging := dest + ".importing" if kind == KIND_ART_SET else "%s/%s" % [PACK_STAGING, id]
 	_remove(staging)
 	for p in contents:
 		var path := "%s/%s" % [staging, p]
@@ -187,6 +203,16 @@ static func _import(zip: ZIPReader) -> Dictionary:
 	var keep := FileAccess.open("%s/manifest.json" % staging, FileAccess.WRITE)
 	keep.store_string(JSON.stringify(manifest, "  "))
 	keep.close()
+	if kind == KIND_FACTION_PACK:
+		var errors: Array[String] = []
+		PackLoader.Load(staging, errors)
+		if not errors.is_empty():
+			_remove(staging)
+			var shown: Array[String] = []
+			for e in errors.slice(0, REASONS_SHOWN):
+				shown.append(str(e))
+			var more: String = "\n  ... and %d more" % (errors.size() - REASONS_SHOWN) if errors.size() > REASONS_SHOWN else ""
+			return _fail("Not imported: the game would refuse to load it.\n  %s%s" % ["\n  ".join(shown), more])
 	_remove(dest)
 	if DirAccess.rename_absolute(staging, dest) != OK:
 		return _fail("Could not move the import into place at %s." % dest)
@@ -229,6 +255,8 @@ static func IsOlder(version: String, than: String) -> bool:
 static func Installed() -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
 	for pair in [[KIND_ART_SET, Art.UserArtRoot], [KIND_FACTION_PACK, FactionRegistry.USER_PACKS_ROOT]]:
+		if not DirAccess.dir_exists_absolute(pair[1]):
+			continue
 		for id in DirAccess.get_directories_at(pair[1]):
 			if id.ends_with(".importing"):
 				continue
@@ -253,18 +281,24 @@ static func Remove(kind: String, id: String) -> void:
 	_sync()
 
 
-## Files of a faction pack that are the original's: anything under original/,
-## and any file identical to one in an installed art set.
+## Files of a faction pack that are the original's: anything under original/
+## (any case - the exporter's PackBuilder checks it so), and any file identical
+## to one in an art set: the player's imported ones, and a checkout's exported
+## one in the project's art/ folder (gitignored and never exported - a
+## developer's own copy).
 static func _leaks(contents: Dictionary) -> Array[String]:
-	var known := {}   # sha256 -> true, from every installed art set's manifest
-	for id in DirAccess.get_directories_at(Art.UserArtRoot):
-		var m: Variant = JSON.parse_string(FileAccess.get_file_as_string("%s/%s/manifest.json" % [Art.UserArtRoot, id]))
-		if m is Dictionary and m.get("files") is Dictionary:
-			for h in (m["files"] as Dictionary).values():
-				known[str(h)] = true
+	var known := {}   # sha256 -> true, from every art set's manifest
+	for root in [Art.UserArtRoot, "res://art"]:
+		if not DirAccess.dir_exists_absolute(root):
+			continue
+		for id in DirAccess.get_directories_at(root):
+			var m: Variant = JSON.parse_string(FileAccess.get_file_as_string("%s/%s/manifest.json" % [root, id]))
+			if m is Dictionary and m.get("files") is Dictionary:
+				for h in (m["files"] as Dictionary).values():
+					known[str(h).to_lower()] = true
 	var out: Array[String] = []
 	for p in contents:
-		if str(p).begins_with("original/"):
+		if str(p).to_lower().begins_with("original/"):
 			out.append("%s  (the original's art lives in the art set, not in a pack)" % p)
 		elif known.has(_sha256(contents[p])):
 			out.append("%s  (the same picture as one in your art set)" % p)
