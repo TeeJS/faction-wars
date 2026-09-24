@@ -71,7 +71,17 @@ func _init() -> void:
 	else:
 		_check(false, "an agent and a world to send them to")
 
-	# Special Forces: off the Personnel page while on a mission.
+	# Special Forces: off the Personnel page while on a mission. Day zero's
+	# seeding is random, and some galaxies deal us none (seed 3's Alliance):
+	# then raise one of ours on a world we hold, as training would.
+	var ours_sf: bool = Lq.any(GameState.AllPlanets(), func(p: Planet) -> bool:
+		return p.ControllingFaction == us and Lq.any(p.SpecForces(), func(u: Unit) -> bool: return u.Faction == us))
+	if not ours_sf:
+		var def: PackDefs.UnitDef = Lq.first_or_null(MilitaryCatalog.All(), func(d: PackDefs.UnitDef) -> bool:
+			return d.Kind == "spec_force" and d.BuildableBy.has(us.Id) and not MissionCatalog.SpecForceMissions(d.Id).is_empty())
+		var held: Planet = Lq.first_or_null(GameState.AllPlanets(), func(p: Planet) -> bool: return p.ControllingFaction == us)
+		if def != null and held != null:
+			DayZeroGenerator.AssignUnitToPlanet(held, MilitaryCatalog.Create(def, us, held))
 	var sent := false
 	for p: Planet in GameState.AllPlanets():
 		if sent or p.ControllingFaction != us:
