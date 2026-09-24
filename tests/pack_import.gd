@@ -6,7 +6,9 @@ extends SceneTree
 ##     leave the installed copy alone;
 ##   - a faction pack imports into user://packs/ and is listed;
 ##   - a faction pack carrying one of the art set's pictures, or an original/
-##     folder, is refused;
+##     folder (in any case), is refused;
+##   - a faction pack whose pack.json names another id, or that the loader
+##     would refuse, is refused with the reasons, and nothing is written;
 ##   - with --real=<art.zip>, the Faction Wars Exporter's own output imports.
 ## Writes under a test art root and a test pack id; removes both.
 ##
@@ -109,7 +111,32 @@ func _init() -> void:
 	_zip(TMP + "/old.zip", "faction_pack", PACK_ID, old)
 	r = PackImport.ImportFile(TMP + "/old.zip")
 	_check(not r.ok and r.message.contains("original/portraits/x.png"), "a faction pack with an original/ folder is refused")
+	var upper := pack_files.duplicate()
+	upper["Original/portraits/x.png"] = _png(Color(0, 1, 0))
+	_zip(TMP + "/upper.zip", "faction_pack", PACK_ID, upper)
+	r = PackImport.ImportFile(TMP + "/upper.zip")
+	_check(not r.ok and r.message.contains("Original/portraits/x.png"), "... in any case: Original/ too (%s)" % r.message.get_slice("\n", 0))
 	_check(not DirAccess.dir_exists_absolute(pack_dir), "... and nothing of either was written")
+
+	# One the game would not load is refused here, not shown as a broken card.
+	var misnamed := pack_files.duplicate()
+	var other: Dictionary = manifest.duplicate(true)
+	other["id"] = "someone-else"
+	misnamed["pack.json"] = JSON.stringify(other, "  ").to_utf8_buffer()
+	_zip(TMP + "/misnamed.zip", "faction_pack", PACK_ID, misnamed)
+	r = PackImport.ImportFile(TMP + "/misnamed.zip")
+	_check(not r.ok and r.message.contains("names the pack 'someone-else' but its manifest '%s'" % PACK_ID), "a pack.json naming another id is refused (%s)" % r.message)
+	var broken := pack_files.duplicate()
+	var bad: Dictionary = manifest.duplicate(true)
+	bad["schema_version"] = 99
+	broken["pack.json"] = JSON.stringify(bad, "  ").to_utf8_buffer()
+	_zip(TMP + "/broken.zip", "faction_pack", PACK_ID, broken)
+	r = PackImport.ImportFile(TMP + "/broken.zip")
+	_check(not r.ok and r.message.begins_with("Not imported: the game would refuse to load it.") and r.message.contains("schema_version"),
+		"a pack the loader refuses is refused, with its reasons (%s)" % r.message.replace("\n", " | "))
+	_check(not DirAccess.dir_exists_absolute(pack_dir) and not DirAccess.dir_exists_absolute("%s/%s" % [PackImport.PACK_STAGING, PACK_ID]),
+		"... nothing is installed, and its staging folder is gone")
+	_check(not FactionRegistry.ListPackIds().has(PACK_ID), "... and the picker lists nothing")
 	var shipped := pack_files.duplicate()
 	_zip(TMP + "/shipped.zip", "faction_pack", "star-wars-rebellion", shipped)
 	r = PackImport.ImportFile(TMP + "/shipped.zip")
