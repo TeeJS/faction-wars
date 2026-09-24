@@ -4468,6 +4468,7 @@
   ],
   "factions": [
     {
+      "Adjective": "Alliance",
       "AgentName": "C-3PO",
       "ArtSkin": "alliance",
       "ColorHex": "#ff0000",
@@ -4503,6 +4504,7 @@
       }
     },
     {
+      "Adjective": "Imperial",
       "AgentName": "IMP-22",
       "ArtSkin": "empire",
       "ColorHex": "#00ff00",

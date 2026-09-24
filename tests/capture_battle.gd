@@ -5,7 +5,7 @@ extends SceneTree
 ## window. Needs a window (NOT --headless) and the art:
 ##
 ##   Godot_console.exe --path . --resolution 1440x850 -s tests/capture_battle.gd -- --out=C:/tmp/battle.png [--faction=alliance]
-##   writes <out minus .png>_summary.png, _alliance.png, _empire.png, _system.png, _results.png, _results_forces.png
+##   writes <out minus .png>_summary.png, _alliance.png, _empire.png, _system.png, _results.png, _results_<side>_<filter>.png
 
 func _init() -> void:
 	await process_frame
@@ -42,9 +42,18 @@ func _init() -> void:
 	r.WeLost = true
 	r.LoserWithdrew = true
 	for s in r.Theirs.Ships:
-		r.TheirLosses.CapitalShipsOperational.append(s.Name)
+		var kind: String = "CapitalShips" if s.Type == Enums.UnitType.CapitalShip else "Squadrons"
+		r.TheirLosses.add(kind + "Operational", s.Name, "units", s.PackId, false)
+		for h in s.Hangar:
+			if h.Type == Enums.UnitType.Fighter:
+				r.TheirLosses.add("SquadronsOperational", h.Name, "units", h.PackId, false)
+			elif h.Type == Enums.UnitType.Troop:
+				r.TheirLosses.add("TroopsOperational", h.Name, "units", h.PackId, false)
+	for c in GameState.ActiveRoster:
+		if c.Faction == r.Theirs.Faction and r.TheirLosses.PersonnelSurvivors.is_empty():
+			r.TheirLosses.add("PersonnelSurvivors", c.Name, "characters", c.PackId, false)
 	for s in r.Ours.Ships:
-		r.OurLosses.CapitalShipsDestroyed.append(s.Name)
+		r.OurLosses.add("CapitalShipsDestroyed" if s.Type == Enums.UnitType.CapitalShip else "SquadronsDestroyed", s.Name, "units", s.PackId, false)
 	var alert := BattleAlertWindow.new()
 	alert.name = "BattleAlertWindow"
 	ui.add_child(alert)
@@ -64,11 +73,14 @@ func _init() -> void:
 	for _i in 3:
 		await process_frame
 	ok = _shot(results, out + "_results.png") and ok
-	results._page = 2
-	results._ShowPage()
-	for _i in 3:
-		await process_frame
-	ok = _shot(results, out + "_results_forces.png") and ok
+	for page in [1, 2]:
+		for tab in 4:
+			results._page = page
+			results._tab = tab
+			results._ShowPage()
+			for _i in 3:
+				await process_frame
+			ok = _shot(results, out + "_results_%s_%d.png" % ["alliance" if page == 1 else "empire", tab]) and ok
 	print("[capture_battle] at %s -> %s" % [where.Name, "ok" if ok else "error"])
 	quit(0 if ok else 1)
 

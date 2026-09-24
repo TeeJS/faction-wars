@@ -114,6 +114,7 @@ func AdvanceDay() -> void:
 					fleet.Destination = null
 					fleet.DaysToDestination = 0
 					fleet.Status = Enums.Status.AwaitingOrders
+					fleet.ArrivedDay = Today
 					print("%s has arrived at %s." % [fleet.Name, landing.Name])
 					# "A FLEET CAN EXPLORE AN UNEXPLORED SYSTEM ... WHEN THE FLEET ARRIVES YOU
 					# LEARN THE SAME INFORMATION ABOUT THE SYSTEM THAT YOU DO FROM A RECON

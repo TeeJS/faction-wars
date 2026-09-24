@@ -286,6 +286,10 @@ public sealed class Importer
         ("battle_alliance_forces", "alliance", 10730, 10731, 0), ("battle_alliance_forces", "empire", 10740, 10741, 0),
         ("battle_empire_forces", "alliance", 10732, 10733, 0), ("battle_empire_forces", "empire", 10742, 10743, 0),
         ("battle_system", "alliance", 10734, 10735, 0), ("battle_system", "empire", 10744, 10745, 0),
+        // The results' Filters (p153 Fig. 4.18; TeeJ's screenshots, 2026-09-24):
+        // the Encyclopedia's ship, troop and personnel tabs, and these fighter
+        // tabs - the Alliance's X-wing, the Empire's TIE.
+        ("battle_filter_fighter", "alliance", 10354, 10353, 0), ("battle_filter_fighter", "empire", 10364, 10363, 0),
     };
 
     // STRATEGY.DLL: buttons as (name, normal, pressed/current, disabled).

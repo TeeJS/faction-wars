@@ -16,11 +16,11 @@ var _tab: int = 0    # within a force page
 
 ## THE ORIGINAL'S LOOK with the art imported (src/ui/original_battle.gd): the
 ## Encyclopedia's frame, a scene, the title and the outcome; the column's close
-## box, the summary, the two sides' forces and Goto System. Its forces pages
-## are PROVISIONAL: no screenshot shows the original's (Fig. 4.18 is too
-## small to measure) - the tables are its pictures, the rest ours.
+## box, the summary, the two sides' forces and Goto System; the forces pages
+## as TeeJ's screenshots of the original's have them (2026-09-24).
 const OB := preload("res://src/ui/original_battle.gd")
 const OUI := preload("res://src/ui/original_ui.gd")
+const Art := preload("res://src/ui/artwork.gd")
 var _o: Control = null
 var _oBody: Control = null
 var _oPicture: TextureRect = null
@@ -156,39 +156,57 @@ func Summary() -> void:
 ## The composed outcome, clause by clause, in the original's own words: the
 ## victory clause first (the original's large line), then the system and the
 ## forces.
+##
+## As TeeJ's screenshots of the original have it (2026-09-24): ONE victory
+## clause, the viewer's ("The Imperial fleet is victorious." - never the other
+## side's defeat after it), the system's, then the loser's fleet: "Imperial
+## forces have maintained the blockade of Chandrila. The Alliance fleet has
+## withdrawn." / "Chandrila is now under blockade by Imperial forces. The
+## Alliance fleet has been completely destroyed." The sides by their
+## `adjective` ("Imperial", "Alliance").
 static func OutcomeLines(_r: FleetBattleManager.BattleReport, viewer: Faction) -> Array[String]:
 	var mine: Fleet = _r.Mine(viewer)
 	var enemy: Fleet = _r.Enemy(viewer)
-	var us: String = mine.Faction.DisplayName if mine.Faction != null else "Our"
-	var them: String = enemy.Faction.DisplayName if enemy.Faction != null else "Enemy"
-	var we_lost: bool = _r.Lost(viewer)
-
+	var world: String = _r.Where.Name
 	var lines: Array[String] = []
-
 	if _r.DrawBothLost:
-		lines.append("The battle at %s is indecisive." % _r.Where.Name)
-		lines.append("There has been no victor.")
-	elif we_lost:
-		lines.append("The %s fleet is defeated." % us)
-		lines.append("The %s fleet is victorious." % them)
+		lines.append("The battle at %s is indecisive." % world)
+		return lines
+	var we_lost: bool = _r.Lost(viewer)
+	lines.append(("The %s fleet is defeated." if we_lost else "The %s fleet is victorious.") % Adj(mine))
+	var winner: Fleet = enemy if we_lost else mine
+	var loser: Fleet = mine if we_lost else enemy
+
+	# The system's clause. A side that moved in on its own world was breaking
+	# the other's blockade of it.
+	var arriving: Fleet = _r.Arriving
+	var owner: Faction = _r.Where.ControllingFaction
+	if arriving != null and owner == arriving.Faction:
+		var holder_fleet: Fleet = _r.Theirs if arriving == _r.Ours else _r.Ours
+		if arriving == winner:
+			lines.append("%s forces have broken the blockade of %s." % [Adj(arriving), world])
+		else:
+			lines.append("%s forces have maintained the blockade of %s." % [Adj(holder_fleet), world])
 	else:
-		lines.append("The %s fleet is victorious." % us)
-		lines.append("The %s fleet is defeated." % them)
+		var holder: Faction = BlockadeManager.BlockaderOf(_r.Where)
+		if holder != null:
+			lines.append("%s is now under blockade by %s forces." % [world, holder.Adjective])
+		elif owner != null and winner != null and owner == winner.Faction:
+			lines.append("%s has been successfully defended from %s forces." % [world, Adj(loser)])
+		else:
+			lines.append("%s has been cleared of %s forces." % [world, Adj(loser)])
 
-	# The system-state clause.
-	var holder: Faction = BlockadeManager.BlockaderOf(_r.Where)
-	if holder != null:
-		lines.append("%s is now under blockade by %s forces." % [_r.Where.Name, holder.DisplayName])
-	elif not we_lost:
-		lines.append("%s has been cleared of %s forces." % [_r.Where.Name, them])
-
-	# The force-disposition clause.
-	if _r.HeldByGravityWell:
-		lines.append("A gravity well projector held the losing fleet in place. " \
-			+ "It could not withdraw, and has been completely destroyed.")
-	elif _r.LoserWithdrew:
-		lines.append("The losing fleet has withdrawn.")
+	# The loser's fleet.
+	if _r.LoserWithdrew and not _r.HeldByGravityWell:
+		lines.append("The %s fleet has withdrawn." % Adj(loser))
+	else:
+		lines.append("The %s fleet has been completely destroyed." % Adj(loser))
 	return lines
+
+
+## A fleet's side as the sentences name it.
+static func Adj(f: Fleet) -> String:
+	return f.Faction.Adjective if f != null and f.Faction != null and not f.Faction.Adjective.is_empty() else "Enemy"
 
 
 ## Fig 4.18 - four tabs, two columns. The headings change for people.
@@ -375,57 +393,160 @@ func _ShowPage() -> void:
 			HORIZONTAL_ALIGNMENT_CENTER, false, "Outcome")
 		OB.Block(_oBody, " ".join(lines.slice(1)), OB.RestAt, 390, OB.TextPx, 18, colour, "Rest")
 		return
-	# A side's forces (Fig. 4.18) - PROVISIONAL, see the header.
+	# A side's forces (Fig. 4.18), as TeeJ's eight screenshots of the original's
+	# have it (2026-09-24): the side's name in its colour under the title;
+	# "Filters" and the four tabs (capital ships, fighters, troops, personnel -
+	# the viewer's side's pictures); the table (two columns, three for
+	# personnel) with the filter's name on its band and the columns' heads; in
+	# each column the units' pictures - burning where damaged - with their
+	# names under them, or "None" / "No Survivors" / "No Casualties".
 	var skin: String = "alliance" if _page == 1 else "empire"
 	var fleet: Fleet = _FleetOf(skin)
 	var losses: FleetBattleManager.Casualties = _r.MyLosses(viewer) if fleet == _r.Mine(viewer) else _r.EnemyLosses(viewer)
-	OB.Line(_oBody, "%s Forces" % _SideName(skin), OB.ResultTitleCentre - 190, 44, 380, 13, Color.WHITE,
+	var side_colour: Color = OUI.SideColor(fleet.Faction) if fleet != null else Color.WHITE
+	OB.Line(_oBody, "%s Forces" % BattleResultsWindow.Adj(fleet), 211 - 150, 43, 300, 15.5, side_colour,
 		HORIZONTAL_ALIGNMENT_CENTER, false, "PageName")
+	OB.Line(_oBody, "Filters", 20, 73, 100, 18, Color.WHITE, HORIZONTAL_ALIGNMENT_RIGHT, false, "Filters")
+	var stems: Array = ["ency_tab_ship", "battle_filter_fighter", "ency_tab_troop", "ency_tab_personnel"]
 	var names: Array = ["Capital Ships", Terms.label("fighter_squadrons"), Terms.label("trooper_regiments"), "Personnel"]
-	for i in names.size():
-		var tab := Button.new()
+	for i in stems.size():
+		var tab := TextureButton.new()
 		tab.name = "Filter%d" % i
-		tab.text = names[i]
-		tab.flat = true
-		tab.focus_mode = Control.FOCUS_NONE
-		OUI.Style(tab, 10, colour if i == _tab else Color(0.7, 0.7, 0.7), i == _tab)
-		tab.position = Vector2(36 + i * 90, 64) * OUI.K
-		tab.size = Vector2(88, 16) * OUI.K
+		tab.texture_normal = OUI.Tab(stems[i], _oSide, "pressed" if i == _tab else "")
+		tab.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		tab.position = Vector2(FilterX + i * FilterPitch, FilterY) * OUI.K
+		tab.size = tab.texture_normal.get_size() if tab.texture_normal != null else Vector2(49, 41) * OUI.K
+		tab.tooltip_text = names[i]
 		var which := i
 		tab.pressed.connect(func() -> void:
 			_tab = which
 			_ShowPage())
 		_oBody.add_child(tab)
-	OB.Line(_oBody, names[_tab], 40, 102, 300, 11, Color.WHITE, HORIZONTAL_ALIGNMENT_LEFT, true, "Band")
-	var columns: Array = []
+	OB.Line(_oBody, names[_tab], 38, 102, 300, 12.5, Color.WHITE, HORIZONTAL_ALIGNMENT_LEFT, false, "Band")
+	var columns: Array = []   # [head, texts, who, empty text]
 	match _tab:
 		0:
-			columns = [["Operational", losses.CapitalShipsOperational], ["Destroyed", losses.CapitalShipsDestroyed]]
+			columns = [["Operational", "CapitalShipsOperational"], ["Destroyed", "CapitalShipsDestroyed"]]
 		1:
-			columns = [["Operational", losses.SquadronsOperational], ["Destroyed", losses.SquadronsDestroyed]]
+			columns = [["Operational", "SquadronsOperational"], ["Destroyed", "SquadronsDestroyed"]]
 		2:
-			var troops: Array = []
-			if fleet != null:
-				for s in fleet.Ships:
-					if s.Hangar != null:
-						for h in s.Hangar:
-							if h.Type == Enums.UnitType.Troop:
-								troops.append(h.Name)
-			columns = [["Operational", troops], ["Destroyed", []]]
+			columns = [["Operational", "TroopsOperational"], ["Destroyed", "TroopsDestroyed"]]
 		_:
-			columns = [["Survivors", losses.PersonnelSurvivors], ["Captured", losses.PersonnelCaptured], ["Killed", losses.PersonnelKilled]]
-	# The table's columns (measured on its pictures): 24-191-374, or
-	# 24-136-247-374; the heads from y 105, the rows from 121 to 290.
-	var edges: Array = [24, 191, 374] if columns.size() == 2 else [24, 136, 247, 374]
+			columns = [["Survivors", "PersonnelSurvivors"], ["Captured", "PersonnelCaptured"], ["Killed", "PersonnelKilled"]]
+	# What each column holds: {name, picture}. A destroyed unit burns, as a
+	# damaged one does (TeeJ's screenshot: the lost Y-wing).
+	var lists: Array = []
+	for col in columns:
+		var items: Array = []
+		var texts: Array = losses.get(col[1]) if losses != null else []
+		var who: Array = losses.Who.get(col[1], []) if losses != null else []
+		for j in texts.size():
+			var w: Dictionary = who[j] if j < who.size() else {}
+			items.append({"name": _PlainName(str(texts[j])), "picture": _Picture(w, str(col[1]).ends_with("Destroyed"))})
+		lists.append(items)
+	var edges: Array = Table2 if columns.size() == 2 else Table3
+	var rows: int = 0
+	for items in lists:
+		rows = maxi(rows, items.size())
+	var clip := Control.new()
+	clip.name = "Rows"
+	clip.clip_contents = true
+	clip.position = Vector2(edges[0], BodyTop) * OUI.K
+	clip.size = Vector2(edges[edges.size() - 1] - edges[0], BodyBottom - BodyTop) * OUI.K
+	clip.mouse_filter = Control.MOUSE_FILTER_PASS
+	_oBody.add_child(clip)
+	var inner := Control.new()
+	inner.name = "Inner"
+	inner.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	clip.add_child(inner)
 	for i in columns.size():
-		var x0: float = edges[i] + OB.PictureAt.x
-		var w: float = edges[i + 1] - edges[i]
-		OB.Line(_oBody, columns[i][0], x0, 105 + OB.PictureAt.y + 3, w, 11, Color.WHITE, HORIZONTAL_ALIGNMENT_CENTER, false, "Head%d" % i)
-		var items: Array = columns[i][1]
-		var shown: int = mini(items.size(), 10)
-		for j in shown:
-			OB.Line(_oBody, str(items[j]), x0 + 4, 121 + OB.PictureAt.y + 4 + j * 16, w - 8, 11, Color.WHITE,
-				HORIZONTAL_ALIGNMENT_LEFT, false, "Cell%d_%d" % [i, j])
-		if items.size() > shown:
-			OB.Line(_oBody, "... and %d more" % (items.size() - shown), x0 + 4, 121 + OB.PictureAt.y + 4 + shown * 16, w - 8, 11,
-				Color(0.7, 0.7, 0.7), HORIZONTAL_ALIGNMENT_LEFT, false, "More%d" % i)
+		var centre: float = (edges[i] + edges[i + 1]) / 2.0
+		OB.Line(_oBody, columns[i][0], centre - 60, HeadCap, 120, 11.5, Color.WHITE, HORIZONTAL_ALIGNMENT_CENTER, true, "Head%d" % i)
+		var items: Array = lists[i]
+		if items.is_empty():
+			OB.Line(_oBody, _EmptyText(i, columns.size(), lists), centre - 70, EmptyCap, 140, 15, Color.WHITE,
+				HORIZONTAL_ALIGNMENT_CENTER, false, "Empty%d" % i)
+			continue
+		for j in items.size():
+			var it: Dictionary = items[j]
+			var img: Texture2D = it.get("picture")
+			var small: bool = img != null and img.get_height() < 40
+			var top: float = (MiniTop if small else PictureTop) + j * (MiniPitch if small else PicturePitch) - BodyTop
+			if img != null:
+				OUI.Place(inner, Art.Scaled(img, OUI.K), centre - edges[0] - img.get_width() / 2.0, top, "Picture%d_%d" % [i, j])
+			var name_top: float = top + (img.get_height() if img != null else 0) + NameGap
+			OB.Line(inner, str(it.get("name", "")), centre - edges[0] - 70, name_top, 140, 9.5, Color.WHITE,
+				HORIZONTAL_ALIGNMENT_CENTER, false, "Name%d_%d" % [i, j])
+	# The scroll bar inside the table's right edge when a column runs over (two
+	# pictures show whole, the third cut off: TeeJ's three Star Destroyers).
+	var pitch: float = PicturePitch
+	var shown: int = int((BodyBottom - BodyTop) / pitch)
+	if rows > shown:
+		var bar := OUI.ScrollBar12.new()
+		bar.name = "ScrollBar"
+		bar.k = OUI.K
+		bar.parts = [OUI.Btn("scroll_up"), OUI.Btn("scroll_down"), OUI.Btn("scroll_thumb_top"), OUI.Btn("scroll_thumb_mid"), OUI.Btn("scroll_thumb_bottom")]
+		bar.position = Vector2(edges[edges.size() - 1], BodyTop) * OUI.K
+		bar.size = Vector2(OUI.ScrollBar12.W - 1, BodyBottom - BodyTop) * OUI.K
+		_oBody.add_child(bar)
+		bar.set_rows(0, shown, rows)
+		bar.scrolled.connect(func(first: int) -> void:
+			inner.position.y = -first * pitch * OUI.K)
+		clip.gui_input.connect(func(e: InputEvent) -> void:
+			if e is InputEventMouseButton and e.pressed:
+				if e.button_index == MOUSE_BUTTON_WHEEL_UP:
+					bar.step(-1)
+				elif e.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+					bar.step(1))
+
+
+## The results' forces pages, in the frame's pixels (TeeJ's screenshots): the
+## Filters' tabs from (130, 59), 49 apart; the table's columns (their right
+## edge 13 short of the table's, where the scroll bar goes); the heads from
+## y 121; a unit's 122x50 picture from y 146 and every 70, a person's 61x25
+## from y 148; the name 3 under the picture; an empty column's words from 150.
+const FilterX := 130
+const FilterPitch := 49
+const FilterY := 59
+const Table2 := [36, 203, 373]
+const Table3 := [36, 148, 259, 373]
+const HeadCap := 121
+const BodyTop := 131
+const BodyBottom := 299
+const PictureTop := 146
+const PicturePitch := 70
+const MiniTop := 148
+const MiniPitch := 40   # INFERRED: one person on TeeJ's screenshot
+const NameGap := 3
+const EmptyCap := 150
+
+
+## A column's words when it holds no one (TeeJ's screenshots): the losses
+## columns "No Casualties"; the first, "No Survivors" when the others hold
+## someone, else "None"; the rest "None".
+static func _EmptyText(i: int, count: int, lists: Array) -> String:
+	if i == count - 1:
+		return "No Casualties"
+	if i == 0:
+		for k in range(1, lists.size()):
+			if not (lists[k] as Array).is_empty():
+				return "No Survivors"
+	return "None"
+
+
+## An entry's picture: a unit's 122x50 (burning when damaged or lost), a
+## person's miniature.
+static func _Picture(w: Dictionary, lost: bool = false) -> Texture2D:
+	var id: String = str(w.get("id", ""))
+	if id.is_empty():
+		return null
+	if str(w.get("kind", "")) == "characters":
+		return Art.Miniature("characters", id)
+	var pic: Texture2D = Art.Portrait("units", id + ".damage") if lost or bool(w.get("damaged", false)) else null
+	return pic if pic != null else Art.Portrait("units", id)
+
+
+## The name alone: the plain window's list adds the hull ("  (hull 40/60)").
+static func _PlainName(text: String) -> String:
+	var cut: int = text.find("  (")
+	return text.substr(0, cut) if cut >= 0 else text
