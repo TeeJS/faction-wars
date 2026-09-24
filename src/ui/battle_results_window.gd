@@ -412,7 +412,7 @@ func _ShowPage() -> void:
 	for i in stems.size():
 		var tab := TextureButton.new()
 		tab.name = "Filter%d" % i
-		tab.texture_normal = OUI.Tab(stems[i], _oSide, "pressed" if i == _tab else "")
+		tab.texture_normal = _FilterTab(OUI.Tab(stems[i], _oSide, "pressed" if i == _tab else ""))
 		tab.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		tab.position = Vector2(FilterX + i * FilterPitch, FilterY) * OUI.K
 		tab.size = tab.texture_normal.get_size() if tab.texture_normal != null else Vector2(49, 41) * OUI.K
@@ -526,6 +526,22 @@ const MiniTop := 148
 const MiniPitch := 40   # INFERRED: one person on TeeJ's screenshot
 const NameGap := 3
 const EmptyCap := 150
+
+
+## The filter tabs are FilterH rows, down to the band. The Personnel tab is the
+## Encyclopedia's, 57 rows: its shadow runs on down that window's list, and
+## here it ran 16 rows into the band beside the chosen tab (TeeJ, 2026-09-24:
+## "a weird artifact to the right of the personnel tab"). Cut to the others'.
+const FilterH := 41
+
+
+static func _FilterTab(tex: Texture2D) -> Texture2D:
+	if tex == null or tex.get_height() <= FilterH * OUI.K:
+		return tex
+	var cut := AtlasTexture.new()
+	cut.atlas = tex
+	cut.region = Rect2(0, 0, tex.get_width(), FilterH * OUI.K)
+	return cut
 
 
 ## A column's words when it holds no one (TeeJ's screenshots): the losses
