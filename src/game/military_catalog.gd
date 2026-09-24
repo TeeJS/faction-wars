@@ -135,6 +135,9 @@ static func Create(def: PackDefs.UnitDef, faction: Faction, at: Location) -> Uni
 	u.Name = def.DisplayName
 	var t: Variant = TypeOf(def)
 	u.Type = t if t != null else Enums.UnitType.Troop
+	# A capital ship is numbered in its class ("Victory Destroyer 1").
+	if u.Type == Enums.UnitType.CapitalShip:
+		u.Name = "%s %d" % [def.DisplayName, Unit.NextClassNumber(faction, def.Id)]
 	u.AssetId = def.SourceId
 	u.FamilyId = def.SourceFamilyId
 	u.PackId = def.Id

@@ -550,7 +550,7 @@ static func FleetMenu(fleets: Array, planet: Planet, uiManager: UIManager, withR
 			for f in bombarders:
 				if mode == BombardmentManager.BombardmentMode.DestroySystem and not BombardmentManager.CanDestroySystem(f):
 					continue
-				CommandBus.issue("bombard", { "fleet": f.Name, "planet": planet.Name, "mode": mode })
+				CommandBus.issue("bombard", { "fleet": f.ID, "planet": planet.Name, "mode": mode })
 			refresh.call())
 
 		# LIVE. "If you are in orbit above an enemy or neutral system, have
@@ -569,7 +569,7 @@ static func FleetMenu(fleets: Array, planet: Planet, uiManager: UIManager, withR
 		popup.id_pressed.connect(func(id: int) -> void:
 			if id == 6:
 				for f in assaulters:
-					CommandBus.issue("assault", { "fleet": f.Name, "planet": planet.Name })
+					CommandBus.issue("assault", { "fleet": f.ID, "planet": planet.Name })
 				refresh.call())
 
 	# A fleet has no entry of its own: the Encyclopedia's ship database.
@@ -1167,7 +1167,7 @@ func OnFleetMenuAction(actionId: int, fleets: Array, uiManager: UIManager) -> vo
 				if not r.ok:
 					print("[Assault] %s" % r.error)
 					continue
-				CommandBus.issue("assault", { "fleet": fleet.Name, "planet": _associatedPlanet.Name })
+				CommandBus.issue("assault", { "fleet": fleet.ID, "planet": _associatedPlanet.Name })
 			Populate(_associatedPlanet, uiManager)
 
 		3:
@@ -1234,7 +1234,7 @@ func AddFleetButton(fleet: Fleet, list: VBoxContainer, uiManager: UIManager) -> 
 			if boarding.is_empty():
 				return
 
-			var r: Result = CommandBus.issue("board_fleet", { "characters": EntityIndex.names_of(boarding), "fleet": fleet.Name })
+			var r: Result = CommandBus.issue("board_fleet", { "characters": EntityIndex.names_of(boarding), "fleet": fleet.ID })
 			if r.ok:
 				Populate(_associatedPlanet, _uiManager)
 			else:
@@ -1251,7 +1251,7 @@ func AddFleetButton(fleet: Fleet, list: VBoxContainer, uiManager: UIManager) -> 
 		if cargo.is_empty():
 			return
 
-		var load: Result = CommandBus.issue("load_aboard", { "units": EntityIndex.ids_of_units(cargo), "fleet": fleet.Name })
+		var load: Result = CommandBus.issue("load_aboard", { "units": EntityIndex.ids_of_units(cargo), "fleet": fleet.ID })
 		var n: int = load.value
 		if n > 0:
 			Populate(_associatedPlanet, _uiManager)

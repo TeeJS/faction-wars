@@ -35,13 +35,23 @@ static func characters(names: Array) -> Array:
 	return out
 
 
-## Fleets are named by their serial ("… Fleet_0004"), unique per game.
-static func fleet(name: String) -> Fleet:
-	if name.is_empty():
+## A fleet by its ID - unique per game, where its name ("Fleet 1") is not:
+## each side numbers its own. An older order named it; that still resolves.
+static func fleet(key: String) -> Fleet:
+	if key.is_empty():
 		return null
 	for p in GameState.AllPlanets():
 		for f in p.OrbitingFleets:
-			if f.Name == name:
+			if f.ID == key:
+				return f
+	# A save from before the original's names named the fleet by its serial
+	# ("Empire Fleet_0004"), which is the serial its ID was made from.
+	var cut: int = key.rfind("_")
+	if cut >= 0 and key.substr(cut + 1).is_valid_int():
+		return fleet(Fleet.IdFor(int(key.substr(cut + 1))))
+	for p in GameState.AllPlanets():
+		for f in p.OrbitingFleets:
+			if f.Name == key:
 				return f
 	return null
 
@@ -139,6 +149,14 @@ static func target_object(args: Dictionary) -> Variant:
 
 
 # --- the other direction: ids for the UI to put in a command ---
+
+## Fleets' IDs, as orders name them.
+static func ids_of_fleets(list: Array) -> Array:
+	var out: Array = []
+	for f in list:
+		out.append((f as Fleet).ID)
+	return out
+
 
 static func ids_of_units(list: Array) -> Array:
 	var out: Array = []
