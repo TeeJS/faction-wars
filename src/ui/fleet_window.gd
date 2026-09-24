@@ -437,27 +437,39 @@ func PopulateUnitTab(tab: MarginContainer, units: Array, emptyText: String, sele
 
 # Returns the menu; the caller parents it to the fleet's button and pops it.
 func BuildFleetContextMenu(fleet: Fleet, uiManager: UIManager) -> PopupMenu:
-	# THE FLEET COMMAND MENU (manual p111): Move, Confirmed Move, Planetary
-	# Bombardment with its three targeting options, Planetary Assault,
-	# Rename, Encyclopedia, Status, Scrap.
-	#
-	# "Attack" was not one of them - it was an invented item wired to an
-	# empty method, so it read as a working order and did nothing. The two
-	# real combat entries are named here and disabled, which says what the
-	# fleet WILL do without pretending it does it yet.
+	return FleetMenu([fleet], _associatedPlanet, uiManager, true, func() -> void:
+		if _associatedPlanet != null:
+			Populate(_associatedPlanet, _uiManager))
+
+
+## THE FLEET COMMAND MENU (manual p121, Fig. 3.64): Move, Confirmed Move,
+## Planetary Bombardment with its targeting options, Planetary Assault,
+## Rename, Encyclopedia, Status, Scrap - for one fleet in this window, or for
+## a side's fleets at a system from the Sector window's fleet icon, whose menu
+## is the same less Rename (TeeJ's screenshot of the original's, 2026-09-24:
+## Move, Confirmed Move, Planetary Bombardment, Planetary Assault,
+## Encyclopedia, Status, Scrap). An order given to several fleets is given to
+## each. `refresh` runs after an order that changes what is shown.
+##
+## "Attack" was not one of them - it was an invented item wired to an empty
+## method, so it read as a working order and did nothing.
+static func FleetMenu(fleets: Array, planet: Planet, uiManager: UIManager, withRename: bool, refresh: Callable) -> PopupMenu:
 	var popup := PopupMenu.new()
+	popup.name = "FleetMenu"
+	if fleets.is_empty():
+		return popup
+	var fleet: Fleet = fleets[0]
 
 	# A fleet with no faction set is still the player's to command if it is
 	# orbiting their world - falling through to "not ours" was leaving the
 	# whole command half of the menu off.
 	var ours: bool = fleet.Faction == GameSettings.PlayerFaction \
-			 or (fleet.Faction == null
-				 and _associatedPlanet != null and _associatedPlanet.ControllingFaction == GameSettings.PlayerFaction)
+			 or (fleet.Faction == null and planet != null and planet.ControllingFaction == GameSettings.PlayerFaction)
 
 	# "NOTE: Any time a fleet, or a ship within a fleet, IS IN HYPERSPACE, IT
 	# CANNOT RECEIVE ORDERS." (manual p111). ExecuteTransit already refuses
 	# them, but silently - the items looked live and did nothing when picked.
-	var inHyperspace: bool = fleet.Status == Enums.Status.Enroute
+	var inHyperspace: bool = Lq.any(fleets, func(f: Fleet) -> bool: return f.Status == Enums.Status.Enroute)
 
 	if ours:
 		popup.add_item("Move", 0)
@@ -468,12 +480,12 @@ func BuildFleetContextMenu(fleet: Fleet, uiManager: UIManager) -> PopupMenu:
 		# FOUR options, not three. Manual p122 lists Target Military
 		# Facilities, Target Civilian Facilities, General Bombardment AND
 		# "DESTROY SYSTEM: this option is only available if you are the
-		# Empire and have the DEATH STAR IN YOUR FLEET" - which was missing.
+		# Empire and have the DEATH STAR IN YOUR FLEET".
 		#
 		# "The Planetary Bombardment sub-menu becomes available when your
 		# fleet is IN ORBIT AROUND AN ENEMY OR NEUTRAL SYSTEM."
-		var canBombard: bool = BombardmentManager.CanBombard(fleet, _associatedPlanet)
-
+		var bombarders: Array = Lq.where(fleets, func(f: Fleet) -> bool: return BombardmentManager.CanBombard(f, planet))
+		var canBombard: bool = not bombarders.is_empty()
 		var bombard := PopupMenu.new()
 		bombard.name = "BombardSubmenu"
 		bombard.add_item("Target Military Facilities", 10)
@@ -483,67 +495,107 @@ func BuildFleetContextMenu(fleet: Fleet, uiManager: UIManager) -> PopupMenu:
 		for i in 3:
 			bombard.set_item_disabled(i, not canBombard or inHyperspace)
 		bombard.set_item_disabled(3, not canBombard or inHyperspace
-								   or not BombardmentManager.CanDestroySystem(fleet))
+								   or not Lq.any(bombarders, func(f: Fleet) -> bool: return BombardmentManager.CanDestroySystem(f)))
 		popup.add_child(bombard)
 		popup.add_submenu_node_item("Planetary Bombardment", bombard, 2)
 		popup.set_item_disabled(popup.get_item_index(2), not canBombard or inHyperspace)
-
 		bombard.id_pressed.connect(func(id: int) -> void:
-			var mode: int
-			match id:
-				10: mode = BombardmentManager.BombardmentMode.MilitaryFacilities
-				11: mode = BombardmentManager.BombardmentMode.CivilianFacilities
-				13: mode = BombardmentManager.BombardmentMode.DestroySystem
-				_:  mode = BombardmentManager.BombardmentMode.General
-			CommandBus.issue("bombard", { "fleet": fleet.Name, "planet": _associatedPlanet.Name, "mode": mode })
-			Populate(_associatedPlanet, _uiManager))
+			var mode: int = BombardmentManager.BombardmentMode.General
+			if id == 10:
+				mode = BombardmentManager.BombardmentMode.MilitaryFacilities
+			elif id == 11:
+				mode = BombardmentManager.BombardmentMode.CivilianFacilities
+			elif id == 13:
+				mode = BombardmentManager.BombardmentMode.DestroySystem
+			for f in bombarders:
+				if mode == BombardmentManager.BombardmentMode.DestroySystem and not BombardmentManager.CanDestroySystem(f):
+					continue
+				CommandBus.issue("bombard", { "fleet": f.Name, "planet": planet.Name, "mode": mode })
+			refresh.call())
 
 		# LIVE. "If you are in orbit above an enemy or neutral system, have
 		# troops in your fleet, and this option is GRAYED OUT, it means at
 		# least two planetary shields are defending the system." (p123) -
 		# so the shield gate is exactly what greys it, and AssaultManager
 		# owns that test rather than a second copy here.
-		var canAssault: bool = AssaultManager.CanAssault(fleet, _associatedPlanet).ok
+		var assaulters: Array = Lq.where(fleets, func(f: Fleet) -> bool: return AssaultManager.CanAssault(f, planet).ok)
 		popup.add_item("Planetary Assault", 6)
-		popup.set_item_disabled(popup.get_item_index(6), not canAssault or inHyperspace)
+		popup.set_item_disabled(popup.get_item_index(6), assaulters.is_empty() or inHyperspace)
 
-		popup.add_item("Rename", 7)
-		popup.set_item_disabled(popup.get_item_index(7), true)
-		popup.add_separator()
+		if withRename:
+			popup.add_item("Rename", 7)
+			popup.set_item_disabled(popup.get_item_index(7), true)
 
+		popup.id_pressed.connect(func(id: int) -> void:
+			if id == 6:
+				for f in assaulters:
+					CommandBus.issue("assault", { "fleet": f.Name, "planet": planet.Name })
+				refresh.call())
+
+	# A fleet has no entry of its own: the Encyclopedia's ship database.
 	popup.add_item("Encyclopedia", 4)
-	popup.set_item_disabled(popup.get_item_index(4), true)
 	popup.add_item("Status", 3)
 
 	if ours:
-		popup.add_separator()
 		popup.add_item("Scrap", 8)
 		popup.set_item_disabled(popup.get_item_index(8), inHyperspace)
 
-	# C#: popup.IdPressed += (id) => { switch ... }. Named for the same parser
-	# reason as the ship row's menu.
-	var onFleetMenu := func(id: int) -> void:
-		match id:
-			0, 1:
-				InitiateFleetMove(fleet, uiManager, id == 1)
-			3:
-				uiManager.OpenFleetStatusWindow(fleet)
-			8:
-				# Scrapping a fleet is scrapping every ship in it; the fleet
-				# disbands itself once the last one goes (manual p120).
-				var ships: Array = fleet.Ships.duplicate()
-				var refund: int = 0
-				for s in ships:
-					refund += s.ConstructionCost * Planet.ScrapRefundPercent / 100
-				ConfirmScrapShip(null, refund, func() -> void:
-					for s in ships:
-						if _associatedPlanet != null:
-							CommandBus.issue("scrap_unit", { "unit": s.Serial })
-					Populate(_associatedPlanet, _uiManager),
-					"%s (%d ship%s)" % [fleet.Name, ships.size(), "" if ships.size() == 1 else "s"])
-	popup.id_pressed.connect(onFleetMenu)
-
+	popup.id_pressed.connect(func(id: int) -> void:
+		_OnFleetMenu(id, fleets, uiManager, popup, refresh))
 	return popup
+
+
+## A fleet menu item picked (a method: a match cannot sit in a lambda).
+static func _OnFleetMenu(id: int, fleets: Array, uiManager: UIManager, popup: PopupMenu, refresh: Callable) -> void:
+	match id:
+		0, 1:
+			uiManager.StartTargeting(func(selectedPlanet: Planet) -> void:
+				for f in fleets:
+					uiManager.ExecuteSingleFleetMove(f, selectedPlanet, id == 1))
+		3:
+			for f in fleets:
+				uiManager.OpenFleetStatusWindow(f)
+		4:
+			uiManager.OpenEncyclopedia()
+			var w: EncyclopediaWindow = uiManager._openWindows.get("Encyclopedia")
+			if w != null:
+				w.ShowIndex(2)
+		8:
+			# Scrapping a fleet is scrapping every ship in it; the fleet
+			# disbands itself once the last one goes (manual p120).
+			var ships: Array = []
+			for f in fleets:
+				ships.append_array(f.Ships)
+			var refund: int = 0
+			for sh in ships:
+				refund += sh.ConstructionCost * Planet.ScrapRefundPercent / 100
+			var label: String = "%s (%d ship%s)" % [", ".join(Lq.select(fleets, func(f: Fleet) -> String: return f.Name)),
+				ships.size(), "" if ships.size() == 1 else "s"]
+			_ConfirmFleetScrap(popup, uiManager, label, refund, func() -> void:
+				for sh in ships:
+					CommandBus.issue("scrap_unit", { "unit": sh.Serial })
+				refresh.call())
+
+
+## The original's confirmation (with the art), else a plain dialog.
+static func _ConfirmFleetScrap(anchor: Node, uiManager: UIManager, what: String, refund: int, onConfirm: Callable) -> void:
+	var note: String = "Returns %d %s, and the maintenance capacity it was drawing." % [refund, Terms.lower("refined_materials")]
+	if uiManager != null and uiManager.ConfirmScript.CanBuild():
+		var f: Faction = GameSettings.PlayerFaction
+		var side: String = "alliance" if f != null and f.ArtSkin == "alliance" else "empire"
+		uiManager.OpenConfirmation(f, OUI.Pic("scrap_picture." + side),
+			"Are you sure you want to scrap the following units?\n" + what, note, onConfirm)
+		return
+	var dialog := ConfirmationDialog.new()
+	dialog.title = "Confirm Scrap"
+	dialog.dialog_text = "Are you sure you want to scrap the following units?\n\n    %s\n\n%s" % [what, note]
+	dialog.exclusive = true
+	dialog.confirmed.connect(func() -> void:
+		onConfirm.call()
+		dialog.queue_free())
+	dialog.canceled.connect(dialog.queue_free)
+	(uiManager if uiManager != null else anchor).add_child(dialog)
+	dialog.popup_centered()
 
 
 func InitiateFleetMove(fleet: Fleet, uiManager: UIManager, requireConfirmation: bool) -> void:
