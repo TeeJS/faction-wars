@@ -406,7 +406,7 @@ func _ShowPage() -> void:
 	var side_colour: Color = OUI.SideColor(fleet.Faction) if fleet != null else Color.WHITE
 	OB.Line(_oBody, "%s Forces" % BattleResultsWindow.Adj(fleet), 211 - 150, 43, 300, 15.5, side_colour,
 		HORIZONTAL_ALIGNMENT_CENTER, false, "PageName")
-	OB.Line(_oBody, "Filters", 20, 73, 100, 18, Color.WHITE, HORIZONTAL_ALIGNMENT_RIGHT, false, "Filters")
+	OB.Line(_oBody, "Filters", 22, 74, 100, 12.5, Color.WHITE, HORIZONTAL_ALIGNMENT_RIGHT, false, "Filters")
 	var stems: Array = ["ency_tab_ship", "battle_filter_fighter", "ency_tab_troop", "ency_tab_personnel"]
 	var names: Array = ["Capital Ships", Terms.label("fighter_squadrons"), Terms.label("trooper_regiments"), "Personnel"]
 	for i in stems.size():
@@ -442,7 +442,9 @@ func _ShowPage() -> void:
 		var who: Array = losses.Who.get(col[1], []) if losses != null else []
 		for j in texts.size():
 			var w: Dictionary = who[j] if j < who.size() else {}
-			items.append({"name": _PlainName(str(texts[j])), "picture": _Picture(w, str(col[1]).ends_with("Destroyed"))})
+			var burning: bool = str(col[1]).ends_with("Destroyed") or bool(w.get("damaged", false))
+			items.append({"name": _PlainName(str(texts[j])), "picture": _Picture(w),
+				"flames": _Flames(w) if burning else null})
 		lists.append(items)
 	var edges: Array = Table2 if columns.size() == 2 else Table3
 	var rows: int = 0
@@ -461,7 +463,7 @@ func _ShowPage() -> void:
 	clip.add_child(inner)
 	for i in columns.size():
 		var centre: float = (edges[i] + edges[i + 1]) / 2.0
-		OB.Line(_oBody, columns[i][0], centre - 60, HeadCap, 120, 11.5, Color.WHITE, HORIZONTAL_ALIGNMENT_CENTER, true, "Head%d" % i)
+		OB.Line(_oBody, columns[i][0], centre - 60, HeadCap, 120, 12, Color.WHITE, HORIZONTAL_ALIGNMENT_CENTER, false, "Head%d" % i)
 		var items: Array = lists[i]
 		if items.is_empty():
 			OB.Line(_oBody, _EmptyText(i, columns.size(), lists), centre - 70, EmptyCap, 140, 15, Color.WHITE,
@@ -472,6 +474,9 @@ func _ShowPage() -> void:
 			var img: Texture2D = it.get("picture")
 			var small: bool = img != null and img.get_height() < 40
 			var top: float = (MiniTop if small else PictureTop) + j * (MiniPitch if small else PicturePitch) - BodyTop
+			var flames: Texture2D = it.get("flames")
+			if flames != null:
+				OUI.Place(inner, Art.Scaled(flames, OUI.K), centre - edges[0] - flames.get_width() / 2.0, top, "Flames%d_%d" % [i, j])
 			if img != null:
 				OUI.Place(inner, Art.Scaled(img, OUI.K), centre - edges[0] - img.get_width() / 2.0, top, "Picture%d_%d" % [i, j])
 			var name_top: float = top + (img.get_height() if img != null else 0) + NameGap
@@ -501,16 +506,17 @@ func _ShowPage() -> void:
 
 
 ## The results' forces pages, in the frame's pixels (TeeJ's screenshots): the
-## Filters' tabs from (130, 59), 49 apart; the table's columns (their right
-## edge 13 short of the table's, where the scroll bar goes); the heads from
-## y 121; a unit's 122x50 picture from y 146 and every 70, a person's 61x25
+## "Filters" (Arial 12.5, right edge 122, capitals from 74), its tabs from
+## (130, 59), 49 apart; the table's columns (their right
+## edge 13 short of the table's, where the scroll bar goes); the heads
+## (Arial 12) from y 122; a unit's 122x50 picture from y 146 and every 70, a person's 61x25
 ## from y 148; the name 3 under the picture; an empty column's words from 150.
 const FilterX := 130
 const FilterPitch := 49
 const FilterY := 59
 const Table2 := [36, 203, 373]
 const Table3 := [36, 148, 259, 373]
-const HeadCap := 121
+const HeadCap := 122
 const BodyTop := 131
 const BodyBottom := 299
 const PictureTop := 146
@@ -534,16 +540,23 @@ static func _EmptyText(i: int, count: int, lists: Array) -> String:
 	return "None"
 
 
-## An entry's picture: a unit's 122x50 (burning when damaged or lost), a
-## person's miniature.
-static func _Picture(w: Dictionary, lost: bool = false) -> Texture2D:
+## An entry's picture: a unit's 122x50, a person's miniature.
+static func _Picture(w: Dictionary) -> Texture2D:
 	var id: String = str(w.get("id", ""))
 	if id.is_empty():
 		return null
 	if str(w.get("kind", "")) == "characters":
 		return Art.Miniature("characters", id)
-	var pic: Texture2D = Art.Portrait("units", id + ".damage") if lost or bool(w.get("damaged", false)) else null
-	return pic if pic != null else Art.Portrait("units", id)
+	return Art.Portrait("units", id)
+
+
+## The flames drawn under a damaged or lost craft's picture (as the Status
+## window draws them; TeeJ's screenshots: the lost Y-wing, a damaged TIE).
+static func _Flames(w: Dictionary) -> Texture2D:
+	var id: String = str(w.get("id", ""))
+	if id.is_empty() or str(w.get("kind", "")) == "characters":
+		return null
+	return Art.Portrait("units", id + ".damage")
 
 
 ## The name alone: the plain window's list adds the hull ("  (hull 40/60)").

@@ -54,6 +54,13 @@ func _init() -> void:
 			r.TheirLosses.add("PersonnelSurvivors", c.Name, "characters", c.PackId, false)
 	for s in r.Ours.Ships:
 		r.OurLosses.add("CapitalShipsDestroyed" if s.Type == Enums.UnitType.CapitalShip else "SquadronsDestroyed", s.Name, "units", s.PackId, false)
+		for h in s.Hangar:
+			if h.Type == Enums.UnitType.Fighter:
+				r.OurLosses.add("SquadronsDestroyed", h.Name, "units", h.PackId, false)
+	# One of each side's first entries damaged, to show the flames.
+	for list in ["CapitalShipsOperational", "SquadronsOperational"]:
+		if r.TheirLosses.Who.has(list) and not r.TheirLosses.Who[list].is_empty():
+			r.TheirLosses.Who[list][0]["damaged"] = true
 	var alert := BattleAlertWindow.new()
 	alert.name = "BattleAlertWindow"
 	ui.add_child(alert)
