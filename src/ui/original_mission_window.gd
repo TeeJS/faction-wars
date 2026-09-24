@@ -30,8 +30,8 @@ const TitlePx := 13
 const TitleGap := 4
 ## The column: the first mission's picture (73x48) at (5, 24).
 const ColumnAt := Vector2(5, 24)
-## PROVISIONAL: no screenshot shows two missions on one system, so the
-## column's pitch is the picture's height and two pixels.
+## A mission every 50 pixels down the column, only the picked one framed
+## (measured on TeeJ's screenshot of two on Coruscant, 2026-09-24).
 const TilePitch := 50
 const TileW := 73
 const TileH := 48
@@ -57,8 +57,9 @@ const MemberX := 137
 const MemberNameCentreX := 165
 const MemberTop := 11
 const MemberNameY := 26
-## PROVISIONAL: no screenshot shows two agents on one mission.
-const MemberPitch := 40
+## A member every 43 pixels (measured on TeeJ's screenshot of two agents at
+## Bpfassh, 2026-09-24).
+const MemberPitch := 43
 const MemberPx := 10.5
 
 var _planet: Planet
