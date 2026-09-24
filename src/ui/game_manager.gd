@@ -37,6 +37,26 @@ var _timeControls: PanelContainer
 var _speedReadout: Label
 var _speedMenu: PopupMenu
 var _pauseBox: AcceptDialog
+
+# THE ORIGINAL'S SPEED CONTROL AND ALERT BOX, with the art imported (TeeJ,
+# 2026-09-23: "match the pull-down speed selector", "the paused screen does
+# not match"). The Speed Control is the box cut from the side's Command
+# Center frame (STRATEGY 900 / 901): the day in its window, and the side's
+# bars - none lit at Pause and Very Slow, one at Slow, two at Medium, three at
+# Fast (TeeJ's screenshot at Slow: one). Placed in the box's own pixels,
+# measured on the frames; drawn OUI.K times as large. The day's colour on the
+# Alliance's is INFERRED (the Empire's is green): the side's.
+const OUI := preload("res://src/ui/original_ui.gd")
+const Art := preload("res://src/ui/artwork.gd")
+const SpeedLayout := {
+	"empire": {"lcd": Rect2(11, 6, 62, 11), "bars": Vector2(73, 7)},
+	"alliance": {"lcd": Rect2(12, 8, 62, 12), "bars": Vector2(74, 9)},
+}
+var _oSpeed: Control = null
+var _oDay: Label = null
+var _oBars: TextureRect = null
+var _oSide: String = ""
+var _oPause: Control = null
 var _speed: int = DefaultSpeed
 
 # Never 0, so resuming always lands on a running speed.
@@ -273,12 +293,16 @@ func BuildSpeedMenu() -> void:
 	add_child(_speedMenu)
 	_speedMenu.id_pressed.connect(func(id: int) -> void: SetSpeed(id))
 
-	# RIGHT-CLICK ON THE TIME DISPLAY.
+	# A CLICK ON THE TIME DISPLAY PULLS THE MENU DOWN under it. The manual
+	# says right-click (p071); TeeJ asked for a pull-down (2026-09-23), so
+	# either button drops it from the control's lower edge.
 	_timeControls.gui_input.connect(func(event: InputEvent) -> void:
-		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
-			_speedMenu.position = Vector2i(int(event.global_position.x), int(event.global_position.y))
+		if event is InputEventMouseButton and event.pressed 				and (event.button_index == MOUSE_BUTTON_RIGHT or event.button_index == MOUSE_BUTTON_LEFT):
+			var at: Vector2 = _timeControls.global_position + Vector2(0, _timeControls.size.y)
+			_speedMenu.position = Vector2i(int(at.x), int(at.y))
 			_speedMenu.popup()
 			_timeControls.accept_event())
+	_BuildOriginalSpeed()
 
 	# PAUSE IS MODAL. "An alert box comes up, LOCKING YOU OUT OF GAME CONTROLS
 	# UNTIL YOU RESUME PLAY" (manual p071). ✅ CONFIRMED AGAINST THE ORIGINAL:
@@ -293,6 +317,78 @@ func BuildSpeedMenu() -> void:
 	add_child(_pauseBox)
 	_pauseBox.confirmed.connect(ResumeFromPause)
 	_pauseBox.canceled.connect(ResumeFromPause)
+	_BuildOriginalPause()
+
+
+## The Speed Control as the original draws it, over the plain panel's place.
+func _BuildOriginalSpeed() -> void:
+	_oSide = OUI.Side(GameSettings.PlayerFaction)
+	var bezel: Texture2D = OUI.Pic("hud_speed.%s" % _oSide)
+	if bezel == null or not SpeedLayout.has(_oSide) or _oSpeed != null:
+		return
+	var lay: Dictionary = SpeedLayout[_oSide]
+	(_timeControls.get_node("Margin") as Control).visible = false
+	_timeControls.add_theme_stylebox_override("panel", StyleBoxEmpty.new())
+	_oSpeed = Control.new()
+	_oSpeed.name = "OriginalSpeed"
+	_oSpeed.custom_minimum_size = bezel.get_size()
+	_oSpeed.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_timeControls.add_child(_oSpeed)
+	OUI.Place(_oSpeed, bezel, 0, 0, "Bezel")
+	var lcd: Rect2 = lay["lcd"]
+	# The day: 8-pixel figures centred in the window (Arial 11; its capitals
+	# sit 2 pixels under the line's top).
+	_oDay = OUI.Text(_oSpeed, "", lcd.position.x, lcd.position.y + (lcd.size.y - 8) / 2.0 - 2, lcd.size.x, 12, 11,
+		OUI.SideColor(GameSettings.PlayerFaction), HORIZONTAL_ALIGNMENT_CENTER, false, "Day")
+	var bars: Vector2 = lay["bars"]
+	_oBars = OUI.Place(_oSpeed, null, bars.x, bars.y, "Bars")
+
+
+## "Resume Game Play?" in the original's alert box (REBDLOG.DLL: the plate with
+## one button socket, the check), over a blocker that takes every other click:
+## pause still locks you out of the game's controls (manual p071).
+func _BuildOriginalPause() -> void:
+	var plate: Texture2D = OUI.Pic("dialog_plate1")
+	if plate == null or Art.ButtonIcon("dialog_ok") == null or _oPause != null:
+		return
+	_oPause = Control.new()
+	_oPause.name = "OriginalPause"
+	_oPause.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_oPause.mouse_filter = Control.MOUSE_FILTER_STOP
+	_oPause.visible = false
+	_uiManager.add_child(_oPause)
+	var box := Control.new()
+	box.name = "Box"
+	box.size = plate.get_size()
+	box.position = ((_oPause.get_viewport_rect().size - box.size) / 2.0).floor()
+	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_oPause.add_child(box)
+	OUI.Place(box, plate, 0, 0, "Plate")
+	# The original's words (REBDLOG): white, Arial bold 13, centred (measured
+	# on TeeJ's screenshot: capitals from y 63).
+	OUI.Text(box, "Resume Game Play?", 0, 60.5, 412, 18, 13, Color(1, 251 / 255.0, 240 / 255.0), HORIZONTAL_ALIGNMENT_CENTER, true, "Text")
+	OUI.PictureButton(box, "dialog_ok", 176, 134, "Resume").pressed.connect(ResumeFromPause)
+
+
+func _PauseShowing() -> bool:
+	return (_oPause.visible if _oPause != null else false) or _pauseBox.visible
+
+
+func _ShowPause() -> void:
+	if _oPause != null:
+		_oPause.visible = true
+		_uiManager.move_child(_oPause, _uiManager.get_child_count() - 1)
+		var box: Control = _oPause.get_node("Box")
+		box.position = ((_oPause.size - box.size) / 2.0).floor()
+		return
+	_pauseBox.popup_centered()
+
+
+func _HidePause() -> void:
+	if _oPause != null:
+		_oPause.visible = false
+	if _pauseBox.visible:
+		_pauseBox.hide()
 
 
 ## Guarded rather than flagged: SetSpeed hides the box, hiding it can emit
@@ -341,13 +437,17 @@ func _ApplyClock() -> void:
 	else:
 		_speedReadout.text = SpeedNames[_speed]
 
+	if _oBars != null:
+		_oBars.texture = OUI.Pic("speed_bars.%s.%d" % [_oSide, clampi(effective, 0, SpeedNames.size() - 1)])
+		_oBars.size = _oBars.texture.get_size() if _oBars.texture != null else Vector2.ZERO
+		_timeControls.tooltip_text = "Game Speed Control: %s" % _speedReadout.text
 	if _speed == 0:
 		_tickTimer.stop()
-		if not _pauseBox.visible:
-			_pauseBox.popup_centered()
+		if not _PauseShowing():
+			_ShowPause()
 		return
-	if _pauseBox.visible:
-		_pauseBox.hide()
+	if _PauseShowing():
+		_HidePause()
 	if effective == 0 or _menuOpen:
 		# The opponent paused, or I am in the Game Options screen: no clock.
 		_tickTimer.stop()
@@ -497,8 +597,12 @@ func RefreshStatusBar() -> void:
 	# (manual p068). WHICH types is the Message Alert bar's job (its icons light
 	# per category); here a count, so the box never widens over the Raw readout
 	# (TeeJ, 2026-09-22: "Missions 3, Defense 2, Conflict 1" ran into it).
-	var unread: int = EventBus.UnreadTotal()
-	_dayLabel.text = ("Day: %d" % currentDay) if unread == 0 else "Day: %d    %d unread" % [currentDay, unread]
+	# The count is gone from here (TeeJ, 2026-09-23: "the unread message count
+	# is not needed there"): the Message Alert column and the Message Index's
+	# tabs carry it.
+	_dayLabel.text = "Day: %d" % currentDay
+	if _oDay != null:
+		_oDay.text = str(currentDay)
 	_availMines.text = "Raw: %d  (%d %s)" % [econ.RawMaterials, Economy.TotalMines(player), Terms.label("mines")]
 	_availRefineries.text = "Refined: %d  (%d %s)" % [econ.RefinedMaterials, Economy.TotalRefineries(player), Terms.label("refineries")]
 	# Maintenance is a pool, so it reads as remaining/total rather than a rate.
