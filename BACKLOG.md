@@ -52,6 +52,8 @@ no original to cite.
 | 36 | **Old-repo dependency in the generators.** Six `tools/build-*-json.py` transforms: four read `data/` (deleted in #52), two read the old repo via `SCR_SOURCE`, and all six would have wiped the hand-added pack fields | **Done** — retired (TeeJ, 2026-09-22). The pack is hand-edited and is the contract; `source_*` fields keep provenance |
 | 38 | **Ships and fleets named like the original** | TeeJ, 2026-09-23. Fleet lookup by serial first; the original's own naming scheme to be read from its screens / tables before building |
 | 39 | **Message subject pictures** | TeeJ, 2026-09-23. Follow-up from the window-matching work (#95-#113); scope to be checked against the original before building |
+| 41 | **Sound: music and sound effects** — Play Music on/off, the music and sound effects volume sliders (Game Options, manual p076 Fig. 3.16) | TeeJ, 2026-09-23. The game has no sound at all yet; the Game Options screen shows the three controls greyed until it does |
+| 42 | **Tactical Display Options** — Show Starfield, Show Planet, Show Pyrotechnics, Use High Detail Models, Display Holocube (manual p076; "default to on", not changeable mid-battle) | TeeJ, 2026-09-23. Needs the tactical battle view, which the port does not have; shown greyed on the Game Options screen |
 | — | Other window-checklist gaps | see `docs/window-checklists.md` (Missing/Partial rows) — e.g. portrait art placeholders, modal-vs-nonmodal chrome |
 
 ## Phase 5 — pack modularity (setting names still in engine code)

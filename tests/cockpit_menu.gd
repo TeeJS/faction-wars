@@ -141,7 +141,8 @@ func _init() -> void:
 		_check(lines_box != null and lines_box.get_child_count() == menu_def.Credits.size(), "the Credits window lists the pack's %d lines" % menu_def.Credits.size())
 	(regions.get_node("Region_load_game") as Button).pressed.emit()
 	await process_frame
-	_check(menu.get_node_or_null("LoadGameWindow") != null, "pressing load opens the slot picker")
+	_check(menu.get_node_or_null("LoadGameWindow") != null or menu.get_node_or_null("OptionsScreen") != null,
+		"pressing load opens the slot picker (the Game Options screen with the art imported)")
 
 	# The web build has no desktop to exit to; the desktop build does.
 	var exit_btn: Button = regions.get_node("Region_exit")

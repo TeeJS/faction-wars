@@ -6,7 +6,11 @@ extends RefCounted
 ## slots, matching the original's Game Options screen (manual p073-077).
 ##
 ## Slot files:   user://saves/slot<N>.jsonl   - a copy of the command log
-## Slot index:   user://saves/slots.json       - { "<N>": {name, day, saved_at} }
+## Slot index:   user://saves/slots.json       - { "<N>": {name, day, saved_at, side} }
+##
+## `side` is what the Game Options screen's slot icon shows (manual p075: "an
+## icon ... shows whether you were playing the Empire, the Alliance, or a
+## head-to-head game"): the player's faction id, or "h2h". Older saves have none.
 
 const SLOT_COUNT := 6
 ## The save directory. A static var (not a const) so a headless test can point it
@@ -52,12 +56,13 @@ static func Save(slot: int, name: String) -> bool:
 		"name": name,
 		"day": StrategicTickManager.Today,
 		"saved_at": Time.get_datetime_string_from_system(),
+		"side": "h2h" if MpSetup.session != null else (GameSettings.PlayerFaction.Id if GameSettings.PlayerFaction != null else ""),
 	}
 	_write_index(idx)
 	return true
 
 
-## The six slots as [{slot, used, name, day, saved_at}], for the Game Options UI.
+## The six slots as [{slot, used, name, day, saved_at, side}], for the Game Options UI.
 static func Slots() -> Array:
 	var idx: Dictionary = _read_index()
 	var out: Array = []
@@ -70,6 +75,7 @@ static func Slots() -> Array:
 			"name": str(meta.get("name", "")),
 			"day": int(meta.get("day", 0)),
 			"saved_at": str(meta.get("saved_at", "")),
+			"side": str(meta.get("side", "")),
 		})
 	return out
 

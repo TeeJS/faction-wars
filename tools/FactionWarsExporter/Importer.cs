@@ -363,8 +363,31 @@ public sealed class Importer
         11554, 11558, 11553,
         // Build Selection's plate is opaque; so are the Scrap pictures.
         10800, 1032, 1033,
-        // The cockpit and the galaxy map are whole screens.
-        CockpitBitmap, GalaxyBitmap };
+        // The cockpit, the galaxy map and the Game Options screen are whole screens.
+        CockpitBitmap, GalaxyBitmap, OptionsBitmap };
+
+    // COMMON.DLL: the Game Options screen (manual p075-p076, Fig. 3.16), placed
+    // by template matching on TeeJ's screenshot of the original's (2026-09-23).
+    // The 640x480 screen itself, and its parts as (name, normal, pressed,
+    // disabled): each slot's Save Game and Load Game buttons, Restart, Return
+    // to the Command Center, and Exit.
+    public const int OptionsBitmap = 20002;
+    private static readonly (string Name, int Normal, int Pressed, int Disabled)[] OptionsButtons =
+    {
+        ("options_save", 10046, 10047, 10048), ("options_load", 10049, 10050, 10051),
+        ("options_restart", 10035, 10036, 10037), ("options_return", 10023, 10024, 10025),
+        ("options_exit", 10038, 10039, 0),
+    };
+    // ...and its pictures: the side a slot was saved as (the Empire, the
+    // Alliance, head-to-head), the Play Music switch (off, lit, greyed), a
+    // tactical toggle's light (lit, on, off) and a volume slider's knob.
+    private static readonly (string Name, int Id)[] OptionsParts =
+    {
+        ("options_side.empire", 10055), ("options_side.alliance", 10056), ("options_side.h2h", 10057),
+        ("options_music.off", 10040), ("options_music.lit", 10041), ("options_music.grey", 10042),
+        ("options_light.lit", 10043), ("options_light.on", 10044), ("options_light.off", 10045),
+        ("options_knob", 10054),
+    };
 
     public sealed record Result(int Pictures, int Descriptions, List<string> Missing, List<string> Log);
 
@@ -683,6 +706,29 @@ public sealed class Importer
         }
         else
             missing.Add("gokres_map.json is not built into the exporter - no portraits or miniatures");
+
+        // The Game Options screen and its parts (COMMON.DLL).
+        var optionsDll = Path.Combine(_gameDir, "COMMON.DLL");
+        if (File.Exists(optionsDll))
+        {
+            var common = new PeResources(optionsDll);
+            if (SaveSprite(common, OptionsBitmap, P("screens", "options.png"))) pictureCount++;
+            else missing.Add($"screens/options: no bitmap {OptionsBitmap} in COMMON.DLL");
+            int optionParts = 0;
+            foreach (var (name, normal, pressed, disabled) in OptionsButtons)
+            {
+                if (SaveSprite(common, normal, P("buttons", $"{name}.png"))) { optionParts++; pictureCount++; }
+                else missing.Add($"buttons/{name}: no bitmap {normal} in COMMON.DLL");
+                if (pressed > 0 && SaveSprite(common, pressed, P("buttons", $"{name}.pressed.png"))) pictureCount++;
+                if (disabled > 0 && SaveSprite(common, disabled, P("buttons", $"{name}.disabled.png"))) pictureCount++;
+            }
+            foreach (var (name, id) in OptionsParts)
+            {
+                if (SaveSprite(common, id, P("windows", $"{name}.png"))) { optionParts++; pictureCount++; }
+                else missing.Add($"windows/{name}: no bitmap {id} in COMMON.DLL");
+            }
+            Say($"Game Options: the screen and {optionParts} parts (COMMON.DLL).");
+        }
 
         _sink.WriteText(P("descriptions.json"),
             descriptions.ToJsonString(new JsonSerializerOptions { WriteIndented = true, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping }) + "\n");

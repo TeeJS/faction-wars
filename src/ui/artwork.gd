@@ -61,6 +61,12 @@ static func WindowPicture(name: String) -> Texture2D:
 	return _texture("windows/%s.png" % name)
 
 
+## A whole screen of the original's: screens/<name>.png (the Game Options
+## screen; the cockpit and the galaxy come through the pack's own references).
+static func Screen(name: String) -> Texture2D:
+	return _texture("screens/%s.png" % name)
+
+
 ## A window tab's icon: tabs/<name>[.<side>][.pressed|.grey].png.
 ## The per-side icons (manufacturing, fighters, troops, personnel) fall back
 ## to the sideless file, so a pack with one set still gets it.
