@@ -27,6 +27,19 @@ class Casualties:
 			Who[list] = []
 		Who[list].append({"kind": kind, "id": id, "damaged": damaged})
 
+	## One of the survivors killed after all (their fleet wiped out): moved to
+	## Killed, with who they are.
+	func Kill(id: String) -> void:
+		var who: Array = Who.get("PersonnelSurvivors", [])
+		for i in who.size():
+			if str(who[i].get("id", "")) == id:
+				var text: String = PersonnelSurvivors[i]
+				PersonnelSurvivors.remove_at(i)
+				var w: Dictionary = who[i]
+				who.remove_at(i)
+				add("PersonnelKilled", text, str(w.get("kind", "characters")), id, false)
+				return
+
 	## A fleet completely destroyed: whatever was still operational is lost too.
 	func LoseAll() -> void:
 		for pair in [["CapitalShipsOperational", "CapitalShipsDestroyed"], ["SquadronsOperational", "SquadronsDestroyed"],
@@ -267,6 +280,8 @@ static func Simulate(r: BattleReport, day: int) -> void:
 	r.TheirsLost = theirs_loses
 	r.DrawBothLost = sim.LoserIndex == -1
 
+	Rehome(sim.Sides[0])
+	Rehome(sim.Sides[1])
 	Tally(sim.Sides[0], r.OurLosses, r.Ours)
 	Tally(sim.Sides[1], r.TheirLosses, r.Theirs)
 	RemoveWrecks(sim.Sides[0], r)
@@ -276,6 +291,7 @@ static func Simulate(r: BattleReport, day: int) -> void:
 		ResolveLoser(r, r.Theirs, r.Ours, r)
 	if ours_loses:
 		ResolveLoser(r, r.Ours, r.Theirs, r)
+	LoseCrews(r)
 
 	if r.DrawBothLost:
 		r.Summary = "Both fleets were broken at %s." % r.Where.Name
@@ -321,11 +337,48 @@ static func Tally(side: TacticalBattle.TacticalSide, into: Casualties, fleet: Fl
 			for carried in ship.Hangar:
 				if carried.Type == Enums.UnitType.Troop:
 					into.add("TroopsDestroyed" if sunk.has(ship) else "TroopsOperational", carried.Name, "units", carried.PackId, false)
-	# ⚠ The injured/captured/killed split is NOT reproduced: everyone aboard survives.
+	# Everyone aboard survives the fight itself; a fleet wiped out takes them
+	# with it (LoseCrews). The injured and captured splits are NOT reproduced.
 	for c in GameState.ActiveRoster:
 		if c.Attached == fleet and c.Status != Enums.Status.Dead:
 			into.add("PersonnelSurvivors", c.Name if c.Rank == Enums.Rank.None else "%s %s" % [JsonUtil.enum_name(Enums.Rank, c.Rank), c.Name],
 				"characters", c.PackId, false)
+
+
+## FIGHTERS OUTLIVE THEIR CARRIER (TeeJ, 2026-09-24: "move to another ship"):
+## a squadron still flying whose carrier was lost berths on another ship of
+## the fleet with room for it (OrderManager.HasRoomFor, the first in the
+## fleet's order). With none, it is lost with its carrier (RemoveWrecks).
+## Before the tally, so the results list it operational.
+static func Rehome(side: TacticalBattle.TacticalSide) -> void:
+	for sq in side.Squadrons:
+		if sq.Destroyed() or sq.Source == null or sq.Carrier == null or not sq.Carrier.Destroyed():
+			continue
+		var berth: TacticalBattle.TacticalUnit = Lq.first_or_null(side.Ships, func(t: TacticalBattle.TacticalUnit) -> bool:
+			return not t.Destroyed() and t.Source != null and OrderManager.HasRoomFor(t.Source, Enums.UnitType.Fighter))
+		if berth == null:
+			continue
+		if sq.Carrier.Source != null:
+			sq.Carrier.Source.Hangar.erase(sq.Source)
+		berth.Source.Hangar.append(sq.Source)
+		sq.Carrier = berth
+
+
+## THE CREW OF A FLEET WIPED OUT (TeeJ, 2026-09-24: "die, but only if every
+## ship is destroyed"): the characters aboard a fleet with no ship left are
+## killed (MissionManager.Kill) and the results list them killed. A fleet with
+## a ship still flying keeps them all.
+static func LoseCrews(r: BattleReport) -> void:
+	for pair in [[r.Ours, r.OurLosses], [r.Theirs, r.TheirLosses]]:
+		var f: Fleet = pair[0]
+		if f == null or not f.Ships.is_empty():
+			continue
+		var losses: Casualties = pair[1]
+		for c in GameState.ActiveRoster:
+			if c.Attached == f and c.Status != Enums.Status.Dead:
+				losses.Kill(c.PackId)
+				r.Destroyed.append(c.Name)
+				MissionManager.Kill(c)
 
 
 ## THE LOST ARE GONE (TeeJ, 2026-09-24: "destroyed ships are NOT repaired.
@@ -336,9 +389,8 @@ static func Tally(side: TacticalBattle.TacticalSide, into: Casualties, fleet: Fl
 ## carried, as Planet.DestroyUnit has always taken it (bombardment): the
 ## results' Trooper Regiments column lists troops "Destroyed", and troops do
 ## not fight in space. A fleet left empty is disbanded (p120). Fighters that
-## outlive their carrier are lost with it here - NO SOURCE says otherwise or
-## so (manual, Prima, swrebellion.net, open-rebellion searched); a question
-## for TeeJ.
+## outlive their carrier have moved to another ship with room first (Rehome);
+## any with nowhere to go are lost with it.
 static func RemoveWrecks(side: TacticalBattle.TacticalSide, r: BattleReport) -> void:
 	for u in side.All():
 		if not u.Destroyed() or u.Source == null:
