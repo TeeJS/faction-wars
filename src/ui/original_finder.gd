@@ -225,9 +225,11 @@ static func Locate(list: Control, text: String) -> int:
 ## EncyclopediaWindow.OriginalIndex does).
 class OriginalGrid extends Control:
 	signal item_activated(index: int)
-	const Pitch := 25
-	const Shown := 6
-	const TextTop := 3
+	## The Troop Finder's rows (25 apart, six showing, names' capitals 5
+	## down); the special forces' are 20 apart, eight, 7 down.
+	var Pitch: int = 25
+	var Shown: int = 6
+	var NameCap: float = 5.0
 	const Grey := Color(120 / 255.0, 120 / 255.0, 120 / 255.0)
 	## Each column's left edge (its dotted rule), from the grid's left; the
 	## count centred 17 in, its box 4 in and 4 down, its capitals 7 down.
@@ -271,7 +273,7 @@ class OriginalGrid extends Control:
 		l.add_theme_font_override("font", font)
 		l.add_theme_font_size_override("font_size", 13 * k)
 		l.add_theme_color_override("font_color", Grey)
-		l.position = Vector2(0, TextTop * k)
+		l.position = Vector2(0, NameCap - 0.19 * 13) * k
 		l.size = Vector2(((columns[0] if not columns.is_empty() else size.x / k) - 2) * k, 18 * k)
 		row.add_child(l)
 		for c in columns.size():
@@ -341,6 +343,7 @@ class OriginalGrid extends Control:
 	func _sync_bar() -> void:
 		if bar != null:
 			bar.call("set_rows", _first, Shown, _names.size())
+			bar.visible = _names.size() > Shown
 
 	func _gui_input(event: InputEvent) -> void:
 		if event is InputEventMouseButton and event.pressed and bar != null \

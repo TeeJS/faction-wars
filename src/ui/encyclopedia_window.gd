@@ -608,6 +608,8 @@ class OriginalIndex extends Control:
 	var k: int = 2
 	var font: Font
 	var bar: Control
+	## The names' size (the Personnel Finder's list is smaller, 11).
+	var px: float = 13.0
 	var _names: Array[String] = []
 	var _rows: Array = []
 	var _selected: int = -1
@@ -637,7 +639,7 @@ class OriginalIndex extends Control:
 		l.text = text
 		l.mouse_filter = Control.MOUSE_FILTER_STOP
 		l.add_theme_font_override("font", font)
-		l.add_theme_font_size_override("font_size", 13 * k)
+		l.add_theme_font_size_override("font_size", roundi(px * k))
 		l.add_theme_color_override("font_color", Grey)
 		l.size = Vector2(size.x, Pitch * k)
 		l.gui_input.connect(func(e: InputEvent) -> void:
@@ -686,6 +688,9 @@ class OriginalIndex extends Control:
 	func _sync_bar() -> void:
 		if bar != null:
 			bar.call("set_rows", _first, Shown, _names.size())
+			# Only when the names run over (TeeJ's Fleet Finder, five fleets:
+			# no bar).
+			bar.visible = _names.size() > Shown
 
 	func _gui_input(event: InputEvent) -> void:
 		if event is InputEventMouseButton and event.pressed and bar != null \
