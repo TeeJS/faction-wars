@@ -68,9 +68,11 @@ func _init() -> void:
 	click.global_position = gm._timeControls.global_position + Vector2(10, 10)
 	gm._timeControls.gui_input.emit(click)
 	await process_frame
-	_check(gm._speedMenu.visible and absf(gm._speedMenu.position.y - (gm._timeControls.global_position.y + gm._timeControls.size.y)) < 2.0,
+	# The original's menu when its bars are imported (original_menu.gd).
+	var menu: Window = gm._oSpeedMenu if gm._oSpeedMenu != null else gm._speedMenu
+	_check(menu.visible and absf(menu.position.y - (gm._timeControls.global_position.y + gm._timeControls.size.y)) < 2.0,
 		"a click drops the speed menu under the control")
-	gm._speedMenu.hide()
+	menu.hide()
 
 	# Pause: the original's box over a blocker; its check resumes.
 	gm.SetSpeed(3)

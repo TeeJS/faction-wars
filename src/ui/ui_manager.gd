@@ -61,8 +61,14 @@ func IsTargetingObject() -> bool:
 	return IsTargeting and _objectTargetingCallback.is_valid()
 
 
+const OriginalMenu := preload("res://src/ui/original_menu.gd")
+
+
 func _ready() -> void:
 	ApplyOriginalCursors()
+	# Every menu in play in the original's style (original_menu.gd), as it
+	# enters the tree - not a text field's or a drop-down's own.
+	get_tree().node_added.connect(_StyleMenu)
 	_taskbarList = get_node("%TaskbarList")
 	var menuButton: Button = get_node_or_null("../MenuButton")
 	if menuButton == null:
@@ -905,6 +911,15 @@ func OpenGameOptions() -> void:
 	if get_node_or_null("GameOptionsWindow") != null:
 		return
 	add_child(GameOptionsWindow.new())
+
+
+func _StyleMenu(n: Node) -> void:
+	if not (n is PopupMenu) or not OriginalMenu.Enabled():
+		return
+	var owner_: Node = n.get_parent()
+	if owner_ is LineEdit or owner_ is TextEdit or owner_ is OptionButton or owner_ is SpinBox:
+		return
+	OriginalMenu.Style(n as PopupMenu)
 
 
 ## Alt+W - close every open window at once. Windows opened through OpenWindow are
