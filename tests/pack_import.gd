@@ -9,6 +9,8 @@ extends SceneTree
 ##     folder (in any case), is refused;
 ##   - a faction pack whose pack.json names another id, or that the loader
 ##     would refuse, is refused with the reasons, and nothing is written;
+##   - a player's FIRST faction pack imports, when user://packs does not exist
+##     yet (a scratch packs root stands in for it);
 ##   - with --real=<art.zip>, the Faction Wars Exporter's own output imports.
 ## Writes under a test art root and a test pack id; removes both.
 ##
@@ -150,6 +152,17 @@ func _init() -> void:
 		"... into user://packs, and the picker lists it")
 	var errors: Array[String] = []
 	_check(PackLoader.Load(pack_dir, errors) != null, "... and it validates (%s)" % ", ".join(errors))
+
+	# ---- a player's first faction pack: no packs folder yet ----
+	var real_root: String = FactionRegistry.USER_PACKS_ROOT
+	FactionRegistry.USER_PACKS_ROOT = "user://test-import-first-packs"
+	PackImport._remove(FactionRegistry.USER_PACKS_ROOT)
+	_check(not DirAccess.dir_exists_absolute(FactionRegistry.USER_PACKS_ROOT), "no packs folder before the first import")
+	r = PackImport.ImportFile(TMP + "/pack.zip")
+	_check(r.ok, "the first faction pack imports with no packs folder yet (%s)" % r.message)
+	_check(FileAccess.file_exists("%s/%s/pack.json" % [FactionRegistry.USER_PACKS_ROOT, PACK_ID]), "... into a packs folder made for it")
+	PackImport._remove(FactionRegistry.USER_PACKS_ROOT)
+	FactionRegistry.USER_PACKS_ROOT = real_root
 
 	# ---- removing ----
 	PackImport.Remove("faction_pack", PACK_ID)

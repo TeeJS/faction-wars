@@ -15,7 +15,9 @@ extends RefCounted
 const PACKS_ROOT := "res://packs"
 ## Packs the player imported (docs/original-art-plan.md): the same layout,
 ## in the user folder (browser storage on the web). A shipped pack wins.
-const USER_PACKS_ROOT := "user://packs"
+## A static var, not a const, so a test can point it at a scratch folder and
+## never touch a player's imported packs (as Artwork.UserArtRoot).
+static var USER_PACKS_ROOT := "user://packs"
 ## The files a pack is made of - what PackLoader.Load reads and what the
 ## content hash covers, so two clients on the same pack id but different
 ## content are told so instead of desyncing (BACKLOG #13).
