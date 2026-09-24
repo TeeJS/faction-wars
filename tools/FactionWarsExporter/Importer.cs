@@ -398,6 +398,10 @@ public sealed class Importer
     private static readonly (string Name, int Frame, int X, int Y, int W, int H)[] FrameCuts =
     {
         ("hud_speed.alliance", 900, 90, 11, 106, 23), ("hud_speed.empire", 901, 488, 13, 102, 24),
+        // The resource displays (manual p030 Fig. 2.15: raw material, refined
+        // material, maintenance), their icons in the frame; TeeJ's screenshot
+        // of the Empire's matched 901 at (127, 6).
+        ("hud_resources.alliance", 900, 232, 10, 300, 28), ("hud_resources.empire", 901, 132, 12, 320, 30),
     };
     private static readonly (string Side, int[] Ids)[] SpeedBars =
     {

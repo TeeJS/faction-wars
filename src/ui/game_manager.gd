@@ -61,6 +61,22 @@ var _oDay: Label = null
 var _oBars: TextureRect = null
 var _oSide: String = ""
 var _oPause: Control = null
+
+# THE ORIGINAL'S RESOURCE DISPLAYS (TeeJ, 2026-09-23: "match the resource
+# display windows to the original"): the strip cut from the same frame - raw
+# material, refined material, maintenance, each its icon and a number (manual
+# p030 Fig. 2.15) - the numbers right-aligned 4 pixels inside each panel, 7
+# pixels tall (measured on TeeJ's screenshot: 29, 125, 462). Maintenance is
+# what is AVAILABLE, as the original's monitor shows (day-zero baseline in the
+# research skill: "the maintenance monitor shows available"). What the plain
+# row adds - the mine and refinery counts, the capacity - is on each panel's
+# tooltip.
+const ResourceLayout := {
+	"empire": {"rights": [104, 202, 300], "cap": 11},
+	"alliance": {"rights": [94, 189, 287], "cap": 11},
+}
+var _oResources: Control = null
+var _oFigures: Array = []
 var _speed: int = DefaultSpeed
 
 # Never 0, so resuming always lands on a running speed.
@@ -307,6 +323,7 @@ func BuildSpeedMenu() -> void:
 			_speedMenu.popup()
 			_timeControls.accept_event())
 	_BuildOriginalSpeed()
+	_BuildOriginalResources()
 
 	# PAUSE IS MODAL. "An alert box comes up, LOCKING YOU OUT OF GAME CONTROLS
 	# UNTIL YOU RESUME PLAY" (manual p071). ✅ CONFIRMED AGAINST THE ORIGINAL:
@@ -346,6 +363,41 @@ func _BuildOriginalSpeed() -> void:
 		OUI.SideColor(GameSettings.PlayerFaction), HORIZONTAL_ALIGNMENT_CENTER, "Day")
 	var bars: Vector2 = lay["bars"]
 	_oBars = HudPlace(_oSpeed, null, bars.x, bars.y, "Bars")
+
+
+## The resource displays as the original draws them, centred at the top in
+## place of the plain row.
+func _BuildOriginalResources() -> void:
+	var side: String = OUI.Side(GameSettings.PlayerFaction)
+	var strip: Texture2D = Art.WindowPicture("hud_resources.%s" % side)
+	if strip == null or not ResourceLayout.has(side) or _oResources != null:
+		return
+	var row: Control = _availMines.get_parent().get_parent()   # the scene's Resources row
+	row.visible = false
+	var lay: Dictionary = ResourceLayout[side]
+	_oResources = Control.new()
+	_oResources.name = "OriginalResources"
+	_oResources.size = strip.get_size() * HudScale
+	_oResources.position = Vector2(floorf((get_viewport().get_visible_rect().size.x - _oResources.size.x) / 2.0), 0)
+	_oResources.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.get_parent().add_child(_oResources)
+	HudPlace(_oResources, strip, 0, 0, "Strip")
+	_oFigures.clear()
+	var left := 0.0
+	for i in 3:
+		var right: float = lay["rights"][i]
+		# The figure (Arial 10: 7-pixel figures; the capitals 2 under the top).
+		var fig := HudText(_oResources, "", right - 60, float(lay["cap"]) - 2, 60, 11, 10,
+			OUI.SideColor(GameSettings.PlayerFaction), HORIZONTAL_ALIGNMENT_RIGHT, ["Raw", "Refined", "Maintenance"][i])
+		_oFigures.append(fig)
+		# The panel's hover area, for its tooltip.
+		var hover := Control.new()
+		hover.name = "Hover%d" % i
+		hover.position = Vector2(left, 0) * HudScale
+		hover.size = Vector2(right + 4 - left, strip.get_height()) * HudScale
+		hover.mouse_filter = Control.MOUSE_FILTER_PASS
+		_oResources.add_child(hover)
+		left = right + 4
 
 
 ## A picture of the Command Center's frame at original position (x, y),
@@ -644,3 +696,12 @@ func RefreshStatusBar() -> void:
 	_availRefineries.text = "Refined: %d  (%d %s)" % [econ.RefinedMaterials, Economy.TotalRefineries(player), Terms.label("refineries")]
 	# Maintenance is a pool, so it reads as remaining/total rather than a rate.
 	_availMaintenence.text = "Maint: %d/%d" % [Economy.MaintenanceAvailable(player), Economy.MaintenanceCapacity(player)]
+	if _oResources != null:
+		var figures: Array = [econ.RawMaterials, econ.RefinedMaterials, Economy.MaintenanceAvailable(player)]
+		var tips: Array = [
+			"Raw material: %d (%d %s)" % [econ.RawMaterials, Economy.TotalMines(player), Terms.label("mines")],
+			"Refined material: %d (%d %s)" % [econ.RefinedMaterials, Economy.TotalRefineries(player), Terms.label("refineries")],
+			"Maintenance: %d available of %d" % [Economy.MaintenanceAvailable(player), Economy.MaintenanceCapacity(player)]]
+		for i in 3:
+			(_oFigures[i] as Label).text = str(figures[i])
+			(_oResources.get_node("Hover%d" % i) as Control).tooltip_text = tips[i]
