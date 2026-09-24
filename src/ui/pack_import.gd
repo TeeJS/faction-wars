@@ -42,10 +42,11 @@ const REASONS_SHOWN := 8
 ## resource displays and the battle windows (2026-09-23). 2.4.0: the Fleet
 ## window and the in-transit icon, the System, Fleet and Ship Finders, the
 ## battle results' forces pages, the character status icons and the blue
-## hyperspace engine glow (released 2026-09-24). Raise it when the game needs
-## pictures an older exporter did not write; the picker then asks for a new
-## export.
-const MIN_EXPORTER := {"swr-original": "2.4.0"}
+## hyperspace engine glow (released 2026-09-24). 2.4.1: planet pictures 24-26
+## are the original's sprites (Umgul and Bpfassh were plain circles). Raise it
+## when the game needs pictures an older exporter did not write; the picker
+## then asks for a new export.
+const MIN_EXPORTER := {"swr-original": "2.4.1"}
 
 
 ## Called with each import's result (the pack picker refreshes its cards).
