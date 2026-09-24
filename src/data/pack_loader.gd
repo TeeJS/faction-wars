@@ -2,7 +2,7 @@ class_name PackLoader
 extends RefCounted
 ## backend/Packs/PackLoader.cs - reads a faction pack off disk and validates it.
 ## Validation collects EVERY problem rather than stopping at the first, so a pack
-## author sees the whole list in one pass (SCHEMA.md section 9).
+## author sees the whole list in one pass (SCHEMA.md section 11).
 
 const SupportedSchemaVersion := 1
 const KNOWN_HQ_KINDS := ["fixed", "hidden"]
@@ -188,7 +188,7 @@ static func _validate(pack: LoadedPack, pack_dir: String, errors: Array[String])
 		elif f.Hq.Kind == "fixed" and f.Hq.Planet.strip_edges().is_empty():
 			errors.append("%s: hq.kind 'fixed' requires hq.planet." % ctx)
 		elif f.Hq.Kind == "hidden" and f.Hq.Placement.strip_edges().is_empty():
-			errors.append("%s: hq.kind 'hidden' requires hq.placement (a planet name or 'random_rim')." % ctx)
+			errors.append("%s: hq.kind 'hidden' requires hq.placement (a planet id or 'random_rim')." % ctx)
 
 	_validate_map(pack, pack_dir, errors)
 	_validate_characters(pack, errors)

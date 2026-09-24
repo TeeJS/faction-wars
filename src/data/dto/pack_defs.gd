@@ -8,7 +8,7 @@ extends RefCounted
 class HqDef:
 	var Kind: String          # "fixed" | "hidden"
 	var Planet: String        # fixed: the planet it sits on
-	var Placement: String     # hidden: "random_rim", or a planet name
+	var Placement: String     # hidden: "random_rim", or a planet id
 	var Movable: bool
 
 	static func from_dict(d: Variant) -> HqDef:
