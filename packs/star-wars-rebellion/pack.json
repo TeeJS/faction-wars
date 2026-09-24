@@ -20,6 +20,7 @@
     1070.6666,
     803
   ],
+  "card_image": "milky_way.jpg",
   "setup": {
     "difficulty_default": "easy",
     "galaxy_sizes": [
@@ -219,7 +220,8 @@
     "credits": [
       "Star Wars: Rebellion (1998) - LucasArts Entertainment Company / Coolhand Interactive.",
       "This faction pack: unit, facility, character, mission and map tables from the original GData files; rules and screens from the manual.",
-      "Faction Wars engine: TeeJS."
+      "Faction Wars engine: TeeJS.",
+      "Setting picture: the Milky Way, artist's concept, NASA/JPL-Caltech/R. Hurt (SSC/Caltech)."
     ]
   }
 }

@@ -796,6 +796,9 @@ static func _validate_map(pack: LoadedPack, pack_dir: String, errors: Array[Stri
 		var image_path := "%s/%s" % [pack_dir, pack.Manifest.MapImage]
 		if not (ResourceLoader.exists(image_path) or FileAccess.file_exists(image_path)):
 			errors.append("pack.json: map_image '%s' is not in %s." % [pack.Manifest.MapImage, pack_dir])
+	# card_image is not checked for here: it is only the picker card's picture,
+	# and a copy of a shipped pack that leaves it behind must still load (the
+	# card then has no picture). An art-set reference is checked with the rest.
 
 
 ## Rule 18 (SCHEMA.md section 14): art sets, skins and art references.
@@ -826,7 +829,8 @@ static func _validate_art(pack: LoadedPack, errors: Array[String]) -> void:
 				errors.append("%s: '%s' needs pack.json art_sets." % [ctx, row.Art])
 			elif ParseArtRef(row.Art, sets).is_empty():
 				errors.append("%s: '%s' must be [<art set>:]<kind>/<id>, the art set one of %s and the kind one of %s." % [ctx, row.Art, ", ".join(sets), ", ".join(ART_KINDS)])
-	var images: Array = [["map_image", pack.Manifest.MapImage], ["menu.image", pack.Manifest.Menu.ImageFile if pack.Manifest.Menu != null else ""]]
+	var images: Array = [["map_image", pack.Manifest.MapImage], ["card_image", pack.Manifest.CardImage],
+		["menu.image", pack.Manifest.Menu.ImageFile if pack.Manifest.Menu != null else ""]]
 	if pack.Manifest.Menu != null:
 		for m in pack.Manifest.Menu.Monitors:
 			images.append(["menu.monitors image", m.ImageFile])

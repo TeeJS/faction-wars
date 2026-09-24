@@ -34,8 +34,8 @@ it on. Most packs start **from the original**, for the player's own use:
    `art/` folder and win over the art set's.
 3. **Change what you like** - the rest of this document is every field. A key
    starting with `_` (`"_comment"`) is yours: it is never read as data, anywhere.
-4. **Load it.** Export the pack as a `.zip` (the editor's *Export*) and import it
-   from the pack picker. The import checks it with the same validator the game
+4. **Load it.** Export the pack as a `.zip` (the editor's *Export*) and drag it
+   onto the game's first screen. The import checks it with the same validator the game
    uses (§11) and refuses it, with the reasons, if the game could not load it.
    A pack with the same id as a shipped one is never used - give yours its own.
 
@@ -161,6 +161,7 @@ Rects are in the menu picture's own pixels - the original's cockpit is
 | `setup.galaxy_sizes` | The size names offered on the menu. **Which sectors each size includes is declared per sector** in `map.json` (`min_size`), not here — see §4. |
 | `setup.galaxy_size_default` | The size pre-selected on the Cockpit. Optional; the first of `galaxy_sizes` when absent. Must be one of them. |
 | `summary` | **★ DECIDED (TeeJ, 2026-09-22).** One sentence on what the setting is, shown on the pack picker's card under the name. Optional; blank when absent. The card's other content (name, sides and their colours, the map picture) already comes from `display_name`, `factions.json` and `map_image`. |
+| `card_image` | **★ 2026-09-24 (TeeJ).** The pack picker card's picture when `map_image` cannot be shown - its art set not imported. A file in the pack folder, or `"<art set>:<path>"` (rule 18 checks the art set is declared). Optional, and not required to be there: a copy of the Star Wars pack that leaves the picture behind still loads, its card just has no picture. Star Wars: `milky_way.jpg`, NASA/JPL-Caltech's Milky Way. |
 | `credits` | Who made the setting: the lines "View credits" shows, from either form of the Cockpit. Optional. A pack with a Cockpit picture may put them in `menu.credits` instead, which wins when both are given. |
 | `victory_tips` | The two win-condition tooltips on the Multiplayer Options screen — `standard` and `hq_only` (manual p162; the Star Wars pack carries its sentences verbatim). Optional; both texts required when present. The last setting text engine code carried (TeeJ, 2026-09-22). |
 | `menu` | **The Shuttle Cockpit as the pack's picture** (manual p021, Fig. 2.2). Optional: a pack without it gets the engine's labelled-button menu. `image` is a file in the pack folder, or `"<art set>:<path>"` (§14) - without that art set the pack gets the button menu; `regions` lays one clickable area per menu function over it, `rect` = `[x, y, w, h]` in the picture's own pixels (the engine scales them with the picture, keeping aspect). `action` is engine vocabulary — `difficulty` (`value` easy/medium/hard), `galaxy_size` (`value` from `setup.galaxy_sizes`), `start` (`value` a faction id), `load_game`, `credits`, `hq_only_victory`, `multiplayer`, `exit`. **Every function must have exactly one region** — one per difficulty, per offered size, per playable faction, and one each of the rest — so the picture cannot lose a function the button menu has (validation rule 11). `readout` is the text panel the engine paints `standard` / `hq_only` on as the victory toggle changes; `selected_color` is the corner-bracket colour on the chosen difficulty and size; a region may override it with its own `selected_color` (the original marks difficulty in red, galaxy size in yellow). A region may give a `quad` - the screen it shows as four `[x, y]` corners in the picture's pixels, top-left, top-right, bottom-right, bottom-left - and the brackets then follow that screen's edges instead of the rect's (the Star Wars cockpit's difficulty monitors are seen at an angle); the click area stays the rect. **The picture must carry no selection state of its own** — the engine draws the brackets; the Star Wars capture had the original's marks scrubbed from the easy and standard screens. `credits` is the lines "View credits" shows. `monitors` (optional) puts a picture on each monitor (Fig. 2.2's "rotating red Alliance icon"): `image` is a strip of `frames` equal frames side by side (a pack file or `"<art set>:<path>"`), played in a loop at `monitor_fps` (default 10) with its top-left at `at` = `[x, y]` in the picture's pixels; with `region` (a region's `action` or `action:value`) and `selected_image`, that picture shows while the region is chosen; with `still` (a frame of the strip, from 0) it holds that frame and does not move. A monitor whose picture is missing stays dark. |
@@ -810,7 +811,8 @@ and the import refuses one (§14).
 8. ✅ Display tiers are ordered descending, use a known flare, and terminate
    with a `min: 0` tier; every Alt+N slot names a declared mode; every band has
    a label.
-9. ✅ `map_image` is declared and names a file present in the pack folder.
+9. ✅ `map_image` is declared and names a file present in the pack folder (or
+   an art set's picture).
 10. ✅ Every sector's `min_size` is one of `setup.galaxy_sizes`, and the smallest
     declared size has at least one sector — otherwise that menu option yields an
     empty galaxy.
@@ -1029,6 +1031,7 @@ What changed from the source repo's 2026-07-25 draft, and why.
 | 59 | **`adjective`** per faction (§3): the side as the battle sentences name it | TeeJ, 2026-09-24: the battle screens in the original's words |
 | 60 | **`still`** on a `menu.monitors` entry (§2): a monitor that holds one frame | TeeJ, 2026-09-24: "lucas arts logo twitches, it does not move in the original" |
 | 61 | **Brought up to date for pack authors.** "DRAFT" dropped; a *Making your own pack* section; §1's missing-field rule made accurate and `_` comments documented; §2's example is the real `pack.json`; §5 `family` a string, the unit-roles row moved to §6; §6 the real units and `weapons.json` (`kind`, per-unit weapon ranges, `observed_ranges` unread); §8 `rules.json` an array, the logistics fields and what reads them; §9 the real mission-table shape, which tables are read and which are not implemented, `available_to` read only by Assassination; §11 rules 11 and 12 in the list, 3 and 5 marked done, rules 19-22 | The pack editor's handoff (2026-09-23), item 5; TeeJ, 2026-09-24: help players make their own packs from the original, for their own use |
+| 62 | **`card_image`** (§2): the picker card's picture when `map_image`'s art set is not imported; optional, never a load error when missing | TeeJ, 2026-09-24: the Milky Way on the Star Wars card before the art is imported |
 
 ---
 
