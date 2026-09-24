@@ -147,8 +147,7 @@ func RegisterPopupMenu(popup: PopupMenu) -> void:
 func DrawCharacterRow(list: Container, character: Character, uiManager: UIManager) -> void:
 	var nameColor: Color = character.Faction.FactionColor
 	# RANK IS A PREFIX: "Admiral Ackbar", "General Madine" (TEXTSTRA.DLL).
-	var displayText: String = character.Name if character.Rank == Enums.Rank.None \
-		else "%s %s" % [JsonUtil.enum_name(Enums.Rank, character.Rank), character.Name]
+	var displayText: String = character.TitledName()
 
 	# "Characters have FOUR statuses: Ready, In transit, CAPTURED, INJURED"
 	# (manual p096); the Status field reads "awaiting orders; ON A MISSION at a
@@ -543,7 +542,7 @@ func AddCharacterToList(list: Container, characterData: Character, text: String,
 	if IsCardList(list):
 		# White, as the original's names are - unless a status colours it.
 		var cardColor: Color = Color.WHITE if characterData.Faction != null and color == characterData.Faction.FactionColor else color
-		OUI.Card(characterBtn, characterData.Name, OUI.Mini("characters", characterData.PackId), cardColor,
+		OUI.Card(characterBtn, characterData.TitledName(), OUI.Mini("characters", characterData.PackId), cardColor,
 			OUI.SideColor(GameSettings.PlayerFaction), OUI.CharacterState(characterData), OUI.CharacterOver(characterData))
 		characterBtn.tooltip_text = text
 	characterBtn.CharacterData = characterData

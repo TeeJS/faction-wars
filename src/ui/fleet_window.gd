@@ -1019,7 +1019,7 @@ func _RowUnit(btn: Button, unit: Unit) -> void:
 
 ## A person's row: the miniature in its status (manual p096), the name.
 func _RowCharacter(btn: Button, c: Character) -> void:
-	_Row(btn, c.Name, OUI.Mini("characters", c.PackId), [], OUI.Side(c.Faction), OUI.SideColor(GameSettings.PlayerFaction))
+	_Row(btn, c.TitledName(), OUI.Mini("characters", c.PackId), [], OUI.Side(c.Faction), OUI.SideColor(GameSettings.PlayerFaction))
 	var pic: Node = btn.get_node_or_null("Picture")
 	var state: String = OUI.CharacterState(c)
 	var over: Texture2D = OUI.CharacterOver(c) if state == "captured" else (OUI.Pic("card_injured") if state == "injured" else null)
