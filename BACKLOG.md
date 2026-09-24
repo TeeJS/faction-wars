@@ -27,15 +27,12 @@ target) before landing.
 | 8 | Fix MenuButton `pressed` double-connect log spam | #18 |
 | — | `faction-wars-dev` skill (workflow + context-MCP + handoff template) | #9 #10 #12 #13 |
 | — | `BACKLOG.md` tracker | #19 |
+| 40 | **The original's art out of the public repo; owners import it** (`docs/original-art-plan.md`). The signed Faction Wars Exporter writes the player's own art set; the game imports it into browser storage or the user folder; art sets are separate from shareable faction packs, which wear the original UI through per-faction skins. The art is gone from the repo, its history (rewritten, backup `D:\Backup\faction-wars\faction-wars-20260923-1518.git`) and GHCR. Optional, TeeJ's: a GitHub Support ticket for the old commits still reachable through PR refs | #114 #115 #116 #117 #118, exporter-v2.1.0 |
 
 ## Status — in progress
 
-| # | Item | Plan |
-|---|------|------|
-| 40 | **The original's art out of the public repo; owners import it.** A signed exporter writes the player's own art set to a file (their backup); the game imports it into browser storage (web) or the user folder (desktop). Art sets are separate from shareable faction packs, so custom packs (e.g. Separatists vs Trade Federation) can wear the original UI. Removal, history rewrite and GHCR purge come last. | `docs/original-art-plan.md` (TeeJ signed off 2026-09-23). Phases 0-4 done (#114, #115, #116); 5a prepared (merge after the exporter release); 5b/5c each need TeeJ's go |
-
-What remains is under **Missing Features** (new screens) and **Backlog** below;
-those need TeeJ's go before they start.
+*None - all approved work is merged.* What remains is under **Missing Features**
+(new screens) and **Backlog** below; those need TeeJ's go before they start.
 
 ---
 
