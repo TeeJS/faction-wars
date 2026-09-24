@@ -109,6 +109,19 @@ func _ready() -> void:
 		btnLoad.offset_top = -40.0
 		btnLoad.offset_right = 140.0
 		btnLoad.offset_bottom = -10.0
+		# "View credits" (manual p021, Fig. 2.2), the Cockpit's other function
+		# the labelled buttons lacked: without the picture, no pack's credits
+		# could be opened at all.
+		var btnCredits := Button.new()
+		btnCredits.name = "BtnCredits"
+		btnCredits.text = "View Credits"
+		btnCredits.pressed.connect(OpenCredits)
+		add_child(btnCredits)
+		btnCredits.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
+		btnCredits.offset_left = 150.0
+		btnCredits.offset_top = -40.0
+		btnCredits.offset_right = 280.0
+		btnCredits.offset_bottom = -10.0
 
 	# The build version, bottom right of the Cockpit (TeeJ, room #106).
 	var ver := BuildInfo.label()
@@ -175,8 +188,18 @@ func OpenMultiplayer() -> void:
 
 func OpenCredits() -> void:
 	if get_node_or_null("CreditsWindow") == null:
-		var lines: Array[String] = _cockpit.Credits if _cockpit != null else []
-		add_child(CreditsWindow.new(FactionRegistry.Pack.Manifest.DisplayName, lines))
+		add_child(CreditsWindow.new(FactionRegistry.Pack.Manifest.DisplayName, PackCredits()))
+
+
+## The pack's credits: its Cockpit picture's (`menu.credits`), else pack.json's
+## own `credits` - whichever form of the Cockpit is on screen.
+static func PackCredits() -> Array[String]:
+	var m: PackDefs.PackManifest = FactionRegistry.Pack.Manifest if FactionRegistry.Pack != null else null
+	if m == null:
+		return []
+	if m.Menu != null and not m.Menu.Credits.is_empty():
+		return m.Menu.Credits
+	return m.Credits
 
 
 ## The picture form's choices, for tests and the log. The button form reads its

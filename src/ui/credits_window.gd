@@ -1,7 +1,7 @@
 class_name CreditsWindow
 extends PanelContainer
 ## "View credits" on the Shuttle Cockpit (manual p021, Fig. 2.2). The lines are
-## the pack's (`menu.credits` in pack.json) - who made the setting is content,
+## the pack's (`menu.credits`, else `credits`, in pack.json) - who made the setting is content,
 ## not engine. Built in code (repo convention), shown as a centered modal overlay.
 
 func _init(title: String = "", lines: Array[String] = []) -> void:

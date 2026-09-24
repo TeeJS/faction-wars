@@ -298,6 +298,11 @@ class PackManifest:
 	## SCHEMA.md section 14: the art sets this pack's original look comes from
 	## (the player's own, imported - never shipped). Empty = the engine's own art.
 	var ArtSets: Array[String] = []
+	## SCHEMA.md section 2: who made the setting - "View credits" shows them.
+	## A pack without a Cockpit picture has them here (the WWII pack's were
+	## never shown, the editor handoff, 2026-09-23); `menu.credits` wins when
+	## the picture has its own.
+	var Credits: Array[String] = []
 
 	static func from_dict(d: Dictionary) -> PackManifest:
 		var o := PackManifest.new()
@@ -316,6 +321,7 @@ class PackManifest:
 		o.Menu = MenuDef.from_dict(JsonUtil.get_ci(d, "menu"))
 		o.VictoryTips = VictoryTipsDef.from_dict(JsonUtil.get_ci(d, "victory_tips"))
 		o.ArtSets = JsonUtil.str_list(d, "art_sets", [])
+		o.Credits = JsonUtil.str_list(d, "credits", [])
 		return o
 
 
