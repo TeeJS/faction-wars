@@ -149,7 +149,20 @@ func SetupToggleButton(btn: Button, group: ButtonGroup) -> void:
 	btn.button_group = group
 
 
+## "You get to the Game Options screen from the Load a Saved Game icon in the
+## Shuttle Cockpit" (manual p075): the original's screen when the art is
+## imported, with nothing to save and no Command Center to return to; the
+## plain slot picker otherwise.
+const OptionsScreenScript := preload("res://src/ui/original_options_screen.gd")
+
+
 func OpenLoadGame() -> void:
+	if OptionsScreenScript.CanBuild():
+		if get_node_or_null("OptionsScreen") == null:
+			var screen: Control = OptionsScreenScript.new()
+			screen.FromCockpit = true
+			add_child(screen)
+		return
 	if get_node_or_null("LoadGameWindow") == null:
 		add_child(LoadGameWindow.new())
 

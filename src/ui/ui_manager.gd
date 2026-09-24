@@ -538,7 +538,23 @@ func OnMissionClicked(planetData: Planet) -> void:
 		targetPos)
 
 
+## The original's Game Options screen (manual p075-p076, Fig. 3.16), which is
+## the Game Menu and the save slots in one, when the player imported its art.
+## Preloaded by path: a new script can lag the editor's class cache.
+const OptionsScreenScript := preload("res://src/ui/original_options_screen.gd")
+
+
+func OpenOptionsScreen() -> void:
+	if get_node_or_null("OptionsScreen") != null:
+		return
+	var screen: Control = OptionsScreenScript.new()
+	add_child(screen)
+
+
 func OnMenuButtonClicked() -> void:
+	if OptionsScreenScript.CanBuild():
+		OpenOptionsScreen()
+		return
 	var viewportSize: Vector2 = get_viewport().get_visible_rect().size
 	var centerPos: Vector2 = (viewportSize / 2.0) - Vector2(110, 80)
 	OpenWindow("GameMenu", InGameMenuWindowTemplate, func(_window) -> void: pass, centerPos)
@@ -858,6 +874,9 @@ func OpenPlanetFinder() -> void:
 ## its own relay Save, so this is offered only when there is no MP session. Guards
 ## against opening a second copy.
 func OpenGameOptions() -> void:
+	if OptionsScreenScript.CanBuild():
+		OpenOptionsScreen()
+		return
 	if MpSetup.session != null:
 		return
 	if get_node_or_null("GameOptionsWindow") != null:
@@ -873,7 +892,7 @@ func CloseAllWindows() -> void:
 	for w: Variant in _openWindows.values().duplicate():
 		if is_instance_valid(w):
 			(w as Node).queue_free()
-	for wname in ["GalaxyOverviewWindow", "ObjectivesWindow", "GameOptionsWindow", "LoadGameWindow"]:
+	for wname in ["GalaxyOverviewWindow", "ObjectivesWindow", "GameOptionsWindow", "LoadGameWindow", "OptionsScreen"]:
 		var extra: Node = get_node_or_null(wname)
 		if extra != null:
 			extra.queue_free()
