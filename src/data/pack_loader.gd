@@ -261,6 +261,11 @@ static func _validate_icons(pack: LoadedPack, pack_dir: String, errors: Array[St
 static func _validate_menu(pack: LoadedPack, pack_dir: String, errors: Array[String]) -> void:
 	var setup := pack.Manifest.Setup
 	var sizes: Array[String] = setup.GalaxySizes if setup != null else []
+	# The game offers three galaxy sizes (the menu's buttons, a multiplayer
+	# room's settings - Enums.GalaxySize); a pack with fewer gives an empty
+	# galaxy for the ones it lacks. More are allowed.
+	if sizes.size() < 3:
+		errors.append("pack.json: setup.galaxy_sizes has %d; the game offers three sizes, so it needs at least 3." % sizes.size())
 	if setup != null and not setup.GalaxySizeDefault.is_empty() and not sizes.has(setup.GalaxySizeDefault):
 		errors.append("pack.json: setup.galaxy_size_default '%s' is not one of setup.galaxy_sizes (%s)." % [setup.GalaxySizeDefault, ", ".join(sizes)])
 	if setup != null and not setup.DifficultyDefault.is_empty() and not KNOWN_DIFFICULTIES.has(setup.DifficultyDefault):
@@ -442,12 +447,37 @@ static func _validate_setup(pack: LoadedPack, errors: Array[String]) -> void:
 			for v in [f.Seed.HqFacilities, f.Seed.HqGarrison, f.Seed.Fleet, f.Seed.ProceduralFleet]:
 				if not v.is_empty():
 					named.append(v)
+			# What day zero reads without asking (DayZeroGenerator,
+			# "POPULATION, ECONOMY & LOGISTICS"): a seeded side's headquarters
+			# takes hq_facilities, hq_garrison and fleet, and a starting world
+			# with a garrison takes fleet. Left empty they passed here and
+			# stopped the game at its first day (the editor handoff, 2026-09-23).
+			var garrisoned: bool = Lq.any(f.StartingPlanets, func(sp) -> bool: return not sp.Garrison.is_empty())
+			var needs: Array = []
+			if f.Hq != null:
+				needs = [["hq_facilities", f.Seed.HqFacilities], ["hq_garrison", f.Seed.HqGarrison], ["fleet", f.Seed.Fleet]]
+			elif garrisoned:
+				needs = [["fleet", f.Seed.Fleet]]
+			for n in needs:
+				if str(n[1]).is_empty():
+					errors.append("factions.json[%s]: seed.%s is empty; day zero seeds %s from it." % [f.Id, n[0],
+						"the headquarters" if n[0] != "fleet" or f.Hq != null else "each garrisoned starting world"])
 		for sp in f.StartingPlanets:
 			if not sp.Garrison.is_empty():
 				named.append(sp.Garrison)
 		for id in named:
 			if not pack.Setup.Logistics.has(id):
 				errors.append("factions.json[%s]: names logistics table '%s', which setup.json does not declare." % [f.Id, id])
+
+	# Every inhabited world is seeded from core_system_facilities (a Core
+	# sector, ring 1) or rim_system_facilities (any other), by those names.
+	var rings := {}
+	if pack.Map != null:
+		for s in pack.Map.Sectors:
+			rings["core_system_facilities" if s.Ring == 1 else "rim_system_facilities"] = true
+	for table in rings:
+		if not pack.Setup.Logistics.has(table):
+			errors.append("setup.json: logistics has no '%s'; day zero seeds every %s world from it." % [table, "Core" if table.begins_with("core") else "Rim"])
 
 	# Rule 13: every seeding asset names a declared unit or facility BY ID. A
 	# row the engine cannot resolve would seed nothing and say nothing - that is
@@ -462,6 +492,9 @@ static func _validate_setup(pack: LoadedPack, errors: Array[String]) -> void:
 	for table_id in pack.Setup.Logistics:
 		var table: Variant = pack.Setup.Logistics[table_id]
 		if not (table is Dictionary):
+			# The seeder reads every table as an object and stops the game
+			# when one is not (SeedManager.Load).
+			errors.append("setup.json: logistics['%s'] is not an object." % table_id)
 			continue
 		var entries: Variant = JsonUtil.get_ci(table, "Entries")
 		if not (entries is Array):

@@ -28,6 +28,26 @@ func _init() -> void:
 	_case("sector missing min_size",
 		_pack({"min_size": ""}, {}, {}), "missing min_size")
 
+	# What day zero reads without asking would stop the game on its first day
+	# (the editor handoff, 2026-09-23) - so the validator refuses it first.
+	var full_seed := {"hq_facilities": "garrison", "hq_garrison": "garrison", "fleet": "garrison"}
+	var no_garrison := full_seed.duplicate()
+	no_garrison["hq_garrison"] = ""
+	_case("a seeded side with a headquarters and no hq_garrison",
+		_pack({}, {}, {"seed": no_garrison}), "seed.hq_garrison is empty")
+	var no_fleet := full_seed.duplicate()
+	no_fleet["fleet"] = ""
+	_case("a seeded side with a headquarters and no fleet",
+		_pack({}, {}, {"seed": no_fleet}), "seed.fleet is empty")
+	_case("no core_system_facilities table for a Core sector",
+		_pack({}, {}, {}), "logistics has no 'core_system_facilities'")
+	_case("no rim_system_facilities table for a Rim sector",
+		_pack({}, {}, {}), "logistics has no 'rim_system_facilities'")
+	_case("a logistics table that is not an object",
+		_pack({}, {}, {"logistics": {"core_system_facilities": "see the notes"}}), "logistics['core_system_facilities'] is not an object")
+	_case("two galaxy sizes where the game offers three",
+		_pack({"min_size": "standard"}, {}, {"sizes": ["standard", "large"]}), "setup.galaxy_sizes has 2")
+
 	# Rule 11 - the Cockpit picture reaches every function (SCHEMA.md section 2).
 	_case("menu region with an unknown action",
 		_pack({}, {}, {"menu": _menu({"bad_action": true})}), "action 'launch' is not one of")
@@ -376,7 +396,7 @@ func _pack(sector_over: Dictionary, planet_over: Dictionary, other: Dictionary) 
 		"unexplored_color": "#cccccc",
 		"map_image": other.get("map_image", "galaxyShaded.bmp"),
 		"art_sets": other.get("art_sets", []),
-		"setup": {"difficulty_default": "medium", "galaxy_sizes": ["standard", "large", "huge"],
+		"setup": {"difficulty_default": "medium", "galaxy_sizes": other.get("sizes", ["standard", "large", "huge"]),
 			"galaxy_size_default": other.get("size_default", "standard")},
 	}
 	if other.has("menu"):
@@ -410,6 +430,8 @@ func _pack(sector_over: Dictionary, planet_over: Dictionary, other: Dictionary) 
 		"victory": {"capture_characters": [other.get("victory", "second_person")]},
 		"skin": other.get("skin", ""),
 	}
+	if other.has("seed"):
+		faction["seed"] = other["seed"]
 	p.Factions = [PackDefs.FactionDef.from_dict(faction)]
 
 	# Two characters, so a collision has something to collide WITH.
@@ -491,9 +513,9 @@ func _pack(sector_over: Dictionary, planet_over: Dictionary, other: Dictionary) 
 	p.Rules = [{"EntryId": 1}]
 	p.Setup = PackDefs.SetupFile.from_dict({
 		"side_lottery": [{"EntryId": 1}],
-		"logistics": {"garrison": {"Type": "CMUN/FACL (Hierarchical)", "Entries": [
+		"logistics": other.get("logistics", {"garrison": {"Type": "CMUN/FACL (Hierarchical)", "Entries": [
 			{"ParentId": 1, "ProbabilityThreshold": 1, "Multiplier": 1,
-			 "Assets": [other.get("setup_asset", {"unit": "scout"})]}]}}})
+			 "Assets": [other.get("setup_asset", {"unit": "scout"})]}]}})})
 	return p
 
 
