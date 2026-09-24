@@ -77,16 +77,16 @@ Manual passages: assembling a mission, PDF pp. 100–101 (manual pp. 102–103);
 | “Encyclopedia” control in Create Mission | **Missing.** No Encyclopedia control/window is provided. |
 | “Assign” and “Cancel” | **Partial.** ConfirmationDialog provides accept/cancel behavior, but the accept button is not explicitly labelled “Assign” in code. |
 | Transit time / units in hyperspace after assignment | **Present.** The dialog reports transit days and launch creates real mission travel time. |
-| Double-click the Mission icon to bring up the Mission window | **Present.** The sector Mission corner opens `MissionWindow`. |
-| Mission window may contain “more than one mission on a given system” | **Present.** It lists every unfinished player mission against the system and names each team. |
+| Double-click the Mission icon to bring up the Mission window | **Present.** The sector Mission corner opens the original's “Mission at …” window (`original_mission_window.gd`) with the art imported, `MissionWindow` without. |
+| Mission window may contain “more than one mission on a given system” | **Present.** Each unfinished player mission is an icon (its 73x48 picture, its name over it) in the left column; clicking one shows its target and team on the right, the picked one in the side's frame. The column's pitch is provisional: no screenshot of the original shows two missions on one system. |
 | Separate status for “AGENTS” and “DECOYS” | **Present.** Dedicated tabs/labels separately list operatives and decoys. |
 | Mission progress/status, including hyperspace and persistent-mission progress | **Present.** Rows show travel days, attempt count, and Diplomacy support percentage. |
-| Moving-star field indicates the mission team is “in hyperspace” | **Partial.** Status text reports “in hyperspace, …d out”; the moving-star visual is absent. |
+| Moving-star field indicates the mission team is “in hyperspace” | **Present** with the art: a member in transit is drawn on the hyperspace-streak plate (Fig 3.51). The plain window reports “in hyperspace, …d out”. |
 | Right-click Mission icon: “Status”, “Encyclopedia”, “Abort” (and continue a persistent mission when applicable) | **Partial.** Status and per-mission Abort exist; Encyclopedia is visible but disabled. Persistent missions continue automatically, but there is no separately named Continue command. |
-| “you cannot give orders to units in hyperspace” | **Present.** Abort is disabled until the team arrives, both in the icon menu and status rows. |
+| “you cannot give orders to units in hyperspace” | **Present.** Abort is disabled until the team arrives: in the map icon's menu, the original window's right-click menu (Fig 3.50: Encyclopedia, Status, Abort) and the plain window's rows. |
 | Aborting/continuing applies to the selected mission when several share a system | **Present for Abort.** Each Abort entry names its mission/team. Continue is automatic rather than a selectable control. |
 
-Research confidence: **high** for create/status controls and mission-menu wiring, **medium** for original visual arrangement because it has not yet been rendered side by side.
+Research confidence: **high** for create/status controls and mission-menu wiring; the original Mission window was rendered side by side with TeeJ's screenshots of the original and matches to within a pixel (2026-09-23).
 
 ---
 

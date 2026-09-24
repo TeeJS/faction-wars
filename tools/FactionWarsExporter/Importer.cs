@@ -143,6 +143,12 @@ public sealed class Importer
         ("list_starfield", 10598),
         ("mission_agents.alliance", 11121), ("mission_decoys.alliance", 11122),
         ("mission_agents.empire", 11123), ("mission_decoys.empire", 11124),
+        // The Mission window (p109 Fig 3.51): the 235x304 plate that is the
+        // window (the starfield, the Target box, the team panel), and the
+        // side's frame round the mission picked in its column (73x48, keyed
+        // inside). Placed by template matching on TeeJ's four screenshots of
+        // the original's (Mon Calamari, Umgul twice, Coruscant; 2026-09-23).
+        ("mission_window", 11165), ("mission_frame.alliance", 11127), ("mission_frame.empire", 11128),
         // A Status window (manual p064: modal, no title bar, closed by its
         // diamond): the 379x272 plate per side - the field panel with the
         // side's emblem, the picture and name grids, the button sockets - and
@@ -250,6 +256,12 @@ public sealed class Importer
         // Create Mission's two tabs, 116x33: Select Mission and Decoy.
         ("mission_select", "alliance", 11103, 11104, 0), ("mission_select", "empire", 11105, 11106, 0),
         ("mission_decoy", "alliance", 11107, 11108, 0), ("mission_decoy", "empire", 11109, 11110, 0),
+        // The Mission window's two tabs (p109 Fig 3.51), 61x16: the agents
+        // and the decoys. Normal and current measured on TeeJ's Empire
+        // screenshots; the Alliance's are their twins (a figure and the red
+        // emblem), not yet seen.
+        ("mission_agents_tab", "alliance", 11560, 11561, 0), ("mission_decoys_tab", "alliance", 11562, 11563, 11564),
+        ("mission_agents_tab", "empire", 11565, 11566, 0), ("mission_decoys_tab", "empire", 11567, 11568, 11569),
     };
 
     // STRATEGY.DLL: buttons as (name, normal, pressed/current, disabled).
@@ -318,6 +330,13 @@ public sealed class Importer
     // all 21 were checked by eye, the Alliance set 4096 below the Empire's).
     private const int MissionCardEmpire = 4096;
     private const int MissionCardAlliance = 8192;
+    // ...and its 73x48 picture in the Mission window's column (p109 Fig
+    // 3.51), at the string_id plus these: the Empire's matched TeeJ's four
+    // screenshots of the original (Diplomacy, Sabotage, Recruitment; the
+    // label and the frame aside, every pixel); the Alliance set is 4096 below,
+    // as it is for the Create Mission pictures - not yet seen.
+    private const int MissionTileEmpire = 12288;
+    private const int MissionTileAlliance = 8192;
 
     // Bitmaps the original draws WHOLE, pure blue included: the Create Mission
     // plates' blue line under the tabs and the tabs' blue edges are on TeeJ's
@@ -563,8 +582,14 @@ public sealed class Importer
                 else if (!id.StartsWith("unnamed"))
                     missing.Add($"missions/{id}.{faction}.small: no bitmap {sid - less} in GOKRES.DLL");
             }
+            foreach (var (faction, more) in new[] { ("empire", MissionTileEmpire), ("alliance", MissionTileAlliance) })
+            {
+                if (SaveSprite(cards, sid + more, P("missions", $"{id}.{faction}.tile.png"))) { missionCards++; pictureCount++; }
+                else if (!id.StartsWith("unnamed"))
+                    missing.Add($"missions/{id}.{faction}.tile: no bitmap {sid + more} in GOKRES.DLL");
+            }
         }
-        Say($"mission pictures for Create Mission: {missionCards} (GOKRES.DLL).");
+        Say($"mission pictures for Create Mission and the Mission window: {missionCards} (GOKRES.DLL).");
         // The mouse pointers: REBEXE.EXE's RT_CURSOR 3 (group 1001, the arrow -
         // all 179 of its pixels matched TeeJ's screenshot of the original) and 4
         // (group 1002, the targeting crosshair). Their hotspots go beside them.
