@@ -1,14 +1,20 @@
 extends SceneTree
 ## Can this Godot binary open a wss:// WebSocket? (Gate B needs it headless.)
 ##   Godot_console.exe --headless --path . -s tests/tls_probe.gd -- --url=wss://host/ws [--unsafe]
+## It connects to the host it is given and to none by default: a run of every
+## test must not reach a live server.
 func _init() -> void:
-	var url := "wss://wars.schmitzplex.com/ws"
+	var url := ""
 	var unsafe := false
 	for a in OS.get_cmdline_user_args():
 		if a.begins_with("--url="):
 			url = a.substr(6)
 		if a == "--unsafe":
 			unsafe = true
+	if url.is_empty():
+		print("[tls_probe] SKIP: names no host (--url=wss://host/ws)")
+		quit(0)
+		return
 	var peer := WebSocketPeer.new()
 	var err := peer.connect_to_url(url, TLSOptions.client_unsafe() if unsafe else TLSOptions.client())
 	print("[tls_probe] connect_to_url(%s, unsafe=%s) -> %d" % [url, str(unsafe), err])

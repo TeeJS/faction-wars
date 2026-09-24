@@ -5,6 +5,8 @@ extends SceneTree
 ##
 ##   Godot_console.exe --headless --path . -s tests/menu_load_audit.gd
 
+const OptionsScreen := preload("res://src/ui/original_options_screen.gd")
+
 var _fails := 0
 var _checks := 0
 
@@ -55,6 +57,21 @@ func _init() -> void:
 	if loadGameBtn != null:
 		loadGameBtn.pressed.emit()
 		await process_frame
+		# In the original's look the Cockpit's Load icon opens its Game Options
+		# screen (manual p075), not the plain slot picker.
+		if OptionsScreen.CanBuild():
+			var screen: Node = menu.get_node_or_null("OptionsScreen")
+			_check(screen != null, "pressing Load Game opens the Game Options screen")
+			if screen != null:
+				var loadBtn: BaseButton = screen._loadBtns[0]
+				_check(not loadBtn.disabled, "the used slot has an enabled Load Game button")
+				if not loadBtn.disabled:
+					loadBtn.pressed.emit()   # sets PendingLoadPath, then changes scene
+					_check(GameSettings.PendingLoadPath == SaveManager.SlotPath(0), "pressing Load Game sets PendingLoadPath to the slot")
+			GameSettings.PendingLoadPath = ""
+			_clean()
+			_finish()
+			return
 		var lgw: Node = menu.get_node_or_null("LoadGameWindow")
 		_check(lgw != null, "pressing Load Game opens the slot picker")
 		if lgw != null:

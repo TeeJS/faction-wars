@@ -60,7 +60,8 @@ func _init() -> void:
 
 	_key(ui, KEY_F1, false)
 	await process_frame
-	_check(ui.get_node_or_null("GameOptionsWindow") != null, "F1 opens Game Options")
+	# With the original's art, Game Options is its own screen (OptionsScreen).
+	_check(ui.get_node_or_null("GameOptionsWindow") != null or ui.get_node_or_null("OptionsScreen") != null, "F1 opens Game Options")
 
 	# Alt+3 selects a Galaxy Display mode (idle fleets).
 	_check(ui.ActiveGalaxyMap != null, "the galaxy map is active for mode shortcuts")
@@ -83,7 +84,7 @@ func _init() -> void:
 	await process_frame
 	_check(ui._openWindows.is_empty(), "Alt+W closes all tracked data windows")
 	_check(ui.get_node_or_null("GalaxyOverviewWindow") == null, "Alt+W also closes the Galaxy Overview")
-	_check(ui.get_node_or_null("GameOptionsWindow") == null, "Alt+W also closes Game Options")
+	_check(ui.get_node_or_null("GameOptionsWindow") == null and ui.get_node_or_null("OptionsScreen") == null, "Alt+W also closes Game Options")
 
 	_finish()
 

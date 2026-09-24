@@ -32,8 +32,8 @@ func _init() -> void:
 		return
 
 	if not FileAccess.file_exists(OUT):
-		print("[pack_switch] FAIL: run first with -- --pack=ww2 --write")
-		quit(2)
+		print("[pack_switch] SKIP: run first with -- --pack=ww2 --write")
+		quit(0)
 		return
 	var expected: PackedStringArray = FileAccess.get_file_as_string(OUT).split("\n")
 

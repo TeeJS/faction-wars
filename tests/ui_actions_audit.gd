@@ -8,6 +8,8 @@ extends SceneTree
 ##
 ##   Godot_console.exe --headless --path . -s tests/ui_actions_audit.gd
 
+const OptionsScreen := preload("res://src/ui/original_options_screen.gd")
+
 var _fails := 0
 var _checks := 0
 
@@ -54,6 +56,24 @@ func _init() -> void:
 		_check(ui._openWindows.has("Communications"), "pressing All Messages opens the Comms window")
 		if ui._openWindows.has("Communications"):
 			_check(ui._openWindows["Communications"]._uiManager != null, "the opened Comms window has its UIManager (Go To works)")
+
+	# 2-3 in the original's look: the Menu button opens its Game Options
+	# screen directly (it replaced the Game Menu and the Save Game window),
+	# and a slot's Save Game button writes the slot.
+	if OptionsScreen.CanBuild():
+		ui.OnMenuButtonClicked()
+		await process_frame
+		var screen: Node = ui.get_node_or_null("OptionsScreen")
+		_check(screen != null, "the Menu button opens the Game Options screen")
+		if screen != null:
+			(screen._names[0] as LineEdit).text = "Audit"
+			(screen._saveBtns[0] as BaseButton).pressed.emit()
+			await process_frame
+			_check(SaveManager.Slots()[0]["used"], "pressing Save Game writes slot 1")
+			_check(SaveManager.Slots()[0]["name"] == "Audit", "the typed name is saved")
+		_clean()
+		_finish()
+		return
 
 	# 2. In-game menu -> pressing "Game Options" opens the save screen.
 	ui.OnMenuButtonClicked()
