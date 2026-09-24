@@ -269,6 +269,8 @@ static func Simulate(r: BattleReport, day: int) -> void:
 
 	Tally(sim.Sides[0], r.OurLosses, r.Ours)
 	Tally(sim.Sides[1], r.TheirLosses, r.Theirs)
+	RemoveWrecks(sim.Sides[0], r)
+	RemoveWrecks(sim.Sides[1], r)
 
 	if theirs_loses:
 		ResolveLoser(r, r.Theirs, r.Ours, r)
@@ -304,22 +306,48 @@ static func Simulate(r: BattleReport, day: int) -> void:
 
 
 static func Tally(side: TacticalBattle.TacticalSide, into: Casualties, fleet: Fleet) -> void:
+	var sunk: Array = []   # the ships lost, and so what they carried (RemoveWrecks)
 	for u in side.Ships:
+		if u.Destroyed() and u.Source != null:
+			sunk.append(u.Source)
 		into.add("CapitalShipsDestroyed" if u.Destroyed() else "CapitalShipsOperational", Describe(u),
 			"units", u.Source.PackId if u.Source != null else "", Damaged(u))
 	for u in side.Squadrons:
-		into.add("SquadronsDestroyed" if u.Destroyed() else "SquadronsOperational", Describe(u),
-			"units", u.Source.PackId if u.Source != null else "", Damaged(u))
+		var lost: bool = u.Destroyed() or (u.Carrier != null and sunk.has(u.Carrier.Source))
+		into.add("SquadronsDestroyed" if lost else "SquadronsOperational", Describe(u),
+			"units", u.Source.PackId if u.Source != null else "", Damaged(u) and not lost)
 	if fleet != null:
 		for ship in fleet.Ships:
 			for carried in ship.Hangar:
 				if carried.Type == Enums.UnitType.Troop:
-					into.add("TroopsOperational", carried.Name, "units", carried.PackId, false)
+					into.add("TroopsDestroyed" if sunk.has(ship) else "TroopsOperational", carried.Name, "units", carried.PackId, false)
 	# ⚠ The injured/captured/killed split is NOT reproduced: everyone aboard survives.
 	for c in GameState.ActiveRoster:
 		if c.Attached == fleet and c.Status != Enums.Status.Dead:
 			into.add("PersonnelSurvivors", c.Name if c.Rank == Enums.Rank.None else "%s %s" % [JsonUtil.enum_name(Enums.Rank, c.Rank), c.Name],
 				"characters", c.PackId, false)
+
+
+## THE LOST ARE GONE (TeeJ, 2026-09-24: "destroyed ships are NOT repaired.
+## damaged ones are, but destroyed go away!"). A ship or squadron destroyed in
+## the battle leaves the game - it was kept, at no hull, and RepairManager
+## mended it and sent it back to be destroyed again ("I feel like I've
+## destroyed this same medium transport 4 times"). A ship goes with what it
+## carried, as Planet.DestroyUnit has always taken it (bombardment): the
+## results' Trooper Regiments column lists troops "Destroyed", and troops do
+## not fight in space. A fleet left empty is disbanded (p120). Fighters that
+## outlive their carrier are lost with it here - NO SOURCE says otherwise or
+## so (manual, Prima, swrebellion.net, open-rebellion searched); a question
+## for TeeJ.
+static func RemoveWrecks(side: TacticalBattle.TacticalSide, r: BattleReport) -> void:
+	for u in side.All():
+		if not u.Destroyed() or u.Source == null:
+			continue
+		var carried: Array = u.Source.Hangar.duplicate() if u.Source.Hangar != null else []
+		if r.Where.DestroyUnit(u.Source):
+			r.Destroyed.append(u.Source.Name)
+			for c in carried:
+				r.Destroyed.append(c.Name)
 
 
 ## Still flying, but hit.
