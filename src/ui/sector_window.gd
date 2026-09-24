@@ -55,10 +55,23 @@ static func CanBuildOriginal() -> bool:
 
 
 ## Where the original's window sits: against the right or the left edge of
-## the map frame (UIManager's Rect2(150, 99, 1070, ...)), at its top.
+## the map frame (UIManager's Rect2(150, 99, 1070, ...)), and high enough to
+## clear the bottom bars. At the map's top (y 99) the 720-pixel window ran 49
+## pixels into the GID band and the HUD row under it and made them unusable
+## (TeeJ, 2026-09-23: "way better for it to be higher, blocking Popular
+## Support"). It is centred in the room between the top row (0-40, Main.tscn's
+## Resources) and the GID band (from 80 above the bottom, GidBar): y 45 on the
+## 850-pixel screen, 5 pixels clear of each, over the GID mode's name.
+const TopRowBottom := 40
+const GidBandTop := 80   # above the screen's bottom edge
+
+
 static func DockPosition(right: bool) -> Vector2:
 	var frame := Rect2(150, 99, 1070, 0)
-	return Vector2(frame.end.x - OW * K if right else frame.position.x, frame.position.y)
+	var screen_h: float = float(ProjectSettings.get_setting("display/window/size/viewport_height", 850))
+	var room: float = screen_h - GidBandTop - TopRowBottom
+	var y: float = TopRowBottom + floorf(maxf(0.0, room - OH * K) / 2.0)
+	return Vector2(frame.end.x - OW * K if right else frame.position.x, y)
 
 
 ## The name's colour in the original: its side's, cyan for a system no side
