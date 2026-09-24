@@ -11,9 +11,24 @@ var _body: VBoxContainer
 var _tabs: TabBar
 var _error: Label
 
+## THE ORIGINAL'S LOOK with the art imported (src/ui/original_battle.gd; TeeJ,
+## 2026-09-23: "Conflict/Battle screen does not match"): the same four pages
+## and three orders, drawn from its bitmaps.
+const OB := preload("res://src/ui/original_battle.gd")
+const OUI := preload("res://src/ui/original_ui.gd")
+var _o: Control = null
+var _oPage: int = 0
+var _oButtons: Array = []
+var _oBody: Control = null
+var _oPicture: TextureRect = null
+var _oSide: String = ""
+
 
 func Setup(battle: FleetBattleManager.BattleReport) -> void:
 	_battle = battle
+	if OB.CanBuild():
+		_BuildOriginal()
+		return
 
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	set_anchors_preset(Control.PRESET_CENTER)
@@ -119,10 +134,17 @@ func OnRetreat() -> void:
 		return
 	# The gravity-well refusal. Kept in the window rather than filed as a
 	# message, because the player still has a choice to make.
+	if _o != null:
+		_oPage = 0
+		_ShowPage(0, r.error)
+		return
 	_error.text = r.error
 
 
 func Redraw() -> void:
+	if _o != null:
+		_ShowPage(_oPage)
+		return
 	for child in _body.get_children():
 		child.queue_free()
 
@@ -243,3 +265,103 @@ func Row(left: String, right: String) -> void:
 	row.add_child(b)
 
 	_body.add_child(row)
+
+
+# ---- the original's look ------------------------------------------------------
+
+func _BuildOriginal() -> void:
+	mouse_filter = Control.MOUSE_FILTER_STOP
+	_oSide = OUI.Side(GameSettings.LocalFaction())
+	_o = OB.Canvas(self)
+	_oPicture = OUI.Place(_o, null, OB.PictureAt.x, OB.PictureAt.y, "Picture")
+	OUI.Place(_o, OUI.Pic("battle_frame.%s" % _oSide), 0, 0, "Frame")
+	_oBody = Control.new()
+	_oBody.name = "Page"
+	_oBody.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_o.add_child(_oBody)
+	# The column (Fig. 4.1): Battle Summary, Alliance Forces, Imperial Forces,
+	# System Summary - the original's order, by side, not ours-then-theirs.
+	var stems: Array = ["battle_summary", "battle_alliance_forces", "battle_empire_forces", "battle_system"]
+	var tips: Array = ["Battle Summary", "%s Forces" % _SideName("alliance"), "%s Forces" % _SideName("empire"), "System Summary"]
+	_oButtons.clear()
+	for i in stems.size():
+		var b := OB.PageButton(_o, stems[i], _oSide, OB.ColumnX, OB.AlertYs[i], tips[i])
+		var page := i
+		b.pressed.connect(func() -> void:
+			_oPage = page
+			_ShowPage(page))
+		_oButtons.append(b)
+	# Retreat, Simulate Results, Take Command (Fig. 4.1).
+	var retreat := OB.Button3(_o, "battle_retreat.%s" % _oSide, OB.BottomXs[0], OB.BottomY,
+		"Retreat: withdraw immediately to the nearest friendly system.")
+	retreat.pressed.connect(OnRetreat)
+	retreat.disabled = FleetBattleManager.EnemyHoldsThemHere(_battle.Enemy(GameSettings.LocalFaction()))
+	OB.Button3(_o, "battle_simulate.%s" % _oSide, OB.BottomXs[1], OB.BottomY,
+		"Simulate Results: have the computer simulate the battle and report the outcome.").pressed.connect(OnSimulate)
+	OB.Button3(_o, "battle_command.%s" % _oSide, OB.BottomXs[2], OB.BottomY,
+		"Take Command: watch the battle play out (the original's Observe Battle; giving orders is not built yet).").pressed.connect(OnTakeCommand)
+	OB.Centre(self)
+	_ShowPage(0)
+
+
+## The fleet on the given side's page: the one whose faction wears that side's
+## look, else (a pack whose sides share one) ours / theirs in order.
+func _FleetOf(skin: String) -> Fleet:
+	for f in [_battle.Ours, _battle.Theirs]:
+		if f != null and OUI.Side(f.Faction) == skin:
+			return f
+	return _battle.Ours if skin == "alliance" else _battle.Theirs
+
+
+func _SideName(skin: String) -> String:
+	var f: Fleet = _FleetOf(skin)
+	return f.Faction.DisplayName if f != null and f.Faction != null else skin.capitalize()
+
+
+func _ShowPage(page: int, refusal: String = "") -> void:
+	OB.SetCurrent(_oButtons, page)
+	for c in _oBody.get_children():
+		_oBody.remove_child(c)
+		c.queue_free()
+	var colour: Color = OUI.SideColor(GameSettings.LocalFaction())
+	var pic: Texture2D = OUI.Pic(("battle_alert.%s" if page == 0 else "battle_forces.%s") % _oSide)
+	_oPicture.texture = pic
+	_oPicture.size = pic.get_size() if pic != null else Vector2.ZERO
+	# "Battle at <system>" - the original's words (TEXTSTRA).
+	OB.Line(_oBody, "Battle at %s" % _battle.Where.Name, OB.TitleCentre - 190, 20, 380, OB.TitlePx, colour,
+		HORIZONTAL_ALIGNMENT_CENTER, false, "Title")
+	match page:
+		0:
+			var text: String = refusal if not refusal.is_empty() else _Situation()
+			if refusal.is_empty() and FleetBattleManager.EnemyHoldsThemHere(_battle.Enemy(GameSettings.LocalFaction())):
+				text += " A gravity well projector is holding us here: we cannot withdraw."
+			OB.Block(_oBody, text, OB.TextAt, OB.TextW, OB.TextPx, 18, colour, "Situation")
+		1, 2:
+			var fleet: Fleet = _FleetOf("alliance" if page == 1 else "empire")
+			OB.Line(_oBody, "%s Forces" % _SideName("alliance" if page == 1 else "empire"), OB.PageCentre - 190, 44, 380,
+				OB.TitlePx, Color.WHITE, HORIZONTAL_ALIGNMENT_CENTER, false, "PageName")
+			OB.List(_oBody, OB.FleetRows(fleet) if fleet != null else [], _oSide)
+		_:
+			# "System Assets" - the page's heading on TeeJ's screenshot.
+			OB.Line(_oBody, "System Assets", OB.PageCentre - 190, 44, 380, OB.TitlePx, Color.WHITE,
+				HORIZONTAL_ALIGNMENT_CENTER, false, "PageName")
+			OB.List(_oBody, OB.SystemRows(_battle.Where), _oSide)
+
+
+## The situation in the original's own sentences (TEXTSTRA's alert block).
+## INFERRED which applies: the report does not say who arrived, so a side's
+## own world is taken as the one defended - "The <them> fleet has entered the
+## <system> system. <us> forces have been detected on an intercept course" -
+## and a world neither holds gets "<a> and <b> forces are about to engage in
+## battle near the <system> system".
+func _Situation() -> String:
+	var a: Fleet = _battle.Ours
+	var b: Fleet = _battle.Theirs
+	var owner: Faction = _battle.Where.ControllingFaction
+	var an: String = a.Faction.DisplayName if a != null and a.Faction != null else "Our"
+	var bn: String = b.Faction.DisplayName if b != null and b.Faction != null else "Enemy"
+	if a != null and owner == a.Faction:
+		return "The %s fleet has entered the %s system. %s forces have been detected on an intercept course." % [bn, _battle.Where.Name, an]
+	if b != null and owner == b.Faction:
+		return "The %s fleet has entered the %s system. %s forces have been detected on an intercept course." % [an, _battle.Where.Name, bn]
+	return "%s and %s forces are about to engage in battle near the %s system." % [an, bn, _battle.Where.Name]
