@@ -330,7 +330,12 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 					and m.Faction == GameSettings.PlayerFaction \
 					and not m.Finished)
 
-		if planet.IsExplored or myMissionHere:
+		# Ours on the way count too: a fleet of ours heading to a system we have
+		# not charted shows there all the same (its fleet corner, below).
+		var oursInbound: bool = Lq.any(planet.OrbitingFleets, func(f: Fleet) -> bool:
+			return f.Status == Enums.Status.Enroute and f.Destination == planet and f.Faction == GameSettings.PlayerFaction)
+
+		if planet.IsExplored or myMissionHere or oursInbound:
 			# --- THE 4 CORNER BUTTONS ---
 			# Distance from the exact center of the planet to the center of the corner buttons
 			var offset: float = 22.0
