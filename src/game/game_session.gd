@@ -73,7 +73,12 @@ static func load_roster() -> Array[Character]:
 ## head-to-head game (default: none). Both must be identical on both clients.
 static func new_game(player_faction_id: String, difficulty: int, size: int, seed: int, humans: Array = [], host_id: String = "") -> StrategicTickManager:
 	reset_game_state()
-	FactionRegistry.EnsureLoaded()
+	# No pack, no game: without this a pack that failed to load played an empty
+	# galaxy with no sides, and a soak of it "passed" (the editor's game check,
+	# 2026-09-24). Null, as the Replayer returns for an unloadable save.
+	if not FactionRegistry.EnsureLoaded():
+		push_error("[GameSession] no game: the pack did not load.")
+		return null
 	GameSettings.PlayerFaction = FactionRegistry.ById(player_faction_id)
 	GameSettings.HumanFactions = []
 	for h in humans:
