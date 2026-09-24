@@ -201,7 +201,10 @@ func ShowTab(tab: int, pick: bool) -> void:
 	for i in buttons.size():
 		var b: TextureButton = buttons[i]
 		b.set_pressed_no_signal(i == tab)
-		b.disabled = i != tab and i > 0 and EntriesOn(i).is_empty()
+		# Never greyed for being empty: the original's Imperial Fleets and
+		# Imperial Troops tabs stand normal with nothing on them (TeeJ's
+		# screenshots, 2026-09-24).
+		b.disabled = false
 	(_o["header"] as Label).text = Caption(tab)
 	var list: Control = _o["list"]
 	list.call("clear")

@@ -218,6 +218,8 @@ func _ready() -> void:
 	planetInfoBtn.pressed.connect(_uiManager.OpenPlanetFinder)
 	# "Ship Info." was wired to nothing; it is the Fleet Finder (TeeJ, 2026-09-24).
 	(get_node("UIManager/HBoxContainer/ShipInfo") as Button).pressed.connect(func() -> void: _uiManager.OpenFleetFinder())
+	# "Troop Info." likewise: the Troop Finder.
+	(get_node("UIManager/HBoxContainer/TroopInfo") as Button).pressed.connect(_uiManager.OpenTroopFinder)
 	# The Encyclopedia control (manual p073): the Index view.
 	var encyBtn: Button = get_node_or_null("UIManager/HBoxContainer/Encyclopedia")
 	if encyBtn != null:
