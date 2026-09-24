@@ -49,6 +49,17 @@ func _init() -> void:
 		_pack({}, {}, {"victory_tips": {"standard": "Win.", "hq_only": ""}}), "victory_tips: 'standard' and 'hq_only' texts are both required")
 	_case("menu with no readout",
 		_pack({}, {}, {"menu": _menu({"no_readout": true})}), "'readout' is required")
+	_case("menu monitor for a region the menu does not have",
+		_pack({}, {}, {"menu": _menu({"monitor": {"image": "galaxyShaded.bmp", "at": [0, 0], "frames": 1, "region": "nowhere"}})}),
+		"region 'nowhere' is not a region of the menu")
+	_case("menu monitor with no frames",
+		_pack({}, {}, {"menu": _menu({"monitor": {"image": "galaxyShaded.bmp", "at": [0, 0], "frames": 0}})}), "'frames' must be 1 or more")
+	_case("menu monitor with a selected_image and no region",
+		_pack({}, {}, {"menu": _menu({"monitor": {"image": "galaxyShaded.bmp", "at": [0, 0], "frames": 1, "selected_image": "galaxyShaded.bmp"}})}),
+		"'selected_image' needs the 'region' it shows for")
+	_case("menu monitor from an art set the pack does not declare",
+		_pack({}, {}, {"menu": _menu({"monitor": {"image": "swr-original:menu/empire.png", "at": [0, 0], "frames": 15}})}),
+		"menu.monitors image: 'swr-original:menu/empire.png' names art set 'swr-original', which art_sets does not declare")
 	_case("galaxy_size_default not offered",
 		_pack({}, {}, {"size_default": "enormous"}), "galaxy_size_default 'enormous' is not one of")
 
@@ -350,6 +361,8 @@ func _menu(over: Dictionary) -> Dictionary:
 	}
 	if over.has("no_readout"):
 		m.erase("readout")
+	if over.has("monitor"):
+		m["monitors"] = [over["monitor"]]
 	return m
 
 

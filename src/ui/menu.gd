@@ -34,6 +34,8 @@ var _regions: Control                 # the region buttons, laid over the pictur
 var _regionButtons: Dictionary = {}   # "action" or "action:value" -> Button
 var _readout: Label
 var _marks: Control                   # draws the selection brackets
+var _monitors: Control                # the monitors' pictures (menu.monitors)
+var _monitorFrame: int = 0
 
 
 func _ready() -> void:
@@ -243,6 +245,40 @@ func _build_cockpit(menu: PackDefs.MenuDef) -> void:
 	add_child(_picture)
 	move_child(_picture, 1)   # over the Background, under everything else
 
+	# The monitors' pictures (Fig. 2.2: "the rotating red Alliance icon"),
+	# over the cockpit and under the regions: each a strip of frames, played
+	# in a loop. A monitor whose picture is missing stays dark.
+	_monitors = Control.new()
+	_monitors.name = "Monitors"
+	_monitors.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_monitors.set_anchors_preset(Control.PRESET_FULL_RECT)
+	add_child(_monitors)
+	move_child(_monitors, 2)
+	for m in menu.Monitors:
+		var strip: Texture2D = Art.PackImage(m.ImageFile)
+		if strip == null or m.At.size() != 2:
+			continue
+		var pic := TextureRect.new()
+		pic.name = "Monitor_" + m.ImageFile.get_file().get_basename()
+		pic.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		pic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		pic.stretch_mode = TextureRect.STRETCH_SCALE
+		pic.texture = AtlasTexture.new()
+		pic.set_meta("def", m)
+		pic.set_meta("strip", strip)
+		pic.set_meta("selected", Art.PackImage(m.SelectedImageFile) if not m.SelectedImageFile.is_empty() else null)
+		_monitors.add_child(pic)
+	if _monitors.get_child_count() > 0:
+		var tick := Timer.new()
+		tick.name = "MonitorTick"
+		tick.wait_time = 1.0 / maxf(menu.MonitorFps, 1.0)
+		tick.autostart = true
+		tick.timeout.connect(func() -> void:
+			_monitorFrame += 1
+			_paint_monitors())
+		add_child(tick)
+	_paint_monitors()
+
 	_regions = Control.new()
 	_regions.name = "Regions"
 	_regions.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -348,6 +384,38 @@ func _layout_cockpit() -> void:
 		_readout.add_theme_font_size_override("font_size", _readout_font_size(rr.size))
 	_refresh_readout()
 	_marks.queue_redraw()
+	_paint_monitors()
+
+
+## Each monitor at its place and on its current frame: the region's own
+## picture while that region is chosen (the victory-condition screen).
+func _paint_monitors() -> void:
+	if _monitors == null:
+		return
+	var chosen := _chosen_keys()
+	for pic in _monitors.get_children():
+		var m: PackDefs.MenuMonitorDef = pic.get_meta("def")
+		var strip: Texture2D = pic.get_meta("strip")
+		var alt: Variant = pic.get_meta("selected") if pic.has_meta("selected") else null   # set_meta(null) stores nothing
+		if alt != null and chosen.has(m.Region):
+			strip = alt
+		var frames: int = maxi(1, m.Frames)
+		var fw: float = strip.get_width() / float(frames)
+		var atlas: AtlasTexture = pic.texture
+		atlas.atlas = strip
+		atlas.region = Rect2(fw * (_monitorFrame % frames), 0, fw, strip.get_height())
+		var r := _scaled(Rect2(m.At[0], m.At[1], fw, strip.get_height()))
+		pic.position = r.position
+		pic.size = r.size
+
+
+## The regions chosen now: the difficulty, the galaxy size, and Headquarters
+## Only Victory when it is on.
+func _chosen_keys() -> Array[String]:
+	var chosen: Array[String] = ["difficulty:%s" % _difficultyId, "galaxy_size:%s" % _sizeId]
+	if _hqOnly:
+		chosen.append("hq_only_victory")
+	return chosen
 
 
 ## The largest size at which BOTH readout texts fit the panel: height-bound
@@ -377,10 +445,7 @@ func _draw_marks() -> void:
 	if _cockpit == null:
 		return
 	var default_color := FactionRegistry.ParseColor(_cockpit.SelectedColorHex)
-	var chosen: Array[String] = ["difficulty:%s" % _difficultyId, "galaxy_size:%s" % _sizeId]
-	if _hqOnly:
-		chosen.append("hq_only_victory")
-	for key in chosen:
+	for key in _chosen_keys():
 		if not _regionButtons.has(key):
 			continue
 		var b: Button = _regionButtons[key]
@@ -425,6 +490,7 @@ func _on_region(r: PackDefs.MenuRegionDef) -> void:
 			_hqOnly = not _hqOnly
 			_refresh_readout()
 			_marks.queue_redraw()
+			_paint_monitors()
 		"start":
 			var f := FactionRegistry.ById(r.Value)
 			if f != null:

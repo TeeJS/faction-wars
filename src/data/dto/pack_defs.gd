@@ -192,6 +192,31 @@ class MenuReadoutDef:
 		return Rect2(Rect[0], Rect[1], Rect[2], Rect[3])
 
 
+## A MONITOR ON THE COCKPIT (manual p021, Fig. 2.2: "the rotating red Alliance
+## icon"): `image` is a strip of `frames` equal frames side by side, played in a
+## loop at menu.monitor_fps with its top-left at `at` ([x, y], the picture's
+## own pixels). With `region` (a region's "action" or "action:value") and
+## `selected_image`, that picture shows instead while the region is chosen.
+class MenuMonitorDef:
+	var ImageFile: String
+	var At: Array = []         # [x, y]
+	var Frames: int = 1
+	var Region: String
+	var SelectedImageFile: String
+
+	static func from_dict(d: Dictionary) -> MenuMonitorDef:
+		var o := MenuMonitorDef.new()
+		o.ImageFile = JsonUtil.str_or(d, "image", "")
+		var a: Variant = JsonUtil.get_ci(d, "at")
+		if a is Array:
+			for v in a:
+				o.At.append(int(v))
+		o.Frames = int(JsonUtil.get_ci(d, "frames") if JsonUtil.get_ci(d, "frames") != null else 1)
+		o.Region = JsonUtil.str_or(d, "region", "")
+		o.SelectedImageFile = JsonUtil.str_or(d, "selected_image", "")
+		return o
+
+
 ## THE SHUTTLE COCKPIT AS A PICTURE (manual p021, Fig. 2.2): the pack's own
 ## image with a clickable region per menu function. Optional - a pack without
 ## one gets the labelled-button menu.
@@ -201,6 +226,8 @@ class MenuDef:
 	var Regions: Array[MenuRegionDef] = []
 	var Readout: MenuReadoutDef
 	var Credits: Array[String] = []
+	var Monitors: Array[MenuMonitorDef] = []
+	var MonitorFps: float = 10.0
 
 	static func from_dict(d: Variant) -> MenuDef:
 		if d == null:
@@ -214,6 +241,13 @@ class MenuDef:
 				o.Regions.append(MenuRegionDef.from_dict(e))
 		o.Readout = MenuReadoutDef.from_dict(JsonUtil.get_ci(d, "readout"))
 		o.Credits = JsonUtil.str_list(d, "credits", [])
+		var ms: Variant = JsonUtil.get_ci(d, "monitors")
+		if ms is Array:
+			for e in ms:
+				o.Monitors.append(MenuMonitorDef.from_dict(e))
+		var fps: Variant = JsonUtil.get_ci(d, "monitor_fps")
+		if fps != null:
+			o.MonitorFps = float(fps)
 		return o
 
 
