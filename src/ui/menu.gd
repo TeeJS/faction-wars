@@ -363,13 +363,16 @@ func _build_cockpit(menu: PackDefs.MenuDef) -> void:
 	_readout.add_theme_color_override("font_color", FactionRegistry.ParseColor(menu.Readout.ColorHex))
 	_regions.add_child(_readout)
 
-	# The selection brackets, drawn over the chosen regions.
+	# The selection brackets, drawn over the chosen regions - and over the
+	# monitors' pictures, which hid the inner half of each line on a screen
+	# (TeeJ, 2026-09-24: make the line heavier, towards the middle).
 	_marks = Control.new()
 	_marks.name = "Marks"
 	_marks.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_marks.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_marks.draw.connect(_draw_marks)
-	_regions.add_child(_marks)
+	add_child(_marks)
+	move_child(_marks, _monitors.get_index() + 1)
 
 	resized.connect(_layout_cockpit)
 	_layout_cockpit()
@@ -526,7 +529,8 @@ func _bracket(region: Rect2, color: Color) -> void:
 
 ## The same brackets on a screen seen at an angle (pack.json region `quad`;
 ## TeeJ, 2026-09-24): each corner's arms run along the screen's own edges, a
-## little inside them so they land on the glass.
+## little inside them so they land on the glass. Each corner is one filled L,
+## so the arms meet in a square corner rather than two overlapping strokes.
 func _bracket_quad(q: PackedVector2Array, color: Color) -> void:
 	var centre: Vector2 = (q[0] + q[1] + q[2] + q[3]) / 4.0
 	var shortest := INF
@@ -537,14 +541,34 @@ func _bracket_quad(q: PackedVector2Array, color: Color) -> void:
 		p.append(c.lerp(centre, 0.06))
 	var l := shortest * 0.32
 	var w := maxf(3.0, shortest * 0.07)
-	var arms := []
 	for i in 4:
-		arms.append([p[i], p[i] + (p[(i + 1) % 4] - p[i]).normalized() * l])
-		arms.append([p[i], p[i] + (p[(i + 3) % 4] - p[i]).normalized() * l])
-	for pass_color in [Color(0, 0, 0, 0.85), color]:
-		var width := w + 2.0 if pass_color.a < 1.0 else w
-		for a in arms:
-			_marks.draw_line(a[0], a[1], pass_color, width)
+		var corner := _bracket_corner(p[i], p[(i + 1) % 4], p[(i + 3) % 4], centre, l, w)
+		var ring := corner.duplicate()
+		ring.append(corner[0])
+		_marks.draw_polyline(ring, Color(0, 0, 0, 0.85), 2.0)   # the dark outline, 1 px outside
+		_marks.draw_colored_polygon(corner, color)
+
+
+## One corner of a bracket as an L, w wide: its arms centred on the lines from
+## `at` towards `next` and `prev`, l long.
+static func _bracket_corner(at: Vector2, next: Vector2, prev: Vector2, centre: Vector2, l: float, w: float) -> PackedVector2Array:
+	var e1 := (next - at).normalized()
+	var e2 := (prev - at).normalized()
+	var n1 := _inward(e1, centre - at)
+	var n2 := _inward(e2, centre - at)
+	var a := at - n1 * w * 0.5
+	var b := at - n2 * w * 0.5
+	var o: Variant = Geometry2D.line_intersects_line(a, e1, b, e2)
+	var outer: Vector2 = o if o != null else at
+	var i: Variant = Geometry2D.line_intersects_line(outer + n1 * w, e1, outer + n2 * w, e2)
+	var inner: Vector2 = i if i != null else outer + (n1 + n2) * w
+	return PackedVector2Array([outer, a + e1 * l, a + e1 * l + n1 * w, inner, b + e2 * l + n2 * w, b + e2 * l])
+
+
+## The normal of edge direction `e` on the side `towards` points to.
+static func _inward(e: Vector2, towards: Vector2) -> Vector2:
+	var n := Vector2(-e.y, e.x)
+	return n if n.dot(towards) >= 0.0 else -n
 
 
 ## Picture pixels to screen pixels, point by point (as _scaled does rects).
