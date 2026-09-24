@@ -460,6 +460,11 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 					_OriginalIcon(cornerBtn, "fleet", flagged.Id if flagged != null else "unknown", 1.0)
 					cornerBtn.tooltip_text = "In orbit: " + ", ".join(Lq.select(fleetsHere,
 						func(f: Fleet) -> String: return "%s (%s)" % [f.Name, f.Faction.DisplayName if f.Faction != null else "unknown"]))
+					# RIGHT-CLICK: the fleet command menu (TeeJ's screenshot of
+					# the original's, 2026-09-24) for the side the icon shows -
+					# ours when ours are here.
+					var menuFleets: Array = Lq.where(fleetsHere, func(f: Fleet) -> bool: return f.Faction == flagged)
+					AttachFleetMenu(cornerBtn, menuFleets, planet, uiManager)
 
 				# "A ... icon to the lower right of a planet indicates a
 				# mission is in progress there" (manual p109). Lit only for
@@ -1031,6 +1036,24 @@ static func _AddLoyaltyBar(sectorMap: Control, centerX: float, y: float, support
 # Each is disabled while its team is in hyperspace - "you cannot give orders
 # to units in hyperspace; you must wait until they reach their destination"
 # (p109), which is why the original greys the order out rather than dropping it.
+## The fleet icon's right-click menu (FleetWindow.FleetMenu): Move,
+## Confirmed Move, Planetary Bombardment, Planetary Assault, Encyclopedia,
+## Status, Scrap for our fleets here; Encyclopedia and Status for theirs.
+static func AttachFleetMenu(icon: Button, fleets: Array, planet: Planet, uiManager: UIManager) -> void:
+	icon.gui_input.connect(func(e: InputEvent) -> void:
+		if not (e is InputEventMouseButton) or not e.pressed or e.button_index != MOUSE_BUTTON_RIGHT:
+			return
+		if uiManager.IsTargeting:
+			uiManager.CancelTargeting()
+			return
+		var popup: PopupMenu = FleetWindow.FleetMenu(fleets, planet, uiManager, false, func() -> void: pass)
+		icon.add_child(popup)
+		popup.popup_hide.connect(popup.queue_free)
+		popup.position = Vector2i(int(e.global_position.x), int(e.global_position.y))
+		popup.popup()
+		icon.accept_event())
+
+
 static func AttachMissionMenu(icon: Button, planet: Planet, uiManager: UIManager) -> void:
 	icon.gui_input.connect(func(e: InputEvent) -> void:
 		if not (e is InputEventMouseButton) or not e.pressed or e.button_index != MOUSE_BUTTON_RIGHT:
