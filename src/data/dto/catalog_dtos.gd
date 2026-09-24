@@ -26,7 +26,7 @@ class GameRuleData:
 		o.Multiplayer = JsonUtil.int_or(d, "Multiplayer")
 		var bf: Variant = JsonUtil.get_ci(d, "By_Faction")
 		if bf != null:
-			for faction_id in bf.keys():
+			for faction_id in JsonUtil.data_keys(bf):
 				o.By_Faction[str(faction_id)] = JsonUtil.str_int_dict(bf, str(faction_id))
 		return o
 
@@ -52,11 +52,11 @@ class SideRuleData:
 		o.GroupId = JsonUtil.int_or(d, "GroupId")
 		var bf: Variant = JsonUtil.get_ci(d, "By_Faction")
 		if bf != null:
-			for faction_id in bf.keys():
+			for faction_id in JsonUtil.data_keys(bf):
 				var by_diff := {}
 				var inner: Variant = bf[faction_id]
 				if inner != null:
-					for diff in inner.keys():
+					for diff in JsonUtil.data_keys(inner):
 						by_diff[str(diff)] = JsonUtil.str_int_dict(inner, str(diff))
 				o.By_Faction[str(faction_id)] = by_diff
 		o.Dev = JsonUtil.str_int_dict(d, "dev")
