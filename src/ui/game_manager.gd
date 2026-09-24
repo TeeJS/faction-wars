@@ -44,10 +44,14 @@ var _pauseBox: AcceptDialog
 # Center frame (STRATEGY 900 / 901): the day in its window, and the side's
 # bars - none lit at Pause and Very Slow, one at Slow, two at Medium, three at
 # Fast (TeeJ's screenshot at Slow: one). Placed in the box's own pixels,
-# measured on the frames; drawn OUI.K times as large. The day's colour on the
-# Alliance's is INFERRED (the Empire's is green): the side's.
+# measured on the frames; drawn HudScale times as large - one and a half, not
+# the windows' two, so the strip across the top (the resource displays, 30
+# pixels tall) stays inside the 45-pixel row above the docked sector window,
+# and the Speed Control matches it as the original's does. The day's colour
+# on the Alliance's is INFERRED (the Empire's is green): the side's.
 const OUI := preload("res://src/ui/original_ui.gd")
 const Art := preload("res://src/ui/artwork.gd")
+const HudScale := 1.5
 const SpeedLayout := {
 	"empire": {"lcd": Rect2(11, 6, 62, 11), "bars": Vector2(73, 7)},
 	"alliance": {"lcd": Rect2(12, 8, 62, 12), "bars": Vector2(74, 9)},
@@ -323,7 +327,7 @@ func BuildSpeedMenu() -> void:
 ## The Speed Control as the original draws it, over the plain panel's place.
 func _BuildOriginalSpeed() -> void:
 	_oSide = OUI.Side(GameSettings.PlayerFaction)
-	var bezel: Texture2D = OUI.Pic("hud_speed.%s" % _oSide)
+	var bezel: Texture2D = Art.WindowPicture("hud_speed.%s" % _oSide)
 	if bezel == null or not SpeedLayout.has(_oSide) or _oSpeed != null:
 		return
 	var lay: Dictionary = SpeedLayout[_oSide]
@@ -331,17 +335,50 @@ func _BuildOriginalSpeed() -> void:
 	_timeControls.add_theme_stylebox_override("panel", StyleBoxEmpty.new())
 	_oSpeed = Control.new()
 	_oSpeed.name = "OriginalSpeed"
-	_oSpeed.custom_minimum_size = bezel.get_size()
+	_oSpeed.custom_minimum_size = bezel.get_size() * HudScale
 	_oSpeed.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_timeControls.add_child(_oSpeed)
-	OUI.Place(_oSpeed, bezel, 0, 0, "Bezel")
+	HudPlace(_oSpeed, bezel, 0, 0, "Bezel")
 	var lcd: Rect2 = lay["lcd"]
 	# The day: 8-pixel figures centred in the window (Arial 11; its capitals
 	# sit 2 pixels under the line's top).
-	_oDay = OUI.Text(_oSpeed, "", lcd.position.x, lcd.position.y + (lcd.size.y - 8) / 2.0 - 2, lcd.size.x, 12, 11,
-		OUI.SideColor(GameSettings.PlayerFaction), HORIZONTAL_ALIGNMENT_CENTER, false, "Day")
+	_oDay = HudText(_oSpeed, "", lcd.position.x, lcd.position.y + (lcd.size.y - 8) / 2.0 - 2, lcd.size.x, 12, 11,
+		OUI.SideColor(GameSettings.PlayerFaction), HORIZONTAL_ALIGNMENT_CENTER, "Day")
 	var bars: Vector2 = lay["bars"]
-	_oBars = OUI.Place(_oSpeed, null, bars.x, bars.y, "Bars")
+	_oBars = HudPlace(_oSpeed, null, bars.x, bars.y, "Bars")
+
+
+## A picture of the Command Center's frame at original position (x, y),
+## HudScale times as large, each pixel kept square-edged.
+static func HudPlace(parent: Control, tex: Texture2D, x: float, y: float, node_name: String) -> TextureRect:
+	var r := TextureRect.new()
+	r.name = node_name
+	r.texture = tex
+	r.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	r.stretch_mode = TextureRect.STRETCH_SCALE
+	r.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	r.position = Vector2(x, y) * HudScale
+	r.size = tex.get_size() * HudScale if tex != null else Vector2.ZERO
+	r.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	parent.add_child(r)
+	return r
+
+
+## Text in the frame's own pixels, HudScale times as large.
+static func HudText(parent: Control, text: String, x: float, y: float, w: float, h: float, px: float,
+		color: Color, align: HorizontalAlignment, node_name: String) -> Label:
+	var l := Label.new()
+	l.name = node_name
+	l.text = text
+	l.position = Vector2(x, y) * HudScale
+	l.size = Vector2(w, h) * HudScale
+	l.horizontal_alignment = align
+	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	l.add_theme_font_override("font", OUI.Face(false))
+	l.add_theme_font_size_override("font_size", roundi(px * HudScale))
+	l.add_theme_color_override("font_color", color)
+	parent.add_child(l)
+	return l
 
 
 ## "Resume Game Play?" in the original's alert box (REBDLOG.DLL: the plate with
@@ -438,8 +475,8 @@ func _ApplyClock() -> void:
 		_speedReadout.text = SpeedNames[_speed]
 
 	if _oBars != null:
-		_oBars.texture = OUI.Pic("speed_bars.%s.%d" % [_oSide, clampi(effective, 0, SpeedNames.size() - 1)])
-		_oBars.size = _oBars.texture.get_size() if _oBars.texture != null else Vector2.ZERO
+		_oBars.texture = Art.WindowPicture("speed_bars.%s.%d" % [_oSide, clampi(effective, 0, SpeedNames.size() - 1)])
+		_oBars.size = _oBars.texture.get_size() * HudScale if _oBars.texture != null else Vector2.ZERO
 		_timeControls.tooltip_text = "Game Speed Control: %s" % _speedReadout.text
 	if _speed == 0:
 		_tickTimer.stop()

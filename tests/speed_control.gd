@@ -93,7 +93,7 @@ func _init() -> void:
 
 
 static func OUI_pic(name: String) -> Texture2D:
-	return Art.Scaled(Art.WindowPicture(name), 2)
+	return Art.WindowPicture(name)   # the HUD scales its node, not the picture
 
 
 static func _png(path: String, w: int, h: int, color: Color) -> void:
