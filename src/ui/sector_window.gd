@@ -327,8 +327,13 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 		planetMapNode.add_theme_stylebox_override("hover", planetCircle)
 		planetMapNode.add_theme_stylebox_override("pressed", planetCircle)
 
-		# Main planet click opens the Planet Window
-		planetMapNode.pressed.connect(func() -> void: uiManager.OnPlanetClicked(planet))
+		# A click on the planet names it for the crosshair and does nothing else:
+		# it opened the plain Planet window, which the original has no click
+		# for (TeeJ, 2026-09-24: "it should do nothing"). Its icons open its
+		# windows; a drop on it still moves units here.
+		planetMapNode.pressed.connect(func() -> void:
+			if uiManager.IsTargeting:
+				uiManager.OnPlanetClicked(planet))
 		sectorMap.add_child(planetMapNode)
 
 		# --- THE MIRRORED GID STAR ---

@@ -9,8 +9,8 @@ extends SceneTree
 ## the planet under them. Real mouse events, pushed through the viewport, so
 ## the GUI itself decides what is under the pointer:
 ##   1. outside targeting, a click on the planet's visible pixels where no
-##      glyph pixel is drawn opens the System window; a click on a glyph opens
-##      that icon's window;
+##      glyph pixel is drawn lands on the planet (which opens nothing); a click
+##      on a glyph opens that icon's window;
 ##   2. the hover follows the drawn pixels: an icon lights only over them;
 ##   3. a character dragged onto the planet there is dropped on the planet (the
 ##      PlanetMapButton's drop handler), and the planet there takes a dragged
@@ -95,8 +95,10 @@ func _init() -> void:
 	if bare != null:
 		w = await _open_sector(ui, home)
 		var over: String = await _click(w, bare["at"])
-		_check(_opened(ui, home) == [home.Name],
-			"a click on %s's picture where the %s icon's cell lies but no glyph is drawn opens the System window (under the pointer: %s; opened %s)" \
+		# The picture takes it - and a click on a planet opens nothing (TeeJ,
+		# 2026-09-24: "it should do nothing").
+		_check(over == "the picture" and _opened(ui, home).is_empty(),
+			"a click on %s's picture where the %s icon's cell lies but no glyph is drawn lands on the picture, which opens nothing (under the pointer: %s; opened %s)" \
 				% [home.Name, bare["cell"], over, str(_opened(ui, home))])
 	for name in glyphs:
 		w = await _open_sector(ui, home)

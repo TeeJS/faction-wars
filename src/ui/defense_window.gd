@@ -429,7 +429,7 @@ func _pending_row(list: Container, pending: String, uiManager: UIManager, select
 	# hyperspace plate - the original's own two states (manual p084).
 	var title: String = pending.get_slice("  (", 0)
 	OUI.StaticCard(list, title, OUI.Mini("units", _unit_id_named(title)), Color.WHITE, pending,
-		"building" if pending.contains("under construction") else "enroute")
+		"building" if pending.contains("under construction") else "enroute", not _is_fighter_named(title))
 
 
 ## A unit type's pack id by its display name ("" when none matches).
@@ -441,6 +441,18 @@ static func _unit_id_named(title: String) -> String:
 		if u.DisplayName == title:
 			return u.Id
 	return ""
+
+
+## Whether a unit type, by its display name, is a fighter squadron (its card
+## has no plate).
+static func _is_fighter_named(title: String) -> bool:
+	var pack: PackLoader.LoadedPack = FactionRegistry.Pack
+	if pack == null:
+		return false
+	for u in pack.Units:
+		if u.DisplayName == title:
+			return u.Kind == "fighter"
+	return false
 
 
 ## A character's pack id by the name a sighting carries, rank or not.
@@ -473,7 +485,8 @@ func AddUnitToList(list: Container, unitData: Unit, text: String, color: Color, 
 	if IsCardList(list):
 		var cardColor: Color = Color.WHITE if unitData.Faction != null and color == unitData.Faction.FactionColor else color
 		OUI.Card(unitBtn, unitData.Name, OUI.Mini("units", unitData.PackId), cardColor,
-			OUI.SideColor(GameSettings.PlayerFaction), "enroute" if unitData.Status == Enums.Status.Enroute else "")
+			OUI.SideColor(GameSettings.PlayerFaction), "enroute" if unitData.Status == Enums.Status.Enroute else "",
+			null, unitData.Type != Enums.UnitType.Fighter)   # a regiment on its plate, a squadron without
 		unitBtn.tooltip_text = text
 	unitBtn.UnitData = unitData
 	unitBtn.UIManagerRef = uiManager
@@ -676,7 +689,7 @@ func _defence_row(list: Container, text: String, family: String, status: String,
 		# THE ORIGINAL'S CARD: the facility's miniature over its name
 		# ("LNR Series I" on Yaga Minor); the tier and state go to the tooltip.
 		OUI.Card(rowBtn, text.get_slice(" (Tier", 0), OUI.Mini("facilities", packId if not packId.is_empty() else family),
-			Color.RED if status == "[DAMAGED]" else Color.WHITE, OUI.SideColor(GameSettings.PlayerFaction))
+			Color.RED if status == "[DAMAGED]" else Color.WHITE, OUI.SideColor(GameSettings.PlayerFaction), "", null, false)
 		rowBtn.tooltip_text = "%s %s" % [text, status]
 	if resolve.is_valid():
 		rowBtn.tooltip_text = (rowBtn.tooltip_text + "\n" if IsCardList(list) else "") \
@@ -711,7 +724,7 @@ func _defence_row(list: Container, text: String, family: String, status: String,
 ## sighting is stale and it has since moved. The "(seen day N)" marker makes the
 ## snapshot's age plain, so a unit that has moved is not mistaken for being in two
 ## places at once.
-func _intel_target_row(list: Container, text: String, day: int, resolve: Callable, mini: Texture2D = null) -> void:
+func _intel_target_row(list: Container, text: String, day: int, resolve: Callable, mini: Texture2D = null, plated: bool = true) -> void:
 	var row := HBoxContainer.new()
 	var rowBtn := Button.new()
 	rowBtn.text = text
@@ -733,7 +746,7 @@ func _intel_target_row(list: Container, text: String, day: int, resolve: Callabl
 	if IsCardList(list):
 		# THE ORIGINAL'S CARD for a sighting; the day it was seen is in
 		# its tooltip only.
-		OUI.Card(rowBtn, text, mini, Color.WHITE, OUI.SideColor(GameSettings.PlayerFaction))
+		OUI.Card(rowBtn, text, mini, Color.WHITE, OUI.SideColor(GameSettings.PlayerFaction), "", null, plated)
 		rowBtn.tooltip_text = "%s (seen day %d)\n%s" % [text, day, rowBtn.tooltip_text]
 		list.add_child(rowBtn)
 		return
@@ -786,7 +799,7 @@ func _draw_intel_units(list: Container, planet: Planet, view: IntelManager.Intel
 			if section == Enums.IntelSection.Characters else OUI.Mini("units", _unit_id_named(title))
 		_intel_target_row(list, title, view.Day, func() -> Variant:
 			var here: Array = _enemy_here(world, section)
-			return here[nth] if nth < here.size() else null, mini)
+			return here[nth] if nth < here.size() else null, mini, section != Enums.IntelSection.Fighters)
 		i += 1
 
 
