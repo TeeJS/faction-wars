@@ -209,7 +209,7 @@ func Forces(fleet: Fleet) -> void:
 	if aboard.is_empty():
 		Row("None", "")
 	for c in aboard:
-		Row(c.Name if c.Rank == Enums.Rank.None else "%s %s" % [JsonUtil.enum_name(Enums.Rank, c.Rank), c.Name], "Survivors")
+		Row(c.TitledName(), "Survivors")
 
 
 ## "System Assets" - what is on the world the battle is over. Read through the

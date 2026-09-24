@@ -19,8 +19,7 @@ func Populate(character: Character) -> void:
 	# placeholder.
 	Art.Fill(get_node_or_null(PortraitPath), Art.Portrait("characters", character.PackId))
 	# Set Window Title
-	var displayRank: String = "" if character.Rank == Enums.Rank.None else "%s " % JsonUtil.enum_name(Enums.Rank, character.Rank)
-	(get_node("%TitleBarLabel") as Label).text = " %s%s Status" % [displayRank, character.Name]
+	(get_node("%TitleBarLabel") as Label).text = " %s Status" % character.TitledName()
 
 	# --- TOP SECTION: BASIC INFO ---
 	# FIX 1: Safely handle nulls. If attached/commanding is null, it defaults to "None"
@@ -91,11 +90,13 @@ func Populate(character: Character) -> void:
 ## Everything the ORIGINAL'S Status window shows for a character (OUI
 ## .StatusPlate; manual p063 Fig 3.2, p101 Fig 3.46), in its order and words
 ## (TEXTSTRA.DLL 34595-34615), measured on TeeJ's screenshot of Han Solo's
-## (2026-09-23): the command rank held (or None), where they are, the status
+## (2026-09-23): the post commanded (or None), where they are, the status
 ## word, the Force ranking, the four ratings, the R&D Capabilities and Possible
 ## Command Ranks headings with a Yes / No under each; the 80x80 portrait; the
-## name. General: and Commander: are INFERRED (below the capture's view; the
-## scroll thumb says 17 lines).
+## name, the rank before it. General: and Commander: are INFERRED (below the
+## capture's view; the scroll thumb says 17 lines). "Commanding: Sluis Van"
+## under "General Jerjerrod" (TeeJ's screenshot of the original, 2026-09-24):
+## the post, not the rank - the rank is in the name.
 static func StatusData(c: Character) -> Dictionary:
 	var word: String = "Awaiting Orders"
 	if c.IsCaptured():
@@ -108,7 +109,7 @@ static func StatusData(c: Character) -> Dictionary:
 		word = "Injured"
 	var yes := func(b: bool) -> String: return "Yes" if b else "No"
 	var rows: Array = []
-	rows.append(["Commanding:", JsonUtil.enum_name(Enums.Rank, c.Rank) if c.Rank != Enums.Rank.None else "None"])
+	rows.append(["Commanding:", c.Commanding.Name if c.Rank != Enums.Rank.None and c.Commanding != null else "None"])
 	rows.append(["Attached:", c.Attached.Name if c.Attached != null else "None"])
 	rows.append(["Status:", word])
 	if c.Status == Enums.Status.Enroute:
@@ -130,7 +131,7 @@ static func StatusData(c: Character) -> Dictionary:
 		"title": "Character Status",
 		"fields": rows,
 		"picture": Art.Scaled(Art.Portrait("characters", c.PackId), OUI.K),
-		"name": c.Name,
+		"name": c.TitledName(),
 		"encyclopedia": ["characters", c.PackId],
 	}
 

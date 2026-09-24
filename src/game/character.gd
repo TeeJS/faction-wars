@@ -172,6 +172,13 @@ const _RANK_KEYS := {
 }
 
 
+## RANK IS A PREFIX: "Admiral Ackbar", "General Madine" (TEXTSTRA.DLL); the
+## original's cards and Status window both read "General Jerjerrod" (TeeJ's
+## screenshots, 2026-09-24).
+func TitledName() -> String:
+	return Name if Rank == Enums.Rank.None else "%s %s" % [JsonUtil.enum_name(Enums.Rank, Rank), Name]
+
+
 static func RankLabel(rank: int) -> String:
 	var key: String = _RANK_KEYS.get(rank, "none")
 	var pack := FactionRegistry.Pack
