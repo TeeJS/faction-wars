@@ -136,6 +136,11 @@ public sealed class Importer
         // 46x226 left column (three 46x46 pictures, three 46x16 ratio boxes),
         // the 166x79 row frame (header, body, progress-bar track).
         ("mfg_background", 10297), ("mfg_column", 10298), ("mfg_row", 10290),
+        // The Mines tab (manual p027 Fig 2.11: "mines as mechanical units and
+        // raw material as multicoloured piles"): the 67x35 mine and the pile of
+        // unmined raw material, every pixel matched on TeeJ's screenshot of the
+        // original's Coruscant Mines tab (2026-09-25).
+        ("mine_tile", 9001), ("mine_pile", 9005),
         // The row headers (162x13): normal, and lit (a list's selected row).
         ("header.alliance", 10292), ("header.empire", 10294), ("header.neutral", 10296),
         ("header.alliance.lit", 10291), ("header.empire.lit", 10293), ("header.neutral.lit", 10295),

@@ -34,6 +34,15 @@ const RowYs := [4, 85, 166]
 const RowW := 166
 const RowH := 79
 const RowHeaders := ["Ship Construction", "Troops in Training", "Facilities Under Construction"]
+## The Mines page (manual p027 Fig 2.11), in page pixels: the grid's corner,
+## one cell, and where a mine's 67x35 picture sits in its cell (a pile's sits
+## at the corner). Every pixel matched on TeeJ's screenshot of the original's
+## Coruscant Mines tab (2026-09-25): mines at (9, 26) + (69c, 40r), piles one
+## pixel left and two up.
+const MinesGridAt := Vector2(8, 24)
+const MineCell := Vector2(69, 40)
+const MineAt := Vector2(1, 2)
+const MinePicture := Vector2(67, 35)
 const RowKeys := ["Ship", "Troop", "Fac"]
 const QueuePaths := ["%ShipQueueLabel", "%TroopQueueLabel", "%FacQueueLabel"]
 
@@ -281,6 +290,16 @@ func _BuildOriginal() -> bool:
 	return true
 
 
+## A cell of the original's Mines grid: its size, and its picture at `at`.
+static func _MineCell(btn: Control, at: Vector2) -> void:
+	btn.custom_minimum_size = MineCell * OUI.K
+	btn.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	btn.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	var pic: Control = btn.get_node_or_null("Picture")
+	if pic != null:
+		pic.position = at * OUI.K
+
+
 ## An invisible box that takes the mouse over part of the page (a row's
 ## frame, a building's picture), for the row's right-click menu.
 static func _HitArea(parent: Control, area_name: String, r: Rect2) -> Control:
@@ -481,6 +500,12 @@ func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, fa
 		return
 
 	var list: Container = _facility_list(container, tabName)
+	var minesPage: bool = _original and family == "mine" and OUI.Has(["mine_tile", "mine_pile"])
+	if minesPage:
+		# The original's Mines grid: 67x35 pictures, 69 across and 40 down
+		# from (8, 24) of the page (matched on TeeJ's Coruscant screenshot).
+		(list.get_parent() as Control).position = MinesGridAt * OUI.K
+		list.custom_minimum_size = Vector2(MineCell.x * 3, 0) * OUI.K
 	if not _original:
 		# Create a styled sub-header
 		var header := Label.new()
@@ -581,9 +606,15 @@ func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, fa
 			# THE ORIGINAL'S CARD: the facility's miniature over its name; the
 			# tier and what it is doing go to the tooltip.
 			var tip: String = rowBtn.text
-			OUI.Card(rowBtn, fac.Name(), OUI.Mini("facilities", fac.Def.Id if fac.Def != null else fac.Family()),
+			OUI.Card(rowBtn, fac.Name(), OUI.Pic("mine_tile") if minesPage else OUI.Mini("facilities", fac.Def.Id if fac.Def != null else fac.Family()),
 				Color.RED if fac.IsDamaged else Color.WHITE, OUI.SideColor(GameSettings.PlayerFaction), "", null, false, false)
 			rowBtn.tooltip_text = tip
+			if minesPage:
+				_MineCell(rowBtn, MineAt)
+				var frame: Control = rowBtn.get_node_or_null("Frame")
+				if frame != null:
+					frame.position = MineAt * OUI.K
+					frame.size = MinePicture * OUI.K
 
 		rowBtn.toggled.connect(func(on: bool) -> void:
 			# CROSSHAIRS UP: this click is naming a sabotage target, not
@@ -720,6 +751,38 @@ func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, fa
 			list.add_child(rowBtn)
 		else:
 			container.add_child(row)
+
+	# THE RAW MATERIAL STILL IN THE GROUND, as the original's piles after the
+	# mines (manual p027 Fig 2.11: "mines as mechanical units and raw
+	# material as multicoloured piles" - built against available): one per
+	# free mine slot. Their menu is the original's, Encyclopedia and Status,
+	# both greyed (TeeJ's screenshot of the original, 2026-09-25: "noting is
+	# available when you right click on them").
+	if minesPage:
+		for i in planet.FreeMineSlots():
+			var pile := Button.new()
+			pile.name = "Pile%d" % i
+			pile.flat = true
+			pile.focus_mode = Control.FOCUS_NONE
+			for st in ["normal", "hover", "pressed", "focus", "hover_pressed", "disabled"]:
+				pile.add_theme_stylebox_override(st, StyleBoxEmpty.new())
+			pile.set_meta("pile", true)
+			OUI.Place(pile, OUI.Pic("mine_pile"), 0, 0, "Picture")
+			_MineCell(pile, Vector2.ZERO)
+			var pileMenu := PopupMenu.new()
+			pileMenu.add_item("Encyclopedia", 0)
+			pileMenu.set_item_disabled(0, true)
+			pileMenu.add_item("Status", 1)
+			pileMenu.set_item_disabled(1, true)
+			pile.add_child(pileMenu)
+			RegisterPopupMenu(pileMenu)
+			pile.gui_input.connect(func(e: InputEvent) -> void:
+				if not (e is InputEventMouseButton) or not e.pressed or e.button_index != MOUSE_BUTTON_RIGHT:
+					return
+				pileMenu.position = Vector2i(int(e.global_position.x), int(e.global_position.y))
+				pileMenu.popup()
+				pile.accept_event())
+			list.add_child(pile)
 
 	# Say out loud what selecting several of them buys you, because the
 	# speed rule was previously invisible and automatic.
