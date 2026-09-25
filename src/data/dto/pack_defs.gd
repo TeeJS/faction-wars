@@ -88,6 +88,9 @@ class FactionDef:
 	## The side's name where room is short ("Alliance", "Empire" - the map
 	## key's legend, the original's words). Blank = the display name.
 	var ShortName: String
+	## The loyalty label where room is short ("Loyalty to Alliance" - the
+	## Command Center's left-hand menu). Blank = the loyalty label.
+	var LoyaltyLabelShort: String
 
 	static func from_dict(d: Dictionary) -> FactionDef:
 		var o := FactionDef.new()
@@ -107,6 +110,7 @@ class FactionDef:
 		o.ArtSkin = JsonUtil.str_or(d, "skin", "")
 		o.Adjective = JsonUtil.str_or(d, "adjective", "")
 		o.ShortName = JsonUtil.str_or(d, "short_name", "")
+		o.LoyaltyLabelShort = JsonUtil.str_or(d, "loyalty_label_short", "")
 		return o
 
 
@@ -927,11 +931,15 @@ class GidModeDef:
 	var Kind: String           # quantity.kind
 	var Args: Dictionary = {}  # the rest of quantity
 	var Tiers: Array[GidTierDef] = []
+	## The mode's line in the Command Center's left-hand menu, under its
+	## category's heading ("Idle" under Fleets); empty -> the label.
+	var MenuLabel: String
 
 	static func from_dict(d: Dictionary) -> GidModeDef:
 		var o := GidModeDef.new()
 		o.Id = JsonUtil.str_or(d, "id", "")
 		o.LabelText = JsonUtil.str_or(d, "label", "")
+		o.MenuLabel = JsonUtil.str_or(d, "menu_label", "")
 		o.Title = JsonUtil.str_or(d, "title", "")
 		o.TitleFrom = JsonUtil.str_or(d, "title_from", "")
 		var q: Variant = JsonUtil.get_ci(d, "quantity")

@@ -28,6 +28,7 @@ class GidMode:
 	var Magnitude: Callable      # Func<Planet, float>
 	var Reveal: Callable         # Func<Planet, bool> - does the player have knowledge here?
 	var Tiers: Array             # Array[GidTier], descending
+	var MenuLabel: String = ""   # its line in the left-hand menu (display.json menu_label; else the label)
 
 	func _init(label: String, magnitude: Callable, reveal: Callable, tiers: Array, title: String = "") -> void:
 		LabelText = label
@@ -259,6 +260,7 @@ static func LoadFromPack(pack: PackLoader.LoadedPack) -> void:
 			var m := GidMode.new(md.LabelText, _magnitude_for(md.Kind, md.Args), _Known, tiers, title)
 			m.Id = md.Id
 			m.TitleFrom = md.TitleFrom
+			m.MenuLabel = md.MenuLabel if not md.MenuLabel.is_empty() else md.LabelText
 			modes.append(m)
 			_by_id[md.Id] = m
 		Categories.append(GidCategory.new(cd.DisplayName, modes, cd.Id))

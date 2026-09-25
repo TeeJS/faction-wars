@@ -63,7 +63,7 @@
       "modes": [
         {
           "id": "idle_fleets",
-          "label": "Idle Fleets",
+          "label": "Idle Fleets", "menu_label": "Idle",
           "quantity": {
             "kind": "my_fleets",
             "status": "awaiting_orders"
@@ -93,7 +93,7 @@
         },
         {
           "id": "fleets_enroute",
-          "label": "Fleets Enroute",
+          "label": "Fleets Enroute", "menu_label": "Enroute",
           "quantity": {
             "kind": "my_fleets",
             "status": "enroute"
@@ -129,7 +129,7 @@
       "modes": [
         {
           "id": "idle_personnel",
-          "label": "Idle Personnel",
+          "label": "Idle Personnel", "menu_label": "Idle",
           "quantity": {
             "kind": "personnel",
             "busy": false
@@ -149,7 +149,7 @@
         },
         {
           "id": "active_personnel",
-          "label": "Active Personnel",
+          "label": "Active Personnel", "menu_label": "Active",
           "quantity": {
             "kind": "personnel",
             "busy": true
@@ -205,7 +205,7 @@
         },
         {
           "id": "available_raw_materials",
-          "label": "Available Raw Materials",
+          "label": "Available Raw Materials", "menu_label": "Avail Raw Materials",
           "quantity": {
             "kind": "status_figure",
             "key": "materials"
@@ -381,7 +381,7 @@
         },
         {
           "id": "idle_training_facilities",
-          "label": "Idle Training Facilities",
+          "label": "Idle Training Facilities", "menu_label": "Idle Training Fac.",
           "quantity": {
             "kind": "idle_producer",
             "role": "produces_troop"
@@ -431,7 +431,7 @@
         },
         {
           "id": "idle_construction_yards",
-          "label": "Idle Construction Yards",
+          "label": "Idle Construction Yards", "menu_label": "Idle Constr. Yards",
           "quantity": {
             "kind": "idle_producer",
             "role": "produces_facility"
