@@ -232,7 +232,10 @@ func InitializeMap(galaxyData: Array, uiManager: UIManager) -> void:
 		for planet in sector.Planets:
 			var hit := Button.new()
 			hit.flat = true
-			hit.tooltip_text = "%s - %s" % [planet.Name, sector.Name]
+			# No tooltip of its own: on the galaxy map the only thing a hover
+			# shows is the sector's name; a system's name is the sector
+			# window's (TeeJ, 2026-09-25: "planets shouldn't have tooltip/hover
+			# over in galaxy view, just in sector view").
 			hit.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 			hit.size = Vector2(RegionHitSize, RegionHitSize)
 			hit.position = MapPos(planet.MapX, planet.MapY) - Vector2(RegionHitSize, RegionHitSize) / 2.0
