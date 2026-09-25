@@ -794,6 +794,19 @@ func OpenOptionsScreen() -> void:
 		return
 	var screen: Control = OptionsScreenScript.new()
 	add_child(screen)
+	# Nothing opens over it: whatever is added while it is up (a window a key
+	# opened, a minimised button) goes under it.
+	if not child_entered_tree.is_connected(_KeepOptionsOnTop):
+		child_entered_tree.connect(_KeepOptionsOnTop)
+
+
+func _KeepOptionsOnTop(n: Node) -> void:
+	var screen: Node = get_node_or_null("OptionsScreen")
+	if screen == null or n == screen:
+		return
+	(func() -> void:
+		if is_instance_valid(screen) and screen.get_parent() == self and not screen.is_queued_for_deletion():
+			move_child(screen, -1)).call_deferred()
 
 
 func OnMenuButtonClicked() -> void:

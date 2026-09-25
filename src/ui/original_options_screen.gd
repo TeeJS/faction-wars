@@ -86,7 +86,13 @@ static func CanBuild() -> bool:
 
 func _ready() -> void:
 	name = "OptionsScreen"
-	set_anchors_preset(Control.PRESET_FULL_RECT)
+	# The whole screen, so its black and its click-stop cover the sides too:
+	# under a CanvasLayer the anchors alone left it 0x0, and a click beside
+	# the picture reached the sector column - a sector opened over the screen
+	# (TeeJ, 2026-09-25).
+	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	if size.x <= 0.0 or size.y <= 0.0:
+		size = get_viewport_rect().size
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	var back := ColorRect.new()
 	back.name = "Back"
