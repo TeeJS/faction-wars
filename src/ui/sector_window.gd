@@ -32,8 +32,14 @@ const OBackground := Color(72 / 255.0, 72 / 255.0, 72 / 255.0, 0.78)
 ## they need to be less transparent - can we make them more opaque with a
 ## generic starfield background"): the original's see-through grey let the
 ## galaxy - and a second sector window - show through, which reads badly once
-## they are moved over each other. Deep space, opaque, with its own stars.
-const OSpace := Color(4 / 255.0, 5 / 255.0, 12 / 255.0, 1.0)
+## they are moved over each other. Opaque deep space was tried and disliked
+## ("I absolutely hate the new sector background. Can we make it the same
+## value grey as the original but more opaque (than the original) and with
+## stars?"): 0.78 -> 0.9 opaque, with its own stars, and the grey as it READS
+## on screen. The original's 72 at 0.78 over the galaxy reads about 60 (sampled
+## from TeeJ's screenshot); 72 at 0.9 would read about 69, lighter, so the
+## colour is (60 - 0.1 x 32, the galaxy under it) / 0.9 = 63.
+const OPanel := Color(63 / 255.0, 63 / 255.0, 63 / 255.0, 0.9)
 const StarCount := 170
 const OBorder := Color(192 / 255.0, 192 / 255.0, 192 / 255.0)
 ## From each system's picture's top-left, in original pixels: the GID star's
@@ -100,7 +106,7 @@ func _BuildOriginalChrome(sector: Sector) -> void:
 	if _originalTitle == null:
 		(get_node("%TitleBar") as Control).visible = false
 		var sb := StyleBoxFlat.new()
-		sb.bg_color = OSpace
+		sb.bg_color = OPanel
 		sb.shadow_size = 0
 		sb.set_content_margin_all(0)
 		add_theme_stylebox_override("panel", sb)
