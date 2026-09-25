@@ -7,7 +7,9 @@ extends SceneTree
 ## picture and a name, a capital ship with its cargo badges); a tab with
 ## nothing on it is greyed; carried and capacity show on the fighter and
 ## troop tabs; a double-clicked fleet lists its ships, and a ship shows its
-## own three tabs. Writes and removes its own test art.
+## own three tabs. A person's and a regiment's row stands on the grey plate,
+## a ship's and a squadron's does not (TeeJ, 2026-09-25: "just like on
+## planet (fighters should NOT)"). Writes and removes its own test art.
 ##
 ##   .\tools\run-gd.ps1 tests/fleet_window_original.gd
 
@@ -39,6 +41,7 @@ func _init() -> void:
 	for sub in ["windows", "tabs", "buttons"]:
 		DirAccess.make_dir_recursive_absolute("%s/%s" % [dir, sub])
 	_png("%s/windows/fleet_background.png" % dir, 235, 304, Color(0.05, 0.05, 0.1))
+	_png("%s/windows/card_plate.png" % dir, 61, 25, Color(0.4, 0.4, 0.45))
 	for side in ["alliance", "empire"]:
 		_png("%s/windows/fleet_panel.%s.png" % [dir, side], 132, 266, Color(0, 0, 0, 0.5))
 		_png("%s/windows/fleet_tile.%s.png" % [dir, side], 73, 47, Color(0, 1, 0, 0.3))
@@ -68,6 +71,32 @@ func _init() -> void:
 	if fleet == null:
 		_finish()
 		return
+	# Someone aboard and a regiment in a hold, for the plates.
+	var aboard: Character = Lq.first_or_null(GameState.ActiveRoster, func(c: Character) -> bool:
+		return c.Faction == us and c.Attached is Planet and not c.IsOffMap())
+	if aboard != null:
+		aboard.Attached = fleet
+	var regiment: Unit = null
+	for p in GameState.AllPlanets():
+		for u in p.Garrison:
+			if regiment == null and u.Faction == us and u.Type == Enums.UnitType.Troop:
+				regiment = u
+	if regiment != null and not Lq.any(fleet.Ships, func(s: Unit) -> bool:
+			return Lq.any(s.Hangar, func(h: Unit) -> bool: return h.Type == Enums.UnitType.Troop)):
+		(regiment.Attached as Planet).Garrison.erase(regiment)
+		fleet.Ships[0].Hangar.append(regiment)
+		regiment.Attached = fleet
+	# And a squadron, which stands on no plate.
+	var squadron: Unit = null
+	for p in GameState.AllPlanets():
+		for u in p.FighterSquadrons:
+			if squadron == null and u.Faction == us:
+				squadron = u
+	if squadron != null and not Lq.any(fleet.Ships, func(s: Unit) -> bool:
+			return Lq.any(s.Hangar, func(h: Unit) -> bool: return h.Type == Enums.UnitType.Fighter)):
+		(squadron.Attached as Planet).FighterSquadrons.erase(squadron)
+		fleet.Ships[0].Hangar.append(squadron)
+		squadron.Attached = fleet
 	ui.OnFleetClicked(home)
 	for _i in 3:
 		await process_frame
@@ -99,6 +128,13 @@ func _init() -> void:
 	for i in 4:
 		var n: int = FleetWindow._RowsOn(tabs.get_child(i))
 		_check(tabs.is_tab_disabled(i) == (n == 0 and i != tabs.current_tab), "tab %d greyed only when empty (%d rows)" % [i, n])
+	# The grey plate: under people and regiments, not ships or squadrons.
+	for page_plated in [["Capital Ships", false], ["Fighters", false], ["Troops", true], ["Personnel", true]]:
+		var rows: Array = _rows(tabs.get_node(page_plated[0]))
+		var plated: int = Lq.count(rows, func(b: Button) -> bool: return b.get_node_or_null("Plate") != null)
+		_check(not rows.is_empty(), "the %s page has rows (%d)" % [page_plated[0], rows.size()])
+		_check(plated == (rows.size() if page_plated[1] else 0),
+			"%s: %s (%d of %d rows plated)" % [page_plated[0], "on the grey plate" if page_plated[1] else "no plate", plated, rows.size()])
 	tabs.current_tab = 1
 	await process_frame
 	_check(w._oCarried.text == str(c["fighters"]) and w._oCapacity.text == str(c["fighter_cap"]),
@@ -122,6 +158,11 @@ func _init() -> void:
 	_check(FleetWindow._RowsOn(tabs.get_node("Fighters")) == hangar_f, "the fighter page lists its own squadrons (%d)" % hangar_f)
 	_check(name.text == ship.Name, "the panel names the ship")
 	_finish()
+
+
+## A page's rows (FleetWindow._Row marks them).
+static func _rows(page: Node) -> Array:
+	return page.find_children("*", "Button", true, false).filter(func(b: Node) -> bool: return b.has_meta("fleet_row"))
 
 
 func _tile_for(w: FleetWindow, subject: Object) -> Button:
