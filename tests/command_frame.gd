@@ -175,6 +175,15 @@ func _init() -> void:
 		_check(ew != null and refBar != null and _shelf_fits(refBar, shelf) and refBar.get_child_count() == 1,
 			"%s: a minimised window takes a slat on the shelf" % side)
 		if refBar != null and refBar.get_child_count() > 0:
+			# The original's entry (TeeJ's Commenor): yellow, Arial 11 at the
+			# frame's scale, no outline, no fill, from the slat's left.
+			var entry: Button = refBar.get_child(0)
+			var normal: StyleBox = entry.get_theme_stylebox("normal")
+			_check(entry.get_theme_color("font_color") == Color(1, 1, 0) and entry.get_theme_color("font_hover_color") == Color(1, 1, 0)
+				and entry.get_theme_font_size("font_size") == roundi(11.0 * s) and entry.get_theme_constant("outline_size") == 0
+				and entry.alignment == HORIZONTAL_ALIGNMENT_LEFT and normal is StyleBoxEmpty
+				and entry.get_theme_stylebox("hover") is StyleBoxEmpty and is_equal_approx(normal.content_margin_left, 2.0 * s),
+				"%s: the entry as the original draws it - yellow, %d px, no outline or fill, left" % [side, entry.get_theme_font_size("font_size")])
 			(refBar.get_child(0) as Button).pressed.emit()
 			for _i in 3:
 				await process_frame

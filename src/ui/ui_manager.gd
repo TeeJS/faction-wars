@@ -278,7 +278,9 @@ func _BuildReferenceBar() -> void:
 
 
 ## A minimised window's kind, as the sector window's corner icon for it:
-## Manufacturing, Defenses, Fleet or Mission. Null for any other window.
+## Manufacturing, Defenses, Fleet or Mission. Null for any other window. Only
+## the glyph: the corner icon is a 27x18 cell with its glyph in one corner,
+## and the original's shelf draws the glyph alone (11x7 before Commenor).
 func _WindowKindIcon(window: DraggableWindow) -> Texture2D:
 	var glyph := ""
 	if window is EconomyWindow:
@@ -291,7 +293,21 @@ func _WindowKindIcon(window: DraggableWindow) -> Texture2D:
 		glyph = "mission"
 	if glyph.is_empty():
 		return null
-	return Art.CornerIcon(glyph, OUI.Side(GameSettings.PlayerFaction))
+	var cell: Texture2D = Art.CornerIcon(glyph, OUI.Side(GameSettings.PlayerFaction))
+	if cell == null:
+		return null
+	var img: Image = cell.get_image()
+	if img == null:
+		return cell
+	if img.is_compressed():
+		img.decompress()
+	var used: Rect2i = img.get_used_rect()
+	if used.size.x <= 0 or used.size.y <= 0:
+		return cell
+	var only := AtlasTexture.new()
+	only.atlas = cell
+	only.region = Rect2(used)
+	return only
 
 
 ## Where a minimised window's button goes: the Window Reference Bar with the
@@ -300,12 +316,24 @@ func _MinimisedList() -> VBoxContainer:
 	return _referenceList if _referenceList != null else _taskbarList
 
 
+## A shelf entry as the original draws it (TeeJ's screenshot of Commenor,
+## 2026-09-25: "too hard to read, esp compared to the original"), in the
+## frame's pixels: the kind icon 2 px in from the slat's edge, the system name
+## straight after it in pure yellow, regular weight, 8 px capitals (Arial 11),
+## no outline and no fill - the bare slat behind - centred on the slat.
+const ShelfText := Color(1, 1, 0)
+const ShelfTextPx := 11.0
+const ShelfInset := 2.0
+const ShelfIconW := 11.0
+
+
 ## The shelf's entries: one slat high (or an even share of the shelf past
-## twelve), the name in white on the slat, lit on hover.
+## twelve).
 func RelayoutShelf() -> void:
 	if CommandFrameRef == null or _referenceList == null:
 		return
 	var shelf: Rect2 = CommandFrameRef.Shelf()
+	var s: float = CommandFrameRef.S
 	var entries: Array = _referenceList.get_children().filter(func(n: Node) -> bool:
 		return n is Button and not n.is_queued_for_deletion())
 	var h: float = shelf.size.y / float(maxi(ShelfSlots, entries.size()))
@@ -315,18 +343,23 @@ func RelayoutShelf() -> void:
 		btn.flat = true
 		btn.clip_text = true
 		btn.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		btn.tooltip_text = btn.text
-		for st in ["normal", "focus", "disabled"]:
-			btn.add_theme_stylebox_override(st, StyleBoxEmpty.new())
-		var lit := StyleBoxFlat.new()
-		lit.bg_color = Color(1, 1, 1, 0.18)
-		for st in ["hover", "pressed", "hover_pressed"]:
-			btn.add_theme_stylebox_override(st, lit)
+		# The icon at the original's size: fitted to the entry's height, then
+		# held to its own width at the frame's scale.
+		btn.expand_icon = true
+		btn.add_theme_constant_override("icon_max_width", roundi(ShelfIconW * s))
+		btn.add_theme_constant_override("h_separation", 0)
+		var bare := StyleBoxEmpty.new()
+		bare.content_margin_left = ShelfInset * s
+		bare.content_margin_right = ShelfInset * s
+		for st in ["normal", "focus", "disabled", "hover", "pressed", "hover_pressed"]:
+			btn.add_theme_stylebox_override(st, bare)
 		for c in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color", "font_hover_pressed_color"]:
-			btn.add_theme_color_override(c, Color.WHITE)
-		btn.add_theme_color_override("font_outline_color", Color.BLACK)
-		btn.add_theme_constant_override("outline_size", 3)
-		btn.add_theme_font_size_override("font_size", clampi(int(h * 0.42), 10, 14))
+			btn.add_theme_color_override(c, ShelfText)
+		btn.add_theme_constant_override("outline_size", 0)
+		btn.add_theme_font_override("font", OUI.Face(false))
+		btn.add_theme_font_size_override("font_size", roundi(ShelfTextPx * s))
 
 
 func _exit_tree() -> void:
