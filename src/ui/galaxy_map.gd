@@ -4,8 +4,6 @@ extends Node2D
 ## every planet as a faction-colored dot with a "+" flare behind it sized by the
 ## active GID mode's tier (manual p021, p061-p062, p069-p072).
 
-enum MapLayer { PopularSupport = 0, IdlePersonnel = 1, IdleConstructionYards = 2, IdleTroopTraining = 3, IdleShipyards = 4, Fleets = 5 }
-
 var _uiManager: UIManager
 var _bar: GidBar   # the selector overlay + active-mode label
 
@@ -198,6 +196,7 @@ func InitializeMap(galaxyData: Array, uiManager: UIManager) -> void:
 	# A map rebuilt under the Command Center frame (a loaded game) fits it again.
 	if _uiManager != null and _uiManager.CommandFrameRef != null:
 		_bar.FitToFrame(UIManager.MapFrame)
+		_bar.FitAcross(_uiManager.CommandFrameRef.ScreenRect())
 	_bar.SetActiveLabel(_mode().LabelText)
 	_bar.ShowKeyFor(_mode())
 
@@ -228,23 +227,6 @@ func SetMode(mode: Gid.GidMode) -> void:
 static func FindMode(id: String) -> Gid.GidMode:
 	var m := Gid.ModeById(id)
 	return m if m != null else Gid.Default()
-
-
-## Back-compat shim: the old "Galaxy Map Layers" MenuButton still calls this
-## with a MapLayer index - map it onto the GID modes.
-func SetLayer(layerIndex: int) -> void:
-	if not MapLayer.values().has(layerIndex):
-		return
-	var m: Gid.GidMode
-	match layerIndex:
-		MapLayer.PopularSupport:        m = FindMode("popular_support")
-		MapLayer.IdlePersonnel:         m = FindMode("idle_personnel")
-		MapLayer.IdleConstructionYards: m = FindMode("construction_yards")
-		MapLayer.IdleTroopTraining:     m = FindMode("training_facilities")
-		MapLayer.IdleShipyards:         m = FindMode("shipyards")
-		MapLayer.Fleets:                m = FindMode("idle_fleets")
-		_:                              m = Gid.Default()
-	SetMode(m)
 
 
 ## WHAT THE OVERLAY IS CURRENTLY DRAWING, as a cheap string, so the poll can

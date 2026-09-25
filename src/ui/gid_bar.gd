@@ -7,6 +7,8 @@ extends CanvasLayer
 var _map: GalaxyMap
 var _activeLabel: Label
 var _key: GidKey
+var _panel: PanelContainer   # the category selector's bar
+var _row: HBoxContainer      # its buttons, centred in it
 
 
 func Setup(map: GalaxyMap) -> void:
@@ -67,11 +69,13 @@ func Setup(map: GalaxyMap) -> void:
 	panel.offset_top = -80
 	panel.offset_bottom = -36
 	add_child(panel)
+	_panel = panel
 
 	var bar := HBoxContainer.new()
 	bar.alignment = BoxContainer.ALIGNMENT_CENTER
 	bar.add_theme_constant_override("separation", 6)
 	panel.add_child(bar)
+	_row = bar
 
 	print("[GID] selector built: %d categories; viewport=%s" % [Gid.Categories.size(), str(get_viewport().get_visible_rect().size)])
 
@@ -124,6 +128,27 @@ func FitToFrame(window: Rect2) -> void:
 		_activeLabel.offset_right = window.end.x
 		_activeLabel.offset_top = window.position.y + 4
 		_activeLabel.offset_bottom = window.position.y + 38
+
+
+## Under the frame the selector spans the frame exactly, its buttons centred
+## on the frame's middle (TeeJ, 2026-09-25: "the blue bar should be cropped to
+## the width of the metal frame", "centered on the new, narrower width").
+func FitAcross(across: Rect2) -> void:
+	if _panel == null:
+		return
+	_panel.anchor_left = 0.0
+	_panel.anchor_right = 0.0
+	_panel.offset_left = across.position.x
+	_panel.offset_right = across.end.x
+
+
+## The selector's bar and its row of buttons (for placing what sits on it).
+func Panel() -> PanelContainer:
+	return _panel
+
+
+func Row() -> HBoxContainer:
+	return _row
 
 
 func SetActiveLabel(text: String) -> void:
