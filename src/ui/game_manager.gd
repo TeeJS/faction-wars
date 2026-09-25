@@ -54,6 +54,10 @@ var _pauseBox: AcceptDialog
 const OUI := preload("res://src/ui/original_ui.gd")
 const Art := preload("res://src/ui/artwork.gd")
 const HudScale := 1.5
+## The scale the HUD is drawn at now: HudScale, or the Command Center frame's
+## own (the screen's height over the frame's) when the frame is the screen, so
+## the Speed Control and the resource displays sit on the frame's boxes.
+static var HudScaleNow: float = HudScale
 const SpeedLayout := {
 	"empire": {"lcd": Rect2(11, 6, 62, 11), "bars": Vector2(73, 7)},
 	"alliance": {"lcd": Rect2(12, 8, 62, 12), "bars": Vector2(74, 9)},
@@ -337,6 +341,9 @@ func BuildSpeedMenu() -> void:
 			menu.position = Vector2i(int(at.x), int(at.y))
 			menu.popup()
 			_timeControls.accept_event())
+	var hudSide: String = OUI.Side(GameSettings.PlayerFaction)
+	HudScaleNow = CommandFrame.ScaleFor(get_viewport().get_visible_rect().size) \
+		if CommandFrame.CanBuild(hudSide) else HudScale
 	_BuildOriginalSpeed()
 	_BuildOriginalResources()
 	_PlaceHud()
@@ -369,7 +376,7 @@ func _BuildOriginalSpeed() -> void:
 	_timeControls.add_theme_stylebox_override("panel", StyleBoxEmpty.new())
 	_oSpeed = Control.new()
 	_oSpeed.name = "OriginalSpeed"
-	_oSpeed.custom_minimum_size = bezel.get_size() * HudScale
+	_oSpeed.custom_minimum_size = bezel.get_size() * HudScaleNow
 	_oSpeed.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_timeControls.add_child(_oSpeed)
 	HudPlace(_oSpeed, bezel, 0, 0, "Bezel")
@@ -398,11 +405,20 @@ func _PlaceHud() -> void:
 	if not HudFrame.has(side) or (_oSpeed == null and _oResources == null):
 		return
 	var f: Dictionary = HudFrame[side]
+	# With the Command Center frame as the screen, each sits on its own box in
+	# the frame (the pieces are cut from it at these places).
+	if CommandFrame.CanBuild(side):
+		var origin: Vector2 = CommandFrame.OriginFor(get_viewport().get_visible_rect().size)
+		if _oSpeed != null:
+			_timeControls.position = (origin + f["speed"] * HudScaleNow).floor()
+		if _oResources != null:
+			_oResources.position = (origin + f["resources"] * HudScaleNow).floor()
+		return
 	var parts: Array = []   # [control, frame position, size in frame pixels]
 	if _oSpeed != null:
-		parts.append([_timeControls, f["speed"], _oSpeed.custom_minimum_size / HudScale])
+		parts.append([_timeControls, f["speed"], _oSpeed.custom_minimum_size / HudScaleNow])
 	if _oResources != null:
-		parts.append([_oResources, f["resources"], _oResources.size / HudScale])
+		parts.append([_oResources, f["resources"], _oResources.size / HudScaleNow])
 	var left: float = INF
 	var right: float = -INF
 	var top: float = INF
@@ -410,20 +426,14 @@ func _PlaceHud() -> void:
 		left = minf(left, part[1].x)
 		right = maxf(right, part[1].x + part[2].x)
 		top = minf(top, part[1].y)
-	var x0: float = floorf((get_viewport().get_visible_rect().size.x - (right - left) * HudScale) / 2.0)
+	var x0: float = floorf((get_viewport().get_visible_rect().size.x - (right - left) * HudScaleNow) / 2.0)
 	for part in parts:
-		(part[0] as Control).position = Vector2(x0 + (part[1].x - left) * HudScale, (part[1].y - top) * HudScale).floor()
+		(part[0] as Control).position = Vector2(x0 + (part[1].x - left) * HudScaleNow, (part[1].y - top) * HudScaleNow).floor()
 
 
-## The Command Center's frame (CommandFrame), its top bar lined up under the
-## Speed Control as _PlaceHud put it: the frame's highest HUD row is the
-## screen's top.
+## The Command Center (CommandFrame): the side's frame as the screen.
 func _BuildCommandFrame() -> void:
-	var side: String = OUI.Side(GameSettings.PlayerFaction)
-	if _oSpeed == null or not HudFrame.has(side):
-		return
-	var speedAt: Vector2 = HudFrame[side]["speed"]
-	_uiManager.BuildCommandFrame(side, Vector2(_timeControls.position.x - speedAt.x * HudScale, 0))
+	_uiManager.BuildCommandFrame(OUI.Side(GameSettings.PlayerFaction))
 
 
 ## The resource displays as the original draws them, in place of the plain
@@ -438,7 +448,7 @@ func _BuildOriginalResources() -> void:
 	var lay: Dictionary = ResourceLayout[side]
 	_oResources = Control.new()
 	_oResources.name = "OriginalResources"
-	_oResources.size = strip.get_size() * HudScale
+	_oResources.size = strip.get_size() * HudScaleNow
 	_oResources.position = Vector2(floorf((get_viewport().get_visible_rect().size.x - _oResources.size.x) / 2.0), 0)
 	_oResources.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	row.get_parent().add_child(_oResources)
@@ -454,8 +464,8 @@ func _BuildOriginalResources() -> void:
 		# The panel's hover area, for its tooltip.
 		var hover := Control.new()
 		hover.name = "Hover%d" % i
-		hover.position = Vector2(left, 0) * HudScale
-		hover.size = Vector2(right + 4 - left, strip.get_height()) * HudScale
+		hover.position = Vector2(left, 0) * HudScaleNow
+		hover.size = Vector2(right + 4 - left, strip.get_height()) * HudScaleNow
 		hover.mouse_filter = Control.MOUSE_FILTER_PASS
 		_oResources.add_child(hover)
 		left = right + 4
@@ -470,8 +480,8 @@ static func HudPlace(parent: Control, tex: Texture2D, x: float, y: float, node_n
 	r.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	r.stretch_mode = TextureRect.STRETCH_SCALE
 	r.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	r.position = Vector2(x, y) * HudScale
-	r.size = tex.get_size() * HudScale if tex != null else Vector2.ZERO
+	r.position = Vector2(x, y) * HudScaleNow
+	r.size = tex.get_size() * HudScaleNow if tex != null else Vector2.ZERO
 	r.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	parent.add_child(r)
 	return r
@@ -483,12 +493,12 @@ static func HudText(parent: Control, text: String, x: float, y: float, w: float,
 	var l := Label.new()
 	l.name = node_name
 	l.text = text
-	l.position = Vector2(x, y) * HudScale
-	l.size = Vector2(w, h) * HudScale
+	l.position = Vector2(x, y) * HudScaleNow
+	l.size = Vector2(w, h) * HudScaleNow
 	l.horizontal_alignment = align
 	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	l.add_theme_font_override("font", OUI.Face(false))
-	l.add_theme_font_size_override("font_size", roundi(px * HudScale))
+	l.add_theme_font_size_override("font_size", roundi(px * HudScaleNow))
 	l.add_theme_color_override("font_color", color)
 	parent.add_child(l)
 	return l
@@ -589,7 +599,7 @@ func _ApplyClock() -> void:
 
 	if _oBars != null:
 		_oBars.texture = Art.WindowPicture("speed_bars.%s.%d" % [_oSide, clampi(effective, 0, SpeedNames.size() - 1)])
-		_oBars.size = _oBars.texture.get_size() * HudScale if _oBars.texture != null else Vector2.ZERO
+		_oBars.size = _oBars.texture.get_size() * HudScaleNow if _oBars.texture != null else Vector2.ZERO
 		_timeControls.tooltip_text = "Game Speed Control: %s" % _speedReadout.text
 	if _speed == 0:
 		_tickTimer.stop()

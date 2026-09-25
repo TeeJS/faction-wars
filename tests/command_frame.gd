@@ -1,13 +1,15 @@
 extends SceneTree
-## The Command Center's frame (manual p022 Fig 2.3; TeeJ, 2026-09-25: the
-## frame across the top from the day counter and down the left-hand column,
-## then that column): with the side's frame in the art set, its top bar lines
-## up under the Speed Control, the Message Alert bar's column stands against
-## the map's left edge with the nine category icons in its slots in the
-## original's order (dim, lit with unread mail, each opening the Message Index
-## on its category) and the Game Options monitor under them; the socket column
-## is put away. Without the frame, nothing changes. Both sides. Writes and
-## removes its own test art.
+## The Command Center as the original draws it (manual p022 Fig 2.3; TeeJ,
+## 2026-09-25: the whole frame, not a strip and a pillar on our own layout):
+## with the side's frame in the art set, the frame IS the screen - scaled to
+## its height and centred, the black either side - with the galaxy map behind
+## its window at the frame's scale; the Speed Control and the resource
+## displays on the frame's own boxes; the Message Alert bar in the frame's
+## slots (the Alliance's left, the Empire's right) in the original's order,
+## dim, lit with unread mail, each opening the Message Index; the Game Options
+## monitor where the frame has it. The metal takes clicks, the window does
+## not. Windows centre and dock in the frame's window. Without the frame,
+## nothing changes. Both sides. Writes and removes its own test art.
 ##
 ##   .\tools\run-gd.ps1 tests/command_frame.gd
 
@@ -34,23 +36,31 @@ func _init() -> void:
 	FactionRegistry.EnsureLoaded()
 	var sets: Array = FactionRegistry.Pack.Manifest.ArtSets
 	var dir := "%s/%s" % [Art.UserArtRoot, sets[0] if not sets.is_empty() else "swr-original"]
-	for sub in ["windows", "alerts", "hud"]:
+	for sub in ["windows", "alerts"]:
 		DirAccess.make_dir_recursive_absolute("%s/%s" % [dir, sub])
 
-	# Without the frame: the socket column as before.
+	# Without the frame: the plain screen.
 	var main: Node = await _start("alliance")
 	var ui: UIManager = main.get_node("UIManager")
-	_check(ui.CommandFrameRef == null and (ui.get_node("CommsPanel") as Control).visible, "without the frame in the art set, the plain column stays")
+	_check(ui.CommandFrameRef == null and (ui.get_node("CommsPanel") as Control).visible
+		and UIManager.MapFrame == UIManager.DefaultMapFrame, "without the frame in the art set, the plain screen stays")
+	var plainMap: Node2D = main.get_node("GalaxyMap")
+	var plainAt: Vector2 = plainMap.position
 	await _stop(main)
 
 	for side in ["alliance", "empire"]:
-		_png("%s/windows/command.%s.png" % [dir, side], 640, 481, Color(0.6, 0.6, 0.62))
+		var win: Rect2 = CommandFrame.Layout[side]["window"]
+		var img := Image.create(640, 481, false, Image.FORMAT_RGBA8)
+		img.fill(Color(0.6, 0.6, 0.62))
+		img.fill_rect(Rect2i(win), Color(0, 0, 0, 0))
+		img.save_png("%s/windows/command.%s.png" % [dir, side])
 		_png("%s/windows/hud_speed.%s.png" % [dir, side], 106, 24, Color(0.2, 0.2, 0.2))
 		_png("%s/windows/hud_resources.%s.png" % [dir, side], 320, 30, Color(0.2, 0.2, 0.2))
 		for c in Order:
 			_png("%s/alerts/%s.%s.png" % [dir, side, c.to_lower()], 27, 22, Color(0.1, 0.1, 0.1))
 			_png("%s/alerts/%s.%s.lit.png" % [dir, side, c.to_lower()], 27, 22, Color(1, 0.8, 0))
 	for side in ["alliance", "empire"]:
+		var win: Rect2 = CommandFrame.Layout[side]["window"]
 		main = await _start(side)
 		ui = main.get_node("UIManager")
 		var frame: CommandFrame = ui.CommandFrameRef
@@ -58,53 +68,60 @@ func _init() -> void:
 		if frame == null:
 			await _stop(main)
 			continue
-		_check(not (ui.get_node("CommsPanel") as Control).visible, "%s: the socket column is put away" % side)
-		_check(frame.get_index() == 0, "%s: behind every window and panel" % side)
-		var lay: Dictionary = CommandFrame.Layout[side]
+		var screen: Vector2 = ui.get_viewport().get_visible_rect().size
+		var s: float = screen.y / 481.0
+		var origin := Vector2(floorf((screen.x - 640 * s) / 2.0), 0)
+		var pic: TextureRect = frame.get_node("Frame")
+		_check(pic.position == origin and pic.size.is_equal_approx(Vector2(640, 481) * s),
+			"%s: the whole frame fills the screen's height, centred (%s, %s)" % [side, str(pic.position), str(pic.size)])
+		var bar: GidBar = (main.get_node("GalaxyMap") as GalaxyMap).Bar()
+		_check((frame.get_parent() as CanvasLayer).layer == UIManager.FrameLayer and bar != null and bar.layer == GidBar.FramedLayer
+			and ui.layer == UIManager.WindowsLayer and UIManager.FrameLayer < GidBar.FramedLayer and GidBar.FramedLayer < UIManager.WindowsLayer
+			and not (ui.get_node("CommsPanel") as Control).visible,
+			"%s: map, then frame, then the GID bar, then the windows; the socket column put away" % side)
+		var bg: ColorRect = main.get_node("Background")
+		_check(bg.color == Color.BLACK and bg.visible, "%s: black either side" % side)
+		var map: Node2D = main.get_node("GalaxyMap")
+		_check(map.position == origin and is_equal_approx(map.scale.x, 640 * s / GalaxyMap.Frame.x) and map.position != plainAt,
+			"%s: the galaxy map behind the frame at its scale (%s x%.3f)" % [side, str(map.position), map.scale.x])
+		_check(UIManager.MapFrame.is_equal_approx(frame.MapWindow()) and UIManager.MapFrame.position.is_equal_approx(origin + win.position * s),
+			"%s: windows centre and dock in the frame's window (%s)" % [side, str(UIManager.MapFrame)])
+		var hud: Dictionary = GameManager.HudFrame[side]
 		var tc: Control = ui.get_node("TimeControls")
-		var speed: Vector2 = GameManager.HudFrame[side]["speed"]
-		var band: TextureRect = frame.get_node("Band")
-		var expected: float = tc.position.x - speed.x * 1.5 + (lay["band"] as Rect2i).position.x * 1.5
-		_check(absf(band.position.x - expected) < 1.0 and band.position.y == 0,
-			"%s: the top bar lines up under the Speed Control (%.1f, expected %.1f)" % [side, band.position.x, expected])
-		var fills: Array = frame.get_children().filter(func(n: Node) -> bool: return n.name.begins_with("Fill"))
-		var reach := [INF, -INF]
-		for f in [band] + fills:
-			reach[0] = minf(reach[0], (f as Control).position.x)
-			reach[1] = maxf(reach[1], (f as Control).position.x + (f as Control).size.x)
-		_check(reach[0] <= 0 and reach[1] >= 1440, "%s: the bar runs from edge to edge (%d to %d)" % [side, int(reach[0]), int(reach[1])])
-		var col: Rect2 = frame.ColumnRect()
-		_check(is_equal_approx(col.end.x, UIManager.MapLeft), "%s: the column stands against the map's left edge" % side)
+		var res: Control = ui.get_node_or_null("OriginalResources")
+		_check(tc.position == (origin + hud["speed"] * s).floor(), "%s: the Speed Control on the frame's box (%s)" % [side, str(tc.position)])
+		_check(res != null and res.position == (origin + hud["resources"] * s).floor(), "%s: the resource displays on the frame's box" % side)
+
+		var slot: Vector2 = CommandFrame.Layout[side]["slot"]
 		var alerts: Array = []
 		for c in Order:
 			alerts.append(frame.get_node_or_null("Alert" + c))
 		_check(not alerts.has(null), "%s: the nine category icons" % side)
-		if alerts.has(null):
-			await _stop(main)
-			continue
-		var pitch: float = (alerts[1] as Control).position.y - (alerts[0] as Control).position.y
-		var inOrder := true
-		for n in range(1, 9):
-			if not is_equal_approx((alerts[n] as Control).position.y - (alerts[n - 1] as Control).position.y, 37.5):
-				inOrder = false
-		_check(inOrder and is_equal_approx(pitch, 37.5), "%s: in the original's order, one slot (25 x 1.5) apart" % side)
-		_check(Lq.all(alerts, func(a: TextureButton) -> bool: return col.encloses(Rect2(a.position, a.size).grow(-1))),
-			"%s: every icon inside the column" % side)
-		var dimTex: Texture2D = (alerts[0] as TextureButton).texture_normal
-		_check(dimTex == Art.AlertIcon(side, "Loyalty", false) or EventBus.UnreadCount(Enums.MessageCategory.Loyalty) > 0,
-			"%s: dim while nothing is unread" % side)
-		var msg := GameMessage.new("Test", "A test message.", Enums.MessageCategory.Fleets, StrategicTickManager.Today, null)
-		EventBus.Tell(GameSettings.PlayerFaction, msg)
-		EventBus.BroadcastChanged()
-		await process_frame
-		_check((alerts[1] as TextureButton).texture_normal == Art.AlertIcon(side, "Fleets", true), "%s: Fleets lights with unread mail" % side)
-		(alerts[1] as TextureButton).pressed.emit()
-		for _i in 3:
+		if not alerts.has(null):
+			var placed := true
+			for n in 9:
+				if not (alerts[n] as Control).position.is_equal_approx(origin + (slot + Vector2(0, n * 25)) * s):
+					placed = false
+			_check(placed, "%s: in the frame's slots, the original's order" % side)
+			var onLeft: bool = (alerts[0] as Control).position.x < origin.x + 320 * s
+			_check(onLeft == (side == "alliance"), "%s: the bar on the %s, as the original has it" % [side, "left" if side == "alliance" else "right"])
+			_check((alerts[1] as TextureButton).texture_normal == Art.AlertIcon(side, "Fleets", false), "%s: dim while nothing is unread" % side)
+			EventBus.Tell(GameSettings.PlayerFaction, GameMessage.new("Test", "A test message.", Enums.MessageCategory.Fleets, StrategicTickManager.Today, null))
+			EventBus.BroadcastChanged()
 			await process_frame
-		var mw: Node = ui._openWindows.get("Communications")
-		_check(mw != null, "%s: its icon opens the Message Index" % side)
+			_check((alerts[1] as TextureButton).texture_normal == Art.AlertIcon(side, "Fleets", true), "%s: Fleets lights with unread mail" % side)
+			(alerts[1] as TextureButton).pressed.emit()
+			for _i in 3:
+				await process_frame
+			_check(ui._openWindows.get("Communications") != null, "%s: its icon opens the Message Index" % side)
+		var mon: Rect2 = CommandFrame.Layout[side]["monitor"]
 		var options: Button = frame.get_node_or_null("GameOptions")
-		_check(options != null and col.encloses(Rect2(options.position, options.size)), "%s: the Game Options monitor, in the column" % side)
+		_check(options != null and options.position.is_equal_approx(origin + mon.position * s), "%s: the Game Options monitor where the frame has it" % side)
+
+		var inWindow: Vector2 = origin + (win.position + win.size / 2.0) * s
+		var onMetal: Vector2 = origin + Vector2(320, 5) * s
+		_check(not frame._has_point(inWindow) and frame._has_point(onMetal) and not frame._has_point(Vector2(origin.x - 10, 400)),
+			"%s: the metal takes clicks; the window and the black do not" % side)
 		await _stop(main)
 	_remove(Art.UserArtRoot)
 	Art.Reset()

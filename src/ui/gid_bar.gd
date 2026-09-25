@@ -108,6 +108,24 @@ func PopupAbove(btn: Button, pop: PopupMenu) -> void:
 	pop.position = Vector2i(int(anchor.x), int(anchor.y - pop.size.y))
 
 
+## With the Command Center frame as the screen (UIManager.BuildCommandFrame):
+## above the frame and below the windows, and the mode's name at the top of
+## the frame's window, where the original writes it ("Popular Support" in
+## the window's top middle).
+const FramedLayer := 2
+
+
+func FitToFrame(window: Rect2) -> void:
+	layer = FramedLayer
+	if _activeLabel != null:
+		_activeLabel.anchor_left = 0.0
+		_activeLabel.anchor_right = 0.0
+		_activeLabel.offset_left = window.position.x
+		_activeLabel.offset_right = window.end.x
+		_activeLabel.offset_top = window.position.y + 4
+		_activeLabel.offset_bottom = window.position.y + 38
+
+
 func SetActiveLabel(text: String) -> void:
 	if _activeLabel != null:
 		_activeLabel.text = text

@@ -65,6 +65,7 @@ const OriginalMenu := preload("res://src/ui/original_menu.gd")
 
 
 func _ready() -> void:
+	MapFrame = DefaultMapFrame   # until the Command Center frame is built
 	ApplyOriginalCursors()
 	# Every menu in play in the original's style (original_menu.gd), as it
 	# enters the tree - not a text field's or a drop-down's own.
@@ -133,22 +134,49 @@ func _ready() -> void:
 		popup.id_pressed.connect(func(id: int) -> void: OnMapLayerSelected(popup, id))
 
 
-## THE COMMAND CENTER'S FRAME, when the art set has the side's (CommandFrame):
-## the top bar behind the HUD, and the Message Alert bar's column with the
-## Game Options monitor in place of the socket column, which it hides.
-## `hud_origin`: where the frame's top row lands (GameManager's HUD placing).
+## THE COMMAND CENTER, when the art set has the side's frame (CommandFrame):
+## the frame is the screen, the galaxy map behind its window, the Message
+## Alert bar and the Game Options monitor in their places; the socket column
+## is put away and the black either side replaces the grey.
 var CommandFrameRef: CommandFrame = null
+## THE MAP'S AREA ON SCREEN, where windows are centred and docked: the scene's
+## map rectangle, or the frame's window once the frame is built.
+static var MapFrame: Rect2 = Rect2(150, 99, 1070, 751)
+const DefaultMapFrame := Rect2(150, 99, 1070, 751)
+## With the frame: its layer, the GID bar's (GidBar.FramedLayer), and this.
+const FrameLayer := 1
+const WindowsLayer := 3
 
 
-func BuildCommandFrame(side: String, hud_origin: Vector2) -> void:
+func BuildCommandFrame(side: String) -> void:
 	if CommandFrameRef != null or not CommandFrame.CanBuild(side):
 		return
+	var screen: Vector2 = get_viewport().get_visible_rect().size
+	# THE LAYERS, bottom to top: the galaxy map (the base canvas), the frame,
+	# the GID's mode name and selector (GidBar), then every window and panel
+	# (this). Without the frame the GID bar stays on the base canvas and this
+	# on layer 1.
+	var frameLayer := CanvasLayer.new()
+	frameLayer.name = "CommandFrameLayer"
+	frameLayer.layer = FrameLayer
+	get_parent().add_child(frameLayer)
 	var frame := CommandFrame.new()
-	add_child(frame)
-	move_child(frame, 0)   # behind every window and panel
-	frame.Build(side, hud_origin, MapLeft, get_viewport().get_visible_rect().size.x,
+	frameLayer.add_child(frame)
+	frame.Build(side, screen,
 		func(category: String) -> void: OnMessageIndexClicked(category), OnMenuButtonClicked)
 	CommandFrameRef = frame
+	MapFrame = frame.MapWindow()
+	layer = WindowsLayer
+	var map: Node2D = get_node_or_null("../GalaxyMap")
+	if map != null:
+		frame.Place(map)
+	if ActiveGalaxyMap != null and ActiveGalaxyMap.Bar() != null:
+		ActiveGalaxyMap.Bar().FitToFrame(MapFrame)
+	var background: ColorRect = get_node_or_null("../Background")
+	if background != null:
+		background.color = Color.BLACK
+		background.visible = true   # hidden in Main.tscn: the grey was the clear colour
+		background.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var comms: Control = get_node_or_null("CommsPanel")
 	if comms != null:
 		comms.visible = false
@@ -376,11 +404,11 @@ func OpenComposeChatMessage() -> void:
 ## every open rather than drifting. Manual p079 Fig 3.20 has the Message
 ## Index over the whole display.
 const CommsRect := Rect2(150, 99, 1000, 671)
-## The galaxy map's left edge (the frame the windows are placed in starts here).
-const MapLeft := 150.0
 
 
 func OnMessageIndexClicked(category: String = "All") -> void:
+	# Docked at the map's top-left: the scene's, or the frame's window.
+	var at: Vector2 = MapFrame.position if CommandFrameRef != null else CommsRect.position
 	OpenWindow("Communications", MessageWindowTemplate,
 		func(window) -> void:
 			window.Setup(self)   # without this the window's _uiManager is null and Go To is a no-op
@@ -388,14 +416,14 @@ func OnMessageIndexClicked(category: String = "All") -> void:
 			var dock: Vector2 = window.OriginalSize() if window._original else CommsRect.size
 			window.custom_minimum_size = dock
 			window.size = dock
-			window.position = CommsRect.position
+			window.position = at
 			window._tabContainer.tabs_visible = false
 			window.OpenToCategory(category)
 			# Docked: after OpenWindow has placed it (it nudges new windows), so
 			# the dock position is the one that stands.
-			window.set_deferred("position", CommsRect.position)
+			window.set_deferred("position", at)
 			RefreshCommsHighlights(),
-		CommsRect.position)
+		at)
 
 
 ## THE GALACTIC ENCYCLOPEDIA (manual p073-p074). One entry point: no
@@ -422,9 +450,8 @@ func OpenEncyclopedia(kind: String = "", id: String = "") -> void:
 func EncyclopediaPosition(window: Control) -> Vector2:
 	if not window.get("_original"):
 		return EncyclopediaRect.position
-	var frame := Rect2(150, 99, 1070, get_viewport().get_visible_rect().size.y - 99)
 	var size: Vector2 = window.get_combined_minimum_size()
-	return (frame.get_center() - size / 2.0).floor().max(Vector2(150, 99))
+	return (MapFrame.get_center() - size / 2.0).floor().max(MapFrame.position)
 
 
 ## THE ORIGINAL'S MOUSE POINTERS (TeeJ, 2026-09-23: "we need the cursor to
@@ -455,8 +482,7 @@ const ConfirmScript := preload("res://src/ui/confirm_window.gd")
 
 func OpenConfirmation(f: Faction, picture: Texture2D, text: String, okTip: String, onConfirm: Callable) -> void:
 	var size := Vector2(ConfirmScript.FrameW, ConfirmScript.FrameH) * ConfirmScript.K
-	var frame := Rect2(150, 99, 1070, get_viewport().get_visible_rect().size.y - 99)
-	var at: Vector2 = (frame.get_center() - size / 2.0).floor().max(Vector2(150, 99))
+	var at: Vector2 = (MapFrame.get_center() - size / 2.0).floor().max(MapFrame.position)
 	OpenWindow("Confirm", ConfirmScene,
 		func(window) -> void: window.Setup(self, f, picture, text, okTip, onConfirm),
 		at)
@@ -1469,8 +1495,7 @@ const StatusPlateScene := preload("res://src/ui/StatusPlateWindow.tscn")
 
 func OpenStatusPlate(windowName: String, source: Callable) -> void:
 	var size: Vector2 = Vector2(OUI.StatusW, OUI.StatusH) * OUI.K if OUI.HasStatus() else Vector2(460, 260)
-	var frame := Rect2(150, 99, 1070, get_viewport().get_visible_rect().size.y - 99)
-	var at: Vector2 = (frame.get_center() - size / 2.0).floor().max(Vector2(150, 99))
+	var at: Vector2 = (MapFrame.get_center() - size / 2.0).floor().max(MapFrame.position)
 	OpenWindow(windowName, StatusPlateScene,
 		func(window) -> void: window.Setup(self, GameSettings.PlayerFaction, source),
 		at)
