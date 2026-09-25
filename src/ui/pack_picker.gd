@@ -1155,7 +1155,9 @@ func _open_art_window(pack_id: String, message: String = "", ok: bool = true) ->
 	pick.custom_minimum_size = Vector2(230, 42)
 	pick.pressed.connect(func() -> void: PackImport.PickFile(_on_imported))
 	row.add_child(pick)
-	var go := _button("ContinueWithout", "Continue without artwork")
+	# Out of date, the old artwork stays in use: say so (TeeJ, 2026-09-25:
+	# "Make it 'Continue without updating'").
+	var go := _button("ContinueWithout", "Continue without updating" if not outdated.is_empty() else "Continue without artwork")
 	go.pressed.connect(func() -> void:
 		_close_art_window()
 		Choose(pack_id))

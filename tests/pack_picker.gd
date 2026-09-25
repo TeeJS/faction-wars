@@ -93,6 +93,7 @@ func _init() -> void:
 	if win != null:
 		for part in ["ImportArtwork", "ContinueWithout", "CancelArtwork", "ExporterLink"]:
 			_check(win.find_child(part, true, false) != null, "the artwork window has %s" % part)
+		_check((win.find_child("ContinueWithout", true, false) as Button).text == "Continue without artwork", "with no art yet, 'Continue without artwork'")
 		var said := " ".join(_labels(win))
 		_check(said.contains("own copy") and said.contains("1.") and said.contains("4.") and said.contains("swr-original.art.zip"),
 			"it says why, and the four steps")
@@ -118,6 +119,9 @@ func _init() -> void:
 	win = picker.ArtworkWindow()
 	_check(win != null and " ".join(_labels(win)).contains("needs %s or later" % Importer.MIN_EXPORTER["swr-original"]),
 		"an art set older than the game needs opens the window, saying export again")
+	# The old artwork stays in use if the player goes on (TeeJ, 2026-09-25).
+	var goOn: Button = win.find_child("ContinueWithout", true, false) if win != null else null
+	_check(goOn != null and goOn.text == "Continue without updating", "out of date, the way on reads 'Continue without updating'")
 	picker._close_art_window()
 	var sw_pack: PackLoader.LoadedPack = picker._packs["star-wars-rebellion"]
 	m = FileAccess.open(ArtScript.UserArtRoot + "/swr-original/manifest.json", FileAccess.WRITE)
