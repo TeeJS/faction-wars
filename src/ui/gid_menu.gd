@@ -1,38 +1,50 @@
 extends Control
 ## THE GALAXY DISPLAY MENU down the Command Center's left-hand column (TeeJ,
 ## 2026-09-25: "Next I would like to move the mostly empty left hand column
-## ... This will completely eliminate the blue bar"). The black left of the
+## ... This will completely eliminate the blue bar"). The left of the
 ## frame, top to bottom, in his order: each GID category under its heading -
-## the category's icon, its name, a short rule - with its modes below it, one
-## line each; a rule between categories; Manufacturing's three pairs split by
-## short rules; then "Loyalty to <side>" (the map key, moved from the sector
-## column: it opens and closes the key) and Display Off. Arial 16, not
-## indented (his option A); the shorter lines are the pack's `menu_label`s
-## ("Idle" under Fleets) and the side's `loyalty_label_short`, all approved by
-## him. The mode on the map in the side's colour.
+## the category's icon and its name, no box - with its modes below it, one
+## row each; Manufacturing's three pairs a little apart; then "Loyalty to
+## <side>" (the map key, moved from the sector column: it opens and closes
+## the key) and Display Off. The shorter lines are the pack's `menu_label`s
+## ("Idle" under Fleets) and the side's `loyalty_label_short`, all approved
+## by him. The mode on the map in the side's colour.
+##
+## The column wears the sector column's panel, and the rows its button
+## style - the same greys, its hover, its 4px padding, its 14px type - so
+## the two columns read as one interface; headings Arial Bold 16 over them;
+## the row text 10px right of where it was, the icons at 16px, no rules, and
+## 4px more before each heading (TeeJ's refinement, 2026-09-25). The sector column spaces its
+## 28px rows 8 apart; 23 rows and 6 headings do not fit 850 that way, so
+## these are 22 high and 4 apart - less where a pack's menu is longer, so it
+## always fits.
 ##
 ## The headings' icons: the side's crest, the sector window's fleet, factory
 ## and tower (his "planet fleet icon", "planet factory icon", "planet defence
-## icon" - the corner icons' glyphs, twice size), and for Personnel and
-## Resources a person and a currency mark drawn here, in the side's colour
-## (his references: a head-and-shoulders silhouette, and the ring with four
+## icon" - the corner icons' glyphs), and for Personnel and Resources a
+## person and a currency mark drawn here, in the side's colour (his
+## references: a head-and-shoulders silhouette, and the ring with four
 ## spokes).
 ## Preloaded by path (a new class_name can lag the editor's class cache).
 
 const Art := preload("res://src/ui/artwork.gd")
 const OUI := preload("res://src/ui/original_ui.gd")
 
-const Px := 16
+const HeadPx := 16
+const RowPx := 14            # the sector column's size of type
 const Margin := 6.0
-const RowHeight := 21.0
-const HeadHeight := 28.0
-const IconSize := 22.0
-const Gap := 5.0
+const RowHeight := 22.0      # the most a row gets; less when a menu is longer
+const RowGap := 4.0
+const HeadHeight := 22.0
+const IconSize := 16.0
+const Indent := 6.0          # a row's box, in from the headings' icons
+const Pad := 4.0             # its text, in from the box: the sector rows' padding
+const SectionGap := 15.0     # before each heading (the old rule's 11, plus 4)
+const PairGap := 8.0         # between Manufacturing's pairs
 const TextColor := Color(0.86, 0.86, 0.86)
-const RuleColor := Color(0.42, 0.42, 0.45)
 ## A category's heading icon: the sector window's corner glyph it wears.
 const CategoryGlyph := {"loyalty": "mission", "fleets": "fleet", "manufacturing": "manufacturing", "defense": "defenses"}
-## Categories whose modes come in pairs, split by short rules (TeeJ's list).
+## Categories whose modes come in pairs, a little apart (TeeJ's list).
 const Paired := ["manufacturing"]
 const Person := [
 	"....###....",
@@ -69,6 +81,7 @@ var _key: Button = null
 var _painted: Object = null      # the mode last painted as current
 var _y: float = 0.0
 var _w: float = 0.0
+var _rowH: float = RowHeight
 
 
 func Build(width: float, map: GalaxyMap, on_key: Callable) -> void:
@@ -79,23 +92,34 @@ func Build(width: float, map: GalaxyMap, on_key: Callable) -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	position = Vector2.ZERO
 	size = Vector2(width, get_viewport_rect().size.y)
-	_y = Margin
+	# The sector column's own panel behind it, so the column and its rows are
+	# the same grey as that one (TeeJ: "the background should be the same grey
+	# as the right column") - the row boxes are see-through, so it takes both.
+	var back := Panel.new()
+	back.name = "Back"
+	back.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	back.size = size
+	add_child(back)
+	back.add_theme_stylebox_override("panel", back.get_theme_stylebox("panel", "PanelContainer"))
 	Gid.ActiveMode()   # builds the catalogue if nothing has yet
 	var cats: Array = Gid.Categories
+	_rowH = _fit_rows(cats, size.y)
+	_y = Margin
 	for i in cats.size():
 		var cat: Gid.GidCategory = cats[i]
+		if i > 0:
+			_y += SectionGap
 		_heading(cat)
 		var n := 0
 		for mode in cat.Modes:
-			if Paired.has(cat.Id) and n > 0 and n % 2 == 0:
-				_rule(Margin + 12.0, 36.0)
+			_y += PairGap if Paired.has(cat.Id) and n > 0 and n % 2 == 0 else RowGap
 			_row(mode)
 			n += 1
-		_rule(Margin, _w - 2 * Margin)
+	_y += SectionGap
 	_key = _button("KeyRow", GameSettings.PlayerFaction.LoyaltyLabelShort if GameSettings.PlayerFaction != null else "Map Key")
 	_key.tooltip_text = "Open or close the map key"
 	_key.pressed.connect(on_key)
-	_rule(Margin, _w - 2 * Margin)
+	_y += RowGap
 	_off = _button("DisplayOff", "Display Off")
 	_off.pressed.connect(func() -> void: _map.SetMode(Gid.DisplayOff))
 	Repaint()
@@ -126,23 +150,40 @@ func KeyRow() -> Button:
 	return _key
 
 
+## A row's height: RowHeight, or what keeps the whole menu inside the
+## column when a pack has more lines than the Rebellion's 23.
+func _fit_rows(cats: Array, height: float) -> float:
+	var rows := 2   # the key's line and Display Off
+	var gaps := 0.0
+	for cat in cats:
+		var n: int = (cat as Gid.GidCategory).Modes.size()
+		rows += n
+		gaps += n * RowGap
+		if Paired.has((cat as Gid.GidCategory).Id) and n > 2:
+			gaps += int((n - 1) / 2) * (PairGap - RowGap)
+	# Before every heading but the first and before the key's line; then
+	# between the last two lines.
+	gaps += cats.size() * SectionGap + RowGap
+	var room: float = height - 2 * Margin - cats.size() * HeadHeight - gaps
+	return clampf(floorf(room / rows), 1.0, RowHeight)
+
+
 func _heading(cat: Gid.GidCategory) -> void:
 	var icon: Texture2D = _icon_for(cat.Id)
 	if icon != null:
 		var t := TextureRect.new()
 		t.texture = icon
-		t.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		t.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		t.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		t.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 		t.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		t.position = Vector2(Margin, _y + (HeadHeight - IconSize) / 2.0)
-		t.size = Vector2(IconSize, IconSize)
+		var sz := Vector2(icon.get_size())
+		t.position = Vector2(Margin + floorf((IconSize - sz.x) / 2.0), _y + floorf((HeadHeight - sz.y) / 2.0))
+		t.size = sz
 		add_child(t)
 	var l := Label.new()
 	l.name = "Head_" + cat.Id
 	l.text = cat.Name
 	l.add_theme_font_override("font", OUI.Face(true))
-	l.add_theme_font_size_override("font_size", Px)
+	l.add_theme_font_size_override("font_size", HeadPx)
 	l.add_theme_color_override("font_color", Color.WHITE)
 	l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -150,9 +191,6 @@ func _heading(cat: Gid.GidCategory) -> void:
 	l.size = Vector2(_w - l.position.x - Margin, HeadHeight)
 	add_child(l)
 	_y += HeadHeight
-	# The heading's short rule, as long as the heading.
-	var long: float = IconSize + 6.0 + OUI.Face(true).get_string_size(cat.Name, HORIZONTAL_ALIGNMENT_LEFT, -1, Px).x
-	_rule(Margin, minf(long, _w - 2 * Margin), 1.0)
 
 
 func _row(mode: Gid.GidMode) -> void:
@@ -163,35 +201,29 @@ func _row(mode: Gid.GidMode) -> void:
 	_rows[mode] = b
 
 
+## A row: the sector column's button - the same theme boxes, so the same grey
+## and hover - its text left, 4px in, and no padding above or below.
 func _button(node_name: String, text: String) -> Button:
 	var b := Button.new()
 	b.name = node_name
 	b.text = text
-	b.flat = true
 	b.focus_mode = Control.FOCUS_NONE
 	b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	b.clip_text = true
 	b.add_theme_font_override("font", OUI.Face(false))
-	b.add_theme_font_size_override("font_size", Px)
-	# No padding above or below the words: a row is its line of text.
-	var none := StyleBoxEmpty.new()
-	var lit := StyleBoxFlat.new()
-	lit.bg_color = Color(1, 1, 1, 0.1)
-	for sb in [none, lit]:
+	b.add_theme_font_size_override("font_size", RowPx)
+	b.position = Vector2(Margin + Indent, _y)
+	add_child(b)
+	for st in ["normal", "hover", "pressed", "hover_pressed", "disabled"]:
+		var sb: StyleBox = b.get_theme_stylebox(st).duplicate()
+		sb.content_margin_left = Pad
+		sb.content_margin_right = Pad
 		sb.content_margin_top = 0
 		sb.content_margin_bottom = 0
-		sb.content_margin_left = 0
-		sb.content_margin_right = 0
-	for st in ["normal", "focus", "disabled", "pressed"]:
-		b.add_theme_stylebox_override(st, none)
-	for st in ["hover", "hover_pressed"]:
-		b.add_theme_stylebox_override(st, lit)
-	b.position = Vector2(Margin, _y)
-	add_child(b)
-	var h: float = maxf(RowHeight, b.get_combined_minimum_size().y)
-	b.size = Vector2(_w - 2 * Margin, h)
+		b.add_theme_stylebox_override(st, sb)
+	b.size = Vector2(_w - b.position.x - Margin, _rowH)
 	_tint(b, TextColor)
-	_y += h
+	_y += b.size.y
 	return b
 
 
@@ -200,24 +232,14 @@ static func _tint(b: Button, c: Color) -> void:
 		b.add_theme_color_override(k, c if k != "font_hover_color" else c.lightened(0.25))
 
 
-func _rule(x: float, w: float, gap: float = Gap) -> void:
-	_y += gap
-	var r := ColorRect.new()
-	r.color = RuleColor
-	r.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	r.position = Vector2(x, _y)
-	r.size = Vector2(w, 1.0)
-	add_child(r)
-	_y += 1.0 + gap
-
-
 ## The heading icon for a category: the corner icon's glyph (the 27x18 cell
-## cropped to what is drawn), or the person / currency drawn here.
+## cropped to what is drawn), or the person / currency drawn here - fitted
+## to IconSize, its shape kept.
 func _icon_for(cat_id: String) -> Texture2D:
 	if cat_id == "personnel":
-		return _drawn(Person)
+		return _fitted(_drawn(Person))
 	if cat_id == "resources":
-		return _drawn(Currency)
+		return _fitted(_drawn(Currency))
 	var glyph: String = CategoryGlyph.get(cat_id, "")
 	if glyph.is_empty():
 		return null
@@ -226,19 +248,16 @@ func _icon_for(cat_id: String) -> Texture2D:
 		return null
 	var img: Image = cell.get_image()
 	if img == null:
-		return cell
+		return null
 	if img.is_compressed():
 		img.decompress()
 	var used: Rect2i = img.get_used_rect()
 	if used.size.x <= 0:
-		return cell
-	var only := AtlasTexture.new()
-	only.atlas = cell
-	only.region = Rect2(used)
-	return only
+		return null
+	return _fitted(img.get_region(used))
 
 
-func _drawn(rows: Array) -> Texture2D:
+func _drawn(rows: Array) -> Image:
 	var h: int = rows.size()
 	var w: int = str(rows[0]).length()
 	var img := Image.create(w, h, false, Image.FORMAT_RGBA8)
@@ -248,4 +267,17 @@ func _drawn(rows: Array) -> Texture2D:
 		for x in w:
 			if line[x] == "#":
 				img.set_pixel(x, y, c)
+	return img
+
+
+## The picture as large as fits IconSize square, its shape kept. A small one
+## is blown up by whole pixels first, so the smoothing down stays crisp.
+static func _fitted(img: Image) -> Texture2D:
+	img.convert(Image.FORMAT_RGBA8)
+	var whole: int = ceili(IconSize / maxi(img.get_width(), img.get_height()))
+	if whole > 1:
+		img.resize(img.get_width() * whole, img.get_height() * whole, Image.INTERPOLATE_NEAREST)
+	var k: float = IconSize / maxi(img.get_width(), img.get_height())
+	if k < 1.0:
+		img.resize(maxi(1, roundi(img.get_width() * k)), maxi(1, roundi(img.get_height() * k)), Image.INTERPOLATE_LANCZOS)
 	return ImageTexture.create_from_image(img)
