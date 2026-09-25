@@ -52,7 +52,9 @@ func _init() -> void:
 	var p0: Planet = sector0.Planets[0]
 	var hit0: Button = hits[p0]
 	_check((hit0.position + hit0.size / 2.0).is_equal_approx(map.MapPos(p0.MapX, p0.MapY)), "%s's button is centred on its dot" % p0.Name)
-	_check(hit0.tooltip_text.contains(p0.Name) and hit0.tooltip_text.contains(sector0.Name), "its tooltip names the region and its theatre")
+	# On the galaxy map the only hover is the sector's name (TeeJ, 2026-09-25).
+	var tipped: Array = hits.values().filter(func(h: Button) -> bool: return not h.tooltip_text.is_empty())
+	_check(tipped.is_empty(), "no system has a tooltip on the galaxy map (%d do)" % tipped.size())
 
 	# Pressing it opens the theatre: a window titled with the sector's name.
 	hit0.pressed.emit()
