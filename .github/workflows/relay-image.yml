@@ -12,6 +12,14 @@ permissions:
   contents: read
   packages: write
 
+# One build at a time, the newest winning: a push cancels the run still going.
+# Two merges seconds apart (#207, #208 on 2026-09-25) started two runs, the
+# older finished 15 s after the newer and pushed its image over :latest - the
+# Command Center frame vanished from the web game.
+concurrency:
+  group: relay-image
+  cancel-in-progress: true
+
 env:
   GODOT_VERSION: "4.7.1"
 
