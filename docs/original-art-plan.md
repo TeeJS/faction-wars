@@ -5,13 +5,20 @@ release, the history rewrite and the GHCR purge). One optional follow-up is TeeJ
 GitHub Support ticket (see 5b).
 Stop after every phase with a go/no-go read-out.
 
+**Superseded in part, 2026-09-25 (TeeJ):** the leak guard is gone. Star Wars:
+Rebellion has a modding culture - the original came with its own editor - so a
+player's faction pack may carry any pictures, the original's included; neither the
+exporter's Build faction pack nor the game's import checks for them. What stays true
+is what WE publish: the repo, the web build and the GHCR image carry none of the
+original's art. The struck lines below are that guard.
+
 ## Charter
 
 | | |
 |---|---|
 | **The one thing** | A player who owns Star Wars: Rebellion sees the original look in the web and desktop game, while the public repo, the web build and the GHCR image contain none of the original's art. |
 | **Wrong if shipped without** | Import once per browser, surviving restarts. A saved file that restores a lost import without re-running anything. Custom faction packs (e.g. Separatists vs Trade Federation) that use the original's UI and shared pictures (shipyards, mines) with their own characters, ships and troops. Beta testers use the same path as the public. |
-| **Off-limits** | Hosting the art anywhere (Unraid, cloud storage, a private repo, GHCR). A checked-in copy "for now". Asking players to copy files into a game folder by hand. A custom pack that carries the original's art inside it. An exporter that runs a shell, opens a socket, self-extracts or ships unsigned. |
+| **Off-limits** | Hosting the art anywhere (Unraid, cloud storage, a private repo, GHCR). A checked-in copy "for now". Asking players to copy files into a game folder by hand. ~~A custom pack that carries the original's art inside it.~~ (superseded 2026-09-25: allowed) An exporter that runs a shell, opens a socket, self-extracts or ships unsigned. |
 | **Deploy target** | Web: push to main -> CI -> GHCR -> Unraid (unchanged). Desktop build. The exporter: a GitHub Release asset on TeeJS/faction-wars, signed with Azure Trusted Signing. |
 | **Backup** | Git covers the code. Before the history rewrite (phase 5b): a `git clone --mirror` to `D:\Backup\faction-wars\`. |
 | **Done when** | See "Verification" at the end. |
@@ -96,7 +103,7 @@ Full-screen bitmaps in the install, for later use: `COMMON.DLL` 10100-10103, 200
 - Outputs:
   - an art-set pack file (the default);
   - a folder (for authors and TeeJ's checkout);
-  - "build pack file from folder" for faction packs. It **refuses a faction pack that contains any file matching the art set's hashes** (the leak guard).
+  - "build pack file from folder" for faction packs. ~~It **refuses a faction pack that contains any file matching the art set's hashes** (the leak guard).~~ (removed 2026-09-25)
 - Its existing headless mode stays, with new flags `--out <zip>`, `--folder <dir>` and `--build <dir>`.
 - Retarget from .NET 8 to .NET 10 LTS: .NET 8 support ends 2026-11-10; 10 runs to 2028-11-14.
 - Signed with TeeJ's existing Azure Trusted Signing identity, locally.
@@ -127,7 +134,7 @@ its placement.
 - Unzip, check `manifest.json` and every SHA-256, then write:
   - an art set to `user://art/<set>/`;
   - a faction pack to `user://packs/<id>/`, which the picker lists.
-- Refuse a faction pack carrying art-set files (the same leak guard).
+- ~~Refuse a faction pack carrying art-set files (the same leak guard).~~ (removed 2026-09-25)
 - Ask the browser to keep the storage (`navigator.storage.persist()`).
 - Show each art set's status: installed, file count, date. Add **Remove**.
 - Tests: an import round trip, a bad manifest refused, a hash mismatch refused, Remove clears it.
@@ -213,6 +220,6 @@ same pack is built in `tests/art_sets.gd`.
 - Clear the site's data: gone. Re-import the saved file: back. [Remove survived a reload; a re-import replaced the set]
 - A tablet imports it through the file picker. [not tested]
 - The fixture custom pack with new factions: the original look with its skins. The shipyard shows the original's picture, and its own character shows its own picture. [yes: tests/art_sets.gd, and phase 4 in the browser]
-- A faction pack containing an art-set picture is refused by the exporter and by the game. [yes, both]
+- ~~A faction pack containing an art-set picture is refused by the exporter and by the game. [yes, both]~~ (removed 2026-09-25: both now accept it)
 - CI fails a build containing any art-set file. After 5b, `git log --all` over those paths is empty. After 5c, no GHCR version contains them. [the guard pattern matched real art paths and passed an art-free pck; 5b and 5c as above]
 - The exporter: `Get-AuthenticodeSignature` reports Valid, and SmartScreen names the publisher. [Valid, CN=Thomas Schmitz; SmartScreen not observed]

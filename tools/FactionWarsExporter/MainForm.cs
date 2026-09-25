@@ -171,8 +171,7 @@ public sealed class MainForm : Form
         var start = Path.Combine(Path.GetDirectoryName(_outFile.Text) ?? "", Path.GetFileName(folder) + ".zip");
         if (PickZip("Save the faction pack as", start) is not string outZip)
             return;
-        var hashes = Exporter.ArtSetHashes(_outFile.Text, _gameDir.Text, Say);
-        var result = PackBuilder.Build(folder, outZip, hashes, Say);
+        var result = PackBuilder.Build(folder, outZip, Say);
         Say(result.Message);
     }
 }
