@@ -8701,7 +8701,7 @@
     "FactionCount": 2,
     "Id": "star-wars-rebellion",
     "MapImage": "swr-original:screens/galaxy.png",
-    "MapImageRect": "[P: (-5.0, 110.0), S: (1070.667, 803.0)]",
+    "MapImageRect": "[P: (-11.8089, -16.4027), S: (1079.671, 1124.76)]",
     "Menu": {
       "Credits": [
         "Star Wars: Rebellion (1998) - LucasArts Entertainment Company / Coolhand Interactive.",
