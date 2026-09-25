@@ -27,8 +27,12 @@ const TabY := 20
 const ColumnX := 6
 const ColumnY := 18
 const RatioYs := [66, 147, 227]
+const RatioH := 16
+const ColumnW := 46
 const RowX := 55
 const RowYs := [4, 85, 166]
+const RowW := 166
+const RowH := 79
 const RowHeaders := ["Ship Construction", "Troops in Training", "Facilities Under Construction"]
 const RowKeys := ["Ship", "Troop", "Fac"]
 const QueuePaths := ["%ShipQueueLabel", "%TroopQueueLabel", "%FacQueueLabel"]
@@ -238,6 +242,14 @@ func _BuildOriginal() -> bool:
 		var y: int = RowYs[i]
 		OUI.Place(mfg, OUI.Pic("mfg_row"), RowX, y, "Row%d" % i)
 		OUI.Place(mfg, OUI.Pic("header.%s" % side), RowX, y, "Header%d" % i)
+		# THE WHOLE ROW TAKES THE RIGHT-CLICK, and so does its building's
+		# picture in the column (TeeJ, 2026-09-25: "you should be able to
+		# click on the whole row in this window as well as the actual
+		# building"): the queue's own line was the only part that did.
+		# Under the row's labels, so the queue line keeps its tooltip.
+		var pictureTop: int = ColumnY if i == 0 else RatioYs[i - 1] + RatioH
+		_HitArea(mfg, "RowHit%d" % i, Rect2(RowX, y, RowW, RowH))
+		_HitArea(mfg, "BuildingHit%d" % i, Rect2(ColumnX, pictureTop, ColumnW, RatioYs[i] + RatioH - pictureTop))
 		var head := OUI.Text(mfg, RowHeaders[i], RowX + 4, y, 156, 13, 11, Color.BLACK, HORIZONTAL_ALIGNMENT_LEFT, false, "HeaderText%d" % i)
 		head.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		# The progress bar runs in the frame's black track (rows 70-74).
@@ -267,6 +279,18 @@ func _BuildOriginal() -> bool:
 		if shell != null:
 			shell.visible = false
 	return true
+
+
+## An invisible box that takes the mouse over part of the page (a row's
+## frame, a building's picture), for the row's right-click menu.
+static func _HitArea(parent: Control, area_name: String, r: Rect2) -> Control:
+	var area := Control.new()
+	area.name = area_name
+	area.position = r.position * OUI.K
+	area.size = r.size * OUI.K
+	area.mouse_filter = Control.MOUSE_FILTER_STOP
+	parent.add_child(area)
+	return area
 
 
 ## A facility tab's list: the original's caption over its grid of cards, or
@@ -369,57 +393,76 @@ static func QueueStatusData(planet: Planet, producer: String) -> Dictionary:
 # A production queue entry carries the orders. "Right-click a production
 # entry" gives Build, Stop, Destination (manual p084) - the same menu the
 # original shows, minus the parts that need systems we do not have.
-func AttachQueueMenu(labelPath: String, planet: Planet, producer: String, queue: Array) -> void:
+func AttachQueueMenu(labelPath: String, _planet: Planet, producer: String, queue: Array) -> void:
 	var label: Label = get_node_or_null(labelPath)
 	if label == null:
 		return
 
 	label.mouse_filter = Control.MOUSE_FILTER_STOP
-	label.tooltip_text = "Right-click for orders"
+	# The original's queue line carries the progress in its tooltip (QueueBar).
+	if not _original or queue.is_empty():
+		label.tooltip_text = "Right-click for orders"
 
-	# Rebuilt every refresh, so the menu must not accumulate.
-	for child in label.get_children():
-		if child is PopupMenu:
-			label.remove_child(child)
-			child.queue_free()
-
-	var menu := PopupMenu.new()
-	menu.add_item("Build...", 0)
-	menu.add_item("Stop", 1)
+	# BUILT ONCE, KEPT ACROSS REPAINTS. It used to be freed and rebuilt on
+	# every refresh while each one connected another right-click handler to
+	# the line, so the old handlers piled up and failed on their freed menus
+	# at every click. The orders act on the system the window shows NOW.
+	var menu: PopupMenu = label.get_node_or_null("QueueMenu")
+	if menu == null:
+		menu = PopupMenu.new()
+		menu.name = "QueueMenu"
+		menu.add_item("Build...", 0)
+		menu.add_item("Stop", 1)
+		menu.add_item("Destination...", 2)
+		menu.add_separator()
+		menu.add_item("Encyclopedia", 3)
+		# "When you right-click on the Facilities Under Construction area ... one
+		# of the options is Status. This brings up the Facilities Under
+		# Construction window" (manual p086, Fig 3.29) - each queue has its own.
+		menu.add_item("Status", 4)
+		label.add_child(menu)
+		RegisterPopupMenu(menu)
+		menu.id_pressed.connect(func(id: int) -> void: _OnQueueOrder(id, producer))
+		# The line, and in the original's window the whole row and its building.
+		var takers: Array = [label]
+		var row: int = QueuePaths.find(labelPath)
+		var page: Node = get_node_or_null("%EconomyTabs/Manufacturing/OriginalManufacturing")
+		if page != null and row >= 0:
+			for n in ["RowHit%d" % row, "BuildingHit%d" % row]:
+				var area: Control = page.get_node_or_null(n)
+				if area != null:
+					takers.append(area)
+		for taker in takers:
+			var t: Control = taker
+			t.gui_input.connect(func(e: InputEvent) -> void:
+				if not (e is InputEventMouseButton) or not e.pressed or e.button_index != MOUSE_BUTTON_RIGHT:
+					return
+				menu.position = Vector2i(int(e.global_position.x), int(e.global_position.y))
+				menu.popup()
+				t.accept_event())
 	menu.set_item_disabled(menu.get_item_index(1), queue.size() == 0)
-	menu.add_item("Destination...", 2)
-	menu.add_separator()
-	menu.add_item("Encyclopedia", 3)
-	# "When you right-click on the Facilities Under Construction area ... one
-	# of the options is Status. This brings up the Facilities Under
-	# Construction window" (manual p086, Fig 3.29) - each queue has its own.
-	menu.add_item("Status", 4)
-	label.add_child(menu)
-	RegisterPopupMenu(menu)
 
-	label.gui_input.connect(func(e: InputEvent) -> void:
-		if not (e is InputEventMouseButton) or not e.pressed or e.button_index != MOUSE_BUTTON_RIGHT:
-			return
-		menu.position = Vector2i(int(e.global_position.x), int(e.global_position.y))
-		menu.popup()
-		label.accept_event())
 
-	var onId := func(id: int) -> void:
-		match id:
-			0: OpenBuildChooser(planet, producer)
-			3:   # Encyclopedia - the producing facility's entry
-				var ui3: UIManager = get_parent() as UIManager
-				if ui3 != null:
-					ui3.OpenEncyclopedia("facilities", FacilityCatalog.FamilyForRole(producer))
-			4:   # Status - the queue's own Status window (Fig 3.29)
-				var ui4: UIManager = get_parent() as UIManager
-				if ui4 != null:
-					ui4.OpenQueueStatusWindow(planet, producer)
-			1:
-				CommandBus.issue("cancel_build", { "planet": planet.Name, "producer": producer })
-				Populate(planet)
-			2: OpenDestinationChooser(planet)
-	menu.id_pressed.connect(onId)
+## An order from a queue's right-click menu (manual p084), on the system the
+## window shows.
+func _OnQueueOrder(id: int, producer: String) -> void:
+	var planet: Planet = _associatedPlanet
+	if planet == null:
+		return
+	match id:
+		0: OpenBuildChooser(planet, producer)
+		3:   # Encyclopedia - the producing facility's entry
+			var ui3: UIManager = get_parent() as UIManager
+			if ui3 != null:
+				ui3.OpenEncyclopedia("facilities", FacilityCatalog.FamilyForRole(producer))
+		4:   # Status - the queue's own Status window (Fig 3.29)
+			var ui4: UIManager = get_parent() as UIManager
+			if ui4 != null:
+				ui4.OpenQueueStatusWindow(planet, producer)
+		1:
+			CommandBus.issue("cancel_build", { "planet": planet.Name, "producer": producer })
+			Populate(planet)
+		2: OpenDestinationChooser(planet)
 
 
 # A tab with nothing of that type on the system is greyed out (manual p084).
@@ -625,9 +668,20 @@ func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, fa
 				return
 			# Right-clicking an unselected row selects it first, so an order
 			# always applies to something the player can see is chosen.
+			#
+			# WITHOUT A REPAINT UNDER THE MENU. This used to Populate here,
+			# which rebuilt the tab and freed this very card and its menu the
+			# moment before the menu opened - so right-clicking a facility
+			# not already selected brought up nothing (TeeJ, 2026-09-25). It
+			# is framed in place; the window repaints once the menu closes
+			# (RegisterPopupMenu).
 			if not _selected.has(rowFac):
 				_selected.append(rowFac)
-				Populate(planet)
+				rowBtn.set_pressed_no_signal(true)
+				var frame: CanvasItem = rowBtn.get_node_or_null("Frame")
+				if frame != null:
+					frame.visible = true
+				_pendingRefresh = true
 			menu.position = Vector2i(int(e.global_position.x), int(e.global_position.y))
 			menu.popup()
 			rowBtn.accept_event())
