@@ -119,7 +119,7 @@ func _init() -> void:
 			_check(frame.encloses(Rect2(pic.position, pic.size).grow(-0.5)), "%s lies inside the picture" % pic.name)
 	var spinning: TextureRect = Lq.first_or_null(shown, func(p: TextureRect) -> bool:
 		var d: PackDefs.MenuMonitorDef = p.get_meta("def")
-		return d.Frames > 1 and d.Still < 0)
+		return d.Frames > 1 and d.Still < 0 and d.FrameBy.is_empty())
 	var still: TextureRect = Lq.first_or_null(shown, func(p: TextureRect) -> bool: return (p.get_meta("def") as PackDefs.MenuMonitorDef).Still >= 0)
 	if spinning != null:
 		var before: Rect2 = (spinning.texture as AtlasTexture).region
@@ -130,6 +130,29 @@ func _init() -> void:
 		if still != null:
 			# The LucasArts logo does not move in the original (TeeJ, 2026-09-24).
 			_check((still.texture as AtlasTexture).region == held, "%s holds its one frame" % still.name)
+	# The galaxy-size lever (TeeJ, 2026-09-25): its position follows the size
+	# chosen - standard high, large middle, huge low - and it does not move
+	# on its own. Only with an art set that has it (exporter 2.4.3).
+	var lever: TextureRect = Lq.first_or_null(shown, func(p: TextureRect) -> bool: return not (p.get_meta("def") as PackDefs.MenuMonitorDef).FrameBy.is_empty())
+	var leverDef: PackDefs.MenuMonitorDef = null
+	for m in menu_def.Monitors:
+		if not m.FrameBy.is_empty():
+			leverDef = m
+	_check(leverDef != null and leverDef.FrameBy.size() == sizes.size(), "the pack declares the size lever, a frame for each galaxy size")
+	if lever == null:
+		print("[cockpit_menu] (the art set predates the size lever - its frames not checked)")
+	else:
+		var fw: float = (lever.texture as AtlasTexture).atlas.get_width() / float(leverDef.Frames)
+		for s in sizes:
+			var region: Button = regions.get_node_or_null("Region_galaxy_size_%s" % s)
+			if region != null:
+				region.pressed.emit()
+			await process_frame
+			menu.set("_monitorFrame", int(menu.get("_monitorFrame")) + 1)
+			menu.call("_paint_monitors")
+			var wantFrame: int = int(leverDef.FrameBy.get("galaxy_size:%s" % s, -1))
+			_check(is_equal_approx((lever.texture as AtlasTexture).region.position.x, wantFrame * fw),
+				"choosing %s puts the lever at frame %d" % [s, wantFrame])
 	var hq: TextureRect = Lq.first_or_null(shown, func(p: TextureRect) -> bool: return (p.get_meta("def") as PackDefs.MenuMonitorDef).Region == "hq_only_victory")
 	if hq != null and hq.has_meta("selected"):
 		var standard: Texture2D = (hq.texture as AtlasTexture).atlas

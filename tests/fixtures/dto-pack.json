@@ -8718,6 +8718,7 @@
             61,
             40
           ],
+          "FrameBy": {},
           "Frames": 30,
           "ImageFile": "swr-original:menu/easy.png",
           "Region": "",
@@ -8729,6 +8730,7 @@
             124,
             40
           ],
+          "FrameBy": {},
           "Frames": 30,
           "ImageFile": "swr-original:menu/medium.png",
           "Region": "",
@@ -8740,6 +8742,7 @@
             187,
             40
           ],
+          "FrameBy": {},
           "Frames": 30,
           "ImageFile": "swr-original:menu/hard.png",
           "Region": "",
@@ -8751,6 +8754,7 @@
             153,
             307
           ],
+          "FrameBy": {},
           "Frames": 15,
           "ImageFile": "swr-original:menu/empire.png",
           "Region": "",
@@ -8762,6 +8766,7 @@
             437,
             307
           ],
+          "FrameBy": {},
           "Frames": 15,
           "ImageFile": "swr-original:menu/alliance.png",
           "Region": "",
@@ -8773,6 +8778,7 @@
             411,
             231
           ],
+          "FrameBy": {},
           "Frames": 30,
           "ImageFile": "swr-original:menu/load.png",
           "Region": "",
@@ -8784,6 +8790,7 @@
             459,
             242
           ],
+          "FrameBy": {},
           "Frames": 2,
           "ImageFile": "swr-original:menu/credits.png",
           "Region": "",
@@ -8795,6 +8802,7 @@
             67,
             381
           ],
+          "FrameBy": {},
           "Frames": 30,
           "ImageFile": "swr-original:menu/multiplayer.png",
           "Region": "",
@@ -8806,8 +8814,25 @@
             535,
             392
           ],
+          "FrameBy": {},
           "Frames": 30,
           "ImageFile": "swr-original:menu/exit.png",
+          "Region": "",
+          "SelectedImageFile": "",
+          "Still": -1
+        },
+        {
+          "At": [
+            242,
+            271
+          ],
+          "FrameBy": {
+            "galaxy_size:huge": 0,
+            "galaxy_size:large": 1,
+            "galaxy_size:standard": 2
+          },
+          "Frames": 3,
+          "ImageFile": "swr-original:menu/size_lever.png",
           "Region": "",
           "SelectedImageFile": "",
           "Still": -1
@@ -8817,6 +8842,7 @@
             305,
             333
           ],
+          "FrameBy": {},
           "Frames": 1,
           "ImageFile": "swr-original:menu/standard_game.png",
           "Region": "hq_only_victory",

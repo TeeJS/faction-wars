@@ -366,6 +366,11 @@ static func _validate_menu(pack: LoadedPack, pack_dir: String, errors: Array[Str
 			errors.append("%s: region '%s' is not a region of the menu." % [ctx, m.Region])
 		if not m.SelectedImageFile.is_empty() and m.Region.is_empty():
 			errors.append("%s: 'selected_image' needs the 'region' it shows for." % ctx)
+		for key in m.FrameBy:
+			if not seen.has(key):
+				errors.append("%s: frame_by region '%s' is not a region of the menu." % [ctx, key])
+			if int(m.FrameBy[key]) < 0 or int(m.FrameBy[key]) >= m.Frames:
+				errors.append("%s: frame_by '%s' must be a frame of the strip (0 to %d)." % [ctx, key, m.Frames - 1])
 
 
 ## SCHEMA.md section 11 rules 4 and 8 for the display catalog.
