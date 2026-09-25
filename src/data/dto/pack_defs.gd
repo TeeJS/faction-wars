@@ -220,6 +220,9 @@ class MenuReadoutDef:
 ## own pixels). With `region` (a region's "action" or "action:value") and
 ## `selected_image`, that picture shows instead while the region is chosen.
 ## With `still` (a frame, from 0) it holds that frame and does not move.
+## With `frame_by` ({region: frame}) it shows the frame of whichever of those
+## regions is chosen, and does not move - the galaxy-size lever's three
+## positions (COMMON.DLL 10001-10003; TeeJ, 2026-09-25).
 class MenuMonitorDef:
 	var ImageFile: String
 	var At: Array = []         # [x, y]
@@ -227,6 +230,7 @@ class MenuMonitorDef:
 	var Still: int = -1
 	var Region: String
 	var SelectedImageFile: String
+	var FrameBy: Dictionary = {}   # region key ("action" or "action:value") -> frame
 
 	static func from_dict(d: Dictionary) -> MenuMonitorDef:
 		var o := MenuMonitorDef.new()
@@ -239,6 +243,10 @@ class MenuMonitorDef:
 		o.Still = int(JsonUtil.get_ci(d, "still") if JsonUtil.get_ci(d, "still") != null else -1)
 		o.Region = JsonUtil.str_or(d, "region", "")
 		o.SelectedImageFile = JsonUtil.str_or(d, "selected_image", "")
+		var fb: Variant = JsonUtil.get_ci(d, "frame_by")
+		if fb is Dictionary:
+			for k in fb:
+				o.FrameBy[str(k)] = int(fb[k])
 		return o
 
 

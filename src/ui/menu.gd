@@ -447,6 +447,13 @@ func _paint_monitors() -> void:
 		var atlas: AtlasTexture = pic.texture
 		atlas.atlas = strip
 		var frame: int = m.Still if m.Still >= 0 else _monitorFrame % frames
+		# A picture that follows a choice (the galaxy-size lever): the chosen
+		# region's frame.
+		for key in m.FrameBy:
+			if chosen.has(key):
+				frame = clampi(int(m.FrameBy[key]), 0, frames - 1)
+		if not m.FrameBy.is_empty() and m.Still < 0 and not m.FrameBy.keys().any(func(k: Variant) -> bool: return chosen.has(k)):
+			frame = 0
 		atlas.region = Rect2(fw * frame, 0, fw, strip.get_height())
 		var r := _scaled(Rect2(m.At[0], m.At[1], fw, strip.get_height()))
 		pic.position = r.position

@@ -458,13 +458,17 @@ public sealed class Importer
     // Fig. 2.2 labels - the three difficulties (an X-wing, a Star Destroyer,
     // the Death Star), the two sides' emblems, load (a disc), credits,
     // head-to-head, exit (the lever), and the victory-condition screen (a
-    // picture per condition, no animation).
+    // picture per condition, no animation). size_lever: the galaxy-size lever
+    // left of the three galaxy monitors, its three positions - 10001 handle
+    // low (huge), 10002 middle (large), 10003 high (standard); matched to the
+    // pixel on TeeJ's screenshots of the original at cockpit (242,271).
     private static readonly (string Name, int First, int Frames)[] CockpitMonitors =
     {
         ("easy", 11061, 30), ("medium", 11091, 30), ("hard", 11121, 30),
         ("empire", 11001, 15), ("alliance", 11031, 15),
         ("load", 11241, 30), ("credits", 11271, 2), ("multiplayer", 11151, 30), ("exit", 11181, 30),
         ("standard_game", 10158, 1), ("hq_only", 10159, 1),
+        ("size_lever", 10001, 3),
     };
 
     // GOKRES.DLL: the 130x65 picture of each mission in the Create Mission
