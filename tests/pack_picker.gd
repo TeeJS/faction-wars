@@ -65,11 +65,25 @@ func _init() -> void:
 	picker._rebuild()
 	_check(picker.find_child("Imports", true, false) == null and picker.find_child("ImportButton", true, false) == null
 		and picker.find_child("OriginalLook", true, false) == null, "nothing under the cards: no import list, no Original look")
-	var sw_card: Node = (picker.PlayButtons()["star-wars-rebellion"] as Node).get_parent()
-	var pic: TextureRect = sw_card.get_node_or_null("Picture")
+	var sw_card: Node = picker._panels["star-wars-rebellion"]
+	var pic: TextureRect = sw_card.find_child("Picture", true, false)
 	_check(pic != null and pic.texture != null, "without its art set the Star Wars card shows its own picture (card_image)")
-	_check(sw_card.get_node_or_null("ClearArtwork") == null and sw_card.get_node_or_null("RemovePack") == null,
+	_check(sw_card.find_child("ClearArtwork", true, false) == null and sw_card.find_child("RemovePack", true, false) == null,
 		"no Clear artwork pack without artwork, and a shipped pack has no Remove")
+	# Every card's Play the same, narrower than its card (TeeJ, 2026-09-24).
+	await process_frame
+	var sizes: Array = []
+	for id in picker.VisibleIds():
+		if picker.PlayButtons().has(id):
+			var pb: Button = picker.PlayButtons()[id]
+			sizes.append(pb.size)
+			_check(pb.size.x < (picker._panels[id] as Control).size.x - 40, "%s's Play is narrower than its card (%.0f of %.0f)" % [id, pb.size.x, (picker._panels[id] as Control).size.x])
+	_check(sizes.size() >= 2 and sizes.all(func(s: Vector2) -> bool: return s == sizes[0]), "every Play is the same size (%s)" % str(sizes))
+	var ys: Array = []
+	for id in picker.VisibleIds():
+		if picker.PlayButtons().has(id):
+			ys.append(roundi((picker.PlayButtons()[id] as Control).global_position.y))
+	_check(ys.size() >= 2 and ys.all(func(y: int) -> bool: return y == ys[0]), "... and at the same height on every card (%s)" % str(ys))
 
 	# Play without the art: the artwork window, not the game.
 	(picker.PlayButtons()["star-wars-rebellion"] as Button).pressed.emit()
@@ -112,9 +126,10 @@ func _init() -> void:
 	ArtScript.Reset()
 	_check(PackPicker.ArtState(sw_pack) == "", "a current art set: Play goes straight on")
 	picker._rebuild()
-	sw_card = (picker.PlayButtons()["star-wars-rebellion"] as Node).get_parent()
-	var clear: Button = sw_card.get_node_or_null("ClearArtwork")
-	_check(clear != null and clear.get_index() > (picker.PlayButtons()["star-wars-rebellion"] as Node).get_index(),
+	sw_card = picker._panels["star-wars-rebellion"]
+	var clear: Button = sw_card.find_child("ClearArtwork", true, false)
+	await process_frame
+	_check(clear != null and clear.global_position.y > (picker.PlayButtons()["star-wars-rebellion"] as Control).global_position.y,
 		"with the art in, Clear artwork pack is under Play")
 	if clear != null:
 		clear.pressed.emit()
@@ -134,7 +149,7 @@ func _init() -> void:
 	_make_pack(FactionRegistry.USER_PACKS_ROOT, "test-picker-pack", "Test Pack")
 	picker._rebuild()
 	var mine_play: Button = picker.PlayButtons().get("test-picker-pack")
-	var remove: Button = mine_play.get_parent().get_node_or_null("RemovePack") if mine_play != null else null
+	var remove: Button = (picker._panels["test-picker-pack"] as Node).find_child("RemovePack", true, false) if mine_play != null else null
 	_check(mine_play != null and not mine_play.disabled and remove != null, "an imported pack has its card, Play and Remove pack")
 	if remove != null:
 		remove.pressed.emit()
@@ -150,8 +165,8 @@ func _init() -> void:
 	picker._start = 0
 	picker._rebuild()
 	var shown := picker.VisibleIds()
-	_check(shown.size() == 3 and shown.back() == PackPicker.ADD_CARD and not picker._left.visible,
-		"two packs and the + card fit: all on show, no arrows (%s)" % str(shown))
+	_check(shown.size() == 3 and shown.back() == PackPicker.ADD_CARD and picker._left.visible and picker._left.disabled and picker._right.disabled,
+		"two packs and the + card fit: all on show, the arrows there but dimmed (%s)" % str(shown))
 	_check(picker.find_child("AddPack", true, false) != null and picker._order.back() == PackPicker.ADD_CARD, "the + card is last")
 	for k in 3:
 		_make_pack(FactionRegistry.USER_PACKS_ROOT, "test-carousel-%d" % k, "Carousel %d" % k)
@@ -159,8 +174,8 @@ func _init() -> void:
 	var order: Array[String] = picker._order
 	_check(order.size() == 6 and order[0] == "star-wars-rebellion" and order[1] == "ww2" and order[2] == "test-carousel-0" and order[5] == PackPicker.ADD_CARD,
 		"with no favorites: the shipped packs, the player's own, then + (%s)" % str(order))
-	_check(picker.VisibleIds() == order.slice(0, 3) and picker._left.visible and picker._right.visible,
-		"three on show, with the arrows (%s)" % str(picker.VisibleIds()))
+	_check(picker.VisibleIds() == order.slice(0, 3) and not picker._left.disabled and not picker._right.disabled and picker._dots.visible,
+		"three on show, the arrows live, the dots showing (%s)" % str(picker.VisibleIds()))
 	picker._right.pressed.emit()
 	_check(picker.VisibleIds() == order.slice(1, 4), "the right arrow turns it one card (%s)" % str(picker.VisibleIds()))
 	picker.Turn(-1)
