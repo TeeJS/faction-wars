@@ -246,6 +246,8 @@ class MenuMonitorDef:
 		var fb: Variant = JsonUtil.get_ci(d, "frame_by")
 		if fb is Dictionary:
 			for k in fb:
+				if str(k).begins_with("_"):
+					continue   # a "_comment" (SCHEMA.md section 1)
 				o.FrameBy[str(k)] = int(fb[k])
 		return o
 
