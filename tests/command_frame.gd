@@ -227,6 +227,19 @@ func _init() -> void:
 		lowest = maxf(lowest, (pins[n] as Control).get_global_rect().end.y)
 	_check(pins.size() > 12 and lowest <= ui.get_viewport().get_visible_rect().size.y,
 		"a huge galaxy's %d sectors all fit the grey bar (lowest at %d)" % [pins.size(), int(lowest)])
+	# The GID key's docked button ("Loyalty to the Alliance") at the foot of
+	# the sector column, every sector above it (TeeJ, 2026-09-25).
+	var key: Button = ui.get_node_or_null("MapKeyButton")
+	if key == null:
+		ui.AddToTaskbar("Loyalty to the Alliance", Callable())
+		await process_frame
+		key = ui.get_node_or_null("MapKeyButton")
+	var screen: Vector2 = ui.get_viewport().get_visible_rect().size
+	var keyAt: Rect2 = key.get_global_rect() if key != null else Rect2()
+	var column: Rect2 = (ui.get_node("TaskbarPanel") as Control).get_global_rect()
+	_check(key != null and keyAt.position.x >= column.position.x - 1 and keyAt.end.x <= screen.x and absf(keyAt.end.y - (screen.y - 8)) <= 1
+		and lowest <= keyAt.position.y,
+		"the key's button at the foot of the sector column, under every sector (%s; lowest sector at %d)" % [str(keyAt), int(lowest)])
 	await _stop(main)
 	# A huge galaxy's every world is in the frame's window, not under its metal
 	# (TeeJ, 2026-09-25: "in large mode, sectors are being cut off").

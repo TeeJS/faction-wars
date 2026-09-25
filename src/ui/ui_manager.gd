@@ -236,11 +236,14 @@ func _FitBottomBars(frame: CommandFrame) -> void:
 	var feedback: FeedbackPanel = get_node_or_null("FeedbackPanel")
 	if feedback != null:
 		feedback.FitToBar(across.position.x, BarTop + BarInset, BarBottom - BarInset)
-	# The GID key's docked button had sat above Feedback in the left column.
-	var key: Control = get_node_or_null("MapKeyButton")
+	# The GID key's docked button goes to the foot of the sector column, the
+	# sectors stopping above it.
+	var tb: Control = get_node_or_null("TaskbarPanel")
+	if tb != null:
+		tb.offset_bottom = -(ColumnFoot + KeyButtonHeight + KeyButtonGap)
+	var key: Button = get_node_or_null("MapKeyButton")
 	if key != null:
-		key.offset_bottom = FeedbackPanel.ColumnBottom
-		key.offset_top = FeedbackPanel.ColumnBottom - KeyButtonHeight
+		_PlaceKeyButton(key)
 
 
 ## THE WINDOW REFERENCE BAR ("The Window Reference Bar has twelve slots for
@@ -945,9 +948,13 @@ func PinMenu() -> PopupMenu:
 ## The docked GID key's button sits at the bottom of the LEFT column, just
 ## above the Feedback box - or in its place when there is none (TeeJ,
 ## 2026-09-24: moved from the top of the right-hand panel). As wide as the
-## column, in the Feedback button's size of type so a long title fits.
+## column, in the Feedback button's size of type so a long title fits. Under
+## the Command Center frame it is the foot of the SECTOR column instead
+## (TeeJ, 2026-09-25: "move loyalty to the alliance to the bottom of the
+## sector column"), the sectors stopping above it.
 const KeyButtonHeight := 30.0
 const KeyButtonGap := 4.0
+const ColumnFoot := 8.0      # the key under the frame, from the screen's bottom
 
 
 func AddToTaskbar(title: String, onRestore: Callable) -> Button:
@@ -960,6 +967,20 @@ func AddToTaskbar(title: String, onRestore: Callable) -> Button:
 	btn.pressed.connect(func() -> void:
 		if onRestore.is_valid():
 			onRestore.call())
+	add_child(btn)
+	_PlaceKeyButton(btn)
+	return btn
+
+
+func _PlaceKeyButton(btn: Button) -> void:
+	if CommandFrameRef != null:
+		# The sector column's foot: the column's width, inside its margins.
+		btn.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+		btn.offset_left = -146.0
+		btn.offset_right = -3.0
+		btn.offset_bottom = -ColumnFoot
+		btn.offset_top = -ColumnFoot - KeyButtonHeight
+		return
 	btn.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
 	var bottom: float = FeedbackPanel.ColumnBottom
 	var feedback: FeedbackPanel = get_node_or_null("FeedbackPanel")
@@ -971,11 +992,9 @@ func AddToTaskbar(title: String, onRestore: Callable) -> Button:
 	btn.offset_right = 147.0
 	btn.offset_bottom = bottom
 	btn.offset_top = bottom - KeyButtonHeight
-	add_child(btn)
 	# Under the Feedback box, which grows up over it while open.
 	if feedback != null:
 		move_child(btn, feedback.get_index())
-	return btn
 
 
 func RemoveFromTaskbar(btn: Button) -> void:
