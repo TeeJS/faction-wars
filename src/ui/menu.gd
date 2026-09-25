@@ -265,11 +265,12 @@ func _build_cockpit(menu: PackDefs.MenuDef) -> void:
 	_hqOnly = false
 
 	# The button form's controls give way to the picture; the one the manual's
-	# screen does not have (feedback) moves to a corner.
+	# screen does not have (feedback) moves into the black beside it
+	# (_layout_cockpit).
 	(get_node("CenterContainer") as Control).visible = false
 	(get_node("Background") as ColorRect).color = Color.BLACK
 	(get_node("%BtnMultiplayer") as Button).visible = false
-	_to_corner(get_node("%ChkFeedback"), Control.PRESET_BOTTOM_RIGHT, Vector2(-240, -60), Vector2(-10, -34))
+	_to_corner(get_node("%ChkFeedback"), Control.PRESET_TOP_LEFT, Vector2.ZERO, Vector2.ZERO)
 
 	_picture = TextureRect.new()
 	_picture.name = "Cockpit"
@@ -428,6 +429,44 @@ func _layout_cockpit() -> void:
 	_refresh_readout()
 	_marks.queue_redraw()
 	_paint_monitors()
+	_layout_corner()
+
+
+## "PROVIDE FEEDBACK" AND THE BUILD LABEL, in the black right of the picture,
+## left-aligned together, the check box over the label (TeeJ, 2026-09-25: "I
+## would like 'Provide feedback' completely in the black, left aligned with
+## the version #. It can be split to two rows if needed") - it had sat half
+## over the cockpit's edge.
+const CornerGap := 10.0      # from the picture's edge, and from the screen's
+const CornerBottom := 10.0   # the build label, from the screen's bottom
+const LabelHeight := 20.0
+
+
+func _layout_corner() -> void:
+	var left: float = _picture_frame().end.x + CornerGap
+	var width: float = maxf(0.0, size.x - left - CornerGap)
+	var ver: Label = get_node_or_null("BuildVersion")
+	var labelTop: float = size.y - CornerBottom - LabelHeight
+	if ver != null:
+		ver.set_anchors_preset(Control.PRESET_TOP_LEFT)
+		ver.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		ver.position = Vector2(left, labelTop)
+		ver.size = Vector2(width, LabelHeight)
+	var chk: CheckBox = find_child("ChkFeedback", true, false)
+	if chk != null:
+		# Two rows when one does not fit the black: the line breaks where
+		# the words do, so the box's height counts both rows.
+		if not chk.has_meta("one_row"):
+			chk.set_meta("one_row", chk.text)
+		chk.text = str(chk.get_meta("one_row"))
+		if chk.get_combined_minimum_size().x > width:
+			chk.text = chk.text.replace(" ", "\n")
+		var h: float = chk.get_combined_minimum_size().y
+		chk.custom_minimum_size = Vector2.ZERO
+		chk.size = Vector2(width, h)
+		# The box's own left edge on the label's: less the button's margin.
+		var inset: float = chk.get_theme_stylebox("normal").get_margin(SIDE_LEFT)
+		chk.position = Vector2(left - inset, labelTop - h - 4.0)
 
 
 ## Each monitor at its place and on its current frame: the region's own
