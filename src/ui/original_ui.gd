@@ -693,7 +693,10 @@ static func CharacterOver(c: Character) -> Texture2D:
 ## its menu, selection and drag; its text moves to the Name label. A card is
 ## exactly one grid cell: it never stretches, so every row keeps the grid
 ## (TeeJ, 2026-09-23: "ITEMS NEED TO ALIGN IN A GRID").
-static func Card(btn: BaseButton, title: String, mini: Texture2D, color: Color, selected: Color, state: String = "", over: Texture2D = null, plated: bool = true) -> void:
+## `named`: the name under the picture. The Manufacturing window's facilities
+## have none (TeeJ, 2026-09-24, the original's Coruscant Training Facilities
+## page): the name is then the card's tooltip alone.
+static func Card(btn: BaseButton, title: String, mini: Texture2D, color: Color, selected: Color, state: String = "", over: Texture2D = null, plated: bool = true, named: bool = true) -> void:
 	if btn is Button:
 		(btn as Button).text = ""
 		(btn as Button).icon = null
@@ -709,6 +712,7 @@ static func Card(btn: BaseButton, title: String, mini: Texture2D, color: Color, 
 	var frame := SelectionFrame(0, 0, selected)
 	btn.add_child(frame)
 	var name := _card_name(btn, title, color)
+	name.visible = named
 	var show := func(on: bool) -> void:
 		frame.visible = on
 		name.add_theme_color_override("font_color", selected if on else color)
