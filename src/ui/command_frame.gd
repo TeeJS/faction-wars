@@ -157,7 +157,9 @@ func _has_point(point: Vector2) -> bool:
 	return _image.get_pixel(int(p.x), int(p.y)).a > 0.5
 
 
-## Lit while its category holds unread mail.
+## Lit while its category holds unread mail, with the unread count on its
+## corner as the message column's sockets had it (TeeJ, 2026-09-25: "I'm not
+## getting numbers for messages anymore, which was a nice feature").
 func RefreshAlerts() -> void:
 	for pair in _alerts:
 		var b: TextureButton = pair[0]
@@ -165,6 +167,7 @@ func RefreshAlerts() -> void:
 		var unread: int = EventBus.UnreadCount(Enums.MessageCategory[cat]) if Enums.MessageCategory.has(cat) else 0
 		b.texture_normal = Art.AlertIcon(Side, cat, unread > 0)
 		b.tooltip_text = cat if unread == 0 else "%s (%d unread)" % [cat, unread]
+		UIManager._Badge(b, unread, b.size.x)
 
 
 ## The Window Reference Bar's twelve slots on screen.
