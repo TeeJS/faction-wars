@@ -46,11 +46,13 @@ func _init() -> void:
 	var rect := pack.Manifest.MapImageRect
 	if rect.size.x <= 0.0:
 		rect = Rect2(Vector2.ZERO, expected.get_size())
-	var want_scale := minf(GalaxyMap.Frame.x / rect.size.x, GalaxyMap.Frame.y / rect.size.y)
-	_check(absf(map.MapScale() - want_scale) < 0.0001, "the map space is fitted into the frame by the picture's rect (scale %.4f)" % map.MapScale())
-	_check(backdrop != null and backdrop.position == Vector2.ZERO
-		and backdrop.scale.is_equal_approx(rect.size * want_scale / expected.get_size()),
-		"the backdrop fills the frame from its top-left, at that scale")
+	# The picture fitted into the frame keeping its shape; the rect laid onto
+	# the picture per axis.
+	var fit := minf(GalaxyMap.Frame.x / expected.get_size().x, GalaxyMap.Frame.y / expected.get_size().y)
+	var want_scale: Vector2 = expected.get_size() / rect.size * fit
+	_check(map.MapScale().is_equal_approx(want_scale), "the map space is laid onto the picture by its rect (scale %s)" % str(map.MapScale()))
+	_check(backdrop != null and backdrop.position == Vector2.ZERO and backdrop.scale.is_equal_approx(Vector2(fit, fit)),
+		"the backdrop fills the frame from its top-left, its shape kept")
 	_check(backdrop != null and backdrop.z_index < 0, "the backdrop is behind every marker")
 
 	# A marker lands at coordinate * scale - the picture and the regions agree.
@@ -79,13 +81,17 @@ func _init() -> void:
 		"%s's marker is at its coordinate x scale (%s)" % [planet.Name, str(centre)])
 	_check(map.MapPos(planet.MapX, planet.MapY).x <= GalaxyMap.Frame.x + 1 and map.MapPos(planet.MapX, planet.MapY).y <= GalaxyMap.Frame.y + 1,
 		"and inside the frame")
-	# Star Wars: everything lands exactly where the old scene put it - the
-	# picture at screen (150,99), markers at (155 + x, -11 + y), unscaled.
+	# Star Wars: every world where the original draws it on its galaxy picture
+	# (measured on TeeJ's screenshots, 2026-09-25): its 1024-unit space laid
+	# onto the 607x437 picture, the star's centre 7 px in - on the picture,
+	# (x * 607/1024 + 7, y * 437/1024 + 7). The picture stays at screen
+	# (150,99), where Main.tscn baked it.
 	if pack.Manifest.Id == "star-wars-rebellion":
-		_check(absf(map.MapScale() - 1.0) < 0.0001, "Star Wars: coordinates unscaled")
+		var onPicture: Vector2 = map.MapPos(planet.MapX, planet.MapY) / fit
+		var original := Vector2(planet.MapX * 607.0 / 1024.0 + 7.0, planet.MapY * 437.0 / 1024.0 + 7.0)
+		_check(onPicture.distance_to(original) < 0.01,
+			"Star Wars: %s on the picture where the original draws it (%s, want %s)" % [planet.Name, str(onPicture), str(original)])
 		_check((map.position + backdrop.position).is_equal_approx(Vector2(150, 99)), "Star Wars: the picture at screen (150,99) as Main.tscn baked it")
-		_check((map.position + map.MapPos(planet.MapX, planet.MapY)).is_equal_approx(Vector2(155 + planet.MapX, -11 + planet.MapY)),
-			"Star Wars: %s at screen (155+x, -11+y) as the old map node placed it" % planet.Name)
 
 	print("[map_backdrop] %d checks, %d failed" % [_checks, _fails])
 	quit(1 if _fails > 0 else 0)
