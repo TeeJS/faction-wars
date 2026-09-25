@@ -109,11 +109,20 @@ func _init() -> void:
 			_check(placed, "%s: in the frame's slots, the original's order" % side)
 			var onLeft: bool = (alerts[0] as Control).position.x < origin.x + 320 * s
 			_check(onLeft == (side == "alliance"), "%s: the bar on the %s, as the original has it" % [side, "left" if side == "alliance" else "right"])
-			_check((alerts[1] as TextureButton).texture_normal == Art.AlertIcon(side, "Fleets", false), "%s: dim while nothing is unread" % side)
+			var fleets: TextureButton = alerts[1]
+			var badge: Label = fleets.get_node_or_null("Badge")
+			_check(fleets.texture_normal == Art.AlertIcon(side, "Fleets", false) and (badge == null or not badge.visible),
+				"%s: dim, and no number, while nothing is unread" % side)
 			EventBus.Tell(GameSettings.PlayerFaction, GameMessage.new("Test", "A test message.", Enums.MessageCategory.Fleets, StrategicTickManager.Today, null))
 			EventBus.BroadcastChanged()
 			await process_frame
-			_check((alerts[1] as TextureButton).texture_normal == Art.AlertIcon(side, "Fleets", true), "%s: Fleets lights with unread mail" % side)
+			_check(fleets.texture_normal == Art.AlertIcon(side, "Fleets", true), "%s: Fleets lights with unread mail" % side)
+			# The unread count on its corner, as the message column had it.
+			badge = fleets.get_node_or_null("Badge")
+			var unread: int = EventBus.UnreadCount(Enums.MessageCategory.Fleets)
+			_check(unread > 0 and badge != null and badge.visible and badge.text == str(unread)
+				and badge.get_theme_color("font_color") == Color.YELLOW and Rect2(Vector2.ZERO, fleets.size).grow(3).encloses(Rect2(badge.position, badge.size)),
+				"%s: the unread count on its corner (%s)" % [side, badge.text if badge != null else "none"])
 			(alerts[1] as TextureButton).pressed.emit()
 			for _i in 3:
 				await process_frame
