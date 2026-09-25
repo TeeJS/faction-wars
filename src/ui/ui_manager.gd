@@ -133,6 +133,27 @@ func _ready() -> void:
 		popup.id_pressed.connect(func(id: int) -> void: OnMapLayerSelected(popup, id))
 
 
+## THE COMMAND CENTER'S FRAME, when the art set has the side's (CommandFrame):
+## the top bar behind the HUD, and the Message Alert bar's column with the
+## Game Options monitor in place of the socket column, which it hides.
+## `hud_origin`: where the frame's top row lands (GameManager's HUD placing).
+var CommandFrameRef: CommandFrame = null
+
+
+func BuildCommandFrame(side: String, hud_origin: Vector2) -> void:
+	if CommandFrameRef != null or not CommandFrame.CanBuild(side):
+		return
+	var frame := CommandFrame.new()
+	add_child(frame)
+	move_child(frame, 0)   # behind every window and panel
+	frame.Build(side, hud_origin, MapLeft, get_viewport().get_visible_rect().size.x,
+		func(category: String) -> void: OnMessageIndexClicked(category), OnMenuButtonClicked)
+	CommandFrameRef = frame
+	var comms: Control = get_node_or_null("CommsPanel")
+	if comms != null:
+		comms.visible = false
+
+
 func OnMapLayerSelected(popup: PopupMenu, selectedId: int) -> void:
 	# Update checkmarks so only the selected item is checked.
 	for i in popup.item_count:
@@ -203,6 +224,8 @@ static func Socket(category: String, side: String, current: bool) -> Texture2D:
 
 
 func RefreshCommsHighlights() -> void:
+	if CommandFrameRef != null:
+		CommandFrameRef.RefreshAlerts()
 	var commsList: VBoxContainer = get_node_or_null("CommsPanel/Margin/CommsList")
 	if commsList == null:
 		return
@@ -353,6 +376,8 @@ func OpenComposeChatMessage() -> void:
 ## every open rather than drifting. Manual p079 Fig 3.20 has the Message
 ## Index over the whole display.
 const CommsRect := Rect2(150, 99, 1000, 671)
+## The galaxy map's left edge (the frame the windows are placed in starts here).
+const MapLeft := 150.0
 
 
 func OnMessageIndexClicked(category: String = "All") -> void:

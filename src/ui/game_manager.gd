@@ -340,6 +340,7 @@ func BuildSpeedMenu() -> void:
 	_BuildOriginalSpeed()
 	_BuildOriginalResources()
 	_PlaceHud()
+	_BuildCommandFrame()
 
 	# PAUSE IS MODAL. "An alert box comes up, LOCKING YOU OUT OF GAME CONTROLS
 	# UNTIL YOU RESUME PLAY" (manual p071). ✅ CONFIRMED AGAINST THE ORIGINAL:
@@ -412,6 +413,17 @@ func _PlaceHud() -> void:
 	var x0: float = floorf((get_viewport().get_visible_rect().size.x - (right - left) * HudScale) / 2.0)
 	for part in parts:
 		(part[0] as Control).position = Vector2(x0 + (part[1].x - left) * HudScale, (part[1].y - top) * HudScale).floor()
+
+
+## The Command Center's frame (CommandFrame), its top bar lined up under the
+## Speed Control as _PlaceHud put it: the frame's highest HUD row is the
+## screen's top.
+func _BuildCommandFrame() -> void:
+	var side: String = OUI.Side(GameSettings.PlayerFaction)
+	if _oSpeed == null or not HudFrame.has(side):
+		return
+	var speedAt: Vector2 = HudFrame[side]["speed"]
+	_uiManager.BuildCommandFrame(side, Vector2(_timeControls.position.x - speedAt.x * HudScale, 0))
 
 
 ## The resource displays as the original draws them, in place of the plain
