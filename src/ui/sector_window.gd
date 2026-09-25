@@ -68,7 +68,8 @@ static func CanBuildOriginal() -> bool:
 
 
 ## Where the original's window sits: against the right or the left edge of
-## the map frame (UIManager's Rect2(150, 99, 1070, ...)), and high enough to
+## the map's area (UIManager.MapFrame: the scene's map rectangle, or the
+## Command Center frame's window), and high enough to
 ## clear the bottom bars. At the map's top (y 99) the 720-pixel window ran 49
 ## pixels into the GID band and the HUD row under it and made them unusable
 ## (TeeJ, 2026-09-23: "way better for it to be higher, blocking Popular
@@ -80,7 +81,7 @@ const GidBandTop := 80   # above the screen's bottom edge
 
 
 static func DockPosition(right: bool) -> Vector2:
-	var frame := Rect2(150, 99, 1070, 0)
+	var frame: Rect2 = UIManager.MapFrame
 	var screen_h: float = float(ProjectSettings.get_setting("display/window/size/viewport_height", 850))
 	var room: float = screen_h - GidBandTop - TopRowBottom
 	var y: float = TopRowBottom + floorf(maxf(0.0, room - OH * K) / 2.0)

@@ -195,6 +195,9 @@ func InitializeMap(galaxyData: Array, uiManager: UIManager) -> void:
 	_bar = GidBar.new()
 	add_child(_bar)
 	_bar.Setup(self)
+	# A map rebuilt under the Command Center frame (a loaded game) fits it again.
+	if _uiManager != null and _uiManager.CommandFrameRef != null:
+		_bar.FitToFrame(UIManager.MapFrame)
 	_bar.SetActiveLabel(_mode().LabelText)
 	_bar.ShowKeyFor(_mode())
 
@@ -360,6 +363,11 @@ func MapScale() -> float:
 
 func Backdrop() -> Sprite2D:
 	return _backdrop
+
+
+## The GID's mode name and selector (for the Command Center frame to fit).
+func Bar() -> GidBar:
+	return _bar
 
 
 ## Planet -> the invisible button on its dot (opens its theatre).

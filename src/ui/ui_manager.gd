@@ -65,6 +65,7 @@ const OriginalMenu := preload("res://src/ui/original_menu.gd")
 
 
 func _ready() -> void:
+	MapFrame = DefaultMapFrame   # until the Command Center frame is built
 	ApplyOriginalCursors()
 	# Every menu in play in the original's style (original_menu.gd), as it
 	# enters the tree - not a text field's or a drop-down's own.
@@ -133,25 +134,145 @@ func _ready() -> void:
 		popup.id_pressed.connect(func(id: int) -> void: OnMapLayerSelected(popup, id))
 
 
-## THE COMMAND CENTER'S FRAME, when the art set has the side's (CommandFrame):
-## the top bar behind the HUD, and the Message Alert bar's column with the
-## Game Options monitor in place of the socket column, which it hides.
-## `hud_origin`: where the frame's top row lands (GameManager's HUD placing).
+## THE COMMAND CENTER, when the art set has the side's frame (CommandFrame):
+## the frame is the screen, the galaxy map behind its window, the Message
+## Alert bar and the Game Options monitor in their places; the socket column
+## is put away and the black either side replaces the grey.
 var CommandFrameRef: CommandFrame = null
+## THE MAP'S AREA ON SCREEN, where windows are centred and docked: the scene's
+## map rectangle, or the frame's window once the frame is built.
+static var MapFrame: Rect2 = Rect2(150, 99, 1070, 751)
+const DefaultMapFrame := Rect2(150, 99, 1070, 751)
+## With the frame: its layer, the GID bar's (GidBar.FramedLayer), and this.
+const FrameLayer := 1
+const WindowsLayer := 3
+## The black behind the frame: below everything on the map's canvas.
+const BackgroundZ := -100
 
 
-func BuildCommandFrame(side: String, hud_origin: Vector2) -> void:
+func BuildCommandFrame(side: String) -> void:
 	if CommandFrameRef != null or not CommandFrame.CanBuild(side):
 		return
+	var screen: Vector2 = get_viewport().get_visible_rect().size
+	# THE LAYERS, bottom to top: the galaxy map (the base canvas), the frame,
+	# the GID's mode name and selector (GidBar), then every window and panel
+	# (this). Without the frame the GID bar stays on the base canvas and this
+	# on layer 1.
+	var frameLayer := CanvasLayer.new()
+	frameLayer.name = "CommandFrameLayer"
+	frameLayer.layer = FrameLayer
+	get_parent().add_child(frameLayer)
 	var frame := CommandFrame.new()
-	add_child(frame)
-	move_child(frame, 0)   # behind every window and panel
-	frame.Build(side, hud_origin, MapLeft, get_viewport().get_visible_rect().size.x,
+	frameLayer.add_child(frame)
+	frame.Build(side, screen,
 		func(category: String) -> void: OnMessageIndexClicked(category), OnMenuButtonClicked)
 	CommandFrameRef = frame
+	MapFrame = frame.MapWindow()
+	layer = WindowsLayer
+	var map: Node2D = get_node_or_null("../GalaxyMap")
+	if map != null:
+		frame.Place(map)
+	if ActiveGalaxyMap != null and ActiveGalaxyMap.Bar() != null:
+		ActiveGalaxyMap.Bar().FitToFrame(MapFrame)
+	var background: ColorRect = get_node_or_null("../Background")
+	if background != null:
+		background.color = Color.BLACK
+		background.visible = true   # hidden in Main.tscn: the grey was the clear colour
+		background.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		# Under the galaxy picture, which draws at z -10 (GalaxyMap's backdrop):
+		# at z 0 the black covered it and the map's window showed empty space.
+		background.z_as_relative = false
+		background.z_index = BackgroundZ
 	var comms: Control = get_node_or_null("CommsPanel")
 	if comms != null:
 		comms.visible = false
+	_BuildReferenceBar()
+
+
+## THE WINDOW REFERENCE BAR ("The Window Reference Bar has twelve slots for
+## minimized System windows", manual p022): the frame's shelf - the
+## Alliance's slats, the Empire's blue panel - takes every minimised window,
+## one to a slat, the shelf's own slats showing through; past twelve they
+## share its height. The sectors keep the grey bar on the right: the
+## original's sector windows did not minimise (TeeJ, 2026-09-25: "sectors
+## collapse to the grey bar on the right and everything else
+## collapses/minimised to the panel used by the original"; "those 12 slats
+## would be for everything but sectors").
+var _referenceList: VBoxContainer = null
+const ShelfSlots := 12
+
+
+func _BuildReferenceBar() -> void:
+	if CommandFrameRef == null or _referenceList != null:
+		return
+	var shelf: Rect2 = CommandFrameRef.Shelf()
+	_referenceList = VBoxContainer.new()
+	_referenceList.name = "ReferenceBar"
+	_referenceList.position = shelf.position
+	_referenceList.size = shelf.size
+	_referenceList.add_theme_constant_override("separation", 0)
+	add_child(_referenceList)
+	move_child(_referenceList, 0)   # under every window
+	# Anything already minimised moves across.
+	for w in _taskbarButtons:
+		var btn: Button = _taskbarButtons[w]
+		if is_instance_valid(btn) and btn.get_parent() != null:
+			btn.reparent(_referenceList)
+	_referenceList.child_entered_tree.connect(func(_n: Node) -> void: call_deferred("RelayoutShelf"))
+	_referenceList.child_exiting_tree.connect(func(_n: Node) -> void: call_deferred("RelayoutShelf"))
+	RelayoutShelf()
+
+
+## A minimised window's kind, as the sector window's corner icon for it:
+## Manufacturing, Defenses, Fleet or Mission. Null for any other window.
+func _WindowKindIcon(window: DraggableWindow) -> Texture2D:
+	var glyph := ""
+	if window is EconomyWindow:
+		glyph = "manufacturing"
+	elif window is DefenseWindow:
+		glyph = "defenses"
+	elif window is FleetWindow:
+		glyph = "fleet"
+	elif window is MissionWindow or window.get_script() == OriginalMissionScript:
+		glyph = "mission"
+	if glyph.is_empty():
+		return null
+	return Art.CornerIcon(glyph, OUI.Side(GameSettings.PlayerFaction))
+
+
+## Where a minimised window's button goes: the Window Reference Bar with the
+## frame, else the taskbar under the sectors.
+func _MinimisedList() -> VBoxContainer:
+	return _referenceList if _referenceList != null else _taskbarList
+
+
+## The shelf's entries: one slat high (or an even share of the shelf past
+## twelve), the name in white on the slat, lit on hover.
+func RelayoutShelf() -> void:
+	if CommandFrameRef == null or _referenceList == null:
+		return
+	var shelf: Rect2 = CommandFrameRef.Shelf()
+	var entries: Array = _referenceList.get_children().filter(func(n: Node) -> bool:
+		return n is Button and not n.is_queued_for_deletion())
+	var h: float = shelf.size.y / float(maxi(ShelfSlots, entries.size()))
+	for b in entries:
+		var btn: Button = b
+		btn.custom_minimum_size = Vector2(shelf.size.x, h)
+		btn.flat = true
+		btn.clip_text = true
+		btn.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		btn.tooltip_text = btn.text
+		for st in ["normal", "focus", "disabled"]:
+			btn.add_theme_stylebox_override(st, StyleBoxEmpty.new())
+		var lit := StyleBoxFlat.new()
+		lit.bg_color = Color(1, 1, 1, 0.18)
+		for st in ["hover", "pressed", "hover_pressed"]:
+			btn.add_theme_stylebox_override(st, lit)
+		for c in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color", "font_hover_pressed_color"]:
+			btn.add_theme_color_override(c, Color.WHITE)
+		btn.add_theme_color_override("font_outline_color", Color.BLACK)
+		btn.add_theme_constant_override("outline_size", 3)
+		btn.add_theme_font_size_override("font_size", clampi(int(h * 0.42), 10, 14))
 
 
 func OnMapLayerSelected(popup: PopupMenu, selectedId: int) -> void:
@@ -376,11 +497,11 @@ func OpenComposeChatMessage() -> void:
 ## every open rather than drifting. Manual p079 Fig 3.20 has the Message
 ## Index over the whole display.
 const CommsRect := Rect2(150, 99, 1000, 671)
-## The galaxy map's left edge (the frame the windows are placed in starts here).
-const MapLeft := 150.0
 
 
 func OnMessageIndexClicked(category: String = "All") -> void:
+	# Docked at the map's top-left: the scene's, or the frame's window.
+	var at: Vector2 = MapFrame.position if CommandFrameRef != null else CommsRect.position
 	OpenWindow("Communications", MessageWindowTemplate,
 		func(window) -> void:
 			window.Setup(self)   # without this the window's _uiManager is null and Go To is a no-op
@@ -388,14 +509,14 @@ func OnMessageIndexClicked(category: String = "All") -> void:
 			var dock: Vector2 = window.OriginalSize() if window._original else CommsRect.size
 			window.custom_minimum_size = dock
 			window.size = dock
-			window.position = CommsRect.position
+			window.position = at
 			window._tabContainer.tabs_visible = false
 			window.OpenToCategory(category)
 			# Docked: after OpenWindow has placed it (it nudges new windows), so
 			# the dock position is the one that stands.
-			window.set_deferred("position", CommsRect.position)
+			window.set_deferred("position", at)
 			RefreshCommsHighlights(),
-		CommsRect.position)
+		at)
 
 
 ## THE GALACTIC ENCYCLOPEDIA (manual p073-p074). One entry point: no
@@ -422,9 +543,8 @@ func OpenEncyclopedia(kind: String = "", id: String = "") -> void:
 func EncyclopediaPosition(window: Control) -> Vector2:
 	if not window.get("_original"):
 		return EncyclopediaRect.position
-	var frame := Rect2(150, 99, 1070, get_viewport().get_visible_rect().size.y - 99)
 	var size: Vector2 = window.get_combined_minimum_size()
-	return (frame.get_center() - size / 2.0).floor().max(Vector2(150, 99))
+	return (MapFrame.get_center() - size / 2.0).floor().max(MapFrame.position)
 
 
 ## THE ORIGINAL'S MOUSE POINTERS (TeeJ, 2026-09-23: "we need the cursor to
@@ -455,8 +575,7 @@ const ConfirmScript := preload("res://src/ui/confirm_window.gd")
 
 func OpenConfirmation(f: Faction, picture: Texture2D, text: String, okTip: String, onConfirm: Callable) -> void:
 	var size := Vector2(ConfirmScript.FrameW, ConfirmScript.FrameH) * ConfirmScript.K
-	var frame := Rect2(150, 99, 1070, get_viewport().get_visible_rect().size.y - 99)
-	var at: Vector2 = (frame.get_center() - size / 2.0).floor().max(Vector2(150, 99))
+	var at: Vector2 = (MapFrame.get_center() - size / 2.0).floor().max(MapFrame.position)
 	OpenWindow("Confirm", ConfirmScene,
 		func(window) -> void: window.Setup(self, f, picture, text, okTip, onConfirm),
 		at)
@@ -716,7 +835,8 @@ func PinSector(sector: Sector) -> void:
 		if _taskbarButtons.has(w):
 			var old: Button = _taskbarButtons[w]
 			if is_instance_valid(old):
-				_taskbarList.remove_child(old)
+				if old.get_parent() != null:
+					old.get_parent().remove_child(old)
 				old.queue_free()
 			_taskbarButtons.erase(w)
 
@@ -794,7 +914,19 @@ func _AddWindowToTaskbar(window: DraggableWindow) -> void:
 	taskbarBtn.text = window.WindowTitle
 	# When clicked, restore the window.
 	taskbarBtn.pressed.connect(func() -> void: RestoreWindow(window))
-	_taskbarList.add_child(taskbarBtn)
+	# On the Window Reference Bar, "the name of the system sits next to an icon
+	# showing what kind of window it is" (manual p022): the kind's corner icon
+	# from the sector window, where there is one.
+	if _referenceList != null:
+		var kind: Texture2D = _WindowKindIcon(window)
+		if kind != null:
+			taskbarBtn.icon = kind
+			taskbarBtn.expand_icon = false
+			# The icon says the kind; the slat says the system.
+			var system: Variant = window.get("_associatedPlanet") if window.get("_associatedPlanet") != null else window.get("_planet")
+			if system is Planet:
+				taskbarBtn.text = (system as Planet).Name
+	_MinimisedList().add_child(taskbarBtn)
 	_taskbarButtons[window] = taskbarBtn
 
 
@@ -1469,8 +1601,7 @@ const StatusPlateScene := preload("res://src/ui/StatusPlateWindow.tscn")
 
 func OpenStatusPlate(windowName: String, source: Callable) -> void:
 	var size: Vector2 = Vector2(OUI.StatusW, OUI.StatusH) * OUI.K if OUI.HasStatus() else Vector2(460, 260)
-	var frame := Rect2(150, 99, 1070, get_viewport().get_visible_rect().size.y - 99)
-	var at: Vector2 = (frame.get_center() - size / 2.0).floor().max(Vector2(150, 99))
+	var at: Vector2 = (MapFrame.get_center() - size / 2.0).floor().max(MapFrame.position)
 	OpenWindow(windowName, StatusPlateScene,
 		func(window) -> void: window.Setup(self, GameSettings.PlayerFaction, source),
 		at)
