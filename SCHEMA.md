@@ -28,10 +28,9 @@ it on. Most packs start **from the original**, for the player's own use:
    the folder name **is** the id). A copy keeps the original's rules, units,
    characters and missions exactly, and plays identically.
 2. **Keep `art_sets: ["swr-original"]`.** The pictures then come from the
-   player's **own** art set, exported from their copy of the game (§14). A pack
-   never carries the original's pictures or text: the editor's export and the
-   game's import both refuse one that does. Your own pictures go in the pack's
-   `art/` folder and win over the art set's.
+   player's **own** art set, exported from their copy of the game (§14). Your
+   own pictures - any you choose, the original's included; it is your mod -
+   go in the pack's `art/` folder and win over the art set's.
 3. **Change what you like** - the rest of this document is every field. A key
    starting with `_` (`"_comment"`) is yours: it is never read as data, anywhere.
 4. **Load it.** Export the pack as a `.zip` (the editor's *Export*) and drag it
@@ -1032,6 +1031,7 @@ What changed from the source repo's 2026-07-25 draft, and why.
 | 60 | **`still`** on a `menu.monitors` entry (§2): a monitor that holds one frame | TeeJ, 2026-09-24: "lucas arts logo twitches, it does not move in the original" |
 | 61 | **Brought up to date for pack authors.** "DRAFT" dropped; a *Making your own pack* section; §1's missing-field rule made accurate and `_` comments documented; §2's example is the real `pack.json`; §5 `family` a string, the unit-roles row moved to §6; §6 the real units and `weapons.json` (`kind`, per-unit weapon ranges, `observed_ranges` unread); §8 `rules.json` an array, the logistics fields and what reads them; §9 the real mission-table shape, which tables are read and which are not implemented, `available_to` read only by Assassination; §11 rules 11 and 12 in the list, 3 and 5 marked done, rules 19-22 | The pack editor's handoff (2026-09-23), item 5; TeeJ, 2026-09-24: help players make their own packs from the original, for their own use |
 | 62 | **`card_image`** (§2): the picker card's picture when `map_image`'s art set is not imported; optional, never a load error when missing | TeeJ, 2026-09-24: the Milky Way on the Star Wars card before the art is imported |
+| 63 | A pack **may carry the original's pictures** (its `art/` folder, an `original/` folder): the game's import and the exporter's Build faction pack no longer refuse one | TeeJ, 2026-09-25: the original came with its own editor, and people mod it - a mod is the modder's to make |
 
 ---
 

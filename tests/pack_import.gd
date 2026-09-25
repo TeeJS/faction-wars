@@ -103,22 +103,22 @@ func _init() -> void:
 	manifest["map_image"] = "swr-original:screens/galaxy.png"
 	manifest.erase("menu")
 	pack_files["pack.json"] = JSON.stringify(manifest, "  ").to_utf8_buffer()
-	var leaky := pack_files.duplicate()
-	leaky["art/portraits/characters/my_hero.png"] = red
-	_zip(TMP + "/leaky.zip", "faction_pack", PACK_ID, leaky)
-	r = PackImport.ImportFile(TMP + "/leaky.zip")
-	_check(not r.ok and r.message.contains("the same picture as one in your art set"), "a faction pack carrying an art-set picture is refused")
+	# A MOD MAY CARRY THE ORIGINAL'S PICTURES (TeeJ, 2026-09-25: the original
+	# came with its own editor, and people mod it): a pack holding a picture
+	# from the art set, or an original/ folder, imports like any other.
+	var withArt := pack_files.duplicate()
+	withArt["art/portraits/characters/my_hero.png"] = red
+	_zip(TMP + "/with-art.zip", "faction_pack", PACK_ID, withArt)
+	r = PackImport.ImportFile(TMP + "/with-art.zip")
+	_check(r.ok, "a faction pack carrying one of the art set's pictures imports (%s)" % r.message)
+	PackImport.Remove("faction_pack", PACK_ID)
 	var old := pack_files.duplicate()
 	old["original/portraits/x.png"] = _png(Color(0, 1, 0))
 	_zip(TMP + "/old.zip", "faction_pack", PACK_ID, old)
 	r = PackImport.ImportFile(TMP + "/old.zip")
-	_check(not r.ok and r.message.contains("original/portraits/x.png"), "a faction pack with an original/ folder is refused")
-	var upper := pack_files.duplicate()
-	upper["Original/portraits/x.png"] = _png(Color(0, 1, 0))
-	_zip(TMP + "/upper.zip", "faction_pack", PACK_ID, upper)
-	r = PackImport.ImportFile(TMP + "/upper.zip")
-	_check(not r.ok and r.message.contains("Original/portraits/x.png"), "... in any case: Original/ too (%s)" % r.message.get_slice("\n", 0))
-	_check(not DirAccess.dir_exists_absolute(pack_dir), "... and nothing of either was written")
+	_check(r.ok, "a faction pack with an original/ folder imports (%s)" % r.message)
+	PackImport.Remove("faction_pack", PACK_ID)
+	_check(not DirAccess.dir_exists_absolute(pack_dir), "... and Remove takes each away again")
 
 	# One the game would not load is refused here, not shown as a broken card.
 	var misnamed := pack_files.duplicate()

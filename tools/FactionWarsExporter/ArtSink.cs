@@ -102,12 +102,6 @@ public sealed class ZipSink : ArtSink
     }
 }
 
-/// <summary>Hashes only - the art set in memory, for the pack builder's leak guard.</summary>
-public sealed class HashSink : ArtSink
-{
-    protected override void Store(string rel, byte[] data) { }
-}
-
 /// <summary>manifest.json, at the root of every art-set and faction-pack file.</summary>
 public static class Manifest
 {
@@ -125,29 +119,4 @@ public static class Manifest
         ["exporter"] = typeof(Manifest).Assembly.GetName().Version?.ToString(3) ?? "",
         ["created_utc"] = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ"),
     };
-
-    /// <summary>The hashes an art-set file or folder lists, or null when the
-    /// path is not an art set.</summary>
-    public static HashSet<string>? ArtSetHashes(string path)
-    {
-        string? json = null;
-        if (File.Exists(path) && path.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
-        {
-            using var zip = ZipFile.OpenRead(path);
-            var entry = zip.GetEntry(FileName);
-            if (entry != null)
-            {
-                using var r = new StreamReader(entry.Open());
-                json = r.ReadToEnd();
-            }
-        }
-        else if (Directory.Exists(path) && File.Exists(Path.Combine(path, FileName)))
-            json = File.ReadAllText(Path.Combine(path, FileName));
-        if (json == null)
-            return null;
-        var doc = JsonNode.Parse(json)?.AsObject();
-        if (doc?["kind"]?.GetValue<string>() != KindArtSet || doc["files"] is not JsonObject files)
-            return null;
-        return files.Select(f => f.Value!.GetValue<string>()).ToHashSet();
-    }
 }

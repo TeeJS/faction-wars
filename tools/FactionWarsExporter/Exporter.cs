@@ -24,34 +24,4 @@ public static class Exporter
         report($"{sink.Hashes.Count} files in the art set.");
         return result;
     }
-
-    /// <summary>
-    /// The art set's hashes for the pack builder's leak guard: the art set
-    /// named, else the default art-set file, else the art set read in memory
-    /// from the game (when one is found). Null when there is none of these.
-    /// </summary>
-    public static HashSet<string>? ArtSetHashes(string? artPath, string gameDir, Action<string> report)
-    {
-        foreach (var path in new[] { artPath, DefaultArtFile })
-        {
-            if (string.IsNullOrEmpty(path))
-                continue;
-            var hashes = Manifest.ArtSetHashes(path);
-            if (hashes != null)
-            {
-                report($"Checking against the art set {path} ({hashes.Count} distinct files).");
-                return hashes;
-            }
-            if (path == artPath)
-                report($"{path} is not an art set - looking elsewhere.");
-        }
-        if (!string.IsNullOrEmpty(gameDir) && Importer.Problem(gameDir, Importer.BundledRows) == null)
-        {
-            report($"Checking against the original's art read from {gameDir}.");
-            using var sink = new HashSink();
-            new Importer(gameDir, Importer.BundledRows, sink, _ => { }).Run();
-            return sink.Hashes.Values.ToHashSet();
-        }
-        return null;
-    }
 }

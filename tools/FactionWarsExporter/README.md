@@ -47,11 +47,9 @@ pick the disc instead.
 - **Export as folder...** writes the same art set to an empty folder, to look
   at or to work from.
 - **Build faction pack...** zips a faction pack's folder (the one holding
-  `pack.json`) into a file anyone can import. A faction pack is shared, so it
-  must not carry the original's art: the build is **refused** if any file has
-  the same contents as a file in your art set, or sits under an `original/`
-  folder. Refer to the art set instead. Godot's `*.import` and `*.uid` files
-  are left out.
+  `pack.json`) into a file anyone can import, with whatever pictures you put
+  in it, the original's included - it is your mod. Godot's `*.import` and
+  `*.uid` files are left out.
 
 ## Command line
 
@@ -70,8 +68,8 @@ read the log. Exit code 0 = done, 1 = a problem (the log says which),
 ```
 
 ```powershell
-# a faction-pack file, checked against the art set (log: <out>.log)
-.\FactionWarsExporter.exe --build 'D:\Packs\my-pack' --out 'D:\Packs\my-pack.zip' --art "$env:USERPROFILE\Documents\Faction Wars\swr-original.art.zip"
+# a faction-pack file (log: <out>.log)
+.\FactionWarsExporter.exe --build 'D:\Packs\my-pack' --out 'D:\Packs\my-pack.zip'
 ```
 
 Without `--art`, the build checks against the default art-set file, else reads
