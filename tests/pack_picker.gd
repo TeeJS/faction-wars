@@ -131,6 +131,7 @@ func _init() -> void:
 	await process_frame
 	_check(clear != null and clear.global_position.y > (picker.PlayButtons()["star-wars-rebellion"] as Control).global_position.y,
 		"with the art in, Clear artwork pack is under Play")
+	_check(clear != null and clear.tooltip_text.begins_with("Remove the imported artwork"), "... and says what it does")
 	if clear != null:
 		clear.pressed.emit()
 		await process_frame
@@ -168,6 +169,27 @@ func _init() -> void:
 	_check(shown.size() == 3 and shown.back() == PackPicker.ADD_CARD and picker._left.visible and picker._left.disabled and picker._right.disabled,
 		"two packs and the + card fit: all on show, the arrows there but dimmed (%s)" % str(shown))
 	_check(picker.find_child("AddPack", true, false) != null and picker._order.back() == PackPicker.ADD_CARD, "the + card is last")
+	# Every secondary control says what it does (TeeJ, 2026-09-24).
+	var add_tip: String = (picker.find_child("AddPack", true, false) as Control).tooltip_text
+	_check(add_tip.begins_with("Import a faction pack (.zip file).") and picker.find_child("ChooseFile", true, false) != null,
+		"the + card says what it takes, and shows its action ('%s')" % add_tip.replace("\n", " | "))
+	_check(picker._left.tooltip_text == "Every setting is on screen", "a dimmed arrow says why ('%s')" % picker._left.tooltip_text)
+	_check(not " ".join(_labels(picker)).contains("CHOOSE A SETTING"), "no 'CHOOSE A SETTING' line")
+	# Tooltips that read: the screen's tooltip style reaches what is under it
+	# (a tooltip is shown under the control that owns it).
+	var probe := Label.new()
+	probe.theme_type_variation = "TooltipLabel"
+	var add_node: Control = picker.find_child("AddPack", true, false)
+	add_node.add_child(probe)
+	_check(probe.get_theme_font_size("font_size") == 15 and probe.get_theme_color("font_color") == PackPicker.CText,
+		"tooltips on this screen: light 15 px type (%d)" % probe.get_theme_font_size("font_size"))
+	var tip_panel := PanelContainer.new()
+	tip_panel.theme_type_variation = "TooltipPanel"
+	add_node.add_child(tip_panel)
+	var sb: StyleBoxFlat = tip_panel.get_theme_stylebox("panel") as StyleBoxFlat
+	_check(sb != null and sb.bg_color.a > 0.9, "... on a solid dark panel")
+	probe.free()
+	tip_panel.free()
 	for k in 3:
 		_make_pack(FactionRegistry.USER_PACKS_ROOT, "test-carousel-%d" % k, "Carousel %d" % k)
 	picker._rebuild()
@@ -176,6 +198,7 @@ func _init() -> void:
 		"with no favorites: the shipped packs, the player's own, then + (%s)" % str(order))
 	_check(picker.VisibleIds() == order.slice(0, 3) and not picker._left.disabled and not picker._right.disabled and picker._dots.visible,
 		"three on show, the arrows live, the dots showing (%s)" % str(picker.VisibleIds()))
+	_check(picker._left.tooltip_text == "Previous setting" and picker._right.tooltip_text == "Next setting", "live arrows say which way")
 	picker._right.pressed.emit()
 	_check(picker.VisibleIds() == order.slice(1, 4), "the right arrow turns it one card (%s)" % str(picker.VisibleIds()))
 	picker.Turn(-1)
@@ -192,11 +215,13 @@ func _init() -> void:
 		var star: PackPicker.StarButton = (picker._panels[id] as Node).find_child("Star", true, false)
 		star.pressed.emit()
 		_check(star.on and PackPicker.Favorites().has(id), "%s starred" % id)
+		_check(star.tooltip_text == "Remove from favorites", "a filled star says 'Remove from favorites' ('%s')" % star.tooltip_text)
 	var ww2_star: PackPicker.StarButton = (picker._panels["ww2"] as Node).find_child("Star", true, false)
 	ww2_star.pressed.emit()
 	await process_frame
 	_check(not ww2_star.on and PackPicker.Favorites().size() == 3 and picker.get_node_or_null("Favorites") != null,
 		"a fourth star is refused, and says so")
+	_check(ww2_star.tooltip_text == "Add to favorites", "an empty star says 'Add to favorites' ('%s')" % ww2_star.tooltip_text)
 	var said: Node = picker.get_node_or_null("Favorites")
 	if said != null:
 		said.queue_free()
