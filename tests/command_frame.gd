@@ -36,8 +36,10 @@ func _init() -> void:
 	FactionRegistry.EnsureLoaded()
 	var sets: Array = FactionRegistry.Pack.Manifest.ArtSets
 	var dir := "%s/%s" % [Art.UserArtRoot, sets[0] if not sets.is_empty() else "swr-original"]
-	for sub in ["windows", "alerts"]:
+	for sub in ["windows", "alerts", "screens"]:
 		DirAccess.make_dir_recursive_absolute("%s/%s" % [dir, sub])
+	# A galaxy picture, so the map has a backdrop to keep in sight.
+	_png("%s/screens/galaxy.png" % dir, 640, 480, Color(0.2, 0.25, 0.5))
 
 	# Without the frame: the plain screen.
 	var main: Node = await _start("alliance")
@@ -80,7 +82,9 @@ func _init() -> void:
 			and not (ui.get_node("CommsPanel") as Control).visible,
 			"%s: map, then frame, then the GID bar, then the windows; the socket column put away" % side)
 		var bg: ColorRect = main.get_node("Background")
-		_check(bg.color == Color.BLACK and bg.visible, "%s: black either side" % side)
+		var backdrop: Sprite2D = (main.get_node("GalaxyMap") as GalaxyMap).Backdrop()
+		_check(bg.color == Color.BLACK and bg.visible and not bg.z_as_relative
+			and backdrop != null and bg.z_index < backdrop.z_index, "%s: black either side, under the galaxy picture" % side)
 		var map: Node2D = main.get_node("GalaxyMap")
 		_check(map.position == origin and is_equal_approx(map.scale.x, 640 * s / GalaxyMap.Frame.x) and map.position != plainAt,
 			"%s: the galaxy map behind the frame at its scale (%s x%.3f)" % [side, str(map.position), map.scale.x])
@@ -118,22 +122,78 @@ func _init() -> void:
 		var options: Button = frame.get_node_or_null("GameOptions")
 		_check(options != null and options.position.is_equal_approx(origin + mon.position * s), "%s: the Game Options monitor where the frame has it" % side)
 
+		# THE SECTORS keep the grey bar on the right, outside the frame; THE
+		# WINDOW REFERENCE BAR on the frame's shelf takes minimised windows, one
+		# to a slat (TeeJ, 2026-09-25).
+		var shelf: Rect2 = frame.Shelf()
+		var tb: Control = ui.get_node("TaskbarPanel")
+		_check(tb.get_global_rect().position.x >= origin.x + 640 * s - 1 and ui.PinnedSectors().size() > 0,
+			"%s: the sectors in the grey bar right of the frame" % side)
+		var refBar: Control = ui.get_node_or_null("ReferenceBar")
+		_check(refBar != null and Rect2(refBar.position, refBar.size).is_equal_approx(shelf), "%s: the Window Reference Bar on the frame's shelf" % side)
+		var home: Planet = Lq.first_or_null(GameState.AllPlanets(), func(p: Planet) -> bool: return p.ControllingFaction == GameSettings.PlayerFaction)
+		ui.OnEconomyClicked(home)
+		for _i in 3:
+			await process_frame
+		var ew: DraggableWindow = Lq.first_or_null(ui.get_children(), func(n: Node) -> bool: return n is EconomyWindow)
+		if ew != null:
+			ew.MinimizeWindow()
+			for _i in 3:
+				await process_frame
+		_check(ew != null and refBar != null and _shelf_fits(refBar, shelf) and refBar.get_child_count() == 1,
+			"%s: a minimised window takes a slat on the shelf" % side)
+		if refBar != null and refBar.get_child_count() > 0:
+			(refBar.get_child(0) as Button).pressed.emit()
+			for _i in 3:
+				await process_frame
+			_check(ew.visible and refBar.get_children().filter(func(n: Node) -> bool: return not n.is_queued_for_deletion()).is_empty(),
+				"%s: its slat restores it and clears" % side)
+
 		var inWindow: Vector2 = origin + (win.position + win.size / 2.0) * s
 		var onMetal: Vector2 = origin + Vector2(320, 5) * s
 		_check(not frame._has_point(inWindow) and frame._has_point(onMetal) and not frame._has_point(Vector2(origin.x - 10, 400)),
 			"%s: the metal takes clicks; the window and the black do not" % side)
 		await _stop(main)
+
+	# A huge galaxy's sectors all fit the grey bar, top to bottom of the screen.
+	main = await _start("alliance", Enums.GalaxySize.Huge)
+	ui = main.get_node("UIManager")
+	await process_frame
+	var pins: Dictionary = ui.PinnedSectors()
+	var lowest := 0.0
+	for n in pins:
+		lowest = maxf(lowest, (pins[n] as Control).get_global_rect().end.y)
+	_check(pins.size() > 12 and lowest <= ui.get_viewport().get_visible_rect().size.y,
+		"a huge galaxy's %d sectors all fit the grey bar (lowest at %d)" % [pins.size(), int(lowest)])
+	await _stop(main)
 	_remove(Art.UserArtRoot)
 	Art.Reset()
 	print("[command_frame] %d checks, %d failed" % [_checks, _fails])
 	quit(1 if _fails > 0 else 0)
 
 
-func _start(side: String) -> Node:
+## Every entry on the shelf is one slat high (or an even share past twelve)
+## and inside it.
+func _shelf_fits(list: Node, shelf: Rect2) -> bool:
+	var entries: Array = list.get_children().filter(func(n: Node) -> bool:
+		return n is Button and not n.is_queued_for_deletion())
+	if entries.is_empty():
+		return false
+	var h: float = shelf.size.y / float(maxi(12, entries.size()))
+	for b in entries:
+		var r := Rect2((b as Control).global_position, (b as Control).size)
+		# Controls size to whole pixels: within one of the exact share.
+		if absf((b as Control).size.y - h) > 1.0 or not shelf.grow(1.5).encloses(r):
+			print("[command_frame]   entry %s %s outside %s or not %.2f high" % [(b as Button).text, str(r), str(shelf), h])
+			return false
+	return true
+
+
+func _start(side: String, galaxy: int = Enums.GalaxySize.Standard) -> Node:
 	Art.Reset()
 	MpSetup.reset()
 	GameSettings.SelectedDifficulty = Enums.Difficulty.Medium
-	GameSettings.SelectedSize = Enums.GalaxySize.Standard
+	GameSettings.SelectedSize = galaxy
 	GameSettings.PlayerFaction = FactionRegistry.ById(side)
 	var main: Node = load("res://Main.tscn").instantiate()
 	root.add_child(main)

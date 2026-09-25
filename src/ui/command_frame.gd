@@ -25,17 +25,22 @@ const FrameSize := Vector2(640, 481)
 
 ## In the frame's own pixels. window: the map's window (the see-through blue);
 ## slot: the first Message Alert icon (pitch 25, down; each 1 px up and left of
-## its 25x20 slot); monitor: the Game Options monitor.
+## its 25x20 slot); monitor: the Game Options monitor; shelf: the Window
+## Reference Bar's twelve slots ("twelve slots for minimized System windows",
+## manual p022) - the Alliance's slatted shelf, the Empire's blue panel -
+## measured slat edge to slat edge.
 const Layout := {
 	"alliance": {
 		"window": Rect2(54, 35, 488, 358),
 		"slot": Vector2(3, 109),
 		"monitor": Rect2(3, 358, 27, 34),
+		"shelf": Rect2(546, 58, 60, 262),
 	},
 	"empire": {
 		"window": Rect2(118, 41, 489, 358),
 		"slot": Vector2(611, 110),
 		"monitor": Rect2(78, 196, 32, 48),
+		"shelf": Rect2(20, 46, 55, 291),
 	},
 }
 const SlotPitch := 25
@@ -153,6 +158,12 @@ func RefreshAlerts() -> void:
 		var unread: int = EventBus.UnreadCount(Enums.MessageCategory[cat]) if Enums.MessageCategory.has(cat) else 0
 		b.texture_normal = Art.AlertIcon(Side, cat, unread > 0)
 		b.tooltip_text = cat if unread == 0 else "%s (%d unread)" % [cat, unread]
+
+
+## The Window Reference Bar's twelve slots on screen.
+func Shelf() -> Rect2:
+	var r: Rect2 = Layout[Side]["shelf"]
+	return Rect2(Origin + r.position * S, r.size * S)
 
 
 ## The map's window on screen.

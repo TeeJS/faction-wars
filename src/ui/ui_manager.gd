@@ -146,6 +146,8 @@ const DefaultMapFrame := Rect2(150, 99, 1070, 751)
 ## With the frame: its layer, the GID bar's (GidBar.FramedLayer), and this.
 const FrameLayer := 1
 const WindowsLayer := 3
+## The black behind the frame: below everything on the map's canvas.
+const BackgroundZ := -100
 
 
 func BuildCommandFrame(side: String) -> void:
@@ -177,9 +179,100 @@ func BuildCommandFrame(side: String) -> void:
 		background.color = Color.BLACK
 		background.visible = true   # hidden in Main.tscn: the grey was the clear colour
 		background.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		# Under the galaxy picture, which draws at z -10 (GalaxyMap's backdrop):
+		# at z 0 the black covered it and the map's window showed empty space.
+		background.z_as_relative = false
+		background.z_index = BackgroundZ
 	var comms: Control = get_node_or_null("CommsPanel")
 	if comms != null:
 		comms.visible = false
+	_BuildReferenceBar()
+
+
+## THE WINDOW REFERENCE BAR ("The Window Reference Bar has twelve slots for
+## minimized System windows", manual p022): the frame's shelf - the
+## Alliance's slats, the Empire's blue panel - takes every minimised window,
+## one to a slat, the shelf's own slats showing through; past twelve they
+## share its height. The sectors keep the grey bar on the right: the
+## original's sector windows did not minimise (TeeJ, 2026-09-25: "sectors
+## collapse to the grey bar on the right and everything else
+## collapses/minimised to the panel used by the original"; "those 12 slats
+## would be for everything but sectors").
+var _referenceList: VBoxContainer = null
+const ShelfSlots := 12
+
+
+func _BuildReferenceBar() -> void:
+	if CommandFrameRef == null or _referenceList != null:
+		return
+	var shelf: Rect2 = CommandFrameRef.Shelf()
+	_referenceList = VBoxContainer.new()
+	_referenceList.name = "ReferenceBar"
+	_referenceList.position = shelf.position
+	_referenceList.size = shelf.size
+	_referenceList.add_theme_constant_override("separation", 0)
+	add_child(_referenceList)
+	move_child(_referenceList, 0)   # under every window
+	# Anything already minimised moves across.
+	for w in _taskbarButtons:
+		var btn: Button = _taskbarButtons[w]
+		if is_instance_valid(btn) and btn.get_parent() != null:
+			btn.reparent(_referenceList)
+	_referenceList.child_entered_tree.connect(func(_n: Node) -> void: call_deferred("RelayoutShelf"))
+	_referenceList.child_exiting_tree.connect(func(_n: Node) -> void: call_deferred("RelayoutShelf"))
+	RelayoutShelf()
+
+
+## A minimised window's kind, as the sector window's corner icon for it:
+## Manufacturing, Defenses, Fleet or Mission. Null for any other window.
+func _WindowKindIcon(window: DraggableWindow) -> Texture2D:
+	var glyph := ""
+	if window is EconomyWindow:
+		glyph = "manufacturing"
+	elif window is DefenseWindow:
+		glyph = "defenses"
+	elif window is FleetWindow:
+		glyph = "fleet"
+	elif window is MissionWindow or window.get_script() == OriginalMissionScript:
+		glyph = "mission"
+	if glyph.is_empty():
+		return null
+	return Art.CornerIcon(glyph, OUI.Side(GameSettings.PlayerFaction))
+
+
+## Where a minimised window's button goes: the Window Reference Bar with the
+## frame, else the taskbar under the sectors.
+func _MinimisedList() -> VBoxContainer:
+	return _referenceList if _referenceList != null else _taskbarList
+
+
+## The shelf's entries: one slat high (or an even share of the shelf past
+## twelve), the name in white on the slat, lit on hover.
+func RelayoutShelf() -> void:
+	if CommandFrameRef == null or _referenceList == null:
+		return
+	var shelf: Rect2 = CommandFrameRef.Shelf()
+	var entries: Array = _referenceList.get_children().filter(func(n: Node) -> bool:
+		return n is Button and not n.is_queued_for_deletion())
+	var h: float = shelf.size.y / float(maxi(ShelfSlots, entries.size()))
+	for b in entries:
+		var btn: Button = b
+		btn.custom_minimum_size = Vector2(shelf.size.x, h)
+		btn.flat = true
+		btn.clip_text = true
+		btn.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		btn.tooltip_text = btn.text
+		for st in ["normal", "focus", "disabled"]:
+			btn.add_theme_stylebox_override(st, StyleBoxEmpty.new())
+		var lit := StyleBoxFlat.new()
+		lit.bg_color = Color(1, 1, 1, 0.18)
+		for st in ["hover", "pressed", "hover_pressed"]:
+			btn.add_theme_stylebox_override(st, lit)
+		for c in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color", "font_hover_pressed_color"]:
+			btn.add_theme_color_override(c, Color.WHITE)
+		btn.add_theme_color_override("font_outline_color", Color.BLACK)
+		btn.add_theme_constant_override("outline_size", 3)
+		btn.add_theme_font_size_override("font_size", clampi(int(h * 0.42), 10, 14))
 
 
 func OnMapLayerSelected(popup: PopupMenu, selectedId: int) -> void:
@@ -742,7 +835,8 @@ func PinSector(sector: Sector) -> void:
 		if _taskbarButtons.has(w):
 			var old: Button = _taskbarButtons[w]
 			if is_instance_valid(old):
-				_taskbarList.remove_child(old)
+				if old.get_parent() != null:
+					old.get_parent().remove_child(old)
 				old.queue_free()
 			_taskbarButtons.erase(w)
 
@@ -820,7 +914,19 @@ func _AddWindowToTaskbar(window: DraggableWindow) -> void:
 	taskbarBtn.text = window.WindowTitle
 	# When clicked, restore the window.
 	taskbarBtn.pressed.connect(func() -> void: RestoreWindow(window))
-	_taskbarList.add_child(taskbarBtn)
+	# On the Window Reference Bar, "the name of the system sits next to an icon
+	# showing what kind of window it is" (manual p022): the kind's corner icon
+	# from the sector window, where there is one.
+	if _referenceList != null:
+		var kind: Texture2D = _WindowKindIcon(window)
+		if kind != null:
+			taskbarBtn.icon = kind
+			taskbarBtn.expand_icon = false
+			# The icon says the kind; the slat says the system.
+			var system: Variant = window.get("_associatedPlanet") if window.get("_associatedPlanet") != null else window.get("_planet")
+			if system is Planet:
+				taskbarBtn.text = (system as Planet).Name
+	_MinimisedList().add_child(taskbarBtn)
 	_taskbarButtons[window] = taskbarBtn
 
 
