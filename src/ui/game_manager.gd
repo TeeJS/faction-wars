@@ -62,6 +62,14 @@ const SpeedLayout := {
 	"empire": {"lcd": Rect2(11, 6, 62, 11), "bars": Vector2(73, 7)},
 	"alliance": {"lcd": Rect2(12, 8, 62, 12), "bars": Vector2(74, 9)},
 }
+## WHERE THE ORIGINAL'S SPEED MENU OPENS, from the Speed Control's top-left:
+## 5 pixels right of its bars and 2 under their top, over the box's lower half
+## (TeeJ, 2026-09-25: "the alignment of the speed pull-down menu is different
+## than the original, please make it match"). The Alliance's measured on his
+## screenshot of the original - the menu's frame at (169,22) on the Command
+## Center frame, the box at (90,11); the Empire's INFERRED, the same off its
+## own bars. The menu's inside already matched (original_menu.gd).
+const SpeedMenuAt := {"alliance": Vector2(79, 11), "empire": Vector2(78, 9)}
 var _oSpeed: Control = null
 var _oDay: Label = null
 var _oBars: TextureRect = null
@@ -338,6 +346,9 @@ func BuildSpeedMenu() -> void:
 			if _oSpeedMenu != null:
 				OriginalMenu.MarkSpeed(_oSpeedMenu, _speed)
 				menu = _oSpeedMenu
+				# The original's opens off its bars, over the box's lower half.
+				if _oSpeed != null and SpeedMenuAt.has(_oSide):
+					at = _timeControls.global_position + SpeedMenuAt[_oSide] * HudScaleNow
 			menu.position = Vector2i(int(at.x), int(at.y))
 			menu.popup()
 			_timeControls.accept_event())

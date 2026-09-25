@@ -70,8 +70,15 @@ func _init() -> void:
 	await process_frame
 	# The original's menu when its bars are imported (original_menu.gd).
 	var menu: Window = gm._oSpeedMenu if gm._oSpeedMenu != null else gm._speedMenu
-	_check(menu.visible and absf(menu.position.y - (gm._timeControls.global_position.y + gm._timeControls.size.y)) < 2.0,
-		"a click drops the speed menu under the control")
+	if gm._oSpeedMenu != null and gm._oSpeed != null:
+		# Where the original opens it: off the bars, over the box's lower half
+		# (TeeJ's screenshot, 2026-09-25).
+		var want: Vector2 = gm._timeControls.global_position + GameManager.SpeedMenuAt[gm._oSide] * GameManager.HudScaleNow
+		_check(menu.visible and Vector2(menu.position).distance_to(want) < 1.5,
+			"a click opens the original's speed menu where the original does (%s, want %s)" % [str(menu.position), str(want)])
+	else:
+		_check(menu.visible and absf(menu.position.y - (gm._timeControls.global_position.y + gm._timeControls.size.y)) < 2.0,
+			"a click drops the speed menu under the control")
 	menu.hide()
 
 	# Pause: the original's box over a blocker; its check resumes.
