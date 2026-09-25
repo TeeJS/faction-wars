@@ -47,6 +47,11 @@ func _init() -> void:
 		_png("%s/buttons/%s.disabled.png" % [dir, b], 42, 20, Color(0.2, 0.2, 0.2))
 	for w in ["options_side.empire", "options_side.alliance", "options_side.h2h", "options_music.grey", "options_light.off", "options_knob"]:
 		_png("%s/windows/%s.png" % [dir, w], 26, 19, Color(0.9, 0.1, 0.1))
+	# The original's alert box (REBDLOG): the two-socket plate, check and X.
+	_png("%s/windows/dialog_plate2.png" % dir, 412, 176, Color(0.4, 0.4, 0.4))
+	for b in ["dialog_ok", "dialog_cancel"]:
+		_png("%s/buttons/%s.png" % [dir, b], 57, 28, Color(0.5, 0.5, 0.5))
+		_png("%s/buttons/%s.pressed.png" % [dir, b], 57, 28, Color(0.3, 0.3, 0.3))
 	Art.Reset()
 	_check(Screen.CanBuild(), "with its parts the screen can be built")
 
@@ -89,8 +94,22 @@ func _init() -> void:
 
 	screen._restart()
 	var confirm: Node = screen.get_node_or_null("Confirm")
-	_check(confirm is ConfirmationDialog, "Restart asks first")
-	if confirm != null:
+	_check(confirm != null, "Restart asks first")
+	# In the original's alert box, in its words, the check and the X where
+	# the original has them (TeeJ's screenshot, 2026-09-25).
+	var plate2: bool = Screen.OUI.Pic("dialog_plate2") != null and Art.ButtonIcon("dialog_cancel") != null
+	if confirm != null and plate2:
+		var q: Label = confirm.find_child("Question", true, false)
+		var t: Label = confirm.find_child("Text", true, false)
+		var yes: Control = confirm.find_child("dialog_ok", true, false)
+		var no: Control = confirm.find_child("dialog_cancel", true, false)
+		_check(t != null and t.text == "Returning to the shuttle cockpit will cause unsaved changes to be lost" and q != null and q.text == "Return without saving?"
+			and yes != null and yes.position.is_equal_approx(Vector2(138, 135) * Screen.OUI.K) and no != null and no.position.is_equal_approx(Vector2(229, 135) * Screen.OUI.K),
+			"Restart asks in the original's box and words, check and X in its places")
+		no.pressed.emit()
+		await process_frame
+		_check(screen.get_node_or_null("Confirm") == null or screen.get_node("Confirm").is_queued_for_deletion(), "the X closes it and stays")
+	elif confirm != null:
 		confirm.queue_free()
 	await process_frame
 	screen._return()
