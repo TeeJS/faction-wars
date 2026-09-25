@@ -985,9 +985,9 @@ func _ShowCounts() -> void:
 	_oCapacity.text = str(capacity) if capacity >= 0 else ""
 
 
-## A row on the panel: the picture centred, its badges, its name under it.
-## The button keeps its menu, drag and selection.
-func _Row(btn: Button, title: String, picture: Texture2D, badges: Array, side: String, selected: Color, over: Texture2D = null) -> void:
+## A row on the panel: the picture centred (on its `plate`, if any), its
+## badges, its name under it. The button keeps its menu, drag and selection.
+func _Row(btn: Button, title: String, picture: Texture2D, badges: Array, side: String, selected: Color, over: Texture2D = null, plate: Texture2D = null) -> void:
 	btn.text = ""
 	btn.icon = null
 	btn.flat = true
@@ -1000,6 +1000,8 @@ func _Row(btn: Button, title: String, picture: Texture2D, badges: Array, side: S
 	var top: float = RowTop - ListRect.position.y
 	var w: float = picture.get_width() / float(OUI.K) if picture != null else 66.0
 	var left: float = RowCentre - ListRect.position.x - w / 2.0
+	if plate != null:
+		OUI.Place(btn, plate, left, top, "Plate")
 	if picture != null:
 		OUI.Place(btn, picture, left, top, "Picture")
 	if over != null:
@@ -1026,7 +1028,20 @@ func _RowUnit(btn: Button, unit: Unit) -> void:
 		badges = [Lq.any(unit.Hangar, func(h: Unit) -> bool: return h.Type == Enums.UnitType.Fighter),
 			Lq.any(unit.Hangar, func(h: Unit) -> bool: return h.Type == Enums.UnitType.Troop or h.Type == Enums.UnitType.SpecForce)]
 	_Row(btn, unit.Name, OUI.Mini("units", unit.PackId), badges, side if side != "" else "empire",
-		OUI.SideColor(GameSettings.PlayerFaction), Glow(unit, true))
+		OUI.SideColor(GameSettings.PlayerFaction), Glow(unit, true), RowPlate(unit))
+
+
+## THE GREY PLATE, as on a system's pages (TeeJ, 2026-09-25: "personnel and
+## troops on fleets should have backgrounds, just like on planet (fighters
+## should NOT)"; the original's Troops and Personnel pages): under a person
+## and a regiment or Special Forces unit; a ship's and a squadron's picture
+## stands straight on the page. Null for those.
+static func RowPlate(u: Unit) -> Texture2D:
+	if u == null:
+		return null
+	if u is Character or u.Type == Enums.UnitType.Troop or u.Type == Enums.UnitType.SpecForce:
+		return OUI.Pic("card_plate")
+	return null
 
 
 ## A craft's blue engine glow while it is in hyperspace (GOKRES + 4096; TeeJ,
@@ -1044,7 +1059,7 @@ static func Glow(u: Unit, miniature: bool) -> Texture2D:
 
 ## A person's row: the miniature in its status (manual p096), the name.
 func _RowCharacter(btn: Button, c: Character) -> void:
-	_Row(btn, c.TitledName(), OUI.Mini("characters", c.PackId), [], OUI.Side(c.Faction), OUI.SideColor(GameSettings.PlayerFaction))
+	_Row(btn, c.TitledName(), OUI.Mini("characters", c.PackId), [], OUI.Side(c.Faction), OUI.SideColor(GameSettings.PlayerFaction), null, RowPlate(c))
 	var pic: Node = btn.get_node_or_null("Picture")
 	var state: String = OUI.CharacterState(c)
 	var over: Texture2D = OUI.CharacterOver(c) if state == "captured" else (OUI.Pic("card_injured") if state == "injured" else null)
