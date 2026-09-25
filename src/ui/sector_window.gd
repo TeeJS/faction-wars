@@ -428,12 +428,12 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 
 			# OURS ON THE WAY (TeeJ, 2026-09-24: "I moved a fleet from
 			# Coruscant to Yaga Minor - it did not show up until it arrived").
-			# The original's sector legend names an icon for "Units Enroute to
-			# System" (TEXTSTRA 0x01c54c); with none of ours in orbit, the
-			# fleet corner shows it - the side's ship in hyperspace (STRATEGY
-			# 11613/11614). INFERRED placement: no screenshot shows it. Only
-			# our own: the opponent's inbound fleets are fog we have not
-			# earned (inbound_fog).
+			# With none of ours in orbit, the fleet corner shows our fleet
+			# icon - the SAME one as in orbit, never the hyperspace picture
+			# (TeeJ, 2026-09-24, from the original: "The original just always
+			# shows the same icon at the planet"). Only our own: the
+			# opponent's inbound fleets are fog we have not earned
+			# (inbound_fog).
 			var inbound: Array = Lq.where(planet.OrbitingFleets, func(f: Fleet) -> bool:
 				return f.Status == Enums.Status.Enroute and f.Destination == planet and f.Faction == GameSettings.PlayerFaction)
 
@@ -521,11 +521,8 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 					# ours when ours are here.
 					var menuFleets: Array = Lq.where(fleetsHere, func(f: Fleet) -> bool: return f.Faction == flagged)
 					if fleetsHere.is_empty():
-						# Only ours inbound: the hyperspace icon, their arrival.
+						# Only ours inbound: the icon above, their arrival in the tooltip.
 						menuFleets = inbound
-						cornerBtn.set_meta("corner", "enroute")
-						_TintIcon(cornerBtn, Color(GameSettings.PlayerFaction.FactionColor, 0.6))
-						_OriginalIcon(cornerBtn, "enroute", GameSettings.PlayerFaction.Id, 1.0)
 					if not inbound.is_empty():
 						cornerBtn.tooltip_text = ((cornerBtn.tooltip_text + "
 ") if not fleetsHere.is_empty() else "") 							+ "En route: " + ", ".join(Lq.select(inbound, func(f: Fleet) -> String:
@@ -893,10 +890,23 @@ static func _OriginalIcon(btn: Button, glyph: String, faction_id: String, alpha:
 	btn.icon = tex
 	btn.set_meta("original_icon", true)
 	_TintIcon(btn, Color(1, 1, 1, alpha))
+	# ONE PAIR OF HOVER HOOKS. A corner drawn twice (the owner's picture,
+	# then the fleet's side's) kept the first call's hooks too, so the first
+	# picture came back on the next mouse-over - the fleet icon flipping
+	# (TeeJ, 2026-09-24). A new picture replaces the old hooks.
+	for sig in ["mouse_entered", "mouse_exited"]:
+		var old: Callable = btn.get_meta("hover_" + sig, Callable())
+		if old.is_valid() and btn.is_connected(sig, old):
+			btn.disconnect(sig, old)
+		btn.remove_meta("hover_" + sig)
 	var hover: Texture2D = Art.Scaled(Art.CornerIcon(glyph, side, true), k)
 	if hover != null:
-		btn.mouse_entered.connect(func() -> void: btn.icon = hover)
-		btn.mouse_exited.connect(func() -> void: btn.icon = tex)
+		var enter := func() -> void: btn.icon = hover
+		var leave := func() -> void: btn.icon = tex
+		btn.mouse_entered.connect(enter)
+		btn.mouse_exited.connect(leave)
+		btn.set_meta("hover_mouse_entered", enter)
+		btn.set_meta("hover_mouse_exited", leave)
 	return true
 
 
