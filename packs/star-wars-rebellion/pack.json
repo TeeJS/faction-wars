@@ -214,7 +214,7 @@
       {"image": "swr-original:menu/load.png", "at": [411, 231], "frames": 30},
       {"image": "swr-original:menu/credits.png", "at": [459, 242], "frames": 2, "still": 1},
       {"image": "swr-original:menu/multiplayer.png", "at": [67, 381], "frames": 30},
-      {"image": "swr-original:menu/exit.png", "at": [535, 392], "frames": 30},
+      {"image": "swr-original:menu/exit.png", "at": [535, 392], "frames": 30, "region": "exit", "pressed_image": "swr-original:menu/exit_pulled.png"},
       {"image": "swr-original:menu/size_lever.png", "at": [242, 271], "frames": 3, "frame_by": {"galaxy_size:standard": 2, "galaxy_size:large": 1, "galaxy_size:huge": 0}},
       {"image": "swr-original:menu/standard_game.png", "at": [305, 333], "frames": 1, "region": "hq_only_victory", "selected_image": "swr-original:menu/hq_only.png"}
     ],

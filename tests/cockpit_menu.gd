@@ -178,6 +178,20 @@ func _init() -> void:
 	# reaches too (TeeJ, 2026-09-24): it is shown on every build.
 	var exit_btn: Button = regions.get_node("Region_exit")
 	_check(exit_btn.visible, "the ejector handle is shown on every build")
+	# Pulled when clicked (TeeJ, 2026-09-25: "when you click on the handle, it
+	# moves"): the exit monitor's pressed picture, COMMON.DLL 10011. Only with
+	# an art set that has it (exporter 2.4.4).
+	var handle: TextureRect = Lq.first_or_null(shown, func(p: TextureRect) -> bool: return (p.get_meta("def") as PackDefs.MenuMonitorDef).Region == "exit")
+	var handleDef: PackDefs.MenuMonitorDef = null
+	for m in menu_def.Monitors:
+		if m.Region == "exit":
+			handleDef = m
+	_check(handleDef != null and not handleDef.PressedImageFile.is_empty(), "the pack gives the handle its pulled picture")
+	if handle != null and handle.get_meta("pressed") != null:
+		var pulled: bool = menu.call("_press_shown", "exit")
+		_check(pulled and (handle.texture as AtlasTexture).atlas == handle.get_meta("pressed"), "pressing the handle shows it pulled")
+	else:
+		print("[cockpit_menu] (the art set predates the pulled handle - not checked)")
 
 	# "Provide feedback" and the build label in the black right of the
 	# picture, left-aligned together, the box over the label (TeeJ,

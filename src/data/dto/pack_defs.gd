@@ -231,6 +231,10 @@ class MenuReadoutDef:
 ## With `frame_by` ({region: frame}) it shows the frame of whichever of those
 ## regions is chosen, and does not move - the galaxy-size lever's three
 ## positions (COMMON.DLL 10001-10003; TeeJ, 2026-09-25).
+## With `region` and `pressed_image` (one frame), that picture shows for a
+## moment when the region is pressed, before its function runs - the ejector
+## handle pulled (COMMON.DLL 10011; TeeJ, 2026-09-25: "when you click on the
+## handle, it moves").
 class MenuMonitorDef:
 	var ImageFile: String
 	var At: Array = []         # [x, y]
@@ -239,6 +243,7 @@ class MenuMonitorDef:
 	var Region: String
 	var SelectedImageFile: String
 	var FrameBy: Dictionary = {}   # region key ("action" or "action:value") -> frame
+	var PressedImageFile: String
 
 	static func from_dict(d: Dictionary) -> MenuMonitorDef:
 		var o := MenuMonitorDef.new()
@@ -251,6 +256,7 @@ class MenuMonitorDef:
 		o.Still = int(JsonUtil.get_ci(d, "still") if JsonUtil.get_ci(d, "still") != null else -1)
 		o.Region = JsonUtil.str_or(d, "region", "")
 		o.SelectedImageFile = JsonUtil.str_or(d, "selected_image", "")
+		o.PressedImageFile = JsonUtil.str_or(d, "pressed_image", "")
 		var fb: Variant = JsonUtil.get_ci(d, "frame_by")
 		if fb is Dictionary:
 			for k in fb:
