@@ -477,6 +477,12 @@ func _init() -> void:
 			(bs.find_child("build_up", true, false) as TextureButton).pressed.emit()
 			(bs.find_child("build_up", true, false) as TextureButton).pressed.emit()
 			_check((bs.find_child("Number", true, false) as Label).text == "3", "the spinner counts up")
+			# "Number to build:" stays clear of the number (TeeJ, 2026-09-25:
+			# it ran into it in every build screen).
+			var nl: Label = bs.find_child("NumberLabel", true, false)
+			var textW: float = nl.get_theme_font("font").get_string_size(nl.text, HORIZONTAL_ALIGNMENT_LEFT, -1, nl.get_theme_font_size("font_size")).x
+			_check(nl.position.x + nl.size.x <= 137 * K and textW <= nl.size.x and nl.horizontal_alignment == HORIZONTAL_ALIGNMENT_RIGHT,
+				"'Number to build:' ends before the number box (text %d px in %d)" % [int(textW / K), int(nl.size.x / K)])
 			(bs.find_child("build_list_open", true, false) as TextureButton).pressed.emit()
 			_check(bs._list.visible and bs._listRows.size() == bs._items.size(), "the arrow drops the list of %d items" % bs._items.size())
 			(bs.find_child("build_cancel", true, false) as TextureButton).pressed.emit()

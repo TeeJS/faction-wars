@@ -33,6 +33,9 @@ const DeploymentY := 165
 const TimesRight := 200
 const Cream := Color(255 / 255.0, 251 / 255.0, 240 / 255.0)
 const NumberAt := Vector2(141, 196)
+## "Number to build:" may start this far left and ends NumberGap short of the box.
+const NumberLabelLeft := 10
+const NumberGap := 4
 const UpAt := Vector2(189, 196)
 const DownAt := Vector2(189, 205)
 const ButtonXs := [5, 73, 141]
@@ -120,7 +123,10 @@ func _build() -> void:
 	_deployment = OUI.Text(_canvas, "", TimesRight - 80, DeploymentY, 80, 14, 11, Color.WHITE, HORIZONTAL_ALIGNMENT_RIGHT, false, "Deployment")
 	for l in [_completion, _deployment]:
 		(l as Label).mouse_filter = Control.MOUSE_FILTER_PASS
-	OUI.Text(_canvas, "Number to build:", 43, 196, 96, 16, 13, Cream, HORIZONTAL_ALIGNMENT_LEFT, false, "NumberLabel")
+	# Right-aligned to end just short of the number box (TeeJ, 2026-09-25: the
+	# word ran into the number in every build screen): our font sets it wider
+	# than the original's, which fit 43-139 from the left.
+	OUI.Text(_canvas, "Number to build:", NumberLabelLeft, 196, NumberAt.x - NumberGap - NumberLabelLeft, 16, 13, Cream, HORIZONTAL_ALIGNMENT_RIGHT, false, "NumberLabel")
 	_number = OUI.Text(_canvas, "1", NumberAt.x, NumberAt.y, 44, 16, 13, Color.WHITE, HORIZONTAL_ALIGNMENT_LEFT, false, "Number")
 	_number.mouse_filter = Control.MOUSE_FILTER_STOP
 	_number.tooltip_text = "Number of units to build consecutively"
