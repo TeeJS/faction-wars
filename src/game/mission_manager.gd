@@ -639,6 +639,25 @@ static func Launch(type: int, team: Array, from: Planet, target: Planet, decoys:
 			mission.Decoys.append(u)
 	mission.DaysToTarget = from.DeploymentDaysTo(target)
 
+	# THE TEAM LEAVES ITS FLEET (TeeJ, 2026-09-24: "when sending personnel on
+	# a mission from a fleet, they do not 'leave' the fleet"). The original
+	# moves a team into the Mission window; one still aboard stayed in the
+	# fleet's Personnel list and would have died with the fleet
+	# (FleetBattleManager.LoseCrews). It sets off from the fleet's system,
+	# `from` - where Conclude already lands a team whose mission ends early.
+	# A Special Forces unit rides in a ship's hangar, whose Attached may name
+	# the system rather than the fleet (CascadeFleetPayloads), so the hangars
+	# are searched too.
+	for u in team:
+		var carried: bool = false
+		for f in from.OrbitingFleets:
+			for ship in f.Ships:
+				if ship.Hangar.has(u):
+					ship.Hangar.erase(u)
+					carried = true
+		if carried or u.Attached is Fleet:
+			MilitaryCatalog.Relocate(u, from)
+
 	for c in team:
 		if mission.Arrived():
 			MilitaryCatalog.Relocate(c, target)
