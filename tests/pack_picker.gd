@@ -192,11 +192,13 @@ func _init() -> void:
 		var star: PackPicker.StarButton = (picker._panels[id] as Node).find_child("Star", true, false)
 		star.pressed.emit()
 		_check(star.on and PackPicker.Favorites().has(id), "%s starred" % id)
+		_check(star.tooltip_text == "Remove from favorites", "a filled star says 'Remove from favorites' ('%s')" % star.tooltip_text)
 	var ww2_star: PackPicker.StarButton = (picker._panels["ww2"] as Node).find_child("Star", true, false)
 	ww2_star.pressed.emit()
 	await process_frame
 	_check(not ww2_star.on and PackPicker.Favorites().size() == 3 and picker.get_node_or_null("Favorites") != null,
 		"a fourth star is refused, and says so")
+	_check(ww2_star.tooltip_text == "Add to favorites", "an empty star says 'Add to favorites' ('%s')" % ww2_star.tooltip_text)
 	var said: Node = picker.get_node_or_null("Favorites")
 	if said != null:
 		said.queue_free()

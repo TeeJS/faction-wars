@@ -647,9 +647,9 @@ func _toggle_star(id: String, star: StarButton) -> void:
 	star.queue_redraw()
 
 
+## The star's state, unmistakable (TeeJ, 2026-09-24).
 static func _star_tip(on: bool) -> String:
-	return "A favorite: first on this screen. Click to unstar." if on \
-		else "Star as a favorite (up to %d): favorites come first on this screen." % MaxFavorites
+	return "Remove from favorites" if on else "Add to favorites"
 
 
 ## Left and Right, and the mouse wheel over the cards, turn the carousel -
