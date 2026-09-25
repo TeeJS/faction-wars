@@ -206,6 +206,7 @@ Rects are in the menu picture's own pixels - the original's cockpit is
 | `loyalty_label` | Display string for the GID loyalty mode. |
 | `agent_name` | What the side's agent droid / adviser is called (manual p030, Fig. 2.16; C-3PO and IMP-22). Optional; "Agent" when absent. Was an id branch in engine code. |
 | `adjective` | The side's name as an adjective in the game's own sentences - "the **Imperial** fleet", "**Alliance** forces" (the battle alert and results, TEXTSTRA's battle block). Optional; the `display_name` when absent. |
+| `short_name` | The side's name where room is short - the map key's legend, "**Alliance**", "**Empire**" (the original's words). Optional; the `display_name` when absent. |
 | `starting_planets[]` | `{planet, support, explored, garrison}`. `planet` is a **planet id** (`map.json`); `garrison` a logistics table id (`setup.json`). |
 | `seed` | Which day-zero logistics table seeds this side's HQ, garrison and fleets — **table ids** from `setup.json` (§12 Q2). |
 | `victory.capture_characters` | **Character ids** (`characters.json`) this side must hold captive to win. The Objectives window looks the display name up (`FactionRegistry.CharacterNameOf`). |
@@ -1033,6 +1034,7 @@ What changed from the source repo's 2026-07-25 draft, and why.
 | 62 | **`card_image`** (§2): the picker card's picture when `map_image`'s art set is not imported; optional, never a load error when missing | TeeJ, 2026-09-24: the Milky Way on the Star Wars card before the art is imported |
 | 63 | A pack **may carry the original's pictures** (its `art/` folder, an `original/` folder): the game's import and the exporter's Build faction pack no longer refuse one | TeeJ, 2026-09-25: the original came with its own editor, and people mod it - a mod is the modder's to make |
 | 64 | **`frame_by`** on a `menu.monitors` entry (§2): a monitor whose frame follows a choice; validated with rule 11 | TeeJ, 2026-09-25: "the lever to the left of the galaxy size is missing ... the lever moves as you change your size selection" |
+| 65 | **`short_name`** per faction (§3): the side where room is short (the map key's legend) | TeeJ, 2026-09-25: the map key "should match the UI" of the original, whose legend says "Alliance" and "Empire" |
 
 ---
 

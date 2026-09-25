@@ -7,8 +7,10 @@ extends CanvasLayer
 var _map: GalaxyMap
 var _activeLabel: Label
 var _key: GidKey
+var _okey: Control = null    # the original's key, under the frame (original_gid_key.gd)
 var _panel: PanelContainer   # the category selector's bar
 var _row: HBoxContainer      # its buttons, centred in it
+const OriginalKey := preload("res://src/ui/original_gid_key.gd")
 
 
 func Setup(map: GalaxyMap) -> void:
@@ -158,5 +160,27 @@ func SetActiveLabel(text: String) -> void:
 
 ## Rebuild the key for the newly-selected mode (hides itself on Display Off).
 func ShowKeyFor(mode: Gid.GidMode) -> void:
+	if _okey != null:
+		_okey.call("ShowMode", mode)
+		return
 	if _key != null:
 		_key.ShowMode(mode)
+
+
+## Under the Command Center frame, the original's key (original_gid_key.gd)
+## in place of the plain one, when the art set has its pieces.
+func FitKeyToFrame(frame: CommandFrame) -> void:
+	if _okey != null or frame == null or not OriginalKey.CanBuild(frame.Side):
+		return
+	if _key != null:
+		_key.Retire()
+		_key = null
+	_okey = OriginalKey.new()
+	add_child(_okey)
+	_okey.call("Build", frame.Side, frame.S, frame.Origin)
+	ShowKeyFor(Gid.ActiveMode())
+
+
+## The key in use (the original's or the plain one), for tests.
+func Key() -> Control:
+	return _okey if _okey != null else _key

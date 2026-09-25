@@ -91,6 +91,19 @@ public sealed class Importer
         ("unexplored", 10181, 10180, 10170, 10169),
     };
     private const int UprisingFrame1 = 11608, UprisingFrame2 = 11609;
+    // STRATEGY.DLL: the GID key (the map's legend; TeeJ, 2026-09-25) - its
+    // closed button, the key in miniature (10168: the original shows its
+    // top-left 29x23), and its legend's marks, 9x9 on black: 10243 the
+    // Alliance's, 10241 the Empire's, 10245 neutral, and 10158 unexplored
+    // (15x15). Its rows' stars are the grey GID set (gid/unexplored.*) and its
+    // close box is title_close. Each matched to the pixel on TeeJ's
+    // screenshots of the original, both sides.
+    private static readonly (string Name, int Id, bool KeyBlack)[] GidKeyPictures =
+    {
+        ("gid_key_closed", 10168, false),
+        ("gid_key_alliance", 10243, true), ("gid_key_empire", 10241, true),
+        ("gid_key_neutral", 10245, true), ("gid_key_unexplored", 10158, true),
+    };
 
     // Full-screen pictures (docs/original-art-plan.md, phase 0): the Shuttle
     // Cockpit, the Star Wars pack's menu picture (manual p021 Fig 2.2), in
@@ -706,6 +719,11 @@ public sealed class Importer
                 if (SaveSprite(strategy, id, P("gid", $"{faction}.{tier}.png"))) { stars++; pictureCount++; }
                 else missing.Add($"gid/{faction}.{tier}: no bitmap {id} in STRATEGY.DLL");
             }
+        }
+        foreach (var (name, id, keyBlack) in GidKeyPictures)
+        {
+            if (SaveSprite(strategy, id, P("windows", $"{name}.png"), keyBlack: keyBlack)) pictureCount++;
+            else missing.Add($"windows/{name}: no bitmap {id} in STRATEGY.DLL");
         }
         if (SaveSprite(strategy, UprisingFrame1, P("icons", "uprising.png"))) pictureCount++;
         else missing.Add($"icons/uprising: no bitmap {UprisingFrame1} in STRATEGY.DLL");

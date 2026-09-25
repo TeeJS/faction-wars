@@ -85,6 +85,9 @@ class FactionDef:
 	## Imperial fleet", "Alliance forces" - TEXTSTRA's battle block). Blank =
 	## the display name.
 	var Adjective: String
+	## The side's name where room is short ("Alliance", "Empire" - the map
+	## key's legend, the original's words). Blank = the display name.
+	var ShortName: String
 
 	static func from_dict(d: Dictionary) -> FactionDef:
 		var o := FactionDef.new()
@@ -103,6 +106,7 @@ class FactionDef:
 		o.AgentName = JsonUtil.str_or(d, "agent_name", "")
 		o.ArtSkin = JsonUtil.str_or(d, "skin", "")
 		o.Adjective = JsonUtil.str_or(d, "adjective", "")
+		o.ShortName = JsonUtil.str_or(d, "short_name", "")
 		return o
 
 

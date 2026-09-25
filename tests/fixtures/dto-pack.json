@@ -4489,6 +4489,7 @@
         "HqGarrison": "alliance_hq_garrison",
         "ProceduralFleet": "alliance_procedural_fleet"
       },
+      "ShortName": "Alliance",
       "StartingPlanets": [
         {
           "Explored": true,
@@ -4525,6 +4526,7 @@
         "HqGarrison": "empire_hq_garrison",
         "ProceduralFleet": "empire_procedural_fleet"
       },
+      "ShortName": "Empire",
       "StartingPlanets": [],
       "Victory": {
         "CaptureCharacters": [

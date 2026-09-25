@@ -18,7 +18,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>FactionWarsExporter</AssemblyName>
     <RootNamespace>FactionWarsExporter</RootNamespace>
-    <Version>2.4.3</Version>
+    <Version>2.4.4</Version>
     <Product>Faction Wars Exporter</Product>
     <Description>Exports the original artwork from your own copy of Star Wars: Rebellion into a file Faction Wars imports.</Description>
     <PublishSingleFile>true</PublishSingleFile>
