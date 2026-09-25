@@ -95,8 +95,9 @@ func RefreshIfChanged() -> void:
 	var now: Variant = StateSignature()
 	if now == null:
 		return
-	# A menu or a dialog is open on this window - leave it completely alone.
-	if HasOpenPopup():
+	# A menu or a dialog is open on this window, or something is being dragged
+	# - leave it completely alone.
+	if HasOpenPopup() or _Dragging():
 		return
 	if _everPainted and now == _paintedSignature:
 		return
@@ -125,11 +126,25 @@ static func _HasOpenPopup(node: Node) -> bool:
 func CanRefresh() -> bool:
 	# Checked here as well, so the day tick and the state event cannot walk over
 	# a dialog either - they call Refresh() directly, bypassing the poll.
-	if HasOpenPopup():
+	if HasOpenPopup() or _Dragging():
 		_pendingRefresh = true
 		return false
 	_pendingRefresh = false
 	return true
+
+
+## NOT UNDER A DRAG. A repaint rebuilds the window's buttons, so one in the
+## middle of a drag took the drop target out from under the mouse and the
+## release landed on nothing: a fleet dragged between systems while the clock
+## ran was dropped about one time in six (tests/drag_fleet_icon, 2 of 12 runs).
+## The repaint waits and follows the drop (_notification).
+func _Dragging() -> bool:
+	return is_inside_tree() and get_viewport().gui_is_dragging()
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_DRAG_END and _pendingRefresh and CanRefresh():
+		Refresh()
 
 
 func RegisterPopupMenu(popup: PopupMenu) -> void:
