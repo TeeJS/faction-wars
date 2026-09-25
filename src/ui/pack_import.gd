@@ -45,10 +45,11 @@ const REASONS_SHOWN := 8
 ## window and the in-transit icon, the System, Fleet and Ship Finders, the
 ## battle results' forces pages, the character status icons and the blue
 ## hyperspace engine glow (released 2026-09-24). 2.4.1: planet pictures 24-26
-## are the original's sprites (Umgul and Bpfassh were plain circles). Raise it
-## when the game needs pictures an older exporter did not write; the picker
-## then asks for a new export.
-const MIN_EXPORTER := {"swr-original": "2.4.1"}
+## are the original's sprites (Umgul and Bpfassh were plain circles). 2.4.2:
+## the Mines tab's mine and piles, and the Command Center frame (released
+## 2026-09-25). Raise it when the game needs pictures an older exporter did
+## not write; the picker then asks for a new export.
+const MIN_EXPORTER := {"swr-original": "2.4.2"}
 
 
 ## Called with each import's result (the pack picker refreshes its cards).
