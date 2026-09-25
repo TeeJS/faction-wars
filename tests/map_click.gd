@@ -64,18 +64,37 @@ func _init() -> void:
 			opened = true
 	_check(opened, "pressing it opened the '%s' theatre window" % sector0.Name)
 
-	# Theatre names are drawn only while hovered - text AND outline.
-	var theatre_btn: Button = null
-	for c in map.get_children():
-		if c is Button and not hits.values().has(c) and not (c as Button).text.is_empty():
-			theatre_btn = c
-			break
-	_check(theatre_btn != null and not GalaxyMap.TitleShown(theatre_btn) and theatre_btn.get_theme_color("font_color").a == 0.0,
-		"a theatre's name is hidden (no outline, transparent text) when not hovered")
+	# Theatre names are drawn only while hovered: the plain look's text AND
+	# outline on the box, or the original's own label (with its art).
+	var theatre_btn: Button = map.SectorButton(sector0)
+	var title: Label = map.SectorTitle(sector0)
+	_check(theatre_btn != null and not map.IsTitleShown(sector0), "a theatre's name is hidden when not hovered")
+	if title == null:
+		_check(theatre_btn.get_theme_color("font_color").a == 0.0, "(plain look) no outline, transparent text")
 	theatre_btn.mouse_entered.emit()
-	_check(GalaxyMap.TitleShown(theatre_btn) and theatre_btn.get_theme_color("font_color").a == 1.0, "hovering shows it, dark with an outline")
+	_check(map.IsTitleShown(sector0), "hovering shows it")
+	if title == null:
+		_check(theatre_btn.get_theme_color("font_color").a == 1.0, "(plain look) dark with an outline")
+	else:
+		# The original's (TeeJ's Calaron): yellow, Arial 14 at the picture's
+		# scale, two lines - the name, then "Sector" - top-left at the sector's
+		# point on the picture, 7 px up-left of where a star there is centred.
+		var fit: float = map.Backdrop().scale.x if map.Backdrop() != null else 1.0
+		var at: Vector2 = map.MapPos(sector0.MapX, sector0.MapY) - Vector2(7, 7) * fit
+		_check(title.text == "%s\n%s" % [sector0.Name, Terms.label("sector")] and title.get_theme_color("font_color") == Color(240 / 255.0, 240 / 255.0, 0)
+			and title.get_theme_font_size("font_size") == roundi(14.0 * fit) and title.get_theme_constant("outline_size") == 0
+			and title.position.is_equal_approx(at),
+			"(original look) '%s', yellow, %d px, no outline, at the sector's point" % [title.text.replace("\n", " / "), title.get_theme_font_size("font_size")])
+	# Off the box onto one of its own regions: the name stays up (it blinked
+	# on every star - TeeJ, 2026-09-25: "more flickery than the original").
+	var hitIn: Button = hits[sector0.Planets[0]]
 	theatre_btn.mouse_exited.emit()
-	_check(not GalaxyMap.TitleShown(theatre_btn), "leaving hides it again")
+	hitIn.mouse_entered.emit()
+	await process_frame
+	_check(map.IsTitleShown(sector0), "moving onto one of its regions keeps it up")
+	hitIn.mouse_exited.emit()
+	await process_frame
+	_check(not map.IsTitleShown(sector0), "leaving hides it again")
 
 	# The padding: theatre boxes are their regions plus SectorPadding a side.
 	var eu_overlaps := 0

@@ -22,6 +22,7 @@ var _planetStars: Dictionary = {}    # Planet -> Label
 var _backdrop: Sprite2D = null
 ## The player's own artwork overlay (tools/FactionWarsExporter).
 const Art := preload("res://src/ui/artwork.gd")
+const OUI := preload("res://src/ui/original_ui.gd")
 ## The original drew its 15 px stars on a 640-wide screen; ours is 1440.
 const StarScale := 2.0
 var _planetSprites: Dictionary = {}   # Planet -> TextureRect (the original's star)
@@ -59,6 +60,28 @@ static func TitleFont() -> Font:
 		_titleFont.base_font = ThemeDB.fallback_font
 		_titleFont.variation_embolden = 0.9
 	return _titleFont
+## THE ORIGINAL'S SECTOR NAME, when its art is in use (TeeJ, 2026-09-25:
+## "tool tips/sector names are still too hard to read, please match the
+## original"). Measured on his screenshot of Calaron: yellow (240,240,0), Arial
+## 14, regular weight, two lines - the name, then "Sector" - left-aligned, no
+## outline; the text's top-left at the sector's own point on the picture,
+## where a star's 15 px bitmap has its top-left (7 px up and left of the
+## star's centre, which is where MapPos puts a coordinate).
+const OTitleColor := Color(240 / 255.0, 240 / 255.0, 0)
+const OTitlePx := 14.0
+const StarHalf := 7.0
+## The picture's pixels in this node's space (the backdrop's scale).
+var _fit: float = 1.0
+## WHICH NAME SHOWS: the sector under the pointer, over its box or any of its
+## regions. The region buttons sit on top of the box, so the box's own exit
+## fired on every star and the name went out until the pointer was off the
+## star again ("they also seem more flickery than the original?"); the
+## regions now hold their sector's name up too.
+var _titles: Dictionary = {}       # Sector -> its name: a Label, or the plain look's button
+var _sectorButtons: Dictionary = {}  # Sector -> its click box
+var _hoverOwner: Dictionary = {}   # Control (a box or a region) -> Sector
+var _under: Array = []             # the boxes and regions the pointer is over, last entered last
+var _hovered: Sector = null
 ## The map area on screen, in this node's space: the rectangle the scene used
 ## to give the Star Wars picture (Main.tscn, 1070.67 x 803 at 150,99).
 const Frame := Vector2(1070.6666, 803.0)
@@ -90,11 +113,18 @@ func InitializeMap(galaxyData: Array, uiManager: UIManager) -> void:
 	_planetStars.clear()
 	_planetFlares.clear()
 	_regionHits.clear()
+	_titles.clear()
+	_sectorButtons.clear()
+	_hoverOwner.clear()
+	_under.clear()
+	_hovered = null
 	_hqPlanet = null
 	_backdrop = null
 	_scale = Vector2.ONE
+	_fit = 1.0
 	_origin = Vector2.ZERO
 	_load_backdrop()
+	var original: bool = OriginalLook()
 
 	print("\n--- DRAWING GALAXY: %d Sectors Loaded ---" % galaxyData.size())
 
@@ -104,21 +134,41 @@ func InitializeMap(galaxyData: Array, uiManager: UIManager) -> void:
 
 	for sector in galaxyData:
 		var sectorButton := Button.new()
-		sectorButton.text = ("Sector %d" % sector.SectorId) if sector.Name.is_empty() else sector.Name
+		var sectorName: String = ("Sector %d" % sector.SectorId) if sector.Name.is_empty() else sector.Name
 		sectorButton.flat = true
-		# The theatre's name shows ONLY while hovered: dark, with a light outline,
-		# so it reads on a paper map (WWII) as well as on a starfield (Star Wars).
-		# A theme outline draws even on transparent text, which put every name on
-		# screen at once; so the outline is switched on and off with the mouse.
-		sectorButton.add_theme_font_size_override("font_size", TitleFontSize)
-		sectorButton.add_theme_font_override("font", TitleFont())
-		sectorButton.add_theme_color_override("font_outline_color", TitleOutline)
 		sectorButton.z_index = TitleZIndex
-		_title_visible(sectorButton, false)
-		sectorButton.mouse_entered.connect(_title_visible.bind(sectorButton, true))
-		sectorButton.mouse_exited.connect(_title_visible.bind(sectorButton, false))
+		if original:
+			# The original's name: its own label, at the sector's point.
+			var title := Label.new()
+			title.name = "SectorName"
+			title.text = "%s\n%s" % [sectorName, Terms.label("sector")]
+			title.add_theme_font_override("font", OUI.Face(false))
+			title.add_theme_font_size_override("font_size", roundi(OTitlePx * _fit))
+			title.add_theme_color_override("font_color", OTitleColor)
+			title.position = MapPos(sector.MapX, sector.MapY) - Vector2(StarHalf, StarHalf) * _fit
+			title.z_index = TitleZIndex
+			title.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			title.visible = false
+			add_child(title)
+			_titles[sector] = title
+		else:
+			# The theatre's name shows ONLY while hovered: dark, with a light
+			# outline, so it reads on a paper map (WWII) as well as on a starfield
+			# (Star Wars). A theme outline draws even on transparent text, which
+			# put every name on screen at once; so the outline is switched on and
+			# off with the mouse.
+			sectorButton.text = sectorName
+			sectorButton.add_theme_font_size_override("font_size", TitleFontSize)
+			sectorButton.add_theme_font_override("font", TitleFont())
+			sectorButton.add_theme_color_override("font_outline_color", TitleOutline)
+			_title_visible(sectorButton, false)
+			_titles[sector] = sectorButton
 
 		var localSector: Sector = sector
+		_sectorButtons[sector] = sectorButton
+		_hoverOwner[sectorButton] = sector
+		sectorButton.mouse_entered.connect(_Enter.bind(sectorButton))
+		sectorButton.mouse_exited.connect(_Leave.bind(sectorButton))
 		sectorButton.pressed.connect(func() -> void: _uiManager.OnSectorClicked(localSector))
 
 		var scaleFactor := _scale
@@ -187,6 +237,10 @@ func InitializeMap(galaxyData: Array, uiManager: UIManager) -> void:
 			hit.size = Vector2(RegionHitSize, RegionHitSize)
 			hit.position = MapPos(planet.MapX, planet.MapY) - Vector2(RegionHitSize, RegionHitSize) / 2.0
 			hit.pressed.connect(func() -> void: _uiManager.OnSectorClicked(localSector))
+			# Over a region is over its sector: its name stays up.
+			_hoverOwner[hit] = sector
+			hit.mouse_entered.connect(_Enter.bind(hit))
+			hit.mouse_exited.connect(_Leave.bind(hit))
 			add_child(hit)
 			_regionHits[planet] = hit
 
@@ -333,6 +387,64 @@ static func TitleShown(b: Button) -> bool:
 	return b.get_theme_constant("outline_size") > 0
 
 
+## Whether the original's art is in use, so the original's sector names.
+static func OriginalLook() -> bool:
+	return Art.ButtonIcon("title_close") != null
+
+
+## The pointer came onto a sector's box or one of its regions, or left one:
+## the sector shown is the owner of the last one it is still over, so moving
+## off a box onto one of its own regions keeps the name up.
+func _Enter(c: Control) -> void:
+	_under.erase(c)
+	_under.append(c)
+	_PickHovered()
+
+
+func _Leave(c: Control) -> void:
+	_under.erase(c)
+	_PickHovered()
+
+
+func _PickHovered() -> void:
+	_hovered = null
+	while not _under.is_empty() and _hovered == null:
+		_hovered = _hoverOwner.get(_under.back(), null)
+		if _hovered == null:
+			_under.pop_back()
+	_PaintTitles()
+
+
+func _PaintTitles() -> void:
+	for s in _titles:
+		var t: Control = _titles[s]
+		if not is_instance_valid(t):
+			continue
+		var on: bool = s == _hovered
+		if t is Button:
+			_title_visible(t, on)
+		else:
+			t.visible = on
+
+
+## A sector's click box, and whether its name is showing.
+func SectorButton(sector: Sector) -> Button:
+	return _sectorButtons.get(sector, null)
+
+
+func IsTitleShown(sector: Sector) -> bool:
+	var t: Control = _titles.get(sector, null)
+	if t == null:
+		return false
+	return TitleShown(t) if t is Button else t.visible
+
+
+## A sector's name label in the original's look (null in the plain look).
+func SectorTitle(sector: Sector) -> Label:
+	var t: Variant = _titles.get(sector, null)
+	return t if t is Label else null
+
+
 ## Where a map.json coordinate lands in this node's space: the frame's
 ## top-left is map_image_rect's (x, y), and the space is scaled onto the
 ## picture per axis.
@@ -384,6 +496,7 @@ func _load_backdrop() -> void:
 	if rect.size.x <= 0.0 or rect.size.y <= 0.0:
 		rect = Rect2(Vector2.ZERO, size)   # no rect: coordinates are picture pixels
 	var fit: float = minf(Frame.x / size.x, Frame.y / size.y)
+	_fit = fit
 	_scale = size / rect.size * fit
 	_origin = rect.position
 	_backdrop = Sprite2D.new()
