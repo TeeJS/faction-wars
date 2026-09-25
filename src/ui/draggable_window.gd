@@ -552,9 +552,14 @@ func AddCharacterToList(list: Container, characterData: Character, text: String,
 	characterBtn.add_theme_font_size_override("font_size", 16)
 
 	# 2. Create the specific Menu. You may only give ORDERS to your own people
-	# (manual p100); a prisoner and an injured character take none (p096).
+	# (manual p100); a prisoner and an injured character take none (p096);
+	# nor does someone in hyperspace (p111) - on their own way somewhere or
+	# aboard a fleet in transit. TeeJ's screenshot of the original
+	# (2026-09-25, Sarin Virgo aboard a moving Fleet 4): Move, Confirmed Move,
+	# Mission, Command and Retire greyed; Encyclopedia and Status live.
 	var isOurs: bool = characterData.Faction == GameSettings.PlayerFaction
-	var fit: bool = characterData.CanTakeOrders()
+	var inHyperspace: bool = characterData.Status == Enums.Status.Enroute
+	var fit: bool = characterData.CanTakeOrders() and not inHyperspace
 
 	var popup := PopupMenu.new()
 
@@ -591,9 +596,10 @@ func AddCharacterToList(list: Container, characterData: Character, text: String,
 		popup.add_child(commandSubmenu)
 		popup.add_submenu_node_item("Command", commandSubmenu, 3)
 
-		# A character with no possible rank at all has nothing to pick.
-		popup.set_item_disabled(popup.get_item_index(3),
-			not characterData.CanHoldAnyRank() and characterData.Rank == Enums.Rank.None)
+		# A character with no possible rank at all has nothing to pick, and
+		# one in hyperspace takes no post (the original greys Command itself).
+		popup.set_item_disabled(popup.get_item_index(3), inHyperspace
+			or (not characterData.CanHoldAnyRank() and characterData.Rank == Enums.Rank.None))
 
 	popup.add_item("Encyclopedia", 4)
 	popup.add_item("Status", 5)
