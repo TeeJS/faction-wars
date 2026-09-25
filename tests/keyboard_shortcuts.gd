@@ -62,6 +62,18 @@ func _init() -> void:
 	await process_frame
 	# With the original's art, Game Options is its own screen (OptionsScreen).
 	_check(ui.get_node_or_null("GameOptionsWindow") != null or ui.get_node_or_null("OptionsScreen") != null, "F1 opens Game Options")
+	var screen: Control = ui.get_node_or_null("OptionsScreen")
+	if screen != null:
+		# The whole screen, its black and click-stop included, and nothing
+		# opens over it - a sector from the column opened over it (TeeJ,
+		# 2026-09-25).
+		var view: Rect2 = ui.get_viewport().get_visible_rect()
+		_check(screen.get_global_rect().encloses(view), "the Game Options screen covers the whole screen (%s)" % str(screen.get_global_rect()))
+		ui.OnSectorClicked(GameState.ActiveGalaxy[0])
+		await process_frame
+		await process_frame
+		var sw: Node = Lq.first_or_null(ui.get_children(), func(n: Node) -> bool: return n is SectorWindow)
+		_check(sw == null or sw.get_index() < screen.get_index(), "a sector opened meanwhile stays under the Game Options screen")
 
 	# Alt+3 selects a Galaxy Display mode (idle fleets).
 	_check(ui.ActiveGalaxyMap != null, "the galaxy map is active for mode shortcuts")
