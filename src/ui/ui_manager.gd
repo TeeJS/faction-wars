@@ -89,6 +89,7 @@ func _ready() -> void:
 		var ver := BuildInfo.label()
 		menuButton.get_parent().add_child(ver)
 		menuButton.get_parent().move_child(ver, menuButton.get_index() + 1)
+		_versionLabel = ver
 	# Loop through the CommsList to wire the HUD buttons dynamically.
 	var commsList: VBoxContainer = get_node_or_null("CommsPanel/Margin/CommsList")
 	if commsList != null:
@@ -128,10 +129,9 @@ func _ready() -> void:
 	# The tester's feedback box, bottom of the left column (TeeJ, room #80).
 	if GameSettings.ProvideFeedback:
 		add_child(FeedbackPanel.new())
-	var mapLayersBtn: MenuButton = get_node_or_null("%GalaxyMapLayers")
-	if mapLayersBtn != null:
-		var popup: PopupMenu = mapLayersBtn.get_popup()
-		popup.id_pressed.connect(func(id: int) -> void: OnMapLayerSelected(popup, id))
+	# No Galaxy Map Layers button: the GID bar's categories do all it did
+	# (TeeJ, 2026-09-25: "the functionality this provides has all been moved
+	# elsewhere - please remove it").
 
 
 ## THE COMMAND CENTER, when the art set has the side's frame (CommandFrame):
@@ -174,6 +174,7 @@ func BuildCommandFrame(side: String) -> void:
 		frame.Place(map)
 	if ActiveGalaxyMap != null and ActiveGalaxyMap.Bar() != null:
 		ActiveGalaxyMap.Bar().FitToFrame(MapFrame)
+	_FitBottomBars(frame)
 	var background: ColorRect = get_node_or_null("../Background")
 	if background != null:
 		background.color = Color.BLACK
@@ -187,6 +188,59 @@ func BuildCommandFrame(side: String) -> void:
 	if comms != null:
 		comms.visible = false
 	_BuildReferenceBar()
+
+
+## THE BOTTOM BARS UNDER THE FRAME (TeeJ, 2026-09-25): the blue bar (the GID
+## selector) and the grey one under it span the frame exactly - "the blue bar
+## should be cropped to the width of the metal frame", "the blue and grey bars
+## should be centered on the new, narrower width" - each with its row of
+## buttons on the frame's middle: what sits at either end is held in equal
+## halves either side, so it cannot push the row off centre. On the blue bar,
+## Feedback at its far left, flush with its left side, and the build label at
+## its far right ("move the version number to the right of the blue bar").
+## The Menu button goes: the frame's Game Options monitor is the way to the
+## menu ("text 'menu' is not needed now, it can be removed").
+var _versionLabel: Label = null
+const BarTop := -80.0      # the blue bar, from the screen's bottom (GidBar)
+const BarBottom := -36.0
+const BarInset := 2.0      # what sits on it, in from its edges
+
+
+func _FitBottomBars(frame: CommandFrame) -> void:
+	var across: Rect2 = frame.ScreenRect()
+	var row: HBoxContainer = get_node_or_null("HBoxContainer")
+	if row != null:
+		row.anchor_left = 0.0
+		row.anchor_right = 0.0
+		row.offset_left = across.position.x
+		row.offset_right = across.end.x
+		var menu: Control = row.get_node_or_null("MenuButton")
+		if menu != null:
+			menu.visible = false
+		# Nothing is left at either end: the two spacers are equal halves,
+		# the finders between them.
+	var bar: GidBar = ActiveGalaxyMap.Bar() if ActiveGalaxyMap != null else null
+	if bar != null:
+		bar.FitAcross(across)
+	if _versionLabel != null:
+		_versionLabel.reparent(self)
+		_versionLabel.anchor_left = 0.0
+		_versionLabel.anchor_right = 0.0
+		_versionLabel.anchor_top = 1.0
+		_versionLabel.anchor_bottom = 1.0
+		_versionLabel.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		_versionLabel.offset_right = across.end.x - BarInset * 3.0
+		_versionLabel.offset_left = _versionLabel.offset_right - 200.0
+		_versionLabel.offset_top = BarTop
+		_versionLabel.offset_bottom = BarBottom
+	var feedback: FeedbackPanel = get_node_or_null("FeedbackPanel")
+	if feedback != null:
+		feedback.FitToBar(across.position.x, BarTop + BarInset, BarBottom - BarInset)
+	# The GID key's docked button had sat above Feedback in the left column.
+	var key: Control = get_node_or_null("MapKeyButton")
+	if key != null:
+		key.offset_bottom = FeedbackPanel.ColumnBottom
+		key.offset_top = FeedbackPanel.ColumnBottom - KeyButtonHeight
 
 
 ## THE WINDOW REFERENCE BAR ("The Window Reference Bar has twelve slots for
@@ -224,7 +278,9 @@ func _BuildReferenceBar() -> void:
 
 
 ## A minimised window's kind, as the sector window's corner icon for it:
-## Manufacturing, Defenses, Fleet or Mission. Null for any other window.
+## Manufacturing, Defenses, Fleet or Mission. Null for any other window. Only
+## the glyph: the corner icon is a 27x18 cell with its glyph in one corner,
+## and the original's shelf draws the glyph alone (11x7 before Commenor).
 func _WindowKindIcon(window: DraggableWindow) -> Texture2D:
 	var glyph := ""
 	if window is EconomyWindow:
@@ -237,7 +293,21 @@ func _WindowKindIcon(window: DraggableWindow) -> Texture2D:
 		glyph = "mission"
 	if glyph.is_empty():
 		return null
-	return Art.CornerIcon(glyph, OUI.Side(GameSettings.PlayerFaction))
+	var cell: Texture2D = Art.CornerIcon(glyph, OUI.Side(GameSettings.PlayerFaction))
+	if cell == null:
+		return null
+	var img: Image = cell.get_image()
+	if img == null:
+		return cell
+	if img.is_compressed():
+		img.decompress()
+	var used: Rect2i = img.get_used_rect()
+	if used.size.x <= 0 or used.size.y <= 0:
+		return cell
+	var only := AtlasTexture.new()
+	only.atlas = cell
+	only.region = Rect2(used)
+	return only
 
 
 ## Where a minimised window's button goes: the Window Reference Bar with the
@@ -246,12 +316,24 @@ func _MinimisedList() -> VBoxContainer:
 	return _referenceList if _referenceList != null else _taskbarList
 
 
+## A shelf entry as the original draws it (TeeJ's screenshot of Commenor,
+## 2026-09-25: "too hard to read, esp compared to the original"), in the
+## frame's pixels: the kind icon 2 px in from the slat's edge, the system name
+## straight after it in pure yellow, regular weight, 8 px capitals (Arial 11),
+## no outline and no fill - the bare slat behind - centred on the slat.
+const ShelfText := Color(1, 1, 0)
+const ShelfTextPx := 11.0
+const ShelfInset := 2.0
+const ShelfIconW := 11.0
+
+
 ## The shelf's entries: one slat high (or an even share of the shelf past
-## twelve), the name in white on the slat, lit on hover.
+## twelve).
 func RelayoutShelf() -> void:
 	if CommandFrameRef == null or _referenceList == null:
 		return
 	var shelf: Rect2 = CommandFrameRef.Shelf()
+	var s: float = CommandFrameRef.S
 	var entries: Array = _referenceList.get_children().filter(func(n: Node) -> bool:
 		return n is Button and not n.is_queued_for_deletion())
 	var h: float = shelf.size.y / float(maxi(ShelfSlots, entries.size()))
@@ -261,27 +343,23 @@ func RelayoutShelf() -> void:
 		btn.flat = true
 		btn.clip_text = true
 		btn.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		btn.tooltip_text = btn.text
-		for st in ["normal", "focus", "disabled"]:
-			btn.add_theme_stylebox_override(st, StyleBoxEmpty.new())
-		var lit := StyleBoxFlat.new()
-		lit.bg_color = Color(1, 1, 1, 0.18)
-		for st in ["hover", "pressed", "hover_pressed"]:
-			btn.add_theme_stylebox_override(st, lit)
+		# The icon at the original's size: fitted to the entry's height, then
+		# held to its own width at the frame's scale.
+		btn.expand_icon = true
+		btn.add_theme_constant_override("icon_max_width", roundi(ShelfIconW * s))
+		btn.add_theme_constant_override("h_separation", 0)
+		var bare := StyleBoxEmpty.new()
+		bare.content_margin_left = ShelfInset * s
+		bare.content_margin_right = ShelfInset * s
+		for st in ["normal", "focus", "disabled", "hover", "pressed", "hover_pressed"]:
+			btn.add_theme_stylebox_override(st, bare)
 		for c in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color", "font_hover_pressed_color"]:
-			btn.add_theme_color_override(c, Color.WHITE)
-		btn.add_theme_color_override("font_outline_color", Color.BLACK)
-		btn.add_theme_constant_override("outline_size", 3)
-		btn.add_theme_font_size_override("font_size", clampi(int(h * 0.42), 10, 14))
-
-
-func OnMapLayerSelected(popup: PopupMenu, selectedId: int) -> void:
-	# Update checkmarks so only the selected item is checked.
-	for i in popup.item_count:
-		popup.set_item_checked(i, i == selectedId)
-	# Command the active map to update its layer.
-	if ActiveGalaxyMap != null:
-		ActiveGalaxyMap.SetLayer(selectedId)
+			btn.add_theme_color_override(c, ShelfText)
+		btn.add_theme_constant_override("outline_size", 0)
+		btn.add_theme_font_override("font", OUI.Face(false))
+		btn.add_theme_font_size_override("font_size", roundi(ShelfTextPx * s))
 
 
 func _exit_tree() -> void:
@@ -884,7 +962,9 @@ func AddToTaskbar(title: String, onRestore: Callable) -> Button:
 			onRestore.call())
 	btn.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
 	var bottom: float = FeedbackPanel.ColumnBottom
-	var feedback: Node = get_node_or_null("FeedbackPanel")
+	var feedback: FeedbackPanel = get_node_or_null("FeedbackPanel")
+	if feedback != null and feedback.OnBar:
+		feedback = null   # on the blue bar, not in the column
 	if feedback != null:
 		bottom -= FeedbackPanel.FoldedHeight + KeyButtonGap
 	btn.offset_left = 4.0

@@ -173,6 +173,11 @@ func Shelf() -> Rect2:
 	return Rect2(Origin + r.position * S, r.size * S)
 
 
+## The whole frame on screen.
+func ScreenRect() -> Rect2:
+	return Rect2(Origin, FrameSize * S)
+
+
 ## The map's window on screen.
 func MapWindow() -> Rect2:
 	return Rect2(Origin + (Layout[Side]["window"] as Rect2).position * S, (Layout[Side]["window"] as Rect2).size * S)
