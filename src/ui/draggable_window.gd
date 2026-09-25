@@ -95,8 +95,9 @@ func RefreshIfChanged() -> void:
 	var now: Variant = StateSignature()
 	if now == null:
 		return
-	# A menu or a dialog is open on this window - leave it completely alone.
-	if HasOpenPopup():
+	# A menu or a dialog is open on this window, or something is being dragged
+	# - leave it completely alone.
+	if HasOpenPopup() or _Dragging():
 		return
 	if _everPainted and now == _paintedSignature:
 		return
@@ -125,11 +126,25 @@ static func _HasOpenPopup(node: Node) -> bool:
 func CanRefresh() -> bool:
 	# Checked here as well, so the day tick and the state event cannot walk over
 	# a dialog either - they call Refresh() directly, bypassing the poll.
-	if HasOpenPopup():
+	if HasOpenPopup() or _Dragging():
 		_pendingRefresh = true
 		return false
 	_pendingRefresh = false
 	return true
+
+
+## NOT UNDER A DRAG. A repaint rebuilds the window's buttons, so one in the
+## middle of a drag took the drop target out from under the mouse and the
+## release landed on nothing: a fleet dragged between systems while the clock
+## ran was dropped about one time in six (tests/drag_fleet_icon, 2 of 12 runs).
+## The repaint waits and follows the drop (_notification).
+func _Dragging() -> bool:
+	return is_inside_tree() and get_viewport().gui_is_dragging()
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_DRAG_END and _pendingRefresh and CanRefresh():
+		Refresh()
 
 
 func RegisterPopupMenu(popup: PopupMenu) -> void:
@@ -552,9 +567,14 @@ func AddCharacterToList(list: Container, characterData: Character, text: String,
 	characterBtn.add_theme_font_size_override("font_size", 16)
 
 	# 2. Create the specific Menu. You may only give ORDERS to your own people
-	# (manual p100); a prisoner and an injured character take none (p096).
+	# (manual p100); a prisoner and an injured character take none (p096);
+	# nor does someone in hyperspace (p111) - on their own way somewhere or
+	# aboard a fleet in transit. TeeJ's screenshot of the original
+	# (2026-09-25, Sarin Virgo aboard a moving Fleet 4): Move, Confirmed Move,
+	# Mission, Command and Retire greyed; Encyclopedia and Status live.
 	var isOurs: bool = characterData.Faction == GameSettings.PlayerFaction
-	var fit: bool = characterData.CanTakeOrders()
+	var inHyperspace: bool = characterData.Status == Enums.Status.Enroute
+	var fit: bool = characterData.CanTakeOrders() and not inHyperspace
 
 	var popup := PopupMenu.new()
 
@@ -591,9 +611,10 @@ func AddCharacterToList(list: Container, characterData: Character, text: String,
 		popup.add_child(commandSubmenu)
 		popup.add_submenu_node_item("Command", commandSubmenu, 3)
 
-		# A character with no possible rank at all has nothing to pick.
-		popup.set_item_disabled(popup.get_item_index(3),
-			not characterData.CanHoldAnyRank() and characterData.Rank == Enums.Rank.None)
+		# A character with no possible rank at all has nothing to pick, and
+		# one in hyperspace takes no post (the original greys Command itself).
+		popup.set_item_disabled(popup.get_item_index(3), inHyperspace
+			or (not characterData.CanHoldAnyRank() and characterData.Rank == Enums.Rank.None))
 
 	popup.add_item("Encyclopedia", 4)
 	popup.add_item("Status", 5)

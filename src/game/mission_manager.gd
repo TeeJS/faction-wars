@@ -613,6 +613,13 @@ static func Launch(type: int, team: Array, from: Planet, target: Planet, decoys:
 	if unfit != null:
 		return _refuse("%s is in no condition to go." % unfit.Name)
 
+	# "Someone in hyperspace takes no orders" (manual p111) - on their own
+	# way somewhere or aboard a fleet in transit (TeeJ's screenshot of the
+	# original, 2026-09-25: Mission greyed for a character in a moving fleet).
+	var travelling: Unit = Lq.first_or_null(team, func(u): return u.Status == Enums.Status.Enroute)
+	if travelling != null:
+		return _refuse("%s is in hyperspace and cannot be given orders." % travelling.Name)
+
 	if type == Enums.MissionType.SpecialPowerTraining:
 		var people := Lq.of_type_character(team)
 		if not Lq.any(people, CanTeachSpecialPower):
@@ -638,6 +645,25 @@ static func Launch(type: int, team: Array, from: Planet, target: Planet, decoys:
 		for u in decoys:
 			mission.Decoys.append(u)
 	mission.DaysToTarget = from.DeploymentDaysTo(target)
+
+	# THE TEAM LEAVES ITS FLEET (TeeJ, 2026-09-24: "when sending personnel on
+	# a mission from a fleet, they do not 'leave' the fleet"). The original
+	# moves a team into the Mission window; one still aboard stayed in the
+	# fleet's Personnel list and would have died with the fleet
+	# (FleetBattleManager.LoseCrews). It sets off from the fleet's system,
+	# `from` - where Conclude already lands a team whose mission ends early.
+	# A Special Forces unit rides in a ship's hangar, whose Attached may name
+	# the system rather than the fleet (CascadeFleetPayloads), so the hangars
+	# are searched too.
+	for u in team:
+		var carried: bool = false
+		for f in from.OrbitingFleets:
+			for ship in f.Ships:
+				if ship.Hangar.has(u):
+					ship.Hangar.erase(u)
+					carried = true
+		if carried or u.Attached is Fleet:
+			MilitaryCatalog.Relocate(u, from)
 
 	for c in team:
 		if mission.Arrived():

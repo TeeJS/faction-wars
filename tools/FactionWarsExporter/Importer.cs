@@ -528,6 +528,10 @@ public sealed class Importer
         // material, maintenance), their icons in the frame; TeeJ's screenshot
         // of the Empire's matched 901 at (127, 6).
         ("hud_resources.alliance", 900, 232, 10, 300, 28), ("hud_resources.empire", 901, 132, 12, 320, 30),
+        // The whole Command Center frame per side (manual p022 Fig 2.3), the
+        // map's see-through blue kept out: the game cuts the top bar, the
+        // Message Alert bar's column and the Game Options monitor from it.
+        ("command.alliance", 900, 0, 0, 640, 481), ("command.empire", 901, 0, 0, 640, 481),
     };
     private static readonly (string Side, int[] Ids)[] SpeedBars =
     {

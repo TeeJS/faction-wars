@@ -66,6 +66,16 @@ static func _labels(w: Control) -> Array:
 	return out
 
 
+## A right mouse press at a point, as a control's gui_input receives it.
+static func _right_click(at: Vector2) -> InputEventMouseButton:
+	var e := InputEventMouseButton.new()
+	e.button_index = MOUSE_BUTTON_RIGHT
+	e.pressed = true
+	e.position = at
+	e.global_position = at
+	return e
+
+
 func _cards(node: Node) -> Array:
 	var out: Array = []
 	if node.has_meta("card") and node is Control:
@@ -184,6 +194,48 @@ func _init() -> void:
 			_check(q.text == "No Ships are being built", "an idle queue in the original's words")
 		var head: Label = mfg.get_node_or_null("HeaderText0")
 		_check(head != null and head.text == "Ship Construction", "the row header")
+		# THE WHOLE ROW AND ITS BUILDING TAKE THE RIGHT-CLICK (TeeJ,
+		# 2026-09-25), with one menu that survives repaints - each repaint
+		# used to add another handler bound to a freed menu.
+		for _r in 5:
+			ew.Populate(home)
+			await process_frame
+		_check(q.gui_input.get_connections().size() == 1, "the queue line keeps one right-click handler across repaints (%d)" % q.gui_input.get_connections().size())
+		for i in 3:
+			var qmenu: PopupMenu = ew.get_node(EconomyWindow.QueuePaths[i]).get_node_or_null("QueueMenu")
+			for n in ["RowHit%d" % i, "BuildingHit%d" % i]:
+				var area: Control = mfg.get_node_or_null(n)
+				_check(area != null and area.mouse_filter == Control.MOUSE_FILTER_STOP, "%s takes the mouse" % n)
+				if area == null or qmenu == null:
+					continue
+				area.gui_input.emit(_right_click(area.get_global_rect().get_center()))
+				await process_frame
+				_check(qmenu.visible, "a right-click on %s opens the row's orders" % n)
+				qmenu.hide()
+				await process_frame
+		var rowHit: Control = mfg.get_node_or_null("RowHit0")
+		_check(rowHit != null and rowHit.position == Vector2(55, 4) * K and rowHit.size == Vector2(166, 79) * K, "row 0's hit area is its frame")
+	# AN UNSELECTED FACILITY'S MENU OPENS (TeeJ, 2026-09-25: "Right clicking
+	# on manufacturing facilities no longer brings up the menu"): selecting it
+	# used to repaint the tab and free the card and its menu first.
+	for t in range(1, etabs.get_tab_count()):
+		if etabs.is_tab_disabled(t):
+			continue
+		etabs.current_tab = t
+		for _i in 2:
+			await process_frame
+		var fcard: Button = Lq.first_or_null(_cards(etabs.get_child(t)), func(c: Control) -> bool:
+			return c is Button and not (c as Button).button_pressed and c.get_children().any(func(k): return k is PopupMenu))
+		if fcard == null:
+			continue
+		var fmenu: PopupMenu = Lq.first_or_null(fcard.get_children(), func(k) -> bool: return k is PopupMenu)
+		fcard.gui_input.emit(_right_click(fcard.get_global_rect().get_center()))
+		await process_frame
+		_check(is_instance_valid(fcard) and fcard.is_inside_tree() and fmenu.visible and fcard.button_pressed,
+			"right-clicking an unselected facility selects it and opens its menu (%s page)" % etabs.get_child(t).name)
+		if is_instance_valid(fmenu):
+			fmenu.hide()
+		break
 	# A facility page whose last row is short: every card still on the grid.
 	var shortRow: Array = []
 	var shortPage: int = -1
@@ -477,6 +529,12 @@ func _init() -> void:
 			(bs.find_child("build_up", true, false) as TextureButton).pressed.emit()
 			(bs.find_child("build_up", true, false) as TextureButton).pressed.emit()
 			_check((bs.find_child("Number", true, false) as Label).text == "3", "the spinner counts up")
+			# "Number to build:" stays clear of the number (TeeJ, 2026-09-25:
+			# it ran into it in every build screen).
+			var nl: Label = bs.find_child("NumberLabel", true, false)
+			var textW: float = nl.get_theme_font("font").get_string_size(nl.text, HORIZONTAL_ALIGNMENT_LEFT, -1, nl.get_theme_font_size("font_size")).x
+			_check(nl.position.x + nl.size.x <= 137 * K and textW <= nl.size.x and nl.horizontal_alignment == HORIZONTAL_ALIGNMENT_RIGHT,
+				"'Number to build:' ends before the number box (text %d px in %d)" % [int(textW / K), int(nl.size.x / K)])
 			(bs.find_child("build_list_open", true, false) as TextureButton).pressed.emit()
 			_check(bs._list.visible and bs._listRows.size() == bs._items.size(), "the arrow drops the list of %d items" % bs._items.size())
 			(bs.find_child("build_cancel", true, false) as TextureButton).pressed.emit()

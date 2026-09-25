@@ -9,9 +9,11 @@ extends RefCounted
 ## the site's data:
 ##   an art set      -> Artwork.UserArtRoot/<id>/   (read by src/ui/artwork.gd)
 ##   a faction pack  -> user://packs/<id>/          (listed by the pack picker)
-## A faction pack is shareable, so it may carry none of the original's art: one
-## with a file matching an installed art set, or anything under original/, is
-## refused. A faction pack must also be one the game will load: its pack.json
+## A faction pack may carry any pictures, the original's included: Star Wars:
+## Rebellion has a modding culture - the original came with its own editor -
+## and a mod is the modder's to make (TeeJ, 2026-09-25; a refusal of packs
+## holding the original's pictures stood here and is gone). A faction pack
+## must be one the game will load: its pack.json
 ## names the same id as its manifest, and it passes the loader's checks
 ## (PackLoader.Load) from a staging folder named after it - so a pack that would
 ## only ever show as a broken card is refused here, with the reasons (the
@@ -177,9 +179,6 @@ static func _import(zip: ZIPReader) -> Dictionary:
 	if kind == KIND_ART_SET:
 		dest = "%s/%s" % [Art.UserArtRoot, id]
 	else:
-		var leaked := _leaks(contents)
-		if not leaked.is_empty():
-			return _fail("Not imported: a faction pack must not carry the original's art (refer to the art set instead). These files are the original's:\n  " + "\n  ".join(leaked))
 		if not contents.has("pack.json"):
 			return _fail("It is a faction pack with no pack.json.")
 		if FileAccess.file_exists("%s/%s/pack.json" % [FactionRegistry.PACKS_ROOT, id]):
@@ -290,28 +289,6 @@ static func Remove(kind: String, id: String) -> void:
 	_sync()
 
 
-## Files of a faction pack that are the original's: anything under original/
-## (any case - the exporter's PackBuilder checks it so), and any file identical
-## to one in an art set: the player's imported ones, and a checkout's exported
-## one in the project's art/ folder (gitignored and never exported - a
-## developer's own copy).
-static func _leaks(contents: Dictionary) -> Array[String]:
-	var known := {}   # sha256 -> true, from every art set's manifest
-	for root in [Art.UserArtRoot, "res://art"]:
-		if not DirAccess.dir_exists_absolute(root):
-			continue
-		for id in DirAccess.get_directories_at(root):
-			var m: Variant = JSON.parse_string(FileAccess.get_file_as_string("%s/%s/manifest.json" % [root, id]))
-			if m is Dictionary and m.get("files") is Dictionary:
-				for h in (m["files"] as Dictionary).values():
-					known[str(h).to_lower()] = true
-	var out: Array[String] = []
-	for p in contents:
-		if str(p).to_lower().begins_with("original/"):
-			out.append("%s  (the original's art lives in the art set, not in a pack)" % p)
-		elif known.has(_sha256(contents[p])):
-			out.append("%s  (the same picture as one in your art set)" % p)
-	return out
 
 
 static func _fail(message: String) -> Dictionary:
