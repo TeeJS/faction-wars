@@ -281,6 +281,7 @@ static func _is_imported(pack_id: String) -> bool:
 
 func _build(ids: Array[String]) -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
+	theme = _tooltip_theme()
 	var bg := Backdrop.new()
 	bg.name = "Backdrop"
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -295,18 +296,13 @@ func _build(ids: Array[String]) -> void:
 	centre.add_child(column)
 	_column = column
 
-	# The logo across the top (TeeJ, 2026-09-24), then what this screen is for.
-	var heading := VBoxContainer.new()
-	heading.add_theme_constant_override("separation", 10)
+	# The logo across the top (TeeJ, 2026-09-24), and nothing under it: the
+	# cards say what the screen is for ("CHOOSE A SETTING" went - TeeJ: "makes
+	# no sense").
 	var logo := LogoSlot.new()
 	logo.name = "LogoSlot"
 	logo.custom_minimum_size = Vector2(CardWidth * MaxShown + CardGap * 2, LogoH)
-	heading.add_child(logo)
-	var title := _label("CHOOSE A SETTING", 16, CGlow, _face(6, 0.5))
-	title.name = "Title"
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	heading.add_child(title)
-	column.add_child(heading)
+	column.add_child(logo)
 
 	# The carousel: an arrow either side of the cards on show, and a dot per
 	# card under them.
@@ -484,18 +480,20 @@ func _card(id: String, pack: PackLoader.LoadedPack, errors: Array[String]) -> Bu
 	play.pressed.connect(func() -> void: Play(id))
 	foot.add_child(play)
 	_play[id] = play
-	# The quiet actions, on a row every card keeps (empty or not), so the
-	# cards stay the same height and their Play buttons level.
+	# The card's other actions, on a row every card keeps (empty or not), so
+	# the cards stay the same height and their Play buttons level.
 	var links := HBoxContainer.new()
 	links.name = "Links"
 	links.alignment = BoxContainer.ALIGNMENT_CENTER
-	links.custom_minimum_size = Vector2(0, 26)
-	links.add_theme_constant_override("separation", 14)
+	links.custom_minimum_size = Vector2(0, 32)
+	links.add_theme_constant_override("separation", 10)
 	foot.add_child(links)
 
 	# The imported artwork, clearable - only when there is some to clear.
 	if pack != null and not _imported_sets(pack).is_empty():
 		var clear := _link("ClearArtwork", "Clear artwork pack")
+		clear.tooltip_text = "Remove the imported artwork from this %s. %s then plays without the original's pictures until you import your artwork file again." \
+			% ["browser" if OS.has_feature("web") else "computer", pack.Manifest.DisplayName]
 		clear.pressed.connect(func() -> void:
 			_confirm("Clear artwork pack",
 				"Remove the imported artwork? %s plays without it until you import your artwork file again." % pack.Manifest.DisplayName,
@@ -508,6 +506,8 @@ func _card(id: String, pack: PackLoader.LoadedPack, errors: Array[String]) -> Bu
 	if _is_imported(id):
 		var remove := _link("RemovePack", "Remove pack")
 		var title: String = pack.Manifest.DisplayName if pack != null else id
+		remove.tooltip_text = "Remove %s from this %s. Import its .zip again to get it back." \
+			% [title, "browser" if OS.has_feature("web") else "computer"]
 		remove.pressed.connect(func() -> void:
 			_confirm("Remove pack", "Remove %s? Import its file again to get it back." % title, "Remove", func() -> void:
 				PackImport.Remove(PackImport.KIND_FACTION_PACK, id)
@@ -525,8 +525,8 @@ func _add_card() -> Control:
 	var card := AddCard.new()
 	card.name = "AddPack"
 	card.custom_minimum_size = Vector2(CardWidth, 0)
-	card.tooltip_text = "Import a faction pack (.zip) made with the pack editor. It stays on this " \
-		+ ("browser" if OS.has_feature("web") else "computer") + ": keep the .zip, to import it again."
+	card.tooltip_text = "Import a faction pack (.zip file).\nKeep the file: " \
+		+ ("if this browser forgets the pack, import it again." if OS.has_feature("web") else "if the pack is ever removed, import it again.")
 	var empty := StyleBoxEmpty.new()
 	for st in ["normal", "hover", "pressed", "focus", "disabled"]:
 		card.add_theme_stylebox_override(st, empty)
@@ -541,8 +541,8 @@ func _add_card() -> Control:
 	room.custom_minimum_size = Vector2(0, AddCard.Ring * 2 + 24)
 	room.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	box.add_child(room)
-	for part in [["ADD YOUR OWN PACK", 15, CText, _face(3, 0.6)],
-			["A faction pack (.zip) made with the pack editor.", 14, CMuted, null]]:
+	for part in [["ADD YOUR OWN PACK", 16, CText, _face(3, 0.7)],
+			["A faction pack (.zip) made with the pack editor.", 14, CText.darkened(0.12), null]]:
 		var l := _label(part[0], part[1], part[2], part[3])
 		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -550,6 +550,25 @@ func _add_card() -> Control:
 		l.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 		l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		box.add_child(l)
+	# What a click does, said as a button would say it.
+	var cta := PanelContainer.new()
+	cta.name = "ChooseFile"
+	cta.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	cta.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var pill := _box(Color(CGlow, 0.08), CGlow, ButtonRadius, 1)
+	pill.content_margin_left = 16
+	pill.content_margin_right = 16
+	pill.content_margin_top = 7
+	pill.content_margin_bottom = 7
+	cta.add_theme_stylebox_override("panel", pill)
+	var cta_text := _label("CHOOSE A .ZIP FILE", 13, CGlow, _face(2, 0.5))
+	cta_text.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	cta.add_child(cta_text)
+	var gap := Control.new()
+	gap.custom_minimum_size = Vector2(0, 6)
+	gap.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(gap)
+	box.add_child(cta)
 	_cards.add_child(card)
 	return card
 
@@ -561,7 +580,7 @@ func _arrow(node_name: String, dir: int) -> Button:
 	b.custom_minimum_size = Vector2(ArrowWidth, ArrowWidth)
 	b.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	b.focus_mode = Control.FOCUS_NONE
-	b.tooltip_text = "Previous" if dir < 0 else "Next"
+	b.tooltip_text = "Previous setting" if dir < 0 else "Next setting"
 	var empty := StyleBoxEmpty.new()
 	for st in ["normal", "hover", "pressed", "focus", "disabled"]:
 		b.add_theme_stylebox_override(st, empty)
@@ -587,6 +606,8 @@ func _layout_carousel() -> void:
 	var turning := n > shown
 	_left.disabled = not turning
 	_right.disabled = not turning
+	_left.tooltip_text = "Previous setting" if turning else "Every setting is on screen"
+	_right.tooltip_text = "Next setting" if turning else "Every setting is on screen"
 	_left.queue_redraw()
 	_right.queue_redraw()
 	_start = posmod(_start, n) if turning else 0
@@ -687,6 +708,23 @@ static func _box(bg: Color, edge: Color, radius: int = 10, width: int = 1) -> St
 	return sb
 
 
+## Tooltips that read (TeeJ, 2026-09-24: "hard to read"): light 15 px type on
+## a solid dark panel with a warm edge, padded. Only the tooltip types are in
+## it, so every other control keeps its own look.
+static func _tooltip_theme() -> Theme:
+	var th := Theme.new()
+	var panel := _box(Color(0.07, 0.06, 0.065, 0.97), CGlow.darkened(0.35), ButtonRadius)
+	panel.content_margin_left = 12
+	panel.content_margin_right = 12
+	panel.content_margin_top = 8
+	panel.content_margin_bottom = 8
+	th.set_stylebox("panel", "TooltipPanel", panel)
+	th.set_color("font_color", "TooltipLabel", CText)
+	th.set_font_size("font_size", "TooltipLabel", 15)
+	th.set_constant("line_spacing", "TooltipLabel", 3)
+	return th
+
+
 ## The game's font, spaced out and made heavier: the type's voice, since the
 ## project ships no font of its own.
 static func _face(spacing: int, embolden: float = 0.0) -> FontVariation:
@@ -758,17 +796,28 @@ static func _quiet(b: Button) -> void:
 	b.add_theme_font_size_override("font_size", 14)
 
 
-## A card's quiet action: text only, warming under the pointer.
+## A card's other action (TeeJ, 2026-09-24: "too subtle or ambiguous"): a
+## small outlined button, light text on a clear edge, the edge and text
+## warming to peach under the pointer - plainly a button, plainly less than
+## Play.
 static func _link(node_name: String, text: String) -> Button:
 	var b := Button.new()
 	b.name = node_name
 	b.text = text
-	b.flat = true
 	b.focus_mode = Control.FOCUS_NONE
-	var empty := StyleBoxEmpty.new()
-	for st in ["normal", "hover", "pressed", "focus", "disabled"]:
-		b.add_theme_stylebox_override(st, empty)
-	b.add_theme_color_override("font_color", CMuted)
+	b.custom_minimum_size = Vector2(0, 30)
+	var rest := _box(Color(1, 1, 1, 0.04), CText.darkened(0.45), ButtonRadius)
+	var hot := _box(Color(CGlow, 0.1), CGlow, ButtonRadius)
+	for sb in [rest, hot]:
+		sb.content_margin_left = 12
+		sb.content_margin_right = 12
+		sb.content_margin_top = 4
+		sb.content_margin_bottom = 4
+	for st in ["normal", "focus", "disabled"]:
+		b.add_theme_stylebox_override(st, rest)
+	b.add_theme_stylebox_override("hover", hot)
+	b.add_theme_stylebox_override("pressed", hot)
+	b.add_theme_color_override("font_color", CText.darkened(0.08))
 	b.add_theme_color_override("font_hover_color", CGlow)
 	b.add_theme_color_override("font_pressed_color", CGlow)
 	b.add_theme_font_size_override("font_size", 13)
@@ -879,8 +928,9 @@ class LogoSlot extends Control:
 		draw_rect(Rect2(Vector2((size.x - w) / 2.0, size.y - 10), Vector2(w, 4)), Color.WHITE)
 
 
-## A round arrow either side of the carousel; dimmed when there is nothing
-## to turn.
+## A round arrow either side of the carousel (TeeJ, 2026-09-24: "too subtle"):
+## a solid dark disc with a light ring and a white arrow, the ring peach under
+## the pointer; when there is nothing to turn, still there but plainly dim.
 class ArrowButton extends Button:
 	var dir: int = 1
 
@@ -891,13 +941,14 @@ class ArrowButton extends Button:
 
 	func _draw() -> void:
 		var c := size / 2.0
-		var r := minf(size.x, size.y) / 2.0 - 1.0
+		var r := minf(size.x, size.y) / 2.0 - 1.5
 		var live := not disabled
 		var hot := live and is_hovered()
-		draw_circle(c, r, Color(0.08, 0.07, 0.075, 0.85 if live else 0.4))
-		draw_arc(c, r, 0, TAU, 48, (CGlow if hot else CEdge.lightened(0.2)) if live else Color(CEdge, 0.5), 1.5, true)
-		var t := r * 0.36
-		var col := (Color.WHITE if hot else CText) if live else Color(CMuted, 0.35)
+		draw_circle(c, r, Color(0.07, 0.06, 0.065, 0.95) if live else Color(0.07, 0.06, 0.065, 0.55))
+		var ring: Color = CGlow if hot else (CText.darkened(0.2) if live else Color(CMuted, 0.4))
+		draw_arc(c, r, 0, TAU, 64, ring, 2.0 if live else 1.5, true)
+		var t := r * 0.38
+		var col: Color = (CGlow if hot else Color.WHITE) if live else Color(CMuted, 0.45)
 		draw_colored_polygon(PackedVector2Array([c + Vector2(t * dir * 1.1, 0), c + Vector2(-t * 0.7 * dir, -t), c + Vector2(-t * 0.7 * dir, t)]), col)
 
 
@@ -944,33 +995,36 @@ class AddCard extends Button:
 		mouse_exited.connect(queue_redraw)
 
 	func _draw() -> void:
+		# Contrast raised (TeeJ, 2026-09-24: "too subtle"): a card's own dark
+		# ground, a light dashed edge, the ring and plus in peach.
 		var hot := is_hovered()
-		var edge := CGlow.darkened(0.25) if hot else CEdge.lightened(0.15)
+		var edge: Color = CGlow if hot else CText.darkened(0.35)
 		var r := Rect2(Vector2(1, 1), size - Vector2(2, 2))
-		var fill := PackPicker._box(Color(CCard, 0.55 if hot else 0.35), Color(0, 0, 0, 0), CardRadius, 0)
+		var fill := PackPicker._box(Color(CCard, 0.95 if hot else 0.85), Color(0, 0, 0, 0), CardRadius, 0)
 		draw_style_box(fill, r)
 		# A dashed edge with the cards' rounded corners.
 		var k := float(CardRadius)
 		var a := r.position
 		var b := r.end
-		draw_dashed_line(Vector2(a.x + k, a.y), Vector2(b.x - k, a.y), edge, 1.5, 8.0)
-		draw_dashed_line(Vector2(b.x, a.y + k), Vector2(b.x, b.y - k), edge, 1.5, 8.0)
-		draw_dashed_line(Vector2(b.x - k, b.y), Vector2(a.x + k, b.y), edge, 1.5, 8.0)
-		draw_dashed_line(Vector2(a.x, b.y - k), Vector2(a.x, a.y + k), edge, 1.5, 8.0)
-		draw_arc(Vector2(a.x + k, a.y + k), k, PI, PI * 1.5, 8, edge, 1.5, true)
-		draw_arc(Vector2(b.x - k, a.y + k), k, PI * 1.5, TAU, 8, edge, 1.5, true)
-		draw_arc(Vector2(b.x - k, b.y - k), k, 0, PI * 0.5, 8, edge, 1.5, true)
-		draw_arc(Vector2(a.x + k, b.y - k), k, PI * 0.5, PI, 8, edge, 1.5, true)
+		draw_dashed_line(Vector2(a.x + k, a.y), Vector2(b.x - k, a.y), edge, 2.0, 9.0)
+		draw_dashed_line(Vector2(b.x, a.y + k), Vector2(b.x, b.y - k), edge, 2.0, 9.0)
+		draw_dashed_line(Vector2(b.x - k, b.y), Vector2(a.x + k, b.y), edge, 2.0, 9.0)
+		draw_dashed_line(Vector2(a.x, b.y - k), Vector2(a.x, a.y + k), edge, 2.0, 9.0)
+		draw_arc(Vector2(a.x + k, a.y + k), k, PI, PI * 1.5, 8, edge, 2.0, true)
+		draw_arc(Vector2(b.x - k, a.y + k), k, PI * 1.5, TAU, 8, edge, 2.0, true)
+		draw_arc(Vector2(b.x - k, b.y - k), k, 0, PI * 0.5, 8, edge, 2.0, true)
+		draw_arc(Vector2(a.x + k, b.y - k), k, PI * 0.5, PI, 8, edge, 2.0, true)
 		var box: Control = get_child(0) if get_child_count() > 0 else null
 		var c := Vector2(size.x / 2.0, size.y / 2.0 - 40)
 		if box != null and box.get_child_count() > 0:
 			var room: Control = box.get_child(0)
 			c = box.position + room.position + room.size / 2.0
-		draw_arc(c, Ring, 0, TAU, 64, edge, 2.0, true)
+		draw_circle(c, Ring, Color(CGlow, 0.14 if hot else 0.08))
+		draw_arc(c, Ring, 0, TAU, 64, CGlow, 2.5, true)
 		var arm := Ring * 0.45
-		var col := CGlow if hot else CText
-		draw_line(c - Vector2(arm, 0), c + Vector2(arm, 0), col, 3.0, true)
-		draw_line(c - Vector2(0, arm), c + Vector2(0, arm), col, 3.0, true)
+		var col: Color = Color.WHITE if hot else CGlow
+		draw_line(c - Vector2(arm, 0), c + Vector2(arm, 0), col, 3.5, true)
+		draw_line(c - Vector2(0, arm), c + Vector2(0, arm), col, 3.5, true)
 
 
 ## Asks before something that cannot be undone from here.
