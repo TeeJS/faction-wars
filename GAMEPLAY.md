@@ -2081,7 +2081,9 @@ Hyperspace is a real state with real restrictions:
 
 Shown in the UI as a **starfield background behind the portrait**. A mission
 cannot be aborted while the team is in hyperspace either — orders simply don't
-apply. Note how many mission target specs say "cannot be in hyperspace": it is
+apply. That includes a character **aboard a fleet in transit**: the original's
+menu for one greys Move, Confirmed Move, Mission, Command and Retire and leaves
+Encyclopedia and Status (TeeJ's screenshot of the original, 2026-09-25). Note how many mission target specs say "cannot be in hyperspace": it is
 also a **shield**, since a target in transit cannot be abducted, assassinated,
 rescued or sabotaged.
 

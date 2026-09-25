@@ -613,6 +613,13 @@ static func Launch(type: int, team: Array, from: Planet, target: Planet, decoys:
 	if unfit != null:
 		return _refuse("%s is in no condition to go." % unfit.Name)
 
+	# "Someone in hyperspace takes no orders" (manual p111) - on their own
+	# way somewhere or aboard a fleet in transit (TeeJ's screenshot of the
+	# original, 2026-09-25: Mission greyed for a character in a moving fleet).
+	var travelling: Unit = Lq.first_or_null(team, func(u): return u.Status == Enums.Status.Enroute)
+	if travelling != null:
+		return _refuse("%s is in hyperspace and cannot be given orders." % travelling.Name)
+
 	if type == Enums.MissionType.SpecialPowerTraining:
 		var people := Lq.of_type_character(team)
 		if not Lq.any(people, CanTeachSpecialPower):
