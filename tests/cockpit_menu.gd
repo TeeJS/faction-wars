@@ -156,5 +156,23 @@ func _init() -> void:
 	var exit_btn: Button = regions.get_node("Region_exit")
 	_check(exit_btn.visible, "the ejector handle is shown on every build")
 
+	# "Provide feedback" and the build label in the black right of the
+	# picture, left-aligned together, the box over the label (TeeJ,
+	# 2026-09-25), at the game's own screen size.
+	menu.size = Vector2(1440, 850)
+	await process_frame
+	await process_frame
+	var drawn: Rect2 = menu.call("_picture_frame")
+	var chk: Control = menu.find_child("ChkFeedback", true, false)
+	var ver: Control = menu.get_node_or_null("BuildVersion")
+	var chkAt: Rect2 = chk.get_global_rect() if chk != null else Rect2()
+	var verAt: Rect2 = ver.get_global_rect() if ver != null else Rect2()
+	# The box's drawn edge (inside the button's margin) on the label's text.
+	var boxX: float = chkAt.position.x + (chk.get_theme_stylebox("normal").get_margin(SIDE_LEFT) if chk != null else 0.0)
+	_check(chk != null and ver != null and chkAt.position.x >= drawn.end.x and verAt.position.x >= drawn.end.x
+		and absf(boxX - verAt.position.x) < 0.5 and chkAt.end.x <= 1440.0 and verAt.end.y <= 850.0
+		and chkAt.end.y <= verAt.position.y and (ver as Label).horizontal_alignment == HORIZONTAL_ALIGNMENT_LEFT,
+		"Provide feedback in the black, left-aligned with the build label (%s, %s; the picture ends at %.0f)" % [str(chkAt), str(verAt), drawn.end.x])
+
 	print("[cockpit_menu] %d checks, %d failed: %s" % [_checks, _fails, "PASS" if _fails == 0 else "FAIL"])
 	quit(1 if _fails > 0 else 0)
