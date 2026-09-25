@@ -634,14 +634,19 @@ static func Captions(page: Control, captions: Array, width: int) -> void:
 ## status icons: the ship's windows behind a character in transit), the
 ## miniature on it, then over it the side's grid for something being built,
 ## the green trace for an injured character, a captured one's bars.
-static func _picture_stack(parent: Control, mini: Texture2D, state: String, over: Texture2D = null) -> void:
+## `plated`: the grey plate under a picture at rest is a person's and a
+## regiment's only (the original's Personnel and Troops pages); a facility's
+## and a fighter squadron's picture stands straight on the page (TeeJ,
+## 2026-09-24, against the original's Manufacturing and System Defenses
+## pages: "not showing a clear background like they should be").
+static func _picture_stack(parent: Control, mini: Texture2D, state: String, over: Texture2D = null, plated: bool = true) -> void:
 	var plate: Texture2D = null
 	match state:
 		"enroute":
 			plate = Pic("card_enroute")
 		"transit":
 			plate = Pic("card_transit")
-	if plate == null:
+	if plate == null and plated:
 		plate = Pic("card_plate")
 	if plate != null:
 		Place(parent, plate, 0, 0, "Plate")
@@ -688,7 +693,10 @@ static func CharacterOver(c: Character) -> Texture2D:
 ## its menu, selection and drag; its text moves to the Name label. A card is
 ## exactly one grid cell: it never stretches, so every row keeps the grid
 ## (TeeJ, 2026-09-23: "ITEMS NEED TO ALIGN IN A GRID").
-static func Card(btn: BaseButton, title: String, mini: Texture2D, color: Color, selected: Color, state: String = "", over: Texture2D = null) -> void:
+## `named`: the name under the picture. The Manufacturing window's facilities
+## have none (TeeJ, 2026-09-24, the original's Coruscant Training Facilities
+## page): the name is then the card's tooltip alone.
+static func Card(btn: BaseButton, title: String, mini: Texture2D, color: Color, selected: Color, state: String = "", over: Texture2D = null, plated: bool = true, named: bool = true) -> void:
 	if btn is Button:
 		(btn as Button).text = ""
 		(btn as Button).icon = null
@@ -700,10 +708,11 @@ static func Card(btn: BaseButton, title: String, mini: Texture2D, color: Color, 
 	btn.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	btn.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 	btn.set_meta("card", true)
-	_picture_stack(btn, mini, state, over)
+	_picture_stack(btn, mini, state, over, plated)
 	var frame := SelectionFrame(0, 0, selected)
 	btn.add_child(frame)
 	var name := _card_name(btn, title, color)
+	name.visible = named
 	var show := func(on: bool) -> void:
 		frame.visible = on
 		name.add_theme_color_override("font_color", selected if on else color)
@@ -713,14 +722,14 @@ static func Card(btn: BaseButton, title: String, mini: Texture2D, color: Color, 
 
 ## A card that is only a picture and a name (a unit on its way, a stale
 ## sighting with nothing to click).
-static func StaticCard(list: Container, title: String, mini: Texture2D, color: Color, tip: String = "", state: String = "") -> Control:
+static func StaticCard(list: Container, title: String, mini: Texture2D, color: Color, tip: String = "", state: String = "", plated: bool = true) -> Control:
 	var c := Control.new()
 	c.custom_minimum_size = Vector2(CardW, CardH) * K
 	c.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	c.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 	c.mouse_filter = Control.MOUSE_FILTER_PASS
 	c.tooltip_text = tip
-	_picture_stack(c, mini, state)
+	_picture_stack(c, mini, state, null, plated)
 	_card_name(c, title, color)
 	list.add_child(c)
 	return c

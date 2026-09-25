@@ -539,7 +539,7 @@ func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, fa
 			# tier and what it is doing go to the tooltip.
 			var tip: String = rowBtn.text
 			OUI.Card(rowBtn, fac.Name(), OUI.Mini("facilities", fac.Def.Id if fac.Def != null else fac.Family()),
-				Color.RED if fac.IsDamaged else Color.WHITE, OUI.SideColor(GameSettings.PlayerFaction))
+				Color.RED if fac.IsDamaged else Color.WHITE, OUI.SideColor(GameSettings.PlayerFaction), "", null, false, false)
 			rowBtn.tooltip_text = tip
 
 		rowBtn.toggled.connect(func(on: bool) -> void:
@@ -1037,7 +1037,7 @@ func StaleFacilityTab(tabs: TabContainer, tabName: String, family: String, yards
 		if _original:
 			var seenDef: PackDefs.FacilityDef = FacilityCatalog.Get(family, 2 if str(line).begins_with("Advanced") else 1)
 			OUI.Card(row, str(line), OUI.Mini("facilities", seenDef.Id if seenDef != null else family),
-				Color.WHITE, OUI.SideColor(GameSettings.PlayerFaction))
+				Color.WHITE, OUI.SideColor(GameSettings.PlayerFaction), "", null, false, false)
 			row.tooltip_text = "%s (seen day %d)" % [line, yards.Day]
 		list.add_child(row)
 
