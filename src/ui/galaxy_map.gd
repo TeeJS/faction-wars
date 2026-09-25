@@ -255,6 +255,7 @@ func InitializeMap(galaxyData: Array, uiManager: UIManager) -> void:
 	if _uiManager != null and _uiManager.CommandFrameRef != null:
 		_bar.FitToFrame(UIManager.MapFrame)
 		_bar.FitAcross(_uiManager.CommandFrameRef.ScreenRect())
+		_bar.FitKeyToFrame(_uiManager.CommandFrameRef)
 	_bar.SetActiveLabel(_mode().LabelText)
 	_bar.ShowKeyFor(_mode())
 

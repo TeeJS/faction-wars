@@ -36,10 +36,18 @@ func _init() -> void:
 	FactionRegistry.EnsureLoaded()
 	var sets: Array = FactionRegistry.Pack.Manifest.ArtSets
 	var dir := "%s/%s" % [Art.UserArtRoot, sets[0] if not sets.is_empty() else "swr-original"]
-	for sub in ["windows", "alerts", "screens"]:
+	for sub in ["windows", "alerts", "screens", "buttons", "gid"]:
 		DirAccess.make_dir_recursive_absolute("%s/%s" % [dir, sub])
 	# A galaxy picture, so the map has a backdrop to keep in sight.
 	_png("%s/screens/galaxy.png" % dir, 640, 480, Color(0.2, 0.25, 0.5))
+	# The original's key: its closed button, legend marks, close box, stars.
+	_png("%s/windows/gid_key_closed.png" % dir, 47, 25, Color(0.2, 0.18, 0.13))
+	for m in ["alliance", "empire", "neutral"]:
+		_png("%s/windows/gid_key_%s.png" % [dir, m], 9, 9, Color(1, 0, 0))
+	_png("%s/windows/gid_key_unexplored.png" % dir, 15, 15, Color(0.8, 0.8, 0.8))
+	_png("%s/buttons/title_close.png" % dir, 14, 14, Color(0.9, 0.9, 0.9))
+	for t in ["big", "mid", "low", "none"]:
+		_png("%s/gid/unexplored.%s.png" % [dir, t], 15, 15, Color(0.9, 0.9, 0.9))
 
 	# Without the frame: the plain screen.
 	var main: Node = await _start("alliance")
@@ -215,6 +223,45 @@ func _init() -> void:
 		var onMetal: Vector2 = origin + Vector2(320, 5) * s
 		_check(not frame._has_point(inWindow) and frame._has_point(onMetal) and not frame._has_point(Vector2(origin.x - 10, 400)),
 			"%s: the metal takes clicks; the window and the black do not" % side)
+
+		# THE ORIGINAL'S KEY (TeeJ, 2026-09-25, his screenshots of the
+		# original): closed, its small button on the map's corner; open, the
+		# 180-wide box where the original first opens it, then where it was
+		# last dragged to; the button gone while it is open.
+		var key: Control = bar.Key()
+		var kl: Dictionary = key.get("Layout")[side] if key != null and key.get("Layout") != null else {}
+		_check(key != null and key.name == "OriginalGidKey", "%s: the original's key replaces the plain one" % side)
+		if key != null and key.name == "OriginalGidKey":
+			var btn: Control = key.get_node("KeyButton")
+			var box: Control = key.get_node("Key")
+			_check(btn.visible and not box.visible and btn.position.is_equal_approx(origin + (kl["closed"] as Vector2) * s)
+				and btn.size.is_equal_approx(Vector2(29, 23) * s) and ui.get_node_or_null("MapKeyButton") != null,
+				"%s: it starts closed - its button at the map's corner, the sector column's button too (%s %s %s %s %s)" % [side,
+					btn.visible, box.visible, str(btn.position), str(btn.size), ui.get_node_or_null("MapKeyButton") != null])
+			key.call("Open")
+			await process_frame
+			var tiers: int = Gid.ActiveMode().Tiers.size()
+			_check(box.visible and not btn.visible and box.position.is_equal_approx(origin + (kl["key"] as Vector2) * s)
+				and box.size.is_equal_approx(Vector2(180, 20 + 20 * tiers + 35) * s)
+				and (key.get("_title") as Label).text == Gid.TitleFor(Gid.ActiveMode()),
+				"%s: open, where the original opens it, 180 wide, titled '%s' (%s)" % [side, Gid.TitleFor(Gid.ActiveMode()), str(box.position)])
+			var moved: Vector2 = box.position + Vector2(40, 30) * s
+			var press := InputEventMouseButton.new()
+			press.button_index = MOUSE_BUTTON_LEFT
+			press.pressed = true
+			box.gui_input.emit(press)
+			box.global_position = moved
+			var release := InputEventMouseButton.new()
+			release.button_index = MOUSE_BUTTON_LEFT
+			release.pressed = false
+			box.gui_input.emit(release)
+			key.call("Close")
+			await process_frame
+			_check(not box.visible and btn.visible, "%s: closed again, its button back" % side)
+			key.call("Open")
+			await process_frame
+			_check(box.position.is_equal_approx(moved), "%s: it reopens where it was left (%s)" % [side, str(box.position)])
+			key.call("Close")
 		await _stop(main)
 
 	# A huge galaxy's sectors all fit the grey bar, top to bottom of the screen.

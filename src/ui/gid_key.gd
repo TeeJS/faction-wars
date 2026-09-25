@@ -214,6 +214,17 @@ func Restore() -> void:
 		call_deferred("SnapToCorner")
 
 
+## Replaced by the original's key (GidBar.FitKeyToFrame): its taskbar button
+## goes with it.
+func Retire() -> void:
+	var ui: UIManager = get_tree().root.find_child("UIManager", true, false) as UIManager if is_inside_tree() else null
+	if ui != null and _taskbarBtn != null:
+		ui.RemoveFromTaskbar(_taskbarBtn)
+	_taskbarBtn = null
+	visible = false
+	queue_free()
+
+
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:

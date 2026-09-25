@@ -174,6 +174,7 @@ func BuildCommandFrame(side: String) -> void:
 		frame.Place(map)
 	if ActiveGalaxyMap != null and ActiveGalaxyMap.Bar() != null:
 		ActiveGalaxyMap.Bar().FitToFrame(MapFrame)
+		ActiveGalaxyMap.Bar().FitKeyToFrame(frame)
 	_FitBottomBars(frame)
 	var background: ColorRect = get_node_or_null("../Background")
 	if background != null:
@@ -1012,6 +1013,10 @@ func _PlaceKeyButton(btn: Button) -> void:
 
 func RemoveFromTaskbar(btn: Button) -> void:
 	if btn != null and is_instance_valid(btn):
+		# Out of the tree at once, so a button added in the same frame (the
+		# original's key taking over from the plain one) gets its name.
+		if btn.get_parent() != null:
+			btn.get_parent().remove_child(btn)
 		btn.queue_free()
 
 

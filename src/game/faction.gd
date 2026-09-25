@@ -26,6 +26,9 @@ var ArtSkin: String = ""
 ## "The Imperial fleet", "Alliance forces": factions.json `adjective`, else the
 ## display name.
 var Adjective: String = ""
+## "Alliance", "Empire": factions.json `short_name`, where room is short (the
+## map key's legend); else the display name.
+var ShortName: String = ""
 
 
 static func FromPack(def: PackDefs.FactionDef) -> Faction:
@@ -42,6 +45,7 @@ static func FromPack(def: PackDefs.FactionDef) -> Faction:
 	f.AgentName = def.AgentName
 	f.ArtSkin = def.ArtSkin if not def.ArtSkin.is_empty() else def.Id
 	f.Adjective = def.Adjective if not def.Adjective.is_empty() else def.DisplayName
+	f.ShortName = def.ShortName if not def.ShortName.is_empty() else def.DisplayName
 	return f
 
 
@@ -53,6 +57,7 @@ static func Simple(id: String, display_name: String, color: Color) -> Faction:
 	f.FactionColor = color
 	f.ArtSkin = id
 	f.Adjective = display_name
+	f.ShortName = display_name
 	return f
 
 

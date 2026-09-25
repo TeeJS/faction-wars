@@ -3,6 +3,7 @@
     {
       "id": "alliance",
       "adjective": "Alliance",
+      "short_name": "Alliance",
       "display_name": "Rebel Alliance",
       "skin": "alliance",
       "color": "#ff0000",
@@ -38,6 +39,7 @@
     {
       "id": "empire",
       "adjective": "Imperial",
+      "short_name": "Empire",
       "display_name": "Galactic Empire",
       "skin": "empire",
       "color": "#00ff00",
