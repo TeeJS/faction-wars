@@ -200,6 +200,33 @@ func _init() -> void:
 			var offRow: Button = leftMenu.find_child("DisplayOff", false, false)
 			lowest = maxf(lowest, offRow.get_global_rect().end.y if offRow != null else 9999.0)
 			_check(allModes and lowest <= screen.y, "%s: a line for every mode, inside the black, the lowest at %d of %d" % [side, int(lowest), int(screen.y)])
+			# TeeJ's refinement (2026-09-25): the sector column's greys - its
+			# panel behind, its button boxes on the rows - the rows' text 10px
+			# in from the old 6, 4px more before each heading, 16px icons, no
+			# rules.
+			var pin: Button = ui.PinnedSectors().values()[0]
+			var rowBox: StyleBox = (leftMenu.call("Row", Gid.ModeById("idle_fleets")) as Button).get_theme_stylebox("normal")
+			var back: Panel = leftMenu.find_child("Back", false, false)
+			var colBox: StyleBox = (ui.get_node("TaskbarPanel") as Control).get_theme_stylebox("panel")
+			_check(rowBox is StyleBoxFlat and pin.get_theme_stylebox("normal") is StyleBoxFlat
+				and (rowBox as StyleBoxFlat).bg_color == (pin.get_theme_stylebox("normal") as StyleBoxFlat).bg_color
+				and back != null and back.size == leftMenu.size and back.get_theme_stylebox("panel") is StyleBoxFlat and colBox is StyleBoxFlat
+				and (back.get_theme_stylebox("panel") as StyleBoxFlat).bg_color == (colBox as StyleBoxFlat).bg_color,
+				"%s: the sector column's greys, the panel and the rows" % side)
+			var fleetsHead: Label = leftMenu.find_child("Head_fleets", false, false)
+			var uprisings: Button = leftMenu.call("Row", Gid.ModeById("uprisings"))
+			var firstFleet: Button = leftMenu.call("Row", Gid.ModeById("idle_fleets"))
+			_check(firstFleet != null and is_equal_approx(firstFleet.position.x + firstFleet.get_theme_stylebox("normal").content_margin_left, 16.0)
+				and fleetsHead != null and uprisings != null and is_equal_approx(fleetsHead.position.y - uprisings.get_rect().end.y, 15.0),
+				"%s: rows' text 10px further in, 4px more before a heading" % side)
+			var ruled := false
+			var iconsSmall := true
+			for c in leftMenu.get_children():
+				if c is ColorRect:
+					ruled = true
+				if c is TextureRect and ((c as TextureRect).size.x > 16.0 or (c as TextureRect).size.y > 16.0):
+					iconsSmall = false
+			_check(not ruled and iconsSmall, "%s: no rules, the icons at 16px" % side)
 			var idle: Button = leftMenu.call("Row", Gid.ModeById("idle_fleets"))
 			_check(idle != null and idle.text == "Idle", "%s: the pack's short lines ('Idle' under Fleets)" % side)
 			idle.pressed.emit()
