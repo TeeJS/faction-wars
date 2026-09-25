@@ -15,10 +15,10 @@
   ],
   "map_image": "swr-original:screens/galaxy.png",
   "map_image_rect": [
-    -5,
-    110,
-    1070.6666,
-    803
+    -11.8089,
+    -16.4027,
+    1079.6705,
+    1124.7597
   ],
   "card_image": "milky_way.jpg",
   "setup": {

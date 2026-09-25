@@ -86,8 +86,20 @@ func _init() -> void:
 		_check(bg.color == Color.BLACK and bg.visible and not bg.z_as_relative
 			and backdrop != null and bg.z_index < backdrop.z_index, "%s: black either side, under the galaxy picture" % side)
 		var map: Node2D = main.get_node("GalaxyMap")
-		_check(map.position == origin and is_equal_approx(map.scale.x, 640 * s / GalaxyMap.Frame.x) and map.position != plainAt,
-			"%s: the galaxy map behind the frame at its scale (%s x%.3f)" % [side, str(map.position), map.scale.x])
+		var picAt: Vector2 = CommandFrame.Layout[side]["picture"]
+		_check(map.position.is_equal_approx(origin + picAt * s) and is_equal_approx(map.scale.x, 640 * s / GalaxyMap.Frame.x) and map.position != plainAt,
+			"%s: the galaxy picture behind the frame where the original draws it, at its scale (%s x%.3f)" % [side, str(map.position), map.scale.x])
+		_check(backdrop.region_enabled and backdrop.region_rect.size.is_equal_approx((Vector2(640, 481) - picAt).min(Vector2(640, 480))),
+			"%s: the picture cut off at the frame's edge (%s)" % [side, str(backdrop.region_rect)])
+		# Every world where the original draws it: the 1024-unit space on the
+		# 607x437 picture, the star's centre 7 px in (TeeJ's screenshots).
+		var gm: GalaxyMap = map
+		var worst := 0.0
+		for p in GameState.AllPlanets():
+			var drawn: Vector2 = gm.position + gm.MapPos(p.MapX, p.MapY) * gm.scale
+			var want: Vector2 = origin + (picAt + Vector2(p.MapX * 607.0 / 1024.0 + 7.0, p.MapY * 437.0 / 1024.0 + 7.0)) * s
+			worst = maxf(worst, drawn.distance_to(want))
+		_check(worst < 0.5, "%s: every world where the original draws it (worst %.3f px)" % [side, worst])
 		_check(UIManager.MapFrame.is_equal_approx(frame.MapWindow()) and UIManager.MapFrame.position.is_equal_approx(origin + win.position * s),
 			"%s: windows centre and dock in the frame's window (%s)" % [side, str(UIManager.MapFrame)])
 		var hud: Dictionary = GameManager.HudFrame[side]
@@ -166,6 +178,16 @@ func _init() -> void:
 	_check(pins.size() > 12 and lowest <= ui.get_viewport().get_visible_rect().size.y,
 		"a huge galaxy's %d sectors all fit the grey bar (lowest at %d)" % [pins.size(), int(lowest)])
 	await _stop(main)
+	# A huge galaxy's every world is in the frame's window, not under its metal
+	# (TeeJ, 2026-09-25: "in large mode, sectors are being cut off").
+	for side in ["alliance", "empire"]:
+		main = await _start(side, Enums.GalaxySize.Huge)
+		var gm: GalaxyMap = main.get_node("GalaxyMap")
+		var outside: Array = GameState.AllPlanets().filter(func(p: Planet) -> bool:
+			return not UIManager.MapFrame.has_point(gm.position + gm.MapPos(p.MapX, p.MapY) * gm.scale))
+		_check(GameState.AllPlanets().size() == 200 and outside.is_empty(),
+			"%s: all 200 worlds of a huge galaxy in the frame's window (%d outside)" % [side, outside.size()])
+		await _stop(main)
 	_remove(Art.UserArtRoot)
 	Art.Reset()
 	print("[command_frame] %d checks, %d failed" % [_checks, _fails])

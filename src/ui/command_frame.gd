@@ -28,19 +28,26 @@ const FrameSize := Vector2(640, 481)
 ## its 25x20 slot); monitor: the Game Options monitor; shelf: the Window
 ## Reference Bar's twelve slots ("twelve slots for minimized System windows",
 ## manual p022) - the Alliance's slatted shelf, the Empire's blue panel -
-## measured slat edge to slat edge.
+## measured slat edge to slat edge; picture: where the original draws its
+## galaxy picture (STRATEGY 903, the top-left of screens/galaxy.png), 1:1 -
+## measured on TeeJ's screenshots of the original, 2026-09-25 (five of the
+## Alliance's, standard, large and huge galaxies; one of the Empire's): the
+## picture correlates 0.93 / 0.985 there, and every system's star sits within
+## a pixel of where the Star Wars pack's map_image_rect puts it.
 const Layout := {
 	"alliance": {
 		"window": Rect2(54, 35, 488, 358),
 		"slot": Vector2(3, 109),
 		"monitor": Rect2(3, 358, 27, 34),
 		"shelf": Rect2(546, 58, 60, 262),
+		"picture": Vector2(21, 25),
 	},
 	"empire": {
 		"window": Rect2(118, 41, 489, 358),
 		"slot": Vector2(611, 110),
 		"monitor": Rect2(78, 196, 32, 48),
 		"shelf": Rect2(20, 46, 55, 291),
+		"picture": Vector2(84, 27),
 	},
 }
 const SlotPitch := 25
@@ -173,10 +180,19 @@ func MapWindow() -> Rect2:
 
 ## Where the galaxy map goes so it lies behind the frame as the original's
 ## does: its picture (the pack's map_image, fitted into GalaxyMap.Frame from
-## its top-left) drawn at the frame's origin, the frame's scale - the
-## original's 640x480 galaxy picture fills its screen behind the frame.
+## its top-left) drawn where the original draws its galaxy picture, 1:1 at
+## the frame's scale, and cut off at the frame's edge - past it (the
+## Empire's picture runs 50 px beyond) it would show over the black.
 func Place(map: Node2D) -> void:
 	var fitted: Vector2 = GalaxyMap.Frame
-	map.position = Origin
+	var at: Vector2 = Layout[Side]["picture"]
+	map.position = Origin + at * S
 	var k: float = (FrameSize.x * S) / fitted.x
 	map.scale = Vector2(k, k)
+	var backdrop: Sprite2D = map.call("Backdrop") if map.has_method("Backdrop") else null
+	if backdrop != null and backdrop.texture != null:
+		# The picture's pixels per frame pixel: fitted into Frame, then scaled.
+		var perFrame: float = backdrop.scale.x * k / S
+		var room: Vector2 = (FrameSize - at) / perFrame
+		backdrop.region_enabled = true
+		backdrop.region_rect = Rect2(Vector2.ZERO, room.min(backdrop.texture.get_size()))

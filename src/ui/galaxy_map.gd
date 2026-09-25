@@ -15,20 +15,21 @@ var _planetStars: Dictionary = {}    # Planet -> Label
 ## THE PACK'S MAP PICTURE (pack.json map_image), drawn behind everything where
 ## pack.json's map_image_rect puts it in the pack's MAP COORDINATE SPACE
 ## (SCHEMA.md section 4; the picture's own pixels when no rect is given). The
-## map space is scaled so that rect fills Frame, and every marker is placed at
-## coordinate * _scale, so picture and regions line up whatever the picture's
-## size. Coordinates are never rescaled to the picture: Planet.DistanceTo
-## reads them, so they are travel time.
+## picture is fitted into Frame keeping its shape, and the rect is laid onto
+## the picture PER AXIS - the axes may scale differently: the original draws
+## its 1024-unit square space onto its 607x437 galaxy picture - so every
+## marker at coordinate * _scale lands on the picture where the pack says.
+## Coordinates are never rescaled to the picture: Planet.DistanceTo reads
+## them, so they are travel time.
 var _backdrop: Sprite2D = null
 ## The player's own artwork overlay (tools/FactionWarsExporter).
 const Art := preload("res://src/ui/artwork.gd")
 ## The original drew its 15 px stars on a 640-wide screen; ours is 1440.
 const StarScale := 2.0
 var _planetSprites: Dictionary = {}   # Planet -> TextureRect (the original's star)
-var _scale: float = 1.0
+var _scale: Vector2 = Vector2.ONE
 ## The map-space point at the frame's top-left corner (map_image_rect's x, y).
-## Star Wars: (-5, 110), so its unscaled coordinates land exactly where the
-## old scene put them; WWII: (0, 0).
+## Star Wars: where the original's 1024 space starts on its picture; WWII: (0, 0).
 var _origin: Vector2 = Vector2.ZERO
 ## One invisible button per region, centred on its dot: a click opens the
 ## region's THEATRE (the sector window), so a crowded theatre is reachable
@@ -93,7 +94,7 @@ func InitializeMap(galaxyData: Array, uiManager: UIManager) -> void:
 	_regionHits.clear()
 	_hqPlanet = null
 	_backdrop = null
-	_scale = 1.0
+	_scale = Vector2.ONE
 	_origin = Vector2.ZERO
 	_load_backdrop()
 
@@ -169,13 +170,13 @@ func InitializeMap(galaxyData: Array, uiManager: UIManager) -> void:
 			sectorButton.position = MapPos(sector.MapX, sector.MapY)
 			sectorButton.size = Vector2(100, 100)
 		else:
-			var width: float = (sector.MaxX - sector.MinX) * scaleFactor + (padding * 2)
-			var height: float = (sector.MaxY - sector.MinY) * scaleFactor + (padding * 2)
+			var width: float = (sector.MaxX - sector.MinX) * scaleFactor.x + (padding * 2)
+			var height: float = (sector.MaxY - sector.MinY) * scaleFactor.y + (padding * 2)
 			sectorButton.size = Vector2(width, height)
 			sectorButton.position = MapPos(sector.MinX, sector.MinY) - Vector2(padding, padding)
 
 		add_child(sectorButton)
-		print("Spawned [%s] at X:%s, Y:%s (Planets: %d)" % [sectorButton.text, str(sector.MapX * scaleFactor), str(sector.MapY * scaleFactor), sector.Planets.size()])
+		print("Spawned [%s] at X:%s, Y:%s (Planets: %d)" % [sectorButton.text, str(sector.MapX * scaleFactor.x), str(sector.MapY * scaleFactor.y), sector.Planets.size()])
 
 	# Region hit buttons last, so every one is above every theatre box for input.
 	for sector in galaxyData:
@@ -351,13 +352,15 @@ static func TitleShown(b: Button) -> bool:
 
 
 ## Where a map.json coordinate lands in this node's space: the frame's
-## top-left is map_image_rect's (x, y), and the space is scaled to the frame.
+## top-left is map_image_rect's (x, y), and the space is scaled onto the
+## picture per axis.
 func MapPos(x: float, y: float) -> Vector2:
 	return (Vector2(x, y) - _origin) * _scale
 
 
-## The picture's scale on screen, for anything else that places by coordinate.
-func MapScale() -> float:
+## The map space's scale on screen, per axis, for anything else that places
+## by coordinate.
+func MapScale() -> Vector2:
 	return _scale
 
 
@@ -375,10 +378,12 @@ func RegionButtons() -> Dictionary:
 	return _regionHits
 
 
-## The pack's map picture, fitted into Frame from the top-left corner. The
-## picture may come from an art set the player has not imported: the map is
-## still placed by map_image_rect, with no picture under it. A pack with
-## neither a picture nor a rect places markers unscaled.
+## The pack's map picture, fitted into Frame from the top-left corner, its
+## shape kept; the map space laid onto it per axis. The picture may come from
+## an art set the player has not imported: the map is still placed by
+## map_image_rect, with no picture under it - taken to be the frame's shape,
+## as the Star Wars galaxy is (640x480 in a 4:3 frame). A pack with neither a
+## picture nor a rect places markers unscaled.
 func _load_backdrop() -> void:
 	var pack := FactionRegistry.Pack
 	if pack == null or pack.Manifest.MapImage.is_empty():
@@ -388,7 +393,7 @@ func _load_backdrop() -> void:
 	if tex == null:
 		print("[GalaxyMap] map_image '%s' is not available - no backdrop." % pack.Manifest.MapImage)
 		if rect.size.x > 0.0 and rect.size.y > 0.0:
-			_scale = minf(Frame.x / rect.size.x, Frame.y / rect.size.y)
+			_scale = Frame / rect.size
 			_origin = rect.position
 		return
 	var size := tex.get_size()
@@ -396,14 +401,15 @@ func _load_backdrop() -> void:
 		return
 	if rect.size.x <= 0.0 or rect.size.y <= 0.0:
 		rect = Rect2(Vector2.ZERO, size)   # no rect: coordinates are picture pixels
-	_scale = minf(Frame.x / rect.size.x, Frame.y / rect.size.y)
+	var fit: float = minf(Frame.x / size.x, Frame.y / size.y)
+	_scale = size / rect.size * fit
 	_origin = rect.position
 	_backdrop = Sprite2D.new()
 	_backdrop.name = "Backdrop"
 	_backdrop.texture = tex
 	_backdrop.centered = false
 	_backdrop.position = Vector2.ZERO   # the frame's top-left IS the picture's
-	_backdrop.scale = rect.size * _scale / size
+	_backdrop.scale = Vector2(fit, fit)
 	_backdrop.z_index = -10
 	_backdrop.z_as_relative = false
 	add_child(_backdrop)
