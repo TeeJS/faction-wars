@@ -207,6 +207,7 @@ Rects are in the menu picture's own pixels - the original's cockpit is
 | `agent_name` | What the side's agent droid / adviser is called (manual p030, Fig. 2.16; C-3PO and IMP-22). Optional; "Agent" when absent. Was an id branch in engine code. |
 | `adjective` | The side's name as an adjective in the game's own sentences - "the **Imperial** fleet", "**Alliance** forces" (the battle alert and results, TEXTSTRA's battle block). Optional; the `display_name` when absent. |
 | `short_name` | The side's name where room is short - the map key's legend, "**Alliance**", "**Empire**" (the original's words). Optional; the `display_name` when absent. |
+| `loyalty_label_short` | The `loyalty_label` where room is short - the Command Center's left-hand menu, "**Loyalty to Alliance**". Optional; the `loyalty_label` when absent. |
 | `starting_planets[]` | `{planet, support, explored, garrison}`. `planet` is a **planet id** (`map.json`); `garrison` a logistics table id (`setup.json`). |
 | `seed` | Which day-zero logistics table seeds this side's HQ, garrison and fleets — **table ids** from `setup.json` (§12 Q2). |
 | `victory.capture_characters` | **Character ids** (`characters.json`) this side must hold captive to win. The Objectives window looks the display name up (`FactionRegistry.CharacterNameOf`). |
@@ -777,6 +778,7 @@ threshold and flare, all 21 modes — by dumping both and diffing.
 | `flare` | `big` / `mid` / `low` / `none`. Marker *sizes* are engine presentation constants; which tier gets which size is pack data. |
 | `label` | **Load-bearing:** the active mode's label is part of the game signature (`GameSignature.GidLabel`). Rename one and the lockstep hash changes. |
 | `title_from` | `loyalty_label` — the key-panel title is the player's faction's `loyalty_label` from `factions.json`, resolved per side. |
+| `menu_label` | The mode's line in the Command Center's left-hand menu, under its category's heading ("**Idle**" under Fleets, "**Avail Raw Materials**"). Optional; the `label` when absent. Display only - not part of the game signature. |
 | `galaxy_display_modes` | Mode ids in the original's Alt+1..9 order. |
 | `loyalty_bar` | **Optional.** The playable sides left to right on the sector window's loyalty bar (manual p025 Fig 2.9 has the Empire on the left, the Alliance on the right, so the Star Wars pack says `["empire", "alliance"]`). When given it must name every faction exactly once (rule 16); left out, the bar follows the pack's faction order. |
 | `icons` | **Optional per key.** The pack's own picture for a sector-window corner glyph: `manufacturing` (top left), `fleet` (upper right), `defenses` (lower left), `mission` and `uprising` (lower right) - manual p070 Fig 3.7. A file in the pack folder, white on alpha (the map tints it with the faction colour), 16 px. A glyph the pack does not name comes from the engine's `assets/icons/` (drawn by `tools/draw_corner_icons.py`). Rule 17. In the original's look, the sector window draws the art set's own corner pictures instead (§14). |
@@ -1035,6 +1037,7 @@ What changed from the source repo's 2026-07-25 draft, and why.
 | 63 | A pack **may carry the original's pictures** (its `art/` folder, an `original/` folder): the game's import and the exporter's Build faction pack no longer refuse one | TeeJ, 2026-09-25: the original came with its own editor, and people mod it - a mod is the modder's to make |
 | 64 | **`frame_by`** on a `menu.monitors` entry (§2): a monitor whose frame follows a choice; validated with rule 11 | TeeJ, 2026-09-25: "the lever to the left of the galaxy size is missing ... the lever moves as you change your size selection" |
 | 65 | **`short_name`** per faction (§3): the side where room is short (the map key's legend) | TeeJ, 2026-09-25: the map key "should match the UI" of the original, whose legend says "Alliance" and "Empire" |
+| 66 | **`menu_label`** per GID mode (§10) and **`loyalty_label_short`** per faction (§3): the lines of the Command Center's left-hand menu | TeeJ, 2026-09-25: the left-hand column as the GID menu, his abbreviations approved ("Avail Raw Materials", "Idle Training Fac.", "Idle Constr. Yards", "Loyalty to Alliance", "Loyalty to Empire") |
 
 ---
 

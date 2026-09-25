@@ -175,6 +175,7 @@ func BuildCommandFrame(side: String) -> void:
 	if ActiveGalaxyMap != null and ActiveGalaxyMap.Bar() != null:
 		ActiveGalaxyMap.Bar().FitToFrame(MapFrame)
 		ActiveGalaxyMap.Bar().FitKeyToFrame(frame)
+	_BuildGidMenu(frame)
 	_FitBottomBars(frame)
 	var background: ColorRect = get_node_or_null("../Background")
 	if background != null:
@@ -223,6 +224,14 @@ func _FitBottomBars(frame: CommandFrame) -> void:
 	var bar: GidBar = ActiveGalaxyMap.Bar() if ActiveGalaxyMap != null else null
 	if bar != null:
 		bar.FitAcross(across)
+		# The left-hand menu does all the blue bar did: it goes (TeeJ: "This
+		# will completely eliminate the blue bar").
+		if _gidMenu != null and bar.Panel() != null:
+			bar.Panel().visible = false
+	# Feedback and the build label at the ends of the blue bar - or, with the
+	# blue bar gone, of the grey one under it.
+	var top: float = BarTop if _gidMenu == null else GreyTop
+	var bottom: float = BarBottom if _gidMenu == null else GreyBottom
 	if _versionLabel != null:
 		_versionLabel.reparent(self)
 		_versionLabel.anchor_left = 0.0
@@ -232,19 +241,43 @@ func _FitBottomBars(frame: CommandFrame) -> void:
 		_versionLabel.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 		_versionLabel.offset_right = across.end.x - BarInset * 3.0
 		_versionLabel.offset_left = _versionLabel.offset_right - 200.0
-		_versionLabel.offset_top = BarTop
-		_versionLabel.offset_bottom = BarBottom
+		_versionLabel.offset_top = top
+		_versionLabel.offset_bottom = bottom
 	var feedback: FeedbackPanel = get_node_or_null("FeedbackPanel")
 	if feedback != null:
-		feedback.FitToBar(across.position.x, BarTop + BarInset, BarBottom - BarInset)
+		feedback.FitToBar(across.position.x, top + BarInset, bottom - BarInset)
 	# The GID key's docked button goes to the foot of the sector column, the
-	# sectors stopping above it.
+	# sectors stopping above it - or, with the left-hand menu, the menu's
+	# "Loyalty to ..." line takes its place and the column is whole again.
 	var tb: Control = get_node_or_null("TaskbarPanel")
 	if tb != null:
-		tb.offset_bottom = -(ColumnFoot + KeyButtonHeight + KeyButtonGap)
+		tb.offset_bottom = -(ColumnFoot + KeyButtonHeight + KeyButtonGap) if _gidMenu == null else 0.0
 	var key: Button = get_node_or_null("MapKeyButton")
 	if key != null:
 		_PlaceKeyButton(key)
+
+
+## THE GALAXY DISPLAY MENU down the left-hand column (gid_menu.gd), in the
+## black left of the frame.
+const GidMenuScript := preload("res://src/ui/gid_menu.gd")
+const GreyTop := -34.0     # the grey bar, from the screen's bottom (Main.tscn)
+const GreyBottom := -3.0
+var _gidMenu: Control = null
+
+
+func _BuildGidMenu(frame: CommandFrame) -> void:
+	if _gidMenu != null or ActiveGalaxyMap == null or frame.Origin.x < 100.0:
+		return
+	_gidMenu = GidMenuScript.new()
+	add_child(_gidMenu)
+	move_child(_gidMenu, 0)   # under every window
+	_gidMenu.call("Build", frame.Origin.x, ActiveGalaxyMap, func() -> void:
+		if ActiveGalaxyMap != null and ActiveGalaxyMap.Bar() != null:
+			ActiveGalaxyMap.Bar().ToggleKey())
+
+
+func GidMenu() -> Control:
+	return _gidMenu
 
 
 ## THE WINDOW REFERENCE BAR ("The Window Reference Bar has twelve slots for
@@ -987,6 +1020,8 @@ func AddToTaskbar(title: String, onRestore: Callable) -> Button:
 
 
 func _PlaceKeyButton(btn: Button) -> void:
+	# With the left-hand menu, its "Loyalty to ..." line is the way to the key.
+	btn.visible = _gidMenu == null
 	if CommandFrameRef != null:
 		# The sector column's foot: the column's width, inside its margins.
 		btn.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)

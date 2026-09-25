@@ -29,6 +29,9 @@ var Adjective: String = ""
 ## "Alliance", "Empire": factions.json `short_name`, where room is short (the
 ## map key's legend); else the display name.
 var ShortName: String = ""
+## "Loyalty to Alliance": factions.json `loyalty_label_short`, where room is
+## short (the Command Center's left-hand menu); else the loyalty label.
+var LoyaltyLabelShort: String = ""
 
 
 static func FromPack(def: PackDefs.FactionDef) -> Faction:
@@ -46,6 +49,7 @@ static func FromPack(def: PackDefs.FactionDef) -> Faction:
 	f.ArtSkin = def.ArtSkin if not def.ArtSkin.is_empty() else def.Id
 	f.Adjective = def.Adjective if not def.Adjective.is_empty() else def.DisplayName
 	f.ShortName = def.ShortName if not def.ShortName.is_empty() else def.DisplayName
+	f.LoyaltyLabelShort = def.LoyaltyLabelShort if not def.LoyaltyLabelShort.is_empty() else def.LoyaltyLabel
 	return f
 
 

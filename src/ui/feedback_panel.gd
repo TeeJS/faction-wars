@@ -29,6 +29,7 @@ var _bottom: float = ColumnBottom
 var _foldedHeight: float = FoldedHeight
 ## True once it sits on the blue bar.
 var OnBar: bool = false
+var _margin: MarginContainer = null
 
 
 ## Folded: a plain 'Feedback' button at the bottom of the column; open: the
@@ -55,6 +56,14 @@ func FitToBar(left: float, top: float, bottom: float) -> void:
 	offset_right = left + Width
 	_bottom = bottom
 	_foldedHeight = bottom - top
+	# A bar lower than the folded box (the grey bar, 31 high): the box packs
+	# tighter so it fits in it.
+	var sb: StyleBox = get_theme_stylebox("panel")
+	var frame: float = (sb.get_margin(SIDE_TOP) + sb.get_margin(SIDE_BOTTOM)) if sb != null else 0.0
+	if _foldedHeight < FoldedHeight and _margin != null:
+		for side in ["left", "top", "right", "bottom"]:
+			_margin.add_theme_constant_override("margin_" + side, 1)
+		_title.custom_minimum_size = Vector2(0, maxf(12.0, _foldedHeight - 2.0 - frame))
 	set_folded(_folded)
 
 
@@ -73,6 +82,7 @@ func _ready() -> void:
 	for side in ["left", "top", "right", "bottom"]:
 		margin.add_theme_constant_override("margin_" + side, 6)
 	add_child(margin)
+	_margin = margin
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 4)
 	margin.add_child(box)

@@ -184,3 +184,18 @@ func FitKeyToFrame(frame: CommandFrame) -> void:
 ## The key in use (the original's or the plain one), for tests.
 func Key() -> Control:
 	return _okey if _okey != null else _key
+
+
+## Open the key if it is closed, close it if open (the left-hand menu's
+## "Loyalty to ..." line).
+func ToggleKey() -> void:
+	if _okey != null:
+		if bool(_okey.get("IsOpen")):
+			_okey.call("Close")
+		else:
+			_okey.call("Open")
+	elif _key != null:
+		if _key._stowed:
+			_key.Restore()
+		else:
+			_key.ToggleCollapsed()

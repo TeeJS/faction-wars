@@ -8,6 +8,7 @@
       "skin": "alliance",
       "color": "#ff0000",
       "loyalty_label": "Loyalty to the Alliance",
+      "loyalty_label_short": "Loyalty to Alliance",
       "agent_name": "C-3PO",
       "hq": {
         "kind": "hidden",
@@ -44,6 +45,7 @@
       "skin": "empire",
       "color": "#00ff00",
       "loyalty_label": "Loyalty to the Empire",
+      "loyalty_label_short": "Loyalty to Empire",
       "agent_name": "IMP-22",
       "hq": {
         "kind": "fixed",

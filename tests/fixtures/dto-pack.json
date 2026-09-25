@@ -3424,6 +3424,7 @@
             "Id": "popular_support",
             "Kind": "support",
             "LabelText": "Popular Support",
+            "MenuLabel": "",
             "Tiers": [
               {
                 "Flare": "big",
@@ -3454,6 +3455,7 @@
             "Id": "uprisings",
             "Kind": "uprising",
             "LabelText": "Uprisings",
+            "MenuLabel": "",
             "Tiers": [
               {
                 "Flare": "big",
@@ -3482,6 +3484,7 @@
             "Id": "idle_fleets",
             "Kind": "my_fleets",
             "LabelText": "Idle Fleets",
+            "MenuLabel": "Idle",
             "Tiers": [
               {
                 "Flare": "big",
@@ -3514,6 +3517,7 @@
             "Id": "fleets_enroute",
             "Kind": "my_fleets",
             "LabelText": "Fleets Enroute",
+            "MenuLabel": "Enroute",
             "Tiers": [
               {
                 "Flare": "big",
@@ -3552,6 +3556,7 @@
             "Id": "idle_personnel",
             "Kind": "personnel",
             "LabelText": "Idle Personnel",
+            "MenuLabel": "Idle",
             "Tiers": [
               {
                 "Flare": "big",
@@ -3574,6 +3579,7 @@
             "Id": "active_personnel",
             "Kind": "personnel",
             "LabelText": "Active Personnel",
+            "MenuLabel": "Active",
             "Tiers": [
               {
                 "Flare": "big",
@@ -3602,6 +3608,7 @@
             "Id": "available_energy",
             "Kind": "status_figure",
             "LabelText": "Available Energy",
+            "MenuLabel": "",
             "Tiers": [
               {
                 "Flare": "big",
@@ -3634,6 +3641,7 @@
             "Id": "available_raw_materials",
             "Kind": "status_figure",
             "LabelText": "Available Raw Materials",
+            "MenuLabel": "Avail Raw Materials",
             "Tiers": [
               {
                 "Flare": "big",
@@ -3666,6 +3674,7 @@
             "Id": "mines",
             "Kind": "facility_count",
             "LabelText": "Mines",
+            "MenuLabel": "",
             "Tiers": [
               {
                 "Flare": "big",
@@ -3698,6 +3707,7 @@
             "Id": "refineries",
             "Kind": "facility_count",
             "LabelText": "Refineries",
+            "MenuLabel": "",
             "Tiers": [
               {
                 "Flare": "big",
@@ -3736,6 +3746,7 @@
             "Id": "shipyards",
             "Kind": "facility_count",
             "LabelText": "Shipyards",
+            "MenuLabel": "",
             "Tiers": [
               {
                 "Flare": "big",
@@ -3768,6 +3779,7 @@
             "Id": "idle_shipyards",
             "Kind": "idle_producer",
             "LabelText": "Idle Shipyards",
+            "MenuLabel": "",
             "Tiers": [
               {
                 "Flare": "big",
@@ -3790,6 +3802,7 @@
             "Id": "training_facilities",
             "Kind": "facility_count",
             "LabelText": "Training Facilities",
+            "MenuLabel": "",
             "Tiers": [
               {
                 "Flare": "big",
@@ -3822,6 +3835,7 @@
             "Id": "idle_training_facilities",
             "Kind": "idle_producer",
             "LabelText": "Idle Training Facilities",
+            "MenuLabel": "Idle Training Fac.",
             "Tiers": [
               {
                 "Flare": "big",
@@ -3844,6 +3858,7 @@
             "Id": "construction_yards",
             "Kind": "facility_count",
             "LabelText": "Construction Yards",
+            "MenuLabel": "",
             "Tiers": [
               {
                 "Flare": "big",
@@ -3876,6 +3891,7 @@
             "Id": "idle_construction_yards",
             "Kind": "idle_producer",
             "LabelText": "Idle Construction Yards",
+            "MenuLabel": "Idle Constr. Yards",
             "Tiers": [
               {
                 "Flare": "big",
@@ -3904,6 +3920,7 @@
             "Id": "defense_batteries",
             "Kind": "defence_figure",
             "LabelText": "Defense Batteries",
+            "MenuLabel": "",
             "Tiers": [
               {
                 "Flare": "big",
@@ -3936,6 +3953,7 @@
             "Id": "shield_generators",
             "Kind": "defence_figure",
             "LabelText": "Shield Generators",
+            "MenuLabel": "",
             "Tiers": [
               {
                 "Flare": "big",
@@ -3968,6 +3986,7 @@
             "Id": "fighter_squadrons",
             "Kind": "intel_line_count",
             "LabelText": "Fighter Squadrons",
+            "MenuLabel": "",
             "Tiers": [
               {
                 "Flare": "big",
@@ -4000,6 +4019,7 @@
             "Id": "trooper_regiments",
             "Kind": "intel_line_count",
             "LabelText": "Trooper Regiments",
+            "MenuLabel": "",
             "Tiers": [
               {
                 "Flare": "big",
@@ -4030,6 +4050,7 @@
             "Id": "death_star_shields",
             "Kind": "constant_zero",
             "LabelText": "Death Star Shields",
+            "MenuLabel": "",
             "Tiers": [
               {
                 "Flare": "big",
@@ -4482,6 +4503,7 @@
       },
       "Id": "alliance",
       "LoyaltyLabel": "Loyalty to the Alliance",
+      "LoyaltyLabelShort": "Loyalty to Alliance",
       "OccupationSupportPolicy": "occupation_penalty",
       "Seed": {
         "Fleet": "alliance_fleet",
@@ -4519,6 +4541,7 @@
       },
       "Id": "empire",
       "LoyaltyLabel": "Loyalty to the Empire",
+      "LoyaltyLabelShort": "Loyalty to Empire",
       "OccupationSupportPolicy": "garrison_bonus",
       "Seed": {
         "Fleet": "empire_fleet",
