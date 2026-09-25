@@ -8746,6 +8746,7 @@
           "FrameBy": {},
           "Frames": 30,
           "ImageFile": "swr-original:menu/easy.png",
+          "PressedImageFile": "",
           "Region": "",
           "SelectedImageFile": "",
           "Still": -1
@@ -8758,6 +8759,7 @@
           "FrameBy": {},
           "Frames": 30,
           "ImageFile": "swr-original:menu/medium.png",
+          "PressedImageFile": "",
           "Region": "",
           "SelectedImageFile": "",
           "Still": -1
@@ -8770,6 +8772,7 @@
           "FrameBy": {},
           "Frames": 30,
           "ImageFile": "swr-original:menu/hard.png",
+          "PressedImageFile": "",
           "Region": "",
           "SelectedImageFile": "",
           "Still": -1
@@ -8782,6 +8785,7 @@
           "FrameBy": {},
           "Frames": 15,
           "ImageFile": "swr-original:menu/empire.png",
+          "PressedImageFile": "",
           "Region": "",
           "SelectedImageFile": "",
           "Still": -1
@@ -8794,6 +8798,7 @@
           "FrameBy": {},
           "Frames": 15,
           "ImageFile": "swr-original:menu/alliance.png",
+          "PressedImageFile": "",
           "Region": "",
           "SelectedImageFile": "",
           "Still": -1
@@ -8806,6 +8811,7 @@
           "FrameBy": {},
           "Frames": 30,
           "ImageFile": "swr-original:menu/load.png",
+          "PressedImageFile": "",
           "Region": "",
           "SelectedImageFile": "",
           "Still": -1
@@ -8818,6 +8824,7 @@
           "FrameBy": {},
           "Frames": 2,
           "ImageFile": "swr-original:menu/credits.png",
+          "PressedImageFile": "",
           "Region": "",
           "SelectedImageFile": "",
           "Still": 1
@@ -8830,6 +8837,7 @@
           "FrameBy": {},
           "Frames": 30,
           "ImageFile": "swr-original:menu/multiplayer.png",
+          "PressedImageFile": "",
           "Region": "",
           "SelectedImageFile": "",
           "Still": -1
@@ -8842,7 +8850,8 @@
           "FrameBy": {},
           "Frames": 30,
           "ImageFile": "swr-original:menu/exit.png",
-          "Region": "",
+          "PressedImageFile": "swr-original:menu/exit_pulled.png",
+          "Region": "exit",
           "SelectedImageFile": "",
           "Still": -1
         },
@@ -8858,6 +8867,7 @@
           },
           "Frames": 3,
           "ImageFile": "swr-original:menu/size_lever.png",
+          "PressedImageFile": "",
           "Region": "",
           "SelectedImageFile": "",
           "Still": -1
@@ -8870,6 +8880,7 @@
           "FrameBy": {},
           "Frames": 1,
           "ImageFile": "swr-original:menu/standard_game.png",
+          "PressedImageFile": "",
           "Region": "hq_only_victory",
           "SelectedImageFile": "swr-original:menu/hq_only.png",
           "Still": -1

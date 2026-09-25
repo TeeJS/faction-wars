@@ -347,7 +347,7 @@ static func _validate_menu(pack: LoadedPack, pack_dir: String, errors: Array[Str
 	for i in menu.Monitors.size():
 		var m := menu.Monitors[i]
 		var ctx := "pack.json menu.monitors[%d]" % i
-		for pair in [["image", m.ImageFile], ["selected_image", m.SelectedImageFile]]:
+		for pair in [["image", m.ImageFile], ["selected_image", m.SelectedImageFile], ["pressed_image", m.PressedImageFile]]:
 			if pair[1].is_empty():
 				if pair[0] == "image":
 					errors.append("%s: 'image' is required." % ctx)
@@ -366,6 +366,8 @@ static func _validate_menu(pack: LoadedPack, pack_dir: String, errors: Array[Str
 			errors.append("%s: region '%s' is not a region of the menu." % [ctx, m.Region])
 		if not m.SelectedImageFile.is_empty() and m.Region.is_empty():
 			errors.append("%s: 'selected_image' needs the 'region' it shows for." % ctx)
+		if not m.PressedImageFile.is_empty() and m.Region.is_empty():
+			errors.append("%s: 'pressed_image' needs the 'region' it shows for." % ctx)
 		for key in m.FrameBy:
 			if not seen.has(key):
 				errors.append("%s: frame_by region '%s' is not a region of the menu." % [ctx, key])
@@ -842,6 +844,7 @@ static func _validate_art(pack: LoadedPack, errors: Array[String]) -> void:
 		for m in pack.Manifest.Menu.Monitors:
 			images.append(["menu.monitors image", m.ImageFile])
 			images.append(["menu.monitors selected_image", m.SelectedImageFile])
+			images.append(["menu.monitors pressed_image", m.PressedImageFile])
 	for pair in images:
 		var split := SplitArtRef(pair[1])
 		if not split[0].is_empty() and not sets.has(split[0]):

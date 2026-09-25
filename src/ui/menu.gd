@@ -304,6 +304,7 @@ func _build_cockpit(menu: PackDefs.MenuDef) -> void:
 		pic.set_meta("def", m)
 		pic.set_meta("strip", strip)
 		pic.set_meta("selected", Art.PackImage(m.SelectedImageFile) if not m.SelectedImageFile.is_empty() else null)
+		pic.set_meta("pressed", Art.PackImage(m.PressedImageFile) if not m.PressedImageFile.is_empty() else null)
 		_monitors.add_child(pic)
 	if _monitors.get_child_count() > 0:
 		var tick := Timer.new()
@@ -482,10 +483,15 @@ func _paint_monitors() -> void:
 		if alt != null and chosen.has(m.Region):
 			strip = alt
 		var frames: int = maxi(1, m.Frames)
+		# Pressed (the ejector handle pulled): its one picture.
+		var pressed: Variant = pic.get_meta("pressed") if pic.has_meta("pressed") else null
+		if pressed != null and not _pressedRegion.is_empty() and m.Region == _pressedRegion:
+			strip = pressed
+			frames = 1
 		var fw: float = strip.get_width() / float(frames)
 		var atlas: AtlasTexture = pic.texture
 		atlas.atlas = strip
-		var frame: int = m.Still if m.Still >= 0 else _monitorFrame % frames
+		var frame: int = clampi(m.Still if m.Still >= 0 else _monitorFrame % frames, 0, frames - 1)
 		# A picture that follows a choice (the galaxy-size lever): the chosen
 		# region's frame.
 		for key in m.FrameBy:
@@ -652,7 +658,31 @@ func _on_region(r: PackDefs.MenuRegionDef) -> void:
 		"multiplayer":
 			OpenMultiplayer()
 		"exit":
+			# The handle pulled first, as the original shows it (TeeJ,
+			# 2026-09-25: "when you click on the handle, it moves"); how long
+			# it holds is INFERRED - the original closes at once.
+			if _press_shown("exit"):
+				await get_tree().create_timer(PressHold).timeout
 			Picker.ExitToPicker(get_tree())
+
+
+## A region whose monitor has a `pressed_image` shows it for a moment when it
+## is pressed (the ejector handle, COMMON.DLL 10011).
+const PressHold := 0.3
+var _pressedRegion: String = ""
+
+
+## True when a monitor showed its pressed picture for `region`.
+func _press_shown(region: String) -> bool:
+	if _monitors == null:
+		return false
+	for pic in _monitors.get_children():
+		var m: PackDefs.MenuMonitorDef = pic.get_meta("def")
+		if m.Region == region and pic.has_meta("pressed") and pic.get_meta("pressed") != null:
+			_pressedRegion = region
+			_paint_monitors()
+			return true
+	return false
 
 
 ## A light square (off) and the same square with a tick (on), drawn at start,
