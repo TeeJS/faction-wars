@@ -122,6 +122,38 @@ func _init() -> void:
 		var options: Button = frame.get_node_or_null("GameOptions")
 		_check(options != null and options.position.is_equal_approx(origin + mon.position * s), "%s: the Game Options monitor where the frame has it" % side)
 
+		# THE BOTTOM BARS span the frame exactly, each row of buttons on its
+		# middle; Feedback at the blue bar's left end, the build label at its
+		# right end; no Menu button, no Galaxy Map Layers (TeeJ, 2026-09-25).
+		var across := Rect2(origin, Vector2(640, 481) * s)
+		var mid: float = across.get_center().x
+		var blue: Rect2 = bar.Panel().get_global_rect()
+		var grey: Control = ui.get_node("HBoxContainer")
+		_check(absf(blue.position.x - across.position.x) <= 1 and absf(blue.end.x - across.end.x) <= 1
+			and absf(grey.get_global_rect().position.x - across.position.x) <= 1 and absf(grey.get_global_rect().end.x - across.end.x) <= 1,
+			"%s: the blue and grey bars span the frame (%s, %s; frame %s)" % [side, str(blue), str(grey.get_global_rect()), str(across)])
+		var cats := Rect2()
+		var anyCat := false
+		for n in bar.Row().get_children():
+			if n is Control and (n as Control).visible:
+				cats = (n as Control).get_global_rect() if not anyCat else cats.merge((n as Control).get_global_rect())
+				anyCat = true
+		var finders: Rect2 = (grey.get_node("PlanetInfo") as Control).get_global_rect().merge((grey.get_node("Encyclopedia") as Control).get_global_rect())
+		_check(absf(cats.get_center().x - mid) <= 1.5 and absf(finders.get_center().x - mid) <= 1.5,
+			"%s: both rows centred on the frame (%.1f, %.1f; middle %.1f)" % [side, cats.get_center().x, finders.get_center().x, mid])
+		_check(not (grey.get_node("MenuButton") as Control).visible and ui.find_child("GalaxyMapLayers", true, false) == null,
+			"%s: no Menu button, no Galaxy Map Layers" % side)
+		var ver: Label = ui.find_child("BuildVersion", true, false)
+		var verAt: Rect2 = ver.get_global_rect() if ver != null else Rect2()
+		var verText: float = verAt.end.x - (ver.get_minimum_size().x if ver != null else 0.0)
+		_check(ver != null and ver.get_parent() == ui and ver.horizontal_alignment == HORIZONTAL_ALIGNMENT_RIGHT
+			and verAt.end.x <= across.end.x and verAt.end.x >= across.end.x - 12 and blue.encloses(verAt) and verText > cats.end.x,
+			"%s: the build label at the blue bar's right end, clear of its buttons (text from %.0f, buttons end %.0f)" % [side, verText, cats.end.x])
+		var fb: FeedbackPanel = ui.get_node_or_null("FeedbackPanel")
+		var fbAt: Rect2 = fb.get_global_rect() if fb != null else Rect2()
+		_check(fb != null and fb.OnBar and absf(fbAt.position.x - across.position.x) <= 0.5 and blue.encloses(fbAt) and fbAt.end.x < cats.position.x,
+			"%s: Feedback at the blue bar's far left, clear of its buttons (%s, buttons from %.0f)" % [side, str(fbAt), cats.position.x])
+
 		# THE SECTORS keep the grey bar on the right, outside the frame; THE
 		# WINDOW REFERENCE BAR on the frame's shelf takes minimised windows, one
 		# to a slat (TeeJ, 2026-09-25).
@@ -195,6 +227,7 @@ func _start(side: String, galaxy: int = Enums.GalaxySize.Standard) -> Node:
 	GameSettings.SelectedDifficulty = Enums.Difficulty.Medium
 	GameSettings.SelectedSize = galaxy
 	GameSettings.PlayerFaction = FactionRegistry.ById(side)
+	GameSettings.ProvideFeedback = true   # the Feedback box on the blue bar (it sends nothing unless submitted)
 	var main: Node = load("res://Main.tscn").instantiate()
 	root.add_child(main)
 	for _i in 6:

@@ -22,6 +22,13 @@ static var _folded: bool = true
 const ColumnBottom := -80.0      # just above the two bottom rows (TeeJ, room #182)
 const ColumnTop := -367.0        # 4 px under the comms panel's bottom edge
 const FoldedHeight := 40.0
+const Width := 143.0
+## Where the folded box's bottom sits and how tall it is: the left column's
+## foot, or the blue bar's left end under the Command Center frame (FitToBar).
+var _bottom: float = ColumnBottom
+var _foldedHeight: float = FoldedHeight
+## True once it sits on the blue bar.
+var OnBar: bool = false
 
 
 ## Folded: a plain 'Feedback' button at the bottom of the column; open: the
@@ -33,8 +40,22 @@ func set_folded(folded: bool) -> void:
 	_title.text = "Feedback" if folded else "Feedback  ▾"
 	_title.flat = not folded
 	_title.alignment = HORIZONTAL_ALIGNMENT_CENTER if folded else HORIZONTAL_ALIGNMENT_LEFT
-	offset_bottom = ColumnBottom
-	offset_top = ColumnBottom - FoldedHeight if folded else ColumnTop
+	offset_bottom = _bottom
+	offset_top = _bottom - _foldedHeight if folded else ColumnTop
+
+
+## Under the Command Center frame: folded, the box is the blue bar's left end,
+## flush with the bar's left side (TeeJ, 2026-09-25: "Move feedback to the far
+## left of the blue bar (to the left of loyalty), aligned to the far left side
+## of the bar"); open, it still grows upward from there. top and bottom are
+## the folded box's, from the screen's bottom edge.
+func FitToBar(left: float, top: float, bottom: float) -> void:
+	OnBar = true
+	offset_left = left
+	offset_right = left + Width
+	_bottom = bottom
+	_foldedHeight = bottom - top
+	set_folded(_folded)
 
 
 func _ready() -> void:
@@ -46,7 +67,7 @@ func _ready() -> void:
 	# (Main.tscn), so this is anchored the same way.
 	set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
 	offset_left = 4.0
-	offset_right = 147.0
+	offset_right = 4.0 + Width
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	var margin := MarginContainer.new()
 	for side in ["left", "top", "right", "bottom"]:

@@ -267,29 +267,4 @@ text = "Encyclopedia"
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="GalaxyMapLayers" type="MenuButton" parent="UIManager/HBoxContainer" unique_id=455248367]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Galaxy Map Layers"
-item_count = 6
-popup/item_0/text = "Popular Support"
-popup/item_0/checkable = 1
-popup/item_0/checked = true
-popup/item_0/id = 0
-popup/item_1/text = "Idle Personnel"
-popup/item_1/checkable = 1
-popup/item_1/id = 1
-popup/item_2/text = "Idle Construction Yards"
-popup/item_2/checkable = 1
-popup/item_2/id = 2
-popup/item_3/text = "Idle Troop Training Facilities"
-popup/item_3/checkable = 1
-popup/item_3/id = 3
-popup/item_4/text = "Idle Shipyards"
-popup/item_4/checkable = 1
-popup/item_4/id = 4
-popup/item_5/text = "Fleets"
-popup/item_5/checkable = 1
-popup/item_5/id = 5
-
 [connection signal="pressed" from="UIManager/HBoxContainer/MenuButton" to="UIManager" method="OnMenuButtonClicked"]

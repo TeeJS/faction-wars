@@ -89,6 +89,7 @@ func _ready() -> void:
 		var ver := BuildInfo.label()
 		menuButton.get_parent().add_child(ver)
 		menuButton.get_parent().move_child(ver, menuButton.get_index() + 1)
+		_versionLabel = ver
 	# Loop through the CommsList to wire the HUD buttons dynamically.
 	var commsList: VBoxContainer = get_node_or_null("CommsPanel/Margin/CommsList")
 	if commsList != null:
@@ -128,10 +129,9 @@ func _ready() -> void:
 	# The tester's feedback box, bottom of the left column (TeeJ, room #80).
 	if GameSettings.ProvideFeedback:
 		add_child(FeedbackPanel.new())
-	var mapLayersBtn: MenuButton = get_node_or_null("%GalaxyMapLayers")
-	if mapLayersBtn != null:
-		var popup: PopupMenu = mapLayersBtn.get_popup()
-		popup.id_pressed.connect(func(id: int) -> void: OnMapLayerSelected(popup, id))
+	# No Galaxy Map Layers button: the GID bar's categories do all it did
+	# (TeeJ, 2026-09-25: "the functionality this provides has all been moved
+	# elsewhere - please remove it").
 
 
 ## THE COMMAND CENTER, when the art set has the side's frame (CommandFrame):
@@ -174,6 +174,7 @@ func BuildCommandFrame(side: String) -> void:
 		frame.Place(map)
 	if ActiveGalaxyMap != null and ActiveGalaxyMap.Bar() != null:
 		ActiveGalaxyMap.Bar().FitToFrame(MapFrame)
+	_FitBottomBars(frame)
 	var background: ColorRect = get_node_or_null("../Background")
 	if background != null:
 		background.color = Color.BLACK
@@ -187,6 +188,59 @@ func BuildCommandFrame(side: String) -> void:
 	if comms != null:
 		comms.visible = false
 	_BuildReferenceBar()
+
+
+## THE BOTTOM BARS UNDER THE FRAME (TeeJ, 2026-09-25): the blue bar (the GID
+## selector) and the grey one under it span the frame exactly - "the blue bar
+## should be cropped to the width of the metal frame", "the blue and grey bars
+## should be centered on the new, narrower width" - each with its row of
+## buttons on the frame's middle: what sits at either end is held in equal
+## halves either side, so it cannot push the row off centre. On the blue bar,
+## Feedback at its far left, flush with its left side, and the build label at
+## its far right ("move the version number to the right of the blue bar").
+## The Menu button goes: the frame's Game Options monitor is the way to the
+## menu ("text 'menu' is not needed now, it can be removed").
+var _versionLabel: Label = null
+const BarTop := -80.0      # the blue bar, from the screen's bottom (GidBar)
+const BarBottom := -36.0
+const BarInset := 2.0      # what sits on it, in from its edges
+
+
+func _FitBottomBars(frame: CommandFrame) -> void:
+	var across: Rect2 = frame.ScreenRect()
+	var row: HBoxContainer = get_node_or_null("HBoxContainer")
+	if row != null:
+		row.anchor_left = 0.0
+		row.anchor_right = 0.0
+		row.offset_left = across.position.x
+		row.offset_right = across.end.x
+		var menu: Control = row.get_node_or_null("MenuButton")
+		if menu != null:
+			menu.visible = false
+		# Nothing is left at either end: the two spacers are equal halves,
+		# the finders between them.
+	var bar: GidBar = ActiveGalaxyMap.Bar() if ActiveGalaxyMap != null else null
+	if bar != null:
+		bar.FitAcross(across)
+	if _versionLabel != null:
+		_versionLabel.reparent(self)
+		_versionLabel.anchor_left = 0.0
+		_versionLabel.anchor_right = 0.0
+		_versionLabel.anchor_top = 1.0
+		_versionLabel.anchor_bottom = 1.0
+		_versionLabel.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		_versionLabel.offset_right = across.end.x - BarInset * 3.0
+		_versionLabel.offset_left = _versionLabel.offset_right - 200.0
+		_versionLabel.offset_top = BarTop
+		_versionLabel.offset_bottom = BarBottom
+	var feedback: FeedbackPanel = get_node_or_null("FeedbackPanel")
+	if feedback != null:
+		feedback.FitToBar(across.position.x, BarTop + BarInset, BarBottom - BarInset)
+	# The GID key's docked button had sat above Feedback in the left column.
+	var key: Control = get_node_or_null("MapKeyButton")
+	if key != null:
+		key.offset_bottom = FeedbackPanel.ColumnBottom
+		key.offset_top = FeedbackPanel.ColumnBottom - KeyButtonHeight
 
 
 ## THE WINDOW REFERENCE BAR ("The Window Reference Bar has twelve slots for
@@ -273,15 +327,6 @@ func RelayoutShelf() -> void:
 		btn.add_theme_color_override("font_outline_color", Color.BLACK)
 		btn.add_theme_constant_override("outline_size", 3)
 		btn.add_theme_font_size_override("font_size", clampi(int(h * 0.42), 10, 14))
-
-
-func OnMapLayerSelected(popup: PopupMenu, selectedId: int) -> void:
-	# Update checkmarks so only the selected item is checked.
-	for i in popup.item_count:
-		popup.set_item_checked(i, i == selectedId)
-	# Command the active map to update its layer.
-	if ActiveGalaxyMap != null:
-		ActiveGalaxyMap.SetLayer(selectedId)
 
 
 func _exit_tree() -> void:
@@ -884,7 +929,9 @@ func AddToTaskbar(title: String, onRestore: Callable) -> Button:
 			onRestore.call())
 	btn.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
 	var bottom: float = FeedbackPanel.ColumnBottom
-	var feedback: Node = get_node_or_null("FeedbackPanel")
+	var feedback: FeedbackPanel = get_node_or_null("FeedbackPanel")
+	if feedback != null and feedback.OnBar:
+		feedback = null   # on the blue bar, not in the column
 	if feedback != null:
 		bottom -= FeedbackPanel.FoldedHeight + KeyButtonGap
 	btn.offset_left = 4.0
