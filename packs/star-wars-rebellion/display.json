@@ -653,6 +653,7 @@
     "system_engines": "Sub-Light Engine",
     "system_hyperdrive": "Hyper-drive",
     "shield_active": "Active Shielding",
-    "weapon_armed": "Weapon Armed"
+    "weapon_armed": "Weapon Armed",
+    "sector": "Sector"
   }
 }

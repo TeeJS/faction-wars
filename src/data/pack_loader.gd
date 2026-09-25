@@ -49,6 +49,8 @@ const KNOWN_TERMS := [
 	"system_shield_recharge", "system_weapon_recharge", "system_tractor", "system_engines", "system_hyperdrive",
 	# a standing defence's state tag in the Defenses window
 	"shield_active", "weapon_armed",
+	# the word under a sector's name on the map
+	"sector",
 ]
 ## SCHEMA.md section 2, `menu`. Every function of the Shuttle Cockpit (manual
 ## p021, Fig. 2.2); a picture menu must offer each one, so no function is lost

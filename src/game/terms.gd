@@ -55,6 +55,9 @@ const DEFAULTS := {
 	# a standing defence's state tag in the Defenses window
 	"shield_active":          "Shielding Up",
 	"weapon_armed":           "Armed",
+	# the word under a sector's name on the map, in the original's look
+	# ("Calaron" / "Sector")
+	"sector":                 "Sector",
 }
 
 

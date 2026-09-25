@@ -668,6 +668,7 @@
     "system_engines": "Main Engines",
     "system_hyperdrive": "Cruising Engines",
     "shield_active": "Fortified",
-    "weapon_armed": "Manned"
+    "weapon_armed": "Manned",
+    "sector": "Theatre"
   }
 }
