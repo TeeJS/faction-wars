@@ -24,6 +24,9 @@ func _check(cond: bool, what: String) -> void:
 
 func _init() -> void:
 	await process_frame
+	# The last pack and the favorites in a scratch file, never the player's own.
+	PackPicker.LastFile = "user://test-picker.cfg"
+	DirAccess.remove_absolute(PackPicker.LastFile)
 	_check(not FactionRegistry.IsLoaded(), "nothing is loaded before the picker")
 
 	var picker: PackPicker = load("res://PackPicker.tscn").instantiate()
@@ -128,21 +131,7 @@ func _init() -> void:
 	var real_packs: String = FactionRegistry.USER_PACKS_ROOT
 	FactionRegistry.USER_PACKS_ROOT = "user://test-picker-packs"
 	Importer._remove(FactionRegistry.USER_PACKS_ROOT)
-	var mine := FactionRegistry.USER_PACKS_ROOT + "/test-picker-pack"
-	DirAccess.make_dir_recursive_absolute(mine)
-	for f in FactionRegistry.PACK_FILES:
-		var text := FileAccess.get_file_as_string("res://packs/ww2/" + f)
-		if f == "pack.json":
-			var d: Dictionary = JSON.parse_string(text)
-			d["id"] = "test-picker-pack"
-			d["display_name"] = "Test Pack"
-			d["map_image"] = "ww2map.png"
-			text = JSON.stringify(d)
-		var w := FileAccess.open(mine + "/" + f, FileAccess.WRITE)
-		w.store_string(text)
-		w.close()
-	var map_img := Image.create(8, 8, false, Image.FORMAT_RGBA8)
-	map_img.save_png(mine + "/ww2map.png")
+	_make_pack(FactionRegistry.USER_PACKS_ROOT, "test-picker-pack", "Test Pack")
 	picker._rebuild()
 	var mine_play: Button = picker.PlayButtons().get("test-picker-pack")
 	var remove: Button = mine_play.get_parent().get_node_or_null("RemovePack") if mine_play != null else null
@@ -156,6 +145,68 @@ func _init() -> void:
 			ask2.confirmed.emit()
 			await process_frame
 		_check(not picker.PlayButtons().has("test-picker-pack"), "... and the pack and its card are gone")
+
+	# THE CAROUSEL AND THE FAVORITES (TeeJ, 2026-09-24).
+	picker._start = 0
+	picker._rebuild()
+	var shown := picker.VisibleIds()
+	_check(shown.size() == 3 and shown.back() == PackPicker.ADD_CARD and not picker._left.visible,
+		"two packs and the + card fit: all on show, no arrows (%s)" % str(shown))
+	_check(picker.find_child("AddPack", true, false) != null and picker._order.back() == PackPicker.ADD_CARD, "the + card is last")
+	for k in 3:
+		_make_pack(FactionRegistry.USER_PACKS_ROOT, "test-carousel-%d" % k, "Carousel %d" % k)
+	picker._rebuild()
+	var order: Array[String] = picker._order
+	_check(order.size() == 6 and order[0] == "star-wars-rebellion" and order[1] == "ww2" and order[2] == "test-carousel-0" and order[5] == PackPicker.ADD_CARD,
+		"with no favorites: the shipped packs, the player's own, then + (%s)" % str(order))
+	_check(picker.VisibleIds() == order.slice(0, 3) and picker._left.visible and picker._right.visible,
+		"three on show, with the arrows (%s)" % str(picker.VisibleIds()))
+	picker._right.pressed.emit()
+	_check(picker.VisibleIds() == order.slice(1, 4), "the right arrow turns it one card (%s)" % str(picker.VisibleIds()))
+	picker.Turn(-1)
+	picker.Turn(-1)
+	_check(picker.VisibleIds() == [order[5], order[0], order[1]], "turning left from the first wraps round to the + card (%s)" % str(picker.VisibleIds()))
+	var key := InputEventKey.new()
+	key.keycode = KEY_RIGHT
+	key.pressed = true
+	root.push_input(key)
+	_check(picker.VisibleIds() == order.slice(0, 3), "the Right key turns it too (%s)" % str(picker.VisibleIds()))
+	# Stars: up to three; they come first when the screen loads.
+	for id in ["test-carousel-2", "test-carousel-1", "test-carousel-0"]:
+		picker._bring_into_view(id)
+		var star: PackPicker.StarButton = (picker._panels[id] as Node).find_child("Star", true, false)
+		star.pressed.emit()
+		_check(star.on and PackPicker.Favorites().has(id), "%s starred" % id)
+	var ww2_star: PackPicker.StarButton = (picker._panels["ww2"] as Node).find_child("Star", true, false)
+	ww2_star.pressed.emit()
+	await process_frame
+	_check(not ww2_star.on and PackPicker.Favorites().size() == 3 and picker.get_node_or_null("Favorites") != null,
+		"a fourth star is refused, and says so")
+	var said: Node = picker.get_node_or_null("Favorites")
+	if said != null:
+		said.queue_free()
+	picker._start = 0
+	picker._rebuild()
+	_check(picker.VisibleIds() == ["test-carousel-2", "test-carousel-1", "test-carousel-0"],
+		"on load the favorites are the cards on show, in star order (%s)" % str(picker.VisibleIds()))
+	_check(((picker._panels["test-carousel-2"] as Node).find_child("Star", true, false) as PackPicker.StarButton).on, "a favorite's star is lit on its card")
+	# The + card: the file picker (none headless - the refusal says so).
+	(picker._panels[PackPicker.ADD_CARD] as Button).pressed.emit()
+	await process_frame
+	var told: AcceptDialog = picker.get_node_or_null("ImportResult")
+	_check(told != null, "the + card imports a file (headless: '%s')" % (told.dialog_text if told != null else "nothing"))
+	if told != null:
+		told.queue_free()
+		await process_frame   # closed before the next question opens
+	# A starred pack removed is no favorite.
+	var rm: Button = (picker._panels["test-carousel-2"] as Node).find_child("RemovePack", true, false)
+	rm.pressed.emit()
+	await process_frame
+	(picker.get_node("Confirm") as ConfirmationDialog).confirmed.emit()
+	await process_frame
+	_check(not PackPicker.Favorites().has("test-carousel-2") and not picker._order.has("test-carousel-2"), "removing a starred pack unstars it")
+	for id in PackPicker.Favorites():
+		PackPicker.SetFavorite(id, false)
 	Importer._remove(FactionRegistry.USER_PACKS_ROOT)
 	FactionRegistry.USER_PACKS_ROOT = real_packs
 	Importer._remove(ArtScript.UserArtRoot)
@@ -201,8 +252,27 @@ func _init() -> void:
 	_check(current_scene is Menu, "and its Cockpit is the scene")
 	_check(FactionRegistry.Pack.Manifest.Menu != null, "the Star Wars Cockpit is the picture form - the new pack, not the old one")
 
+	DirAccess.remove_absolute(PackPicker.LastFile)
 	print("[pack_picker] %d checks, %d failed" % [_checks, _fails])
 	quit(1 if _fails > 0 else 0)
+
+
+## A copy of the WWII pack under `root`, as a player's import.
+static func _make_pack(root: String, id: String, display_name: String) -> void:
+	var dir := "%s/%s" % [root, id]
+	DirAccess.make_dir_recursive_absolute(dir)
+	for f in FactionRegistry.PACK_FILES:
+		var text := FileAccess.get_file_as_string("res://packs/ww2/" + f)
+		if f == "pack.json":
+			var d: Dictionary = JSON.parse_string(text)
+			d["id"] = id
+			d["display_name"] = display_name
+			d["map_image"] = "ww2map.png"
+			text = JSON.stringify(d)
+		var w := FileAccess.open(dir + "/" + f, FileAccess.WRITE)
+		w.store_string(text)
+		w.close()
+	Image.create(8, 8, false, Image.FORMAT_RGBA8).save_png(dir + "/ww2map.png")
 
 
 static func _labels(node: Node) -> Array[String]:

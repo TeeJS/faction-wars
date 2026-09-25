@@ -15,6 +15,11 @@ extends Control
 ## Clear artwork pack under Play; a pack the player imported has Remove pack.
 ## A pack file dropped on the window still imports, on every screen.
 ##
+## The cards are a CAROUSEL (TeeJ, 2026-09-24): three on screen at most,
+## turned by its arrows, the wheel or Left/Right, wrapping round. Up to three
+## favorites, starred on their cards, come first when the screen loads. The
+## last card is "+": Add your own pack, a faction pack from the file picker.
+##
 ## Skipped straight through to the Cockpit when the choice is already made:
 ## `--pack=<id>` on the command line, a pack already loaded (a scene coming
 ## back here mid-flow), or exactly one pack installed.
@@ -33,7 +38,20 @@ const Art := preload("res://src/ui/artwork.gd")
 const PackImport := preload("res://src/ui/pack_import.gd")
 
 const MENU_SCENE := "res://Menu.tscn"
-const LastFile := "user://pack.cfg"
+## The last pack played and the favorites. A static var so a test can point it
+## at a scratch file and never touch the player's own.
+static var LastFile := "user://pack.cfg"
+## THE CAROUSEL (TeeJ, 2026-09-24): three cards on screen at most, turned by
+## the arrows at its sides, the mouse wheel over it or the Left and Right
+## keys, wrapping round; up to three FAVORITES, starred on their cards, come
+## first when the screen loads; the "+" card to add a pack is always last.
+const MaxShown := 3
+const MaxFavorites := 3
+const CardWidth := 340
+const CardGap := 24
+const ArrowWidth := 44
+## The "+" card's place in the carousel order.
+const ADD_CARD := "+"
 ## The Faction Wars Exporter's download: always the newest release's exe (one
 ## file, from exporter 2.2.0 on).
 const EXPORTER_URL := "https://github.com/TeeJS/faction-wars/releases/latest/download/FactionWarsExporter.exe"
@@ -46,6 +64,14 @@ var _play: Dictionary = {}
 ## pack id -> its loaded manifest and tables (null for one that failed).
 var _packs: Dictionary = {}
 var _cards: HBoxContainer
+## The carousel: its order (pack ids, then ADD_CARD), each card's panel, the
+## arrows, and the first card on screen (kept across a rebuild).
+var _order: Array[String] = []
+var _panels: Dictionary = {}
+var _row: HBoxContainer
+var _left: Button
+var _right: Button
+var _start: int = 0
 ## Set by ExitToPicker: the next picker is a return from the Cockpit.
 static var _returning: bool = false
 var _column: VBoxContainer
@@ -136,8 +162,55 @@ static func _cmdline_pack() -> String:
 
 static func _remember(pack_id: String) -> void:
 	var cfg := ConfigFile.new()
+	cfg.load(LastFile)   # keep the favorites
 	cfg.set_value("pack", "last", pack_id)
 	cfg.save(LastFile)
+
+
+## The starred packs, in the order they were starred.
+static func Favorites() -> Array[String]:
+	var out: Array[String] = []
+	var cfg := ConfigFile.new()
+	if cfg.load(LastFile) != OK:
+		return out
+	for f in cfg.get_value("pack", "favorites", []):
+		out.append(str(f))
+	return out
+
+
+## Star or unstar a pack. False when it would be a fourth favorite.
+static func SetFavorite(pack_id: String, on: bool) -> bool:
+	var favs := Favorites()
+	if on:
+		if favs.has(pack_id):
+			return true
+		if favs.size() >= MaxFavorites:
+			return false
+		favs.append(pack_id)
+	elif not favs.has(pack_id):
+		return true
+	else:
+		favs.erase(pack_id)
+	var cfg := ConfigFile.new()
+	cfg.load(LastFile)   # keep the last pack played
+	cfg.set_value("pack", "favorites", favs)
+	cfg.save(LastFile)
+	return true
+
+
+## The carousel's order: the favorites as starred, then the packs that come
+## with the game, then the player's own, then the "+" card.
+static func CarouselOrder(ids: Array[String]) -> Array[String]:
+	var out: Array[String] = []
+	for f in Favorites():
+		if ids.has(f) and not out.has(f):
+			out.append(f)
+	for shipped in [true, false]:
+		for id in ids:
+			if not out.has(id) and _is_imported(id) != shipped:
+				out.append(id)
+	out.append(ADD_CARD)
+	return out
 
 
 static func _last() -> String:
@@ -202,20 +275,39 @@ func _build(ids: Array[String]) -> void:
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	column.add_child(title)
 
+	# The carousel: an arrow either side of the cards on show.
+	_row = HBoxContainer.new()
+	_row.name = "Carousel"
+	_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	_row.add_theme_constant_override("separation", 12)
+	column.add_child(_row)
+	_left = _arrow("CarouselLeft", -1)
+	_row.add_child(_left)
 	_cards = HBoxContainer.new()
-	_cards.add_theme_constant_override("separation", 24)
+	_cards.add_theme_constant_override("separation", CardGap)
 	_cards.alignment = BoxContainer.ALIGNMENT_CENTER
-	column.add_child(_cards)
+	_row.add_child(_cards)
+	_right = _arrow("CarouselRight", 1)
+	_row.add_child(_right)
 
-	var last := _last()
-	var focus_first: Button = null
-	for id in ids:
+	_order = CarouselOrder(ids)
+	for id in _order:
+		if id == ADD_CARD:
+			_panels[id] = _add_card()
+			continue
 		var errors: Array[String] = []
 		var pack := PackLoader.Load(FactionRegistry.PackDir(id), errors)
 		_packs[id] = pack
-		var play := _card(id, pack, errors)
-		if focus_first == null or id == last:
-			focus_first = play
+		_card(id, pack, errors)
+	_layout_carousel()
+	if not resized.is_connected(_layout_carousel):
+		resized.connect(_layout_carousel)
+	# The last pack played has the focus when its card is on show; else the first.
+	var last := _last()
+	var focus_first: Button = null
+	for id in VisibleIds():
+		if _play.has(id) and (focus_first == null or id == last):
+			focus_first = _play[id]
 	if focus_first != null and not focus_first.disabled:
 		focus_first.grab_focus()
 
@@ -235,17 +327,32 @@ func _build(ids: Array[String]) -> void:
 ## about what is installed.
 func _card(id: String, pack: PackLoader.LoadedPack, errors: Array[String]) -> Button:
 	var panel := PanelContainer.new()
-	panel.custom_minimum_size = Vector2(340, 0)
+	panel.name = "Card_" + id
+	panel.custom_minimum_size = Vector2(CardWidth, 0)
 	_cards.add_child(panel)
+	_panels[id] = panel
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 10)
 	panel.add_child(box)
 
+	# The name, centred, with the favorite's star in the corner.
+	var head := HBoxContainer.new()
+	var balance := Control.new()   # as wide as the star, so the name stays centred
+	balance.custom_minimum_size = Vector2(StarButton.Size, 0)
+	head.add_child(balance)
 	var name := Label.new()
 	name.text = pack.Manifest.DisplayName if pack != null else id
 	name.add_theme_font_size_override("font_size", 24)
 	name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	box.add_child(name)
+	name.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	head.add_child(name)
+	var star := StarButton.new()
+	star.name = "Star"
+	star.on = Favorites().has(id)
+	star.tooltip_text = _star_tip(star.on)
+	star.pressed.connect(func() -> void: _toggle_star(id, star))
+	head.add_child(star)
+	box.add_child(head)
 
 	if pack != null:
 		# The map picture - from the art set, when it is imported - else the
@@ -314,9 +421,194 @@ func _card(id: String, pack: PackLoader.LoadedPack, errors: Array[String]) -> Bu
 		remove.pressed.connect(func() -> void:
 			_confirm("Remove pack", "Remove %s? Import its file again to get it back." % title, "Remove", func() -> void:
 				PackImport.Remove(PackImport.KIND_FACTION_PACK, id)
+				SetFavorite(id, false)   # a removed pack is no favorite
 				_rebuild()))
 		box.add_child(remove)
 	return play
+
+
+# ---- the carousel -------------------------------------------------------------------
+
+## The "+" card, as big as the others, always last: a faction pack of the
+## player's own, from the file picker (TeeJ, 2026-09-24).
+func _add_card() -> Control:
+	var card := Button.new()
+	card.name = "AddPack"
+	card.custom_minimum_size = Vector2(CardWidth, 0)
+	card.tooltip_text = "Import a faction pack (.zip) made with the pack editor. It stays on this " \
+		+ ("browser" if OS.has_feature("web") else "computer") + ": keep the .zip, to import it again."
+	var plain := get_theme_stylebox("panel", "PanelContainer")
+	if plain != null:
+		for st in ["normal", "focus", "disabled"]:
+			card.add_theme_stylebox_override(st, plain)
+	card.pressed.connect(func() -> void: PackImport.PickFile(_on_imported))
+	var box := VBoxContainer.new()
+	box.set_anchors_preset(Control.PRESET_FULL_RECT)
+	box.alignment = BoxContainer.ALIGNMENT_CENTER
+	box.add_theme_constant_override("separation", 10)
+	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(box)
+	for part in [["+", 72, Color(0.85, 0.85, 0.9)], ["Add your own pack", 24, Color.WHITE],
+			["A faction pack (.zip) made with the pack editor.", 16, Color(0.75, 0.75, 0.8)]]:
+		var l := Label.new()
+		l.text = part[0]
+		l.add_theme_font_size_override("font_size", part[1])
+		l.add_theme_color_override("font_color", part[2])
+		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		box.add_child(l)
+	_cards.add_child(card)
+	return card
+
+
+func _arrow(node_name: String, dir: int) -> Button:
+	var b := ArrowButton.new()
+	b.name = node_name
+	b.dir = dir
+	b.custom_minimum_size = Vector2(ArrowWidth, 120)
+	b.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	b.focus_mode = Control.FOCUS_NONE
+	b.tooltip_text = "Previous" if dir < 0 else "Next"
+	b.pressed.connect(func() -> void: Turn(dir))
+	return b
+
+
+## How many cards fit on screen: as many as the width takes, three at most.
+func _shown() -> int:
+	var width: float = size.x if size.x > 0 else get_viewport_rect().size.x
+	var fit := int((width - 2 * (ArrowWidth + 12)) / float(CardWidth + CardGap))
+	return mini(clampi(fit, 1, MaxShown), _order.size())
+
+
+## Shows the cards from _start on, in carousel order, wrapping round; the
+## arrows only when there are more cards than fit.
+func _layout_carousel() -> void:
+	if _cards == null or _order.is_empty():
+		return
+	var n := _order.size()
+	var shown := _shown()
+	var turning := n > shown
+	_left.visible = turning
+	_right.visible = turning
+	_start = posmod(_start, n) if turning else 0
+	for c in _cards.get_children():
+		(c as Control).visible = false
+	for i in shown:
+		var card: Control = _panels.get(_order[(_start + i) % n])
+		if card == null:
+			continue
+		card.visible = true
+		_cards.move_child(card, i)
+
+
+## The cards on screen, left to right (ADD_CARD for the "+" card).
+func VisibleIds() -> Array[String]:
+	var out: Array[String] = []
+	if _order.is_empty():
+		return out
+	for i in _shown():
+		out.append(_order[(_start + i) % _order.size()])
+	return out
+
+
+## Turn the carousel one card left (-1) or right (1), wrapping round.
+func Turn(step: int) -> void:
+	if _order.size() <= _shown():
+		return
+	_start = posmod(_start + step, _order.size())
+	_layout_carousel()
+
+
+## Turn until `id`'s card is on show (a pack just imported).
+func _bring_into_view(id: String) -> void:
+	if VisibleIds().has(id) or not _order.has(id):
+		return
+	_start = _order.find(id) - (_shown() - 1)
+	_layout_carousel()
+
+
+func _toggle_star(id: String, star: StarButton) -> void:
+	var want := not star.on
+	if not SetFavorite(id, want):
+		_tell({"message": "Up to %d favorites: unstar one first." % MaxFavorites}, "Favorites")
+		return
+	star.on = want
+	star.tooltip_text = _star_tip(want)
+	star.queue_redraw()
+
+
+static func _star_tip(on: bool) -> String:
+	return "A favorite: first on this screen. Click to unstar." if on \
+		else "Star as a favorite (up to %d): favorites come first on this screen." % MaxFavorites
+
+
+## Left and Right, and the mouse wheel over the cards, turn the carousel -
+## not while a window or a question is up over it.
+func _input(event: InputEvent) -> void:
+	if _row == null or not _left.visible or ArtworkWindow() != null or _dialog_up():
+		return
+	if event is InputEventKey and event.pressed and not event.echo \
+			and (event.keycode == KEY_LEFT or event.keycode == KEY_RIGHT):
+		Turn(-1 if event.keycode == KEY_LEFT else 1)
+		get_viewport().set_input_as_handled()
+	elif event is InputEventMouseButton and event.pressed \
+			and (event.button_index == MOUSE_BUTTON_WHEEL_UP or event.button_index == MOUSE_BUTTON_WHEEL_DOWN) \
+			and _row.get_global_rect().has_point(event.position):
+		Turn(-1 if event.button_index == MOUSE_BUTTON_WHEEL_UP else 1)
+		get_viewport().set_input_as_handled()
+
+
+func _dialog_up() -> bool:
+	for c in get_children():
+		if c is Window and (c as Window).visible:
+			return true
+	return false
+
+
+## A triangle pointing the way the carousel turns.
+class ArrowButton extends Button:
+	var dir: int = 1
+
+	func _ready() -> void:
+		flat = true
+		mouse_entered.connect(queue_redraw)
+		mouse_exited.connect(queue_redraw)
+
+	func _draw() -> void:
+		var c := size / 2.0
+		var r := minf(size.x, size.y) * 0.3
+		var col := Color.WHITE if is_hovered() else Color(0.7, 0.7, 0.78)
+		draw_colored_polygon(PackedVector2Array([c + Vector2(r * dir, 0), c + Vector2(-r * 0.6 * dir, -r), c + Vector2(-r * 0.6 * dir, r)]), col)
+
+
+## A favorite's star: gold and filled when starred, an outline when not.
+class StarButton extends Button:
+	const Size := 30
+	var on: bool = false
+
+	func _ready() -> void:
+		flat = true
+		focus_mode = Control.FOCUS_NONE
+		custom_minimum_size = Vector2(Size, Size)
+		size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		mouse_entered.connect(queue_redraw)
+		mouse_exited.connect(queue_redraw)
+
+	func _draw() -> void:
+		var c := size / 2.0
+		var outer := minf(size.x, size.y) * 0.45
+		var pts := PackedVector2Array()
+		for i in 10:
+			var r := outer if i % 2 == 0 else outer * 0.45
+			var a := -PI / 2.0 + i * PI / 5.0
+			pts.append(c + Vector2(cos(a), sin(a)) * r)
+		if on:
+			draw_colored_polygon(pts, Color(1.0, 0.82, 0.2))
+		else:
+			var ring := pts.duplicate()
+			ring.append(pts[0])
+			draw_polyline(ring, Color.WHITE if is_hovered() else Color(0.65, 0.65, 0.72), 2.0, true)
 
 
 ## Asks before something that cannot be undone from here.
@@ -335,11 +627,12 @@ func _confirm(title: String, text: String, yes_text: String, yes: Callable) -> v
 	box.popup_centered(Vector2i(460, 0))
 
 
-## A result with nowhere else to go (a file dropped on the cards).
-func _tell(result: Dictionary) -> void:
+## A result with nowhere else to go (a file dropped on the cards, the "+"
+## card's import, a fourth star).
+func _tell(result: Dictionary, title: String = "Import") -> void:
 	var box := AcceptDialog.new()
-	box.name = "ImportResult"
-	box.title = "Import"
+	box.name = "ImportResult" if title == "Import" else title
+	box.title = title
 	box.dialog_text = str(result.get("message", ""))
 	box.dialog_autowrap = true
 	add_child(box)
@@ -500,6 +793,9 @@ func _on_imported(result: Dictionary) -> void:
 	_rebuild()
 	var message := str(result.get("message", ""))
 	var ok := bool(result.get("ok", false))
+	# A pack just imported: its card on show.
+	if ok and str(result.get("kind", "")) == PackImport.KIND_FACTION_PACK:
+		_bring_into_view(str(result.get("id", "")))
 	if waiting.is_empty():
 		if not message.is_empty():
 			_tell(result)
@@ -518,4 +814,6 @@ func _rebuild() -> void:
 		c.queue_free()
 	_play.clear()
 	_packs.clear()
-	_build(FactionRegistry.ListPackIds())
+	_panels.clear()
+	_order.clear()
+	_build(FactionRegistry.ListPackIds())   # _start is kept: the same cards stay on show
