@@ -279,16 +279,18 @@ func _load(slot: int) -> void:
 		return
 	# "If you try to load a game without saving the current game first, the
 	# computer asks you to confirm that this is what you want to do."
-	_confirm("Load Game", "Load \"%s\"? The game you are playing is lost unless you have saved it." % str(SaveManager.Slots()[slot]["name"]), go)
+	# The original's words (REBDLOG.DLL).
+	_confirm("Load Game", "Loading the selected game will destroy unsaved changes", go, "Load without saving?")
 
 
 func _restart() -> void:
 	if FromCockpit:
 		queue_free()   # already in the Shuttle
 		return
-	_confirm("Restart the Game", "Abandon this game and start over in the Shuttle?", func() -> void:
+	# The original's words (TeeJ's screenshot, 2026-09-25; REBDLOG.DLL).
+	_confirm("Restart the Game", "Returning to the shuttle cockpit will cause unsaved changes to be lost", func() -> void:
 		MpSetup.reset()
-		get_tree().change_scene_to_file("res://Menu.tscn"))
+		get_tree().change_scene_to_file("res://Menu.tscn"), "Return without saving?")
 
 
 func _return() -> void:
@@ -298,17 +300,58 @@ func _return() -> void:
 
 
 func _exit() -> void:
-	_confirm("Exit the Game", "Do you want to quit?", func() -> void:
+	# The original's words (REBDLOG.DLL); the question's own place in the box.
+	_confirm("Exit the Game", "", func() -> void:
 		MpSetup.reset()
 		# A browser tab has no desktop to exit to: back to the pack picker,
 		# as the Cockpit's Exit does (TeeJ, room #97).
 		if OS.has_feature("web"):
 			Picker.ExitToPicker(get_tree())
 		else:
-			get_tree().quit())
+			get_tree().quit(), "Are you sure you want to quit?")
 
 
-func _confirm(title: String, text: String, yes: Callable) -> void:
+## A question, in the original's alert box when its pictures are imported
+## (TeeJ, 2026-09-25: "we need this menu to match the original", with his
+## screenshot of the original's "Return without saving?"): REBDLOG's plate with
+## two button sockets, over a shade that takes every other click; the message
+## centred on its panel in white Arial bold 13, capitals from y 28, lines 16
+## apart, the question under it (capitals at y 87); the check at (138,135) and
+## the X at (229,135) - both matched to the pixel. No title: the original's
+## box has none.
+const ConfirmText := Color(1, 1, 1)
+
+
+func _confirm(title: String, text: String, yes: Callable, question: String = "") -> void:
+	if OUI.Pic("dialog_plate2") == null or Art.ButtonIcon("dialog_ok") == null or Art.ButtonIcon("dialog_cancel") == null:
+		var parts: Array = [text, question].filter(func(s: String) -> bool: return not s.is_empty())
+		_confirm_plain(title, "\n\n".join(PackedStringArray(parts)), yes)
+		return
+	var shade := Control.new()
+	shade.name = "Confirm"
+	shade.mouse_filter = Control.MOUSE_FILTER_STOP
+	add_child(shade)
+	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)   # the screen's whole size (#222)
+	var plate: Texture2D = OUI.Pic("dialog_plate2")
+	var box := Control.new()
+	box.name = "Box"
+	box.size = plate.get_size()
+	box.position = ((get_viewport_rect().size - box.size) / 2.0).floor()
+	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	shade.add_child(box)
+	OUI.Place(box, plate, 0, 0, "Plate")
+	var words := OUI.Text(box, text, 40, 25.5, 332, 40, 13, ConfirmText, HORIZONTAL_ALIGNMENT_CENTER, true, "Text")
+	words.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	OUI.LinePitch(words, 13, 16, true)
+	if not question.is_empty():
+		OUI.Text(box, question, 0, 84.5, 412, 18, 13, ConfirmText, HORIZONTAL_ALIGNMENT_CENTER, true, "Question")
+	OUI.PictureButton(box, "dialog_ok", 138, 135, "Yes").pressed.connect(func() -> void:
+		shade.queue_free()
+		yes.call())
+	OUI.PictureButton(box, "dialog_cancel", 229, 135, "No").pressed.connect(shade.queue_free)
+
+
+func _confirm_plain(title: String, text: String, yes: Callable) -> void:
 	var box := ConfirmationDialog.new()
 	box.name = "Confirm"
 	box.title = title
