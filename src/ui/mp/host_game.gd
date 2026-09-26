@@ -4,9 +4,28 @@ extends MpScreen
 ## Cancel. Proceed creates the room on the relay and opens Multiplayer Options.
 ## The game name follows the player name while it is still that player's
 ## default "<name>'s game" (TeeJ, room #197 item 1).
+##
+## In the original's look when its screen is imported (original_mp.gd): the
+## original's Host Game screen (COMMON.DLL 10102), as TeeJ asked (2026-09-25:
+## "setup game should be similar to this").
+
+const OriginalMp := preload("res://src/ui/mp/original_mp.gd")
+
+## The original's Host Game screen (px of its 640 x 480, measured on TeeJ's
+## screenshot): the two questions centred on x 296, capitals at y 106 and 266,
+## green Arial 15.5; the answers typed at x 124, capitals at 148 and 305, green
+## Arial 13, the caret white.
+const HeadCentre := 296.0
+const HeadTops := [106, 266]
+const HeadPx := 15.5
+const FieldX := 124
+const FieldW := 348
+const FieldTops := [148, 305]
+const FieldPx := 13.0
 
 var _creating: bool = false
 var _last_player: String = ""
+var _look: OriginalMp
 
 
 static func default_game_name(player: String) -> String:
@@ -29,6 +48,16 @@ func _ready() -> void:
 	bar().proceed.connect(_proceed)
 	bar().previous.connect(func() -> void: go(ConfigurationScene))
 	bar().cancel.connect(cancel_to_cockpit)
+	if OriginalMp.CanBuild("mp_setup"):
+		_dress()
+
+
+func _dress() -> void:
+	_look = OriginalMp.Dress(self, "mp_setup") as OriginalMp
+	for i in 2:
+		_look.Line(get_node("CenterContainer/Console/%s" % ["PlayerCaption", "GameCaption"][i]) as Label,
+			HeadCentre - 200, HeadTops[i], 400, HeadPx, OriginalMp.Green, HORIZONTAL_ALIGNMENT_CENTER)
+		_look.Field(get_node(["%PlayerName", "%GameName"][i]) as LineEdit, FieldX, FieldTops[i], FieldW, FieldPx, OriginalMp.Green)
 
 
 func _proceed() -> void:

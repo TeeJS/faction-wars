@@ -22,13 +22,20 @@ func _init() -> void:
 	FactionRegistry.EnsureLoaded()
 	await _menu()
 	await _configuration()
-	await _configuration_original()
 	await _host_game()
 	await _locate()
 	await _options(true)
 	await _options(false)
 	await _compose()
 	await _chat_tab()
+	# Then each screen in the original's look, on stand-in pictures of the
+	# original's.
+	_stand_in_art()
+	await _configuration_original()
+	await _locate_original()
+	await _host_original()
+	_remove(ArtRoot)
+	Art.Reset()
 	print("[mp_screens] %d checks, %d failed" % [_checks, _fails])
 	quit(1 if _fails > 0 else 0)
 
@@ -99,12 +106,13 @@ func _configuration() -> void:
 	await _close(s)
 
 
-## The screen in the original's look, on stand-in pictures of the original's.
-func _configuration_original() -> void:
+## Stand-ins for exporter 2.4.7's head-to-head pictures, at the original's sizes.
+func _stand_in_art() -> void:
 	var dir := "%s/%s" % [ArtRoot, FactionRegistry.Pack.Manifest.ArtSets[0]]
 	for sub in ["screens", "buttons", "windows"]:
 		DirAccess.make_dir_recursive_absolute("%s/%s" % [dir, sub])
-	_png("%s/screens/mp_connection.png" % dir, 640, 480, Color(0.4, 0.4, 0.42))
+	for sc in ["mp_connection", "mp_connect", "mp_setup", "mp_options"]:
+		_png("%s/screens/%s.png" % [dir, sc], 640, 480, Color(0.4, 0.4, 0.42))
 	for b in ["mp_back", "mp_next", "mp_start", "mp_cancel"]:
 		_png("%s/buttons/%s.png" % [dir, b], 89, 26, Color(0.3, 0.3, 0.3))
 		_png("%s/buttons/%s.pressed.png" % [dir, b], 89, 26, Color(0.9, 0.9, 0.2))
@@ -112,17 +120,35 @@ func _configuration_original() -> void:
 	_png("%s/windows/mp_choice.png" % dir, 152, 33, Color(0.3, 0.3, 0.3))
 	_png("%s/windows/mp_choice.chosen.png" % dir, 152, 33, Color(0.25, 0.25, 0.25))
 	Art.Reset()
-	var s: Control = await _open("res://src/ui/mp/MultiplayerConfiguration.tscn")
-	s.size = Vector2(1280, 960)   # twice the original's 640 x 480
+
+
+## Opens a screen at twice the original's 640 x 480 and returns its canvas, or
+## null (checked) when the original's look did not build.
+func _open_original(path: String, plain: String) -> Array:
+	var s: Control = await _open(path)
+	s.size = Vector2(1280, 960)
 	await process_frame
 	var look: Control = s.get_node_or_null("Original")
-	_check(look != null and not (s.get_node("CenterContainer") as Control).visible and not (s.get_node("%BottomBar") as Control).visible,
-		"with the original's screen imported: its look, the plain parts hidden")
-	if look == null:
+	_check(look != null and not (s.get_node(plain) as Control).visible,
+		"%s: with the original's screen imported, its look; the plain parts hidden" % path.get_file())
+	return [s, look.get_node("Canvas") if look != null else null]
+
+
+## The screen's own bottom-bar handler for `sig` would change scene: take it off.
+func _unhook(s: Node, sig: Signal) -> void:
+	for conn in sig.get_connections():
+		if (conn["callable"] as Callable).get_object() == s:
+			sig.disconnect(conn["callable"])
+
+
+func _configuration_original() -> void:
+	var opened := await _open_original("res://src/ui/mp/MultiplayerConfiguration.tscn", "CenterContainer")
+	var s: Control = opened[0]
+	_check(not (s.get_node("%BottomBar") as Control).visible, "the plain bottom bar hidden")
+	if opened[1] == null:
 		await _close(s)
-		_remove(ArtRoot)
-		Art.Reset()
 		return
+	var look: Control = s.get_node("Original")
 	var c: Control = look.get_node("Canvas")
 	var plate: TextureRect = c.get_node("Plate")
 	_check(plate.size == Vector2(1280, 960) and c.position == Vector2.ZERO, "the original's screen fills ours, doubled")
@@ -151,12 +177,10 @@ func _configuration_original() -> void:
 	_check(box1.texture_normal == Art.WindowPicture("mp_choice.chosen") and w1.get_theme_color("font_color") == Color(1, 0, 0)
 		and w0.get_theme_color("font_color") == Color(0, 1, 0), "measured: the chosen box, its words red; the other's green")
 	_check(not next.disabled and (s.get_node("%BtnSetupGame") as Button).button_pressed, "a choice made: forward goes on")
+	var bar: MpBottomBar = s.get_node("%BottomBar")
+	_unhook(s, bar.cancel)
 	var cancelled := [false]
-	(s.get_node("%BottomBar") as MpBottomBar).cancel.connect(func() -> void: cancelled[0] = true, CONNECT_ONE_SHOT)
-	# The screen's own handler would change scene: take it off first.
-	for conn in (s.get_node("%BottomBar") as MpBottomBar).cancel.get_connections():
-		if conn["callable"] != Callable() and (conn["callable"] as Callable).get_object() == s:
-			(s.get_node("%BottomBar") as MpBottomBar).cancel.disconnect(conn["callable"])
+	bar.cancel.connect(func() -> void: cancelled[0] = true, CONNECT_ONE_SHOT)
 	cancel.pressed.emit()
 	_check(cancelled[0], "cancel is the bottom bar's Cancel")
 	s.size = Vector2(640, 600)
@@ -164,8 +188,86 @@ func _configuration_original() -> void:
 	_check(plate.size == Vector2(640, 480) and c.position == Vector2(0, 60) and box1.position == Vector2(346, 313),
 		"resized: the picture's aspect kept, centred")
 	await _close(s)
-	_remove(ArtRoot)
-	Art.Reset()
+
+
+## Connect To Game (TeeJ 2026-09-25): the original's Join Game screen with the
+## player name, and the game code in place of its game list.
+func _locate_original() -> void:
+	MpSetup.reset()
+	MpSetup.player_name = "Luke"
+	var opened := await _open_original("res://src/ui/mp/LocateSession.tscn", "CenterContainer")
+	var s: Control = opened[0]
+	var c: Control = opened[1]
+	if c == null:
+		await _close(s)
+		return
+	var name_box: LineEdit = s.get_node_or_null("%PlayerName")
+	var code_box: LineEdit = s.get_node_or_null("%CodeBox")
+	_check(name_box != null and code_box != null and name_box.get_parent() == c and code_box.get_parent() == c,
+		"the name and code boxes moved onto the original's screen, still found by name")
+	_check(name_box != null and name_box.text == "Luke" and name_box.get_theme_color("font_color") == Color(0, 1, 0)
+		and name_box.get_theme_color("caret_color") == Color.WHITE, "measured: the name typed in green, the caret white")
+	var heads: Array = []
+	for n in c.get_children():
+		if n is Label and (n as Label).horizontal_alignment == HORIZONTAL_ALIGNMENT_CENTER:
+			heads.append((n as Label).text)
+	_check(heads.has("What would you like your player name to be?") and heads.has("Enter the game code of the session host."),
+		"TeeJ: 'What would you like your player name to be?' and 'Enter the game code of the session host.'")
+	# Where the original has its text (x 124; capitals at 148, and the list's row).
+	var cap := func(f: Control, px: float) -> float: return f.position.y / 2.0 + 3.0 + 0.19 * px
+	_check(is_equal_approx(name_box.position.x, 124 * 2.0) and is_equal_approx(cap.call(name_box, 13.0), 148.0),
+		"measured: the name at x 124, capitals at y 148")
+	_check(is_equal_approx(code_box.position.x, 124 * 2.0) and code_box.position.y > name_box.position.y + 200, "the code in the list's panel")
+	var back: TextureButton = c.get_node("Back")
+	var next: TextureButton = c.get_node("Next")
+	_check(not back.disabled and next.disabled, "the original's screen 2: back lit; forward greyed until there is a code")
+	code_box.text = "ab12cd"
+	code_box.text_changed.emit(code_box.text)
+	_check(code_box.text == "AB12CD" and not next.disabled, "six characters light the forward arrow (OK)")
+	var bar: MpBottomBar = (s.get_node("Original") as Control).call("Bar")
+	_unhook(s, bar.previous)
+	_unhook(s, bar.cancel)
+	var went := []
+	bar.previous.connect(func() -> void: went.append("back"))
+	bar.cancel.connect(func() -> void: went.append("cancel"))
+	back.pressed.emit()
+	(c.get_node("Cancel") as TextureButton).pressed.emit()
+	_check(went == ["back", "cancel"], "back and cancel are the bar's")
+	await _close(s)
+	MpSetup.reset()
+
+
+## Setup Game (TeeJ 2026-09-25): the original's Host Game screen.
+func _host_original() -> void:
+	MpSetup.reset()
+	MpSetup.player_name = "Han"
+	MpSetup.game_name = "The End of the Empire"
+	var opened := await _open_original("res://src/ui/mp/HostGame.tscn", "CenterContainer")
+	var s: Control = opened[0]
+	var c: Control = opened[1]
+	if c == null:
+		await _close(s)
+		return
+	var name_box: LineEdit = s.get_node_or_null("%PlayerName")
+	var game_box: LineEdit = s.get_node_or_null("%GameName")
+	_check(name_box != null and game_box != null and name_box.get_parent() == c and game_box.get_parent() == c,
+		"the two boxes moved onto the original's screen, still found by name")
+	var heads: Array = []
+	for n in c.get_children():
+		if n is Label and (n as Label).horizontal_alignment == HORIZONTAL_ALIGNMENT_CENTER:
+			heads.append((n as Label).text)
+	_check(heads.has("What would you like your player name to be?") and heads.has("What would you like to call your game?"),
+		"Fig 5.3: both questions, verbatim")
+	var cap := func(f: Control) -> float: return f.position.y / 2.0 + 3.0 + 0.19 * 13.0
+	_check(is_equal_approx(name_box.position.x, 124 * 2.0) and is_equal_approx(cap.call(name_box), 148.0)
+		and is_equal_approx(cap.call(game_box), 305.0), "measured: the answers at x 124, capitals at y 148 and 305")
+	_check(name_box.text == "Han" and game_box.text == "The End of the Empire" and game_box.get_theme_color("font_color") == Color(0, 1, 0),
+		"the names typed in green")
+	var back: TextureButton = c.get_node("Back")
+	var next: TextureButton = c.get_node("Next")
+	_check(not back.disabled and not next.disabled, "the original's screen 3: back and forward lit")
+	await _close(s)
+	MpSetup.reset()
 
 
 static func _png(path: String, w: int, h: int, color: Color) -> void:
