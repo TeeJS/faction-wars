@@ -761,17 +761,50 @@ func CommsCategory() -> String:
 
 
 func OnSectorClicked(sector: Sector) -> void:
+	var original := SectorWindow.CanBuildOriginal()
+	# A second sector opens on the other side from the one already open, not
+	# over it (TeeJ, 2026-09-25: "it should default to the opposite side of
+	# the screen"). The first opens where it always has: the original's
+	# docked on the right, the plain one at the upper left.
+	var fresh := not (_openWindows.has(sector.Name) and is_instance_valid(_openWindows[sector.Name]))
+	var right := _NewSectorOnRight(sector.Name, original) if fresh else true
 	var targetPos := Vector2(100 + randf() * 50, 100 + randf() * 50)
+	if not original and right:
+		targetPos.x = get_viewport().get_visible_rect().size.x   # kept on screen by GetSafeWindowPosition
 	# The original's sector window docks against the map frame's right edge;
 	# its box moves it to the left and back (SectorWindow._SwitchSide).
-	if SectorWindow.CanBuildOriginal():
-		targetPos = SectorWindow.DockPosition(true)
+	if original:
+		targetPos = SectorWindow.DockPosition(right)
 	OpenWindow(sector.Name, SectorWindowTemplate,
 		func(window) -> void:
+			if fresh:
+				window.set("_dockRight", right)
 			window.get_node("%Title").text = sector.Name
 			window.Populate(sector, self)
 			_WireSectorPinMenu(window, sector),
 		targetPos)
+
+
+## Which side a new sector window opens on: its usual side (the right for the
+## original's, the left for the plain one) unless another sector's window is
+## on it and the other side is free. A window's side is where its middle is,
+## so one dragged across counts where it now sits.
+func _NewSectorOnRight(opening: String, original: bool) -> bool:
+	var mid: float = MapFrame.get_center().x if original else get_viewport().get_visible_rect().size.x / 2.0
+	var onLeft := false
+	var onRight := false
+	for n in _openWindows:
+		var w: Variant = _openWindows[n]
+		if n == opening or not is_instance_valid(w) or not (w is SectorWindow) or not (w as Control).visible:
+			continue
+		if (w as Control).get_global_rect().get_center().x >= mid:
+			onRight = true
+		else:
+			onLeft = true
+	var usual := original
+	var taken := onRight if usual else onLeft
+	var other := onLeft if usual else onRight
+	return (not usual) if taken and not other else usual
 
 
 ## Right-click on the title bar: "Pin to menu" / "Unpin from menu". Setup
