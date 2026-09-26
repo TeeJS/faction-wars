@@ -49,9 +49,11 @@ const REASONS_SHOWN := 8
 ## the Mines tab's mine and piles, and the Command Center frame (released
 ## 2026-09-25). 2.4.3: the Shuttle Cockpit's galaxy-size lever (released
 ## 2026-09-25). 2.4.4: the original's map key window and the ejector handle
-## pulled (released 2026-09-25). Raise it when the game needs pictures an
-## older exporter did not write; the picker then asks for a new export.
-const MIN_EXPORTER := {"swr-original": "2.4.4"}
+## pulled (released 2026-09-25). 2.4.5: the Command Center's droids, the
+## Control Panel's monitors held down and the menus' check mark (released
+## 2026-09-25). Raise it when the game needs pictures an older exporter did
+## not write; the picker then asks for a new export.
+const MIN_EXPORTER := {"swr-original": "2.4.5"}
 
 
 ## Called with each import's result (the pack picker refreshes its cards).
