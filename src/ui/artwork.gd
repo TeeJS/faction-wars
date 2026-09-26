@@ -285,12 +285,13 @@ static func Reset() -> void:
 	_descriptions_loaded = false
 
 
-## A new pack forgets the last one's pictures and aliases.
+## A new pack forgets the last one's pictures and aliases - and so does another
+## version of the same pack (its content hash; FactionRegistry.SwitchTo).
 static func _check_pack() -> void:
-	var pack_id: String = FactionRegistry.LoadedId()
-	if pack_id != _cache_pack:
+	var pack_key: String = "%s#%s" % [FactionRegistry.LoadedId(), FactionRegistry.PackHash]
+	if pack_key != _cache_pack:
 		Reset()
-		_cache_pack = pack_id
+		_cache_pack = pack_key
 
 
 ## The loaded pack's art sets (pack.json `art_sets`).

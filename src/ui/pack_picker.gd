@@ -511,12 +511,15 @@ func _card(id: String, pack: PackLoader.LoadedPack, errors: Array[String]) -> Bu
 		links.add_child(clear)
 	# A pack the player imported can go again; the ones that ship cannot.
 	if _is_imported(id):
-		var remove := _link("RemovePack", "Remove pack")
+		# Every version kept of it goes too (PackImport.Remove), and says so.
+		var versions: int = 1 + PackImport.ArchivedVersions(id).size()
+		var remove := _link("RemovePack", "Remove pack" if versions == 1 else "Remove pack (all %d versions)" % versions)
 		var title: String = pack.Manifest.DisplayName if pack != null else id
+		var what: String = title if versions == 1 else "%s and every version of it kept here (%d)" % [title, versions]
 		remove.tooltip_text = "Remove %s from this %s. Import its .zip again to get it back." \
-			% [title, "browser" if OS.has_feature("web") else "computer"]
+			% [what, "browser" if OS.has_feature("web") else "computer"]
 		remove.pressed.connect(func() -> void:
-			_confirm("Remove pack", "Remove %s? Import its file again to get it back." % title, "Remove", func() -> void:
+			_confirm("Remove pack", "Remove %s? Import its file again to get it back." % what, "Remove", func() -> void:
 				PackImport.Remove(PackImport.KIND_FACTION_PACK, id)
 				SetFavorite(id, false)   # a removed pack is no favorite
 				_rebuild()))

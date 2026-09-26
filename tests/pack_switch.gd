@@ -56,12 +56,83 @@ func _init() -> void:
 		if i >= expected.size() or got[i] != expected[i]:
 			first_bad = i + 1
 			break
+	var fails := 0
 	if first_bad < 0 and got.size() == expected.size():
 		print("[pack_switch] ok   %d day hashes after the switch match the fresh-process game" % got.size())
-		quit(0)
 	else:
+		fails += 1
 		print("[pack_switch] FAIL: day hashes diverge at day %d (%d vs %d recorded)" % [first_bad, got.size(), expected.size()])
-		quit(1)
+
+	# 3. Two versions of one pack (strangers plan PR 3): a copy of WWII that
+	# differs only in its summary, kept as an archived version, found by its
+	# hash and switched to from the loaded WWII - the head-to-head join's path.
+	# The same simulation, so the same hashes as the fresh process.
+	fails += _other_version(expected)
+	quit(0 if fails == 0 else 1)
+
+
+func _other_version(expected: PackedStringArray) -> int:
+	var fails := 0
+	var real_root := FactionRegistry.PACK_VERSIONS_ROOT
+	FactionRegistry.PACK_VERSIONS_ROOT = "user://test-pack-switch-versions"
+	_remove(FactionRegistry.PACK_VERSIONS_ROOT)
+	var staging := "user://test-pack-switch-staging/ww2"
+	_remove(staging.get_base_dir())
+	DirAccess.make_dir_recursive_absolute(staging)
+	for f in DirAccess.get_files_at("res://packs/ww2"):
+		if f.ends_with(".import"):
+			continue
+		var bytes := FileAccess.get_file_as_bytes("res://packs/ww2/" + f)
+		if f == "pack.json":
+			var d: Dictionary = JSON.parse_string(bytes.get_string_from_utf8())
+			d["summary"] = "Another version of the WWII pack."
+			d["version"] = "1.1"
+			bytes = (JSON.stringify(d, "  ") + "\n").to_utf8_buffer()
+		var w := FileAccess.open("%s/%s" % [staging, f], FileAccess.WRITE)
+		w.store_buffer(bytes)
+		w.close()
+	var hash := FactionRegistry.ContentHash(staging)
+	var dir := "%s/%s/ww2" % [FactionRegistry.PACK_VERSIONS_ROOT, hash.substr(0, 16).to_lower()]
+	DirAccess.make_dir_recursive_absolute(dir.get_base_dir())
+	DirAccess.rename_absolute(staging, dir)
+	FactionRegistry.ClearHashCache()
+
+	var shipped_hash := FactionRegistry.PackHash
+	var found := FactionRegistry.FindByHash("ww2", hash)
+	fails += _ok(hash != shipped_hash and found == dir and FactionRegistry.FindByHash("ww2", shipped_hash) == "res://packs/ww2",
+		"FindByHash tells the two versions of ww2 apart: the archived copy and the shipped one")
+	var broken := "user://test-pack-switch-staging/broken/ww2"
+	DirAccess.make_dir_recursive_absolute(broken)
+	fails += _ok(not FactionRegistry.SwitchTo(broken) and FactionRegistry.LoadedDir == "res://packs/ww2" and FactionRegistry.PackHash == shipped_hash,
+		"SwitchTo a folder that will not load: false, and the loaded pack stays")
+	fails += _ok(FactionRegistry.SwitchTo(found) and FactionRegistry.LoadedDir == dir and FactionRegistry.PackHash == hash
+		and FactionRegistry.LoadedId() == "ww2" and FactionRegistry.Pack.Manifest.Version == "1.1", "SwitchTo the archived version: loaded, with its own hash")
+	var got := _play("allies", SEED, DAYS)
+	var same := got.size() == expected.size()
+	for i in got.size():
+		if i >= expected.size() or got[i] != expected[i]:
+			same = false
+	fails += _ok(same, "%d day hashes on the other version match the fresh-process game" % got.size())
+	_remove(FactionRegistry.PACK_VERSIONS_ROOT)
+	_remove(staging.get_base_dir())
+	FactionRegistry.PACK_VERSIONS_ROOT = real_root
+	FactionRegistry.ClearHashCache()
+	return fails
+
+
+static func _ok(cond: bool, what: String) -> int:
+	print("[pack_switch] %s %s" % ["ok  " if cond else "FAIL", what])
+	return 0 if cond else 1
+
+
+static func _remove(path: String) -> void:
+	if not DirAccess.dir_exists_absolute(path):
+		return
+	for sub in DirAccess.get_directories_at(path):
+		_remove("%s/%s" % [path, sub])
+	for file in DirAccess.get_files_at(path):
+		DirAccess.remove_absolute("%s/%s" % [path, file])
+	DirAccess.remove_absolute(path)
 
 
 ## A single-player game from day zero, the AI on both sides is not needed -
