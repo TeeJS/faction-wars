@@ -114,6 +114,10 @@ func _ready() -> void:
 	EventBus.OnStateChanged.append(RefreshNow)
 	# The original's movies at their moments (docs/cutscenes-plan.md, phase 4).
 	EventBus.OnMovieCue.append(_OnMovieCue)
+	# A battle's music gives way to the playlist when its windows are gone.
+	child_exiting_tree.connect(func(n: Node) -> void:
+		if BattleWindows.has(str(n.name)):
+			_AfterBattleWindow.call_deferred())
 
 	# The general answer to stale windows: every open window is asked what it is
 	# showing, and repainted only if that differs from what it last painted.
@@ -430,6 +434,38 @@ func _OnMovieCue(event: String, sides: Array) -> void:
 	if not sides.is_empty() and not sides.has(GameSettings.LocalFaction()):
 		return
 	(func() -> void: MoviesLib.Play(get_tree(), event)).call_deferred()
+
+
+const MusicLib := preload("res://src/ui/music.gd")
+## The windows a battle's music lasts through (docs/music-plan.md, phase 3):
+## its alert, its tactical display, its results.
+const BattleWindows := ["BattleAlertWindow", "TacticalView", "BattleResultsWindow"]
+
+
+## Rebellion 2's battle music: `battle_victory` / `battle_defeat` /
+## `battle_draw.<side>` for this client's side, as its battle came out.
+static func BattleMusic(r: FleetBattleManager.BattleReport) -> String:
+	var me: Faction = GameSettings.LocalFaction()
+	var id: String = me.Id if me != null else ""
+	var in_it: bool = me != null and ((r.Ours != null and r.Ours.Faction == me) or (r.Theirs != null and r.Theirs.Faction == me))
+	if r.DrawBothLost or not in_it:
+		return "battle_draw.%s" % id
+	return ("battle_defeat.%s" if r.Lost(me) else "battle_victory.%s") % id
+
+
+## A battle window closed: once none is up and no battle of ours waits for
+## an answer or its results, the playlist goes on where it was.
+func _AfterBattleWindow() -> void:
+	if not is_inside_tree() or not MusicLib.InCue():
+		return
+	for n in BattleWindows:
+		var w: Node = get_node_or_null(n)
+		if w != null and not w.is_queued_for_deletion():
+			return
+	if FleetBattleManager.HasPendingBattle() \
+			or Lq.any(FleetBattleManager.Unreported(), func(r: RefCounted) -> bool: return r is FleetBattleManager.BattleReport):
+		return
+	MusicLib.Resume(get_tree())
 
 
 func _exit_tree() -> void:
@@ -1269,6 +1305,10 @@ func RefreshActiveWindows(_currentDay: int) -> void:
 		if ordered_by != null and ordered_by != GameSettings.LocalFaction():
 			continue   # the other side's assault or bombardment: it reaches this one as a message
 		ShowReport(done)
+		# A battle's own results, as they come up (not a report reopened from
+		# the messages): its result music.
+		if done is FleetBattleManager.BattleReport:
+			MusicLib.Cue(get_tree(), BattleMusic(done), true)
 		break
 
 	for windowName in _openWindows.keys():
@@ -1545,6 +1585,8 @@ func ShowPendingBattle() -> void:
 	add_child(win)
 	win.Setup(FleetBattleManager.AwaitingOrders()[0])
 	win.move_to_front()
+	# Its music in place of the playlist, not restarted by a second alert.
+	MusicLib.Cue(get_tree(), "battle_alert", false)
 
 
 ## "NOTE: This window comes up at the end of EVERY battle, EVEN IF YOU

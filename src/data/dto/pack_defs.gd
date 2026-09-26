@@ -367,8 +367,9 @@ class PackManifest:
 	var MoviesGiven: bool = false
 	var MoviesRaw: Variant = null
 	## SCHEMA.md section 2 (docs/music-plan.md): which track plays at which
-	## moment, event -> reference ("<art set>:<path>.ogg" or a pack file).
-	## Empty = no music. MusicGiven/MusicRaw for validation rule 24.
+	## moment, moment -> [reference, ...] ("<art set>:<path>.ogg" or a pack
+	## file); several are a pool one is drawn from. Empty = no music.
+	## MusicGiven/MusicRaw for validation rule 24.
 	var Music: Dictionary = {}
 	var MusicGiven: bool = false
 	var MusicRaw: Variant = null
@@ -424,7 +425,7 @@ class PackManifest:
 		o.Version = (str(v) if (v is String or v is int or v is float) else "").strip_edges()
 		var url: Variant = JsonUtil.get_ci(d, "download_url")
 		o.DownloadUrl = str(url).strip_edges() if url is String else ""
-		o.MoviesRaw = JsonUtil.get_ci(d, "movies")
+		o.MoviesRaw = _without_comments(JsonUtil.get_ci(d, "movies"))
 		o.MoviesGiven = o.MoviesRaw != null
 		if o.MoviesRaw is Dictionary:
 			for event in o.MoviesRaw:
@@ -439,15 +440,33 @@ class PackManifest:
 						if movie is String:
 							refs.append(str(movie).strip_edges())
 				o.Movies[str(event)] = refs
-		o.MusicRaw = JsonUtil.get_ci(d, "music")
+		o.MusicRaw = _without_comments(JsonUtil.get_ci(d, "music"))
 		o.MusicGiven = o.MusicRaw != null
 		if o.MusicRaw is Dictionary:
 			for event in o.MusicRaw:
 				if str(event).begins_with("_"):
 					continue   # an author's comment (SCHEMA.md section 1)
-				var track: Variant = o.MusicRaw[event]
-				o.Music[str(event)] = str(track).strip_edges() if track is String else ""
+				var tracks: Variant = o.MusicRaw[event]
+				var pool: Array[String] = []
+				if tracks is String:
+					pool.append(str(tracks).strip_edges())
+				elif tracks is Array:
+					for track in tracks:
+						if track is String:
+							pool.append(str(track).strip_edges())
+				o.Music[str(event)] = pool
 		return o
+
+	## A map as written, less its "_" keys: an author's comments are never data
+	## (SCHEMA.md section 1), not even in what validation reads back.
+	static func _without_comments(v: Variant) -> Variant:
+		if not v is Dictionary:
+			return v
+		var out := {}
+		for k in v:
+			if not str(k).begins_with("_"):
+				out[k] = v[k]
+		return out
 
 
 class FactionsFile:

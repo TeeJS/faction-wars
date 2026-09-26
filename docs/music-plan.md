@@ -1,9 +1,9 @@
 # Plan: the original's music in the game
 
-Status: **phases 1-2 built, phase 0 partial, 2026-09-26.** Decision 1 answered - TeeJ: "yes to
+Status: **phases 1-3 built, phase 0 partial, 2026-09-26.** Decision 1 answered - TeeJ: "yes to
 including the music with the art". Decision 3 answered - TeeJ approved reading the game's code and
-Rebellion 2 (findings below; the in-game selector is not read yet). Decision 2 is open; until it is
-answered only the confirmed menu track plays.
+Rebellion 2 (findings below; the in-game selector is not read yet). Decision 2 answered - TeeJ:
+"Build from rebellion 2": phase 3 plays Rebellion 2's map, single-source, until the selector is read.
 BACKLOG #41 (sound: music and sound effects); `docs/cutscenes-plan.md` left the music for
 its own plan. This plan is the music only; the sound effects are a separate question.
 
@@ -133,12 +133,12 @@ have it), and the callers of `0x417610` (the looped tracks - likely the battle a
 | 0 | **Settle the moments** - TeeJ listens in the original (or approves reading the binary) | each side's four roles and the alert's track are named |
 | 1 | **Exporter**: the 16 tracks as Ogg Vorbis in the chosen file | Godot plays them; size stated - **done**: `Music.cs` in the art export, 16 tracks, 4.0 MB, each as long as its WAV; Godot 4.7.1 loads them |
 | 2 | **Game**: the player, the music bus, Game Options' Play Music and volume (BACKLOG #41's greyed controls), the menu track | the Cockpit plays 300; the controls work; a movie silences it - **built** (`src/ui/music.gd`, pack field `music`, rule 24; tests/music.gd) |
-| 3 | **Game**: the in-play playlist and the battle alert, as phase 0 settles them | a test per moment; TeeJ hears them in play |
+| 3 | **Game**: the in-play playlist and the battle alert, as phase 0 settles them | a test per moment; TeeJ hears them in play - **built from Rebellion 2's map** (`src/ui/music.gd`: the playlist, the Battle Alert and battle-result cues; `ui_manager.gd` resumes the playlist when the battle's windows are gone; pack moments per SCHEMA.md §2; tests/music.gd). TeeJ's listen is still owed |
 
 ## Decisions for TeeJ
 
 | # | Question | Recommendation |
 |---|---|---|
 | 1 | Where do the music files go: the **art set** (+3 MB), or the **movies file**? | **The art set**: small enough, and a player with the pictures has the music without importing a second file; the movies file stays optional - **answered: the art set** (TeeJ, 2026-09-26) |
-| 2 | Before phase 0, play only the confirmed menu track, or also a **neutral playlist of all the long tracks** during play (not the original's exact choice)? | **Menu only** until phase 0 (the no-guess rule) - but it is your call: a plain playlist is a known deviation, easy to replace |
+| 2 | Before phase 0, play only the confirmed menu track, or also a **neutral playlist of all the long tracks** during play (not the original's exact choice)? | **Answered 2026-09-26:** "Build from rebellion 2" - its whole map, single-source, marked in the pack |
 | 3 | Phase 0: will you listen in the original, or should I ask to read the binary's music selection? | **Answered 2026-09-26:** read the game's code and Rebellion 2 (findings above) |

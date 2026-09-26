@@ -9179,11 +9179,75 @@
       "victory.empire": "swr-original:movies/108.ogv"
     },
     "Music": {
-      "menu": "swr-original:music/300.ogg"
+      "advantage.alliance": [
+        "swr-original:music/306.ogg"
+      ],
+      "advantage.empire": [
+        "swr-original:music/310.ogg"
+      ],
+      "battle_alert": [
+        "swr-original:music/307.ogg"
+      ],
+      "battle_defeat.alliance": [
+        "swr-original:music/315.ogg"
+      ],
+      "battle_defeat.empire": [
+        "swr-original:music/315.ogg"
+      ],
+      "battle_draw.alliance": [
+        "swr-original:music/315.ogg"
+      ],
+      "battle_draw.empire": [
+        "swr-original:music/315.ogg"
+      ],
+      "battle_victory.alliance": [
+        "swr-original:music/308.ogg"
+      ],
+      "battle_victory.empire": [
+        "swr-original:music/314.ogg"
+      ],
+      "disadvantage.alliance": [
+        "swr-original:music/310.ogg"
+      ],
+      "disadvantage.empire": [
+        "swr-original:music/306.ogg"
+      ],
+      "menu": [
+        "swr-original:music/300.ogg"
+      ],
+      "play": [
+        "swr-original:music/301.ogg",
+        "swr-original:music/302.ogg",
+        "swr-original:music/303.ogg"
+      ],
+      "strong_advantage.alliance": [
+        "swr-original:music/305.ogg"
+      ],
+      "strong_advantage.empire": [
+        "swr-original:music/311.ogg"
+      ]
     },
     "MusicGiven": true,
     "MusicRaw": {
-      "menu": "swr-original:music/300.ogg"
+      "advantage.alliance": "swr-original:music/306.ogg",
+      "advantage.empire": "swr-original:music/310.ogg",
+      "battle_alert": "swr-original:music/307.ogg",
+      "battle_defeat.alliance": "swr-original:music/315.ogg",
+      "battle_defeat.empire": "swr-original:music/315.ogg",
+      "battle_draw.alliance": "swr-original:music/315.ogg",
+      "battle_draw.empire": "swr-original:music/315.ogg",
+      "battle_victory.alliance": "swr-original:music/308.ogg",
+      "battle_victory.empire": "swr-original:music/314.ogg",
+      "disadvantage.alliance": "swr-original:music/310.ogg",
+      "disadvantage.empire": "swr-original:music/306.ogg",
+      "menu": "swr-original:music/300.ogg",
+      "play": [
+        "swr-original:music/301.ogg",
+        "swr-original:music/302.ogg",
+        "swr-original:music/303.ogg"
+      ],
+      "strong_advantage.alliance": "swr-original:music/305.ogg",
+      "strong_advantage.empire": "swr-original:music/311.ogg"
     },
     "Neutral": {
       "ColorHex": "#5499ff",
