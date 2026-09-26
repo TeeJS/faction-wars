@@ -1733,7 +1733,8 @@ func ExecuteUnitMove(units: Array, destination: Planet, _requireConfirmation: bo
 
 	# RUNNING A BLOCKADE. "Troops attempting to move MAY BE KILLED" (manual p124),
 	# and the original ASKS FIRST (TEXTSTRA.DLL 0xF168, REBEXE.EXE 0x49A6EA).
-	if OrderManager.MustRunBlockade(currentPlanet, units):
+	# Troops landing from a fleet on the world it orbits are not leaving it.
+	if destination != currentPlanet and OrderManager.MustRunBlockade(currentPlanet, units):
 		var leaving: Planet = currentPlanet
 		var odds: int = BlockadeManager.WithdrawPercent(leaving)
 		ConfirmEvacuation(odds, func() -> void:
@@ -1766,6 +1767,21 @@ func ConfirmEvacuation(odds: int, onProceed: Callable) -> void:
 
 
 ## A REFUSED ORDER HAS TO SAY SO ON SCREEN.
+## Units aboard a fleet: dropped on its row, or picked with the crosshair after
+## Move - from the world below or from another fleet in the same orbit
+## (OrderManager.LoadAboard; "Drag ships or troops between fleets", manual
+## p120). A refusal says why, as a move's does.
+func ExecuteLoadAboard(units: Array, fleet: Fleet) -> void:
+	if fleet == null or units.is_empty():
+		return
+	var r: Result = CommandBus.issue("load_aboard", { "units": EntityIndex.ids_of_units(units), "fleet": fleet.ID })
+	var orbit: Planet = OrderManager.SystemOf(fleet)
+	if int(r.value) > 0 and orbit != null:
+		RefreshAfterMove(orbit, orbit)
+	if not r.error.is_empty():
+		ShowRefusal(r.error)
+
+
 func ShowRefusal(reason: String) -> void:
 	print("[Move] %s" % reason)
 	var dialog := AcceptDialog.new()
