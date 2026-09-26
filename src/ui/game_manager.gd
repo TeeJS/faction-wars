@@ -122,8 +122,8 @@ const LeaveAfterMs := 60000          # Leave Game appears after this (design que
 
 func _ready() -> void:
 	print("Booting up Rebellion Engine...")
-	# The Cockpit's music ends as the game begins (docs/music-plan.md: the
-	# in-play playlist waits on its phase 0).
+	# The Cockpit's music ends as the game begins; the game's playlist starts
+	# once there is a galaxy to judge the war by (below; docs/music-plan.md).
 	preload("res://src/ui/music.gd").Stop()
 
 	_uiManager = get_node("UIManager")
@@ -197,6 +197,7 @@ func _ready() -> void:
 	var authenticGalaxy: Array[Sector] = GameState.ActiveGalaxy
 
 	_galaxyMap.InitializeMap(authenticGalaxy, _uiManager)
+	preload("res://src/ui/music.gd").StartGame(get_tree())
 
 	# THE SESSION LOG (docs/m1-plan.md). Every order goes through the CommandBus
 	# and into this file, with the day hash after every tick; --record=path
