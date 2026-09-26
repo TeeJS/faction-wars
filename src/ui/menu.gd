@@ -20,6 +20,9 @@ const DIFFICULTY_IDS := {"easy": Enums.Difficulty.Easy, "medium": Enums.Difficul
 ## pack_picker.gd (a pull with the editor open, 2026-09-22) failed to compile
 ## this script on the bare name, and the whole Cockpit went dead.
 const Picker := preload("res://src/ui/pack_picker.gd")
+## The original's movies (docs/cutscenes-plan.md): the intro when the Cockpit
+## first opens, the credits from View credits.
+const MoviesLib := preload("res://src/ui/movies.gd")
 
 var _difficultyGroup: ButtonGroup
 var _sizeGroup: ButtonGroup
@@ -158,6 +161,10 @@ func _ready() -> void:
 	if has_picture:
 		_build_cockpit(FactionRegistry.Pack.Manifest.Menu)
 
+	# "To skip the introductory graphics, click the mouse" (manual p022): the
+	# pack's launch movies, once a run, when the player imported them.
+	MoviesLib.PlayLaunch(get_tree())
+
 
 func SetupToggleButton(btn: Button, group: ButtonGroup) -> void:
 	btn.toggle_mode = true
@@ -186,7 +193,14 @@ func OpenMultiplayer() -> void:
 	get_tree().change_scene_to_file("res://src/ui/mp/MultiplayerConfiguration.tscn")
 
 
+## View credits: the original's credits movie when the player imported the
+## movies (TeeJ's description of the original, BACKLOG #43), else the pack's
+## credits. The picture's own attribution is then on the pack picker's card
+## ("Credits and licences", docs/cutscenes-plan.md decision 6).
 func OpenCredits() -> void:
+	if MoviesLib.Has("credits"):
+		MoviesLib.Play(get_tree(), "credits")
+		return
 	if get_node_or_null("CreditsWindow") == null:
 		add_child(CreditsWindow.new(FactionRegistry.Pack.Manifest.DisplayName, PackCredits()))
 

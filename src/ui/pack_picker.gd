@@ -274,6 +274,18 @@ static func _outdated_sets(pack: PackLoader.LoadedPack) -> Array[Dictionary]:
 	return out
 
 
+## "Credits and licences" on a card: the pack's credits (`menu.credits`, else
+## `credits`), over the picker.
+func _show_credits(pack: PackLoader.LoadedPack) -> void:
+	var old: Node = get_node_or_null("CreditsWindow")
+	if old != null:
+		old.queue_free()
+	var m := pack.Manifest
+	var lines: Array[String] = m.Menu.Credits if m.Menu != null and not m.Menu.Credits.is_empty() else m.Credits
+	var w := CreditsWindow.new(m.DisplayName, lines)
+	add_child(w)
+
+
 ## A pack the player imported (user://packs), not one that ships with the game.
 static func _is_imported(pack_id: String) -> bool:
 	return FactionRegistry.PackDir(pack_id).begins_with(FactionRegistry.USER_PACKS_ROOT)
@@ -496,17 +508,26 @@ func _card(id: String, pack: PackLoader.LoadedPack, errors: Array[String]) -> Bu
 	links.add_theme_constant_override("separation", 10)
 	foot.add_child(links)
 
-	# The imported artwork, clearable - only when there is some to clear.
+	# Who made it, and the licences of what it shows (the card picture's CC BY):
+	# here, now that View credits may play the original's credits movie
+	# (docs/cutscenes-plan.md, decision 6).
+	if pack != null:
+		var credits := _link("Credits", "Credits and licences")
+		credits.tooltip_text = "Who made %s, and the licences of its pictures." % pack.Manifest.DisplayName
+		credits.pressed.connect(func() -> void: _show_credits(pack))
+		links.add_child(credits)
+	# The imported artwork (and movies), clearable - only when there is some.
 	if pack != null and not _imported_sets(pack).is_empty():
 		var clear := _link("ClearArtwork", "Clear artwork pack")
-		clear.tooltip_text = "Remove the imported artwork from this %s. %s then plays without the original's pictures until you import your artwork file again." \
+		clear.tooltip_text = "Remove the imported artwork and movies from this %s. %s then plays without the original's pictures until you import your artwork file again." \
 			% ["browser" if OS.has_feature("web") else "computer", pack.Manifest.DisplayName]
 		clear.pressed.connect(func() -> void:
 			_confirm("Clear artwork pack",
-				"Remove the imported artwork? %s plays without it until you import your artwork file again." % pack.Manifest.DisplayName,
+				"Remove the imported artwork and movies? %s plays without them until you import your files again." % pack.Manifest.DisplayName,
 				"Remove", func() -> void:
-					for e in _imported_sets(pack):
-						PackImport.Remove(PackImport.KIND_ART_SET, e.id)
+					for e in PackImport.Installed():
+						if e.kind in [PackImport.KIND_ART_SET, PackImport.KIND_MOVIES] and pack.Manifest.ArtSets.has(e.id):
+							PackImport.Remove(e.kind, e.id)
 					_rebuild()))
 		links.add_child(clear)
 	# A pack the player imported can go again; the ones that ship cannot.

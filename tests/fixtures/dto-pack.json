@@ -9121,6 +9121,47 @@
       ],
       "SelectedColorHex": "#ffd23c"
     },
+    "Movies": {
+      "credits": [
+        "swr-original:movies/005.ogv"
+      ],
+      "defeat.alliance": [
+        "swr-original:movies/106.ogv"
+      ],
+      "defeat.empire": [
+        "swr-original:movies/107.ogv"
+      ],
+      "launch": [
+        "swr-original:movies/000.ogv",
+        "swr-original:movies/001.ogv"
+      ],
+      "superweapon_sabotaged": [
+        "swr-original:movies/104.ogv"
+      ],
+      "system_destroyed": [
+        "swr-original:movies/101.ogv"
+      ],
+      "victory.alliance": [
+        "swr-original:movies/105.ogv"
+      ],
+      "victory.empire": [
+        "swr-original:movies/108.ogv"
+      ]
+    },
+    "MoviesGiven": true,
+    "MoviesRaw": {
+      "credits": "swr-original:movies/005.ogv",
+      "defeat.alliance": "swr-original:movies/106.ogv",
+      "defeat.empire": "swr-original:movies/107.ogv",
+      "launch": [
+        "swr-original:movies/000.ogv",
+        "swr-original:movies/001.ogv"
+      ],
+      "superweapon_sabotaged": "swr-original:movies/104.ogv",
+      "system_destroyed": "swr-original:movies/101.ogv",
+      "victory.alliance": "swr-original:movies/105.ogv",
+      "victory.empire": "swr-original:movies/108.ogv"
+    },
     "Neutral": {
       "ColorHex": "#5499ff",
       "DisplayName": "Neutral",

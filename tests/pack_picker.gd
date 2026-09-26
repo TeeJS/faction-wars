@@ -70,6 +70,19 @@ func _init() -> void:
 	_check(pic != null and pic.texture != null, "without its art set the Star Wars card shows its own picture (card_image)")
 	_check(sw_card.find_child("ClearArtwork", true, false) == null and sw_card.find_child("RemovePack", true, false) == null,
 		"no Clear artwork pack without artwork, and a shipped pack has no Remove")
+	# Credits and licences on the card (docs/cutscenes-plan.md decision 6): the
+	# card picture's CC BY attribution, now View credits may play a movie.
+	var credits_link: Button = sw_card.find_child("Credits", true, false)
+	_check(credits_link != null and credits_link.text == "Credits and licences", "the card has 'Credits and licences'")
+	if credits_link != null:
+		credits_link.pressed.emit()
+		await process_frame
+		var cw: Node = picker.get_node_or_null("CreditsWindow")
+		var shown := " ".join(_labels(cw)) if cw != null else ""
+		_check(cw != null and shown.contains("CC BY 4.0"), "... it shows the pack's credits, the picture's licence among them")
+		if cw != null:
+			cw.queue_free()
+			await process_frame
 	# Every card's Play the same, narrower than its card (TeeJ, 2026-09-24).
 	await process_frame
 	var sizes: Array = []

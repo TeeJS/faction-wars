@@ -94,6 +94,8 @@ func _make_pack(dir: String) -> void:
 	manifest["display_name"] = "Separatists vs Trade Federation"
 	manifest["map_image"] = "swr-original:screens/galaxy.png"
 	manifest.erase("menu")
+	# Its movies name the old sides ("victory.alliance"): rule 23 would refuse them.
+	manifest.erase("movies")
 	_write_text(dir + "/pack.json", JSON.stringify(manifest, "  "))
 	var factions: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(dir + "/factions.json"))
 	for f in factions["factions"]:

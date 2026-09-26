@@ -358,6 +358,14 @@ class PackManifest:
 	## SCHEMA.md section 2: a page where players can get the pack. Optional;
 	## what is offered is OfferedUrl() - only a sound http(s) link.
 	var DownloadUrl: String
+	## SCHEMA.md section 2 (docs/cutscenes-plan.md): which movie plays at which
+	## engine event, event -> [reference, ...] played in order. A reference is
+	## "<art set>:<path>" (the player's own movies file) or a file in the pack.
+	## Empty = no movies. MoviesGiven/MoviesRaw keep what the file said for
+	## validation rule 23.
+	var Movies: Dictionary = {}
+	var MoviesGiven: bool = false
+	var MoviesRaw: Variant = null
 
 	## The longest download link offered (the relay's listing keeps as much).
 	const UrlMax := 300
@@ -410,6 +418,21 @@ class PackManifest:
 		o.Version = (str(v) if (v is String or v is int or v is float) else "").strip_edges()
 		var url: Variant = JsonUtil.get_ci(d, "download_url")
 		o.DownloadUrl = str(url).strip_edges() if url is String else ""
+		o.MoviesRaw = JsonUtil.get_ci(d, "movies")
+		o.MoviesGiven = o.MoviesRaw != null
+		if o.MoviesRaw is Dictionary:
+			for event in o.MoviesRaw:
+				if str(event).begins_with("_"):
+					continue   # an author's comment (SCHEMA.md section 1)
+				var given: Variant = o.MoviesRaw[event]
+				var refs: Array[String] = []
+				if given is String:
+					refs.append(str(given).strip_edges())
+				elif given is Array:
+					for movie in given:
+						if movie is String:
+							refs.append(str(movie).strip_edges())
+				o.Movies[str(event)] = refs
 		return o
 
 

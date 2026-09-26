@@ -2,12 +2,16 @@
 
 Status: **approved, 2026-09-26** - TeeJ: "Yes to all for cutscenes" (every
 recommendation below: converter C, q5, a separate movies file, confirmed moments only, no
-movie switch, a "Credits and licences" link on the pack's card). Phase 1 is built.
+movie switch, a "Credits and licences" link on the pack's card); then "You have my
+permission to install anything that is needed". Phases 1-3 are built.
 
 | Phase | State |
 |---|---|
 | 1, the Smacker decoder | **built** (`tools/FactionWarsExporter/Smacker.cs`): all 15 movies decode identically to FFmpeg - every one of 15,297 frames (as RGB) and 15,072 audio chunks, by MD5 (`tools/SmackerCheck`, dev only) |
-| 2, Theora/Vorbis + the movies file | needs the Xiph libraries (libogg, libtheora, libvorbis) - a download, which waits on TeeJ's yes |
+| 2, Theora/Vorbis + the movies file | **built** (exporter 2.5.0, `Movies.cs`, `native\fwxiph.dll` from Xiph's sources): all 15 in 8.4 minutes, **70.7 MB** at q5 (the 52 MB estimate was from movie 101 alone); Godot 4.7.1 plays them |
+| 3, import + player + pack field (desktop) | **built**: `movies` in pack.json (rule 23), the `movies` import kind, `src/ui/movies.gd` and `movie_player.gd`; `launch` and `credits` play; "Credits and licences" on the pack's card |
+| 4, the event triggers | next |
+| 5, web | after |
 
 TeeJ, 2026-09-25: "please generate a plan for bringing the cut scenes into the game";
 2026-09-26, again: "write-up a plan for cut scenes" (after the strangers plan).
