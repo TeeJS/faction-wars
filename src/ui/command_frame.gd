@@ -15,7 +15,9 @@ extends Control
 ##     sides' layouts are mirrored), dim, lit while that category holds unread
 ##     mail (icons and order matched on TeeJ's screenshot), each opening the
 ##     Message Index on its category;
-##   - the Game Options monitor ("Click here to go to Game Options screen").
+##   - the Game Options monitor ("Click here to go to Game Options screen");
+##   - the two droids (AddDroids): the agent, C-3PO / IMP-22, and the message
+##     droid, R2-D2 / SD-7, idling where the original stands them.
 ## The metal takes the mouse (only the window lets clicks through to the map),
 ## so a click on the frame never opens a system under it. Without the frame in
 ## the art set, nothing: the plain screen stays.
@@ -33,7 +35,12 @@ const FrameSize := Vector2(640, 481)
 ## measured on TeeJ's screenshots of the original, 2026-09-25 (five of the
 ## Alliance's, standard, large and huge galaxies; one of the Empire's): the
 ## picture correlates 0.93 / 0.985 there, and every system's star sits within
-## a pixel of where the Star Wars pack's map_image_rect puts it.
+## a pixel of where the Star Wars pack's map_image_rect puts it. agent /
+## messenger: the droids' pictures (windows/droid_*.<side>, one frame's
+## size), where the original draws them - matched on TeeJ's screenshots of
+## the original (C-3PO and R2-D2 exactly, eight screenshots; IMP-22 98% and
+## SD-7 89% of their pixels, caught mid-animation) and the same four places
+## open-rebellion measured on its own (its 2026-09-10 advisor evidence).
 const Layout := {
 	"alliance": {
 		"window": Rect2(54, 35, 488, 358),
@@ -41,6 +48,8 @@ const Layout := {
 		"monitor": Rect2(3, 358, 27, 34),
 		"shelf": Rect2(546, 58, 60, 262),
 		"picture": Vector2(21, 25),
+		"agent": Rect2(541, 337, 67, 116),
+		"messenger": Rect2(316, 411, 47, 69),
 	},
 	"empire": {
 		"window": Rect2(118, 41, 489, 358),
@@ -48,6 +57,8 @@ const Layout := {
 		"monitor": Rect2(78, 196, 32, 48),
 		"shelf": Rect2(20, 46, 55, 291),
 		"picture": Vector2(84, 27),
+		"agent": Rect2(0, 347, 106, 133),
+		"messenger": Rect2(302, 401, 101, 79),
 	},
 }
 const SlotPitch := 25
@@ -61,6 +72,7 @@ var Origin: Vector2 = Vector2.ZERO
 var _frame: Texture2D
 var _image: Image
 var _alerts: Array = []   # [TextureButton, category]
+var _droids: Array = []   # [Droid]
 
 
 ## True when this side's frame and its alert icons are in the art set.
@@ -168,6 +180,95 @@ func RefreshAlerts() -> void:
 		b.texture_normal = Art.AlertIcon(Side, cat, unread > 0)
 		b.tooltip_text = cat if unread == 0 else "%s (%d unread)" % [cat, unread]
 		UIManager._Badge(b, unread, b.size.x)
+
+
+## THE DROIDS (manual p022 Fig 2.3; p077-p078): the agent - "Right-click on
+## C-3PO or IMP-22 to bring up the Agent menu" - and the message droid - "right-
+## click on the message droid and select Messages. A shortcut is to left-click
+## on your message droid or press F6". Each plays its idle run (the art set's
+## strip: the original's anchor frame and its type-302 frames, exporter
+## 2.4.5) one frame every IdleStep seconds, round and round. The step and the
+## looping are INFERRED (open-rebellion's default, 0.15 s; nobody has read
+## the original's timing). A droid takes the mouse only on its own pixels.
+## Tooltips are the side's names for them (TEXTSTRA 5383/5384: "C-3PO",
+## "R2-D2"). Nothing without the pictures: an art set before 2.4.5.
+const IdleStep := 0.15
+
+
+func AddDroids(agent_name: String, messenger_name: String, on_agent: Callable, on_messages: Callable, on_messenger: Callable) -> void:
+	var lay: Dictionary = Layout.get(Side, {})
+	for role in ["agent", "messenger"]:
+		var strip: Texture2D = Art.WindowPicture("droid_%s.%s" % [role, Side])
+		if strip == null or not lay.has(role):
+			continue
+		var r: Rect2 = lay[role]
+		var d := Droid.new()
+		d.name = "Droid_" + role
+		d.Setup(strip, int(r.size.x))
+		d.position = Origin + r.position * S
+		d.size = r.size * S
+		d.tooltip_text = agent_name if role == "agent" else messenger_name
+		var agent: bool = role == "agent"
+		d.gui_input.connect(func(e: InputEvent) -> void:
+			var b := e as InputEventMouseButton
+			if b == null or b.pressed:
+				return
+			if b.button_index == MOUSE_BUTTON_RIGHT:
+				(on_agent if agent else on_messenger).call(b.global_position)
+			elif b.button_index == MOUSE_BUTTON_LEFT and not agent:
+				on_messages.call())
+		add_child(d)
+		_droids.append(d)
+	if not _droids.is_empty():
+		var tick := Timer.new()
+		tick.name = "DroidIdle"
+		tick.wait_time = IdleStep
+		tick.autostart = true
+		tick.timeout.connect(func() -> void:
+			for d in _droids:
+				(d as Droid).Step())
+		add_child(tick)
+
+
+## The droids on screen (for tests): the agent first, where there is one.
+func Droids() -> Array:
+	return _droids
+
+
+## One droid: its strip cut to the current frame, taking the mouse only where
+## that frame is drawn.
+class Droid extends TextureRect:
+	var Frame := 0
+	var Frames := 1
+	var _strip: Image
+	var _w := 1
+
+	func Setup(strip: Texture2D, frame_width: int) -> void:
+		_w = frame_width
+		Frames = maxi(1, strip.get_width() / frame_width)
+		_strip = strip.get_image()
+		if _strip != null and _strip.is_compressed():
+			_strip.decompress()
+		var cut := AtlasTexture.new()
+		cut.atlas = strip
+		cut.region = Rect2(0, 0, _w, strip.get_height())
+		texture = cut
+		expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		stretch_mode = TextureRect.STRETCH_SCALE
+		texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		mouse_filter = Control.MOUSE_FILTER_STOP
+
+	func Step() -> void:
+		Frame = (Frame + 1) % Frames
+		(texture as AtlasTexture).region = Rect2(Frame * _w, 0, _w, _strip.get_height() if _strip != null else texture.get_height())
+
+	func _has_point(p: Vector2) -> bool:
+		if _strip == null or size.x <= 0 or size.y <= 0:
+			return Rect2(Vector2.ZERO, size).has_point(p)
+		var q := Vector2(p.x / size.x * _w, p.y / size.y * _strip.get_height())
+		if q.x < 0 or q.y < 0 or q.x >= _w or q.y >= _strip.get_height():
+			return false
+		return _strip.get_pixel(Frame * _w + int(q.x), int(q.y)).a > 0.5
 
 
 ## The Window Reference Bar's twelve slots on screen.

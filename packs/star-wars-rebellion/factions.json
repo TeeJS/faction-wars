@@ -10,6 +10,7 @@
       "loyalty_label": "Loyalty to the Alliance",
       "loyalty_label_short": "Loyalty to Alliance",
       "agent_name": "C-3PO",
+      "messenger_name": "R2-D2",
       "hq": {
         "kind": "hidden",
         "placement": "random_rim",
@@ -47,6 +48,7 @@
       "loyalty_label": "Loyalty to the Empire",
       "loyalty_label_short": "Loyalty to Empire",
       "agent_name": "IMP-22",
+      "messenger_name": "SD-7",
       "hq": {
         "kind": "fixed",
         "planet": "coruscant"

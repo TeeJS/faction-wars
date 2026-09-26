@@ -205,6 +205,7 @@ Rects are in the menu picture's own pixels - the original's cockpit is
 | `occupation_support_policy` | `garrison_bonus` (troops raise support over time) or `occupation_penalty` (first occupation lowers it). Asymmetry as a flag. |
 | `loyalty_label` | Display string for the GID loyalty mode. |
 | `agent_name` | What the side's agent droid / adviser is called (manual p030, Fig. 2.16; C-3PO and IMP-22). Optional; "Agent" when absent. Was an id branch in engine code. |
+| `messenger_name` | What the side's message droid is called (manual p078; R2-D2 and SD-7) - its tooltip in the Command Center. Optional; "Message droid" when absent. |
 | `adjective` | The side's name as an adjective in the game's own sentences - "the **Imperial** fleet", "**Alliance** forces" (the battle alert and results, TEXTSTRA's battle block). Optional; the `display_name` when absent. |
 | `short_name` | The side's name where room is short - the map key's legend, "**Alliance**", "**Empire**" (the original's words). Optional; the `display_name` when absent. |
 | `loyalty_label_short` | The `loyalty_label` where room is short - the Command Center's left-hand menu, "**Loyalty to Alliance**". Optional; the `loyalty_label` when absent. |
@@ -1039,6 +1040,7 @@ What changed from the source repo's 2026-07-25 draft, and why.
 | 65 | **`short_name`** per faction (§3): the side where room is short (the map key's legend) | TeeJ, 2026-09-25: the map key "should match the UI" of the original, whose legend says "Alliance" and "Empire" |
 | 66 | **`menu_label`** per GID mode (§10) and **`loyalty_label_short`** per faction (§3): the lines of the Command Center's left-hand menu | TeeJ, 2026-09-25: the left-hand column as the GID menu, his abbreviations approved ("Avail Raw Materials", "Idle Training Fac.", "Idle Constr. Yards", "Loyalty to Alliance", "Loyalty to Empire") |
 | 67 | **`pressed_image`** on a `menu.monitors` entry (§2): a monitor's picture while its region is pressed; validated with rule 11 | TeeJ, 2026-09-25: "when you click on the handle, it moves" (the Cockpit's ejector handle) |
+| 68 | **`messenger_name`** per faction (§3): the message droid's name | The Command Center's droids (manual p022 Fig 2.3, p077-p078): the message droid stands in the frame with its name as its tooltip, as the agent's is `agent_name` | Optional; the Star Wars pack's are R2-D2 and SD-7; "Message droid" when absent |
 
 ---
 

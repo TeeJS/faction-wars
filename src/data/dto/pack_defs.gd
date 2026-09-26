@@ -78,6 +78,9 @@ class FactionDef:
 	var Seed: FactionSeedDef
 	var Victory: VictoryDef
 	var AgentName: String
+	## What the side's message droid is called (R2-D2, SD-7: manual p078).
+	## Blank = "Message droid".
+	var MessengerName: String
 	## SCHEMA.md section 14: which of the art set's side looks this faction
 	## wears ("alliance" / "empire" for swr-original). Blank = its own id.
 	var ArtSkin: String
@@ -107,6 +110,7 @@ class FactionDef:
 		o.Seed = FactionSeedDef.from_dict(JsonUtil.get_ci(d, "seed"))
 		o.Victory = VictoryDef.from_dict(JsonUtil.get_ci(d, "victory"))
 		o.AgentName = JsonUtil.str_or(d, "agent_name", "")
+		o.MessengerName = JsonUtil.str_or(d, "messenger_name", "")
 		o.ArtSkin = JsonUtil.str_or(d, "skin", "")
 		o.Adjective = JsonUtil.str_or(d, "adjective", "")
 		o.ShortName = JsonUtil.str_or(d, "short_name", "")

@@ -6,7 +6,8 @@ namespace FactionWarsExporter;
 /// Reads the resource table of a Win32 DLL straight from its bytes - no
 /// LoadLibrary, so nothing from the game ever executes and a 32-bit DLL reads
 /// fine from a 64-bit process. What the importer needs: RT_STRING tables,
-/// RT_RCDATA blobs, RT_BITMAP pictures and RT_CURSOR pointers.
+/// RT_RCDATA blobs, RT_BITMAP pictures, RT_CURSOR pointers and the droids'
+/// type-302 animation frames.
 /// </summary>
 public sealed class PeResources
 {
@@ -14,6 +15,7 @@ public sealed class PeResources
     private const int RtBitmap = 2;
     private const int RtString = 6;
     private const int RtRcData = 10;
+    private const int RtDroidFrame = 302;   // ALSPRITE / EMSPRITE.DLL: a droid's frames, each a delta on the one before
 
     private readonly byte[] _bytes;
     private readonly List<(uint VirtualAddress, uint VirtualSize, uint RawPointer, uint RawSize)> _sections = new();
@@ -27,6 +29,9 @@ public sealed class PeResources
 
     /// <summary>id -> (offset, size) for every RT_CURSOR entry (hotspot, then a DIB twice as tall: colours over the AND mask).</summary>
     public IReadOnlyDictionary<int, (int Offset, int Size)> Cursors { get; }
+
+    /// <summary>id -> (offset, size) for every type-302 entry (a droid's animation frame).</summary>
+    public IReadOnlyDictionary<int, (int Offset, int Size)> DroidFrames { get; }
 
     /// <summary>String table entries by string id, as the game reads them.</summary>
     public IReadOnlyDictionary<int, string> Strings { get; }
@@ -55,12 +60,13 @@ public sealed class PeResources
         var bitmaps = new Dictionary<int, (int, int)>();
         var strings = new Dictionary<int, string>();
         var cursors = new Dictionary<int, (int, int)>();
+        var droidFrames = new Dictionary<int, (int, int)>();
         if (_resourceRva != 0)
         {
             int root = RvaToOffset(_resourceRva);
             foreach (var (typeId, typeDir) in Entries(root))
             {
-                if (typeId != RtString && typeId != RtRcData && typeId != RtBitmap && typeId != RtCursor) continue;
+                if (typeId != RtString && typeId != RtRcData && typeId != RtBitmap && typeId != RtCursor && typeId != RtDroidFrame) continue;
                 foreach (var (nameId, nameDir) in Entries(typeDir))
                 {
                     foreach (var (_, dataEntry) in Entries(nameDir, leaf: true))
@@ -74,6 +80,8 @@ public sealed class PeResources
                             bitmaps[nameId] = (offset, size);
                         else if (typeId == RtCursor)
                             cursors[nameId] = (offset, size);
+                        else if (typeId == RtDroidFrame)
+                            droidFrames[nameId] = (offset, size);
                         else
                             ReadStringBlock(nameId, offset, size, strings);
                         break;   // first language only
@@ -85,6 +93,7 @@ public sealed class PeResources
         Bitmaps = bitmaps;
         Strings = strings;
         Cursors = cursors;
+        DroidFrames = droidFrames;
     }
 
     /// <summary>
@@ -147,6 +156,20 @@ public sealed class PeResources
         BitConverter.GetBytes(pixelOffset).CopyTo(file, 10);
         Buffer.BlockCopy(_bytes, offset, file, 14, size);
         return file;
+    }
+
+    /// <summary>An RT_BITMAP's DIB exactly as stored (BITMAPINFOHEADER, palette, pixels).</summary>
+    public byte[] BitmapDib(int id)
+    {
+        var (offset, size) = Bitmaps[id];
+        return _bytes.AsSpan(offset, size).ToArray();
+    }
+
+    /// <summary>The bytes of one type-302 droid frame.</summary>
+    public byte[] DroidFrameBytes(int id)
+    {
+        var (offset, size) = DroidFrames[id];
+        return _bytes.AsSpan(offset, size).ToArray();
     }
 
     /// <summary>The bytes of one RT_RCDATA entry.</summary>

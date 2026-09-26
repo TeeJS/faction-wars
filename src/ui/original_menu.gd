@@ -15,8 +15,14 @@ extends RefCounted
 ##   - the Speed Control's menu: each speed's own bar icon (speed_bars.<side>.
 ##     <n>, the Speed Control's bitmaps, matched pixel for pixel) 6 pixels in,
 ##     its name 23 in, and the speed in force in the side's colour.
-## The item under the mouse is not shown in any screenshot: a faint band
-## marks it here (ours).
+##   - the item under the mouse in the side's colour, nothing behind it (the
+##     Alliance's agent menu, red: a capture of the original, open-rebellion's
+##     0896; the Empire's green, INFERRED);
+##   - a ticked item's mark, the original's own (STRATEGY 11902, 20x20, white
+##     with a black shadow, windows/menu_check) 4 pixels in, the text still 27
+##     in (the agent menu, manual p077 Fig 3.17; captures 0620 / 0896).
+## The Speed Control's menu keeps a faint band under the mouse (ours): its
+## speed in force is already the side's colour.
 ##
 ## Every PopupMenu in play is styled as it enters the tree (UIManager hooks
 ## SceneTree.node_added), so no window builds its menu differently. Preloaded
@@ -35,11 +41,14 @@ const Pitch := 20        # a row
 const FontPx := 14
 const TextX := 27        # an item's text, from the frame's outside
 const CaretX := 10       # the submenu caret
+const CheckX := 4        # a ticked item's mark (its 20x20 bitmap's left)
 const SpeedIconX := 6    # the speed menu's bar icon
 const SpeedTextX := 23   # and its name
 const CaretRows := [1, 2, 4, 5, 7, 8, 7, 5, 4, 2, 1]   # the caret, right-aligned
 
 static var _caret: Dictionary = {}   # side -> texture
+static var _tick: Texture2D = null
+static var _tickInk := Rect2i()      # the drawn part of the tick's 20x20 bitmap
 static var _blank: Texture2D = null
 
 
@@ -83,15 +92,19 @@ static func Style(menu: PopupMenu) -> void:
 	menu.transparent_bg = true
 	menu.transparent = true
 	menu.add_theme_stylebox_override("panel", MenuBox.new())
-	var band := StyleBoxFlat.new()
-	band.bg_color = Hover
-	menu.add_theme_stylebox_override("hover", band)
+	menu.add_theme_stylebox_override("hover", StyleBoxEmpty.new())
 	var face: Font = OUI.Face()
 	var size: int = FontPx * K
 	menu.add_theme_font_override("font", face)
 	menu.add_theme_font_size_override("font_size", size)
 	menu.add_theme_color_override("font_color", Color.WHITE)
-	menu.add_theme_color_override("font_hover_color", Color.WHITE)
+	menu.add_theme_color_override("font_hover_color", OUI.SideColor(GameSettings.PlayerFaction))
+	var tick: Texture2D = Tick()
+	if tick != null:
+		for icon in ["checked", "checked_disabled"]:
+			menu.add_theme_icon_override(icon, tick)
+		for icon in ["unchecked", "unchecked_disabled"]:
+			menu.add_theme_icon_override(icon, _Blank())
 	menu.add_theme_color_override("font_disabled_color", Grey)
 	menu.add_theme_color_override("font_separator_color", Grey)
 	menu.add_theme_constant_override("v_separation", maxi(0, Pitch * K - ceili(face.get_height(size))))
@@ -104,20 +117,48 @@ static func Style(menu: PopupMenu) -> void:
 
 
 ## The caret on every item that opens a submenu, and the text column: 27
-## pixels in whether a caret is there or not.
+## pixels in whether a caret or a tick is there or not.
 static func _Carets(menu: PopupMenu) -> void:
 	var caret: Texture2D = Caret(GameSettings.PlayerFaction)
 	var any := false
+	var ticks := false
 	for i in menu.item_count:
 		if menu.get_item_submenu_node(i) != null:
 			menu.set_item_icon(i, caret)
 			any = true
+		if menu.is_item_checkable(i):
+			ticks = true
 	var inner: int = 2   # the frame, which is the panel's margin
-	if any:
+	if ticks and menu.has_theme_icon_override("checked"):
+		# The tick's column: Godot puts it first and every item's text after it.
+		var ink: int = CheckX + _tickInk.position.x
+		menu.add_theme_constant_override("item_start_padding", (ink - inner) * K)
+		menu.add_theme_constant_override("h_separation", (TextX - ink - _tickInk.size.x) * K)
+	elif any:
 		menu.add_theme_constant_override("item_start_padding", (CaretX - inner) * K)
 		menu.add_theme_constant_override("h_separation", (TextX - CaretX - CaretRows.max()) * K)
 	else:
 		menu.add_theme_constant_override("item_start_padding", (TextX - inner) * K)
+
+
+## The tick at the drawn scale, cut to what it draws (its 20x20 bitmap is
+## taller than a row's text, and a taller icon would make its row taller).
+## Null without it in the art set (before exporter 2.4.5).
+static func Tick() -> Texture2D:
+	if _tick != null:
+		return _tick
+	var pic: Texture2D = Art.WindowPicture("menu_check")
+	var img: Image = pic.get_image() if pic != null else null
+	if img == null:
+		return null
+	img = img.duplicate()
+	if img.is_compressed():
+		img.decompress()
+	_tickInk = img.get_used_rect()
+	if _tickInk.size.x <= 0:
+		return null
+	_tick = Art.Scaled(ImageTexture.create_from_image(img.get_region(_tickInk)), K)
+	return _tick
 
 
 ## The submenu caret in a side's colour at half strength, at the drawn scale.

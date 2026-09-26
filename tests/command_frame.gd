@@ -70,6 +70,16 @@ func _init() -> void:
 		for c in Order:
 			_png("%s/alerts/%s.%s.png" % [dir, side, c.to_lower()], 27, 22, Color(0.1, 0.1, 0.1))
 			_png("%s/alerts/%s.%s.lit.png" % [dir, side, c.to_lower()], 27, 22, Color(1, 0.8, 0))
+		# The droids' idle runs: three frames each, clear round a drawn middle.
+		for role in ["agent", "messenger"]:
+			var r: Rect2 = CommandFrame.Layout[side][role]
+			var strip := Image.create(int(r.size.x) * 3, int(r.size.y), false, Image.FORMAT_RGBA8)
+			for f in 3:
+				strip.fill_rect(Rect2i(f * int(r.size.x) + int(r.size.x) / 4, int(r.size.y) / 4, int(r.size.x) / 2, int(r.size.y) / 2), Color(0.8, 0.7, 0.2 + 0.2 * f))
+			strip.save_png("%s/windows/droid_%s.%s.png" % [dir, role, side])
+	var tick := Image.create(20, 20, false, Image.FORMAT_RGBA8)
+	tick.fill_rect(Rect2i(2, 2, 16, 16), Color.WHITE)
+	tick.save_png("%s/windows/menu_check.png" % dir)
 	for side in ["alliance", "empire"]:
 		var win: Rect2 = CommandFrame.Layout[side]["window"]
 		main = await _start(side)
@@ -247,6 +257,61 @@ func _init() -> void:
 			await process_frame
 			_check(Gid.ActiveMode() == Gid.DisplayOff, "%s: Display Off" % side)
 			(main.get_node("GalaxyMap") as GalaxyMap).SetMode(Gid.Default())
+
+		# THE DROIDS (manual p022 Fig 2.3, p077-p078): the agent and the message
+		# droid where the original stands them, idling; the agent's menu at a
+		# right-click, flipped to stay on the frame; the message droid's
+		# left-click is the Message Index, its right-click its menu; the bottom
+		# row's agent button goes.
+		var droids: Array = frame.Droids()
+		var placed := droids.size() == 2
+		for i in droids.size():
+			var role: String = ["agent", "messenger"][i]
+			var want: Rect2 = CommandFrame.Layout[side][role]
+			var got: Rect2 = (droids[i] as Control).get_global_rect()
+			placed = placed and got.position.distance_to(origin + want.position * s) < 1.0 and got.size.distance_to(want.size * s) < 1.0
+		_check(placed, "%s: the agent and the message droid where the original stands them" % side)
+		if droids.size() == 2:
+			var agent: CommandFrame.Droid = droids[0]
+			var messenger: CommandFrame.Droid = droids[1]
+			_check(agent.tooltip_text == AgentDroid.NameFor(GameSettings.PlayerFaction) and messenger.tooltip_text == AgentDroid.MessengerFor(GameSettings.PlayerFaction)
+				and messenger.tooltip_text == ("R2-D2" if side == "alliance" else "SD-7"),
+				"%s: named %s and %s" % [side, agent.tooltip_text, messenger.tooltip_text])
+			var was: int = agent.Frame
+			agent.Step()
+			_check(agent.Frames == 3 and agent.Frame == (was + 1) % 3, "%s: the agent steps through its idle run" % side)
+			_check(agent._has_point(agent.size / 2.0) and not agent._has_point(Vector2(1, 1)), "%s: a droid takes the mouse only on its own pixels" % side)
+			var agentBtn: Control = ui.get_node_or_null("HBoxContainer/AgentButton")
+			_check(ui.HasDroids() and agentBtn != null and not agentBtn.visible, "%s: the bottom row's agent button goes" % side)
+			var click := InputEventMouseButton.new()
+			click.button_index = MOUSE_BUTTON_RIGHT
+			click.pressed = false
+			click.global_position = agent.get_global_rect().get_center()
+			agent.gui_input.emit(click)
+			await process_frame
+			var am: PopupMenu = ui.get_node_or_null("AgentPopup")
+			var box := Rect2(Vector2(am.position), Vector2(am.size)) if am != null else Rect2()
+			_check(am != null and am.visible and am.item_count == 9 and frame.ScreenRect().grow(1).encloses(box)
+				and (box.end.x <= click.global_position.x + 1 if side == "alliance" else box.position.x >= click.global_position.x - 1),
+				"%s: right-click opens the agent's menu at the click, on the frame (%s)" % [side, str(box)])
+			if am != null:
+				am.hide()
+			click.global_position = messenger.get_global_rect().get_center()
+			messenger.gui_input.emit(click)
+			await process_frame
+			var mm: PopupMenu = ui.get_node_or_null("MessengerPopup")
+			_check(mm != null and mm.visible and mm.get_item_text(0) == "Messages" and mm.get_item_text(1) == "Message Alerts" and mm.is_item_disabled(1),
+				"%s: right-click on the message droid: Messages, Message Alerts" % side)
+			if mm != null:
+				mm.hide()
+			var left := InputEventMouseButton.new()
+			left.button_index = MOUSE_BUTTON_LEFT
+			left.pressed = false
+			left.global_position = click.global_position
+			messenger.gui_input.emit(left)
+			for _i in 2:
+				await process_frame
+			_check(ui._openWindows.has("Communications"), "%s: left-click on the message droid opens the Message Index" % side)
 
 		# THE SECTORS keep the grey bar on the right, outside the frame; THE
 		# WINDOW REFERENCE BAR on the frame's shelf takes minimised windows, one

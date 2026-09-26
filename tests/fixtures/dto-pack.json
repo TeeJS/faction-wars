@@ -4504,6 +4504,7 @@
       "Id": "alliance",
       "LoyaltyLabel": "Loyalty to the Alliance",
       "LoyaltyLabelShort": "Loyalty to Alliance",
+      "MessengerName": "R2-D2",
       "OccupationSupportPolicy": "occupation_penalty",
       "Seed": {
         "Fleet": "alliance_fleet",
@@ -4542,6 +4543,7 @@
       "Id": "empire",
       "LoyaltyLabel": "Loyalty to the Empire",
       "LoyaltyLabelShort": "Loyalty to Empire",
+      "MessengerName": "SD-7",
       "OccupationSupportPolicy": "garrison_bonus",
       "Seed": {
         "Fleet": "empire_fleet",
