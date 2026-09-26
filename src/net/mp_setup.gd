@@ -87,7 +87,6 @@ static func load_names() -> void:
 	# written as false for every player who never touched the box, so reading
 	# it would have kept them unticked.
 	GameSettings.ProvideFeedback = bool(cfg.get_value("options", "feedback", true)) if remembered else true
-	GameSettings.ClassicControls = bool(cfg.get_value("options", "classic_controls", false)) if remembered else false
 
 
 static func remember_names() -> void:
@@ -95,7 +94,6 @@ static func remember_names() -> void:
 	cfg.set_value("names", "player", player_name)
 	cfg.set_value("names", "game", game_name)
 	cfg.set_value("options", "feedback", GameSettings.ProvideFeedback)
-	cfg.set_value("options", "classic_controls", GameSettings.ClassicControls)
 	cfg.save(NamesFile)
 
 
