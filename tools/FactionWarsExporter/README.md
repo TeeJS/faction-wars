@@ -128,6 +128,7 @@ gid/<faction>.<tier>.png  gid/unexplored.<tier>.png  icons/uprising.png (+ .hove
 alerts/<faction>.<category>.png (+ .lit.png)
 screens/cockpit.png   screens/galaxy.png
 descriptions.json     { "characters": { "<id>": "text" }, "units": ..., ... }
+music/<nnn>.ogg       the score, MDATA.300-315 as Ogg Vorbis (11 kHz mono, about 4 MB)
 README.txt            keep it; do not share or upload it
 ```
 

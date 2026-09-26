@@ -1115,6 +1115,10 @@ public sealed class Importer
             missing.Add("REBDLOG.DLL not found - no alert box");
         Say($"Speed Control and alert box: {hud} pictures.");
 
+        // The score, as Ogg Vorbis (Music.cs; TeeJ, 2026-09-26: "yes to
+        // including the music with the art").
+        Music.Export(_gameDir, _sink, missing, Say);
+
         _sink.WriteText(P("descriptions.json"),
             descriptions.ToJsonString(new JsonSerializerOptions { WriteIndented = true, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping }) + "\n");
         _sink.WriteText(P("README.txt"),
