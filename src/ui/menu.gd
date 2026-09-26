@@ -262,8 +262,11 @@ func StartGame(chosenFaction: Faction) -> void:
 
 	print("Starting Game... Faction: %s | Difficulty: %s | Size: %s | HQ Only: %s" % [str(chosenFaction), JsonUtil.enum_name(Enums.Difficulty, difficultyLevel), JsonUtil.enum_name(Enums.GalaxySize, sizeLevel), str(isHqOnly)])
 
-	# Launch the Main scene
-	get_tree().change_scene_to_file("res://Main.tscn")
+	# The side's own opening, when the pack has one (`start.<faction>`; the
+	# Star Wars pack's 003/004 wait until their moment is confirmed), then the
+	# Main scene.
+	var tree := get_tree()
+	MoviesLib.Play(tree, "start.%s" % chosenFaction.Id, func() -> void: tree.change_scene_to_file("res://Main.tscn"))
 
 
 # ---------------------------------------------------------------------------

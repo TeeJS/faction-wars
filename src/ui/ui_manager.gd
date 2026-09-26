@@ -112,6 +112,8 @@ func _ready() -> void:
 	EventBus.OnDayAdvanced.append(RefreshActiveWindows)
 	# Redraw the moment state changes, not only on the day tick (see EventBus).
 	EventBus.OnStateChanged.append(RefreshNow)
+	# The original's movies at their moments (docs/cutscenes-plan.md, phase 4).
+	EventBus.OnMovieCue.append(_OnMovieCue)
 
 	# The general answer to stale windows: every open window is asked what it is
 	# showing, and repainted only if that differs from what it last painted.
@@ -415,10 +417,25 @@ func RelayoutShelf() -> void:
 		btn.add_theme_font_size_override("font_size", roundi(ShelfTextPx * s))
 
 
+const MoviesLib := preload("res://src/ui/movies.gd")
+
+
+## A moment the pack may have a movie for: played for this client's side when
+## it is one of `sides` (every side when empty), after the simulation's step.
+## Whom each plays for is INFERRED where the original's is unknown: the
+## destroyed system's owner and the destroyer, both sides of a sabotaged
+## Death Star; victory and defeat are each side's own (their crawls say so).
+func _OnMovieCue(event: String, sides: Array) -> void:
+	if not sides.is_empty() and not sides.has(GameSettings.LocalFaction()):
+		return
+	(func() -> void: MoviesLib.Play(get_tree(), event)).call_deferred()
+
+
 func _exit_tree() -> void:
 	# Always unsubscribe from static events when the node is destroyed.
 	EventBus.OnDayAdvanced.erase(RefreshActiveWindows)
 	EventBus.OnStateChanged.erase(RefreshNow)
+	EventBus.OnMovieCue.erase(_OnMovieCue)
 	EventBus.OnStateChanged.erase(RefreshCommsHighlights)
 	EventBus.OnMessageReceived.erase(ShowHudNotification)
 

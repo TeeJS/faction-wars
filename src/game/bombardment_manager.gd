@@ -116,8 +116,12 @@ static func Bombard(fleet: Fleet, target: Planet, mode: int, rng: Prng, day: int
 	var budget := report.Through
 
 	if mode == BombardmentMode.DestroySystem and CanDestroySystem(fleet):
+		var owner: Faction = target.ControllingFaction
 		DestroyEverything(target, report)
 		Announce(report, fleet, mode, day)
+		# The Death Star's work (manual p124; the original's movie 101), for
+		# the side that did it and the side that held the system.
+		EventBus.Cue("system_destroyed", [fleet.Faction, owner])
 		return report
 
 	var military := Lq.where(target.Facilities, IsMilitary)

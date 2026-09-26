@@ -8,6 +8,10 @@ static var OnGameNotification: Array[Callable] = []   # Action<string>
 static var OnDayAdvanced: Array[Callable] = []        # Action<int>
 static var OnStateChanged: Array[Callable] = []       # Action
 static var OnMessageReceived: Array[Callable] = []    # Action<GameMessage>
+## A moment a movie may mark (docs/cutscenes-plan.md, phase 4): (event, sides)
+## - the pack's `movies` event and the sides it concerns. The UI plays the
+## movie for its own side; the simulation never depends on it.
+static var OnMovieCue: Array[Callable] = []
 
 static var MessageLog: Array[GameMessage] = []
 
@@ -20,6 +24,13 @@ static var _broadcasting: bool = false
 static func Broadcast(message: String) -> void:
 	for cb in OnGameNotification:
 		cb.call(message)
+
+
+## Names a moment a movie may mark, for the sides it concerns (every side when
+## empty). Headless, and in the AI's own games, nobody listens.
+static func Cue(event: String, sides: Array) -> void:
+	for cb in OnMovieCue:
+		cb.call(event, sides)
 
 
 static func BroadcastStateUpdated() -> void:

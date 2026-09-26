@@ -57,13 +57,24 @@ static func PathOf(ref: String) -> String:
 
 
 ## Plays `event`'s movies over everything, then calls `done` - at once when
-## there are none. Returns the player, or null.
+## there are none. Returns the player, or null. With one already playing (a
+## system destroyed, then the war won that same day), these follow its own.
 static func Play(tree: SceneTree, event: String, done: Callable = Callable()) -> Node:
 	var paths := For(event)
 	if paths.is_empty():
 		if done.is_valid():
 			done.call()
 		return null
+	var playing: Node = tree.root.get_node_or_null("MoviePlayer")
+	if playing != null and not playing.is_queued_for_deletion():
+		playing.Paths.append_array(paths)
+		if done.is_valid():
+			var before: Callable = playing.Done
+			playing.Done = func() -> void:
+				if before.is_valid():
+					before.call()
+				done.call()
+		return playing
 	var p := Player.new()
 	p.Paths = paths
 	p.Done = done
