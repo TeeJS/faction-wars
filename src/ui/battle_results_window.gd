@@ -8,8 +8,16 @@ extends PanelContainer
 ## templates at 0x0E758-0x0EB2C - a VICTORY clause, a SYSTEM-STATE clause, then a
 ## FORCE-DISPOSITION clause. 0x0E7B0 / 0x0E9FC give the indecisive outcome the
 ## manual never mentions.
+##
+## THE ASSAULT SUMMARY (manual p123, Figs 3.66-3.67) is this window too (TeeJ,
+## 2026-09-26), set up by SetupAssault: "Assault on <system>", the scene and
+## the original's sentence; the column's close, Summary, the two sides'
+## forces (the attacker's first) and Go to system; each side's forces under
+## six tabs - capital ships, fighters, manufacturing and defensive
+## facilities, trooper regiments, personnel.
 
 var _r: FleetBattleManager.BattleReport
+var _a: AssaultManager.AssaultReport = null
 var _body: VBoxContainer
 var _page: int = 0   # 0 = summary, 1 = ours, 2 = theirs
 var _tab: int = 0    # within a force page
@@ -95,6 +103,58 @@ func Setup(report: FleetBattleManager.BattleReport) -> void:
 	Redraw()
 
 
+## The Assault Summary (manual p123): an assault's results in this window.
+func SetupAssault(report: AssaultManager.AssaultReport) -> void:
+	_a = report
+	if OB.CanBuild() and OUI.Pic("frame.%s" % OUI.Side(GameSettings.LocalFaction())) != null:
+		_BuildOriginal()
+		return
+	mouse_filter = Control.MOUSE_FILTER_STOP
+	set_anchors_preset(Control.PRESET_CENTER)
+	position = Vector2(300, 140)
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.06, 0.07, 0.11, 0.98)
+	sb.border_color = Color(0.55, 0.70, 0.95, 0.9)
+	sb.set_border_width_all(1)
+	sb.set_content_margin_all(14)
+	add_theme_stylebox_override("panel", sb)
+	var root := HBoxContainer.new()
+	root.add_theme_constant_override("separation", 12)
+	add_child(root)
+	var left := VBoxContainer.new()
+	left.add_theme_constant_override("separation", 6)
+	root.add_child(left)
+	var title := Label.new()
+	title.text = _Title()
+	title.add_theme_font_size_override("font_size", 21)
+	title.add_theme_color_override("font_color", Color(0.95, 0.96, 1.0))
+	left.add_child(title)
+	left.add_child(HSeparator.new())
+	var scroll := ScrollContainer.new()
+	scroll.custom_minimum_size = Vector2(470, 300)
+	left.add_child(scroll)
+	_body = VBoxContainer.new()
+	_body.add_theme_constant_override("separation", 2)
+	_body.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(_body)
+	var side := VBoxContainer.new()
+	side.add_theme_constant_override("separation", 6)
+	root.add_child(side)
+	Side(side, "Close", queue_free)
+	Side(side, "Summary", func() -> void:
+		_page = 0
+		Redraw())
+	var skins: Array = _Skins()
+	for i in skins.size():
+		var page: int = i + 1
+		Side(side, "%s Forces" % _PageName(skins[i]), func() -> void:
+			_page = page
+			_tab = AssaultTroopsTab
+			Redraw())
+	Side(side, "Goto System", GotoSystem)
+	Redraw()
+
+
 func Side(into: VBoxContainer, text: String, onPressed: Callable) -> void:
 	var b := Button.new()
 	b.text = text
@@ -109,7 +169,7 @@ func GotoSystem() -> void:
 	# DESTROYED)". ⚠ Only the system half is wired.
 	var ui := get_parent() as UIManager
 	if ui != null:
-		ui.OnPlanetClicked(_r.Where)
+		ui.OnPlanetClicked(_Where())
 	queue_free()
 
 
@@ -120,6 +180,9 @@ func Redraw() -> void:
 	for child in _body.get_children():
 		child.queue_free()
 
+	if _a != null:
+		_PlainAssaultPage()
+		return
 	if _page == 0:
 		Summary()
 		return
@@ -329,18 +392,24 @@ func _BuildOriginal() -> void:
 	_oBody.name = "Page"
 	_oBody.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_o.add_child(_oBody)
-	# The column (TeeJ's screenshot): close, the summary, the Alliance's and
-	# the Empire's forces, Goto System.
-	OB.Button3(_o, "battle_close.%s" % _oSide, OB.ColumnX, OB.ResultYs[0], "Close").pressed.connect(queue_free)
-	var stems: Array = ["battle_summary", "battle_alliance_forces", "battle_empire_forces"]
-	var tips: Array = ["Summary", "%s Forces" % _SideName("alliance"), "%s Forces" % _SideName("empire")]
+	# The column (TeeJ's screenshots): close, the summary, the two sides'
+	# forces, Goto System. A battle's are the Alliance's then the Empire's; an
+	# assault's close box sits 4 lower, and its sides are the attacker's then
+	# the other's (_Skins).
+	OB.Button3(_o, "battle_close.%s" % _oSide, OB.ColumnX, AssaultCloseY if _a != null else OB.ResultYs[0], "Close").pressed.connect(queue_free)
+	var skins: Array = _Skins()
+	var stems: Array = ["battle_summary"]
+	var tips: Array = ["Summary"]
+	for skin in skins:
+		stems.append("battle_%s_forces" % skin)
+		tips.append("%s Forces" % (_PageName(skin) if _a != null else _SideName(skin)))
 	_oButtons.clear()
 	for i in stems.size():
 		var b := OB.PageButton(_o, stems[i], _oSide, OB.ColumnX, OB.ResultYs[i + 1], tips[i])
 		var page := i
 		b.pressed.connect(func() -> void:
 			_page = page
-			_tab = 0
+			_tab = _DefaultTab()
 			_ShowPage())
 		_oButtons.append(b)
 	OB.Button3(_o, "battle_goto.%s" % _oSide, OB.ColumnX, OB.ResultYs[4], "Goto System").pressed.connect(GotoSystem)
@@ -358,6 +427,160 @@ func _FleetOf(skin: String) -> Fleet:
 func _SideName(skin: String) -> String:
 	var f: Fleet = _FleetOf(skin)
 	return f.Faction.DisplayName if f != null and f.Faction != null else skin.capitalize()
+
+
+# ---- a battle's or an assault's -----------------------------------------------
+
+## The Assault Summary's forces pages open on the troops (Fig. 3.67).
+const AssaultTroopsTab := 4
+
+
+func _Where() -> Planet:
+	return _a.Target if _a != null else _r.Where
+
+
+## "Battle at |" (TEXTSTRA.DLL 0xE758) / "Assault on |" (0xF664).
+func _Title() -> String:
+	return ("Assault on %s" if _a != null else "Battle at %s") % _Where().Name
+
+
+func _DefaultTab() -> int:
+	return AssaultTroopsTab if _a != null else 0
+
+
+## The column's two forces pages, by side. A battle's: the Alliance's, then
+## the Empire's (TeeJ's screenshot of the original's). An assault's: the
+## attacker's first - "Imperial Forces" over "Alliance Forces" with the
+## Empire attacking, on TeeJ's screenshot of the original's (matched to the
+## pixel, 10742 over 10740) and on manual p123 Fig. 3.66. INFERRED: attacker
+## first, not always the Empire's first; both known cases are the Empire's.
+func _Skins() -> Array:
+	if _a == null:
+		return ["alliance", "empire"]
+	var first: String = OUI.Side(_a.Attacker)
+	if first != "alliance" and first != "empire":
+		first = "alliance"
+	return [first, "empire" if first == "alliance" else "alliance"]
+
+
+## The side a forces page shows: an assault's second page is the defender's,
+## a neutral system's included.
+func _PageFaction(skin: String) -> Faction:
+	if _a != null:
+		return _a.Attacker if skin == _Skins()[0] else _a.Defender
+	var f: Fleet = _FleetOf(skin)
+	return f.Faction if f != null else null
+
+
+func _PageLosses(skin: String) -> FleetBattleManager.Casualties:
+	if _a != null:
+		return _a.AttackerForces if skin == _Skins()[0] else _a.DefenderForces
+	var viewer: Faction = GameSettings.LocalFaction()
+	return _r.MyLosses(viewer) if _FleetOf(skin) == _r.Mine(viewer) else _r.EnemyLosses(viewer)
+
+
+## The side as the page names it: "Imperial", "Alliance", "Neutral".
+func _PageName(skin: String) -> String:
+	if _a != null:
+		return AssaultManager.Adjective(_PageFaction(skin))
+	return BattleResultsWindow.Adj(_FleetOf(skin))
+
+
+## The forces pages' tabs. A battle's four (TeeJ's screenshots); an assault's
+## six, in Fig. 3.67's order - capital ships, fighters, manufacturing
+## facilities, defensive facilities, trooper regiments, personnel. The two
+## facility tabs are the Encyclopedia's facilities picture and the tower
+## (STRATEGY.DLL 10342/10341, exporter 2.4.8), matched to the figure by their
+## shapes: INFERRED, the scan is too coarse to match pixels.
+func _TabStems() -> Array:
+	if _a != null:
+		return ["ency_tab_ship", "battle_filter_fighter", "ency_tab_facilities", "ency_tab_defense", "ency_tab_troop", "ency_tab_personnel"]
+	return ["ency_tab_ship", "battle_filter_fighter", "ency_tab_troop", "ency_tab_personnel"]
+
+
+## The band's words: the original's strings where it has them ("Defense
+## Facilities", TEXTSTRA.DLL with the results' own); "Manufacturing
+## Facilities" is the manual's wording (p123), no string of its own found.
+func _TabNames() -> Array:
+	var names: Array = ["Capital Ships", Terms.label("fighter_squadrons")]
+	if _a != null:
+		names.append_array(["Manufacturing Facilities", "Defense Facilities"])
+	names.append_array([Terms.label("trooper_regiments"), "Personnel"])
+	return names
+
+
+## A tab's columns: [head, the Casualties list]. Personnel's three, the rest
+## Operational and Destroyed.
+func _TabColumns(tab: int) -> Array:
+	var kinds: Array = ["CapitalShips", "Squadrons"]
+	if _a != null:
+		kinds.append_array(["Manufacturing", "Defense"])
+	kinds.append("Troops")
+	if tab < kinds.size():
+		return [["Operational", kinds[tab] + "Operational"], ["Destroyed", kinds[tab] + "Destroyed"]]
+	return [["Survivors", "PersonnelSurvivors"], ["Captured", "PersonnelCaptured"], ["Killed", "PersonnelKilled"]]
+
+
+## The assault's scene: the attacker's troops holding the world - the
+## Empire's walkers (STRATEGY.DLL 11161, on TeeJ's screenshot of "Imperial
+## troops have taken control...", matched to the pixel), the Alliance's
+## speeders (11160, INFERRED by what it shows) - or the world still under its
+## shield (11162, INFERRED). Exporter 2.4.8.
+func _AssaultScene() -> Texture2D:
+	if _a.Captured:
+		return OUI.Pic("assault_captured.%s" % _Skins()[0])
+	return OUI.Pic("assault_repulsed")
+
+
+## The Assault Summary's text has a black shadow one pixel down and right
+## (TeeJ's screenshot: every such pixel black); its title has none.
+static func _Shadow(l: Label) -> void:
+	l.add_theme_color_override("font_shadow_color", Color.BLACK)
+	l.add_theme_constant_override("shadow_offset_x", OUI.K)
+	l.add_theme_constant_override("shadow_offset_y", OUI.K)
+	l.add_theme_constant_override("shadow_outline_size", 0)
+
+
+## The plain Assault Summary (no art imported): the sentence, or a side's
+## forces under the six tabs.
+func _PlainAssaultPage() -> void:
+	if _page == 0:
+		var l := Label.new()
+		l.name = "Sentence"
+		l.text = AssaultManager.Sentence(_a)
+		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		l.custom_minimum_size = Vector2(450, 0)
+		l.add_theme_font_size_override("font_size", 15)
+		l.add_theme_color_override("font_color", Color(0.92, 0.94, 1.0))
+		_body.add_child(l)
+		return
+	var skin: String = _Skins()[_page - 1]
+	var c: FleetBattleManager.Casualties = _PageLosses(skin)
+	var head := Label.new()
+	head.text = "%s Forces" % _PageName(skin)
+	head.add_theme_font_size_override("font_size", 14)
+	head.add_theme_color_override("font_color", Color(0.70, 0.78, 0.92))
+	_body.add_child(head)
+	var tabs := HBoxContainer.new()
+	tabs.add_theme_constant_override("separation", 4)
+	_body.add_child(tabs)
+	var names: Array = _TabNames()
+	for i in names.size():
+		var which: int = i
+		var b := Button.new()
+		b.text = names[i]
+		b.flat = _tab != i
+		b.add_theme_font_size_override("font_size", 11)
+		b.pressed.connect(func() -> void:
+			_tab = which
+			Redraw())
+		tabs.add_child(b)
+	_body.add_child(HSeparator.new())
+	var cols: Array = _TabColumns(_tab)
+	if cols.size() == 2:
+		Columns(cols[0][0], c.get(cols[0][1]), cols[1][0], c.get(cols[1][1]))
+	else:
+		Three(cols[0][0], c.get(cols[0][1]), cols[1][0], c.get(cols[1][1]), cols[2][0], c.get(cols[2][1]))
 
 
 ## The scene: the side the viewer fought (TeeJ's Imperial victory over an
@@ -382,11 +605,21 @@ func _ShowPage() -> void:
 		c.queue_free()
 	var viewer: Faction = GameSettings.LocalFaction()
 	var colour: Color = OUI.SideColor(viewer)
-	var pic: Texture2D = _Scene() if _page == 0 else OUI.Pic("battle_table%d" % (3 if _tab == 3 else 2))
+	var personnel: bool = _tab == _TabStems().size() - 1
+	var pic: Texture2D = (_AssaultScene() if _a != null else _Scene()) if _page == 0 else OUI.Pic("battle_table%d" % (3 if personnel else 2))
 	_oPicture.texture = pic
 	_oPicture.size = pic.get_size() if pic != null else Vector2.ZERO
-	OB.Line(_oBody, "Battle at %s" % _r.Where.Name, OB.ResultTitleCentre - 190, 22, 380, OB.TitlePx, colour,
-		HORIZONTAL_ALIGNMENT_CENTER, false, "Title")
+	if _a != null:
+		OB.Line(_oBody, _Title(), AssaultTitleCentre - 190, AssaultTitleCap, 380, AssaultTitlePx, colour,
+			HORIZONTAL_ALIGNMENT_CENTER, false, "Title")
+	else:
+		OB.Line(_oBody, _Title(), OB.ResultTitleCentre - 190, 22, 380, OB.TitlePx, colour,
+			HORIZONTAL_ALIGNMENT_CENTER, false, "Title")
+	if _page == 0 and _a != null:
+		var said := OB.Block(_oBody, AssaultManager.Sentence(_a), AssaultTextAt, AssaultTextW, AssaultTextPx, AssaultTextPitch,
+			colour, "Rest")
+		_Shadow(said)
+		return
 	if _page == 0:
 		var lines: Array[String] = OutcomeLines(_r, viewer)
 		OB.Line(_oBody, lines[0] if not lines.is_empty() else "", OB.OutcomeCentre - 200, OB.OutcomeY, 400, OB.OutcomePx, colour,
@@ -400,21 +633,25 @@ func _ShowPage() -> void:
 	# personnel) with the filter's name on its band and the columns' heads; in
 	# each column the units' pictures - burning where damaged - with their
 	# names under them, or "None" / "No Survivors" / "No Casualties".
-	var skin: String = "alliance" if _page == 1 else "empire"
-	var fleet: Fleet = _FleetOf(skin)
-	var losses: FleetBattleManager.Casualties = _r.MyLosses(viewer) if fleet == _r.Mine(viewer) else _r.EnemyLosses(viewer)
-	var side_colour: Color = OUI.SideColor(fleet.Faction) if fleet != null else Color.WHITE
-	OB.Line(_oBody, "%s Forces" % BattleResultsWindow.Adj(fleet), 211 - 150, 43, 300, 15.5, side_colour,
+	var skin: String = _Skins()[_page - 1]
+	var losses: FleetBattleManager.Casualties = _PageLosses(skin)
+	var page_side: Faction = _PageFaction(skin)
+	var side_colour: Color = OUI.SideColor(page_side) if page_side != null else (Color.WHITE if _a == null else OUI.SideColor(null))
+	OB.Line(_oBody, "%s Forces" % _PageName(skin), 211 - 150, 43, 300, 15.5, side_colour,
 		HORIZONTAL_ALIGNMENT_CENTER, false, "PageName")
-	OB.Line(_oBody, "Filters", 22, 74, 100, 12.5, Color.WHITE, HORIZONTAL_ALIGNMENT_RIGHT, false, "Filters")
-	var stems: Array = ["ency_tab_ship", "battle_filter_fighter", "ency_tab_troop", "ency_tab_personnel"]
-	var names: Array = ["Capital Ships", Terms.label("fighter_squadrons"), Terms.label("trooper_regiments"), "Personnel"]
+	# A battle's four tabs follow "Filters"; an assault's six fill the row
+	# (manual p123 Fig. 3.67, no "Filters").
+	if _a == null:
+		OB.Line(_oBody, "Filters", 22, 74, 100, 12.5, Color.WHITE, HORIZONTAL_ALIGNMENT_RIGHT, false, "Filters")
+	var stems: Array = _TabStems()
+	var names: Array = _TabNames()
 	for i in stems.size():
 		var tab := TextureButton.new()
 		tab.name = "Filter%d" % i
 		tab.texture_normal = _FilterTab(OUI.Tab(stems[i], _oSide, "pressed" if i == _tab else ""))
 		tab.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		tab.position = Vector2(FilterX + i * FilterPitch, FilterY) * OUI.K
+		tab.position = (Vector2(AssaultFilterX + i * AssaultFilterPitch, FilterY) if _a != null
+			else Vector2(FilterX + i * FilterPitch, FilterY)) * OUI.K
 		tab.size = tab.texture_normal.get_size() if tab.texture_normal != null else Vector2(49, 41) * OUI.K
 		tab.tooltip_text = names[i]
 		var which := i
@@ -423,16 +660,7 @@ func _ShowPage() -> void:
 			_ShowPage())
 		_oBody.add_child(tab)
 	OB.Line(_oBody, names[_tab], 38, 102, 300, 12.5, Color.WHITE, HORIZONTAL_ALIGNMENT_LEFT, false, "Band")
-	var columns: Array = []   # [head, texts, who, empty text]
-	match _tab:
-		0:
-			columns = [["Operational", "CapitalShipsOperational"], ["Destroyed", "CapitalShipsDestroyed"]]
-		1:
-			columns = [["Operational", "SquadronsOperational"], ["Destroyed", "SquadronsDestroyed"]]
-		2:
-			columns = [["Operational", "TroopsOperational"], ["Destroyed", "TroopsDestroyed"]]
-		_:
-			columns = [["Survivors", "PersonnelSurvivors"], ["Captured", "PersonnelCaptured"], ["Killed", "PersonnelKilled"]]
+	var columns: Array = _TabColumns(_tab)   # [head, the Casualties list]
 	# What each column holds: {name, picture, flames}. A damaged survivor burns
 	# (manual p153: "burn marks indicate they are damaged"), and so does every
 	# destroyed craft (TeeJ, 2026-09-24, his screenshot of the original: the
@@ -530,6 +758,25 @@ const MiniPitch := 40   # INFERRED: one person on TeeJ's screenshot
 const NameGap := 3
 const EmptyCap := 150
 
+## The Assault Summary, in the frame's pixels, matched to the pixel on TeeJ's
+## screenshot of the original's (2026-09-26; the Empire's frame, 10336, over
+## 11161): the close box at y 21; "Assault on <system>" Arial 21 centred on x
+## 211, capitals from y 17; the sentence Arial 16 (drawn here at 15.5, as
+## the battle texts are: at 16 the line ran 4% wide) from x 25, capitals from
+## y 228, a line every 18, wrapping short of "system" (the first line's 330
+## pixels fit, 386 do not). Its forces pages (Fig. 3.67, the manual's scan):
+## the six tabs from x 30, 62 apart (INFERRED from the scan).
+const AssaultCloseY := 21
+const AssaultTitleCentre := 211.0
+const AssaultTitleCap := 17.0
+const AssaultTitlePx := 21.0
+const AssaultTextAt := Vector2(25, 228)
+const AssaultTextW := 350.0
+const AssaultTextPx := 15.5
+const AssaultTextPitch := 18
+const AssaultFilterX := 30
+const AssaultFilterPitch := 62
+
 
 ## The filter tabs are FilterH rows, down to the band. The Personnel tab is the
 ## Encyclopedia's, 57 rows: its shadow runs on down that window's list, and
@@ -560,21 +807,22 @@ static func _EmptyText(i: int, count: int, lists: Array) -> String:
 	return "None"
 
 
-## An entry's picture: a unit's 122x50, a person's miniature.
+## An entry's picture: a unit's or a facility's 122x50, a person's miniature.
 static func _Picture(w: Dictionary) -> Texture2D:
 	var id: String = str(w.get("id", ""))
 	if id.is_empty():
 		return null
-	if str(w.get("kind", "")) == "characters":
+	var kind: String = str(w.get("kind", ""))
+	if kind == "characters":
 		return Art.Miniature("characters", id)
-	return Art.Portrait("units", id)
+	return Art.Portrait("facilities" if kind == "facilities" else "units", id)
 
 
 ## The flames drawn under a damaged or destroyed craft's picture (as the
 ## Status window draws them; TeeJ's screenshots: a damaged TIE, the lost Y-wing).
 static func _Flames(w: Dictionary) -> Texture2D:
 	var id: String = str(w.get("id", ""))
-	if id.is_empty() or str(w.get("kind", "")) == "characters":
+	if id.is_empty() or str(w.get("kind", "")) != "units":
 		return null
 	return Art.Portrait("units", id + ".damage")
 

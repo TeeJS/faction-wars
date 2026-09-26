@@ -1242,11 +1242,15 @@ func RefreshActiveWindows(_currentDay: int) -> void:
 	ShowPendingBattle()
 
 	# ...and any that finished get their Battle Results window, which the manual
-	# says appears after EVERY battle including simulated ones.
-	if not FleetBattleManager.Unreported().is_empty() and get_node_or_null("BattleResultsWindow") == null:
-		var done: FleetBattleManager.BattleReport = FleetBattleManager.Unreported()[0]
+	# says appears after EVERY battle including simulated ones - and an
+	# assault its Assault Summary, for the side that ordered it (manual p123).
+	while not FleetBattleManager.Unreported().is_empty() and get_node_or_null("BattleResultsWindow") == null:
+		var done: RefCounted = FleetBattleManager.Unreported()[0]
 		FleetBattleManager.MarkReported(done)
-		ShowBattleResults(done)
+		if done is AssaultManager.AssaultReport and (done as AssaultManager.AssaultReport).Attacker != GameSettings.LocalFaction():
+			continue   # the other side's: it reaches this one as a message
+		ShowReport(done)
+		break
 
 	for windowName in _openWindows.keys():
 		var window: DraggableWindow = _openWindows[windowName]
@@ -1529,11 +1533,40 @@ func ShowPendingBattle() -> void:
 func ShowBattleResults(report: FleetBattleManager.BattleReport) -> void:
 	if report == null:
 		return
+	var win := _NewResultsWindow()
+	win.Setup(report)
+	win.move_to_front()
+
+
+## The Assault Summary window (manual p123, Figs 3.66-3.67): the Battle
+## Results window's own frame and column (TeeJ, 2026-09-26: "it's what already
+## appears [after a] lost battle").
+func ShowAssaultSummary(report: AssaultManager.AssaultReport) -> void:
+	if report == null:
+		return
+	var win := _NewResultsWindow()
+	win.SetupAssault(report)
+	win.move_to_front()
+
+
+## A battle's or an assault's window, from a Conflict message or at once.
+func ShowReport(report: RefCounted) -> void:
+	if report is AssaultManager.AssaultReport:
+		ShowAssaultSummary(report)
+	elif report is FleetBattleManager.BattleReport:
+		ShowBattleResults(report)
+
+
+## One results window at a time: another's replaces it.
+func _NewResultsWindow() -> BattleResultsWindow:
+	var old: Node = get_node_or_null("BattleResultsWindow")
+	if old != null:
+		remove_child(old)
+		old.queue_free()
 	var win := BattleResultsWindow.new()
 	win.name = "BattleResultsWindow"
 	add_child(win)
-	win.Setup(report)
-	win.move_to_front()
+	return win
 
 
 ## "ALT-O Galaxy Overview" and the agent's own command (manual p030-p031, Fig. 2.17).

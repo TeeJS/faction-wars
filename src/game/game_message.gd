@@ -36,6 +36,14 @@ var IsRead: bool = false
 ## itself ("Do you wish the mission to continue?", manual p110).
 var PendingMission: Mission
 
+## The battle or assault this message reports (a FleetBattleManager.BattleReport
+## or an AssaultManager.AssaultReport). Opening the message opens its results
+## window, as the original's Conflict messages do: the Assault Summary "also is
+## available as a message when your opponent assaults one of your systems"
+## (manual p123; TeeJ's screenshot of the original, 2026-09-26). Messages are
+## not saved, so neither is this.
+var Report: RefCounted = null
+
 
 func _init(title: String = "", body: String = "", category: int = Enums.MessageCategory.All,
 		day: int = 0, planet: Location = null, character: Character = null) -> void:
@@ -53,6 +61,7 @@ func Copy() -> GameMessage:
 	var c := GameMessage.new(Title, Body, Category, DayReceived, AssociatedLocation, AssociatedCharacter)
 	c.Type = Type
 	c.PendingMission = PendingMission
+	c.Report = Report
 	return c
 
 
