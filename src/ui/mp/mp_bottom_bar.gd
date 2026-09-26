@@ -7,6 +7,9 @@ extends HBoxContainer
 signal proceed
 signal previous
 signal cancel
+## A button's state changed: the original-look screens draw their own buttons
+## from it (src/ui/mp/original_mp.gd).
+signal changed
 
 
 func _ready() -> void:
@@ -26,13 +29,16 @@ func set_previous(shown: bool, label: String = "Previous") -> void:
 	var b: Button = get_node("%BtnPrevious")
 	b.visible = shown
 	b.text = "<  %s" % label
+	changed.emit()
 
 
 func set_proceed(label: String) -> void:
 	(get_node("%BtnProceed") as Button).text = label
+	changed.emit()
 
 
 func set_proceed_enabled(enabled: bool, why: String = "") -> void:
 	var b: Button = get_node("%BtnProceed")
 	b.disabled = not enabled
 	b.tooltip_text = why
+	changed.emit()
