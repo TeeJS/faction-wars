@@ -20,6 +20,22 @@ class BombardmentReport:
 	var ShipsLost: Array = []
 	var Damaged: Array = []
 	var CivilianLoss: bool
+	## Who fought, for the results window (a Conflict message opens it, as an
+	## assault's does): the sides (Defender null for a neutral world), the
+	## fleet, and each side's forces by the window's six tabs.
+	var Attacker: Faction
+	var Defender: Faction
+	var Fleet: Fleet
+	var AttackerForces := FleetBattleManager.Casualties.new()
+	var DefenderForces := FleetBattleManager.Casualties.new()
+	# What was there before the first shot, to tell what the bombardment took.
+	var _ships: Array = []
+	var _facilities: Array = []
+	var _ground: Array = []
+
+	## Anything on the surface destroyed.
+	func HitTheGround() -> bool:
+		return not Destroyed.is_empty()
 
 
 ## ⚠ FITTED.
@@ -49,6 +65,12 @@ static func Bombard(fleet: Fleet, target: Planet, mode: int, rng: Prng, day: int
 	report.Target = target
 	if not CanBombard(fleet, target):
 		return report
+	report.Attacker = fleet.Faction
+	report.Defender = target.ControllingFaction
+	report.Fleet = fleet
+	report._ships = fleet.Ships.duplicate()
+	report._facilities = target.Facilities.duplicate()
+	report._ground = target.Garrison.duplicate() + target.FighterSquadrons.duplicate()
 
 	var ships := fleet.Ships.duplicate()
 
@@ -234,8 +256,64 @@ static func Announce(r: BombardmentReport, fleet: Fleet, mode: int, day: int) ->
 
 	var body := "\n".join(lines)
 	print("[Bombardment] %s (%s): %s" % [t.Name, JsonUtil.enum_name(BombardmentMode, mode), body.replace("\n", " ")])
-	EventBus.BroadcastMessage(GameMessage.new("Bombardment of %s" % t.Name, body, Enums.MessageCategory.Conflict, day, t))
+	Forces(r, fleet)
+	# Titled as the original's ("Orbital bombardment of |", TEXTSTRA.DLL
+	# 0xF778); opening it opens the results window, as an assault's does.
+	var msg := GameMessage.new("Orbital bombardment of %s" % t.Name, Sentence(r) + "\n\n" + body, Enums.MessageCategory.Conflict, day, t)
+	msg.Report = r
+	EventBus.BroadcastMessage(msg)
+	# "After bombardment, a window will display the bombardment effects"
+	# (p122): at once, for the side that ordered it (UIManager shows it only
+	# on that side's own client).
+	if attacker != null and GameSettings.IsHuman(attacker):
+		FleetBattleManager.AddUnreported(r)
 	EventBus.BroadcastChanged()
+
+
+## Each side's forces by the results window's tabs: the fleet's ships (lost to
+## the batteries, damaged, or whole) and its fighters; the world's facilities,
+## manufacturing or defensive by their roles, and its regiments and fighters -
+## what the bombardment destroyed, and what stood.
+static func Forces(r: BombardmentReport, fleet: Fleet) -> void:
+	var a := r.AttackerForces
+	for s in r._ships:
+		if s == null:
+			continue
+		var lost: bool = not fleet.Ships.has(s)
+		if s.Type == Enums.UnitType.CapitalShip:
+			a.add("CapitalShipsDestroyed" if lost else "CapitalShipsOperational", s.Name, "units", s.PackId, r.Damaged.has(s.Name) and not lost)
+		for h in s.Hangar:
+			if h != null and h.Type == Enums.UnitType.Fighter:
+				a.add("SquadronsDestroyed" if lost else "SquadronsOperational", h.Name, "units", h.PackId, false)
+	var d := r.DefenderForces
+	var t := r.Target
+	for f in r._facilities:
+		var defensive: bool = IsMilitary(f)
+		var gone: bool = not t.Facilities.has(f)
+		d.add(("Defense" if defensive else "Manufacturing") + ("Destroyed" if gone else "Operational"), f.Name(), "facilities", f.TypeId(), f.IsDamaged and not gone)
+	for u in r._ground:
+		if u == null:
+			continue
+		var gone: bool = not (t.Garrison.has(u) or t.FighterSquadrons.has(u))
+		var kind: String = "Squadrons" if u.Type == Enums.UnitType.Fighter else ("CapitalShips" if u.Type == Enums.UnitType.CapitalShip else "Troops")
+		d.add(kind + ("Destroyed" if gone else "Operational"), u.Name, "units", u.PackId, false)
+	for c in GameState.ActiveRoster:
+		if c.Status == Enums.Status.Dead:
+			continue
+		if c.Attached == fleet:
+			a.add("PersonnelSurvivors", c.Name if c.Rank == Enums.Rank.None else "%s %s" % [JsonUtil.enum_name(Enums.Rank, c.Rank), c.Name], "characters", c.PackId, false)
+		elif c.Attached == t and c.Faction == r.Defender:
+			d.add("PersonnelSurvivors", c.Name if c.Rank == Enums.Rank.None else "%s %s" % [JsonUtil.enum_name(Enums.Rank, c.Rank), c.Name], "characters", c.PackId, false)
+
+
+## The results' sentence, in the original's words (TEXTSTRA.DLL 0xF79E-0xF7EE):
+## "Imperial ships have conducted an orbital strike on the Alliance system of
+## Ghorman" / "... on the non-aligned system Ghorman".
+static func Sentence(r: BombardmentReport) -> String:
+	var att: String = AssaultManager.Adjective(r.Attacker)
+	if r.Defender == null:
+		return "%s ships have conducted an orbital strike on the non-aligned system %s" % [att, r.Target.Name]
+	return "%s ships have conducted an orbital strike on the %s system of %s" % [att, AssaultManager.Adjective(r.Defender), r.Target.Name]
 
 
 static func SectorPeers(p: Planet) -> Array:
