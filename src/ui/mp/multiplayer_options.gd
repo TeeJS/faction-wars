@@ -6,6 +6,64 @@ extends MpScreen
 ## disabled; every host choice is echoed into the chat view as a line from the
 ## host (the figure's "Darth Vader: Standard game victory selected."), which is
 ## how the guest learns the settings. The checkmark starts the game (host only).
+##
+## In the original's look when its screen is imported (original_mp.gd): the
+## original's Multiplayer Options screen (COMMON.DLL 10103), rearranged as
+## TeeJ chose (2026-09-26, mockup 2) to hold our two additions. A third row,
+## "What speed rule would you like?", is the side row's band again under the
+## galaxy-size row. Standard Game, HQ Victory and Load Game sit 62 lower, and
+## the chat box is 62 shorter: its message list goes from 4 lines to 2, and
+## the green-light strip under it is given up. The game code and Copy sit at
+## the right end of the Chat> bar (TeeJ's pick of three).
+
+const OriginalMp := preload("res://src/ui/mp/original_mp.gd")
+const Art := preload("res://src/ui/artwork.gd")
+const OUI := preload("res://src/ui/original_ui.gd")
+
+## The rearranged screen: each piece is [its first row, the row after its
+## last, the row it moves to], across the content between the left rail and
+## the frame (x 133-575).
+const PlateX := Vector2i(133, 575)
+const PlatePieces := [[62, 124, 186], [186, 256, 248], [256, 294, 318], [294, 326, 356], [366, 372, 388], [392, 400, 394]]
+## The rows under the new one moved down by this much.
+const Down := 62
+## The parts (px of the original's 640 x 480, measured on TeeJ's screenshot):
+## the questions green Arial 15.5 centred on x 258, capitals at y 82 and 145,
+## the speed row's at 82 + 124; the side symbols (36 x 36) at (389, 71) and
+## (440, 71), the galaxy sizes at x 389 / 440 / 491, y 133; the speed choices
+## in the new row's two empty slots, (389, 195) and (440, 195); the lamps
+## (29 x 27) at (142, 205) and (318, 205), their words Arial 13 centred on
+## x 231 and 407.5, capitals at 213; Load Game (48 x 43) at (502, 199);
+## "Chat>" at x 181, capitals at 266; the rest, the lower rows' parts, all
+## `Down` lower.
+const QuestionCentre := 258.0
+const QuestionTops := [82, 145, 206]
+const QuestionPx := 15.5
+const Questions := ["Which side do you want to play?", "What size galaxy would you like?", "What speed rule would you like?"]
+const SideAt := [Vector2(389, 71), Vector2(440, 71)]
+const SizeAt := [Vector2(389, 133), Vector2(440, 133), Vector2(491, 133)]
+const SizePictures := ["standard", "large", "huge"]
+const SpeedAt := [Vector2(389, 195), Vector2(440, 195)]
+const Slot := Vector2(36, 36)
+## Each speed choice's words in its slot: the lines, Arial 9, their capitals
+## this far down the slot.
+const SpeedWords := [[["Slowest", 11], ["wins", 22]], [["Average", 16]]]
+const SpeedPx := 9.0
+const LampAt := [Vector2(142, 205 + Down), Vector2(318, 205 + Down)]
+## The lamp and the bar of words beside it take the click.
+const LampHit := [Rect2(137, 200 + Down, 155, 36), Rect2(313, 200 + Down, 157, 36)]
+const LampWords := [[231.0, "Standard Game"], [407.5, "HQ Victory"]]
+const LampTop := 213 + Down
+const LoadAt := Vector2(502, 199 + Down)
+const ChatTop := 266 + Down
+const ChatX := 181
+const EntryX := 222
+const EntryW := 182
+const CodeX := 410
+const LogX := 150
+const LogTop := 297 + Down
+const LogW := 386
+const LogLines := 2
 
 const SizeNames: Array[String] = ["Standard", "Large", "Huge"]
 ## The win-condition tooltips are the PACK's words (pack.json victory_tips,
@@ -40,6 +98,13 @@ var _left: bool = false
 ## Joined a game that had already started (a rejoin by code, TeeJ room #110):
 ## the relay's whole log is pulled and the game rebuilt, as Load does.
 var _rejoining: bool = false
+## The original's look: its screen, and its parts per choice.
+var _look: OriginalMp
+var _oSides: Array = []
+var _oSizes: Array = []
+var _oSpeeds: Array = []
+var _oLamps: Array = []
+var _oLoad: TextureButton
 
 
 func _ready() -> void:
@@ -140,6 +205,9 @@ func _ready() -> void:
 	(get_node("%CodeValue") as Label).text = _lobby.code if not _lobby.code.is_empty() else "------"
 	(get_node("%BtnCopyCode") as Button).pressed.connect(_copy_code)
 
+	if _can_dress():
+		_dress()
+
 	# 5 The checkmark starts the game - host only.
 	bar().set_proceed("Start Game")
 	bar().set_previous(true, "Previous")
@@ -169,6 +237,8 @@ func _ready() -> void:
 			_lock(b)
 		load_btn.disabled = true
 		load_btn.tooltip_text = "Only the host loads a saved game."
+	_sync_load()
+	_refresh_look()
 	_refresh_start()
 	entry.grab_focus()
 
@@ -232,6 +302,7 @@ func _process(_delta: float) -> void:
 		var load_btn: Button = get_node("%BtnLoadGame")
 		load_btn.disabled = shared.is_empty()
 		load_btn.tooltip_text = "Load a game saved with your current opponent." if not shared.is_empty() else "Available once you have saved a game from a previous session with your current opponent."
+		_sync_load()
 	# Errors.
 	if not _lobby.last_error.is_empty():
 		show_error(_lobby.last_error.capitalize() + ".")
@@ -246,6 +317,178 @@ func _process(_delta: float) -> void:
 			_begin_load(str(_settings.get("load", "")))
 	if _loading:
 		_poll_load()
+
+
+# --- the original's look ---
+
+## True when the player imported the pictures this screen is made of.
+func _can_dress() -> bool:
+	if not OriginalMp.CanBuild("mp_options") or Art.ButtonIcon("mp_load") == null or Art.ButtonIcon("mp_start") == null:
+		return false
+	if FactionRegistry.Playable.size() < 2:
+		return false
+	for i in 2:
+		if Art.WindowPicture("mp_side.%s" % (FactionRegistry.Playable[i] as Faction).ArtSkin) == null:
+			return false
+	for s in SizePictures:
+		if Art.WindowPicture("mp_size.%s" % s) == null:
+			return false
+	return Art.WindowPicture("mp_lamp.on") != null and Art.WindowPicture("mp_lamp.off") != null
+
+
+## The original's screen with the speed row put in (PlatePieces).
+static func _plate() -> Texture2D:
+	var tex: Texture2D = Art.Screen("mp_options")
+	var src: Image = tex.get_image() if tex != null else null
+	if src == null:
+		return tex
+	var out: Image = src.duplicate()
+	for p in PlatePieces:
+		out.blit_rect(src, Rect2i(PlateX.x, p[0], PlateX.y - PlateX.x, p[1] - p[0]), Vector2i(PlateX.x, p[2]))
+	return ImageTexture.create_from_image(out)
+
+
+## The red corner brackets of a chosen galaxy size - the pixels that set its
+## chosen picture apart from the plain one - to mark the chosen speed rule the
+## same way.
+static func _brackets() -> Texture2D:
+	var on: Texture2D = Art.WindowPicture("mp_size.huge.chosen")
+	var off: Texture2D = Art.WindowPicture("mp_size.huge")
+	if on == null or off == null or on.get_size() != off.get_size():
+		return null
+	var a: Image = on.get_image()
+	var b: Image = off.get_image()
+	var out := Image.create(a.get_width(), a.get_height(), false, Image.FORMAT_RGBA8)
+	for y in a.get_height():
+		for x in a.get_width():
+			var ca: Color = a.get_pixel(x, y)
+			var cb: Color = b.get_pixel(x, y)
+			if ca.r > 0.6 and ca.g < 0.35 and absf(ca.r - cb.r) + absf(ca.g - cb.g) + absf(ca.b - cb.b) > 0.25:
+				out.set_pixel(x, y, ca)
+	return ImageTexture.create_from_image(out)
+
+
+func _dress() -> void:
+	_look = OriginalMp.Dress(self, "mp_options", _plate()) as OriginalMp
+	for i in Questions.size():
+		_look.Text(Questions[i], QuestionCentre - 150, QuestionTops[i], 300, QuestionPx, OriginalMp.Green, HORIZONTAL_ALIGNMENT_CENTER, "Question%d" % i)
+	for i in 2:
+		var f: Faction = FactionRegistry.Playable[i]
+		_oSides.append(_slot("Side%d" % i, SideAt[i], (_side_buttons[i] as Button).tooltip_text, "side", f.Id))
+	for i in SizeAt.size():
+		_oSizes.append(_slot("Size%d" % i, SizeAt[i], (_size_buttons[i] as Button).tooltip_text, "size", i))
+	var marks: Texture2D = _brackets()
+	for i in SpeedAt.size():
+		var b := _slot("Speed%d" % i, SpeedAt[i], (_speed_buttons[i] as Button).tooltip_text, "speed_rule", str(_speed_buttons[i].get_meta("id")))
+		var words: Array = []
+		for line in SpeedWords[i]:
+			var l: Label = _look.Text(line[0], SpeedAt[i].x, SpeedAt[i].y + line[1], Slot.x, SpeedPx, OriginalMp.Green, HORIZONTAL_ALIGNMENT_CENTER, "SpeedWords%d_%d" % [i, words.size()])
+			l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			words.append(l)
+		var mark := _look.Place(marks, SpeedAt[i].x, SpeedAt[i].y, "SpeedMark%d" % i)
+		b.set_meta("words", words)
+		b.set_meta("mark", mark)
+		_oSpeeds.append(b)
+	for i in 2:
+		var lamp := _look.Place(Art.WindowPicture("mp_lamp.off"), LampAt[i].x, LampAt[i].y, "Lamp%d" % i)
+		var words: Label = _look.Text(LampWords[i][1], LampWords[i][0] - 75, LampTop, 150, 13.0, OriginalMp.Green, HORIZONTAL_ALIGNMENT_CENTER, "LampWords%d" % i)
+		words.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var hit := Control.new()
+		hit.name = "LampHit%d" % i
+		hit.tooltip_text = _victory_tip(i == 1)
+		hit.mouse_filter = Control.MOUSE_FILTER_STOP
+		var hq: bool = i == 1
+		hit.gui_input.connect(func(e: InputEvent) -> void:
+			if e is InputEventMouseButton and e.pressed and e.button_index == MOUSE_BUTTON_LEFT:
+				_pick("hq_only", hq))
+		_look.Add(hit, LampHit[i])
+		_oLamps.append(lamp)
+	_oLoad = _look.PicButton("mp_load", LoadAt.x, LoadAt.y, "Load")
+	_oLoad.pressed.connect(_open_load_list)
+	# Chat> and the space to its right; the game code and Copy at the bar's end.
+	_look.Text("Chat>", ChatX, ChatTop, 40, 13.0, OriginalMp.Green, HORIZONTAL_ALIGNMENT_LEFT, "ChatLabel")
+	var entry: LineEdit = get_node("%ChatEntry")
+	entry.placeholder_text = ""
+	_look.Field(entry, EntryX, ChatTop, EntryW, 13.0, OriginalMp.Green)
+	var code_text := "Code: %s" % (_lobby.code if not _lobby.code.is_empty() else "------")
+	var code_w: float = OUI.Face(false).get_string_size(code_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 12).x
+	_look.Text(code_text, CodeX, ChatTop, code_w + 2, 12.0, OriginalMp.Green, HORIZONTAL_ALIGNMENT_LEFT, "Code")
+	var copy: Label = _look.Text("Copy", CodeX + code_w + 8, ChatTop, 30, 12.0, OriginalMp.Red, HORIZONTAL_ALIGNMENT_LEFT, "Copy")
+	copy.mouse_filter = Control.MOUSE_FILTER_STOP
+	copy.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	copy.tooltip_text = "Copy the game code, to give to your opponent."
+	copy.gui_input.connect(func(e: InputEvent) -> void:
+		if e is InputEventMouseButton and e.pressed and e.button_index == MOUSE_BUTTON_LEFT:
+			_copy_code())
+	_look.Log(_log, LogX, LogTop, LogW, LogLines, 12.0, 16.0, OriginalMp.Green)
+
+
+## One of the square choices: a picture button that makes the host's choice.
+func _slot(node_name: String, at: Vector2, tip: String, key: String, value: Variant) -> TextureButton:
+	var b := TextureButton.new()
+	b.name = node_name
+	b.ignore_texture_size = true
+	b.stretch_mode = TextureButton.STRETCH_SCALE
+	b.tooltip_text = tip
+	b.pressed.connect(func() -> void: _pick(key, value))
+	_look.Add(b, Rect2(at, Slot))
+	return b
+
+
+## A choice made on the original's screen: the host's alone, and not once a
+## saved game has fixed them.
+func _pick(key: String, value: Variant) -> void:
+	if _locked():
+		return
+	_host_change(key, value)
+	_reflect()
+
+
+func _locked() -> bool:
+	return not _host or _loading or (_side_buttons.size() > 0 and (_side_buttons[0] as Button).disabled)
+
+
+## The pictures for the choices as they stand: the chosen one lit; for a
+## player who cannot change them (the guest, or a loaded game), the others
+## greyed - the original's disabled pictures (INFERRED: which state the
+## original's guest sees is not on any screenshot).
+func _refresh_look() -> void:
+	if _look == null:
+		return
+	var locked := _locked()
+	var state := func(chosen: bool) -> String: return ".chosen" if chosen else (".grey" if locked else "")
+	for i in _oSides.size():
+		var skin: String = (FactionRegistry.Playable[i] as Faction).ArtSkin
+		var chosen: bool = str(FactionRegistry.Playable[i].Id) == str(_settings.get("side", ""))
+		_picture(_oSides[i], "mp_side.%s%s" % [skin, state.call(chosen)], "mp_side.%s" % skin)
+	for i in _oSizes.size():
+		var chosen: bool = i == int(_settings.get("size", 1))
+		_picture(_oSizes[i], "mp_size.%s%s" % [SizePictures[i], state.call(chosen)], "mp_size.%s" % SizePictures[i])
+	for i in _oSpeeds.size():
+		var b: TextureButton = _oSpeeds[i]
+		var chosen: bool = str((_speed_buttons[i] as Button).get_meta("id")) == str(_settings.get("speed_rule", "slowest"))
+		for l in b.get_meta("words"):
+			(l as Label).add_theme_color_override("font_color", OriginalMp.Red if chosen else (OriginalMp.Grey if locked else OriginalMp.Green))
+		(b.get_meta("mark") as Control).visible = chosen
+	var hq := bool(_settings.get("hq_only", false))
+	for i in _oLamps.size():
+		var on: bool = (i == 1) == hq
+		var pic: Texture2D = Art.WindowPicture("mp_lamp.on" if on else ("mp_lamp.grey" if locked else "mp_lamp.off"))
+		(_oLamps[i] as TextureRect).texture = pic if pic != null else Art.WindowPicture("mp_lamp.off")
+
+
+static func _picture(b: TextureButton, pic: String, fallback: String) -> void:
+	var tex: Texture2D = Art.WindowPicture(pic)
+	b.texture_normal = tex if tex != null else Art.WindowPicture(fallback)
+
+
+## Load Game on the original's screen follows the plain button.
+func _sync_load() -> void:
+	if _oLoad == null:
+		return
+	var load_btn: Button = get_node("%BtnLoadGame")
+	_oLoad.disabled = load_btn.disabled
+	_oLoad.tooltip_text = load_btn.tooltip_text
 
 
 ## A choice the guest may see but not touch: drawn as on the host's screen.
@@ -287,6 +530,7 @@ func _reflect() -> void:
 	_victory_buttons[1].button_pressed = bool(_settings.get("hq_only", false))
 	for b in _speed_buttons:
 		b.button_pressed = str(b.get_meta("id")) == str(_settings.get("speed_rule", "slowest"))
+	_refresh_look()
 
 
 ## The figure's wording: "Standard game victory selected." "Small galaxy size
@@ -406,9 +650,9 @@ func _open_load_list() -> void:
 		_settings["load_name"] = str(s.get("name", ""))
 		_settings["load_day"] = int(s.get("day", 0))
 		_lobby.set_settings(_settings)
-		_reflect()
 		for b in _side_buttons + _size_buttons + _victory_buttons + _speed_buttons:
 			b.disabled = true
+		_reflect()
 		_echo("load")
 		dlg.queue_free())
 	dlg.canceled.connect(func() -> void: dlg.queue_free())
