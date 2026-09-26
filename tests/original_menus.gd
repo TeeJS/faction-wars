@@ -3,7 +3,9 @@ extends SceneTree
 ## menu in play gets the original's box, its font and its 20-pixel rows; an
 ## item that opens a submenu gets the caret, in the side's colour at half
 ## strength; the Speed Control's menu has each speed's bars and its name, the
-## speed in force in the side's colour. Needs the original's art.
+## speed in force in the side's colour; the item under the mouse in the
+## side's colour, and a ticked item the original's tick. Needs the original's
+## art.
 ##
 ##   .\tools\run-gd.ps1 tests/original_menus.gd
 
@@ -67,6 +69,28 @@ func _init() -> void:
 		"the caret is the side's colour at half strength (%s)" % tip)
 	_check(menu.get_theme_constant("item_start_padding") + menu.get_theme_stylebox("panel").content_margin_left == OriginalMenu.CaretX * OUI.K,
 		"the caret %d pixels in" % OriginalMenu.CaretX)
+
+	# The item under the mouse in the side's colour, nothing behind it (the
+	# original's agent menu, captured); a ticked item's mark the original's,
+	# its words still 27 in (manual p077 Fig 3.17).
+	_check(menu.get_theme_color("font_hover_color") == OUI.SideColor(GameSettings.PlayerFaction)
+		and menu.get_theme_stylebox("hover") is StyleBoxEmpty, "the item under the mouse in the side's colour")
+	if OriginalMenu.Tick() != null:
+		var ticked := PopupMenu.new()
+		ticked.add_item("Galaxy Overview", 0)
+		ticked.add_check_item("Manage Garrisons", 1)
+		ticked.set_item_checked(1, true)
+		ui.add_child(ticked)
+		ticked.popup()
+		await process_frame
+		var tick: Texture2D = ticked.get_theme_icon("checked")
+		var textAt: int = ticked.get_theme_stylebox("panel").content_margin_left + ticked.get_theme_constant("item_start_padding") 			+ tick.get_width() + ticked.get_theme_constant("h_separation")
+		_check(tick == OriginalMenu.Tick() and textAt == OriginalMenu.TextX * OUI.K,
+			"a ticked item has the original's tick, the words %d in (%d at the drawn scale)" % [OriginalMenu.TextX, textAt])
+		var plainRow: int = ceili(face.get_height(ticked.get_theme_font_size("font_size"))) + ticked.get_theme_constant("v_separation")
+		_check(tick.get_height() <= ceili(face.get_height(ticked.get_theme_font_size("font_size"))) and plainRow == OriginalMenu.Pitch * OUI.K,
+			"the tick no taller than a row's words, so its row is %d too" % OriginalMenu.Pitch)
+		ticked.hide()
 
 	# A text field's own menu keeps the engine's look.
 	var field := LineEdit.new()

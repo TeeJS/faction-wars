@@ -44,6 +44,14 @@ static func NameFor(f: Faction) -> String:
 	return "Agent"
 
 
+## The side's message droid's name (factions.json `messenger_name`; R2-D2
+## and SD-7 in the Star Wars pack), for its tooltip.
+static func MessengerFor(f: Faction) -> String:
+	if f != null and not f.MessengerName.is_empty():
+		return f.MessengerName
+	return "Message droid"
+
+
 static func ProcessDay(galaxy: Array, day: int) -> void:
 	if galaxy == null:
 		return

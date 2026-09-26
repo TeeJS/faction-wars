@@ -19,6 +19,8 @@ var Seed: PackDefs.FactionSeedDef
 var Victory: PackDefs.VictoryDef
 ## The side's agent droid / adviser, as the pack names it (manual p030, Fig. 2.16).
 var AgentName: String = ""
+## The side's message droid, as the pack names it (R2-D2, SD-7: manual p078).
+var MessengerName: String = ""
 ## Which of the art set's side looks this faction wears (factions.json `skin`,
 ## docs/original-art-plan.md): the original's pictures are keyed by it, never
 ## by the id, so a Separatist side can wear the Empire's. Defaults to the id.
@@ -46,6 +48,7 @@ static func FromPack(def: PackDefs.FactionDef) -> Faction:
 	f.Seed = def.Seed
 	f.Victory = def.Victory
 	f.AgentName = def.AgentName
+	f.MessengerName = def.MessengerName
 	f.ArtSkin = def.ArtSkin if not def.ArtSkin.is_empty() else def.Id
 	f.Adjective = def.Adjective if not def.Adjective.is_empty() else def.DisplayName
 	f.ShortName = def.ShortName if not def.ShortName.is_empty() else def.DisplayName

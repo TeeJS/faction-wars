@@ -166,6 +166,11 @@ func BuildCommandFrame(side: String) -> void:
 	frameLayer.add_child(frame)
 	frame.Build(side, screen,
 		func(category: String) -> void: OnMessageIndexClicked(category), OnMenuButtonClicked)
+	var us: Faction = GameSettings.PlayerFaction
+	frame.AddDroids(AgentDroid.NameFor(us), AgentDroid.MessengerFor(us),
+		func(at: Vector2) -> void: OpenAgentMenuAt(at),
+		func() -> void: OnMessageIndexClicked("All"),
+		func(at: Vector2) -> void: OpenMessengerMenuAt(at))
 	CommandFrameRef = frame
 	MapFrame = frame.MapWindow()
 	layer = WindowsLayer
@@ -1328,12 +1333,12 @@ func ResolveTarget(targetPlanet: Planet) -> void:
 ## "Right-clicking your agent droid (C-3PO for the Alliance, IMP-22 for the
 ## Empire) gives: Build Ships, Build Troops, Build Facilities, Galaxy Overview,
 ## Objectives, Manage Garrisons, Manage Production, Translate Counterpart, Agent
-## Advice." All nine appear, in the manual's order; four are disabled and say why.
-func OpenAgentMenu(anchor: Button) -> void:
+## Advice." All nine appear, in the manual's order and with no separators (Fig
+## 3.17); five are disabled and say why. Under the Command Center frame the
+## droid itself opens it, at the click (OpenAgentMenuAt); otherwise the bottom
+## row's button does. Styled as the original's menus are (original_menu.gd).
+func _AgentPopup() -> PopupMenu:
 	var us: Faction = GameSettings.PlayerFaction
-	if us == null:
-		return
-
 	var popup: PopupMenu = get_node_or_null("AgentPopup")
 	if popup == null:
 		popup = PopupMenu.new()
@@ -1345,13 +1350,10 @@ func OpenAgentMenu(anchor: Button) -> void:
 	popup.add_item("Build Ships", 0)
 	popup.add_item("Build Troops", 1)
 	popup.add_item("Build Facilities", 2)
-	popup.add_separator()
 	popup.add_item("Galaxy Overview", 3)
 	popup.add_item("Objectives", 4)
-	popup.add_separator()
 	popup.add_check_item("Manage Garrisons", 5)
 	popup.add_check_item("Manage Production", 6)
-	popup.add_separator()
 	popup.add_item("Translate Counterpart", 7)
 	popup.add_item("Agent Advice", 8)
 
@@ -1364,12 +1366,70 @@ func OpenAgentMenu(anchor: Button) -> void:
 	popup.set_item_tooltip(popup.get_item_index(0), "Order ships from a shipyard's own menu.")
 	popup.set_item_tooltip(popup.get_item_index(1), "Order troops from a training facility's own menu.")
 	popup.set_item_tooltip(popup.get_item_index(2), "Order facilities from a construction yard's own menu.")
-	popup.set_item_tooltip(popup.get_item_index(7), "Not built - there is no counterpart droid.")
+	popup.set_item_tooltip(popup.get_item_index(7), "Not built - the message droid's announcements are not voiced.")
 	popup.set_item_tooltip(popup.get_item_index(8), "Not built.")
+	return popup
 
+
+func OpenAgentMenu(anchor: Button) -> void:
+	if GameSettings.PlayerFaction == null:
+		return
+	var popup: PopupMenu = _AgentPopup()
 	var at: Vector2 = anchor.get_screen_position() + Vector2(0, -popup.size.y)
 	popup.position = Vector2i(at)
 	popup.popup()
+
+
+## The agent's menu at a right-click on the droid (the Command Center frame's).
+func OpenAgentMenuAt(at: Vector2) -> void:
+	if GameSettings.PlayerFaction == null:
+		return
+	_PopupAt(_AgentPopup(), at)
+
+
+## THE MESSAGE DROID'S MENU (manual p078): "right-click on the message droid
+## and select Messages" - the Display Message Index, as F6 opens it. Its other
+## item, "Message Alerts" (TEXTSTRA 12573, beside "Messages" 12572), the manual
+## never describes: grey until it is known.
+func OpenMessengerMenuAt(at: Vector2) -> void:
+	var popup: PopupMenu = get_node_or_null("MessengerPopup")
+	if popup == null:
+		popup = PopupMenu.new()
+		popup.name = "MessengerPopup"
+		add_child(popup)
+		popup.add_item("Messages", 0)
+		popup.add_item("Message Alerts", 1)
+		popup.set_item_disabled(1, true)
+		popup.set_item_tooltip(1, "Not built - the manual does not say what it does.")
+		popup.id_pressed.connect(func(id: int) -> void:
+			if id == 0:
+				OnMessageIndexClicked("All"))
+	_PopupAt(popup, at)
+
+
+## A menu opened at a click, down and right of it, flipped to stay on the
+## frame (the original's 640x480) as a Windows menu flips - the Alliance's
+## agent menu opened up and left of C-3PO, the Empire's up and right of IMP-22
+## (captures of the original, open-rebellion 0896 / 0620).
+func _PopupAt(popup: PopupMenu, at: Vector2) -> void:
+	popup.reset_size()
+	var box := Vector2(popup.size)
+	var screen: Rect2 = CommandFrameRef.ScreenRect() if CommandFrameRef != null else get_viewport().get_visible_rect()
+	var p := at
+	if p.x + box.x > screen.end.x:
+		p.x = at.x - box.x
+	if p.y + box.y > screen.end.y:
+		p.y = at.y - box.y
+	p.x = clampf(p.x, screen.position.x, maxf(screen.position.x, screen.end.x - box.x))
+	p.y = clampf(p.y, screen.position.y, maxf(screen.position.y, screen.end.y - box.y))
+	popup.position = Vector2i(p.floor())
+	popup.popup()
+
+
+## The droids stand in the Command Center frame (the bottom row's agent
+## button then goes: the droid is the way to its menu).
+func HasDroids() -> bool:
+	return CommandFrameRef != null and not CommandFrameRef.Droids().is_empty()
 
 
 func OnAgentMenu(id: int) -> void:

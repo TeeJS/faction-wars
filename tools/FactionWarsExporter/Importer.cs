@@ -36,6 +36,10 @@ namespace FactionWarsExporter;
 ///     10337/10338/10822), the tab icons of the Manufacturing, Defenses and
 ///     Message Index windows, and the title-bar, Encyclopedia and scrollbar
 ///     buttons - see the tables below for every id.
+///   ALSPRITE.DLL /      the droids: an 8-bit RT_BITMAP anchor frame, then
+///   EMSPRITE.DLL        type-302 frames, each a delta on the frame before
+///                       (DroidRuns; the format as decoded by open-rebellion,
+///                       scripts/sprites/type302.py, MIT). Index 0 = clear.
 ///
 /// Output: an ART SET (docs/original-art-plan.md) - these paths, relative to
 /// its root, written through an ArtSink (a .zip, a folder, or hashes only).
@@ -52,6 +56,7 @@ namespace FactionWarsExporter;
 ///   original/alerts/&lt;faction&gt;.&lt;category&gt;.png (+ .lit.png)   the Message Alert bar
 ///   original/planet_sprites/&lt;artwork_id&gt;.png              the map's planets
 ///   original/windows/&lt;name&gt;.png                            window pictures
+///   original/windows/droid_&lt;agent|messenger&gt;.&lt;faction&gt;.png   the droids' idle runs, frames side by side
 ///   original/tabs/&lt;name&gt;[.&lt;faction&gt;].png (+ .pressed / .grey)   window tab icons
 ///   original/buttons/&lt;name&gt;.png (+ .pressed / .disabled)       window buttons
 ///   original/cursors/pointer.png, crosshair.png, hotspots.json   the mouse pointers (REBEXE.EXE)
@@ -104,6 +109,24 @@ public sealed class Importer
         ("gid_key_alliance", 10243, true), ("gid_key_empire", 10241, true),
         ("gid_key_neutral", 10245, true), ("gid_key_unexplored", 10158, true),
     };
+
+    // THE DROIDS (manual p022 Fig 2.3, p077-p078): the agent (C-3PO, IMP-22)
+    // and the message droid (R2-D2, SD-7), each its idle run - the anchor
+    // bitmap, then the type-302 frames first..last, each a delta on the one
+    // before (open-rebellion's "authored families"; the chain stops at the
+    // first missing frame, as the original's does). Written as one strip,
+    // frames side by side.
+    private static readonly (string Dll, string Name, int Anchor, int First, int Last)[] DroidRuns =
+    {
+        ("ALSPRITE.DLL", "droid_agent.alliance", 2001, 2002, 2024),
+        ("ALSPRITE.DLL", "droid_messenger.alliance", 3331, 3332, 3346),
+        ("EMSPRITE.DLL", "droid_agent.empire", 2001, 2002, 2016),
+        ("EMSPRITE.DLL", "droid_messenger.empire", 3001, 3002, 3016),
+    };
+
+    // The original's menus' check mark (the droids' menus, manual p077 Fig
+    // 3.17): white with a black shadow, 20x20, blue keyed.
+    public const int MenuCheckBitmap = 11902;
 
     // Full-screen pictures (docs/original-art-plan.md, phase 0): the Shuttle
     // Cockpit, the Star Wars pack's menu picture (manual p021 Fig 2.2), in
@@ -727,6 +750,22 @@ public sealed class Importer
             if (SaveSprite(strategy, id, P("windows", $"{name}.png"), keyBlack: keyBlack)) pictureCount++;
             else missing.Add($"windows/{name}: no bitmap {id} in STRATEGY.DLL");
         }
+        if (SaveSprite(strategy, MenuCheckBitmap, P("windows", "menu_check.png"))) pictureCount++;
+        else missing.Add($"windows/menu_check: no bitmap {MenuCheckBitmap} in STRATEGY.DLL");
+        int droids = 0;
+        var droidDlls = new Dictionary<string, PeResources?>();
+        foreach (var (dllName, name, anchor, first, last) in DroidRuns)
+        {
+            if (!droidDlls.TryGetValue(dllName, out var dll))
+            {
+                var path = Path.Combine(_gameDir, dllName);
+                dll = File.Exists(path) ? new PeResources(path) : null;
+                droidDlls[dllName] = dll;
+            }
+            if (dll != null && SaveDroidRun(dll, anchor, first, last, P("windows", $"{name}.png"))) { droids++; pictureCount++; }
+            else missing.Add($"windows/{name}: no bitmap {anchor} in {dllName}");
+        }
+        Say($"droids: {droids} (ALSPRITE / EMSPRITE.DLL).");
         if (SaveSprite(strategy, UprisingFrame1, P("icons", "uprising.png"))) pictureCount++;
         else missing.Add($"icons/uprising: no bitmap {UprisingFrame1} in STRATEGY.DLL");
         if (SaveSprite(strategy, UprisingFrame2, P("icons", "uprising.hover.png"))) pictureCount++;
@@ -1045,6 +1084,99 @@ public sealed class Importer
             foreach (var b in bitmaps)
                 b.Dispose();
         }
+    }
+
+    /// <summary>A droid's idle run as one strip: the anchor (an uncompressed
+    /// 8-bit DIB), then each type-302 frame first..last applied to the frame
+    /// before - a 17-byte header (u16 width, u16 height, u32 payload size, the
+    /// rest unused), a u32 offset into the payload for each row, and per row runs
+    /// that alternate skip / change, a change's bytes ADDED (mod 256) to the
+    /// palette indices under them. Index 0 is clear. The format as decoded by
+    /// open-rebellion (scripts/sprites/type302.py, MIT); the chain stops at
+    /// the first missing or malformed frame, keeping the ones before.</summary>
+    private bool SaveDroidRun(PeResources dll, int anchor, int first, int last, string outPath)
+    {
+        if (!dll.Bitmaps.ContainsKey(anchor))
+            return false;
+        var dib = dll.BitmapDib(anchor);
+        int headerSize = BitConverter.ToInt32(dib, 0);
+        int w = BitConverter.ToInt32(dib, 4), hSigned = BitConverter.ToInt32(dib, 8);
+        int bpp = BitConverter.ToUInt16(dib, 14), compression = BitConverter.ToInt32(dib, 16);
+        if (bpp != 8 || compression != 0 || w <= 0 || hSigned == 0)
+            return false;
+        int h = Math.Abs(hSigned);
+        int colours = BitConverter.ToInt32(dib, 32);
+        if (colours == 0) colours = 256;
+        var palette = new Color[256];
+        for (int i = 0; i < 256; i++)
+            palette[i] = i < colours
+                ? Color.FromArgb(255, dib[headerSize + i * 4 + 2], dib[headerSize + i * 4 + 1], dib[headerSize + i * 4])
+                : Color.Black;
+        int pixels = headerSize + colours * 4, stride = (w + 3) & ~3;
+        var index = new byte[w * h];
+        for (int row = 0; row < h; row++)
+        {
+            int src = hSigned > 0 ? h - 1 - row : row;   // bottom-up unless the height is negative
+            Buffer.BlockCopy(dib, pixels + src * stride, index, row * w, w);
+        }
+        var frames = new List<byte[]> { (byte[])index.Clone() };
+        for (int id = first; id <= last && dll.DroidFrames.ContainsKey(id); id++)
+        {
+            var next = ApplyDroidFrame(dll.DroidFrameBytes(id), w, h, frames[^1]);
+            if (next == null)
+                break;
+            frames.Add(next);
+        }
+        using var strip = new Bitmap(w * frames.Count, h, PixelFormat.Format32bppArgb);
+        for (int f = 0; f < frames.Count; f++)
+            for (int y = 0; y < h; y++)
+                for (int x = 0; x < w; x++)
+                {
+                    byte i = frames[f][y * w + x];
+                    strip.SetPixel(f * w + x, y, i == 0 ? Color.Transparent : palette[i]);
+                }
+        _sink.Write(outPath, Png(strip));
+        return true;
+    }
+
+    /// <summary>One type-302 frame on the frame before it, or null when it is
+    /// not a frame of that size or runs past its own data.</summary>
+    private static byte[]? ApplyDroidFrame(byte[] data, int w, int h, byte[] before)
+    {
+        const int Header = 17;
+        if (data.Length < Header + h * 4)
+            return null;
+        if (BitConverter.ToUInt16(data, 0) != w || BitConverter.ToUInt16(data, 2) != h)
+            return null;
+        int payload = Header + h * 4;
+        if (data.Length - payload != BitConverter.ToInt32(data, 4))
+            return null;
+        var index = (byte[])before.Clone();
+        for (int row = 0; row < h; row++)
+        {
+            int at = payload + BitConverter.ToInt32(data, Header + row * 4);
+            int x = 0;
+            bool change = false;
+            while (x < w)
+            {
+                if (at >= data.Length)
+                    return null;
+                int n = data[at++];
+                if (x + n > w)
+                    return null;
+                if (change)
+                {
+                    if (at + n > data.Length)
+                        return null;
+                    for (int k = 0; k < n; k++)
+                        index[row * w + x + k] = (byte)(index[row * w + x + k] + data[at + k]);
+                    at += n;
+                }
+                x += n;
+                change = !change;
+            }
+        }
+        return index;
     }
 
     private bool SavePicture(PeResources pictures, int encyId, string outPath)

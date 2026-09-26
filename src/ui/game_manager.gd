@@ -240,10 +240,13 @@ func _ready() -> void:
 		encyBtn.pressed.connect(func() -> void: _uiManager.OpenEncyclopedia())
 
 	# THE AGENT DROID. "C-3PO for the Alliance, IMP-22 for the Empire" (manual
-	# p031). The manual's gesture is a RIGHT-CLICK on the droid itself; there is
-	# no droid sprite on the bar, so this is a button that opens the same menu.
+	# p031). The manual's gesture is a RIGHT-CLICK on the droid itself; without
+	# the Command Center frame's droids this is a button that opens the same
+	# menu, and with them it goes (the droid stands in the frame).
 	var chosenFaction: Faction = GameSettings.PlayerFaction
 	var agentBtn := Button.new()
+	agentBtn.name = "AgentButton"
+	agentBtn.visible = not _uiManager.HasDroids()
 	agentBtn.text = AgentDroid.NameFor(chosenFaction)
 	agentBtn.tooltip_text = "Agent droid: overview, objectives, and the two management automations."
 	agentBtn.pressed.connect(func() -> void: _uiManager.OpenAgentMenu(agentBtn))
