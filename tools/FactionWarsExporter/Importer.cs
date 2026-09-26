@@ -274,6 +274,12 @@ public sealed class Importer
         ("battle_result_none", 10763), ("battle_table2", 10761), ("battle_table3", 10762),
         ("battle_thumb_top.alliance", 10706), ("battle_thumb_mid.alliance", 10707), ("battle_thumb_bottom.alliance", 10708),
         ("battle_thumb_top.empire", 10754), ("battle_thumb_mid.empire", 10755), ("battle_thumb_bottom.empire", 10756),
+        // The Assault Summary (manual p123 Fig. 3.66): the 400x310 scene under
+        // the results' frame - the Empire's walkers holding a world (11161, on
+        // TeeJ's screenshot of "Imperial troops have taken control ...",
+        // matched to the pixel); the Alliance's speeders in a taken city
+        // (11160) and a world still under its shield (11162) by what they show.
+        ("assault_captured.alliance", 11160), ("assault_captured.empire", 11161), ("assault_repulsed", 11162),
         // A Status window (manual p064: modal, no title bar, closed by its
         // diamond): the 379x272 plate per side - the field panel with the
         // side's emblem, the picture and name grids, the button sockets - and
@@ -391,6 +397,9 @@ public sealed class Importer
         ("ency_tab_missions", "alliance", 11616, 11615, 0), ("ency_tab_missions", "empire", 11618, 11617, 0),
         ("ency_tab_troop", "alliance", 10352, 10351, 0), ("ency_tab_troop", "empire", 10362, 10361, 0),
         ("ency_tab_personnel", "alliance", 10346, 10345, 0), ("ency_tab_personnel", "empire", 10358, 10357, 0),
+        // The Assault Summary's defensive facilities tab (p123 Fig. 3.67): the
+        // tower, one for both sides like All and Systems (the blue current).
+        ("ency_tab_defense", "", 10342, 10341, 0),
         // Manufacturing (p084 Fig 3.27), 36x33, in the window's order.
         ("manufacturing", "alliance", 10312, 10311, 10313), ("manufacturing", "empire", 10315, 10314, 10316),
         ("manufacturing", "neutral", 10318, 10317, 10319),

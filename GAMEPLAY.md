@@ -2610,6 +2610,21 @@ category: **trooper regiments** (operational vs destroyed), **capital ships**,
 loss categories — so an assault damages the *planet's* facilities too, not just
 the armies.
 
+**The window as the original draws it** (TeeJ's screenshot of the Empire
+taking Ghorman, 2026-09-26, matched to the pixel; Figs 3.66-3.67):
+
+| Part | What |
+|---|---|
+| Frame, column | the Battle Results window's: the viewer's frame (10336), close box at y 21, **Summary**, **Imperial Forces** over **Alliance Forces** with the Empire attacking (10742 over 10740), **Goto System** |
+| Title | "Assault on \|" (TEXTSTRA.DLL 0xF664), Arial 21, the viewer's colour |
+| Scene | STRATEGY.DLL 11161, the walkers, for the Empire's capture. 11160 (Alliance speeders) and 11162 (a shielded world) are **inferred** for the Alliance's capture and a failed assault |
+| Sentence | TEXTSTRA.DLL 0xF67E-0xF76E: "\| troops have taken control of the \| system \|", "\| Troops have defended \| from an \| assault.", "\| troops have seized control of the neutral system \|", "The neutral system \| has repulsed an attack by \| troops." Arial 16 with a 1-px black shadow, from (25, 228) |
+| Message | the same title under **Conflict Messages**, for the attacker too; opening it opens this window |
+| Forces pages | six tabs in Fig. 3.67's order: capital ships, fighters, manufacturing facilities, defensive facilities, trooper regiments (open by default), personnel |
+
+Single-source for the column order: both known cases have the Empire
+attacking, so "attacker first" and "Empire first" both fit.
+
 ### Blockades — the mechanism *(PDF p122 / manual p124)*
 
 > **Any time a fleet is in orbit above an enemy or neutral system, that fleet

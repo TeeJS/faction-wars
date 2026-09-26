@@ -16,6 +16,13 @@ class Casualties:
 	var PersonnelSurvivors: Array = []
 	var PersonnelCaptured: Array = []
 	var PersonnelKilled: Array = []
+	## An assault's two facility tabs (manual p123: "The other tabs summarize
+	## damage for capital ships, fighters, manufacturing and defensive
+	## facilities, and personnel"). A battle leaves them empty.
+	var ManufacturingOperational: Array = []
+	var ManufacturingDestroyed: Array = []
+	var DefenseOperational: Array = []
+	var DefenseDestroyed: Array = []
 	## Who each entry is, for the results' pictures: per list's name, in the
 	## same order, {kind, id, damaged} (manual p153 Fig. 4.18: "burn marks
 	## indicate they are damaged").
@@ -113,11 +120,19 @@ static func HasPendingBattle() -> bool:
 	return _awaiting_orders.size() > 0
 
 
+## The results windows still to pop up: battles, and the assaults a human
+## ordered (AssaultManager.Resolve) - "Any time a fleet attempts to take over a
+## system by planetary assault, the Assault Summary window comes up" (manual
+## p123). UIManager shows them one at a time.
 static func Unreported() -> Array:
 	return _unreported
 
 
-static func MarkReported(r: BattleReport) -> void:
+static func AddUnreported(r: RefCounted) -> void:
+	_unreported.append(r)
+
+
+static func MarkReported(r: RefCounted) -> void:
 	_unreported.erase(r)
 
 
@@ -312,11 +327,17 @@ static func Simulate(r: BattleReport, day: int) -> void:
 		extra = "\n\nA gravity well projector held the losing fleet in place. It could not withdraw."
 	elif r.LoserWithdrew:
 		extra = "\n\nThe losing fleet withdrew to the nearest system its side holds."
-	var msg := GameMessage.new("Conflict at %s" % r.Where.Name,
+	# A Conflict message titled as its results window is ("Battle at |",
+	# TEXTSTRA.DLL 0xE758), which opening it brings up (TeeJ, 2026-09-26: a
+	# conflict message "opens the actual assault/battle screen"). INFERRED from
+	# the original's assault message, "Assault on <system>" under Conflict
+	# Messages on TeeJ's screenshot; no battle message has been seen.
+	var msg := GameMessage.new("Battle at %s" % r.Where.Name,
 		r.Summary + "\n\nStrength: %s %d, %s %d." % [r.Ours.Name, s0, r.Theirs.Name, s1] + extra
 			+ (("\n\nDestroyed: %s" % Lq.join(r.Destroyed)) if not r.Destroyed.is_empty() else "\n\nNo casualties."),
-		Enums.MessageCategory.Missions, day, r.Where)
+		Enums.MessageCategory.Conflict, day, r.Where)
 	msg.Type = Enums.MessageType.TacticalAfterActionReport
+	msg.Report = r
 	for k in audiences.size():
 		EventBus.Tell(audiences[k], msg if k == 0 else msg.Copy())
 
