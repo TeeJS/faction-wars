@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- DEV ONLY, never shipped: proves the exporter's Smacker decoder
+       (../FactionWarsExporter/Smacker.cs) against FFmpeg's decode of the same
+       movie, frame by frame and sample by sample (docs/cutscenes-plan.md,
+       phase 1). It reads FFmpeg's per-frame MD5 list; it runs nothing. See
+       Program.cs for the commands. -->
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>FactionWarsExporter</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\FactionWarsExporter\Smacker.cs" Link="Smacker.cs" />
+  </ItemGroup>
+
+</Project>
