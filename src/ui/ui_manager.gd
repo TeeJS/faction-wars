@@ -171,6 +171,13 @@ func BuildCommandFrame(side: String) -> void:
 		func(at: Vector2) -> void: OpenAgentMenuAt(at),
 		func() -> void: OnMessageIndexClicked("All"),
 		func(at: Vector2) -> void: OpenMessengerMenuAt(at))
+	frame.AddConsoles({
+		"system_finder": func() -> void: OpenPlanetFinder(),
+		"fleet_finder": func() -> void: OpenFleetFinder(),
+		"troop_finder": func() -> void: OpenTroopFinder(),
+		"personnel_finder": func() -> void: OpenPersonnelFinder(),
+		"encyclopedia": func() -> void: OpenEncyclopedia(),
+	})
 	CommandFrameRef = frame
 	MapFrame = frame.MapWindow()
 	layer = WindowsLayer
@@ -257,9 +264,56 @@ func _FitBottomBars(frame: CommandFrame) -> void:
 	var tb: Control = get_node_or_null("TaskbarPanel")
 	if tb != null:
 		tb.offset_bottom = -(ColumnFoot + KeyButtonHeight + KeyButtonGap) if _gidMenu == null else 0.0
+	if _gidMenu != null:
+		_PlaceClassicToggle(across.position.x + (FeedbackPanel.Width + BarInset * 2.0 if feedback != null else BarInset), top, bottom)
 	var key: Button = get_node_or_null("MapKeyButton")
 	if key != null:
 		_PlaceKeyButton(key)
+
+
+## CLASSIC CONTROLS (TeeJ, 2026-09-25: "we need a plan to be able to toggle
+## between the current bottom ... and the classic bottom menu"): ticked, the
+## original's Control Panel alone - the consoles' monitors (CommandFrame
+## AddConsoles), which work either way - and our bottom row of finders goes.
+## On the grey band right of Feedback; remembered (GameSettings, MpSetup).
+func _PlaceClassicToggle(left: float, top: float, bottom: float) -> void:
+	var chk: CheckBox = get_node_or_null("ClassicControls")
+	if chk == null:
+		chk = CheckBox.new()
+		chk.name = "ClassicControls"
+		chk.text = "Classic controls"
+		chk.tooltip_text = "Only the original's Control Panel: the consoles' monitors, without the row of finder buttons"
+		chk.focus_mode = Control.FOCUS_NONE
+		chk.add_theme_font_size_override("font_size", 11)
+		MenuScript._visible_checkbox(chk)
+		# The finder buttons' own box, so it reads over the consoles' art.
+		var finder: Button = get_node_or_null("HBoxContainer/PlanetInfo")
+		if finder != null:
+			var box: StyleBox = finder.get_theme_stylebox("normal").duplicate()
+			for st in ["normal", "hover", "pressed", "hover_pressed", "focus"]:
+				chk.add_theme_stylebox_override(st, box)
+		chk.button_pressed = GameSettings.ClassicControls
+		chk.toggled.connect(func(on: bool) -> void:
+			GameSettings.ClassicControls = on
+			MpSetup.remember_names()
+			_ShowClassic())
+		add_child(chk)
+	chk.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
+	chk.offset_left = left
+	chk.offset_right = left + chk.get_combined_minimum_size().x
+	chk.offset_top = top
+	chk.offset_bottom = bottom
+	_ShowClassic()
+
+
+## Our bottom row of finders, unless Classic controls is ticked.
+func _ShowClassic() -> void:
+	var row: Control = get_node_or_null("HBoxContainer")
+	if row != null:
+		row.visible = not (GameSettings.ClassicControls and CommandFrameRef != null)
+
+
+const MenuScript := preload("res://src/ui/menu.gd")
 
 
 ## THE GALAXY DISPLAY MENU down the left-hand column (gid_menu.gd), in the
