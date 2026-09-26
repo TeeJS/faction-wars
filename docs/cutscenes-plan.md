@@ -10,8 +10,9 @@ permission to install anything that is needed". **All five phases are built.**
 | 1, the Smacker decoder | **built** (`tools/FactionWarsExporter/Smacker.cs`): all 15 movies decode identically to FFmpeg - every one of 15,297 frames (as RGB) and 15,072 audio chunks, by MD5 (`tools/SmackerCheck`, dev only) |
 | 2, Theora/Vorbis + the movies file | **built** (exporter 2.5.0, `Movies.cs`, `native\fwxiph.dll` from Xiph's sources): all 15 in 8.4 minutes, **70.7 MB** at q5 (the 52 MB estimate was from movie 101 alone); Godot 4.7.1 plays them |
 | 3, import + player + pack field (desktop) | **built**: `movies` in pack.json (rule 23), the `movies` import kind, `src/ui/movies.gd` and `movie_player.gd`; `launch` and `credits` play; "Credits and licences" on the pack's card |
-| 4, the event triggers | **built**: the simulation names the moment (`EventBus.Cue(event, sides)`) and UIManager plays the pack's movie for its own side - `system_destroyed` (a Death Star bombardment; the destroyer and the holder), `superweapon_sabotaged` (both sides), `victory.`/`defeat.` (each side its own), `start.<side>` (before the game; the Star Wars pack maps none until 003/004 are confirmed). A second moment while one plays follows it. **Inferred:** who sees 101 and 104 (the original's audience for them is unknown). In head-to-head the tree is not held, so the other player's game runs on |
+| 4, the event triggers | **built**: the simulation names the moment (`EventBus.Cue(event, sides)`) and UIManager plays the pack's movie for its own side - `system_destroyed` (a Death Star bombardment; the destroyer and the holder), `superweapon_sabotaged` (both sides), `victory.`/`defeat.` (each side its own), `start.<side>` (before a new game). A second moment while one plays follows it. **Inferred:** who sees 101 and 104 (the original's audience for them is unknown). In head-to-head the tree is not held, so the other player's game runs on |
 | 5, web | **built** (`src/ui/movies.gd`'s `fwMovies`): the Import button hands a movies file to the browser, which checks every entry's SHA-256 and keeps **the file itself in IndexedDB** (on disk) - it never enters the game's in-memory `user://`; a movie about to play is read out (a slice: the exporter stores them uncompressed) to a memory-only `/tmp` file, deleted when it ends. Measured in Chrome on a local web export: all 15 checked and kept in 1.8 s; the intro plays from storage; the page's JS heap **+12.6 MB while 001 (12.9 MB) plays** (target +15 MB); the file is deleted when the movie ends, and its memory is the browser's to collect (not yet measured after a collection). A movies file dropped on the browser game is refused (it would already be in memory): use the Import button |
+| after | TeeJ, 2026-09-26: "check rebellion2 and see what order they use them in". Its moments map **003/004** (a side's intro, new games) and **102/103** (a side's headquarters lost, shown to everyone, before the ending) - see "When each plays" below. Only 201/202 are left unmapped |
 
 TeeJ, 2026-09-25: "please generate a plan for bringing the cut scenes into the game";
 2026-09-26, again: "write-up a plan for cut scenes" (after the strangers plan).
@@ -67,17 +68,23 @@ moment it plays is a second question, answered in the next table):
 
 | Movie | When the original plays it | Confidence | Our event (code) |
 |---|---|---|---|
-| `000`, `001` | at launch, before the Cockpit ("To skip the introductory graphics, click the mouse", manual p022) | **Single-source** (the manual names intro graphics; the movies are the only candidates) | the game's start (`PackPicker` -> Cockpit) |
-| `005` | the Cockpit's **View credits** | **Confirmed** (TeeJ's description of the original, BACKLOG #43, and the movie's content) | `menu.gd` credits action (text credits today) |
-| `003` / `004` | after **Start the game as the Alliance / Empire**: the shuttle to the side's command post | **Inferred** from content; TeeJ can confirm in one start per side | the Cockpit's start actions |
+| `000`, `001` | at launch, before the Cockpit ("To skip the introductory graphics, click the mouse", manual p022) | **Confirmed**: the manual, and the Rebellion 2 remake's boot ("intro", then "opening-crawl") | the game's start (`PackPicker` -> Cockpit) |
+| `005` | the Cockpit's **View credits** | **Confirmed** (TeeJ's description of the original, BACKLOG #43, the movie's content, and Rebellion 2's credits button) | `menu.gd` credits action |
+| `003` / `004` | a **new game**, before play: the player's side's intro | **The moment confirmed**: Rebellion 2 plays the player's side's intro movie on a new game only; **the side by content**: 004 has the Star Destroyer and stormtroopers, so it is the Empire's, 003 the Alliance's | `start.<side>` in `menu.gd` StartGame |
+| `102` / `103` | a side's **headquarters captured or destroyed**: that side's movie, for every player, and before the war's end when it ends it | **The moment**: Rebellion 2 (`HeadquartersDestroyedCutscenePath` per side, the defender's queued, then the ending); **the side by content**: 102 is TIEs destroying Cloud City (the Alliance's), 103 a Rebel fleet over a city-world (the Empire's) | `headquarters_lost.<side>`, `VictoryManager.HeadquartersDestroyed` |
 | `101` | the Death Star destroys a system (manual p124) | **Confirmed** (manual event + content) | `BombardmentManager` `DestroySystem` |
 | `104` | a Death Star Sabotage mission succeeds (manual p124, p106) | **Confirmed** (manual event + content) | `mission_manager.gd` Death Star Sabotage result |
 | `201` | the Death Star is destroyed by a fighter "Death Star run" in a tactical battle (manual p124) | **Inferred** from content | **not found** in the tactical code (searched "Death Star run", "superweapon"; not read in full) |
 | `202` | a Death Star run that fails | **Unknown** - inferred only | as `201` |
 | `105` / `108` | the Alliance / the Empire wins | **Confirmed** (the crawl says so) | `victory_manager.gd` |
 | `106` / `107` | the Alliance / the Empire loses | **Confirmed** (the crawl says so) | `victory_manager.gd` |
-| `102` | **unknown** (Cloud City destroyed: an HQ? a system destroyed by other means?) | **Unknown** | - |
-| `103` | **unknown** (a Rebel assault on a city-world: Coruscant captured?) | **Unknown** | - |
+
+**Rebellion 2** ([davidadas/rebellion2](https://github.com/davidadas/rebellion2), a Unity remake;
+read 2026-09-26 at TeeJ's request): its `BootController`, `MainMenuController`,
+`GameFlowController` and `FactionTheme` name the moments - boot "intro" then "opening-crawl",
+the menu's "credits", and per side an intro (new games only), a headquarters-destroyed movie,
+a victory and a defeat; which of the original's files each is lives in its private media
+repository, so the side of 003/004 and 102/103 is by content. It has no Death Star movies.
 
 Sources checked for the moments: the manual (GAMEPLAY.md: p022, p090, p106, p124), the
 movies' own content, open-rebellion's notes (`agent_docs/game-media.md` calls 101-108
@@ -110,8 +117,8 @@ way `menu` and `map_image` do (SCHEMA.md gets the field and a validator rule):
 ```
 
 Engine events are named by role, never by Star Wars name (`system_destroyed`, not "Death
-Star"). A pack without `movies` (WW2) plays none. Unknown moments (`102`, `103`, `202`)
-stay out of the map until known.
+Star"). A pack without `movies` (WW2) plays none. Moments not yet known (`201`, `202`)
+stay out of the map until they are.
 
 ### 2. The exporter converts the movies (Godot plays only Ogg Theora)
 

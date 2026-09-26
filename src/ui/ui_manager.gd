@@ -424,7 +424,8 @@ const MoviesLib := preload("res://src/ui/movies.gd")
 ## it is one of `sides` (every side when empty), after the simulation's step.
 ## Whom each plays for is INFERRED where the original's is unknown: the
 ## destroyed system's owner and the destroyer, both sides of a sabotaged
-## Death Star; victory and defeat are each side's own (their crawls say so).
+## Death Star; victory and defeat are each side's own (their crawls say so);
+## a headquarters lost is shown to everyone (Rebellion 2's remake does so).
 func _OnMovieCue(event: String, sides: Array) -> void:
 	if not sides.is_empty() and not sides.has(GameSettings.LocalFaction()):
 		return
