@@ -49,8 +49,9 @@ static func CanBuild(screen: String) -> bool:
 ## bar too - its signals still run the screen) and the original's picture and
 ## buttons go in their place. The screen then adds its own parts. A screen
 ## whose plain form has no bottom bar (Locate Session, a dialog) gets one,
-## hidden, to wire its buttons to: `Bar()`.
-static func Dress(mp: MpScreen, screen: String) -> Control:
+## hidden, to wire its buttons to: `Bar()`. `plate` stands in for the
+## screen's picture where the screen rearranges it (Multiplayer Options).
+static func Dress(mp: MpScreen, screen: String, plate: Texture2D = null) -> Control:
 	for c in mp.get_children():
 		if c is CanvasItem:
 			(c as CanvasItem).visible = false
@@ -63,7 +64,7 @@ static func Dress(mp: MpScreen, screen: String) -> Control:
 	var look: Control = (load("res://src/ui/mp/original_mp.gd") as GDScript).new()
 	look.name = "Original"
 	mp.add_child(look)
-	look.call("_setup", bar, screen)
+	look.call("_setup", bar, plate if plate != null else Art.Screen(screen))
 	return look
 
 
@@ -72,7 +73,7 @@ func Bar() -> MpBottomBar:
 	return _bar
 
 
-func _setup(bar: MpBottomBar, screen: String) -> void:
+func _setup(bar: MpBottomBar, plate: Texture2D) -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	var black := ColorRect.new()
@@ -85,7 +86,7 @@ func _setup(bar: MpBottomBar, screen: String) -> void:
 	_canvas.name = "Canvas"
 	_canvas.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_canvas)
-	Place(Art.Screen(screen), 0, 0, "Plate")
+	Place(plate, 0, 0, "Plate")
 	_bar = bar
 	_back = PicButton("mp_back", BackX, ButtonY, "Back")
 	_next = PicButton("mp_next", NextX, ButtonY, "Next")
@@ -128,8 +129,17 @@ func _layout() -> void:
 		var r: Rect2 = it[1]
 		c.position = r.position * _s
 		c.size = r.size * _s
-		if float(it[2]) > 0.0:
-			c.add_theme_font_size_override("font_size", roundi(float(it[2]) * _s))
+		_size_text(c, float(it[2]), float(it[3]))
+
+
+## A part's text at the screen's scale; a log's lines `pitch` apart.
+func _size_text(c: Control, px: float, pitch: float) -> void:
+	if px <= 0.0:
+		return
+	c.add_theme_font_size_override("font_size", roundi(px * _s))
+	if c is RichTextLabel:
+		c.add_theme_font_size_override("normal_font_size", roundi(px * _s))
+		c.add_theme_constant_override("line_separation", roundi(maxf(0.0, pitch - 1.15 * px) * _s))
 
 
 ## Puts a part on the screen at its rect in the original's pixels.
@@ -138,12 +148,11 @@ func Add(c: Control, rect: Rect2, px: float = 0.0) -> void:
 	_track(c, rect, px)
 
 
-func _track(c: Control, rect: Rect2, px: float) -> void:
-	_items.append([c, rect, px])
+func _track(c: Control, rect: Rect2, px: float, pitch: float = 0.0) -> void:
+	_items.append([c, rect, px, pitch])
 	c.position = rect.position * _s
 	c.size = rect.size * _s
-	if px > 0.0:
-		c.add_theme_font_size_override("font_size", roundi(px * _s))
+	_size_text(c, px, pitch)
 
 
 # ---- the parts, in the original's pixels -------------------------------------
@@ -237,3 +246,23 @@ func Line(l: Label, x: float, cap_top: float, w: float, px: float, color: Color,
 	l.add_theme_color_override("font_color", color)
 	_track(l, Rect2(x, cap_top - 0.19 * px, w, px * 1.4), px)
 	return l
+
+
+## The screen's own running log moved onto the original's: its lines in
+## `color`, `pitch` apart, the first line's capitals at cap_top, `lines` of
+## them showing; it follows the newest line, and the wheel scrolls back. No
+## scroll bar: the original's panel has none.
+func Log(r: RichTextLabel, x: float, cap_top: float, w: float, lines: int, px: float, pitch: float, color: Color) -> RichTextLabel:
+	r.reparent(_canvas, false)
+	r.custom_minimum_size = Vector2.ZERO
+	r.fit_content = false
+	r.scroll_following = true
+	r.add_theme_font_override("normal_font", OUI.Face(false))
+	r.add_theme_color_override("default_color", color)
+	for st in ["normal", "focus"]:
+		r.add_theme_stylebox_override(st, StyleBoxEmpty.new())
+	var bar := r.get_v_scroll_bar()
+	bar.modulate = Color(1, 1, 1, 0)
+	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_track(r, Rect2(x, cap_top - 0.19 * px, w, pitch * lines), px, pitch)
+	return r

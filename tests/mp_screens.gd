@@ -34,6 +34,8 @@ func _init() -> void:
 	await _configuration_original()
 	await _locate_original()
 	await _host_original()
+	await _options_original(true)
+	await _options_original(false)
 	_remove(ArtRoot)
 	Art.Reset()
 	print("[mp_screens] %d checks, %d failed" % [_checks, _fails])
@@ -119,6 +121,15 @@ func _stand_in_art() -> void:
 		_png("%s/buttons/%s.disabled.png" % [dir, b], 89, 26, Color(0.2, 0.2, 0.2))
 	_png("%s/windows/mp_choice.png" % dir, 152, 33, Color(0.3, 0.3, 0.3))
 	_png("%s/windows/mp_choice.chosen.png" % dir, 152, 33, Color(0.25, 0.25, 0.25))
+	for pic in ["mp_side.alliance", "mp_side.empire", "mp_size.standard", "mp_size.large", "mp_size.huge"]:
+		_png("%s/windows/%s.png" % [dir, pic], 36, 36, Color(0.3, 0.3, 0.3))
+		_png("%s/windows/%s.chosen.png" % [dir, pic], 36, 36, Color(1, 0.1, 0.1))
+		_png("%s/windows/%s.grey.png" % [dir, pic], 36, 36, Color(0.5, 0.5, 0.5))
+	for pic in ["mp_lamp.on", "mp_lamp.off", "mp_lamp.grey"]:
+		_png("%s/windows/%s.png" % [dir, pic], 29, 27, Color(0.2, 0.8, 0.2))
+	_png("%s/buttons/mp_load.png" % dir, 48, 43, Color(0.3, 0.3, 0.3))
+	_png("%s/buttons/mp_load.pressed.png" % dir, 48, 43, Color(0.9, 0.9, 0.2))
+	_png("%s/buttons/mp_load.disabled.png" % dir, 48, 43, Color(0.2, 0.2, 0.2))
 	Art.Reset()
 
 
@@ -266,6 +277,67 @@ func _host_original() -> void:
 	var back: TextureButton = c.get_node("Back")
 	var next: TextureButton = c.get_node("Next")
 	_check(not back.disabled and not next.disabled, "the original's screen 3: back and forward lit")
+	await _close(s)
+	MpSetup.reset()
+
+
+## Multiplayer Options on the original's screen, rearranged as TeeJ chose
+## (2026-09-26, mockup 2): the speed row under the galaxy size, the lower rows
+## 62 down, the code and Copy on the Chat> bar.
+func _options_original(host: bool) -> void:
+	var who := "host" if host else "guest"
+	MpSetup.player_name = "Han" if host else "Luke"
+	MpSetup.game_name = "The End of the Empire"
+	MpSetup.hosting = host
+	var lobby := RelayClient.new("ws://127.0.0.1:1/ws", MpSetup.player_name)
+	lobby.code = "TEST01"
+	lobby.side = who
+	lobby.host_name = "Han"
+	lobby.name = MpSetup.game_name
+	if not host:
+		lobby.settings = { "side": "empire", "size": 2, "hq_only": true, "speed_rule": "average" }
+	MpSetup.lobby = lobby
+	var opened := await _open_original("res://src/ui/mp/MultiplayerOptions.tscn", "CenterContainer")
+	var s: Control = opened[0]
+	var c: Control = opened[1]
+	if c == null:
+		await _close(s)
+		MpSetup.reset()
+		return
+	var q: Array = []
+	for i in 3:
+		q.append((c.get_node("Question%d" % i) as Label).text)
+	_check(q == ["Which side do you want to play?", "What size galaxy would you like?", "What speed rule would you like?"],
+		"%s: the two questions, and TeeJ's third row" % who)
+	_check((c.get_node("Side0") as Control).position == Vector2(389, 71) * 2.0 and (c.get_node("Size2") as Control).position == Vector2(491, 133) * 2.0
+		and (c.get_node("Speed1") as Control).position == Vector2(440, 195) * 2.0, "%s: sides, sizes, and the speed row one row under the sizes" % who)
+	_check((c.get_node("Lamp0") as Control).position == Vector2(142, 267) * 2.0 and (c.get_node("Load") as Control).position == Vector2(502, 261) * 2.0,
+		"%s: Standard Game / HQ Victory and Load Game 62 lower" % who)
+	_check((c.get_node("Code") as Label).text == "Code: TEST01" and (c.get_node("Copy") as Label).get_theme_color("font_color") == Color(1, 0, 0),
+		"%s: the game code and Copy on the Chat> bar" % who)
+	var entry: LineEdit = s.get_node("%ChatEntry")
+	var log: RichTextLabel = s.get_node("%ChatLog")
+	_check(entry.get_parent() == c and log.get_parent() == c and is_equal_approx(log.size.y, 32 * 2.0), "%s: the chat entry and a two-line log on the screen" % who)
+	var start: TextureButton = c.get_node("Next")
+	_check(start.texture_normal == Art.ButtonIcon("mp_start") and start.disabled, "%s: the checkmark, waiting" % who)
+	var s1: TextureButton = c.get_node("Size1")
+	var s2: TextureButton = c.get_node("Size2")
+	if host:
+		_check(s1.texture_normal == Art.WindowPicture("mp_size.large.chosen") and s2.texture_normal == Art.WindowPicture("mp_size.huge"),
+			"host: Large chosen, the others as they are")
+		s2.pressed.emit()
+		_check(int(s._settings.get("size", -1)) == 2 and s2.texture_normal == Art.WindowPicture("mp_size.huge.chosen")
+			and s1.texture_normal == Art.WindowPicture("mp_size.large"), "host: a click on Huge chooses it")
+		(c.get_node("Speed1") as TextureButton).pressed.emit()
+		_check(str(s._settings.get("speed_rule", "")) == "average" and (c.get_node("SpeedMark1") as Control).visible
+			and not (c.get_node("SpeedMark0") as Control).visible, "host: a click on Average chooses it, its brackets shown")
+	else:
+		_check(s2.texture_normal == Art.WindowPicture("mp_size.huge.chosen") and s1.texture_normal == Art.WindowPicture("mp_size.large.grey"),
+			"guest: the host's Huge lit, the others greyed")
+		s1.pressed.emit()
+		_check(int(s._settings.get("size", -1)) == 2, "guest: a click changes nothing")
+		_check((c.get_node("SpeedMark1") as Control).visible and (c.get_node("Lamp1") as TextureRect).texture == Art.WindowPicture("mp_lamp.on"),
+			"guest: the host's Average and HQ Victory shown")
 	await _close(s)
 	MpSetup.reset()
 
