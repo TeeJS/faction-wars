@@ -7,8 +7,11 @@
        distributes the original's art (docs/original-art-plan.md).
 
        Build, package and sign: build.ps1 beside this file (see README.md). It
-       publishes ONE exe: self-contained, compressed, its data built in. Nothing is
-       extracted to disk when it runs (there are no native libraries to unpack). -->
+       publishes ONE exe: self-contained, compressed, its data built in. The one
+       native library, fwxiph.dll (the movies' encoders, native\build-xiph.ps1),
+       is signed and built in as a resource; only Export movies writes it out, to
+       %LOCALAPPDATA%\FactionWarsExporter\<its hash>\, and checks it before
+       loading it (Movies.cs). -->
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -18,7 +21,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>FactionWarsExporter</AssemblyName>
     <RootNamespace>FactionWarsExporter</RootNamespace>
-    <Version>2.4.7</Version>
+    <Version>2.5.0</Version>
     <Product>Faction Wars Exporter</Product>
     <Description>Exports the original artwork from your own copy of Star Wars: Rebellion into a file Faction Wars imports.</Description>
     <PublishSingleFile>true</PublishSingleFile>
@@ -39,6 +42,12 @@
     <EmbeddedResource Include="..\..\packs\star-wars-rebellion\facilities.json" LogicalName="pack/facilities.json" />
     <EmbeddedResource Include="..\..\packs\star-wars-rebellion\missions.json" LogicalName="pack/missions.json" />
     <EmbeddedResource Include="..\..\packs\star-wars-rebellion\map.json" LogicalName="pack/map.json" />
+    <!-- The movies' converter (Movies.cs), when native\build-xiph.ps1 has built it. -->
+    <EmbeddedResource Include="native\bin\fwxiph.dll" LogicalName="native/fwxiph.dll" Condition="Exists('native\bin\fwxiph.dll')" />
+    <!-- Their BSD licences, which travel with the binary (MainForm's link). -->
+    <EmbeddedResource Include="native\xiph\libogg\COPYING" LogicalName="licences/libogg.txt" />
+    <EmbeddedResource Include="native\xiph\libvorbis\COPYING" LogicalName="licences/libvorbis.txt" />
+    <EmbeddedResource Include="native\xiph\libtheora\COPYING" LogicalName="licences/libtheora.txt" />
   </ItemGroup>
 
 </Project>
