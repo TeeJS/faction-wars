@@ -726,7 +726,11 @@ func _build_original() -> void:
 	body.move_child(_oSummary, body.get_child_count() - 1)
 	var x: int = OSideX[_oSide]
 	var ys: Array = OSideYs[_oSide]
+	# With a message open, the close box goes back to the index, as Esc does
+	# (TeeJ, 2026-09-25: "the same for the close button reading a message").
 	OUI.PictureButton(body, "ency_close." + _oSide, x, ys[0], "Close message screen").pressed.connect(func() -> void:
+		if StepBack():
+			return
 		CloseWindow()
 		if _uiManager != null:
 			_uiManager.RefreshCommsHighlights.call_deferred())
@@ -748,6 +752,15 @@ func _build_original() -> void:
 	_oComposeBtn.pressed.connect(func() -> void:
 		if _uiManager != null:
 			_uiManager.OpenComposeChatMessage())
+
+
+## Esc with a message open goes back to the Message Index, not out to the
+## galaxy (TeeJ, 2026-09-25).
+func StepBack() -> bool:
+	if _oSummary == null or not _oSummary.visible:
+		return false
+	_o_show_index()
+	return true
 
 
 func _o_view(body: Control, view_name: String, plate: String) -> Control:

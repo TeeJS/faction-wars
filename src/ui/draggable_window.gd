@@ -59,6 +59,13 @@ func CloseWindow() -> void:
 	queue_free()
 
 
+## Esc on a window showing something inside itself steps back to what it
+## showed before instead of closing (the Message Index: a message read goes
+## back to the index). True when it stepped back; the window stays open.
+func StepBack() -> bool:
+	return false
+
+
 ## A modal window (OUI.Modal) closes on Esc: "Cancel/Close Window - cancels
 ## the current command (same as clicking Close or Cancel)" (manual p064).
 var CloseOnEscape: bool = false
@@ -68,7 +75,8 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	if CloseOnEscape and visible and event.is_pressed() and not event.is_echo() \
 			and (event as InputEventKey).keycode == KEY_ESCAPE:
 		get_viewport().set_input_as_handled()
-		CloseWindow()
+		if not StepBack():
+			CloseWindow()
 
 
 func MinimizeWindow() -> void:

@@ -1660,6 +1660,8 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	if w == null:
 		return
 	get_viewport().set_input_as_handled()
+	if w is DraggableWindow and (w as DraggableWindow).StepBack():
+		return
 	_focusedWindow = null
 	if w is DraggableWindow:
 		(w as DraggableWindow).CloseWindow()
