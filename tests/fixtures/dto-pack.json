@@ -9178,6 +9178,13 @@
       "victory.alliance": "swr-original:movies/105.ogv",
       "victory.empire": "swr-original:movies/108.ogv"
     },
+    "Music": {
+      "menu": "swr-original:music/300.ogg"
+    },
+    "MusicGiven": true,
+    "MusicRaw": {
+      "menu": "swr-original:music/300.ogg"
+    },
     "Neutral": {
       "ColorHex": "#5499ff",
       "DisplayName": "Neutral",

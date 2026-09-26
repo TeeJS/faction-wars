@@ -15,6 +15,8 @@ extends CanvasLayer
 ## yet - the browser's, read out of its storage (Movies.WebFetch); the black
 ## screen holds while it comes, and a skip meanwhile skips it.
 
+const MusicLib := preload("res://src/ui/music.gd")
+
 var Paths: Array[String] = []
 var Done: Callable = Callable()
 var Fetch: Callable = Callable()
@@ -51,6 +53,8 @@ func _ready() -> void:
 		_was_paused = get_tree().paused
 		get_tree().paused = true
 		_held = true
+	# The music waits under a movie (docs/music-plan.md) and comes back after.
+	MusicLib.Hold(true)
 	_next()
 
 
@@ -143,6 +147,7 @@ func _finish() -> void:
 	_let_go()
 	if _held:
 		get_tree().paused = _was_paused
+	MusicLib.Hold(false)
 	queue_free()
 	if Done.is_valid():
 		Done.call()

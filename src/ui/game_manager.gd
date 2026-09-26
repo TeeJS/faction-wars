@@ -122,6 +122,9 @@ const LeaveAfterMs := 60000          # Leave Game appears after this (design que
 
 func _ready() -> void:
 	print("Booting up Rebellion Engine...")
+	# The Cockpit's music ends as the game begins (docs/music-plan.md: the
+	# in-play playlist waits on its phase 0).
+	preload("res://src/ui/music.gd").Stop()
 
 	_uiManager = get_node("UIManager")
 	_galaxyMap = get_node("GalaxyMap")

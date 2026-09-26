@@ -38,6 +38,9 @@
     "defeat.empire": "swr-original:movies/107.ogv",
     "victory.empire": "swr-original:movies/108.ogv"
   },
+  "music": {
+    "menu": "swr-original:music/300.ogg"
+  },
   "setup": {
     "difficulty_default": "easy",
     "galaxy_sizes": [

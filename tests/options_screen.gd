@@ -5,13 +5,15 @@ extends SceneTree
 ## clock stops while it is up; Save Game writes the slot and its side icon;
 ## Load Game is live only on a used slot; Restart and Exit ask first; Return
 ## goes back to the game; from the Cockpit there is nothing to save and no
-## Command Center to return to; the sound and tactical options are greyed.
+## Command Center to return to; Play Music and the music volume work (the
+## music plan, phase 2); the sound effects and tactical options are greyed.
 ## Writes and removes its own test art and saves, never the player's own.
 ##
 ##   .\tools\run-gd.ps1 tests/options_screen.gd
 
 const Art := preload("res://src/ui/artwork.gd")
 const Screen := preload("res://src/ui/original_options_screen.gd")
+const MusicLib := preload("res://src/ui/music.gd")
 
 var _fails := 0
 var _checks := 0
@@ -32,6 +34,11 @@ func _init() -> void:
 	Art.UserArtRoot = "user://test-options-art"
 	SaveManager.Dir = "user://test-options-saves"
 	_remove(SaveManager.Dir)
+	MusicLib.SettingsFile = "user://test-options-music.cfg"
+	DirAccess.remove_absolute(MusicLib.SettingsFile)
+	MusicLib._loaded = false
+	MusicLib.PlayMusic = true
+	MusicLib.Volume = MusicLib.DEFAULT_VOLUME
 	FactionRegistry.EnsureLoaded()
 	MpSetup.reset()
 	GameSettings.SelectedDifficulty = Enums.Difficulty.Medium
@@ -45,7 +52,7 @@ func _init() -> void:
 	for b in ["options_save", "options_load", "options_restart", "options_return", "options_exit"]:
 		_png("%s/buttons/%s.png" % [dir, b], 42, 20, Color(0.6, 0.6, 0.6))
 		_png("%s/buttons/%s.disabled.png" % [dir, b], 42, 20, Color(0.2, 0.2, 0.2))
-	for w in ["options_side.empire", "options_side.alliance", "options_side.h2h", "options_music.grey", "options_light.off", "options_knob"]:
+	for w in ["options_side.empire", "options_side.alliance", "options_side.h2h", "options_music.lit", "options_music.off", "options_light.off", "options_knob"]:
 		_png("%s/windows/%s.png" % [dir, w], 26, 19, Color(0.9, 0.1, 0.1))
 	# The original's alert box (REBDLOG): the two-socket plate, check and X.
 	_png("%s/windows/dialog_plate2.png" % dir, 412, 176, Color(0.4, 0.4, 0.4))
@@ -83,12 +90,39 @@ func _init() -> void:
 
 	var music: Label = screen._canvas.get_node_or_null("MusicLabel")
 	var toggle: Label = screen._canvas.get_node_or_null("Toggle0")
-	_check(music != null and music.get_theme_color("font_color") == Screen.Greyed and music.tooltip_text.begins_with("Not in this game"),
-		"Play Music is greyed: there is no sound yet")
+	_check(music != null and music.get_theme_color("font_color") == Screen.Green and (screen._canvas.get_node("MusicState") as Label).text == "On",
+		"Play Music works: green, and On by default")
 	_check(toggle != null and toggle.text == "Show Starfield" and toggle.get_theme_color("font_color") == Screen.Greyed, "the tactical toggles are greyed")
-	for head in ["Head_SoundOptions", "Head_TacticalDisplayOptions"]:
-		var l: Label = screen._canvas.get_node_or_null(head)
-		_check(l != null and l.get_theme_color("font_color") == Screen.Greyed, "%s is greyed with its options" % head)
+	var sound: Label = screen._canvas.get_node_or_null("Head_SoundOptions")
+	_check(sound != null and sound.get_theme_color("font_color") == Screen.Green, "Sound Options is green: its music half works")
+	var tactical: Label = screen._canvas.get_node_or_null("Head_TacticalDisplayOptions")
+	_check(tactical != null and tactical.get_theme_color("font_color") == Screen.Greyed, "Tactical Display Options is greyed with its options")
+	var effects: Control = screen._canvas.get_node_or_null("EffectsKnob")
+	_check(effects != null and effects.tooltip_text.begins_with("Not in this game"), "the sound-effects knob is greyed: no sound effects yet")
+
+	# The switch turns the music off and on, and the setting is kept.
+	var sw: TextureRect = screen._canvas.get_node_or_null("MusicSwitch")
+	_check(sw != null and sw.texture == Art.WindowPicture("options_music.lit"), "the switch shows lit while the music is on")
+	sw.gui_input.emit(_press())
+	await process_frame
+	var off := ConfigFile.new()
+	off.load(MusicLib.SettingsFile)
+	sw = screen._canvas.get_node_or_null("MusicSwitch")
+	_check(not MusicLib.PlayMusic and not bool(off.get_value("music", "play", true)) and sw != null and sw.texture == Art.WindowPicture("options_music.off")
+		and (screen._canvas.get_node("MusicState") as Label).text == "Off", "a click turns Play Music off: the switch goes dark, Off, and it is saved")
+	sw.gui_input.emit(_press())
+	await process_frame
+	_check(MusicLib.PlayMusic, "a second click turns it back on")
+
+	# The knob slides: at the left end of its track quiet, at the right end full.
+	var knob: Control = screen._canvas.get_node_or_null("MusicKnob")
+	_check(knob != null and is_equal_approx(knob.position.x, (Screen.KnobX + Screen.KnobTravel) * screen._s), "the music knob starts at full, the right end of its track")
+	var grab := _press()
+	grab.position = Vector2((Screen.KnobX + 5.5 + Screen.KnobTravel * 0.5) * screen._s - knob.position.x, 5)
+	knob.gui_input.emit(grab)
+	_check(absf(MusicLib.Volume - 0.5) < 0.05 and is_equal_approx(knob.position.x, (Screen.KnobX + MusicLib.Volume * Screen.KnobTravel) * screen._s),
+		"dragging it to the middle sets half volume (%.2f), and the knob sits there" % MusicLib.Volume)
+	_check(absf(db_to_linear(AudioServer.get_bus_volume_db(MusicLib.Bus())) - MusicLib.Volume) < 0.01, "the Music bus follows the knob")
 	var saved: Label = screen._canvas.get_node_or_null("Head_SavedGames")
 	_check(saved != null and saved.get_theme_color("font_color") == Screen.Green, "Saved Games, which works, stays green")
 
@@ -138,9 +172,19 @@ func _init() -> void:
 	_finish()
 
 
+func _press() -> InputEventMouseButton:
+	var e := InputEventMouseButton.new()
+	e.button_index = MOUSE_BUTTON_LEFT
+	e.pressed = true
+	return e
+
+
 func _finish() -> void:
 	_remove(Art.UserArtRoot)
 	_remove(SaveManager.Dir)
+	DirAccess.remove_absolute(MusicLib.SettingsFile)
+	MusicLib.SettingsFile = MusicLib.SETTINGS
+	MusicLib._loaded = false
 	Art.Reset()
 	print("[options_screen] %d checks, %d failed" % [_checks, _fails])
 	quit(1 if _fails > 0 else 0)
