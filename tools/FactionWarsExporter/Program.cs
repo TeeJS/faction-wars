@@ -11,6 +11,8 @@ internal static class Program
     ///   A checkout's own copy: --folder "&lt;repo&gt;\art\swr-original" (gitignored).
     ///   FactionWarsExporter.exe --build "D:\...\my-pack" --out "D:\...\my-pack.zip"
     ///       a faction-pack file, whatever pictures it carries (log: &lt;out&gt;.log)
+    ///   FactionWarsExporter.exe --gamedir "..." --movies "D:\...\swr-original.movies.zip"
+    ///       the movies file (log: &lt;movies&gt;.log)
     /// Exit code 0 = done, 1 = a problem (the log says which), 2 = failed.
     /// </summary>
     [STAThread]
@@ -27,6 +29,8 @@ internal static class Program
         if (opt.ContainsKey("--pack"))
             return Log(Path.Combine(Get("--pack"), "original", "import.log"),
                 "--pack is gone: the game reads art sets now. For a checkout, use --folder <repo>\\art\\swr-original.", 1);
+        if (opt.ContainsKey("--gamedir") && opt.ContainsKey("--movies"))
+            return ExportMovies(Get("--gamedir"), Get("--movies"));
         if (opt.ContainsKey("--gamedir") && opt.ContainsKey("--folder"))
             return Export(Get("--gamedir"), Importer.BundledRows, () => new FolderSink(Get("--folder")),
                 Path.Combine(Get("--folder"), "export.log"));
@@ -53,6 +57,29 @@ internal static class Program
         catch (Exception ex)
         {
             return Log(logPath, "FAILED: " + ex, 2);
+        }
+    }
+
+    private static int ExportMovies(string gameDir, string outZip)
+    {
+        var logPath = outZip + ".log";
+        var problem = Movies.Problem(gameDir);
+        if (problem != null)
+            return Log(logPath, problem, 1);
+        var lines = new List<string>();
+        File.WriteAllText(logPath, "");
+        try
+        {
+            using var sink = new ZipSink(outZip);
+            // Minutes of work: the log grows as it goes.
+            Movies.Export(gameDir, sink, line => { lines.Add(line); File.AppendAllText(logPath, line + "\n"); });
+            lines.AddRange(new[] { "", "Done." });
+            return Log(logPath, string.Join("\n", lines), 0);
+        }
+        catch (Exception ex)
+        {
+            lines.Add("FAILED: " + ex);
+            return Log(logPath, string.Join("\n", lines), 2);
         }
     }
 

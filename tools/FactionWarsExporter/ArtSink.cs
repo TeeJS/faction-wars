@@ -79,8 +79,9 @@ public sealed class ZipSink : ArtSink
 
     protected override void Store(string rel, byte[] data)
     {
-        // PNGs are already compressed; storing them keeps the export fast.
-        var level = rel.EndsWith(".png", StringComparison.OrdinalIgnoreCase) ? CompressionLevel.NoCompression : CompressionLevel.Optimal;
+        // PNGs and movies are already compressed; storing them keeps the export fast.
+        var level = rel.EndsWith(".png", StringComparison.OrdinalIgnoreCase) || rel.EndsWith(".ogv", StringComparison.OrdinalIgnoreCase)
+            ? CompressionLevel.NoCompression : CompressionLevel.Optimal;
         var entry = _zip!.CreateEntry(rel, level);
         using var s = entry.Open();
         s.Write(data);

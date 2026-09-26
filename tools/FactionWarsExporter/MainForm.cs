@@ -11,6 +11,7 @@ public sealed class MainForm : Form
     private readonly Button _export = new() { Text = "Export", Width = 120, Height = 32 };
     private readonly Button _exportFolder = new() { Text = "Export as folder...", Width = 160, Height = 32 };
     private readonly Button _build = new() { Text = "Build faction pack...", Width = 170, Height = 32 };
+    private readonly Button _movies = new() { Text = "Export movies...", Width = 160, Height = 32 };
     private readonly TextBox _log = new() { Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Vertical, Width = 640, Height = 260, Font = new Font("Consolas", 9f) };
 
     public MainForm()
@@ -45,12 +46,20 @@ public sealed class MainForm : Form
         _exportFolder.Location = new Point(145, 158);
         _exportFolder.Click += (_, _) => Run(ExportFolder);
         Controls.Add(_exportFolder);
+        // The movies: a second, optional file (docs/cutscenes-plan.md, phase 2).
+        _movies.Location = new Point(315, 158);
+        _movies.Click += (_, _) => Run(ExportMovies);
+        Controls.Add(_movies);
         _build.Location = new Point(485, 158);
         _build.Click += (_, _) => Run(BuildPack);
         Controls.Add(_build);
 
         _log.Location = new Point(15, 205);
         Controls.Add(_log);
+        // The movie converter's libraries' BSD licences, which travel with it.
+        var licences = new LinkLabel { Text = "Third-party licences", AutoSize = true, Location = new Point(15, 468) };
+        licences.LinkClicked += (_, _) => ShowLicences();
+        Controls.Add(licences);
 
         _gameDir.Text = GameFolders.Find();
         _outFile.Text = Exporter.DefaultArtFile;
@@ -126,12 +135,12 @@ public sealed class MainForm : Form
     private void Run(Action job)
     {
         _log.Clear();
-        _export.Enabled = _exportFolder.Enabled = _build.Enabled = false;
+        _export.Enabled = _exportFolder.Enabled = _build.Enabled = _movies.Enabled = false;
         try { job(); }
         catch (Exception ex) { Say("FAILED: " + ex.Message); }
         finally
         {
-            _export.Enabled = _exportFolder.Enabled = _build.Enabled = true;
+            _export.Enabled = _exportFolder.Enabled = _build.Enabled = _movies.Enabled = true;
             _log.SelectionStart = _log.TextLength;
             _log.ScrollToCaret();
         }
@@ -162,6 +171,40 @@ public sealed class MainForm : Form
             return;
         }
         ExportTo(() => new FolderSink(folder), folder);
+    }
+
+    /// <summary>The movies file, beside the art set: minutes of work, reported
+    /// movie by movie.</summary>
+    private void ExportMovies()
+    {
+        var problem = Movies.Problem(_gameDir.Text);
+        if (problem != null) { Say(problem); return; }
+        var start = Path.Combine(Path.GetDirectoryName(_outFile.Text) ?? "", Path.GetFileName(Movies.DefaultFile));
+        if (PickZip("Save the movies as", start) is not string outZip)
+            return;
+        Say("Converting the 15 movies takes several minutes. The window may pause between lines.");
+        using (var sink = new ZipSink(outZip))
+            Movies.Export(_gameDir.Text, sink, Say);
+        Say("");
+        Say($"Saved: {outZip}");
+        Say("Import it into Faction Wars as you did the art set (Import artwork file..., or drag it onto the game). Keep it as your backup.");
+    }
+
+    private void ShowLicences()
+    {
+        _log.Clear();
+        Say("Export movies converts with libogg, libvorbis and libtheora (Xiph.Org Foundation), under these licences:");
+        foreach (var name in new[] { "libogg", "libvorbis", "libtheora" })
+        {
+            using var s = typeof(MainForm).Assembly.GetManifestResourceStream($"licences/{name}.txt");
+            if (s == null)
+                continue;
+            Say("");
+            Say($"---- {name} ----");
+            Say(new StreamReader(s).ReadToEnd().Replace("\r\n", "\n").Replace("\n", Environment.NewLine).TrimEnd());
+        }
+        _log.SelectionStart = 0;
+        _log.ScrollToCaret();
     }
 
     private void BuildPack()

@@ -1,0 +1,41 @@
+; The one native library the exporter carries: libogg, libvorbis (encoder)
+; and libtheora (encoder), built together by build-xiph.ps1. Only what
+; Movies.cs calls is exported.
+LIBRARY fwxiph
+EXPORTS
+  ogg_stream_init
+  ogg_stream_clear
+  ogg_stream_packetin
+  ogg_stream_pageout
+  ogg_stream_flush
+  ogg_page_granulepos
+  th_version_string
+  th_info_init
+  th_info_clear
+  th_comment_init
+  th_comment_clear
+  th_encode_alloc
+  th_encode_ctl
+  th_encode_flushheader
+  th_encode_ycbcr_in
+  th_encode_packetout
+  th_encode_free
+  th_granule_time
+  vorbis_version_string
+  vorbis_info_init
+  vorbis_info_clear
+  vorbis_comment_init
+  vorbis_comment_clear
+  vorbis_encode_init_vbr
+  vorbis_analysis_init
+  vorbis_block_init
+  vorbis_block_clear
+  vorbis_dsp_clear
+  vorbis_analysis_headerout
+  vorbis_analysis_buffer
+  vorbis_analysis_wrote
+  vorbis_analysis_blockout
+  vorbis_analysis
+  vorbis_bitrate_addblock
+  vorbis_bitrate_flushpacket
+  vorbis_granule_time

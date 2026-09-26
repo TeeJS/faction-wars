@@ -42,6 +42,20 @@ The CD's `REBELLION` folder holds the same files at the same sizes as the GOG co
 disc. Installs from the CD usually left `EData` on the disc; if it is missing,
 pick the disc instead.
 
+### The movies
+
+**Export movies...** converts the original's 15 movies (`MDATA\MDATA.000`-`202`,
+the intro, the credits, the Death Star's work, victory and defeat) into a second,
+optional file, `swr-original.movies.zip` (about 50 MB; several minutes). Import it
+into the game as you did the art set. The game plays each movie at the moment the
+original did (docs/cutscenes-plan.md); without the file, nothing changes.
+
+The movies are Smacker; Godot plays only Ogg Theora. The exporter decodes them
+itself (`Smacker.cs`, checked frame for frame against FFmpeg by
+`tools/SmackerCheck`) and encodes them with Xiph's libtheora and libvorbis
+(`native\fwxiph.dll`, see Build). **Third-party licences** in the window shows
+their BSD licences.
+
 ### For pack authors
 
 - **Export as folder...** writes the same art set to an empty folder, to look
@@ -72,6 +86,11 @@ read the log. Exit code 0 = done, 1 = a problem (the log says which),
 .\FactionWarsExporter.exe --build 'D:\Packs\my-pack' --out 'D:\Packs\my-pack.zip'
 ```
 
+```powershell
+# the movies file (log: <movies>.log, written as it goes)
+.\FactionWarsExporter.exe --gamedir 'C:\Program Files (x86)\GOG Galaxy\Games\Star Wars - Rebellion' --movies "$env:USERPROFILE\Documents\Faction Wars\swr-original.movies.zip"
+```
+
 Without `--art`, the build checks against the default art-set file, else reads
 the art set in memory from the game folder (found, or `--gamedir`). With none of
 those it warns and builds; the game checks again on import.
@@ -93,8 +112,10 @@ A `.zip` of PNGs and JSON with `manifest.json` at its root:
   "created_utc": "...", "files": { "portraits/characters/<id>.png": "<sha256>", ... } }
 ```
 
-A faction-pack file is the same with `"kind": "faction_pack"` and the pack's id.
-The game checks every hash on import.
+A faction-pack file is the same with `"kind": "faction_pack"` and the pack's id,
+and the movies file with `"kind": "movies"`, the art set's id, and
+`movies/<nnn>.ogv` (Ogg: Theora 640 wide, quality 31 of 63, 4:2:0 BT.601;
+Vorbis at the original's 11 kHz stereo). The game checks every hash on import.
 
 ```
 characters/<id>.png   units/<id>.png   facilities/<id>.png
@@ -141,10 +162,17 @@ program and opens no network connection.
 
 ## Build
 
-.NET 10 SDK. `build.ps1` publishes ONE exe, `dist\FactionWarsExporter.exe`
-(~47 MB): self-contained, compressed, its data built in. It extracts nothing to
-disk when it runs - a WinForms app has no native libraries to unpack (checked:
-nothing appears under `%TEMP%\.net`). The script fails if anything lands beside
+.NET 10 SDK, and the Visual Studio Build Tools' C++ tools ("Desktop development
+with C++") for the movies' converter. `build.ps1` first builds `fwxiph.dll`
+(`native\build-xiph.ps1`: libogg 1.3.6, libvorbis 1.3.7 and libtheora 1.2.0,
+their unmodified sources in `native\xiph\`, fetched from downloads.xiph.org on
+2026-09-26 and checked against Xiph's SHA256SUMS; the C runtime linked in), then
+publishes ONE exe, `dist\FactionWarsExporter.exe`: self-contained, compressed,
+its data and the DLL built in. .NET extracts nothing to disk when it runs (a
+WinForms app has no native libraries of its own to unpack; checked: nothing
+appears under `%TEMP%\.net`). Only **Export movies** writes the DLL out, to
+`%LOCALAPPDATA%\FactionWarsExporter\<its hash>\fwxiph.dll` (never Temp), and it
+checks the hash again before loading it. The script fails if anything lands beside
 the exe:
 
 ```powershell
@@ -160,7 +188,8 @@ For a release, sign it with Azure Trusted Signing. That needs the dlib and
 .\tools\FactionWarsExporter\build.ps1 -Sign
 ```
 
-It signs the exe after it is bundled, so the signature covers everything in it,
-verifies it, and prints its status. The release asset is the exe itself, under a
+It signs `fwxiph.dll` on its own before building it in, then the exe after it
+is bundled, so the signature covers everything in it; it verifies both and
+prints their status. The release asset is the exe itself, under a
 version-free name, so `/releases/latest/download/FactionWarsExporter.exe` (the
 link in the game) always gets the newest.

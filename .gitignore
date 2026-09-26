@@ -16,6 +16,8 @@ manual/
 packs/*/original/
 tools/FactionWarsExporter/bin/
 tools/FactionWarsExporter/obj/
+tools/FactionWarsExporter/native/bin/
+tools/FactionWarsExporter/native/obj/
 tools/SmackerCheck/bin/
 tools/SmackerCheck/obj/
 # The exporter's packaged build (tools/FactionWarsExporter/build.ps1).
