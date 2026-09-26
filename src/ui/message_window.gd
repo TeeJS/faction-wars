@@ -313,6 +313,7 @@ func RefreshCategory(categoryFilter: String) -> void:
 					_picked.append(capturedMsg)
 				msgBtn.set_pressed_no_signal(true)
 				ShowDetail(capturedMsg, msgBtn)
+				_OpenReport(capturedMsg)
 				msgBtn.accept_event())
 
 		activeList.add_child(msgBtn)
@@ -460,6 +461,20 @@ func ShowDetail(message: GameMessage, clickedButton: Button, markRead: bool = tr
 		_abortBtn.visible = asks
 	if _deleteBtn != null:
 		_deleteBtn.visible = true
+
+
+## A Conflict message opens the battle's or assault's own window, not the
+## message summary (TeeJ, 2026-09-26: "it opens the actual assault/battle
+## screen"; manual p123). Marks it read. False for any other message.
+func _OpenReport(m: GameMessage) -> bool:
+	if m == null or m.Report == null or _uiManager == null:
+		return false
+	var wasUnread: bool = not m.IsRead
+	m.IsRead = true
+	_uiManager.ShowReport(m.Report)
+	if wasUnread:
+		EventBus.BroadcastChanged()
+	return true
 
 
 func OnGotoClicked() -> void:
@@ -925,6 +940,9 @@ func _o_update_buttons() -> void:
 ## text, and the tick and cross when it asks (Fig 2.38).
 func _o_show_summary(m: GameMessage) -> void:
 	_selectedMessage = m
+	if _OpenReport(m):
+		_o_show_index()
+		return
 	_oIndex.visible = false
 	_oSummary.visible = true
 	var wasUnread: bool = not m.IsRead

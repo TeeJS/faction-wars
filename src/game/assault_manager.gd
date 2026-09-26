@@ -14,6 +14,14 @@ class AssaultReport:
 	var LostToBatteries: Array = []
 	var AttackersRemaining: int
 	var DefendersRemaining: int
+	## Who fought, for the Assault Summary window (manual p123, Figs 3.66-3.67):
+	## the sides (Defender null for a neutral system), the fleet, and each
+	## side's forces by the window's six tabs.
+	var Attacker: Faction
+	var Defender: Faction
+	var Fleet: Fleet
+	var AttackerForces := FleetBattleManager.Casualties.new()
+	var DefenderForces := FleetBattleManager.Casualties.new()
 
 
 ## "...at least two planetary shields" greys the option out (p123; entry 151).
@@ -128,6 +136,10 @@ static func Resolve(fleet: Fleet, target: Planet, rng: Prng, day: int) -> Assaul
 	report.AttackersRemaining = attacker_alive.size()
 	report.DefendersRemaining = defender_alive.size()
 	report.Captured = attacker_alive.size() > 0 and defender_alive.is_empty()
+	report.Attacker = attacker
+	report.Defender = defender
+	report.Fleet = fleet
+	Forces(report, fleet, target, attackers, attacker_alive, defenders, defender_alive)
 
 	for lost in attackers:
 		if not attacker_alive.has(lost):
@@ -163,26 +175,97 @@ static func Resolve(fleet: Fleet, target: Planet, rng: Prng, day: int) -> Assaul
 		print("[Assault] %s held after %d rounds (%d regiments remain)." % [target.Name, report.Steps, report.DefendersRemaining])
 
 	Announce(report, fleet, attacker, defender, day)
+	# The side that ordered it sees the Assault Summary at once (manual p123);
+	# UIManager shows it only to that side's own client.
+	if attacker != null and GameSettings.IsHuman(attacker):
+		FleetBattleManager.AddUnreported(report)
 	EventBus.BroadcastChanged()
 	return report
 
 
+## Each side's forces by the Assault Summary's tabs. The fleet's ships and
+## fighters are only in orbit - the batteries fire at the troops landing, so
+## they stay operational; the regiments as the contest left them; the world's
+## facilities, manufacturing or defensive by their roles (as Planet sorts a new
+## one's message); everyone aboard the fleet or on the world, alive.
+static func Forces(r: AssaultReport, fleet: Fleet, target: Planet, attackers: Array, attacker_alive: Array,
+		defenders: Array, defender_alive: Array) -> void:
+	var a := r.AttackerForces
+	for s in fleet.Ships:
+		if s == null:
+			continue
+		if s.Type == Enums.UnitType.CapitalShip:
+			a.add("CapitalShipsOperational", s.Name, "units", s.PackId, false)
+		for h in s.Hangar:
+			if h != null and h.Type == Enums.UnitType.Fighter:
+				a.add("SquadronsOperational", h.Name, "units", h.PackId, false)
+	for u in attackers:
+		a.add("TroopsOperational" if attacker_alive.has(u) else "TroopsDestroyed", u.Name, "units", u.PackId, false)
+	var d := r.DefenderForces
+	for u in target.Garrison:
+		if u == null or defenders.has(u):
+			continue
+		if u.Type == Enums.UnitType.CapitalShip:
+			d.add("CapitalShipsOperational", u.Name, "units", u.PackId, false)
+		elif u.Type == Enums.UnitType.Fighter:
+			d.add("SquadronsOperational", u.Name, "units", u.PackId, false)
+	for f in target.Facilities:
+		var defensive: bool = f.HasRole("planet_defense") or f.HasRole("shield") or f.HasRole("anti_ship") or f.HasRole("disable")
+		# A captured world's headquarters is destroyed (Resolve removes it).
+		var lost: bool = r.Captured and r.Defender != null and f.HasRole("headquarters")
+		d.add(("Defense" if defensive else "Manufacturing") + ("Destroyed" if lost else "Operational"), f.Name(), "facilities", f.TypeId(), f.IsDamaged)
+	for u in defenders:
+		d.add("TroopsOperational" if defender_alive.has(u) else "TroopsDestroyed", u.Name, "units", u.PackId, false)
+	for c in GameState.ActiveRoster:
+		if c.Status == Enums.Status.Dead:
+			continue
+		var into: FleetBattleManager.Casualties = null
+		if c.Attached == fleet:
+			into = a
+		elif c.Attached == target and c.Faction == r.Defender:
+			into = d
+		if into != null:
+			into.add("PersonnelSurvivors", c.Name if c.Rank == Enums.Rank.None else "%s %s" % [JsonUtil.enum_name(Enums.Rank, c.Rank), c.Name],
+				"characters", c.PackId, false)
+
+
+## The Assault Summary's sentence, in the original's words (TEXTSTRA.DLL
+## 0xF67E-0xF76E): "Imperial troops have taken control of the Alliance system
+## Ghorman" (TeeJ's screenshot and manual p123 Fig 3.66, matched to the pixel),
+## "<side> Troops have defended <system> from an <side> assault.", and the
+## neutral system's two. The original's "from an" is for its two sides, both
+## vowels; another pack's side gets "a" before a consonant.
+static func Sentence(r: AssaultReport) -> String:
+	var world: String = r.Target.Name
+	var att: String = Adjective(r.Attacker)
+	if r.Defender == null:
+		if r.Captured:
+			return "%s troops have seized control of the neutral system %s" % [att, world]
+		return "The neutral system %s has repulsed an attack by %s troops." % [world, att]
+	if r.Captured:
+		return "%s troops have taken control of the %s system %s" % [att, Adjective(r.Defender), world]
+	var article: String = "an" if "AEIOUaeiou".contains(att.left(1)) else "a"
+	return "%s Troops have defended %s from %s %s assault." % [Adjective(r.Defender), world, article, att]
+
+
+static func Adjective(f: Faction) -> String:
+	if f == null:
+		return "Neutral"
+	return f.Adjective if not f.Adjective.is_empty() else f.DisplayName
+
+
 ## "An Assault Summary window ... also available as a message when your opponent
-## assaults one of your systems" (manual p123).
+## assaults one of your systems" (manual p123). The message is titled as the
+## window ("Assault on |", TEXTSTRA.DLL 0xF664; TeeJ's screenshot of the
+## original's Conflict Messages, 2026-09-26) and opening it opens the window.
 static func Announce(r: AssaultReport, _fleet: Fleet, attacker: Faction, defender: Faction, day: int) -> void:
-	var body := "Assault on %s - %d rounds.\n\nAttacking regiments lost: %d%s\nDefending regiments lost: %d\n\n%s" % [
-		r.Target.Name, r.Steps, r.AttackerLost.size(),
+	var body := "%s\n\n%d rounds.\nAttacking regiments lost: %d%s\nDefending regiments lost: %d" % [
+		Sentence(r), r.Steps, r.AttackerLost.size(),
 		(" (%d to defensive batteries)" % r.LostToBatteries.size()) if not r.LostToBatteries.is_empty() else "",
-		r.DefenderLost.size(),
-		("%s has fallen. %d regiments hold it." % [r.Target.Name, r.AttackersRemaining]) if r.Captured
-		else ("The assault was thrown back. %d defending regiments remain." % r.DefendersRemaining)]
+		r.DefenderLost.size()]
 	for side in [attacker, defender]:
 		if side == null or not GameSettings.IsHuman(side):
 			continue
-		var ours: bool = side == attacker
-		var title: String
-		if r.Captured:
-			title = ("%s captured" % r.Target.Name) if ours else ("%s lost" % r.Target.Name)
-		else:
-			title = ("Assault on %s failed" % r.Target.Name) if ours else ("%s held" % r.Target.Name)
-		EventBus.Tell(side, GameMessage.new(title, body, Enums.MessageCategory.Conflict, day, r.Target))
+		var msg := GameMessage.new("Assault on %s" % r.Target.Name, body, Enums.MessageCategory.Conflict, day, r.Target)
+		msg.Report = r
+		EventBus.Tell(side, msg)
