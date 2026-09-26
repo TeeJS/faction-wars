@@ -598,6 +598,37 @@ public sealed class Importer
         ("options_knob", 10054),
     };
 
+    // COMMON.DLL: the head-to-head screens (manual p157-p160, Figs 5.2, 5.3,
+    // 5.8, 5.9), placed by template matching on TeeJ's screenshots of the
+    // original's (2026-09-25): the four 640x480 screens - the connection
+    // choice, Connect To Game, Setup Game, Multiplayer Options - and their
+    // parts. The bottom row's three buttons, each normal, bracketed in yellow,
+    // and greyed: back, forward, the check (Start), and cancel; the Load Game
+    // button (normal, pressed, greyed).
+    private static readonly (string Name, int Id)[] MpScreens =
+    {
+        ("mp_connection", 10100), ("mp_connect", 10101), ("mp_setup", 10102), ("mp_options", 10103),
+    };
+    private static readonly (string Name, int Normal, int Pressed, int Disabled)[] MpButtons =
+    {
+        ("mp_back", 10129, 10130, 10131), ("mp_next", 10132, 10133, 10134),
+        ("mp_cancel", 10135, 10136, 10137), ("mp_start", 10138, 10139, 10140),
+        ("mp_load", 10141, 10142, 10143),
+    };
+    // ...and its pictures, (name, id): the Connect To Game / Setup Game box
+    // (plain, chosen), each side's crest and each galaxy size (normal, chosen,
+    // greyed) and the victory switches' lamp (off, on, greyed).
+    private static readonly (string Name, int Id)[] MpParts =
+    {
+        ("mp_choice", 10147), ("mp_choice.chosen", 10148),
+        ("mp_side.alliance", 10114), ("mp_side.alliance.chosen", 10115), ("mp_side.alliance.grey", 10116),
+        ("mp_side.empire", 10117), ("mp_side.empire.chosen", 10118), ("mp_side.empire.grey", 10119),
+        ("mp_size.standard", 10120), ("mp_size.standard.chosen", 10121), ("mp_size.standard.grey", 10122),
+        ("mp_size.large", 10123), ("mp_size.large.chosen", 10124), ("mp_size.large.grey", 10125),
+        ("mp_size.huge", 10126), ("mp_size.huge.chosen", 10127), ("mp_size.huge.grey", 10128),
+        ("mp_lamp.off", 10144), ("mp_lamp.on", 10145), ("mp_lamp.grey", 10146),
+    };
+
     // The Command Center's Speed Control (manual p071 Fig. 3.8), cut from each
     // side's frame - STRATEGY 900 the Alliance's, 901 the Empire's (TeeJ's
     // screenshot of the Empire's matched 901 at (474, 6), every pixel but the
@@ -1017,6 +1048,25 @@ public sealed class Importer
                 else missing.Add($"windows/{name}: no bitmap {id} in COMMON.DLL");
             }
             Say($"Game Options: the screen and {optionParts} parts (COMMON.DLL).");
+            int mp = 0;
+            foreach (var (name, id) in MpScreens)
+            {
+                if (SaveSprite(common, id, P("screens", $"{name}.png"))) { mp++; pictureCount++; }
+                else missing.Add($"screens/{name}: no bitmap {id} in COMMON.DLL");
+            }
+            foreach (var (name, normal, pressed, disabled) in MpButtons)
+            {
+                if (SaveSprite(common, normal, P("buttons", $"{name}.png"))) { mp++; pictureCount++; }
+                else missing.Add($"buttons/{name}: no bitmap {normal} in COMMON.DLL");
+                if (SaveSprite(common, pressed, P("buttons", $"{name}.pressed.png"))) pictureCount++;
+                if (SaveSprite(common, disabled, P("buttons", $"{name}.disabled.png"))) pictureCount++;
+            }
+            foreach (var (name, id) in MpParts)
+            {
+                if (SaveSprite(common, id, P("windows", $"{name}.png"))) { mp++; pictureCount++; }
+                else missing.Add($"windows/{name}: no bitmap {id} in COMMON.DLL");
+            }
+            Say($"head-to-head: the four screens and their parts, {mp} pictures (COMMON.DLL).");
         }
 
         // The Speed Control and the alert box.

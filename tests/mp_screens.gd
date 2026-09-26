@@ -10,11 +10,19 @@ var _fails: int = 0
 var _checks: int = 0
 
 
+const Art := preload("res://src/ui/artwork.gd")
+const ArtRoot := "user://test-mp-screens-art"
+
+
 func _init() -> void:
 	await process_frame
+	# Never the player's own art: the screens take the original's look from it.
+	Art.IgnoreProjectFolder = true
+	Art.UserArtRoot = ArtRoot
 	FactionRegistry.EnsureLoaded()
 	await _menu()
 	await _configuration()
+	await _configuration_original()
 	await _host_game()
 	await _locate()
 	await _options(true)
@@ -70,18 +78,110 @@ func _menu() -> void:
 
 func _configuration() -> void:
 	var s := await _open("res://src/ui/mp/MultiplayerConfiguration.tscn")
-	_check(s.get_node_or_null("%Providers") == null, "TeeJ #197: no service-provider list (one connection)")
+	_check(s.get_node_or_null("Original") == null, "without the original's screen imported, the plain screen")
+	var list: ItemList = s.get_node("%Providers")
+	_check(list.item_count == 2 and list.get_item_text(0) == "Open-games list" and list.get_item_text(1) == "Shared Invite code",
+		"TeeJ 2026-09-25: the list is Open-games list, Shared Invite code")
+	_check(list.is_item_disabled(0) and not list.is_item_disabled(1) and list.is_selected(1), "TeeJ: Open-games list greyed; Shared Invite code selected")
 	_check(_label(s, "HowCaption") == "How do you want to play?", "Fig 5.2: 'How do you want to play?'")
 	var connect_btn: Button = s.get_node("%BtnConnectToGame")
 	var setup_btn: Button = s.get_node("%BtnSetupGame")
 	_check(connect_btn.text == "Connect To Game" and setup_btn.text == "Setup Game", "Fig 5.2: Connect To Game / Setup Game")
-	_check(not connect_btn.toggle_mode and not setup_btn.toggle_mode, "TeeJ #197: the two buttons act at once, no toggle")
 	var bar: MpBottomBar = s.get_node("%BottomBar")
 	var proceed: Button = bar.get_node("%BtnProceed")
 	var prev: Button = bar.get_node("%BtnPrevious")
-	_check(not proceed.visible and not prev.visible, "TeeJ #197: no Proceed, no Previous on the first screen")
+	_check(proceed.visible and proceed.disabled and not prev.visible, "Fig 5.2: the right arrow waits for a choice; no Previous on the first screen")
 	_check((bar.get_node("%BtnCancel") as Button).visible, "Fig 5.2: Cancel")
+	setup_btn.pressed.emit()
+	_check(setup_btn.button_pressed and not connect_btn.button_pressed and not proceed.disabled, "Fig 5.2: Setup Game stays depressed and the right arrow goes on")
+	connect_btn.pressed.emit()
+	_check(connect_btn.button_pressed and not setup_btn.button_pressed, "Fig 5.2: one choice at a time")
 	await _close(s)
+
+
+## The screen in the original's look, on stand-in pictures of the original's.
+func _configuration_original() -> void:
+	var dir := "%s/%s" % [ArtRoot, FactionRegistry.Pack.Manifest.ArtSets[0]]
+	for sub in ["screens", "buttons", "windows"]:
+		DirAccess.make_dir_recursive_absolute("%s/%s" % [dir, sub])
+	_png("%s/screens/mp_connection.png" % dir, 640, 480, Color(0.4, 0.4, 0.42))
+	for b in ["mp_back", "mp_next", "mp_start", "mp_cancel"]:
+		_png("%s/buttons/%s.png" % [dir, b], 89, 26, Color(0.3, 0.3, 0.3))
+		_png("%s/buttons/%s.pressed.png" % [dir, b], 89, 26, Color(0.9, 0.9, 0.2))
+		_png("%s/buttons/%s.disabled.png" % [dir, b], 89, 26, Color(0.2, 0.2, 0.2))
+	_png("%s/windows/mp_choice.png" % dir, 152, 33, Color(0.3, 0.3, 0.3))
+	_png("%s/windows/mp_choice.chosen.png" % dir, 152, 33, Color(0.25, 0.25, 0.25))
+	Art.Reset()
+	var s: Control = await _open("res://src/ui/mp/MultiplayerConfiguration.tscn")
+	s.size = Vector2(1280, 960)   # twice the original's 640 x 480
+	await process_frame
+	var look: Control = s.get_node_or_null("Original")
+	_check(look != null and not (s.get_node("CenterContainer") as Control).visible and not (s.get_node("%BottomBar") as Control).visible,
+		"with the original's screen imported: its look, the plain parts hidden")
+	if look == null:
+		await _close(s)
+		_remove(ArtRoot)
+		Art.Reset()
+		return
+	var c: Control = look.get_node("Canvas")
+	var plate: TextureRect = c.get_node("Plate")
+	_check(plate.size == Vector2(1280, 960) and c.position == Vector2.ZERO, "the original's screen fills ours, doubled")
+	var h0: Label = c.get_node("Heading0")
+	var h1: Label = c.get_node("Heading1")
+	_check(h0.text == "Please select a service provider for the type of" and h1.text == "connection you want to use from the list below.",
+		"Fig 5.2: the heading, verbatim, on the original's two lines")
+	var p0: Label = c.get_node("Provider0")
+	var p1: Label = c.get_node("Provider1")
+	_check(p0.text == "Open-games list" and p1.text == "Shared Invite code" and p1.get_theme_color("font_color") == Color(1, 0, 0)
+		and p0.get_theme_color("font_color").r < 0.4 and not p0.tooltip_text.is_empty(), "TeeJ: Open-games list greyed, Shared Invite code chosen in red")
+	_check(is_equal_approx(p1.position.x, 145 * 2.0) and is_equal_approx(p1.position.y - p0.position.y, 20 * 2.0), "measured: the list from x 145, a row every 20")
+	var box0: TextureButton = c.get_node("Choice0")
+	var box1: TextureButton = c.get_node("Choice1")
+	_check(box0.position == Vector2(139, 313) * 2.0 and box1.position == Vector2(346, 313) * 2.0 and box0.size == Vector2(152, 33) * 2.0,
+		"measured: the choice boxes at (139,313) and (346,313)")
+	var back: TextureButton = c.get_node("Back")
+	var next: TextureButton = c.get_node("Next")
+	var cancel: TextureButton = c.get_node("Cancel")
+	_check(back.position == Vector2(141, 442) * 2.0 and next.position == Vector2(290, 442) * 2.0 and cancel.position == Vector2(437, 442) * 2.0,
+		"measured: back, forward, cancel at y 442")
+	_check(back.disabled and next.disabled and not cancel.disabled, "the original's first screen: back greyed; forward greyed until a choice")
+	box1.pressed.emit()
+	var w1: Label = c.get_node("ChoiceText1")
+	var w0: Label = c.get_node("ChoiceText0")
+	_check(box1.texture_normal == Art.WindowPicture("mp_choice.chosen") and w1.get_theme_color("font_color") == Color(1, 0, 0)
+		and w0.get_theme_color("font_color") == Color(0, 1, 0), "measured: the chosen box, its words red; the other's green")
+	_check(not next.disabled and (s.get_node("%BtnSetupGame") as Button).button_pressed, "a choice made: forward goes on")
+	var cancelled := [false]
+	(s.get_node("%BottomBar") as MpBottomBar).cancel.connect(func() -> void: cancelled[0] = true, CONNECT_ONE_SHOT)
+	# The screen's own handler would change scene: take it off first.
+	for conn in (s.get_node("%BottomBar") as MpBottomBar).cancel.get_connections():
+		if conn["callable"] != Callable() and (conn["callable"] as Callable).get_object() == s:
+			(s.get_node("%BottomBar") as MpBottomBar).cancel.disconnect(conn["callable"])
+	cancel.pressed.emit()
+	_check(cancelled[0], "cancel is the bottom bar's Cancel")
+	s.size = Vector2(640, 600)
+	await process_frame
+	_check(plate.size == Vector2(640, 480) and c.position == Vector2(0, 60) and box1.position == Vector2(346, 313),
+		"resized: the picture's aspect kept, centred")
+	await _close(s)
+	_remove(ArtRoot)
+	Art.Reset()
+
+
+static func _png(path: String, w: int, h: int, color: Color) -> void:
+	var img := Image.create(w, h, false, Image.FORMAT_RGBA8)
+	img.fill(color)
+	img.save_png(path)
+
+
+static func _remove(path: String) -> void:
+	if not DirAccess.dir_exists_absolute(path):
+		return
+	for sub in DirAccess.get_directories_at(path):
+		_remove("%s/%s" % [path, sub])
+	for file in DirAccess.get_files_at(path):
+		DirAccess.remove_absolute("%s/%s" % [path, file])
+	DirAccess.remove_absolute(path)
 
 
 func _host_game() -> void:
