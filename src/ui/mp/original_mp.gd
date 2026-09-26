@@ -47,27 +47,40 @@ static func CanBuild(screen: String) -> bool:
 
 ## Puts the original's screen over `mp`: its plain parts are hidden (the bottom
 ## bar too - its signals still run the screen) and the original's picture and
-## buttons go in their place. The screen then adds its own parts.
+## buttons go in their place. The screen then adds its own parts. A screen
+## whose plain form has no bottom bar (Locate Session, a dialog) gets one,
+## hidden, to wire its buttons to: `Bar()`.
 static func Dress(mp: MpScreen, screen: String) -> Control:
 	for c in mp.get_children():
 		if c is CanvasItem:
 			(c as CanvasItem).visible = false
+	var bar: MpBottomBar = mp.get_node_or_null("%BottomBar") as MpBottomBar
+	if bar == null:
+		bar = (load("res://src/ui/mp/MpBottomBar.tscn") as PackedScene).instantiate() as MpBottomBar
+		bar.name = "OriginalBar"
+		bar.visible = false
+		mp.add_child(bar)
 	var look: Control = (load("res://src/ui/mp/original_mp.gd") as GDScript).new()
 	look.name = "Original"
 	mp.add_child(look)
-	look.call("_setup", mp.bar(), screen)
+	look.call("_setup", bar, screen)
 	return look
+
+
+## The bottom bar the original's three buttons stand in for.
+func Bar() -> MpBottomBar:
+	return _bar
 
 
 func _setup(bar: MpBottomBar, screen: String) -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_STOP
-	var back := ColorRect.new()
-	back.name = "Back"
-	back.color = Color.BLACK
-	back.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	back.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(back)
+	var black := ColorRect.new()
+	black.name = "Black"
+	black.color = Color.BLACK
+	black.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	black.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(black)
 	_canvas = Control.new()
 	_canvas.name = "Canvas"
 	_canvas.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -122,6 +135,10 @@ func _layout() -> void:
 ## Puts a part on the screen at its rect in the original's pixels.
 func Add(c: Control, rect: Rect2, px: float = 0.0) -> void:
 	_canvas.add_child(c)
+	_track(c, rect, px)
+
+
+func _track(c: Control, rect: Rect2, px: float) -> void:
 	_items.append([c, rect, px])
 	c.position = rect.position * _s
 	c.size = rect.size * _s
@@ -184,16 +201,39 @@ func Text(t: String, x: float, cap_top: float, w: float, px: float, color: Color
 	return l
 
 
-## A typing box with no box of its own (the original's is drawn on its
-## screen): the text from x, capitals from cap_top.
-func Field(x: float, cap_top: float, w: float, px: float, color: Color, node_name: String) -> LineEdit:
-	var f := LineEdit.new()
-	f.name = node_name
+## The screen's own typing box moved onto the original's (its signals and
+## unique name kept), with no box of its own - the original's is drawn on its
+## screen: the text from x in `color`, capitals from cap_top, the caret white
+## (measured). The text is centred on the box's height, so the box is the
+## font's height (Arial: ascent 0.905, descent 0.212) with equal room round it.
+func Field(f: LineEdit, x: float, cap_top: float, w: float, px: float, color: Color) -> LineEdit:
+	f.reparent(_canvas, false)
 	f.add_theme_font_override("font", OUI.Face(false))
 	f.add_theme_color_override("font_color", color)
-	f.add_theme_color_override("caret_color", color)
+	f.add_theme_color_override("font_placeholder_color", Color(color, 0.35))
+	f.add_theme_color_override("caret_color", Color.WHITE)
+	f.add_theme_color_override("selection_color", Color(color, 0.3))
 	var empty := StyleBoxEmpty.new()
 	for st in ["normal", "focus", "read_only"]:
 		f.add_theme_stylebox_override(st, empty)
-	Add(f, Rect2(x, cap_top - 0.19 * px - 2, w, px * 1.4 + 4), px)
+	f.custom_minimum_size = Vector2.ZERO
+	f.size_flags_horizontal = Control.SIZE_FILL
+	_track(f, Rect2(x, cap_top - 0.19 * px - Pad, w, 1.117 * px + 2 * Pad), px)
 	return f
+
+
+## The room above and below a typing box's text.
+const Pad := 3.0
+
+
+## The screen's own label moved onto the original's, restyled like Text().
+func Line(l: Label, x: float, cap_top: float, w: float, px: float, color: Color,
+		align: HorizontalAlignment = HORIZONTAL_ALIGNMENT_LEFT) -> Label:
+	l.reparent(_canvas, false)
+	l.horizontal_alignment = align
+	l.autowrap_mode = TextServer.AUTOWRAP_OFF
+	l.custom_minimum_size = Vector2.ZERO
+	l.add_theme_font_override("font", OUI.Face(false))
+	l.add_theme_color_override("font_color", color)
+	_track(l, Rect2(x, cap_top - 0.19 * px, w, px * 1.4), px)
+	return l
