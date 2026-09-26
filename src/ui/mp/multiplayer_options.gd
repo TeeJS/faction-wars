@@ -218,8 +218,10 @@ func _ready() -> void:
 	bar().cancel.connect(cancel_to_cockpit)
 
 	if _host:
-		_settings = { "pack": FactionRegistry.LoadedId(), "pack_hash": FactionRegistry.PackHash,
-			"side": FactionRegistry.Playable[0].Id, "size": int(Enums.GalaxySize.Large), "hq_only": false, "speed_rule": "slowest" }
+		# The pack and build first (MpSetup.pack_settings, as the room was
+		# created with), then the game's own choices.
+		_settings = MpSetup.pack_settings()
+		_settings.merge({ "side": FactionRegistry.Playable[0].Id, "size": int(Enums.GalaxySize.Large), "hq_only": false, "speed_rule": "slowest" }, true)
 		_lobby.set_settings(_settings)
 		_reflect()
 		_say(MpSetup.player_name, "Game \"%s\" created. Code %s." % [MpSetup.game_name, _lobby.code])
@@ -578,8 +580,10 @@ func _echo_diff() -> void:
 			_echo(k)
 
 
+## A line in the chat view. Names and messages come from strangers: added as
+## plain text, never parsed as BBCode.
 func _say(who: String, text: String) -> void:
-	_log.append_text("%s: %s\n" % [who, text])
+	_log.add_text("%s: %s\n" % [who, text])
 
 
 ## A guest on the wrong pack is told so here. What stops the game is the
@@ -656,6 +660,19 @@ func _shared_saves() -> Array:
 	return out
 
 
+## "" when save `s` was made on the loaded pack version, else the pack and
+## version it was made with ("<title> v1.2"). A save from before saves carried
+## the pack's hash is taken to be on the loaded one.
+static func _save_pack_words(s: Dictionary) -> String:
+	var st: Dictionary = s.get("settings", {}) if s.get("settings") is Dictionary else {}
+	var hash := str(st.get("pack_hash", ""))
+	if hash.is_empty() or hash == FactionRegistry.PackHash:
+		return ""
+	var title := str(st.get("pack_title", st.get("pack", "another pack")))
+	var version := str(st.get("pack_version", ""))
+	return "%s v%s" % [title, version] if not version.is_empty() else "another version of %s" % title
+
+
 func _open_load_list() -> void:
 	var shared := _shared_saves()
 	if shared.is_empty():
@@ -665,15 +682,27 @@ func _open_load_list() -> void:
 	dlg.ok_button_text = "Load"
 	var list := ItemList.new()
 	list.custom_minimum_size = Vector2(460, 200)
-	for s in shared:
+	# Only a save made on the loaded pack version loads (strangers plan): the
+	# others are listed greyed, with the version they need.
+	var first_ok := -1
+	for i in shared.size():
+		var s: Dictionary = shared[i]
 		var when := Time.get_datetime_string_from_unix_time(int(float(s.get("updated", 0)) / 1000.0), true)
-		list.add_item("%s - Day %d - last played %s" % [str(s.get("name", "")), int(s.get("day", 0)), when])
-	list.select(0)
+		var line := "%s - Day %d - last played %s" % [str(s.get("name", "")), int(s.get("day", 0)), when]
+		var need := _save_pack_words(s)
+		if not need.is_empty():
+			line += " - made with %s" % need
+		list.add_item(line)
+		list.set_item_disabled(i, not need.is_empty())
+		if need.is_empty() and first_ok < 0:
+			first_ok = i
+	if first_ok >= 0:
+		list.select(first_ok)
 	dlg.add_child(list)
 	add_child(dlg)
 	dlg.confirmed.connect(func() -> void:
 		var picked := list.get_selected_items()
-		if picked.is_empty():
+		if picked.is_empty() or list.is_item_disabled(picked[0]):
 			return
 		var s: Dictionary = shared[picked[0]]
 		# "it will use the game size and difficulty settings from your previous

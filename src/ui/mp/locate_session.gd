@@ -17,8 +17,14 @@ extends MpScreen
 ## its top panel, and "Enter the game code of the session host." with the code
 ## in place of its game list. Back returns to Multiplayer Configuration, the
 ## forward arrow is OK, the X returns to the Shuttle Cockpit (Fig 5.2's X).
+##
+## Before joining, the room's pack and build are checked (MpSetup.join_plan,
+## strangers plan PR 5): another game build stops with "whoever is older,
+## reload"; another installed version of the pack is switched to; a pack not
+## installed opens the Get-pack dialog, whose upload comes back here and joins.
 
 const OriginalMp := preload("res://src/ui/mp/original_mp.gd")
+const GetPack := preload("res://src/ui/mp/get_pack_dialog.gd")
 
 const CodeLength := 6
 
@@ -40,9 +46,11 @@ const StatusTop := 305
 const FieldPx := 13.0
 
 var _lobby: RelayClient
-var _phase: String = ""   # "" | "lookup" | "join"
+var _phase: String = ""   # "" | "lookup" | "get" (the Get-pack dialog is up) | "join"
 var _code: String = ""
 var _look: OriginalMp
+var _getpack: AcceptDialog = null
+var _last_import: Dictionary = {}
 
 
 func _ready() -> void:
@@ -138,13 +146,70 @@ func _process(_delta: float) -> void:
 		if info.is_empty() or str(info.get("code", "")) != _code:
 			return
 		if not bool(info.get("found", false)):
+			_close_getpack()
 			_stop("No game has the code %s." % _code)
 		elif bool(info.get("full", false)):
+			_close_getpack()
 			_stop("Game %s is full - a player rejoining must use the same player name." % _code)
 		else:
-			_phase = "join"
-			_say("Joining %s, hosted by %s..." % [str(info.get("name", _code)), str(info.get("host", "?"))])
-			_lobby.join(_code)
+			_act_on(info)
 	elif _phase == "join":
 		if _lobby.side != "" and not _lobby.code.is_empty():
 			go(OptionsScene)
+
+
+## The room is there with a seat: its pack and build decide what happens
+## first (MpSetup.join_plan).
+func _act_on(info: Dictionary) -> void:
+	var plan := MpSetup.join_plan(info)
+	match str(plan.get("do", "join")):
+		"build":
+			_close_getpack()
+			_stop(MpSetup.build_words(str(plan.get("theirs", ""))))
+		"switch":
+			_close_getpack()
+			if not FactionRegistry.SwitchTo(str(plan.get("dir", ""))):
+				_stop("Your copy of this game's pack could not be loaded.")
+				return
+			_say("Switched to %s." % GetPack.PackWords(info.get("settings", {})))
+			_join(info)
+		"get":
+			_phase = "get"
+			if _getpack == null:
+				_open_getpack(info)
+				_say("This game's pack is not installed here.")
+			else:
+				_getpack.call("Wrong", _last_import)
+		_:
+			_close_getpack()
+			_join(info)
+
+
+func _join(info: Dictionary) -> void:
+	_phase = "join"
+	_say("Joining %s, hosted by %s..." % [str(info.get("name", _code)), str(info.get("host", "?"))])
+	_lobby.join(_code)
+	_refresh()
+
+
+func _open_getpack(info: Dictionary) -> void:
+	_getpack = GetPack.new()
+	add_child(_getpack)
+	_getpack.call("Setup", info)
+	# An upload: look the room up again - it may have started or filled.
+	_getpack.connect("uploaded", func(result: Dictionary) -> void:
+		_last_import = result
+		_lobby.looked_up = {}
+		_lobby.lookup(_code)
+		_phase = "lookup")
+	_getpack.connect("closed", func() -> void:
+		_getpack = null
+		_stop(""))
+	_getpack.popup_centered()
+
+
+## Closed by the screen, not the player: no "closed" signal.
+func _close_getpack() -> void:
+	if _getpack != null and is_instance_valid(_getpack):
+		_getpack.queue_free()
+	_getpack = null

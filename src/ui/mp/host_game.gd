@@ -70,7 +70,9 @@ func _proceed() -> void:
 	MpSetup.remember_names()
 	MpSetup.hosting = true
 	var lobby := MpSetup.new_lobby()
-	lobby.create(MpSetup.game_name, {}, true)
+	# Created with its pack and build, so the open-games list and a code's
+	# lookup show them from the start (strangers plan PR 5).
+	lobby.create(MpSetup.game_name, MpSetup.pack_settings(), true)
 	_creating = true
 	bar().set_proceed_enabled(false, "Creating the game on the relay...")
 
