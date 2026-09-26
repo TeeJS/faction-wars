@@ -151,11 +151,14 @@ func _init() -> void:
 	var real_packs: String = FactionRegistry.USER_PACKS_ROOT
 	FactionRegistry.USER_PACKS_ROOT = "user://test-picker-packs"
 	Importer._remove(FactionRegistry.USER_PACKS_ROOT)
-	_make_pack(FactionRegistry.USER_PACKS_ROOT, "test-picker-pack", "Test Pack")
+	_make_pack(FactionRegistry.USER_PACKS_ROOT, "test-picker-pack", "Test Pack", "1.3")
 	picker._rebuild()
 	var mine_play: Button = picker.PlayButtons().get("test-picker-pack")
 	var remove: Button = (picker._panels["test-picker-pack"] as Node).find_child("RemovePack", true, false) if mine_play != null else null
 	_check(mine_play != null and not mine_play.disabled and remove != null, "an imported pack has its card, Play and Remove pack")
+	var version: Label = (picker._panels["test-picker-pack"] as Node).find_child("Version", true, false) if mine_play != null else null
+	_check(version != null and version.text == "v1.3", "pack.json version 1.3: the card says v1.3")
+	_check((picker._panels["ww2"] as Node).find_child("Version", true, false) == null, "a pack without a version: no version on its card")
 	if remove != null:
 		remove.pressed.emit()
 		await process_frame
@@ -302,7 +305,7 @@ func _init() -> void:
 
 
 ## A copy of the WWII pack under `root`, as a player's import.
-static func _make_pack(root: String, id: String, display_name: String) -> void:
+static func _make_pack(root: String, id: String, display_name: String, version: String = "") -> void:
 	var dir := "%s/%s" % [root, id]
 	DirAccess.make_dir_recursive_absolute(dir)
 	for f in FactionRegistry.PACK_FILES:
@@ -312,6 +315,8 @@ static func _make_pack(root: String, id: String, display_name: String) -> void:
 			d["id"] = id
 			d["display_name"] = display_name
 			d["map_image"] = "ww2map.png"
+			if not version.is_empty():
+				d["version"] = version
 			text = JSON.stringify(d)
 		var w := FileAccess.open(dir + "/" + f, FileAccess.WRITE)
 		w.store_string(text)
