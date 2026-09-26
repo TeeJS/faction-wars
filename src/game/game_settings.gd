@@ -46,11 +46,6 @@ static var SpeedRule: String = "slowest"
 ## in any game this client starts. Remembered in user:// (MpSetup prefs).
 ## Ticked until the player unticks it (TeeJ, 2026-09-23).
 static var ProvideFeedback: bool = true
-## "Classic controls" in the Command Center (TeeJ, 2026-09-25: toggle
-## "between the current bottom ... and the classic bottom menu"): the
-## original's Control Panel alone, our bottom row of finders hidden. Off by
-## default; remembered in user:// with Provide feedback.
-static var ClassicControls: bool = false
 
 ## The session's PRNG seed - see Prng. Printed at start; --seed=N replays.
 static var Seed: int = 0

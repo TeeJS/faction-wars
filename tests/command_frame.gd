@@ -168,31 +168,29 @@ func _init() -> void:
 		var options: Button = frame.get_node_or_null("GameOptions")
 		_check(options != null and options.position.is_equal_approx(origin + mon.position * s), "%s: the Game Options monitor where the frame has it" % side)
 
-		# THE BOTTOM: the grey bar spans the frame exactly, its finders on the
-		# middle; no Menu button, no Galaxy Map Layers; the blue bar gone - the
-		# left-hand menu does its job - with Feedback and the build label at
-		# the grey bar's two ends (TeeJ, 2026-09-25).
+		# THE BOTTOM (TeeJ, 2026-09-25): both bars gone - the blue one for the
+		# left-hand menu, the grey row of finders for the Control Panel ("we
+		# have replicated everything the grey bar does, remove it completely");
+		# no Classic controls; the build label at the frame's bottom right;
+		# Feedback at the foot of the sector column, the sectors above it.
 		var across := Rect2(origin, Vector2(640, 481) * s)
-		var mid: float = across.get_center().x
 		var grey: Control = ui.get_node("HBoxContainer")
-		var greyAt: Rect2 = grey.get_global_rect()
-		_check(absf(greyAt.position.x - across.position.x) <= 1 and absf(greyAt.end.x - across.end.x) <= 1 and not bar.Panel().visible,
-			"%s: the grey bar spans the frame; the blue bar is gone (%s; frame %s)" % [side, str(greyAt), str(across)])
-		var finders: Rect2 = (grey.get_node("PlanetInfo") as Control).get_global_rect().merge((grey.get_node("Encyclopedia") as Control).get_global_rect())
-		_check(absf(finders.get_center().x - mid) <= 1.5, "%s: the finders centred on the frame (%.1f; middle %.1f)" % [side, finders.get_center().x, mid])
-		_check(not (grey.get_node("MenuButton") as Control).visible and ui.find_child("GalaxyMapLayers", true, false) == null,
-			"%s: no Menu button, no Galaxy Map Layers" % side)
+		_check(not grey.visible and not bar.Panel().visible and ui.get_node_or_null("ClassicControls") == null
+			and ui.find_child("GalaxyMapLayers", true, false) == null,
+			"%s: no grey row of finders, no blue bar, no Classic controls" % side)
 		var band := Rect2(across.position.x, screen.y - 34, across.size.x, 31).grow(1)
 		var ver: Label = ui.find_child("BuildVersion", true, false)
 		var verAt: Rect2 = ver.get_global_rect() if ver != null else Rect2()
-		var verText: float = verAt.end.x - (ver.get_minimum_size().x if ver != null else 0.0)
 		_check(ver != null and ver.get_parent() == ui and ver.horizontal_alignment == HORIZONTAL_ALIGNMENT_RIGHT
-			and verAt.end.x <= across.end.x and verAt.end.x >= across.end.x - 12 and band.encloses(verAt) and verText > finders.end.x,
-			"%s: the build label at the grey bar's right end, clear of its buttons (text from %.0f, buttons end %.0f)" % [side, verText, finders.end.x])
+			and verAt.end.x <= across.end.x and verAt.end.x >= across.end.x - 12 and band.encloses(verAt),
+			"%s: the build label at the frame's bottom right (%s)" % [side, str(verAt)])
 		var fb: FeedbackPanel = ui.get_node_or_null("FeedbackPanel")
 		var fbAt: Rect2 = fb.get_global_rect() if fb != null else Rect2()
-		_check(fb != null and fb.OnBar and absf(fbAt.position.x - across.position.x) <= 0.5 and band.encloses(fbAt) and fbAt.end.x < finders.position.x,
-			"%s: Feedback at the grey bar's far left, clear of its buttons (%s, buttons from %.0f)" % [side, str(fbAt), finders.position.x])
+		var col: Control = ui.get_node("TaskbarPanel")
+		_check(fb != null and absf(fbAt.end.x - (screen.x - 3)) <= 0.5 and absf(fbAt.end.y - (screen.y - UIManager.ColumnFoot)) <= 0.5
+			and absf(fbAt.size.y - UIManager.KeyButtonHeight) <= 0.5 and col.offset_bottom == -(UIManager.ColumnFoot + UIManager.KeyButtonHeight + UIManager.KeyButtonGap)
+			and fb.get_index() > col.get_index(),
+			"%s: Feedback at the foot of the sector column, the sectors above it (%s)" % [side, str(fbAt)])
 
 		# THE LEFT-HAND MENU (TeeJ, 2026-09-25): every GID mode under its
 		# category, the pack's short lines, the mode on the map in the side's
@@ -249,8 +247,7 @@ func _init() -> void:
 			await process_frame
 			_check(Gid.ActiveMode() == Gid.ModeById("idle_fleets") and idle.get_theme_color("font_color") == OUI.SideColor(GameSettings.PlayerFaction),
 				"%s: a line puts its mode on the map, in the side's colour" % side)
-			_check(keyRow != null and keyRow.text == GameSettings.PlayerFaction.LoyaltyLabelShort and not (ui.get_node_or_null("MapKeyButton") != null and (ui.get_node("MapKeyButton") as Control).visible)
-				and (ui.get_node("TaskbarPanel") as Control).offset_bottom == 0.0,
+			_check(keyRow != null and keyRow.text == GameSettings.PlayerFaction.LoyaltyLabelShort and not (ui.get_node_or_null("MapKeyButton") != null and (ui.get_node("MapKeyButton") as Control).visible),
 				"%s: '%s' in the menu, not at the sector column's foot" % [side, keyRow.text if keyRow != null else ""])
 			var k: Control = bar.Key()
 			var wasOpen: bool = bool(k.get("IsOpen")) if k != null and k.get("IsOpen") != null else false
@@ -379,19 +376,6 @@ func _init() -> void:
 			_check(Gid.ActiveMode() == defense.Modes[1] and ui.get_node_or_null("GidControlMenu") == null,
 				"%s: choosing a mode puts it on the map and closes the menu" % side)
 			(main.get_node("GalaxyMap") as GalaxyMap).SetMode(Gid.Default())
-		var classic: CheckBox = ui.get_node_or_null("ClassicControls")
-		var row: Control = ui.get_node("HBoxContainer")
-		var wasRow: bool = row.visible
-		if classic != null:
-			classic.set_pressed_no_signal(true)
-			GameSettings.ClassicControls = true
-			ui._ShowClassic()
-		var hidden: bool = not row.visible
-		GameSettings.ClassicControls = false
-		ui._ShowClassic()
-		_check(classic != null and wasRow and hidden and row.visible and classic.get_global_rect().end.x <= row.get_global_rect().position.x + 1 + row.get_global_rect().size.x
-			and classic.get_global_rect().position.x >= frame.ScreenRect().position.x,
-			"%s: Classic controls hides the row of finders, and brings it back" % side)
 
 		# THE SECTORS keep the grey bar on the right, outside the frame; THE
 		# WINDOW REFERENCE BAR on the frame's shelf takes minimised windows, one
@@ -485,10 +469,12 @@ func _init() -> void:
 	_check(pins.size() > 12 and lowest <= ui.get_viewport().get_visible_rect().size.y,
 		"a huge galaxy's %d sectors all fit the grey bar (lowest at %d)" % [pins.size(), int(lowest)])
 	# "Loyalty to <side>" moved from the sector column to the left-hand menu:
-	# the column is whole again, the sectors in it (TeeJ, 2026-09-25).
+	# the column holds the sectors down to Feedback at its foot (TeeJ,
+	# 2026-09-25), a huge galaxy's twenty included.
 	var column: Rect2 = (ui.get_node("TaskbarPanel") as Control).get_global_rect()
-	_check(ui.GidMenu() != null and absf(column.end.y - ui.get_viewport().get_visible_rect().size.y) <= 1 and lowest <= column.end.y,
-		"the sector column is whole again with the key's line in the left-hand menu (%s; lowest sector at %d)" % [str(column), int(lowest)])
+	var fbBox: Rect2 = (ui.get_node("FeedbackPanel") as Control).get_global_rect()
+	_check(ui.GidMenu() != null and column.end.y <= fbBox.position.y and lowest <= column.end.y,
+		"the sector column's sectors all above Feedback at its foot (%s; lowest sector at %d; Feedback from %d)" % [str(column), int(lowest), int(fbBox.position.y)])
 	await _stop(main)
 	# A huge galaxy's every world is in the frame's window, not under its metal
 	# (TeeJ, 2026-09-25: "in large mode, sectors are being cut off").

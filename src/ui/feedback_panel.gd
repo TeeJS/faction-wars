@@ -45,11 +45,11 @@ func set_folded(folded: bool) -> void:
 	offset_top = _bottom - _foldedHeight if folded else ColumnTop
 
 
-## Under the Command Center frame: folded, the box is the blue bar's left end,
-## flush with the bar's left side (TeeJ, 2026-09-25: "Move feedback to the far
-## left of the blue bar (to the left of loyalty), aligned to the far left side
-## of the bar"); open, it still grows upward from there. top and bottom are
-## the folded box's, from the screen's bottom edge.
+## Under the Command Center frame: folded, the box is the foot of the sector
+## column (TeeJ, 2026-09-25: "move the feedback button to the bottom of the
+## right hand panel") - or the blue bar's left end where the blue bar stays;
+## open, it still grows upward from there. left is its left edge; top and
+## bottom are the folded box's, from the screen's bottom edge.
 func FitToBar(left: float, top: float, bottom: float) -> void:
 	OnBar = true
 	offset_left = left

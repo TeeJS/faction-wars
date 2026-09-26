@@ -205,16 +205,14 @@ func BuildCommandFrame(side: String) -> void:
 	_BuildReferenceBar()
 
 
-## THE BOTTOM BARS UNDER THE FRAME (TeeJ, 2026-09-25): the blue bar (the GID
-## selector) and the grey one under it span the frame exactly - "the blue bar
-## should be cropped to the width of the metal frame", "the blue and grey bars
-## should be centered on the new, narrower width" - each with its row of
-## buttons on the frame's middle: what sits at either end is held in equal
-## halves either side, so it cannot push the row off centre. On the blue bar,
-## Feedback at its far left, flush with its left side, and the build label at
-## its far right ("move the version number to the right of the blue bar").
-## The Menu button goes: the frame's Game Options monitor is the way to the
-## menu ("text 'menu' is not needed now, it can be removed").
+## THE BOTTOM UNDER THE FRAME (TeeJ, 2026-09-25). Both bars are gone: the
+## blue one (the GID selector) for the left-hand menu - "This will completely
+## eliminate the blue bar" - and the grey one, the row of finders, for the
+## Control Panel's monitors and the droid - "we have replicated everything
+## the grey bar does, remove it completely". Feedback is at the foot of the
+## sector column; the build label stays at the frame's bottom right, where
+## the bars ended. Without the left-hand menu (a screen too narrow for it)
+## the blue bar stays, Feedback at its left end, the label at its right.
 var _versionLabel: Label = null
 const BarTop := -80.0      # the blue bar, from the screen's bottom (GidBar)
 const BarBottom := -36.0
@@ -223,17 +221,12 @@ const BarInset := 2.0      # what sits on it, in from its edges
 
 func _FitBottomBars(frame: CommandFrame) -> void:
 	var across: Rect2 = frame.ScreenRect()
+	# The row of finders goes: the Control Panel's monitors, the droid and the
+	# left-hand menu do all it did (TeeJ, 2026-09-25: "we have replicated
+	# everything the grey bar does, remove it completely").
 	var row: HBoxContainer = get_node_or_null("HBoxContainer")
 	if row != null:
-		row.anchor_left = 0.0
-		row.anchor_right = 0.0
-		row.offset_left = across.position.x
-		row.offset_right = across.end.x
-		var menu: Control = row.get_node_or_null("MenuButton")
-		if menu != null:
-			menu.visible = false
-		# Nothing is left at either end: the two spacers are equal halves,
-		# the finders between them.
+		row.visible = false
 	var bar: GidBar = ActiveGalaxyMap.Bar() if ActiveGalaxyMap != null else null
 	if bar != null:
 		bar.FitAcross(across)
@@ -241,8 +234,8 @@ func _FitBottomBars(frame: CommandFrame) -> void:
 		# will completely eliminate the blue bar").
 		if _gidMenu != null and bar.Panel() != null:
 			bar.Panel().visible = false
-	# Feedback and the build label at the ends of the blue bar - or, with the
-	# blue bar gone, of the grey one under it.
+	# The build label at the frame's bottom right, where the grey bar ended -
+	# at the blue bar's right end without the left-hand menu.
 	var top: float = BarTop if _gidMenu == null else GreyTop
 	var bottom: float = BarBottom if _gidMenu == null else GreyBottom
 	if _versionLabel != null:
@@ -256,65 +249,28 @@ func _FitBottomBars(frame: CommandFrame) -> void:
 		_versionLabel.offset_left = _versionLabel.offset_right - 200.0
 		_versionLabel.offset_top = top
 		_versionLabel.offset_bottom = bottom
+	# Feedback at the foot of the sector column (TeeJ, 2026-09-25: "move the
+	# feedback button to the bottom of the right hand panel"), where the map
+	# key's button once was; the sectors stop above it. Without the left-hand
+	# menu it stays at the blue bar's left end and the key's button takes the
+	# foot.
 	var feedback: FeedbackPanel = get_node_or_null("FeedbackPanel")
-	if feedback != null:
-		feedback.FitToBar(across.position.x, top + BarInset, bottom - BarInset)
-	# The GID key's docked button goes to the foot of the sector column, the
-	# sectors stopping above it - or, with the left-hand menu, the menu's
-	# "Loyalty to ..." line takes its place and the column is whole again.
 	var tb: Control = get_node_or_null("TaskbarPanel")
+	var footUsed: bool = _gidMenu == null or feedback != null
 	if tb != null:
-		tb.offset_bottom = -(ColumnFoot + KeyButtonHeight + KeyButtonGap) if _gidMenu == null else 0.0
-	if _gidMenu != null:
-		_PlaceClassicToggle(across.position.x + (FeedbackPanel.Width + BarInset * 2.0 if feedback != null else BarInset), top, bottom)
+		tb.offset_bottom = -(ColumnFoot + KeyButtonHeight + KeyButtonGap) if footUsed else 0.0
+	if feedback != null:
+		if _gidMenu != null:
+			var right: float = get_viewport().get_visible_rect().size.x
+			feedback.FitToBar(right - FeedbackPanel.Width - 3.0, -(ColumnFoot + KeyButtonHeight), -ColumnFoot)
+			# Over the sectors when it opens upward.
+			if tb != null and feedback.get_index() < tb.get_index():
+				move_child(feedback, tb.get_index())
+		else:
+			feedback.FitToBar(across.position.x, top + BarInset, bottom - BarInset)
 	var key: Button = get_node_or_null("MapKeyButton")
 	if key != null:
 		_PlaceKeyButton(key)
-
-
-## CLASSIC CONTROLS (TeeJ, 2026-09-25: "we need a plan to be able to toggle
-## between the current bottom ... and the classic bottom menu"): ticked, the
-## original's Control Panel alone - the consoles' monitors (CommandFrame
-## AddConsoles), which work either way - and our bottom row of finders goes.
-## On the grey band right of Feedback; remembered (GameSettings, MpSetup).
-func _PlaceClassicToggle(left: float, top: float, bottom: float) -> void:
-	var chk: CheckBox = get_node_or_null("ClassicControls")
-	if chk == null:
-		chk = CheckBox.new()
-		chk.name = "ClassicControls"
-		chk.text = "Classic controls"
-		chk.tooltip_text = "Only the original's Control Panel: the consoles' monitors, without the row of finder buttons"
-		chk.focus_mode = Control.FOCUS_NONE
-		chk.add_theme_font_size_override("font_size", 11)
-		MenuScript._visible_checkbox(chk)
-		# The finder buttons' own box, so it reads over the consoles' art.
-		var finder: Button = get_node_or_null("HBoxContainer/PlanetInfo")
-		if finder != null:
-			var box: StyleBox = finder.get_theme_stylebox("normal").duplicate()
-			for st in ["normal", "hover", "pressed", "hover_pressed", "focus"]:
-				chk.add_theme_stylebox_override(st, box)
-		chk.button_pressed = GameSettings.ClassicControls
-		chk.toggled.connect(func(on: bool) -> void:
-			GameSettings.ClassicControls = on
-			MpSetup.remember_names()
-			_ShowClassic())
-		add_child(chk)
-	chk.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
-	chk.offset_left = left
-	chk.offset_right = left + chk.get_combined_minimum_size().x
-	chk.offset_top = top
-	chk.offset_bottom = bottom
-	_ShowClassic()
-
-
-## Our bottom row of finders, unless Classic controls is ticked.
-func _ShowClassic() -> void:
-	var row: Control = get_node_or_null("HBoxContainer")
-	if row != null:
-		row.visible = not (GameSettings.ClassicControls and CommandFrameRef != null)
-
-
-const MenuScript := preload("res://src/ui/menu.gd")
 
 
 ## THE GALAXY DISPLAY MENU down the left-hand column (gid_menu.gd), in the
