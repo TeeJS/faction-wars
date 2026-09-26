@@ -177,6 +177,7 @@ func BuildCommandFrame(side: String) -> void:
 		"troop_finder": func() -> void: OpenTroopFinder(),
 		"personnel_finder": func() -> void: OpenPersonnelFinder(),
 		"encyclopedia": func() -> void: OpenEncyclopedia(),
+		"gid": func() -> void: OpenGidControlMenu(),
 	})
 	CommandFrameRef = frame
 	MapFrame = frame.MapWindow()
@@ -1478,6 +1479,28 @@ func _PopupAt(popup: PopupMenu, at: Vector2) -> void:
 	p.y = clampf(p.y, screen.position.y, maxf(screen.position.y, screen.end.y - box.y))
 	popup.position = Vector2i(p.floor())
 	popup.popup()
+
+
+## THE GID CONTROL'S MENU (manual p024 Fig 2.7), from the Control Panel's
+## GID monitor, where the original opens it: its bottom-right corner on the
+## original's (CommandFrame.Layout "gid_menu"). A mode chosen goes on the map.
+const GidControlMenuScript := preload("res://src/ui/gid_control_menu.gd")
+
+
+func OpenGidControlMenu() -> void:
+	if CommandFrameRef == null or ActiveGalaxyMap == null:
+		return
+	var old: Node = get_node_or_null("GidControlMenu")
+	if old != null:
+		old.call("Close")
+	var r: Rect2 = CommandFrame.Layout[CommandFrameRef.Side]["gid_menu"]
+	var menu: Control = GidControlMenuScript.new()
+	add_child(menu)
+	menu.call("Open", CommandFrameRef.Origin + r.end * CommandFrameRef.S, CommandFrameRef.Side, Gid.Categories)
+	var map: GalaxyMap = ActiveGalaxyMap
+	menu.connect("chosen", func(mode: Object) -> void:
+		if is_instance_valid(map):
+			map.SetMode(mode))
 
 
 ## The droids stand in the Command Center frame (the bottom row's agent

@@ -47,7 +47,9 @@ const FrameSize := Vector2(640, 481)
 ## pictures' place and size - STRATEGY's pressed / normal pairs, the normal
 ## one matched on this frame (the same place for both of each pair);
 ## options_picture: the Game Options monitor's pair likewise, a little larger
-## than the monitor the frame's glass takes clicks on.
+## than the monitor the frame's glass takes clicks on. gid_menu: the GID
+## control's menu (gid_control_menu.gd) where the original opens it - matched
+## on TeeJ's screenshots of it open, both sides.
 const Layout := {
 	"alliance": {
 		"window": Rect2(54, 35, 488, 358),
@@ -63,6 +65,7 @@ const Layout := {
 			"encyclopedia": Rect2(394, 405, 28, 18), "gid": Rect2(445, 406, 28, 17),
 		},
 		"options_picture": Rect2(3, 355, 27, 41),
+		"gid_menu": Rect2(371, 234, 158, 158),
 	},
 	"empire": {
 		"window": Rect2(118, 41, 489, 358),
@@ -78,6 +81,7 @@ const Layout := {
 			"encyclopedia": Rect2(465, 434, 36, 22), "gid": Rect2(519, 435, 36, 22),
 		},
 		"options_picture": Rect2(79, 193, 35, 57),
+		"gid_menu": Rect2(421, 234, 158, 158),
 	},
 }
 const SlotPitch := 25
@@ -296,8 +300,8 @@ class Droid extends TextureRect:
 ## at the bottom of the screen"): the consoles' monitors as buttons, each with
 ## the original's tooltip (TEXTSTRA 5376-5382) and, while held down, its
 ## pressed picture (windows/console_<name>.<side>.pressed, exporter 2.4.5).
-## `actions` maps a monitor's name to what it opens; a monitor without one
-## stays part of the picture (the GID's menu: not built yet).
+## `actions` maps a monitor's name to what it opens (the GID's: its menu,
+## gid_control_menu.gd); a monitor without one stays part of the picture.
 const ConsoleTips := {
 	"options": "Game Controls", "system_finder": "System Finder", "fleet_finder": "Fleet Finder",
 	"personnel_finder": "Personnel Finder", "troop_finder": "Troop Finder",

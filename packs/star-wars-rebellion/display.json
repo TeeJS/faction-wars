@@ -206,6 +206,7 @@
         {
           "id": "available_raw_materials",
           "label": "Available Raw Materials", "menu_label": "Avail Raw Materials",
+          "control_label": "Available Raw Material",
           "quantity": {
             "kind": "status_figure",
             "key": "materials"
@@ -458,6 +459,7 @@
         {
           "id": "defense_batteries",
           "label": "Defense Batteries",
+          "control_label": "Planetary Defense Batteries",
           "title": "Defense Batteries",
           "quantity": {
             "kind": "defence_figure",
@@ -489,6 +491,7 @@
         {
           "id": "shield_generators",
           "label": "Shield Generators",
+          "control_label": "Planetary Shield Generators",
           "quantity": {
             "kind": "defence_figure",
             "key": "shields"
@@ -549,6 +552,7 @@
         {
           "id": "trooper_regiments",
           "label": "Trooper Regiments",
+          "control_label": "Troopers",
           "quantity": {
             "kind": "intel_line_count",
             "section": "troopers"
