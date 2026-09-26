@@ -38,7 +38,7 @@ func _init() -> void:
 	_remove(Root)
 	DirAccess.make_dir_recursive_absolute(Root + "/swr-original/movies")
 	var bytes := FileAccess.get_file_as_bytes(Fixture)
-	for n in ["101", "104", "105", "106", "107", "108"]:
+	for n in ["101", "102", "103", "104", "105", "106", "107", "108"]:
 		var f := FileAccess.open("%s/swr-original/movies/%s.ogv" % [Root, n], FileAccess.WRITE)
 		f.store_buffer(bytes)
 		f.close()
@@ -111,6 +111,19 @@ func _init() -> void:
 	await process_frame
 	p = root.get_node_or_null("MoviePlayer")
 	_check(p != null and str(p.Playing()).ends_with(lost + ".ogv"), "we lost: our defeat movie, %s" % lost)
+	await _skip_all()
+	VictoryManager.Reset()
+
+	# Their headquarters falls and the war ends with it (Rebellion 2's order):
+	# their headquarters movie, shown to us too, then our victory.
+	var their_hq: String = "103" if them.Id == "empire" else "102"
+	VictoryManager.HeadquartersDestroyed(them)
+	VictoryManager.Declare(us, GameState.ActiveGalaxy, StrategicTickManager.Today)
+	await process_frame
+	await process_frame
+	p = root.get_node_or_null("MoviePlayer")
+	_check(p != null and p.Paths.size() == 2 and str(p.Paths[0]).ends_with(their_hq + ".ogv") and str(p.Paths[1]).ends_with(mine + ".ogv"),
+		"their headquarters lost: their movie (%s) for us too, then our victory (%s)" % [their_hq, mine])
 	await _skip_all()
 	VictoryManager.Reset()
 

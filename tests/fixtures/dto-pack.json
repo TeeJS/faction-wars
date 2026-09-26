@@ -9131,9 +9131,21 @@
       "defeat.empire": [
         "swr-original:movies/107.ogv"
       ],
+      "headquarters_lost.alliance": [
+        "swr-original:movies/102.ogv"
+      ],
+      "headquarters_lost.empire": [
+        "swr-original:movies/103.ogv"
+      ],
       "launch": [
         "swr-original:movies/000.ogv",
         "swr-original:movies/001.ogv"
+      ],
+      "start.alliance": [
+        "swr-original:movies/003.ogv"
+      ],
+      "start.empire": [
+        "swr-original:movies/004.ogv"
       ],
       "superweapon_sabotaged": [
         "swr-original:movies/104.ogv"
@@ -9153,10 +9165,14 @@
       "credits": "swr-original:movies/005.ogv",
       "defeat.alliance": "swr-original:movies/106.ogv",
       "defeat.empire": "swr-original:movies/107.ogv",
+      "headquarters_lost.alliance": "swr-original:movies/102.ogv",
+      "headquarters_lost.empire": "swr-original:movies/103.ogv",
       "launch": [
         "swr-original:movies/000.ogv",
         "swr-original:movies/001.ogv"
       ],
+      "start.alliance": "swr-original:movies/003.ogv",
+      "start.empire": "swr-original:movies/004.ogv",
       "superweapon_sabotaged": "swr-original:movies/104.ogv",
       "system_destroyed": "swr-original:movies/101.ogv",
       "victory.alliance": "swr-original:movies/105.ogv",

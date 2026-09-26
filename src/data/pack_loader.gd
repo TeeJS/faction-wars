@@ -63,7 +63,7 @@ const CYCLE_CHOICES := ["difficulty", "galaxy_size"]
 ## cutscenes-plan.md) - named by role, never by a setting's names. Those
 ## ending in "." take a faction id: "victory.empire".
 const KNOWN_MOVIE_EVENTS := ["launch", "credits", "system_destroyed", "superweapon_sabotaged"]
-const KNOWN_MOVIE_SIDE_EVENTS := ["start.", "victory.", "defeat."]
+const KNOWN_MOVIE_SIDE_EVENTS := ["start.", "victory.", "defeat.", "headquarters_lost."]
 const KNOWN_DIFFICULTIES := ["easy", "medium", "hard"]
 ## SCHEMA.md section 7. Day-zero placement and the story parts. Each story
 ## part is ONE character - the set-pieces are written for one pilgrim, one
@@ -241,7 +241,7 @@ static func _validate_movies(pack: LoadedPack, pack_dir: String, errors: Array[S
 				break
 		if not ok:
 			if not sided:
-				errors.append("pack.json movies: '%s' is not an event. Known: %s, and start./victory./defeat.<faction id>." % [e, ", ".join(KNOWN_MOVIE_EVENTS)])
+				errors.append("pack.json movies: '%s' is not an event. Known: %s, and start./victory./defeat./headquarters_lost.<faction id>." % [e, ", ".join(KNOWN_MOVIE_EVENTS)])
 			continue
 		var v: Variant = m.MoviesRaw[event]
 		var list: Array = v if v is Array else [v]

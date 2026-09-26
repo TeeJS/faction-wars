@@ -23,6 +23,11 @@ static func HeadquartersDestroyed(owner: Faction) -> void:
 	_hq_destroyed[owner.Id] = true
 	print("[Victory] %s headquarters destroyed - permanently." % owner.DisplayName)
 	LoyaltyManager.RebelHeadquartersDestroyed(owner)
+	# The side that lost it has its own movie, shown to everyone - and before
+	# the war's end, when this ends it (the order Rebellion 2's remake plays
+	# them in: its GameFlowController queues the defender's headquarters movie,
+	# then the ending).
+	EventBus.Cue("headquarters_lost.%s" % owner.Id, [])
 
 
 static func HasLostHeadquarters(f: Faction) -> bool:

@@ -42,8 +42,9 @@ func _init() -> void:
 	var m: PackDefs.PackManifest = FactionRegistry.Pack.Manifest
 	_check(m.Id == "star-wars-rebellion", "the Star Wars pack is loaded")
 	_check(m.Movies.get("launch", []) == ["swr-original:movies/000.ogv", "swr-original:movies/001.ogv"]
-		and m.Movies.get("credits", []) == ["swr-original:movies/005.ogv"] and m.Movies.size() == 8,
-		"its movies: launch 000 + 001, credits 005, and six more (%d events)" % m.Movies.size())
+		and m.Movies.get("credits", []) == ["swr-original:movies/005.ogv"] and m.Movies.size() == 12
+		and m.Movies.get("start.empire", []) == ["swr-original:movies/004.ogv"] and m.Movies.get("headquarters_lost.alliance", []) == ["swr-original:movies/102.ogv"],
+		"its movies: launch 000 + 001, credits 005, the Empire's start 004, the Alliance's headquarters 102, and eight more (%d events)" % m.Movies.size())
 	_Rule23()
 
 	# Nothing imported: nothing to play.
