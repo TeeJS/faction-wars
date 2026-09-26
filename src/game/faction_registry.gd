@@ -6,11 +6,12 @@ extends RefCounted
 ## packs/active.json. The engine holds no default pack id.
 ##
 ## ONE PACK AT A TIME. Every catalog is static state filled from the pack, so
-## a second, different load is refused rather than half-applied. The one way to
-## switch is Unload() and it has one caller: the pack picker, when the Cockpit
-## exits back to it - nothing is mid-game then, and GameSession.load_catalogs
-## refills every catalog from the new pack at StartGame. A game never changes
-## pack mid-process.
+## a second, different load is refused rather than half-applied. The ways to
+## switch go through Unload(), and they have two callers, both before any game
+## exists: the pack picker, when the Cockpit exits back to it, and a
+## head-to-head join onto another version of a pack (SwitchTo). Nothing is
+## mid-game then, and GameSession.load_catalogs refills every catalog from the
+## new pack at StartGame. A game never changes pack mid-process.
 
 const PACKS_ROOT := "res://packs"
 ## Packs the player imported (docs/original-art-plan.md): the same layout,
@@ -18,6 +19,16 @@ const PACKS_ROOT := "res://packs"
 ## A static var, not a const, so a test can point it at a scratch folder and
 ## never touch a player's imported packs (as Artwork.UserArtRoot).
 static var USER_PACKS_ROOT := "user://packs"
+## Every other installed version of an imported pack (strangers plan, 2026-09-26):
+## <root>/<first 16 of its content hash>/<id>/. The current version stays at
+## USER_PACKS_ROOT/<id>, so the picker and the loader are unchanged, and the last
+## folder of an archived one is still the pack's id, as the loader requires. A
+## head-to-head game on an older version finds it here (FindByHash). A static
+## var, so a test can point it at a scratch folder.
+static var PACK_VERSIONS_ROOT := "user://pack-versions"
+## Content hash per pack folder, so FindByHash does not re-read every version
+## each time it looks. Cleared on every import and removal.
+static var _hash_cache: Dictionary = {}
 ## The files a pack is made of - what PackLoader.Load reads and what the
 ## content hash covers, so two clients on the same pack id but different
 ## content are told so instead of desyncing (BACKLOG #13).
@@ -126,8 +137,9 @@ static func EnsureLoaded(pack_id: String = "") -> bool:
 	return true
 
 
-## Forget the loaded pack so another can be chosen. THE PACK PICKER'S CALL ONLY,
-## on the way back from the Cockpit: nothing is mid-game, and the catalogs the
+## Forget the loaded pack so another can be chosen. The pack picker's call, on
+## the way back from the Cockpit, and SwitchTo's, joining a head-to-head game
+## on another version: nothing is mid-game either time, and the catalogs the
 ## old pack filled are all refilled by GameSession.load_catalogs before the
 ## next day zero. tests/pack_switch.gd proves a game after a switch hashes
 ## exactly like one in a fresh process.
@@ -142,6 +154,62 @@ static func Unload() -> void:
 	_icons.clear()
 	PackHash = ""
 	LoadedDir = ""
+
+
+## Load the pack at `dir` in place of the loaded one - a head-to-head join onto
+## the version the host plays (strangers plan PR 5). Loaded FIRST: a pack that
+## fails to load leaves the old one loaded and returns false (EnsureLoaded's
+## failure path asserts, and the Multiplayer Options screen reads Playable[0]).
+static func SwitchTo(dir: String) -> bool:
+	var errors: Array[String] = []
+	var pack := PackLoader.Load(dir, errors)
+	if pack == null:
+		push_warning("[Pack] could not switch to %s: %s" % [dir, "; ".join(errors)])
+		return false
+	Unload()
+	Load(pack)
+	LoadedDir = dir
+	PackHash = ContentHash(dir)
+	(load("res://src/ui/artwork.gd") as GDScript).call("Reset")
+	print("[Pack] switched to '%s' from %s (hash %s)." % [pack.Manifest.DisplayName, dir, PackHash.substr(0, 12)])
+	return true
+
+
+## Every installed copy of pack `pack_id`: the shipped one, the imported
+## current one, and the archived versions (PACK_VERSIONS_ROOT).
+static func VersionDirs(pack_id: String) -> Array[String]:
+	var out: Array[String] = []
+	for d in ["%s/%s" % [PACKS_ROOT, pack_id], "%s/%s" % [USER_PACKS_ROOT, pack_id]]:
+		if FileAccess.file_exists("%s/pack.json" % d):
+			out.append(d)
+	if DirAccess.dir_exists_absolute(PACK_VERSIONS_ROOT):
+		for h in DirAccess.get_directories_at(PACK_VERSIONS_ROOT):
+			var d := "%s/%s/%s" % [PACK_VERSIONS_ROOT, h, pack_id]
+			if FileAccess.file_exists("%s/pack.json" % d):
+				out.append(d)
+	return out
+
+
+## The folder of the installed copy of `pack_id` whose content hash is
+## `hash`, or "" when there is none.
+static func FindByHash(pack_id: String, hash: String) -> String:
+	if hash.is_empty():
+		return ""
+	for d in VersionDirs(pack_id):
+		if HashOf(d) == hash:
+			return d
+	return ""
+
+
+## ContentHash, remembered per folder until the next import or removal.
+static func HashOf(pack_dir: String) -> String:
+	if not _hash_cache.has(pack_dir):
+		_hash_cache[pack_dir] = ContentHash(pack_dir)
+	return _hash_cache[pack_dir]
+
+
+static func ClearHashCache() -> void:
+	_hash_cache.clear()
 
 
 ## SHA-256 over the pack's JSON files, in PACK_FILES order. JSON only: an

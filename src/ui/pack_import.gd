@@ -224,22 +224,125 @@ static func _import(zip: ZIPReader) -> Dictionary:
 				shown.append(str(e))
 			var more: String = "\n  ... and %d more" % (errors.size() - REASONS_SHOWN) if errors.size() > REASONS_SHOWN else ""
 			return _fail("Not imported: the game would refuse to load it.\n  %s%s" % ["\n  ".join(shown), more])
-	_remove(dest)
-	# A faction pack is staged outside user://packs, so on a player's first
-	# import that folder does not exist yet and the move would fail (the
-	# editor's game check, 2026-09-24).
-	DirAccess.make_dir_recursive_absolute(dest.get_base_dir())
-	if DirAccess.rename_absolute(staging, dest) != OK:
-		return _fail("Could not move the import into place at %s." % dest)
+	var note := ""
+	if kind == KIND_FACTION_PACK and FileAccess.file_exists("%s/pack.json" % dest):
+		# Another version of a pack already installed: both are kept.
+		var placed := _place_version(staging, dest, id)
+		if not placed.ok:
+			_remove(staging)
+			return _fail(placed.message)
+		note = placed.note
+	else:
+		_remove(dest)
+		# A faction pack is staged outside user://packs, so on a player's first
+		# import that folder does not exist yet and the move would fail (the
+		# editor's game check, 2026-09-24).
+		DirAccess.make_dir_recursive_absolute(dest.get_base_dir())
+		if DirAccess.rename_absolute(staging, dest) != OK:
+			return _fail("Could not move the import into place at %s." % dest)
+	FactionRegistry.ClearHashCache()
 	Art.Reset()
 	_sync()
 	_ask_to_keep_storage()
 	var what := "the art set" if kind == KIND_ART_SET else "the faction pack"
-	var message := "Imported %s \"%s\" (%d files)." % [what, title, contents.size()]
+	var message := "Imported %s \"%s\" (%d files).%s" % [what, title, contents.size(), note]
 	var made_by := str(manifest.get("exporter", ""))
 	if kind == KIND_ART_SET and IsOutdated(id, made_by):
 		message += " " + OutdatedNote(id, made_by)
 	return {"ok": true, "kind": kind, "id": id, "files": contents.size(), "message": message}
+
+
+## A faction pack imported over another version of itself (strangers plan,
+## 2026-09-26): BOTH are kept, so a head-to-head game on either can be joined.
+## The same content replaces in place. Otherwise the newer by pack.json
+## `version` (dotted numbers, 1.10 after 1.9) is current at user://packs/<id>
+## and the other goes to FactionRegistry.PACK_VERSIONS_ROOT; when the versions
+## are equal, missing or not dotted numbers, the one just imported is current.
+## Archiving the loaded pack points FactionRegistry.LoadedDir at its new place.
+static func _place_version(staging: String, dest: String, id: String) -> Dictionary:
+	var old_hash := FactionRegistry.ContentHash(dest)
+	var new_hash := FactionRegistry.ContentHash(staging)
+	if old_hash == new_hash:
+		_remove(dest)
+		if DirAccess.rename_absolute(staging, dest) != OK:
+			return {"ok": false, "message": "Could not move the import into place at %s." % dest}
+		return {"ok": true, "note": ""}
+	var new_version := _version_in(staging)
+	var old_version := _version_in(dest)
+	if CompareVersions(new_version, old_version) < 0:
+		# An older version than the current one: kept beside it.
+		var kept := ArchiveDir(new_hash, id)
+		_remove(kept)
+		DirAccess.make_dir_recursive_absolute(kept.get_base_dir())
+		if DirAccess.rename_absolute(staging, kept) != OK:
+			return {"ok": false, "message": "Could not keep the older version at %s." % kept}
+		return {"ok": true, "note": " It is older than the installed v%s, which stays current; v%s is kept beside it for games played on it." % [old_version, new_version]}
+	# The new one becomes current; the one it replaces is kept.
+	var archive := ArchiveDir(old_hash, id)
+	_remove(archive)
+	DirAccess.make_dir_recursive_absolute(archive.get_base_dir())
+	if DirAccess.rename_absolute(dest, archive) != OK:
+		return {"ok": false, "message": "Could not keep the installed version at %s." % archive}
+	var was_loaded := FactionRegistry.LoadedDir == dest
+	if was_loaded:
+		FactionRegistry.LoadedDir = archive
+	if DirAccess.rename_absolute(staging, dest) != OK:
+		DirAccess.rename_absolute(archive, dest)   # put the installed one back
+		if was_loaded:
+			FactionRegistry.LoadedDir = dest
+		return {"ok": false, "message": "Could not move the import into place at %s." % dest}
+	var replaced := ("v" + old_version) if not old_version.is_empty() else "the one it replaces"
+	return {"ok": true, "note": " The version installed before (%s) is kept, for games played on it." % replaced}
+
+
+## Where an archived version of pack `id` lives: the first 16 characters of its
+## content hash, then the id (the loader wants the folder named for the pack).
+static func ArchiveDir(hash: String, id: String) -> String:
+	return "%s/%s/%s" % [FactionRegistry.PACK_VERSIONS_ROOT, hash.substr(0, 16).to_lower(), id]
+
+
+## The archived versions of pack `id` (not the current one).
+static func ArchivedVersions(id: String) -> Array[String]:
+	var out: Array[String] = []
+	var root := FactionRegistry.PACK_VERSIONS_ROOT
+	if DirAccess.dir_exists_absolute(root):
+		for h in DirAccess.get_directories_at(root):
+			if FileAccess.file_exists("%s/%s/%s/pack.json" % [root, h, id]):
+				out.append("%s/%s/%s" % [root, h, id])
+	return out
+
+
+static func _version_in(pack_dir: String) -> String:
+	var d: Variant = JSON.parse_string(FileAccess.get_file_as_string("%s/pack.json" % pack_dir))
+	return PackDefs.PackManifest.from_dict(d).Version if d is Dictionary else ""
+
+
+## Pack versions as dotted numbers: 1 when `a` is newer, -1 when older, 0 when
+## the same - or when either is missing or not dotted numbers, which no rule
+## can order.
+static func CompareVersions(a: String, b: String) -> int:
+	var pa := _dotted(a)
+	var pb := _dotted(b)
+	if pa.is_empty() or pb.is_empty():
+		return 0
+	for i in maxi(pa.size(), pb.size()):
+		var x: int = pa[i] if i < pa.size() else 0
+		var y: int = pb[i] if i < pb.size() else 0
+		if x != y:
+			return 1 if x > y else -1
+	return 0
+
+
+static func _dotted(v: String) -> Array[int]:
+	var out: Array[int] = []
+	v = v.strip_edges()
+	if v.is_empty():
+		return out
+	for part in v.split("."):
+		if part.is_empty() or not part.is_valid_int() or part.begins_with("-") or part.begins_with("+"):
+			return [] as Array[int]
+		out.append(int(part))
+	return out
 
 
 ## Whether an art set made by exporter `made_by` is older than this game needs.
@@ -288,11 +391,19 @@ static func Installed() -> Array[Dictionary]:
 	return out
 
 
-## Removes an imported art set or faction pack.
+## Removes an imported art set, or a faction pack with EVERY version of it
+## kept (ArchivedVersions) - the picker's Remove pack says so.
 static func Remove(kind: String, id: String) -> void:
 	if not _safe_id(id):
 		return
 	_remove("%s/%s" % [Art.UserArtRoot if kind == KIND_ART_SET else FactionRegistry.USER_PACKS_ROOT, id])
+	if kind == KIND_FACTION_PACK:
+		for dir in ArchivedVersions(id):
+			_remove(dir)
+			var holder := dir.get_base_dir()
+			if DirAccess.get_directories_at(holder).is_empty() and DirAccess.get_files_at(holder).is_empty():
+				DirAccess.remove_absolute(holder)
+		FactionRegistry.ClearHashCache()
 	Art.Reset()
 	_sync()
 
