@@ -114,6 +114,53 @@ static func pack_mismatch(settings: Dictionary) -> String:
 	return ""
 
 
+## The room's pack and build (strangers plan PR 5): what the open-games list
+## and a code's lookup show a stranger (the relay passes only these), and what
+## a joining client checks before it joins (join_plan) - the pack's id, title,
+## version, content hash and download link (only a sound one), and this build.
+static func pack_settings() -> Dictionary:
+	FactionRegistry.EnsureLoaded()
+	var m: PackDefs.PackManifest = FactionRegistry.Pack.Manifest
+	return {"pack": FactionRegistry.LoadedId(), "pack_hash": FactionRegistry.PackHash, "pack_title": m.DisplayName,
+		"pack_version": m.Version, "pack_url": m.OfferedUrl(), "build": BuildInfo.version()}
+
+
+## What a client about to join the room a lookup describes must do first
+## (strangers plan PR 5), as {do, ...}:
+##   "build" - an unstarted room on another game build: whoever is older
+##     reloads the page (`theirs` = the host's build). A started room skips
+##     this: its seat_info and hello compare the live clients, so a rejoin
+##     after a deploy still works;
+##   "join" - this client has the room's pack loaded (or the room names none:
+##     an older host, left to the Start gate);
+##   "switch" - another installed copy has the room's content hash: switch to
+##     `dir` (FactionRegistry.SwitchTo), then join;
+##   "build" again - the room's pack ships with the game but not with this
+##     content: only another build has it;
+##   "get" - the pack is not installed: the Get-pack dialog.
+static func join_plan(info: Dictionary) -> Dictionary:
+	var s: Dictionary = info.get("settings", {}) if info.get("settings") is Dictionary else {}
+	var theirs := str(s.get("build", ""))
+	if not bool(info.get("started", false)) and not BuildInfo.same_build(BuildInfo.version(), theirs):
+		return {"do": "build", "theirs": theirs}
+	var pack := str(s.get("pack", ""))
+	var hash := str(s.get("pack_hash", ""))
+	FactionRegistry.EnsureLoaded()
+	if pack.is_empty() or hash.is_empty() or (pack == FactionRegistry.LoadedId() and hash == FactionRegistry.PackHash):
+		return {"do": "join"}
+	var dir := FactionRegistry.FindByHash(pack, hash)
+	if not dir.is_empty():
+		return {"do": "switch", "dir": dir}
+	if FileAccess.file_exists("%s/%s/pack.json" % [FactionRegistry.PACKS_ROOT, pack]):
+		return {"do": "build", "theirs": theirs}
+	return {"do": "get"}
+
+
+## The words for a build difference (join_plan "build").
+static func build_words(theirs: String) -> String:
+	return "Your game (%s) and the host's (%s) differ. Whoever is older: reload the page." % [BuildInfo.version(), theirs if not theirs.is_empty() else "unknown"]
+
+
 ## The host's side, as a Faction, from the room settings.
 static func host_faction(settings: Dictionary) -> Faction:
 	FactionRegistry.EnsureLoaded()

@@ -42,6 +42,15 @@ func _init() -> void:
 	var log_path := _arg("--replay-log=", "")
 	_log = FileAccess.open(log_path, FileAccess.WRITE) if not log_path.is_empty() else null
 	FactionRegistry.EnsureLoaded()
+	# --pack-dir=<folder>: this client starts on that copy of the pack - another
+	# version of the host's - and must switch to the host's on joining
+	# (strangers plan PR 5; tools/mp-flow-local.ps1 -GuestOtherVersion).
+	var pack_dir := _arg("--pack-dir=", "")
+	if not pack_dir.is_empty():
+		if not FactionRegistry.SwitchTo(pack_dir):
+			await _fail("could not load --pack-dir=%s" % pack_dir)
+			return
+		print("[mp_flow] %s starts on another version of %s (hash %s)" % [_role, FactionRegistry.LoadedId(), FactionRegistry.PackHash.substr(0, 12)])
 	MpSetup.reset()
 	MpSetup.player_name = "Han" if _role == "host" else "Luke"
 	MpSetup.game_name = "The End of the Empire"
@@ -136,6 +145,7 @@ func _guest() -> void:
 	await process_frame
 	await _locate_and_join(FileAccess.get_file_as_string(code_file).strip_edges(), "the game to be found by code")
 	print("[mp_flow] guest in room %s" % MpSetup.lobby.code)
+	print("[mp_flow] guest plays on %s (hash %s)" % [FactionRegistry.LoadedDir, FactionRegistry.PackHash.substr(0, 12)])
 	if not await _until(func() -> bool: return current_scene is GameManager, "the host to start", 180.0): return
 
 

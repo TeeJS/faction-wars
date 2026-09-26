@@ -8,6 +8,7 @@ param(
     [switch]$Load,
     [string]$SpeedRule = '',   # 'average' runs the pair under TeeJ's average rule
     [int]$RejoinCode = 0,      # the guest drops on this day and comes back by code through the screens
+    [switch]$GuestOtherVersion,   # the guest starts on another version of the pack and must switch to the host's on joining (strangers plan PR 5)
     [int]$RelayPort = 8790,
     [string]$Godot = 'D:\Downloads\Godot_v4.7.1-stable_mono_win64\Godot_v4.7.1-stable_mono_win64_console.exe'
 )
@@ -18,11 +19,12 @@ $env:PORT = "$RelayPort"; $env:DATA_DIR = "$box\relay-data"
 $relay = Start-Process -FilePath 'bun' -ArgumentList @('run', (Join-Path $repo 'relay\server.ts')) -RedirectStandardOutput "$box\relay.stdout.txt" -RedirectStandardError "$box\relay.stderr.txt" -PassThru -NoNewWindow
 Start-Sleep -Seconds 2
 
-function Run-Pair([string]$tag, [string[]]$extra) {
+function Run-Pair([string]$tag, [string[]]$extra, [string[]]$guestExtra = @()) {
     $procs = @()
     foreach ($role in @('host', 'guest')) {
         $args = @('--headless', '--path', $repo, '-s', 'tests/mp_flow.gd', '--',
             "--role=$role", "--relay=ws://127.0.0.1:$RelayPort/ws", "--box=$box", "--days=$Days", "--replay-log=$box\$role$tag.hashes.log") + $extra
+        if ($role -eq 'guest') { $args += $guestExtra }
         $procs += Start-Process -FilePath $Godot -ArgumentList $args -RedirectStandardOutput "$box\$role$tag.stdout.txt" -RedirectStandardError "$box\$role$tag.stderr.txt" -PassThru -NoNewWindow
     }
     foreach ($p in $procs) { if (-not $p.WaitForExit(900000)) { $p.Kill(); Write-Host "TIMEOUT" } }
@@ -61,7 +63,20 @@ if ($RejoinCode -gt 0) {
     try { $relay.Kill() } catch {}
     exit
 }
-$g1 = Run-Pair "" $(if ($SpeedRule -ne '') { @("--speed-rule=$SpeedRule") } else { @() })
+$guestExtra = @()
+if ($GuestOtherVersion) {
+    # A copy of the default pack that differs only in its version - so in its
+    # content hash - for the guest to start on (--pack-dir).
+    $id = (Get-Content (Join-Path $repo 'packs\active.json') -Raw | ConvertFrom-Json).pack
+    $alt = Join-Path $box "alt\$id"
+    New-Item -ItemType Directory -Force (Split-Path $alt) | Out-Null
+    Copy-Item (Join-Path $repo "packs\$id") $alt -Recurse
+    $pj = Join-Path $alt 'pack.json'
+    $text = [IO.File]::ReadAllText($pj) -replace '^\{', "{`n  `"version`": `"0.9-other`","
+    [IO.File]::WriteAllText($pj, $text)
+    $guestExtra = @("--pack-dir=$($alt -replace '\\', '/')")
+}
+$g1 = Run-Pair "" $(if ($SpeedRule -ne '') { @("--speed-rule=$SpeedRule") } else { @() }) $guestExtra
 Write-Host ("M4 (screens -> lockstep) GATE: {0}  (box: {1})" -f $g1, $box)
 if ($Load) {
     Remove-Item "$box\room.code" -Force

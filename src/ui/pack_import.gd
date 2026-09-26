@@ -225,6 +225,13 @@ static func _import(zip: ZIPReader) -> Dictionary:
 			var more: String = "\n  ... and %d more" % (errors.size() - REASONS_SHOWN) if errors.size() > REASONS_SHOWN else ""
 			return _fail("Not imported: the game would refuse to load it.\n  %s%s" % ["\n  ".join(shown), more])
 	var note := ""
+	# What was imported, for a caller that wanted one particular pack (the
+	# Get-pack dialog compares it with the host's).
+	var pack_facts := {}
+	if kind == KIND_FACTION_PACK:
+		var d: Variant = JSON.parse_string(FileAccess.get_file_as_string("%s/pack.json" % staging))
+		var m := PackDefs.PackManifest.from_dict(d if d is Dictionary else {})
+		pack_facts = {"pack_title": m.DisplayName, "pack_version": m.Version, "pack_hash": FactionRegistry.ContentHash(staging)}
 	if kind == KIND_FACTION_PACK and FileAccess.file_exists("%s/pack.json" % dest):
 		# Another version of a pack already installed: both are kept.
 		var placed := _place_version(staging, dest, id)
@@ -249,7 +256,9 @@ static func _import(zip: ZIPReader) -> Dictionary:
 	var made_by := str(manifest.get("exporter", ""))
 	if kind == KIND_ART_SET and IsOutdated(id, made_by):
 		message += " " + OutdatedNote(id, made_by)
-	return {"ok": true, "kind": kind, "id": id, "files": contents.size(), "message": message}
+	var result := {"ok": true, "kind": kind, "id": id, "files": contents.size(), "message": message}
+	result.merge(pack_facts)
+	return result
 
 
 ## A faction pack imported over another version of itself (strangers plan,

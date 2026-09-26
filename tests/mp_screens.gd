@@ -38,6 +38,10 @@ func _init() -> void:
 	await _options_original(false)
 	_remove(ArtRoot)
 	Art.Reset()
+	# Strangers plan PR 5: what a joining client does first, and the Get-pack
+	# dialog.
+	_join_plan()
+	await _get_pack()
 	print("[mp_screens] %d checks, %d failed" % [_checks, _fails])
 	quit(1 if _fails > 0 else 0)
 
@@ -106,6 +110,87 @@ func _configuration() -> void:
 	connect_btn.pressed.emit()
 	_check(connect_btn.button_pressed and not setup_btn.button_pressed, "Fig 5.2: one choice at a time")
 	await _close(s)
+
+
+## MpSetup.join_plan: before joining, the room's build and pack decide - a
+## build difference stops an unstarted room; the loaded pack joins; another
+## installed copy with the room's hash is switched to; the room's pack shipped
+## but not with this content means another build; a pack not installed opens
+## the Get-pack dialog.
+func _join_plan() -> void:
+	FactionRegistry.EnsureLoaded()
+	var mine := MpSetup.pack_settings()
+	_check(mine.pack == FactionRegistry.LoadedId() and mine.pack_hash == FactionRegistry.PackHash and mine.build == BuildInfo.version()
+		and mine.has("pack_title") and mine.has("pack_version") and mine.has("pack_url"), "the room carries its pack's id, hash, title, version, link and the build")
+	var was: String = BuildInfo._cached
+	BuildInfo._cached = "2026-09-26 abc1234"
+	var room := func(s: Dictionary, started: bool = false) -> Dictionary:
+		var full := { "build": "2026-09-26 abc1234" }
+		full.merge(s, true)
+		return { "found": true, "started": started, "settings": full }
+	_check(MpSetup.join_plan(room.call(mine)).do == "join", "the host's pack is the loaded one: join")
+	var other_build: Dictionary = MpSetup.join_plan(room.call({ "build": "2026-09-26 def5678", "pack": mine.pack, "pack_hash": mine.pack_hash }))
+	_check(other_build.do == "build" and MpSetup.build_words(other_build.theirs) == "Your game (2026-09-26 abc1234) and the host's (2026-09-26 def5678) differ. Whoever is older: reload the page.",
+		"another build, not started: stop, whoever is older reloads")
+	_check(MpSetup.join_plan(room.call({ "build": "", "pack": mine.pack, "pack_hash": mine.pack_hash })).do == "build", "a room with no build is another build, never a wildcard")
+	_check(MpSetup.join_plan(room.call({ "build": "2026-09-26 def5678", "pack": mine.pack, "pack_hash": mine.pack_hash }, true)).do == "join",
+		"a started room skips the build check (a rejoin after a deploy; the hello compares)")
+	var ww2_hash := FactionRegistry.ContentHash("res://packs/ww2")
+	var sw: Dictionary = MpSetup.join_plan(room.call({ "pack": "ww2", "pack_hash": ww2_hash }))
+	_check(sw.do == "switch" and sw.dir == "res://packs/ww2", "another pack installed with the room's hash: switch to it")
+	_check(MpSetup.join_plan(room.call({ "pack": mine.pack, "pack_hash": "0".repeat(64) })).do == "build", "a shipped pack's id with other content: another build")
+	_check(MpSetup.join_plan(room.call({ "pack": "somebodys-pack", "pack_hash": "1".repeat(64) })).do == "get", "a pack not installed: the Get-pack dialog")
+	BuildInfo._cached = was
+	# Load Game (default 3): only a save made on the loaded pack version loads.
+	var Options: GDScript = load("res://src/ui/mp/multiplayer_options.gd")
+	_check(Options.call("_save_pack_words", { "settings": { "pack_hash": FactionRegistry.PackHash } }) == ""
+		and Options.call("_save_pack_words", { "settings": {} }) == "", "Load Game: a save on the loaded version (or from before saves carried a hash) loads")
+	_check(Options.call("_save_pack_words", { "settings": { "pack_hash": "3".repeat(64), "pack_title": "My Pack", "pack_version": "1.2" } }) == "My Pack v1.2",
+		"Load Game: a save on another version is greyed, 'made with My Pack v1.2'")
+
+
+## The Get-pack dialog (src/ui/mp/get_pack_dialog.gd): what it says, the link
+## only when it is a sound http(s) one, the upload, and what a wrong file gets.
+func _get_pack() -> void:
+	var GetPack: GDScript = load("res://src/ui/mp/get_pack_dialog.gd")
+	var PackImport: GDScript = load("res://src/ui/pack_import.gd")
+	var before: Callable = func(_r: Dictionary) -> void: pass
+	PackImport.OnImported = before
+	var host := { "pack": "somebodys-pack", "pack_title": "Somebody's Pack", "pack_version": "1.3", "pack_url": "https://example.com/packs/somebody" }
+	var dlg: AcceptDialog = GetPack.new()
+	root.add_child(dlg)
+	dlg.call("Setup", { "settings": host })
+	var uses: Label = dlg.find_child("Uses", true, false)
+	_check(uses != null and uses.text == "This game uses Somebody's Pack v1.3.", "Get-pack: which pack, and its version")
+	var link: LineEdit = dlg.find_child("Link", true, false)
+	_check(link != null and link.text == host.pack_url and not link.editable and dlg.find_child("CopyLink", true, false) != null
+		and dlg.find_child("OpenLink", true, false) == null, "Get-pack (desktop): the link in a read-only box with Copy - the game starts no other program")
+	_check(dlg.find_child("Upload", true, false) != null, "Get-pack: Upload pack...")
+	_check(PackImport.OnImported != before, "Get-pack: a file dropped on the game comes to the dialog while it is open")
+	var got: Array = []
+	dlg.connect("uploaded", func(r: Dictionary) -> void: got.append(r))
+	dlg.call("_on_imported", { "ok": false, "message": "Not imported: a test refusal." })
+	_check(got.is_empty() and dlg.call("Status") == "Not imported: a test refusal.", "Get-pack: a refused file says why, and nothing is looked up")
+	var file := { "ok": true, "kind": "faction_pack", "id": "somebodys-pack", "pack_title": "Somebody's Pack", "pack_version": "1.4", "pack_hash": "2".repeat(64) }
+	dlg.call("_on_imported", file)
+	_check(got.size() == 1, "Get-pack: a faction pack uploaded - the room is looked up again")
+	dlg.call("Wrong", file)
+	_check(dlg.call("Status") == "That file is Somebody's Pack v1.4; the host is on v1.3. It stays installed.", "Get-pack: the wrong version says which is which: %s" % dlg.call("Status"))
+	root.remove_child(dlg)
+	dlg.free()
+	await process_frame
+	_check(PackImport.OnImported == before, "Get-pack closed: imports go back to whoever listened before")
+	for bad in ["javascript:alert(1)", " JaVaScRiPt:alert(1)", "data:text/html,<b>x</b>", "https://exa mple.com"]:
+		var h := host.duplicate()
+		h.pack_url = bad
+		var d: AcceptDialog = GetPack.new()
+		root.add_child(d)
+		d.call("Setup", { "settings": h })
+		_check(d.find_child("NoLink", true, false) != null and d.find_child("Link", true, false) == null and d.find_child("OpenLink", true, false) == null,
+			"Get-pack: no link offered for %s" % bad.strip_edges().substr(0, 20))
+		root.remove_child(d)
+		d.free()
+	PackImport.OnImported = Callable()
 
 
 ## Stand-ins for exporter 2.4.7's head-to-head pictures, at the original's sizes.
