@@ -83,6 +83,59 @@ internal static class OggTheora
 {
     private sealed record Page(byte[] Bytes, double Time, bool Audio);
 
+    /// <summary>Sound alone as Ogg Vorbis (the music, Music.cs): 16-bit samples,
+    /// interleaved by channel, fed a few thousand at a time.</summary>
+    public static byte[] EncodeAudio(short[] samples, int channels, int rate, float quality)
+    {
+        using var n = new NativeBlocks();
+        IntPtr vi = n.Alloc(256), vc = n.Alloc(256), vd = n.Alloc(8192), vb = n.Alloc(8192);
+        IntPtr os = n.Alloc(4096), og = n.Alloc(64), op = n.Alloc(256), op2 = n.Alloc(256), op3 = n.Alloc(256);
+        Xiph.vorbis_info_init(vi);
+        if (Xiph.vorbis_encode_init_vbr(vi, channels, rate, quality) != 0)
+            throw new InvalidOperationException($"libvorbis refused {rate} Hz x{channels}.");
+        Xiph.vorbis_comment_init(vc);
+        Xiph.vorbis_analysis_init(vd, vi);
+        Xiph.vorbis_block_init(vd, vb);
+        Xiph.ogg_stream_init(os, 1);
+        try
+        {
+            var outp = new MemoryStream();
+            Xiph.vorbis_analysis_headerout(vd, vc, op, op2, op3);
+            Xiph.ogg_stream_packetin(os, op);
+            while (Xiph.ogg_stream_flush(os, og) != 0)
+                outp.Write(PageBytes(og));
+            Xiph.ogg_stream_packetin(os, op2);
+            Xiph.ogg_stream_packetin(os, op3);
+            while (Xiph.ogg_stream_flush(os, og) != 0)
+                outp.Write(PageBytes(og));
+            var pages = new List<Page>();
+            int step = 4096 * channels;
+            for (int at = 0; at < samples.Length; at += step)
+            {
+                int len = Math.Min(step, samples.Length - at);
+                len -= len % channels;
+                if (len <= 0)
+                    break;
+                Feed(vd, vb, os, og, op, samples[at..(at + len)], channels, pages);
+            }
+            Xiph.vorbis_analysis_wrote(vd, 0);   // the end
+            Drain(vd, vb, os, og, op, pages);
+            while (Xiph.ogg_stream_flush(os, og) != 0)
+                pages.Add(new Page(PageBytes(og), 0, true));
+            foreach (var p in pages)
+                outp.Write(p.Bytes);
+            return outp.ToArray();
+        }
+        finally
+        {
+            Xiph.ogg_stream_clear(os);
+            Xiph.vorbis_block_clear(vb);
+            Xiph.vorbis_dsp_clear(vd);
+            Xiph.vorbis_comment_clear(vc);
+            Xiph.vorbis_info_clear(vi);
+        }
+    }
+
     public static byte[] Encode(SmackerFile movie, int quality, float vorbisQuality, Action<int> progress)
     {
         using var n = new NativeBlocks();

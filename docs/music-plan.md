@@ -1,6 +1,8 @@
 # Plan: the original's music in the game
 
-Status: **proposed, 2026-09-26** - awaiting TeeJ's decisions at the end. Nothing is built.
+Status: **decision 1 answered, 2026-09-26** - TeeJ: "yes to including the music with the
+art". Phase 1 is built (exporter 2.5.0: `music/300.ogg`-`315.ogg` in the art set, 4.0 MB).
+Decisions 2 and 3 are open.
 BACKLOG #41 (sound: music and sound effects); `docs/cutscenes-plan.md` left the music for
 its own plan. This plan is the music only; the sound effects are a separate question.
 
@@ -72,7 +74,7 @@ winning and a losing game per side, a battle alert), or - only with TeeJ's appro
 | # | Phase | Done when |
 |---|---|---|
 | 0 | **Settle the moments** - TeeJ listens in the original (or approves reading the binary) | each side's four roles and the alert's track are named |
-| 1 | **Exporter**: the 16 tracks as Ogg Vorbis in the chosen file | Godot plays them; size stated |
+| 1 | **Exporter**: the 16 tracks as Ogg Vorbis in the chosen file | Godot plays them; size stated - **done**: `Music.cs` in the art export, 16 tracks, 4.0 MB, each as long as its WAV; Godot 4.7.1 loads them |
 | 2 | **Game**: the player, the music bus, Game Options' Play Music and volume (BACKLOG #41's greyed controls), the menu track | the Cockpit plays 300; the controls work; a movie silences it |
 | 3 | **Game**: the in-play playlist and the battle alert, as phase 0 settles them | a test per moment; TeeJ hears them in play |
 
@@ -80,6 +82,6 @@ winning and a losing game per side, a battle alert), or - only with TeeJ's appro
 
 | # | Question | Recommendation |
 |---|---|---|
-| 1 | Where do the music files go: the **art set** (+3 MB), or the **movies file**? | **The art set**: small enough, and a player with the pictures has the music without importing a second file; the movies file stays optional |
+| 1 | Where do the music files go: the **art set** (+3 MB), or the **movies file**? | **The art set**: small enough, and a player with the pictures has the music without importing a second file; the movies file stays optional - **answered: the art set** (TeeJ, 2026-09-26) |
 | 2 | Before phase 0, play only the confirmed menu track, or also a **neutral playlist of all the long tracks** during play (not the original's exact choice)? | **Menu only** until phase 0 (the no-guess rule) - but it is your call: a plain playlist is a known deviation, easy to replace |
 | 3 | Phase 0: will you listen in the original, or should I ask to read the binary's music selection? | **Listen** - one winning and one losing game per side, and a battle alert, answer all of it |
