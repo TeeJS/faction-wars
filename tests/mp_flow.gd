@@ -23,6 +23,15 @@ var _log: FileAccess
 
 func _init() -> void:
 	await process_frame
+	# ONLY EVER A RELAY ON THIS MACHINE. Without --relay the screens use the
+	# game's own address, the live one: a sweep of the tests ran this with no
+	# arguments and hosted a room there (2026-09-25). tools/mp-flow-local.ps1
+	# starts a relay here and passes its address.
+	var relay := _arg("--relay=", "")
+	if not (relay.begins_with("ws://127.0.0.1:") or relay.begins_with("ws://localhost:")):
+		print("[mp_flow] SKIP: needs a local relay (--relay=ws://127.0.0.1:<port>/ws) - run tools/mp-flow-local.ps1")
+		quit(0)
+		return
 	_role = _arg("--role=", "host")
 	_box = _arg("--box=", "")
 	_days = int(_arg("--days=", "30"))
