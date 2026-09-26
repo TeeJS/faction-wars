@@ -71,12 +71,14 @@ static func MoveUnits(units: Array, destination: Planet) -> Result:
 	if blocked != null:
 		return Result.fail("%s is not under your control - personnel can only be moved to worlds your side holds." % destination.Name, 0)
 
-	# A UNIT RIDING A FLEET COMES OFF IT FIRST.
-	if from is Fleet:
-		var riding := from as Fleet
-		var orbit := SystemOf(riding)
+	# A UNIT RIDING A FLEET COMES OFF IT FIRST - dropped on the world below, it
+	# lands there ("drag them onto the system, or right-click -> Move", manual
+	# p120). Found by the hangar it is in, not by its Attached (CarrierOf).
+	var carrier: Fleet = CarrierOf(free)
+	if carrier != null:
+		var orbit := SystemOf(carrier)
 		if orbit == null:
-			return Result.fail("%s is not in orbit anywhere." % riding.Name, 0)
+			return Result.fail("%s is not in orbit anywhere." % carrier.Name, 0)
 		var unloaded := UnloadUnits(units)
 		if not unloaded.ok:
 			return Result.fail(unloaded.error, 0)
@@ -99,6 +101,26 @@ static func SystemOf(where: Location) -> Planet:
 		return where
 	if where is Fleet:
 		return (where as Fleet).Attached
+	return null
+
+
+## WHICH FLEET IS CARRYING THIS UNIT? The one with it in a ship's hangar. A
+## payload's Attached names the fleet only after LoadAboard: at day zero and
+## after its fleet has moved it names the SYSTEM (DayZeroGenerator,
+## CascadeFleetPayloads), so the hangars of the fleets there are searched, as
+## MissionManager does for a team leaving a fleet. Null when not aboard.
+static func CarrierOf(u: Unit) -> Fleet:
+	if u == null:
+		return null
+	if u.Attached is Fleet:
+		return u.Attached
+	var orbit := SystemOf(u.Attached)
+	if orbit == null:
+		return null
+	for f in orbit.OrbitingFleets:
+		for ship in f.Ships:
+			if ship.Hangar.has(u):
+				return f
 	return null
 
 
@@ -221,12 +243,22 @@ static func LoadAboard(units: Array, fleet: Fleet) -> Result:
 			continue
 		if u.Status == Enums.Status.Enroute:
 			continue
-		if u.Attached != orbit:
+		# From the world below, or from another fleet in the same orbit:
+		# "Drag ships or troops between fleets" (manual p120).
+		var carrier: Fleet = CarrierOf(u)
+		if carrier == fleet:
+			continue   # already aboard this one
+		if carrier != null and (carrier.Status == Enums.Status.Enroute or carrier.Attached != orbit):
+			continue
+		if carrier == null and u.Attached != orbit:
 			continue
 		var berth: Unit = Lq.first_or_null(fleet.Ships, func(s): return HasRoomFor(s, u.Type))
 		if berth == null:
 			error = "%s has no room left." % fleet.Name
 			break
+		if carrier != null:
+			for ship in carrier.Ships:
+				ship.Hangar.erase(u)
 		orbit.Garrison.erase(u)
 		orbit.FighterSquadrons.erase(u)
 		berth.Hangar.append(u)
@@ -271,11 +303,11 @@ static func Unload(fleet: Fleet) -> Result:
 
 ## NAMED UNITS OFF THE SHIPS CARRYING THEM.
 static func UnloadUnits(units: Array) -> Result:
-	var riding := Lq.where(units, func(u): return u.Attached is Fleet) if units != null else []
+	var riding := Lq.where(units, func(u): return CarrierOf(u) != null) if units != null else []
 	if riding.is_empty():
 		return Result.fail("Nothing is aboard a fleet.")
 	for u in riding:
-		var fleet: Fleet = u.Attached
+		var fleet: Fleet = CarrierOf(u)
 		if fleet.Status == Enums.Status.Enroute:
 			return Result.fail("%s is %s." % [fleet.Name, Terms.label("in_transit")])
 		if not (fleet.Attached is Planet):
@@ -285,10 +317,9 @@ static func UnloadUnits(units: Array) -> Result:
 			ship.Hangar.erase(u)
 		u.Attached = orbit
 		u.Status = Enums.Status.AwaitingOrders
-		if u.Type == Enums.UnitType.Fighter:
-			orbit.FighterSquadrons.append(u)
-		else:
-			orbit.Garrison.append(u)
+		var into: Array = orbit.FighterSquadrons if u.Type == Enums.UnitType.Fighter else orbit.Garrison
+		if not into.has(u):
+			into.append(u)
 		print("%s unloads from %s at %s." % [u.Name, fleet.Name, orbit.Name])
 	EventBus.BroadcastChanged()
 	return Result.success()
@@ -389,6 +420,10 @@ static func RunBlockade(units: Array, from: Planet, rng: Prng) -> Array:
 			survivors.append(u)
 			continue
 		lost.append(u.Name)
+		var carrier: Fleet = CarrierOf(u)   # lost off a ship as well as off the world
+		if carrier != null:
+			for ship in carrier.Ships:
+				ship.Hangar.erase(u)
 		from.Garrison.erase(u)
 		from.FighterSquadrons.erase(u)
 	if not lost.is_empty():

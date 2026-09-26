@@ -390,7 +390,7 @@ func PopulateUnitTab(tab: MarginContainer, units: Array, emptyText: String, sele
 			elif not isPressed:
 				selectionList.erase(unit))
 
-		_AttachUnitMenu(unitBtn, unit)
+		_AttachUnitMenu(unitBtn, unit, selectionList)
 
 		list.add_child(unitBtn)
 		if _original:
@@ -398,8 +398,13 @@ func PopulateUnitTab(tab: MarginContainer, units: Array, emptyText: String, sele
 
 
 ## A unit's right-click menu on its row (manual p115): Move, Confirmed Move,
-## Create Fleet, Rename, Encyclopedia, Status, Scrap.
-func _AttachUnitMenu(unitBtn: Control, unit: Unit) -> void:
+## Create Fleet, Rename, Encyclopedia, Status, Scrap - a capital ship's. A
+## troop, fighter squadron or Special Forces unit aboard gets its own menu.
+func _AttachUnitMenu(unitBtn: Control, unit: Unit, selection: Array = []) -> void:
+	if unit.Type != Enums.UnitType.CapitalShip:
+		_AttachCarriedUnitMenu(unitBtn, unit, selection)
+		return
+
 	# "A built ship's right-click menu: MOVE, CONFIRMED MOVE, CREATE
 	# FLEET, RENAME, Encyclopedia, Status, SCRAP" (manual p115).
 	#
@@ -481,6 +486,65 @@ func _AttachUnitMenu(unitBtn: Control, unit: Unit) -> void:
 						CommandBus.issue("scrap_unit", { "unit": rowShip.Serial })
 					Populate(_associatedPlanet, _uiManager))
 	popup.id_pressed.connect(onShipMenu)
+
+
+## A troop's, fighter squadron's or Special Forces unit's row aboard a ship:
+## the unit's own menu (manual p045, DraggableWindow.BuildUnitMenu). Its Move
+## puts up the crosshair: a system lands them there - the one below included,
+## "drag them onto the system, or right-click -> Move" (manual p120) - and a
+## fleet takes them aboard. This row had the capital ship's menu, whose Move
+## looked for the unit among the fleet's ships, found nothing and did nothing
+## (TeeJ, 2026-09-25).
+func _AttachCarriedUnitMenu(unitBtn: Control, unit: Unit, selection: Array) -> void:
+	var popup := BuildUnitMenu(unit)
+	RegisterPopupMenu(popup)
+	unitBtn.add_child(popup)
+	unitBtn.gui_input.connect(func(event: InputEvent) -> void:
+		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
+			if _uiManager != null and _uiManager.IsTargeting:
+				_uiManager.CancelTargeting()
+			else:
+				popup.position = Vector2i(int(event.global_position.x), int(event.global_position.y))
+				popup.popup()
+			unitBtn.accept_event())
+	popup.id_pressed.connect(func(id: int) -> void:
+		var targets: Array = selection.duplicate() if selection.has(unit) else [unit]
+		RunUnitMenu.call_deferred(id, targets, _uiManager, func(doomed: Array) -> void:
+			for u in doomed:
+				SelectedTroops.erase(u)
+				SelectedFighters.erase(u)
+			if is_instance_valid(self) and _associatedPlanet != null:
+				Populate(_associatedPlanet, _uiManager)))
+
+
+## Something dropped on a fleet's row goes aboard it: troops and fighter
+## squadrons from the world below or from another fleet in the same orbit
+## ("Drag ships or troops between fleets", manual p120), characters onto it
+## ("dragging the icon onto a system or fleet", p110).
+func CanDropOnFleet(data: Variant) -> bool:
+	if _uiManager == null:
+		return false
+	return (str(data) == "unit_move" and not _uiManager.DraggedUnits.is_empty()) \
+		or (str(data) == "character_move" and not _uiManager.DraggedCharacters.is_empty())
+
+
+func DropOnFleet(fleet: Fleet, data: Variant) -> void:
+	if _uiManager == null or fleet == null:
+		return
+	if str(data) == "character_move":
+		var boarding: Array = _uiManager.DraggedCharacters
+		_uiManager.EndCharacterDrag()
+		if boarding.is_empty():
+			return
+		var r: Result = CommandBus.issue("board_fleet", { "characters": EntityIndex.names_of(boarding), "fleet": fleet.ID })
+		if r.ok:
+			Populate(_associatedPlanet, _uiManager)
+		elif not r.error.is_empty():
+			_uiManager.ShowRefusal(r.error)
+		return
+	var cargo: Array = _uiManager.DraggedUnits
+	_uiManager.EndUnitDrag()
+	_uiManager.ExecuteLoadAboard(cargo, fleet)
 
 
 # Returns the menu; the caller parents it to the fleet's button and pops it.
@@ -871,6 +935,10 @@ func _TileFleet(btn: Button, fleet: Fleet, list: VBoxContainer) -> void:
 				return
 			_ShowShip(s))
 		_AttachUnitMenu(row, s)
+		# Dropped on one of its ships, it goes aboard the fleet.
+		row.set_drag_forwarding(func(_at: Vector2) -> Variant: return null,
+			func(_at: Vector2, data: Variant) -> bool: return CanDropOnFleet(data),
+			func(_at: Vector2, data: Variant) -> void: DropOnFleet(fleet, data))
 		list.add_child(row)
 		var cargo: Array = [Lq.any(s.Hangar, func(h: Unit) -> bool: return h.Type == Enums.UnitType.Fighter),
 			Lq.any(s.Hangar, func(h: Unit) -> bool: return h.Type == Enums.UnitType.Troop or h.Type == Enums.UnitType.SpecForce)]
@@ -1396,6 +1464,14 @@ class FleetButton extends Button:
 
 		set_drag_preview(previewVBox)
 		return "fleet_move"
+
+	# Troops, fighters and characters dropped on the row go aboard
+	# (FleetWindow.DropOnFleet).
+	func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
+		return ParentWindow != null and UnitData != null and ParentWindow.CanDropOnFleet(data)
+
+	func _drop_data(_at_position: Vector2, data: Variant) -> void:
+		ParentWindow.DropOnFleet(UnitData, data)
 
 
 # --- Button that represents individual Ships/Fighters inside the Tab ---

@@ -754,6 +754,121 @@ func ConfirmScrapUnits(names: Array, refundNote: String, onConfirm: Callable, pl
 	ui.OpenConfirmation(f, OUI.Pic("scrap_picture." + side), text, refundNote, onConfirm)
 
 
+## A TROOP'S, FIGHTER SQUADRON'S OR SPECIAL FORCES UNIT'S RIGHT-CLICK MENU,
+## wherever its row is - the System Defenses window, or the Fleet window for
+## one aboard a ship. Shared so both give the unit's own menu; the Fleet
+## window gave troops aboard a SHIP's (Create Fleet, Rename), whose Move
+## looked for them among the fleet's ships and did nothing (TeeJ, 2026-09-25).
+func BuildUnitMenu(unitData: Unit) -> PopupMenu:
+	var popup := PopupMenu.new()
+	popup.add_item("Move", 0)
+	popup.add_item("Confirmed Move", 1)
+	# "A unit's right-click menu is: Move, Confirmed Move, MISSION,
+	# Encyclopedia, Status, Retire" (manual p045). Mission was absent, so a
+	# recon craft had no way to be given the only job it can do.
+	# Only offered to units that can actually run one. A trooper regiment,
+	# fighter squadron or capital ship performs no missions at all, and the
+	# original shows them no Mission item - just Move, Confirmed Move,
+	# Encyclopedia, Status and Scrap.
+	if unitData.Faction == GameSettings.PlayerFaction \
+			and MissionManager.CanEverPerformMissions(unitData):
+		popup.add_item("Mission", 2)
+	popup.add_item("Encyclopedia", 4)
+	popup.add_item("Status", 5)
+
+	# "A unit's right-click menu is: Move, Confirmed Move, Mission,
+	# Encyclopedia, Status, RETIRE" (manual p045, and Fig 2.40 on that page
+	# shows exactly this menu on a Longprobe team).
+	#
+	# LIVE, and unconditional. It was greyed on the reasoning that Retire is
+	# the manual's answer to a traitor and so waits on the loyalty system -
+	# but that is the CHARACTER case (p094). Retiring a troop or a SpecForce
+	# is just disbanding it, has no prerequisite, and always has had none.
+	if unitData.Faction == GameSettings.PlayerFaction:
+		popup.add_item("Retire", 6)
+		popup.set_item_disabled(popup.get_item_index(6), unitData.Status == Enums.Status.Enroute)
+	return popup
+
+
+## What the unit menu's items do. `after` runs with the units just retired,
+## for the window to forget them and repaint.
+func RunUnitMenu(actionId: int, units: Array, uiManager: UIManager, after: Callable) -> void:
+	if units == null or units.size() == 0:
+		return
+
+	match actionId:
+		0, 1:   # Move, Confirmed Move
+			if TransitEligible(units):
+				var currentPlanet: Planet = OrderManager.SystemOf(units[0].Attached)
+				if currentPlanet == null:
+					return
+
+				# A SYSTEM OR A FLEET, exactly as for characters: "anything
+				# movable - character, fleet, troop, SpecForce - can be
+				# dragged to its destination instead of using Move"
+				# (manual p046-p052), and a fleet is a legal destination
+				# (p110). LoadAboard enforces the rules itself: same
+				# orbit, same side, and room in a hangar.
+				uiManager.StartTargetingObject(
+					func(selectedPlanet: Planet) -> void:
+						uiManager.ExecuteUnitMove(units, selectedPlanet, actionId == 1),
+					func(picked: Variant) -> void:
+						var fleet: Fleet = OrderManager.FleetOf(picked)
+						if fleet == null:
+							print("[Move] That is not somewhere a unit can be sent.")
+							return
+						uiManager.ExecuteLoadAboard(units, fleet))
+
+		2:   # Mission - same flow as a character's, targets first.
+			if TransitEligible(units):
+				StartMissionTargeting(units, uiManager)
+
+		4:   # Encyclopedia - the unit's entry (manual p045 Fig 2.40)
+			uiManager.OpenEncyclopedia("units", units[0].PackId)
+
+		5:   # Status
+			for u in units:
+				uiManager.OpenUnitStatusWindow(u)
+
+		6:   # Retire
+			# RETIRING A UNIT IS UNCONDITIONAL. Fig 2.40 on manual p045 shows
+			# it plainly on a Longprobe team's own menu - Move, Confirmed
+			# Move, Mission, Encyclopedia, Status, Retire - with no
+			# prerequisite of any kind.
+			#
+			# This was greyed out on the reasoning that Retire is the answer
+			# to a traitor and therefore waits on the loyalty system. That
+			# conflated two different things: retiring a CHARACTER is how the
+			# manual says you deal with one who has turned (p094), but
+			# retiring a TROOP or a SpecForce is simply disbanding it, and it
+			# has always been available.
+			#
+			# Routed through ScrapUnit because that is what disbanding does
+			# here: it takes the unit off the system and returns the measured
+			# half of its construction cost and all of its maintenance.
+			var doomed: Array = units.duplicate()
+			var refund: int = Lq.sum(doomed, func(u: Unit) -> int: return u.ConstructionCost * Planet.ScrapRefundPercent / 100)
+			var what: String = doomed[0].Name if doomed.size() == 1 \
+				else "%d units" % doomed.size()
+
+			var scrap := func() -> void:
+				for u in doomed:
+					# The ORBIT world for anything riding a fleet - the
+					# cast this replaced was null for a loaded unit, so
+					# ScrapUnit was never even called on it.
+					var orbit: Planet = OrderManager.SystemOf(u.Attached)
+					if orbit != null:
+						CommandBus.issue("scrap_unit", { "unit": u.Serial })
+				after.call(doomed)
+			# The original's own words for units: Scrap, one unit per line.
+			ConfirmScrapUnits(Lq.select(doomed, func(u: Unit) -> String: return u.Name),
+				"Returns %d %s and the maintenance capacity they were drawing." % [refund, Terms.lower("refined_materials")],
+				scrap, func() -> void: ConfirmRetire(what, refund, scrap))
+
+		_:
+			print("Unhandled unit menu action %d" % actionId)
+
+
 ## Retiring is irreversible and gives back only half the material, so it asks
 ## first - the same shape the Economy window uses for scrapping a facility.
 func ConfirmRetire(what: String, refund: int, onConfirm: Callable) -> void:
