@@ -10,11 +10,18 @@ extends CanvasLayer
 ##
 ## A movie that cannot be opened is skipped. `Done` runs once, at the end.
 ## Built by Movies.Play (src/ui/movies.gd).
+##
+## `Fetch` (path, done(local path or "")) readies a movie that is not a file
+## yet - the browser's, read out of its storage (Movies.WebFetch); the black
+## screen holds while it comes, and a skip meanwhile skips it.
 
 var Paths: Array[String] = []
 var Done: Callable = Callable()
+var Fetch: Callable = Callable()
 
 var _at: int = -1
+var _ask: int = 0            # which fetch is wanted: an older answer is dropped
+var _fetched: String = ""    # a fetched movie's file, removed when it ends
 var _video: VideoStreamPlayer
 var _black: ColorRect
 var _held: bool = false
@@ -69,18 +76,45 @@ func Playing() -> String:
 func _next() -> void:
 	if _finished:
 		return
+	_let_go()
 	_at += 1
-	while _at < Paths.size():
+	_ask += 1
+	if _at >= Paths.size():
+		_finish()
+		return
+	if not Fetch.is_valid():
+		_start(Paths[_at])
+		return
+	var ask := _ask
+	Fetch.call(Paths[_at], func(file: String) -> void:
+		if ask != _ask or _finished:
+			return   # skipped while it came
+		if file != Paths[_at]:
+			_fetched = file
+		_start(file))
+
+
+func _start(file: String) -> void:
+	if not file.is_empty():
 		var stream := VideoStreamTheora.new()
-		stream.file = Paths[_at]
+		stream.file = file
 		_video.stream = stream
 		_video.play()
 		if _video.is_playing():
 			_fit()
 			return
-		push_warning("Movie %s could not be played; skipped." % Paths[_at])
-		_at += 1
-	_finish()
+	push_warning("Movie %s could not be played; skipped." % Paths[_at])
+	_next()
+
+
+## The movie that played lets go of its file, and a fetched copy goes.
+func _let_go() -> void:
+	if _video != null:
+		_video.stop()
+		_video.stream = null
+	if not _fetched.is_empty():
+		DirAccess.remove_absolute(_fetched)
+		_fetched = ""
 
 
 ## The frame as large as the screen allows, its shape kept, centred.
@@ -106,6 +140,7 @@ func _finish() -> void:
 	if _finished:
 		return
 	_finished = true
+	_let_go()
 	if _held:
 		get_tree().paused = _was_paused
 	queue_free()
