@@ -1,8 +1,9 @@
 # Plan: the original's music in the game
 
-Status: **phases 1-2 built, 2026-09-26.** Decision 1 answered - TeeJ: "yes to including the music with the
-art". Decisions 2 and 3 are open; until they are answered only the confirmed menu track plays
-(decision 2's recommendation).
+Status: **phases 1-2 built, phase 0 partial, 2026-09-26.** Decision 1 answered - TeeJ: "yes to
+including the music with the art". Decision 3 answered - TeeJ approved reading the game's code and
+Rebellion 2 (findings below; the in-game selector is not read yet). Decision 2 is open; until it is
+answered only the confirmed menu track plays.
 BACKLOG #41 (sound: music and sound effects); `docs/cutscenes-plan.md` left the music for
 its own plan. This plan is the music only; the sound effects are a separate question.
 
@@ -57,6 +58,62 @@ alert's track. **What would settle them:** TeeJ listening in the original at tho
 winning and a losing game per side, a battle alert), or - only with TeeJ's approval (CLAUDE.md
 1a) - the binary's music selection (open-rebellion's Ghidra export is where to look first).
 
+## Phase 0 findings (2026-09-26, partial)
+
+TeeJ approved reading the game's code and Rebellion 2 again (decision 3). The binary reading
+stopped part-way: Claude Code's auto-mode classifier blocked further disassembly, so the
+in-game selection function is **not read**.
+
+### The original's player (REBEXE.EXE, read-only, capstone; open-rebellion's `ghidra/notes` for the entry points)
+
+| Fact | Where |
+|---|---|
+| One player: plays entry *n* (0-15) of a track table from `MDATA\`, at the music volume | `0x417520` (open-rebellion `FUN_00417520.c`) |
+| **The table is not in file order:** 0-6 = 300-306, 7 = 310, 8 = 311, 9 = 312, 10 = 307, 11 = 313, 12 = 308, 13 = 309, 14 = 314, 15 = 315 | pointer table `0x6a8478` |
+| When a track ends, a looped track (started by `0x417610`) plays again; any other asks the selector for the next | MCI callback `0x417780` |
+| The selector gets an object (`0x435a40`; inferred to be the running game); without one it returns with eax 0 - entry 0, **track 300** (the branch target `0x41d3c1` itself was not read); with one it asks it (`0x4369a0` → `0x487fb0`, **not read**) | `0x41d3b0` |
+| Music starts when a window is created (`WM_CREATE`; inferred to be the main window) and when Play Music is switched on; Play Music and the volume live in the registry (`MusicSwitch`, `MusicVolume`) | `0x405050`, `0x4176e0`, `0x4173c0` |
+
+### Rebellion 2's mapping (its `Assets/Resources/Configs/FactionThemes.xml`, deleted from the repo 2026-08-01; read from history at `7dffc9f`)
+
+Its track names are the John Williams cues, matched to MDATA by the table above:
+
+| Moment | Alliance | Empire |
+|---|---|---|
+| Neutral, at random | 301, 302, 303 | 301, 302, 303 |
+| Strong advantage (colonized planets ≥ 3:1) | 305 | 311 |
+| Advantage (≥ 2:1) | 306 | 310 |
+| Disadvantage (≤ 1:2) | 310 | 306 |
+| Between them | a neutral track | a neutral track |
+| Battle alert | 307 | 307 |
+| Battle result: victory / defeat or draw | 308 / 315 | 314 / 315 |
+
+Cadence: one strategic track, then 3 neutral; with the opponent on no planets the player's count
+×10 stands for the ratio. Unused: 309, 313.
+
+**Where the two sources meet.** Before `7dffc9f` Rebellion 2 had **six** tiers ("decisive",
+"strong", plain; then disadvantage), dropped three as unreachable *in its own code*. In order,
+Alliance best to Empire best, they were 304, 305, 306 | 310, 311, 312 - **exactly the original
+table's entries 4-9**. That is how its two ambiguous names are read (311, not 309; 312, not 313),
+and it suggests the original's selector walks one six-step scale from the Alliance's best to the
+Empire's best. Entries 10-15 hold Rebellion 2's battle and result tracks (307, 308, 314, 315)
+and the two it never uses (313, 309).
+
+### Confidence
+
+| Claim | Confidence |
+|---|---|
+| Menu = 300 | **Confirmed**: open-rebellion's notes and Rebellion 2, and the binary agrees (no game → entry 0 = 300, with the two inferences above) |
+| Neutral = 301-303 | Single-source (Rebellion 2); fits the table (entries 1-3) |
+| The advantage tracks per side | Single-source (Rebellion 2); the order matches the table, the rule does not have a second source |
+| The thresholds (3:1, 2:1, 1:2), 3 neutral between, ×10 | Single-source (Rebellion 2), origin not stated |
+| Whether the original has six tiers (304 and 312 included) | **Unknown** |
+| Battle alert 307; results 308 / 314 / 315 | Single-source (Rebellion 2) |
+| 309, 313 | **Unknown** - the original has slots for them |
+
+**What settles the rest:** the in-game selector, `0x487fb0` (open-rebellion's full export may
+have it), and the callers of `0x417610` (the looped tracks - likely the battle and result cues).
+
 ## How
 
 1. **The exporter** reads the 16 WAVs (plain PCM - no decoder needed) and encodes them as Ogg
@@ -84,4 +141,4 @@ winning and a losing game per side, a battle alert), or - only with TeeJ's appro
 |---|---|---|
 | 1 | Where do the music files go: the **art set** (+3 MB), or the **movies file**? | **The art set**: small enough, and a player with the pictures has the music without importing a second file; the movies file stays optional - **answered: the art set** (TeeJ, 2026-09-26) |
 | 2 | Before phase 0, play only the confirmed menu track, or also a **neutral playlist of all the long tracks** during play (not the original's exact choice)? | **Menu only** until phase 0 (the no-guess rule) - but it is your call: a plain playlist is a known deviation, easy to replace |
-| 3 | Phase 0: will you listen in the original, or should I ask to read the binary's music selection? | **Listen** - one winning and one losing game per side, and a battle alert, answer all of it |
+| 3 | Phase 0: will you listen in the original, or should I ask to read the binary's music selection? | **Answered 2026-09-26:** read the game's code and Rebellion 2 (findings above) |
