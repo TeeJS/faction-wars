@@ -9,9 +9,10 @@ extends Control
 ##     the Save Game button [showing] whether you were playing the Empire, the
 ##     Alliance, or a head-to-head game". Loading over a running game asks
 ##     first ("the computer asks you to confirm");
-##   Sound options (Play Music, the music and sound effects volumes) and the
-##     Tactical Display options - NOT IN THIS GAME YET: there is no sound and
-##     no tactical view. Drawn greyed, as TeeJ asked (BACKLOG);
+##   Sound options - Play Music and the music volume work (the original's
+##     score, docs/music-plan.md); the sound effects volume is greyed, there
+##     are no sound effects yet. The Tactical Display options are greyed too:
+##     there is no tactical view (BACKLOG);
 ##   Restart the game ("abandons the current game and starts over in the
 ##     Shuttle ... asks you to confirm"), Return to the Command Center
 ##     ("unavailable if you come to this screen from the Shuttle Cockpit"),
@@ -26,6 +27,7 @@ extends Control
 
 const Art := preload("res://src/ui/artwork.gd")
 const OUI := preload("res://src/ui/original_ui.gd")
+const MusicLib := preload("res://src/ui/music.gd")
 const Picker := preload("res://src/ui/pack_picker.gd")
 
 const W := 640
@@ -47,7 +49,7 @@ const DimGreen := Color(0, 128 / 255.0, 0)
 const Greyed := Color(0.42, 0.42, 0.42)
 ## Each heading's text, centre x, cap top, and whether its section works yet:
 ## the two that do not are greyed with their options (TeeJ, 2026-09-24).
-const Headings := [["Saved Games", 177.5, 41, true], ["Sound Options", 481.5, 41, false], ["Tactical Display Options", 482, 277, false]]
+const Headings := [["Saved Games", 177.5, 41, true], ["Sound Options", 481.5, 41, true], ["Tactical Display Options", 482, 277, false]]
 const MusicSwitchAt := Vector2(352, 76)
 const MusicLabelAt := Vector2(377, 89)
 const StateRight := 602.0
@@ -55,6 +57,8 @@ const StateRight := 602.0
 ## sound effects at y 194.
 const KnobYs := [134, 194]
 const KnobX := 393
+## How far a knob's left edge travels: the track's 188 pixels less its width.
+const KnobTravel := 581 - 393 - 11
 const Toggles := ["Show Starfield", "Show Planet", "Show Pyrotechnics", "Use High Detail Models", "Display Holocube"]
 const ToggleTop := 311
 const TogglePitch := 27
@@ -186,16 +190,30 @@ func _build() -> void:
 			(b as TextureButton).disabled = true
 			(b as TextureButton).tooltip_text = "Only the host can save." if session != null and playing else "No game to save."
 
-	# ---- Sound Options and Tactical Display Options: not in this game yet ------
+	# ---- Sound Options: Play Music and the music volume (docs/music-plan.md);
+	# the sound effects are not in this game yet ------------------------------
 	var not_yet := "Not in this game yet."
-	var sw := _place(Art.WindowPicture("options_music.grey"), MusicSwitchAt.x, MusicSwitchAt.y, "MusicSwitch")
-	sw.tooltip_text = not_yet
-	sw.mouse_filter = Control.MOUSE_FILTER_PASS
-	var music := _text("Play Music", MusicLabelAt.x, MusicLabelAt.y, 150, HeadPx, Greyed, HORIZONTAL_ALIGNMENT_LEFT, true, "MusicLabel")
-	music.tooltip_text = not_yet
-	_text("Off", StateRight - 60, MusicLabelAt.y, 60, HeadPx, Greyed, HORIZONTAL_ALIGNMENT_RIGHT, true, "MusicState")
+	MusicLib.Load()
+	var on: bool = MusicLib.PlayMusic
+	var sw := _place(Art.WindowPicture("options_music.lit" if on else "options_music.off"), MusicSwitchAt.x, MusicSwitchAt.y, "MusicSwitch")
+	sw.tooltip_text = "Play Music"
+	sw.mouse_filter = Control.MOUSE_FILTER_STOP
+	sw.gui_input.connect(func(e: InputEvent) -> void:
+		if e is InputEventMouseButton and e.pressed and e.button_index == MOUSE_BUTTON_LEFT:
+			MusicLib.SetPlayMusic(not MusicLib.PlayMusic)
+			_rebuild())
+	var music := _text("Play Music", MusicLabelAt.x, MusicLabelAt.y, 150, HeadPx, Green if on else DimGreen, HORIZONTAL_ALIGNMENT_LEFT, true, "MusicLabel")
+	music.tooltip_text = "Play Music"
+	_text("On" if on else "Off", StateRight - 60, MusicLabelAt.y, 60, HeadPx, Green if on else DimGreen, HORIZONTAL_ALIGNMENT_RIGHT, true, "MusicState")
 	for i in KnobYs.size():
 		var knob := _place(Art.WindowPicture("options_knob"), KnobX, KnobYs[i], ["MusicKnob", "EffectsKnob"][i])
+		if i == 0:
+			# The music knob slides along its track: left quiet, right full.
+			knob.position.x = (KnobX + MusicLib.Volume * KnobTravel) * _s
+			knob.tooltip_text = "Music volume"
+			knob.mouse_filter = Control.MOUSE_FILTER_STOP
+			knob.gui_input.connect(func(e: InputEvent) -> void: _drag_knob(knob, e))
+			continue
 		knob.modulate = Color(0.55, 0.55, 0.55)
 		knob.tooltip_text = not_yet
 		knob.mouse_filter = Control.MOUSE_FILTER_PASS
@@ -218,6 +236,21 @@ func _build() -> void:
 	var exit := _button("options_exit", ButtonAt[2].x, ButtonAt[2].y, "Exit the game")
 	exit.pressed.connect(_exit)
 	_text("Version: %s" % BuildInfo.version(), VersionCentre.x - 150, VersionCentre.y, 300, 11, Color.BLACK, HORIZONTAL_ALIGNMENT_CENTER, false, "Version")
+
+
+## The music knob follows the mouse along its track while held; the volume
+## follows the knob.
+func _drag_knob(knob: Control, e: InputEvent) -> void:
+	var drag: bool = (e is InputEventMouseButton and e.button_index == MOUSE_BUTTON_LEFT and e.pressed) \
+		or (e is InputEventMouseMotion and (e.button_mask & MOUSE_BUTTON_MASK_LEFT) != 0)
+	if not drag:
+		return
+	# The mouse on the canvas (the event is the knob's own), held by the knob's middle.
+	var x: float = (knob.position.x + (e as InputEventMouse).position.x) / _s - KnobX - 5.5
+	var v: float = clampf(x / KnobTravel, 0.0, 1.0)
+	MusicLib.SetVolume(v)
+	knob.position.x = (KnobX + v * KnobTravel) * _s
+	knob.accept_event()
 
 
 func _refresh_slots() -> void:

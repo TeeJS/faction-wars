@@ -64,6 +64,9 @@ const CYCLE_CHOICES := ["difficulty", "galaxy_size"]
 ## ending in "." take a faction id: "victory.empire".
 const KNOWN_MOVIE_EVENTS := ["launch", "credits", "system_destroyed", "superweapon_sabotaged"]
 const KNOWN_MOVIE_SIDE_EVENTS := ["start.", "victory.", "defeat.", "headquarters_lost."]
+## SCHEMA.md section 2, `music`: the moments a track can play at (docs/
+## music-plan.md). Only the Cockpit's until the plan's phase 0 names the rest.
+const KNOWN_MUSIC_EVENTS := ["menu"]
 const KNOWN_DIFFICULTIES := ["easy", "medium", "hard"]
 ## SCHEMA.md section 7. Day-zero placement and the story parts. Each story
 ## part is ONE character - the set-pieces are written for one pilgrim, one
@@ -211,6 +214,40 @@ static func _validate(pack: LoadedPack, pack_dir: String, errors: Array[String])
 	_validate_roles(pack, errors)
 	_validate_art(pack, errors)
 	_validate_movies(pack, pack_dir, errors)
+	_validate_music(pack, pack_dir, errors)
+
+
+## Rule 24: `music` maps known moments to a track each - a file the pack ships,
+## or "<art set>:<path>.ogg" in a declared art set (not required to be there:
+## without it nothing plays).
+static func _validate_music(pack: LoadedPack, pack_dir: String, errors: Array[String]) -> void:
+	var m := pack.Manifest
+	if not m.MusicGiven:
+		return
+	if not m.MusicRaw is Dictionary:
+		errors.append("pack.json music: must be an object of moment -> track.")
+		return
+	for event in m.MusicRaw:
+		var e := str(event)
+		if e.begins_with("_"):
+			continue   # an author's comment (SCHEMA.md section 1)
+		if not KNOWN_MUSIC_EVENTS.has(e):
+			errors.append("pack.json music: '%s' is not a moment. Known: %s." % [e, ", ".join(KNOWN_MUSIC_EVENTS)])
+			continue
+		var v: Variant = m.MusicRaw[event]
+		if not v is String or str(v).strip_edges().is_empty():
+			errors.append("pack.json music['%s']: a track is a text reference." % e)
+			continue
+		var ref := str(v).strip_edges()
+		var split := SplitArtRef(ref)
+		if split[0].is_empty():
+			var path := "%s/%s" % [pack_dir, ref]
+			if not (ResourceLoader.exists(path) or FileAccess.file_exists(path)):
+				errors.append("pack.json music['%s']: '%s' is not in %s." % [e, ref, pack_dir])
+		elif not m.ArtSets.has(split[0]):
+			errors.append("pack.json music['%s']: '%s' is from art set '%s', which art_sets does not declare." % [e, ref, split[0]])
+		elif not split[1].to_lower().ends_with(".ogg"):
+			errors.append("pack.json music['%s']: '%s' is not an .ogg track (Ogg Vorbis)." % [e, ref])
 
 
 ## Rule 23: `movies` maps known events to movies - each a file the pack ships,

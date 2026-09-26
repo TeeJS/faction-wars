@@ -23,6 +23,8 @@ const Picker := preload("res://src/ui/pack_picker.gd")
 ## The original's movies (docs/cutscenes-plan.md): the intro when the Cockpit
 ## first opens, the credits from View credits.
 const MoviesLib := preload("res://src/ui/movies.gd")
+## The Cockpit's music (docs/music-plan.md): pack.json `music` `menu`.
+const MusicLib := preload("res://src/ui/music.gd")
 
 var _difficultyGroup: ButtonGroup
 var _sizeGroup: ButtonGroup
@@ -163,6 +165,7 @@ func _ready() -> void:
 
 	# "To skip the introductory graphics, click the mouse" (manual p022): the
 	# pack's launch movies, once a run, when the player imported them.
+	MusicLib.Play(get_tree(), "menu")
 	MoviesLib.PlayLaunch(get_tree())
 
 
@@ -262,10 +265,10 @@ func StartGame(chosenFaction: Faction) -> void:
 
 	print("Starting Game... Faction: %s | Difficulty: %s | Size: %s | HQ Only: %s" % [str(chosenFaction), JsonUtil.enum_name(Enums.Difficulty, difficultyLevel), JsonUtil.enum_name(Enums.GalaxySize, sizeLevel), str(isHqOnly)])
 
-	# The side's own opening, when the pack has one (`start.<faction>`; the
-	# Star Wars pack's 003/004 wait until their moment is confirmed), then the
-	# Main scene.
+	# The Cockpit's music ends; the side's own opening, when the pack has one
+	# (`start.<faction>`: the Star Wars pack's 003 and 004), then the Main scene.
 	var tree := get_tree()
+	MusicLib.Stop()
 	MoviesLib.Play(tree, "start.%s" % chosenFaction.Id, func() -> void: tree.change_scene_to_file("res://Main.tscn"))
 
 

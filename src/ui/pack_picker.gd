@@ -106,6 +106,8 @@ var _art_for: String = ""
 
 
 func _ready() -> void:
+	# Back from a Cockpit: its music is that setting's, not the picker's.
+	preload("res://src/ui/music.gd").Stop()
 	# A pack file dropped on the game imports from here on, on every screen.
 	PackImport.ListenForDrops(get_tree())
 	PackImport.OnImported = _on_imported

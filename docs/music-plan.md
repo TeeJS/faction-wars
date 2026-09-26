@@ -1,8 +1,8 @@
 # Plan: the original's music in the game
 
-Status: **decision 1 answered, 2026-09-26** - TeeJ: "yes to including the music with the
-art". Phase 1 is built (exporter 2.5.0: `music/300.ogg`-`315.ogg` in the art set, 4.0 MB).
-Decisions 2 and 3 are open.
+Status: **phases 1-2 built, 2026-09-26.** Decision 1 answered - TeeJ: "yes to including the music with the
+art". Decisions 2 and 3 are open; until they are answered only the confirmed menu track plays
+(decision 2's recommendation).
 BACKLOG #41 (sound: music and sound effects); `docs/cutscenes-plan.md` left the music for
 its own plan. This plan is the music only; the sound effects are a separate question.
 
@@ -75,7 +75,7 @@ winning and a losing game per side, a battle alert), or - only with TeeJ's appro
 |---|---|---|
 | 0 | **Settle the moments** - TeeJ listens in the original (or approves reading the binary) | each side's four roles and the alert's track are named |
 | 1 | **Exporter**: the 16 tracks as Ogg Vorbis in the chosen file | Godot plays them; size stated - **done**: `Music.cs` in the art export, 16 tracks, 4.0 MB, each as long as its WAV; Godot 4.7.1 loads them |
-| 2 | **Game**: the player, the music bus, Game Options' Play Music and volume (BACKLOG #41's greyed controls), the menu track | the Cockpit plays 300; the controls work; a movie silences it |
+| 2 | **Game**: the player, the music bus, Game Options' Play Music and volume (BACKLOG #41's greyed controls), the menu track | the Cockpit plays 300; the controls work; a movie silences it - **built** (`src/ui/music.gd`, pack field `music`, rule 24; tests/music.gd) |
 | 3 | **Game**: the in-play playlist and the battle alert, as phase 0 settles them | a test per moment; TeeJ hears them in play |
 
 ## Decisions for TeeJ

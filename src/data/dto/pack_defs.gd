@@ -366,6 +366,12 @@ class PackManifest:
 	var Movies: Dictionary = {}
 	var MoviesGiven: bool = false
 	var MoviesRaw: Variant = null
+	## SCHEMA.md section 2 (docs/music-plan.md): which track plays at which
+	## moment, event -> reference ("<art set>:<path>.ogg" or a pack file).
+	## Empty = no music. MusicGiven/MusicRaw for validation rule 24.
+	var Music: Dictionary = {}
+	var MusicGiven: bool = false
+	var MusicRaw: Variant = null
 
 	## The longest download link offered (the relay's listing keeps as much).
 	const UrlMax := 300
@@ -433,6 +439,14 @@ class PackManifest:
 						if movie is String:
 							refs.append(str(movie).strip_edges())
 				o.Movies[str(event)] = refs
+		o.MusicRaw = JsonUtil.get_ci(d, "music")
+		o.MusicGiven = o.MusicRaw != null
+		if o.MusicRaw is Dictionary:
+			for event in o.MusicRaw:
+				if str(event).begins_with("_"):
+					continue   # an author's comment (SCHEMA.md section 1)
+				var track: Variant = o.MusicRaw[event]
+				o.Music[str(event)] = str(track).strip_edges() if track is String else ""
 		return o
 
 
