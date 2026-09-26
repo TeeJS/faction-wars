@@ -130,6 +130,17 @@
         "selected_color": "#ffd23c"
       },
       {
+        "action": "cycle",
+        "value": "galaxy_size",
+        "rect": [
+          242.0,
+          271.0,
+          44.0,
+          47.0
+        ],
+        "tooltip": "Set the size of the galaxy: the next one."
+      },
+      {
         "action": "load_game",
         "rect": [
           409.8,

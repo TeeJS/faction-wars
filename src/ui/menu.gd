@@ -657,6 +657,8 @@ func _on_region(r: PackDefs.MenuRegionDef) -> void:
 			OpenCredits()
 		"multiplayer":
 			OpenMultiplayer()
+		"cycle":
+			_cycle(r.Value)
 		"exit":
 			# The handle pulled first, as the original shows it (TeeJ,
 			# 2026-09-25: "when you click on the handle, it moves"); how long
@@ -664,6 +666,31 @@ func _on_region(r: PackDefs.MenuRegionDef) -> void:
 			if _press_shown("exit"):
 				await get_tree().create_timer(PressHold).timeout
 			Picker.ExitToPicker(get_tree())
+
+
+## THE GALAXY-SIZE LEVER (TeeJ, 2026-09-25: "clicking on the handle should
+## move it one position and select the next size (going top - middle -
+## bottom - middle and back to top)"): a `cycle` region chooses the next of
+## that choice's regions in the pack's order, turning back at either end; the
+## lever's picture follows the choice (its monitor's frame_by).
+var _cycleStep: Dictionary = {}   # choice -> +1 or -1
+
+
+func _cycle(choice: String) -> void:
+	var menu: PackDefs.MenuDef = FactionRegistry.Pack.Manifest.Menu if FactionRegistry.Pack != null else null
+	if menu == null:
+		return
+	var opts: Array = menu.Regions.filter(func(reg: PackDefs.MenuRegionDef) -> bool: return reg.Action == choice)
+	if opts.size() < 2:
+		return
+	var now: String = _difficultyId if choice == "difficulty" else _sizeId
+	var i: int = maxi(0, opts.map(func(reg: PackDefs.MenuRegionDef) -> String: return reg.Value).find(now))
+	var step: int = _cycleStep.get(choice, 1)
+	if i + step < 0 or i + step >= opts.size():
+		step = -step
+	_cycleStep[choice] = step
+	_on_region(opts[i + step])
+	_paint_monitors()
 
 
 ## A region whose monitor has a `pressed_image` shows it for a moment when it

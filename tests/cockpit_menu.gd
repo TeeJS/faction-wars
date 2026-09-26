@@ -153,6 +153,23 @@ func _init() -> void:
 			var wantFrame: int = int(leverDef.FrameBy.get("galaxy_size:%s" % s, -1))
 			_check(is_equal_approx((lever.texture as AtlasTexture).region.position.x, wantFrame * fw),
 				"choosing %s puts the lever at frame %d" % [s, wantFrame])
+	# Clicking the lever moves it one position and chooses the next size, top
+	# to bottom and back (TeeJ, 2026-09-25: "going top - middle - bottom -
+	# middle and back to top").
+	var pull: Button = regions.get_node_or_null("Region_cycle_galaxy_size")
+	_check(pull != null, "the lever takes a click")
+	if pull != null and sizes.size() == 3:
+		(regions.get_node("Region_galaxy_size_%s" % sizes[0]) as Button).pressed.emit()
+		var walked: Array = []
+		for _i in 5:
+			pull.pressed.emit()
+			walked.append(str(menu.get("_sizeId")))
+		var wantWalk: Array = [sizes[1], sizes[2], sizes[1], sizes[0], sizes[1]]
+		var frameNow := -1
+		if lever != null:
+			frameNow = int(round((lever.texture as AtlasTexture).region.position.x / ((lever.texture as AtlasTexture).atlas.get_width() / float(leverDef.Frames))))
+		_check(walked == wantWalk and (lever == null or frameNow == int(leverDef.FrameBy.get("galaxy_size:%s" % sizes[1], -1))),
+			"each click: the next size, turning back at the ends (%s)" % str(walked))
 	var hq: TextureRect = Lq.first_or_null(shown, func(p: TextureRect) -> bool: return (p.get_meta("def") as PackDefs.MenuMonitorDef).Region == "hq_only_victory")
 	if hq != null and hq.has_meta("selected"):
 		var standard: Texture2D = (hq.texture as AtlasTexture).atlas
