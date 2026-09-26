@@ -280,6 +280,10 @@ public sealed class Importer
         // matched to the pixel); the Alliance's speeders in a taken city
         // (11160) and a world still under its shield (11162) by what they show.
         ("assault_captured.alliance", 11160), ("assault_captured.empire", 11161), ("assault_repulsed", 11162),
+        // The bombardment's results (manual p122: "a window will display the
+        // bombardment effects"), by what they show: the scorched surface
+        // (11163) and a ship blown apart by a world's guns (11164).
+        ("bombardment_result", 11163), ("bombardment_held", 11164),
         // A Status window (manual p064: modal, no title bar, closed by its
         // diamond): the 379x272 plate per side - the field panel with the
         // side's emblem, the picture and name grids, the button sockets - and

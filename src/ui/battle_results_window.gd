@@ -17,7 +17,11 @@ extends PanelContainer
 ## facilities, trooper regiments, personnel.
 
 var _r: FleetBattleManager.BattleReport
-var _a: AssaultManager.AssaultReport = null
+## An assault's report - or a bombardment's (_bombard), which has the same
+## Target, Attacker, Defender and forces: "After bombardment, a window will
+## display the bombardment effects" (manual p122), shown as this one.
+var _a = null
+var _bombard: bool = false
 var _body: VBoxContainer
 var _page: int = 0   # 0 = summary, 1 = ours, 2 = theirs
 var _tab: int = 0    # within a force page
@@ -103,8 +107,15 @@ func Setup(report: FleetBattleManager.BattleReport) -> void:
 	Redraw()
 
 
+## A bombardment's results: the Assault Summary's window with the
+## bombardment's own title, sentence and scene.
+func SetupBombardment(report: BombardmentManager.BombardmentReport) -> void:
+	_bombard = true
+	SetupAssault(report)
+
+
 ## The Assault Summary (manual p123): an assault's results in this window.
-func SetupAssault(report: AssaultManager.AssaultReport) -> void:
+func SetupAssault(report) -> void:
 	_a = report
 	if OB.CanBuild() and OUI.Pic("frame.%s" % OUI.Side(GameSettings.LocalFaction())) != null:
 		_BuildOriginal()
@@ -439,12 +450,27 @@ func _Where() -> Planet:
 	return _a.Target if _a != null else _r.Where
 
 
-## "Battle at |" (TEXTSTRA.DLL 0xE758) / "Assault on |" (0xF664).
+## "Battle at |" (TEXTSTRA.DLL 0xE758) / "Assault on |" (0xF664) / "Orbital
+## bombardment of |" (0xF778).
 func _Title() -> String:
+	if _bombard:
+		return "Orbital bombardment of %s" % _Where().Name
 	return ("Assault on %s" if _a != null else "Battle at %s") % _Where().Name
 
 
+## The sentence under the title, in the original's words.
+func _Sentence() -> String:
+	return BombardmentManager.Sentence(_a) if _bombard else AssaultManager.Sentence(_a)
+
+
+## A forces page opens on what the moment was about: an assault's troops, a
+## bombardment's defensive facilities (INFERRED: the original's unseen).
+const BombardDefenseTab := 3
+
+
 func _DefaultTab() -> int:
+	if _bombard:
+		return BombardDefenseTab
 	return AssaultTroopsTab if _a != null else 0
 
 
@@ -526,7 +552,15 @@ func _TabColumns(tab: int) -> Array:
 ## troops have taken control...", matched to the pixel), the Alliance's
 ## speeders (11160, INFERRED by what it shows) - or the world still under its
 ## shield (11162, INFERRED). Exporter 2.4.8.
+##
+## A bombardment's (INFERRED, by what they show; open-rebellion's resource
+## catalog also files 11160-11163 as the assault and bombardment screens):
+## the scorched surface (11163) when something on the ground was destroyed, a
+## ship blown apart by the world's guns (11164) when the defences held.
+## Exporter 2.5.0.
 func _AssaultScene() -> Texture2D:
+	if _bombard:
+		return OUI.Pic("bombardment_result" if _a.HitTheGround() else "bombardment_held")
 	if _a.Captured:
 		return OUI.Pic("assault_captured.%s" % _Skins()[0])
 	return OUI.Pic("assault_repulsed")
@@ -547,7 +581,7 @@ func _PlainAssaultPage() -> void:
 	if _page == 0:
 		var l := Label.new()
 		l.name = "Sentence"
-		l.text = AssaultManager.Sentence(_a)
+		l.text = _Sentence()
 		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		l.custom_minimum_size = Vector2(450, 0)
 		l.add_theme_font_size_override("font_size", 15)
@@ -616,7 +650,7 @@ func _ShowPage() -> void:
 		OB.Line(_oBody, _Title(), OB.ResultTitleCentre - 190, 22, 380, OB.TitlePx, colour,
 			HORIZONTAL_ALIGNMENT_CENTER, false, "Title")
 	if _page == 0 and _a != null:
-		var said := OB.Block(_oBody, AssaultManager.Sentence(_a), AssaultTextAt, AssaultTextW, AssaultTextPx, AssaultTextPitch,
+		var said := OB.Block(_oBody, _Sentence(), AssaultTextAt, AssaultTextW, AssaultTextPx, AssaultTextPitch,
 			colour, "Rest")
 		_Shadow(said)
 		return

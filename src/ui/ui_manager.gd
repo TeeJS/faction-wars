@@ -1265,8 +1265,9 @@ func RefreshActiveWindows(_currentDay: int) -> void:
 	while not FleetBattleManager.Unreported().is_empty() and get_node_or_null("BattleResultsWindow") == null:
 		var done: RefCounted = FleetBattleManager.Unreported()[0]
 		FleetBattleManager.MarkReported(done)
-		if done is AssaultManager.AssaultReport and (done as AssaultManager.AssaultReport).Attacker != GameSettings.LocalFaction():
-			continue   # the other side's: it reaches this one as a message
+		var ordered_by: Variant = done.get("Attacker") if (done is AssaultManager.AssaultReport or done is BombardmentManager.BombardmentReport) else null
+		if ordered_by != null and ordered_by != GameSettings.LocalFaction():
+			continue   # the other side's assault or bombardment: it reaches this one as a message
 		ShowReport(done)
 		break
 
@@ -1567,10 +1568,23 @@ func ShowAssaultSummary(report: AssaultManager.AssaultReport) -> void:
 	win.move_to_front()
 
 
-## A battle's or an assault's window, from a Conflict message or at once.
+## A bombardment's results ("After bombardment, a window will display the
+## bombardment effects", manual p122): the same window, as an assault's.
+func ShowBombardmentResults(report: BombardmentManager.BombardmentReport) -> void:
+	if report == null:
+		return
+	var win := _NewResultsWindow()
+	win.SetupBombardment(report)
+	win.move_to_front()
+
+
+## A battle's, an assault's or a bombardment's window, from a Conflict
+## message or at once.
 func ShowReport(report: RefCounted) -> void:
 	if report is AssaultManager.AssaultReport:
 		ShowAssaultSummary(report)
+	elif report is BombardmentManager.BombardmentReport:
+		ShowBombardmentResults(report)
 	elif report is FleetBattleManager.BattleReport:
 		ShowBattleResults(report)
 

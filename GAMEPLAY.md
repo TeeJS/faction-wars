@@ -2579,6 +2579,15 @@ That confirms the manual's own division of facilities into **military** (shields
 batteries, ion cannons) and **civilian** (construction yards, refineries, mines,
 shipyards, training) — a **role tag**, exactly what a pack needs.
 
+"After bombardment, **a window will display the bombardment effects**" (p122). The
+manual has no figure of it. The original's strings (TEXTSTRA.DLL 0xF778-0xF7EE):
+the title **"Orbital bombardment of |"**, and "**| ships have conducted an orbital
+strike on the | system of |**" / "...on the **non-aligned system** |". The pictures
+are **inferred** from what they show: STRATEGY.DLL 11163, a scorched surface, and
+11164, a ship blown apart by a world's guns (open-rebellion's resource catalog files
+11160-11163 as the assault and bombardment screens). The code shows it in the
+Assault Summary's window.
+
 ### ★ Two shields block a planetary assault *(PDF p121 / manual p123)*
 
 The precise rule, which §9 only had in outline:
