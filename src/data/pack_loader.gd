@@ -228,6 +228,8 @@ static func _validate_movies(pack: LoadedPack, pack_dir: String, errors: Array[S
 		faction_ids.append(f.Id)
 	for event in m.MoviesRaw:
 		var e := str(event)
+		if e.begins_with("_"):
+			continue   # an author's comment (SCHEMA.md section 1)
 		var ok: bool = KNOWN_MOVIE_EVENTS.has(e)
 		var sided: bool = false
 		for prefix in KNOWN_MOVIE_SIDE_EVENTS:

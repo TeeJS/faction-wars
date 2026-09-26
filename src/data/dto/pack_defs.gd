@@ -422,6 +422,8 @@ class PackManifest:
 		o.MoviesGiven = o.MoviesRaw != null
 		if o.MoviesRaw is Dictionary:
 			for event in o.MoviesRaw:
+				if str(event).begins_with("_"):
+					continue   # an author's comment (SCHEMA.md section 1)
 				var given: Variant = o.MoviesRaw[event]
 				var refs: Array[String] = []
 				if given is String:
