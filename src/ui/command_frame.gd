@@ -17,7 +17,9 @@ extends Control
 ##     Message Index on its category;
 ##   - the Game Options monitor ("Click here to go to Game Options screen");
 ##   - the two droids (AddDroids): the agent, C-3PO / IMP-22, and the message
-##     droid, R2-D2 / SD-7, idling where the original stands them.
+##     droid, R2-D2 / SD-7, idling where the original stands them;
+##   - the Control Panel (AddConsoles): the consoles' monitors, each opening
+##     its finder or the Encyclopedia, shown held down while pressed.
 ## The metal takes the mouse (only the window lets clicks through to the map),
 ## so a click on the frame never opens a system under it. Without the frame in
 ## the art set, nothing: the plain screen stays.
@@ -41,6 +43,11 @@ const FrameSize := Vector2(640, 481)
 ## the original (C-3PO and R2-D2 exactly, eight screenshots; IMP-22 98% and
 ## SD-7 89% of their pixels, caught mid-animation) and the same four places
 ## open-rebellion measured on its own (its 2026-09-10 advisor evidence).
+## consoles: the Control Panel's monitors (manual p022 Fig 2.3), each at its
+## pictures' place and size - STRATEGY's pressed / normal pairs, the normal
+## one matched on this frame (the same place for both of each pair);
+## options_picture: the Game Options monitor's pair likewise, a little larger
+## than the monitor the frame's glass takes clicks on.
 const Layout := {
 	"alliance": {
 		"window": Rect2(54, 35, 488, 358),
@@ -50,6 +57,12 @@ const Layout := {
 		"picture": Vector2(21, 25),
 		"agent": Rect2(541, 337, 67, 116),
 		"messenger": Rect2(316, 411, 47, 69),
+		"consoles": {
+			"system_finder": Rect2(105, 407, 29, 18), "fleet_finder": Rect2(156, 406, 29, 17),
+			"troop_finder": Rect2(208, 405, 29, 17), "personnel_finder": Rect2(257, 404, 29, 17),
+			"encyclopedia": Rect2(394, 405, 28, 18), "gid": Rect2(445, 406, 28, 17),
+		},
+		"options_picture": Rect2(3, 355, 27, 41),
 	},
 	"empire": {
 		"window": Rect2(118, 41, 489, 358),
@@ -59,6 +72,12 @@ const Layout := {
 		"picture": Vector2(84, 27),
 		"agent": Rect2(0, 347, 106, 133),
 		"messenger": Rect2(302, 401, 101, 79),
+		"consoles": {
+			"system_finder": Rect2(143, 434, 37, 24), "fleet_finder": Rect2(199, 434, 34, 22),
+			"troop_finder": Rect2(253, 433, 34, 22), "personnel_finder": Rect2(412, 433, 34, 22),
+			"encyclopedia": Rect2(465, 434, 36, 22), "gid": Rect2(519, 435, 36, 22),
+		},
+		"options_picture": Rect2(79, 193, 35, 57),
 	},
 }
 const SlotPitch := 25
@@ -152,9 +171,10 @@ func Build(side: String, screen: Vector2, on_category: Callable, on_options: Cal
 		options.add_theme_stylebox_override(st, StyleBoxEmpty.new())
 	options.position = Origin + mon.position * S
 	options.size = mon.size * S
-	options.tooltip_text = "Game Options"
+	options.tooltip_text = ConsoleTips["options"]
 	options.pressed.connect(on_options)
 	add_child(options)
+	_hold(options, "options", lay.get("options_picture", Rect2()))
 	RefreshAlerts()
 
 
@@ -269,6 +289,70 @@ class Droid extends TextureRect:
 		if q.x < 0 or q.y < 0 or q.x >= _w or q.y >= _strip.get_height():
 			return false
 		return _strip.get_pixel(Frame * _w + int(q.x), int(q.y)).a > 0.5
+
+
+## THE CONTROL PANEL (manual p022 Fig 2.3: "Most of the game's controls are
+## here"; p024: "the Galactic Information Display button on the Control Panel
+## at the bottom of the screen"): the consoles' monitors as buttons, each with
+## the original's tooltip (TEXTSTRA 5376-5382) and, while held down, its
+## pressed picture (windows/console_<name>.<side>.pressed, exporter 2.4.5).
+## `actions` maps a monitor's name to what it opens; a monitor without one
+## stays part of the picture (the GID's menu: not built yet).
+const ConsoleTips := {
+	"options": "Game Controls", "system_finder": "System Finder", "fleet_finder": "Fleet Finder",
+	"personnel_finder": "Personnel Finder", "troop_finder": "Troop Finder",
+	"encyclopedia": "Encyclopedia", "gid": "Galactic Information Display",
+}
+
+
+func AddConsoles(actions: Dictionary) -> void:
+	var consoles: Dictionary = Layout.get(Side, {}).get("consoles", {})
+	for key in consoles:
+		if not actions.has(key):
+			continue
+		var r: Rect2 = consoles[key]
+		var b := Button.new()
+		b.name = "Console_" + key
+		b.flat = true
+		b.focus_mode = Control.FOCUS_NONE
+		for st in ["normal", "hover", "pressed", "focus", "hover_pressed"]:
+			b.add_theme_stylebox_override(st, StyleBoxEmpty.new())
+		b.position = Origin + r.position * S
+		b.size = r.size * S
+		b.tooltip_text = ConsoleTips.get(key, "")
+		b.pressed.connect(actions[key])
+		add_child(b)
+		_hold(b, key, r)
+
+
+## The Control Panel's monitors on screen, by name (for tests).
+func Consoles() -> Dictionary:
+	var out := {}
+	for n in get_children():
+		if str(n.name).begins_with("Console_"):
+			out[str(n.name).trim_prefix("Console_")] = n
+	return out
+
+
+## A monitor's pressed picture over it while the mouse holds it down, at the
+## picture's own place (`at`, frame pixels).
+func _hold(b: Button, key: String, at: Rect2) -> void:
+	var pic: Texture2D = Art.WindowPicture("console_%s.%s.pressed" % [key, Side])
+	if pic == null or at.size == Vector2.ZERO:
+		return
+	var held := TextureRect.new()
+	held.name = "Held"
+	held.texture = pic
+	held.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	held.stretch_mode = TextureRect.STRETCH_SCALE
+	held.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	held.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	held.position = Origin + at.position * S - b.position
+	held.size = at.size * S
+	held.visible = false
+	b.add_child(held)
+	b.button_down.connect(func() -> void: held.visible = true)
+	b.button_up.connect(func() -> void: held.visible = false)
 
 
 ## The Window Reference Bar's twelve slots on screen.

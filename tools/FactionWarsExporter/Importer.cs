@@ -57,6 +57,7 @@ namespace FactionWarsExporter;
 ///   original/planet_sprites/&lt;artwork_id&gt;.png              the map's planets
 ///   original/windows/&lt;name&gt;.png                            window pictures
 ///   original/windows/droid_&lt;agent|messenger&gt;.&lt;faction&gt;.png   the droids' idle runs, frames side by side
+///   original/windows/console_&lt;name&gt;.&lt;faction&gt;.pressed.png   the Control Panel's monitors, held down
 ///   original/tabs/&lt;name&gt;[.&lt;faction&gt;].png (+ .pressed / .grey)   window tab icons
 ///   original/buttons/&lt;name&gt;.png (+ .pressed / .disabled)       window buttons
 ///   original/cursors/pointer.png, crosshair.png, hotspots.json   the mouse pointers (REBEXE.EXE)
@@ -122,6 +123,21 @@ public sealed class Importer
         ("ALSPRITE.DLL", "droid_messenger.alliance", 3331, 3332, 3346),
         ("EMSPRITE.DLL", "droid_agent.empire", 2001, 2002, 2016),
         ("EMSPRITE.DLL", "droid_messenger.empire", 3001, 3002, 3016),
+    };
+
+    // THE CONTROL PANEL (manual p022 Fig 2.3: "Most of the game's controls are
+    // here"): each console monitor's picture while it is held down. The
+    // STRATEGY pairs are pressed then normal - the frame (900 / 901) shows the
+    // second of each, matched on it; the Game Options monitor's pair is the
+    // other way round on the Empire's frame (10028 is the one it shows).
+    private static readonly (string Name, string Faction, int Id)[] ConsolePressed =
+    {
+        ("system_finder", "alliance", 10001), ("fleet_finder", "alliance", 10003),
+        ("personnel_finder", "alliance", 10005), ("troop_finder", "alliance", 10007),
+        ("encyclopedia", "alliance", 10009), ("gid", "alliance", 10011), ("options", "alliance", 10013),
+        ("system_finder", "empire", 10015), ("fleet_finder", "empire", 10017),
+        ("personnel_finder", "empire", 10019), ("troop_finder", "empire", 10021),
+        ("encyclopedia", "empire", 10023), ("gid", "empire", 10025), ("options", "empire", 10027),
     };
 
     // The original's menus' check mark (the droids' menus, manual p077 Fig
@@ -752,6 +768,11 @@ public sealed class Importer
         }
         if (SaveSprite(strategy, MenuCheckBitmap, P("windows", "menu_check.png"))) pictureCount++;
         else missing.Add($"windows/menu_check: no bitmap {MenuCheckBitmap} in STRATEGY.DLL");
+        foreach (var (name, faction, id) in ConsolePressed)
+        {
+            if (SaveSprite(strategy, id, P("windows", $"console_{name}.{faction}.pressed.png"))) pictureCount++;
+            else missing.Add($"windows/console_{name}.{faction}.pressed: no bitmap {id} in STRATEGY.DLL");
+        }
         int droids = 0;
         var droidDlls = new Dictionary<string, PeResources?>();
         foreach (var (dllName, name, anchor, first, last) in DroidRuns)

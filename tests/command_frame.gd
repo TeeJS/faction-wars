@@ -77,6 +77,12 @@ func _init() -> void:
 			for f in 3:
 				strip.fill_rect(Rect2i(f * int(r.size.x) + int(r.size.x) / 4, int(r.size.y) / 4, int(r.size.x) / 2, int(r.size.y) / 2), Color(0.8, 0.7, 0.2 + 0.2 * f))
 			strip.save_png("%s/windows/droid_%s.%s.png" % [dir, role, side])
+		# The Control Panel's monitors held down, and the Game Options monitor.
+		var consoles: Dictionary = CommandFrame.Layout[side]["consoles"]
+		for key in consoles:
+			_png("%s/windows/console_%s.%s.pressed.png" % [dir, key, side], int(consoles[key].size.x), int(consoles[key].size.y), Color(0.3, 0.5, 1))
+		var op: Rect2 = CommandFrame.Layout[side]["options_picture"]
+		_png("%s/windows/console_options.%s.pressed.png" % [dir, side], int(op.size.x), int(op.size.y), Color(0.3, 0.5, 1))
 	var tick := Image.create(20, 20, false, Image.FORMAT_RGBA8)
 	tick.fill_rect(Rect2i(2, 2, 16, 16), Color.WHITE)
 	tick.save_png("%s/windows/menu_check.png" % dir)
@@ -312,6 +318,48 @@ func _init() -> void:
 			for _i in 2:
 				await process_frame
 			_check(ui._openWindows.has("Communications"), "%s: left-click on the message droid opens the Message Index" % side)
+
+		# THE CONTROL PANEL (manual p022 Fig 2.3): the consoles' monitors open
+		# their finders and the Encyclopedia, with the original's tooltips and
+		# their pressed pictures while held; the GID's waits for its menu.
+		# CLASSIC CONTROLS hides our row of finders, nothing else.
+		var cons: Dictionary = frame.Consoles()
+		var consAt := cons.size() == 5 and not cons.has("gid")
+		for key in cons:
+			var want: Rect2 = CommandFrame.Layout[side]["consoles"][key]
+			var got: Rect2 = (cons[key] as Control).get_global_rect()
+			consAt = consAt and got.position.distance_to(origin + want.position * s) < 1.0 and (cons[key] as Control).tooltip_text == CommandFrame.ConsoleTips[key]
+		_check(consAt, "%s: five console monitors where the frame has them, with the original's tooltips" % side)
+		var opened := true
+		for pair in [["system_finder", "PlanetFinder"], ["fleet_finder", "FleetFinder"], ["troop_finder", "TroopFinder"], ["personnel_finder", "PersonnelFinder"], ["encyclopedia", "Encyclopedia"]]:
+			if cons.has(pair[0]):
+				(cons[pair[0]] as Button).pressed.emit()
+				await process_frame
+				opened = opened and ui._openWindows.has(pair[1])
+		_check(opened, "%s: each opens its finder, or the Encyclopedia" % side)
+		if cons.has("system_finder"):
+			var sf: Button = cons["system_finder"]
+			var held: Control = sf.get_node_or_null("Held")
+			sf.button_down.emit()
+			var down: bool = held != null and held.visible
+			sf.button_up.emit()
+			var optHeld: Control = frame.get_node("GameOptions").get_node_or_null("Held")
+			_check(down and not held.visible and optHeld != null and not optHeld.visible
+				and (frame.get_node("GameOptions") as Button).tooltip_text == "Game Controls",
+				"%s: a monitor shows its pressed picture while held; Game Options is 'Game Controls'" % side)
+		var classic: CheckBox = ui.get_node_or_null("ClassicControls")
+		var row: Control = ui.get_node("HBoxContainer")
+		var wasRow: bool = row.visible
+		if classic != null:
+			classic.set_pressed_no_signal(true)
+			GameSettings.ClassicControls = true
+			ui._ShowClassic()
+		var hidden: bool = not row.visible
+		GameSettings.ClassicControls = false
+		ui._ShowClassic()
+		_check(classic != null and wasRow and hidden and row.visible and classic.get_global_rect().end.x <= row.get_global_rect().position.x + 1 + row.get_global_rect().size.x
+			and classic.get_global_rect().position.x >= frame.ScreenRect().position.x,
+			"%s: Classic controls hides the row of finders, and brings it back" % side)
 
 		# THE SECTORS keep the grey bar on the right, outside the frame; THE
 		# WINDOW REFERENCE BAR on the frame's shelf takes minimised windows, one
