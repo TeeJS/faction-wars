@@ -265,7 +265,8 @@ func _init() -> void:
 			(main.get_node("GalaxyMap") as GalaxyMap).SetMode(Gid.Default())
 
 		# THE DROIDS (manual p022 Fig 2.3, p077-p078): the agent and the message
-		# droid where the original stands them, idling; the agent's menu at a
+		# droid where the original stands them, still (TeeJ: C-3PO "only moves
+		# when he is talking"); the agent's menu at a
 		# right-click, flipped to stay on the frame; the message droid's
 		# left-click is the Message Index, its right-click its menu; the bottom
 		# row's agent button goes.
@@ -283,9 +284,10 @@ func _init() -> void:
 			_check(agent.tooltip_text == AgentDroid.NameFor(GameSettings.PlayerFaction) and messenger.tooltip_text == AgentDroid.MessengerFor(GameSettings.PlayerFaction)
 				and messenger.tooltip_text == ("R2-D2" if side == "alliance" else "SD-7"),
 				"%s: named %s and %s" % [side, agent.tooltip_text, messenger.tooltip_text])
-			var was: int = agent.Frame
-			agent.Step()
-			_check(agent.Frames == 3 and agent.Frame == (was + 1) % 3, "%s: the agent steps through its idle run" % side)
+			await create_timer(0.4).timeout
+			_check(agent.Frames == 3 and agent.Frame == 0 and messenger.Frame == 0
+				and (agent.texture as AtlasTexture).region.position == Vector2.ZERO and frame.get_node_or_null("DroidIdle") == null,
+				"%s: the droids stand still on their resting frame" % side)
 			_check(agent._has_point(agent.size / 2.0) and not agent._has_point(Vector2(1, 1)), "%s: a droid takes the mouse only on its own pixels" % side)
 			var agentBtn: Control = ui.get_node_or_null("HBoxContainer/AgentButton")
 			_check(ui.HasDroids() and agentBtn != null and not agentBtn.visible, "%s: the bottom row's agent button goes" % side)
