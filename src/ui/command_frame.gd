@@ -17,7 +17,7 @@ extends Control
 ##     Message Index on its category;
 ##   - the Game Options monitor ("Click here to go to Game Options screen");
 ##   - the two droids (AddDroids): the agent, C-3PO / IMP-22, and the message
-##     droid, R2-D2 / SD-7, idling where the original stands them;
+##     droid, R2-D2 / SD-7, standing where the original stands them;
 ##   - the Control Panel (AddConsoles): the consoles' monitors, each opening
 ##     its finder or the Encyclopedia, shown held down while pressed.
 ## The metal takes the mouse (only the window lets clicks through to the map),
@@ -205,14 +205,14 @@ func RefreshAlerts() -> void:
 ## THE DROIDS (manual p022 Fig 2.3; p077-p078): the agent - "Right-click on
 ## C-3PO or IMP-22 to bring up the Agent menu" - and the message droid - "right-
 ## click on the message droid and select Messages. A shortcut is to left-click
-## on your message droid or press F6". Each plays its idle run (the art set's
-## strip: the original's anchor frame and its type-302 frames, exporter
-## 2.4.5) one frame every IdleStep seconds, round and round. The step and the
-## looping are INFERRED (open-rebellion's default, 0.15 s; nobody has read
-## the original's timing). A droid takes the mouse only on its own pixels.
-## Tooltips are the side's names for them (TEXTSTRA 5383/5384: "C-3PO",
-## "R2-D2"). Nothing without the pictures: an art set before 2.4.5.
-const IdleStep := 0.15
+## on your message droid or press F6". Each stands still on the original's
+## resting frame, the first of the art set's strip (the anchor bitmap; its
+## type-302 frames follow it, exporter 2.4.5): C-3PO "only moves when he is
+## talking, otherwise he is still" (TeeJ, 2026-09-25), and talking is not
+## built; when the message droid moves is not known (BACKLOG #45). A droid
+## takes the mouse only on its own pixels. Tooltips are the side's names for
+## them (TEXTSTRA 5383/5384: "C-3PO", "R2-D2"). Nothing without the
+## pictures: an art set before 2.4.5.
 
 
 func AddDroids(agent_name: String, messenger_name: String, on_agent: Callable, on_messages: Callable, on_messenger: Callable) -> void:
@@ -239,15 +239,6 @@ func AddDroids(agent_name: String, messenger_name: String, on_agent: Callable, o
 				on_messages.call())
 		add_child(d)
 		_droids.append(d)
-	if not _droids.is_empty():
-		var tick := Timer.new()
-		tick.name = "DroidIdle"
-		tick.wait_time = IdleStep
-		tick.autostart = true
-		tick.timeout.connect(func() -> void:
-			for d in _droids:
-				(d as Droid).Step())
-		add_child(tick)
 
 
 ## The droids on screen (for tests): the agent first, where there is one.
@@ -255,8 +246,8 @@ func Droids() -> Array:
 	return _droids
 
 
-## One droid: its strip cut to the current frame, taking the mouse only where
-## that frame is drawn.
+## One droid: its strip cut to the frame it shows (the first: at rest),
+## taking the mouse only where that frame is drawn.
 class Droid extends TextureRect:
 	var Frame := 0
 	var Frames := 1
@@ -277,10 +268,6 @@ class Droid extends TextureRect:
 		stretch_mode = TextureRect.STRETCH_SCALE
 		texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		mouse_filter = Control.MOUSE_FILTER_STOP
-
-	func Step() -> void:
-		Frame = (Frame + 1) % Frames
-		(texture as AtlasTexture).region = Rect2(Frame * _w, 0, _w, _strip.get_height() if _strip != null else texture.get_height())
 
 	func _has_point(p: Vector2) -> bool:
 		if _strip == null or size.x <= 0 or size.y <= 0:
