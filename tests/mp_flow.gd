@@ -204,6 +204,13 @@ func _play() -> void:
 				if w is DraggableWindow and w.scene_file_path.ends_with("InGameMenuWindow.tscn"):
 					print("[mp_flow] host closes the Game Options screen")
 					(w as DraggableWindow).CloseWindow()
+			# With the original's art imported the Menu opens the original's
+			# Game Options screen instead (original_options_screen.gd): its
+			# Return to the Command Center.
+			var screen: Node = ui.get_node_or_null("OptionsScreen")
+			if screen != null and screen.has_method("_return"):
+				print("[mp_flow] host closes the Game Options screen")
+				screen.call("_return")
 		if _role == "guest" and d == 10 and not slowed:
 			slowed = true
 			gm.SetSpeed(3)

@@ -33,7 +33,12 @@ type Room = {
   host: Peer;
   guest: Peer | null;
   lines: number;      // lines in the log
+  // The guest's game - {build, pack, pack_hash} - for the host's check before
+  // Start. Kept here, handed to the host now or when it (re)joins; never in
+  // the log, which is the game's lockstep replay.
+  seat: SeatInfo | null;
 };
+type SeatInfo = { build: string; pack: string; pack_hash: string };
 type Data = { room: Room | null; side: Side | null };
 
 // No look-alikes: 0/O, 1/I, S/5, Z/2, B/8 are all out (TeeJ, room #103).
@@ -103,7 +108,7 @@ export function startRelay(opts: { port?: number; dataDir?: string; staticDir?: 
       rooms.set(code, {
         code, name: m.name, settings: m.settings ?? {}, created: m.created, open: !!m.open, started: !!m.started,
         host: { player: m.host, ws: null }, guest: m.guest ? { player: m.guest, ws: null } : null,
-        lines: readLog({ code } as Room, 0).length,
+        lines: readLog({ code } as Room, 0).length, seat: m.seat ?? null,
       });
     } catch { /* a broken room is skipped, not fatal */ }
   }
@@ -251,7 +256,7 @@ export function startRelay(opts: { port?: number; dataDir?: string; staticDir?: 
             if (rooms.size >= LIMITS.rooms) { send(ws, { t: "error", error: "relay full" }); return; }
             const r: Room = {
               code: newCode(), name: String(msg.name ?? "Game"), settings: msg.settings ?? {}, created: Date.now(),
-              open: msg.open !== false, started: false, host: { player: String(msg.player ?? "Player"), ws }, guest: null, lines: 0,
+              open: msg.open !== false, started: false, host: { player: String(msg.player ?? "Player"), ws }, guest: null, lines: 0, seat: null,
             };
             mkdirSync(roomDir(r.code), { recursive: true });
             rooms.set(r.code, r); saveMeta(r);
@@ -274,11 +279,21 @@ export function startRelay(opts: { port?: number; dataDir?: string; staticDir?: 
             // A returning host or guest takes its seat back (reconnect, M5).
             if (r.host.player === player && !r.host.ws) { r.host.ws = ws; d.room = r; d.side = "host"; }
             else if (r.guest && r.guest.player === player && !r.guest.ws) { r.guest.ws = ws; d.room = r; d.side = "guest"; }
-            else if (!r.guest) { r.guest = { player, ws }; d.room = r; d.side = "guest"; saveMeta(r); }
+            else if (!r.guest) { r.guest = { player, ws }; r.seat = null; d.room = r; d.side = "guest"; saveMeta(r); }
             else { send(ws, { t: "error", error: "game is full" }); return; }
             send(ws, { t: "joined", code: r.code, name: r.name, side: d.side, host: r.host.player, guest: r.guest?.player ?? null, settings: r.settings, started: r.started, lines: r.lines });
+            // A host (back) at the table gets the guest's game straight away.
+            if (d.side === "host" && r.seat) send(ws, { t: "seat_info", ...r.seat });
             const o = other(r, d.side!);
             if (o?.ws) send(o.ws, { t: d.side === "guest" ? "guest" : "host", player });
+            return;
+          }
+          case "seat_info": {   // the guest's game, for the host's check before Start
+            const r = d.room; if (!r || d.side !== "guest") return;
+            const s = (v: unknown, n: number) => String(v ?? "").slice(0, n);
+            r.seat = { build: s(msg.build, 32), pack: s(msg.pack, 64), pack_hash: s(msg.pack_hash, 64) };
+            saveMeta(r);
+            if (r.host.ws) send(r.host.ws, { t: "seat_info", ...r.seat });
             return;
           }
           case "settings": {   // the host changes the Multiplayer Options (manual p161)

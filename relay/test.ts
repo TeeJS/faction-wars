@@ -88,6 +88,34 @@ host2.send({ t: "saves", player: "Lando" });
 const sv2 = await host2.next();
 check(sv2.saves.length === 0, "a player not in the game has no save of it");
 
+// seat_info: the guest's game - build, pack, pack hash - reaches the host for
+// its check before Start, is kept on the room for a host that (re)joins, and
+// is never written to the game log (the lockstep replay).
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+const h3 = client("Leia"); const g3 = client("Wedge"); await h3.opened; await g3.opened;
+h3.send({ t: "create", name: "Seat check", player: "Leia", settings: {} });
+const room3 = await h3.next();
+g3.send({ t: "join", code: room3.code, player: "Wedge" });
+await g3.next(); await h3.next();   // joined; the host's guest notice
+g3.send({ t: "seat_info", build: "2026-09-26 abc1234" + "x".repeat(40), pack: "star-wars-rebellion", pack_hash: "f".repeat(64), extra: "not passed on" });
+const seat = await h3.next();
+check(seat.t === "seat_info" && seat.build === ("2026-09-26 abc1234" + "x".repeat(40)).slice(0, 32) && seat.pack === "star-wars-rebellion" && seat.pack_hash === "f".repeat(64) && !("extra" in seat),
+  "the guest's seat_info reaches the host: its three fields only, the build cut to 32 characters");
+h3.send({ t: "seat_info", build: "host's own", pack: "p", pack_hash: "h" });   // only the guest's counts
+g3.send({ t: "since", n: 0 });
+const noLines = await g3.next();
+check(noLines.t === "caught_up" && noLines.lines === 0, "seat_info is not a game line: nothing is logged, and the host's own is ignored");
+h3.ws.close(); await sleep(50);
+check((await g3.next()).t === "left", "the guest is told the host dropped");
+const h4 = client("Leia"); await h4.opened;
+h4.send({ t: "join", code: room3.code, player: "Leia" });
+const back4 = await h4.next(); const seat4 = await h4.next();
+check(back4.t === "joined" && back4.side === "host" && seat4.t === "seat_info" && seat4.pack === "star-wars-rebellion" && seat4.build.startsWith("2026-09-26 abc1234"),
+  "a host back at the table gets the guest's seat_info at once");
+const hostBack = await g3.next();
+check(hostBack.t === "host" && hostBack.player === "Leia", "and the guest is told the host is back (it sends its seat_info again)");
+h4.ws.close(); g3.ws.close(); await sleep(50);
+
 // relay was started without a FEEDBACK_TOKEN: the reports cannot be read at all.
 const closed = await fetch(`http://127.0.0.1:${relay.port}/feedback`);
 check(closed.status === 401, "with no FEEDBACK_TOKEN on the relay the reports are closed to everyone");

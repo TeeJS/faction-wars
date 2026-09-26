@@ -98,6 +98,8 @@ var _left: bool = false
 ## Joined a game that had already started (a rejoin by code, TeeJ room #110):
 ## the relay's whole log is pulled and the game rebuilt, as Load does.
 var _rejoining: bool = false
+## The guest's game as last seen (RelayClient.seat_info), host side.
+var _seat_seen: Dictionary = {}
 ## The original's look: its screen, and its parts per choice.
 var _look: OriginalMp
 var _oSides: Array = []
@@ -237,6 +239,8 @@ func _ready() -> void:
 			_lock(b)
 		load_btn.disabled = true
 		load_btn.tooltip_text = "Only the host loads a saved game."
+		# The guest's game - build and pack - for the host's check before Start.
+		_lobby.send_seat_info()
 	_sync_load()
 	_refresh_look()
 	_refresh_start()
@@ -270,6 +274,17 @@ func _process(_delta: float) -> void:
 		_chat_seen += 1
 		if str(pair[0]) != MpSetup.player_name:
 			_say(str(pair[0]), str(pair[1]))
+	# The host came (back): the guest's game goes to it again.
+	if not _host and _lobby.host_arrived:
+		_lobby.host_arrived = false
+		_lobby.send_seat_info()
+	# The guest's game arrived, or went with the guest: Start follows it.
+	if _host and _lobby.seat_info != _seat_seen:
+		_seat_seen = _lobby.seat_info.duplicate()
+		var why := _seat_mismatch()
+		if not _seat_seen.is_empty() and not why.is_empty():
+			_say(MpSetup.player_name, why)
+		_refresh_start()
 	# Who is here.
 	if _host and _lobby.guest_name != _guest_seen:
 		_guest_seen = _lobby.guest_name
@@ -567,8 +582,10 @@ func _say(who: String, text: String) -> void:
 	_log.append_text("%s: %s\n" % [who, text])
 
 
-## A guest on the wrong pack is told so here; the lockstep hello refuses the
-## start as well, so a host who ignores the warning still cannot desync.
+## A guest on the wrong pack is told so here. What stops the game is the
+## host's side: Start stays disabled until the guest's seat_info matches
+## (_seat_mismatch), and in play the hello stops a game that differs anyway
+## (GameManager._ShowMismatch).
 func _check_pack() -> void:
 	var why := MpSetup.pack_mismatch(_settings)
 	if not why.is_empty():
@@ -584,11 +601,32 @@ func _refresh_start() -> void:
 	elif _lobby.guest_name.is_empty():
 		bar().set_proceed_enabled(false, "Waiting for an opponent to join. Game code: %s" % _lobby.code)
 	else:
-		bar().set_proceed_enabled(true)
+		var why := _seat_mismatch()
+		bar().set_proceed_enabled(why.is_empty(), why)
+
+
+## Why the guest's game cannot play this one, or "" when it can: a HARD block
+## on Start, not a warning - two builds or two packs would desync. Until the
+## guest's seat_info arrives its game is taken to be out of date: a client
+## too old to send one.
+func _seat_mismatch() -> String:
+	var s: Dictionary = _lobby.seat_info
+	if s.is_empty():
+		return "Opponent's game is out of date."
+	if not BuildInfo.same_build(BuildInfo.version(), str(s.get("build", ""))):
+		return "Opponent's game version differs - whoever is older, reload the page."
+	if str(s.get("pack", "")) != FactionRegistry.LoadedId() or str(s.get("pack_hash", "")) != FactionRegistry.PackHash:
+		return "Opponent's pack differs (theirs %s, yours %s) - you must both play the same pack." % [
+			_pack_words(str(s.get("pack", "")), str(s.get("pack_hash", ""))), _pack_words(FactionRegistry.LoadedId(), FactionRegistry.PackHash)]
+	return ""
+
+
+static func _pack_words(id: String, hash: String) -> String:
+	return "%s %s" % [id, hash.substr(0, 8)] if not hash.is_empty() else id
 
 
 func _start() -> void:
-	if not _host or _lobby.guest_name.is_empty() or _loading:
+	if not _host or _lobby.guest_name.is_empty() or _loading or not _seat_mismatch().is_empty():
 		return
 	if not _settings.has("seed"):
 		# The host picks the seed at Start; it travels in the settings so both

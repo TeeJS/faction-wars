@@ -282,6 +282,9 @@ func _StartLockstep() -> void:
 		if resumed < 0:
 			push_error("[GameManager] the saved game's log could not be rebuilt")
 		_strategicEngine = session.engine
+		# A rejoin or a Load compares games too: the build may have changed
+		# since the game was saved (a tab left open across a deploy).
+		session.start()
 	else:
 		session.absorb(lobby.take_held())
 		session.start()
@@ -304,6 +307,10 @@ func _EndPhase() -> void:
 func _process(_delta: float) -> void:
 	var session: LockstepSession = MpSetup.session
 	if session == null:
+		return
+	# The two games differ (the hello): nothing more is played.
+	if not session.hello_mismatch.is_empty():
+		_ShowMismatch(session.hello_mismatch)
 		return
 	var completed := 0
 	while session.try_phase():
@@ -702,6 +709,32 @@ func _MpWatch(session: LockstepSession) -> void:
 		_waitBox.hide()
 		_waitingSince = -1
 		_wasWaiting = false
+
+
+## The hello's backstop (the Multiplayer Options screen blocks Start first): two
+## clients on different builds, packs or settings would desync, so the game
+## stops, says why, and its only way on is Leave - on both sides, each having
+## compared the other's hello.
+var _mismatchBox: AcceptDialog
+
+
+func _ShowMismatch(reasons: String) -> void:
+	if _mismatchBox != null:
+		return
+	print("[GameManager] the two games differ: %s" % reasons)
+	_mismatchBox = AcceptDialog.new()
+	_mismatchBox.title = "Game can't continue"
+	_mismatchBox.dialog_text = "This game can't continue: %s." % reasons
+	_mismatchBox.dialog_autowrap = true
+	_mismatchBox.exclusive = true
+	_mismatchBox.ok_button_text = "Leave"
+	var leave := func() -> void:
+		MpSetup.reset()
+		get_tree().change_scene_to_file("res://Menu.tscn")
+	_mismatchBox.confirmed.connect(leave)
+	_mismatchBox.canceled.connect(leave)
+	add_child(_mismatchBox)
+	_mismatchBox.popup_centered(Vector2i(480, 0))
 
 
 func _BuildWaitBox() -> void:

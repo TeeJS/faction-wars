@@ -82,6 +82,9 @@ static func Header() -> Dictionary:
 	for f in GameSettings.HumanFactions:
 		humans.append(f.Id)
 	return {
+		# The game build: two builds may simulate differently, so the hello
+		# compares it (LockstepSession, BuildInfo.same_build).
+		"build": BuildInfo.version(),
 		"pack": FactionRegistry.LoadedId(),
 		"pack_hash": FactionRegistry.PackHash,
 		"seed": GameSettings.Seed,

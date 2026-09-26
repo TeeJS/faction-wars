@@ -21,6 +21,11 @@ var looked_up: Dictionary = {}   # the reply to lookup(): {code, found, name, ho
 var lines_on_relay: int = 0
 var last_error: String = ""
 var lobby_chat: Array = []       # [player, text] pairs, in order
+## The host's view of the guest's game: {build, pack, pack_hash}, from the
+## guest's seat_info; empty until it arrives, and again once the guest leaves.
+var seat_info: Dictionary = {}
+## The host came (back) to the room: the guest sends its seat_info again.
+var host_arrived: bool = false
 var _held: Array = []            # game lines received before the session exists
 ## A `since` replay in progress: lines arrive, then `caught_up`.
 var catching_up: bool = false
@@ -73,6 +78,13 @@ func chat(text: String) -> void:
 	transport.send({ "t": "lobby_chat", "player": player, "text": text })
 
 
+## The guest's game, for the host to check before Start: this build and the
+## loaded pack. The relay keeps it on the room and hands it to the host,
+## now or when the host (re)joins; it is not a game line and is not logged.
+func send_seat_info() -> void:
+	transport.send({ "t": "seat_info", "build": BuildInfo.version(), "pack": FactionRegistry.LoadedId(), "pack_hash": FactionRegistry.PackHash })
+
+
 ## Drain the wire; lobby lines are absorbed, game lines are held for the session.
 func poll() -> void:
 	for msg in transport.poll():
@@ -100,9 +112,13 @@ func poll() -> void:
 			"guest":
 				guest_name = str(msg.get("player", ""))
 				opponent_left = false
+				seat_info = {}   # a guest (back) at the table sends its game again
 			"host":
 				host_name = str(msg.get("player", ""))
 				opponent_left = false
+				host_arrived = true
+			"seat_info":
+				seat_info = { "build": str(msg.get("build", "")), "pack": str(msg.get("pack", "")), "pack_hash": str(msg.get("pack_hash", "")) }
 			"settings":
 				settings = msg.get("settings", {})
 			"started":
@@ -112,6 +128,8 @@ func poll() -> void:
 				lobby_chat.append([str(msg.get("player", "")), str(msg.get("text", ""))])
 			"left":
 				opponent_left = true
+				if side == "host":
+					seat_info = {}
 			"caught_up":
 				catching_up = false
 				caught_up = true

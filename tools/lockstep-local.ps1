@@ -8,6 +8,7 @@ param(
     [switch]$Relay,          # M3 gate A: through a relay started here for the duration of the test
     [int]$Rejoin = 0,        # M5 gate: the Empire client quits on this day and rejoins the room
     [int]$Load = 0,          # M5 gate: BOTH quit on this day, the relay is restarted, both rejoin (Load)
+    [string]$MismatchBuild = '',   # the Empire client says it is this build: both must stop with a hello mismatch (exit 4)
     [string]$RelayUrl = '',   # Gate B: an existing relay (wss://wars.schmitzplex.com/ws); none is started here
     [int]$RelayPort = 8787,
     [string]$Godot = 'D:\Downloads\Godot_v4.7.1-stable_mono_win64\Godot_v4.7.1-stable_mono_win64_console.exe'
@@ -36,6 +37,8 @@ foreach ($side in @('alliance', 'empire')) {
     $extra = @()
     if ($Relay) { $extra += $relayArg }
     if ($Corrupt -gt 0 -and $side -eq 'empire') { $extra += "--corrupt=$Corrupt" }
+    # Both say a build: a local run is "dev", which plays any build.
+    if ($MismatchBuild -ne '') { $extra += $(if ($side -eq 'empire') { "--build=$MismatchBuild" } else { "--build=local0000000" }) }
     if ($Rejoin -gt 0 -and $side -eq 'empire') { $extra += "--quit-at=$Rejoin" }
     if ($Load -gt 0) { $extra += "--quit-at=$Load" }
     $tag = if ($Rejoin -gt 0 -and $side -eq 'empire') { ".first" } elseif ($Load -gt 0) { ".first" } else { "" }
