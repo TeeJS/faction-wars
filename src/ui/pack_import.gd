@@ -31,8 +31,8 @@ const KIND_ART_SET := "art_set"
 const KIND_FACTION_PACK := "faction_pack"
 ## The original's movies, converted by the exporter from the player's own copy
 ## (docs/cutscenes-plan.md): a second, optional file beside the art set, to
-## Movies.UserRoot/<id>/. Desktop only until the browser keeps them outside
-## its in-memory user:// (the plan's phase 5).
+## Movies.UserRoot/<id>/ - in the browser, into the browser's own storage
+## instead, never the in-memory user:// (Movies, phase 5).
 const KIND_MOVIES := "movies"
 ## Where a picked file is staged for the zip reader (user://, so it is never an
 ## OS temp folder).
@@ -79,7 +79,10 @@ static func PickFile(done: Callable) -> void:
 	_picked = done
 	if OS.has_feature("web"):
 		# A file input clicked from the button's press; its bytes come back
-		# through the callback (kept referenced until it fires).
+		# through the callback (kept referenced until it fires). A movies file
+		# never comes into the game: the browser checks and keeps it (Movies,
+		# fwMovies.take), and only its result comes back, as text.
+		MoviesLib.WebInstall()
 		_js_callback = JavaScriptBridge.create_callback(_on_js_file)
 		JavaScriptBridge.eval("""
 			window.factionWarsPickFile = function (cb) {
@@ -88,7 +91,10 @@ static func PickFile(done: Callable) -> void:
 				input.accept = '.zip,application/zip';
 				input.onchange = function () {
 					var f = input.files && input.files[0];
-					if (f) { f.arrayBuffer().then(function (b) { cb(new Uint8Array(b), f.name); }); }
+					if (!f) return;
+					var bytes = function () { f.arrayBuffer().then(function (b) { cb(new Uint8Array(b), f.name); }); };
+					if (!window.fwMovies) { bytes(); return; }
+					window.fwMovies.take(f).then(function (r) { if (r) cb(r, f.name); else bytes(); }, bytes);
 				};
 				input.click();
 			};""", true)
@@ -109,6 +115,15 @@ static func _on_js_file(args: Array) -> void:
 	_js_callback = null
 	if args.is_empty():
 		return
+	if args[0] is String:
+		# The browser kept a movies file: its result, then the new list.
+		var parsed: Variant = JSON.parse_string(str(args[0]))
+		var result: Dictionary = parsed if parsed is Dictionary else _fail("The movies file could not be read.")
+		if result.get("ok", false):
+			MoviesLib.WebRefresh(func() -> void: _report(result))
+		else:
+			_report(result)
+		return
 	_report(ImportBytes(JavaScriptBridge.js_buffer_to_packed_byte_array(args[0])))
 
 
@@ -119,6 +134,8 @@ static func ListenForDrops(tree: SceneTree) -> void:
 	if _listening:
 		return
 	_listening = true
+	# The browser's movies list, read while the picker is up.
+	MoviesLib.WebInstall()
 	tree.root.files_dropped.connect(func(files: PackedStringArray) -> void:
 		for f in files:
 			if f.get_extension().to_lower() == "zip":
@@ -171,7 +188,9 @@ static func _import(zip: ZIPReader) -> Dictionary:
 	if not kind in [KIND_ART_SET, KIND_FACTION_PACK, KIND_MOVIES]:
 		return _fail("It is a '%s', which is not an art set, a faction pack or a movies file." % kind)
 	if kind == KIND_MOVIES and OS.has_feature("web"):
-		return _fail("Movies play in the desktop game for now. The browser game gets them later.")
+		# Dropped, it is already in the game's memory: the Import button keeps
+		# it in the browser's own storage instead (Movies, fwMovies.take).
+		return _fail("In the browser, import the movies file with the Import button, not by dropping it.")
 	if not _safe_id(id):
 		return _fail("Its id '%s' is not a plain name (letters, digits, - and _)." % id)
 	var files: Variant = manifest.get("files")
@@ -407,6 +426,12 @@ static func Installed() -> Array[Dictionary]:
 				entry["exporter"] = str(m.get("exporter", ""))
 			entry["outdated"] = pair[0] == KIND_ART_SET and IsOutdated(id, entry["exporter"])
 			out.append(entry)
+	# The browser keeps movies files in its own storage.
+	for id in MoviesLib.WebIndex:
+		var m: Dictionary = MoviesLib.WebIndex[id] if MoviesLib.WebIndex[id] is Dictionary else {}
+		out.append({"kind": KIND_MOVIES, "id": str(id), "title": str(m.get("title", id)),
+			"files": (m.get("files", []) as Array).size() if m.get("files") is Array else 0,
+			"created_utc": str(m.get("created_utc", "")), "exporter": str(m.get("exporter", "")), "outdated": false})
 	return out
 
 
@@ -414,6 +439,9 @@ static func Installed() -> Array[Dictionary]:
 ## kept (ArchivedVersions) - the picker's Remove pack says so.
 static func Remove(kind: String, id: String) -> void:
 	if not _safe_id(id):
+		return
+	if kind == KIND_MOVIES and OS.has_feature("web"):
+		MoviesLib.WebRemove(id)
 		return
 	var root: String = {KIND_ART_SET: Art.UserArtRoot, KIND_MOVIES: MoviesLib.UserRoot}.get(kind, FactionRegistry.USER_PACKS_ROOT)
 	_remove("%s/%s" % [root, id])

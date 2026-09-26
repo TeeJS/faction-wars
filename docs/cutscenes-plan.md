@@ -3,7 +3,7 @@
 Status: **approved, 2026-09-26** - TeeJ: "Yes to all for cutscenes" (every
 recommendation below: converter C, q5, a separate movies file, confirmed moments only, no
 movie switch, a "Credits and licences" link on the pack's card); then "You have my
-permission to install anything that is needed". Phases 1-4 are built.
+permission to install anything that is needed". **All five phases are built.**
 
 | Phase | State |
 |---|---|
@@ -11,7 +11,7 @@ permission to install anything that is needed". Phases 1-4 are built.
 | 2, Theora/Vorbis + the movies file | **built** (exporter 2.5.0, `Movies.cs`, `native\fwxiph.dll` from Xiph's sources): all 15 in 8.4 minutes, **70.7 MB** at q5 (the 52 MB estimate was from movie 101 alone); Godot 4.7.1 plays them |
 | 3, import + player + pack field (desktop) | **built**: `movies` in pack.json (rule 23), the `movies` import kind, `src/ui/movies.gd` and `movie_player.gd`; `launch` and `credits` play; "Credits and licences" on the pack's card |
 | 4, the event triggers | **built**: the simulation names the moment (`EventBus.Cue(event, sides)`) and UIManager plays the pack's movie for its own side - `system_destroyed` (a Death Star bombardment; the destroyer and the holder), `superweapon_sabotaged` (both sides), `victory.`/`defeat.` (each side its own), `start.<side>` (before the game; the Star Wars pack maps none until 003/004 are confirmed). A second moment while one plays follows it. **Inferred:** who sees 101 and 104 (the original's audience for them is unknown). In head-to-head the tree is not held, so the other player's game runs on |
-| 5, web | after |
+| 5, web | **built** (`src/ui/movies.gd`'s `fwMovies`): the Import button hands a movies file to the browser, which checks every entry's SHA-256 and keeps **the file itself in IndexedDB** (on disk) - it never enters the game's in-memory `user://`; a movie about to play is read out (a slice: the exporter stores them uncompressed) to a memory-only `/tmp` file, deleted when it ends. Measured in Chrome on a local web export: all 15 checked and kept in 1.8 s; the intro plays from storage; the page's JS heap **+12.6 MB while 001 (12.9 MB) plays** (target +15 MB); the file is deleted when the movie ends, and its memory is the browser's to collect (not yet measured after a collection). A movies file dropped on the browser game is refused (it would already be in memory): use the Import button |
 
 TeeJ, 2026-09-25: "please generate a plan for bringing the cut scenes into the game";
 2026-09-26, again: "write-up a plan for cut scenes" (after the strangers plan).
