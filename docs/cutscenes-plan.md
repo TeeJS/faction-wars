@@ -1,10 +1,21 @@
 # Plan: the original's cutscenes in the game
 
-Status: **proposed, 2026-09-25** - awaiting TeeJ's sign-off on the charter and the
-decisions at the end. Nothing is built. Stop after every phase with a go/no-go read-out.
+Status: **proposed, 2026-09-25; refreshed 2026-09-26** - awaiting TeeJ's sign-off on the
+charter and the decisions at the end. Nothing is built. Stop after every phase with a
+go/no-go read-out.
 
-TeeJ, 2026-09-25: "please generate a plan for bringing the cut scenes into the game".
+TeeJ, 2026-09-25: "please generate a plan for bringing the cut scenes into the game";
+2026-09-26, again: "write-up a plan for cut scenes" (after the strangers plan).
 `docs/original-art-plan.md` left them out on purpose ("This needs its own plan").
+
+**Since the first draft (2026-09-26):**
+
+| | Was | Now |
+|---|---|---|
+| `005`, View credits | Inferred | **Confirmed**: TeeJ's description of the original (BACKLOG #43: the Cockpit's credits monitor "plays a credits cutscene (a starfield, 'Director and Lead Designer / Scott Witte' and so on)") agrees with the movie's content |
+| Decision 5, a switch to turn movies off | "check the original's Game Options screen first" | **Checked**: the original's Game Options screen (rebuilt from TeeJ's screenshot, #127) has Sound Options (Play Music, the music and sound-effect volumes) and Tactical Display Options, and **no movie switch**. So none: a movie is skipped by click or Esc, as the original's |
+| The credits popup | the Cockpit's credits monitor opens a popup of the pack's credits | BACKLOG #43: the credits movie replaces it - but the popup is the only place the Milky Way card picture's **CC BY 4.0** attribution shows (`menu.credits`), and the licence requires it: **decision 6** below |
+| The exporter | 2.4.x | now **2.4.7** (the head-to-head screens); the movies file would still be **2.5.0** |
 
 ## Charter
 
@@ -48,7 +59,7 @@ moment it plays is a second question, answered in the next table):
 | Movie | When the original plays it | Confidence | Our event (code) |
 |---|---|---|---|
 | `000`, `001` | at launch, before the Cockpit ("To skip the introductory graphics, click the mouse", manual p022) | **Single-source** (the manual names intro graphics; the movies are the only candidates) | the game's start (`PackPicker` -> Cockpit) |
-| `005` | the Cockpit's **View credits** | **Inferred** (the only credits movie; the Cockpit has a credits region) | `menu.gd` credits action (text credits today) |
+| `005` | the Cockpit's **View credits** | **Confirmed** (TeeJ's description of the original, BACKLOG #43, and the movie's content) | `menu.gd` credits action (text credits today) |
 | `003` / `004` | after **Start the game as the Alliance / Empire**: the shuttle to the side's command post | **Inferred** from content; TeeJ can confirm in one start per side | the Cockpit's start actions |
 | `101` | the Death Star destroys a system (manual p124) | **Confirmed** (manual event + content) | `BombardmentManager` `DestroySystem` |
 | `104` | a Death Star Sabotage mission succeeds (manual p124, p106) | **Confirmed** (manual event + content) | `mission_manager.gd` Death Star Sabotage result |
@@ -132,7 +143,7 @@ play before the result screen.
 
 | # | Phase | Done when |
 |---|---|---|
-| 0 | **Settle the moments** - TeeJ confirms 003/004/005 (one start per side, View credits) and, if he wants them, the unknowns (102, 103, 202) by playing the original | the table above has no "Inferred" left for what we map |
+| 0 | **Settle the moments** - TeeJ confirms 003/004 (one start per side; 005 is confirmed) and, if he wants them, the unknowns (102, 103, 202) by playing the original | the table above has no "Inferred" left for what we map |
 | 1 | **Exporter: Smacker decoder** (C#) with a dev-only check against FFmpeg's decoded frames | every frame of all 15 movies matches (PSNR, stated) |
 | 2 | **Exporter: Theora/Vorbis encoding + the movies file** (option C), signed; exporter 2.5.0 | a movies file of ~52 MB (q5; TeeJ picks the quality) that Godot plays |
 | 3 | **Game: import + player + pack field** (desktop) - `movies` in SCHEMA.md and the validator, the import kind, `MoviePlayer`, the launch and credits movies | tests: the pack field validates, the import round-trips, the player skips and restores the clock; TeeJ sees the intro on desktop |
@@ -146,8 +157,9 @@ play before the result screen.
 | 1 | Converter: A (FFmpeg libraries) or C (own Smacker decoder + Xiph libraries)? | **C**: smallest, BSD, no big native blob; A if speed to ship matters more than size |
 | 2 | Quality: q5 (~52 MB total) or q7 (~100 MB)? | **q5** to start; the originals are 15 fps, 11 kHz - look at both on one movie first (phase 2) |
 | 3 | Movies as a separate optional file, or inside the art set? | **Separate** (browser memory, and not every player wants 50+ MB) |
-| 4 | Map only what is confirmed, or also the inferred ones (003/004/005) before phase 0? | **Confirmed only** until TeeJ's check (the charter's no-guess rule) |
-| 5 | A Game Options switch to turn movies off? | Only if the original has one - **check the original's Game Options screen first** (not in our notes) |
+| 4 | Map only what is confirmed, or also the inferred ones (003/004) before phase 0? | **Confirmed only** until TeeJ's check (the charter's no-guess rule); 005 is confirmed |
+| 5 | A Game Options switch to turn movies off? | **Answered: no.** The original's Game Options screen has none (checked 2026-09-26); click or Esc skips |
+| 6 | Where does the Milky Way card picture's CC BY 4.0 attribution go when the credits movie replaces the credits popup (BACKLOG #43)? | Keep a small **"Credits and licences"** link on the pack's card in the pack picker (the picker already shows the picture): the licence is satisfied wherever the picture is shown, and the Cockpit monitor is then free for the movie. Until the movies file is imported, the monitor keeps today's popup |
 
 ## Related, not in this plan
 
