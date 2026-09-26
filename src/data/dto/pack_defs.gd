@@ -352,6 +352,39 @@ class PackManifest:
 	## never shown, the editor handoff, 2026-09-23); `menu.credits` wins when
 	## the picture has its own.
 	var Credits: Array[String] = []
+	## SCHEMA.md section 2 (strangers plan, 2026-09-26): the pack's own version,
+	## plain text, shown as "v1.3". Optional; never a load error.
+	var Version: String
+	## SCHEMA.md section 2: a page where players can get the pack. Optional;
+	## what is offered is OfferedUrl() - only a sound http(s) link.
+	var DownloadUrl: String
+
+	## The longest download link offered (the relay's listing keeps as much).
+	const UrlMax := 300
+
+	## download_url when it is a link the game may offer - http:// or https://,
+	## no whitespace or control characters, at most UrlMax long - else "".
+	## Anything else is quietly not offered, never an error.
+	func OfferedUrl() -> String:
+		return SafeUrl(DownloadUrl)
+
+	static func SafeUrl(url: String) -> String:
+		var u := url.strip_edges()
+		if u.is_empty() or u.length() > UrlMax:
+			return ""
+		var lower := u.to_lower()
+		if not (lower.begins_with("http://") or lower.begins_with("https://")):
+			return ""
+		for i in u.length():
+			var c := u.unicode_at(i)
+			if c <= 32 or c == 127 or (c >= 0x80 and c <= 0x9f) or c == 0xa0 or c == 0x2028 or c == 0x2029:
+				return ""
+		return u
+
+	## "v1.3", or "" without a version.
+	func VersionLabel() -> String:
+		var v := Version.strip_edges()
+		return ("v" + v) if not v.is_empty() else ""
 
 	static func from_dict(d: Dictionary) -> PackManifest:
 		var o := PackManifest.new()
@@ -372,6 +405,11 @@ class PackManifest:
 		o.VictoryTips = VictoryTipsDef.from_dict(JsonUtil.get_ci(d, "victory_tips"))
 		o.ArtSets = JsonUtil.str_list(d, "art_sets", [])
 		o.Credits = JsonUtil.str_list(d, "credits", [])
+		# Odd values never block loading: a number is taken as its text.
+		var v: Variant = JsonUtil.get_ci(d, "version")
+		o.Version = (str(v) if (v is String or v is int or v is float) else "").strip_edges()
+		var url: Variant = JsonUtil.get_ci(d, "download_url")
+		o.DownloadUrl = str(url).strip_edges() if url is String else ""
 		return o
 
 

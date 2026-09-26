@@ -433,6 +433,13 @@ func _card(id: String, pack: PackLoader.LoadedPack, errors: Array[String]) -> Bu
 	name.name = "Title"
 	name.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	box.add_child(name)
+	# The pack's own version, "v1.3" (pack.json `version`), when it has one.
+	if pack != null and not pack.Manifest.VersionLabel().is_empty():
+		var version := _label(pack.Manifest.VersionLabel(), 13, CMuted)
+		version.name = "Version"
+		version.tooltip_text = "This pack's version."
+		version.mouse_filter = Control.MOUSE_FILTER_PASS
+		box.add_child(version)
 	if pack != null:
 		var summary := _label(pack.Manifest.Summary, 14, CMuted)
 		summary.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
