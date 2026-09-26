@@ -1,8 +1,13 @@
 # Plan: the original's cutscenes in the game
 
-Status: **proposed, 2026-09-25; refreshed 2026-09-26** - awaiting TeeJ's sign-off on the
-charter and the decisions at the end. Nothing is built. Stop after every phase with a
-go/no-go read-out.
+Status: **approved, 2026-09-26** - TeeJ: "Yes to all for cutscenes" (every
+recommendation below: converter C, q5, a separate movies file, confirmed moments only, no
+movie switch, a "Credits and licences" link on the pack's card). Phase 1 is built.
+
+| Phase | State |
+|---|---|
+| 1, the Smacker decoder | **built** (`tools/FactionWarsExporter/Smacker.cs`): all 15 movies decode identically to FFmpeg - every one of 15,297 frames (as RGB) and 15,072 audio chunks, by MD5 (`tools/SmackerCheck`, dev only) |
+| 2, Theora/Vorbis + the movies file | needs the Xiph libraries (libogg, libtheora, libvorbis) - a download, which waits on TeeJ's yes |
 
 TeeJ, 2026-09-25: "please generate a plan for bringing the cut scenes into the game";
 2026-09-26, again: "write-up a plan for cut scenes" (after the strangers plan).
@@ -144,13 +149,15 @@ play before the result screen.
 | # | Phase | Done when |
 |---|---|---|
 | 0 | **Settle the moments** - TeeJ confirms 003/004 (one start per side; 005 is confirmed) and, if he wants them, the unknowns (102, 103, 202) by playing the original | the table above has no "Inferred" left for what we map |
-| 1 | **Exporter: Smacker decoder** (C#) with a dev-only check against FFmpeg's decoded frames | every frame of all 15 movies matches (PSNR, stated) |
+| 1 | **Exporter: Smacker decoder** (C#) with a dev-only check against FFmpeg's decoded frames | every frame of all 15 movies matches (PSNR, stated) - **done: identical, not just close** |
 | 2 | **Exporter: Theora/Vorbis encoding + the movies file** (option C), signed; exporter 2.5.0 | a movies file of ~52 MB (q5; TeeJ picks the quality) that Godot plays |
 | 3 | **Game: import + player + pack field** (desktop) - `movies` in SCHEMA.md and the validator, the import kind, `MoviePlayer`, the launch and credits movies | tests: the pack field validates, the import round-trips, the player skips and restores the clock; TeeJ sees the intro on desktop |
 | 4 | **Game: the event triggers** - start per side, system destroyed, sabotage, victory/defeat | a test per trigger (the event fires the right movie, once); TeeJ sees them in play |
 | 5 | **Web** - browser storage, one movie at a time | the web game plays them; memory measured as above |
 
 ## Decisions for TeeJ
+
+All six answered 2026-09-26: **"Yes to all"** - each as recommended.
 
 | # | Question | Recommendation |
 |---|---|---|
