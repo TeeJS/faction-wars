@@ -24,10 +24,16 @@ extends RefCounted
 ## class cache.
 
 const Art := preload("res://src/ui/artwork.gd")
+const MoviesLib := preload("res://src/ui/movies.gd")
 
 const FORMAT := 1
 const KIND_ART_SET := "art_set"
 const KIND_FACTION_PACK := "faction_pack"
+## The original's movies, converted by the exporter from the player's own copy
+## (docs/cutscenes-plan.md): a second, optional file beside the art set, to
+## Movies.UserRoot/<id>/. Desktop only until the browser keeps them outside
+## its in-memory user:// (the plan's phase 5).
+const KIND_MOVIES := "movies"
 ## Where a picked file is staged for the zip reader (user://, so it is never an
 ## OS temp folder).
 const STAGING := "user://import-staging.zip"
@@ -162,8 +168,10 @@ static func _import(zip: ZIPReader) -> Dictionary:
 	var title := str(manifest.get("title", id))
 	if int(manifest.get("format", 0)) != FORMAT:
 		return _fail("It is format %s; this version of Faction Wars reads format %d." % [str(manifest.get("format", "?")), FORMAT])
-	if not kind in [KIND_ART_SET, KIND_FACTION_PACK]:
-		return _fail("It is a '%s', which is neither an art set nor a faction pack." % kind)
+	if not kind in [KIND_ART_SET, KIND_FACTION_PACK, KIND_MOVIES]:
+		return _fail("It is a '%s', which is not an art set, a faction pack or a movies file." % kind)
+	if kind == KIND_MOVIES and OS.has_feature("web"):
+		return _fail("Movies play in the desktop game for now. The browser game gets them later.")
 	if not _safe_id(id):
 		return _fail("Its id '%s' is not a plain name (letters, digits, - and _)." % id)
 	var files: Variant = manifest.get("files")
@@ -186,6 +194,8 @@ static func _import(zip: ZIPReader) -> Dictionary:
 	var dest: String
 	if kind == KIND_ART_SET:
 		dest = "%s/%s" % [Art.UserArtRoot, id]
+	elif kind == KIND_MOVIES:
+		dest = "%s/%s" % [MoviesLib.UserRoot, id]
 	else:
 		if not contents.has("pack.json"):
 			return _fail("It is a faction pack with no pack.json.")
@@ -200,7 +210,7 @@ static func _import(zip: ZIPReader) -> Dictionary:
 
 	# Write beside the old copy, then swap, so a failure leaves the old intact.
 	# A faction pack is written where the loader can check it first.
-	var staging := dest + ".importing" if kind == KIND_ART_SET else "%s/%s" % [PACK_STAGING, id]
+	var staging := "%s/%s" % [PACK_STAGING, id] if kind == KIND_FACTION_PACK else dest + ".importing"
 	_remove(staging)
 	for p in contents:
 		var path := "%s/%s" % [staging, p]
@@ -251,7 +261,7 @@ static func _import(zip: ZIPReader) -> Dictionary:
 	Art.Reset()
 	_sync()
 	_ask_to_keep_storage()
-	var what := "the art set" if kind == KIND_ART_SET else "the faction pack"
+	var what: String = {KIND_ART_SET: "the art set", KIND_MOVIES: "the movies"}.get(kind, "the faction pack")
 	var message := "Imported %s \"%s\" (%d files).%s" % [what, title, contents.size(), note]
 	var made_by := str(manifest.get("exporter", ""))
 	if kind == KIND_ART_SET and IsOutdated(id, made_by):
@@ -376,12 +386,12 @@ static func IsOlder(version: String, than: String) -> bool:
 	return false
 
 
-## The art sets and faction packs the player imported: [{ kind, id, title,
-## files, created_utc, exporter, outdated }], art sets first. `outdated`: an art
-## set older than MIN_EXPORTER.
+## The art sets, faction packs and movies the player imported: [{ kind, id,
+## title, files, created_utc, exporter, outdated }], art sets first. `outdated`:
+## an art set older than MIN_EXPORTER.
 static func Installed() -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
-	for pair in [[KIND_ART_SET, Art.UserArtRoot], [KIND_FACTION_PACK, FactionRegistry.USER_PACKS_ROOT]]:
+	for pair in [[KIND_ART_SET, Art.UserArtRoot], [KIND_FACTION_PACK, FactionRegistry.USER_PACKS_ROOT], [KIND_MOVIES, MoviesLib.UserRoot]]:
 		if not DirAccess.dir_exists_absolute(pair[1]):
 			continue
 		for id in DirAccess.get_directories_at(pair[1]):
@@ -405,7 +415,8 @@ static func Installed() -> Array[Dictionary]:
 static func Remove(kind: String, id: String) -> void:
 	if not _safe_id(id):
 		return
-	_remove("%s/%s" % [Art.UserArtRoot if kind == KIND_ART_SET else FactionRegistry.USER_PACKS_ROOT, id])
+	var root: String = {KIND_ART_SET: Art.UserArtRoot, KIND_MOVIES: MoviesLib.UserRoot}.get(kind, FactionRegistry.USER_PACKS_ROOT)
+	_remove("%s/%s" % [root, id])
 	if kind == KIND_FACTION_PACK:
 		for dir in ArchivedVersions(id):
 			_remove(dir)
