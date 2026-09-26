@@ -161,13 +161,14 @@ static func Tick() -> Texture2D:
 	return _tick
 
 
-## The submenu caret in a side's colour at half strength, at the drawn scale.
-static func Caret(side: Faction) -> Texture2D:
-	var key: String = OUI.Side(side)
+## The submenu caret in a side's colour at half strength, at the drawn scale;
+## `lit`, at full strength (the GID control's menu, its open category's).
+static func Caret(side: Faction, lit: bool = false) -> Texture2D:
+	var key: String = OUI.Side(side) + (".lit" if lit else "")
 	if _caret.has(key):
 		return _caret[key]
 	var full: Color = OUI.SideColor(side)
-	var c := Color(full.r * 0.5, full.g * 0.5, full.b * 0.5, 1.0)
+	var c := full if lit else Color(full.r * 0.5, full.g * 0.5, full.b * 0.5, 1.0)
 	var w: int = CaretRows.max()
 	var img := Image.create(w, CaretRows.size(), false, Image.FORMAT_RGBA8)
 	for y in CaretRows.size():

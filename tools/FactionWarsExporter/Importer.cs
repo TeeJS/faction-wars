@@ -58,6 +58,7 @@ namespace FactionWarsExporter;
 ///   original/windows/&lt;name&gt;.png                            window pictures
 ///   original/windows/droid_&lt;agent|messenger&gt;.&lt;faction&gt;.png   the droids' idle runs, frames side by side
 ///   original/windows/console_&lt;name&gt;.&lt;faction&gt;.pressed.png   the Control Panel's monitors, held down
+///   original/windows/gid_menu_&lt;id&gt;.&lt;faction&gt;.png   the GID control's menu icons, by category / mode
 ///   original/tabs/&lt;name&gt;[.&lt;faction&gt;].png (+ .pressed / .grey)   window tab icons
 ///   original/buttons/&lt;name&gt;.png (+ .pressed / .disabled)       window buttons
 ///   original/cursors/pointer.png, crosshair.png, hotspots.json   the mouse pointers (REBEXE.EXE)
@@ -138,6 +139,30 @@ public sealed class Importer
         ("system_finder", "empire", 10015), ("fleet_finder", "empire", 10017),
         ("personnel_finder", "empire", 10019), ("troop_finder", "empire", 10021),
         ("encyclopedia", "empire", 10023), ("gid", "empire", 10025), ("options", "empire", 10027),
+    };
+
+    // THE GID CONTROL'S MENU (manual p024 Fig 2.7): each category's and each
+    // mode's 20x20 icon, blue keyed, named by the Star Wars pack's category and
+    // mode ids - every one matched on TeeJ's screenshots of the original, both
+    // sides, all six submenus. Popular Support, Idle Fleets and Idle Personnel
+    // wear their category's icon; the Resources, Manufacturing and Defense
+    // pictures are the same for both sides but for Fighter Squadrons and
+    // Troopers.
+    private static readonly (string Name, int Alliance, int Empire)[] GidMenuIcons =
+    {
+        ("loyalty", 10110, 10119), ("fleets", 10111, 10120), ("personnel", 10112, 10121),
+        ("resources", 10113, 10122), ("manufacturing", 10114, 10123), ("defense", 10115, 10124),
+        ("popular_support", 10110, 10119), ("uprisings", 11608, 11609),
+        ("idle_fleets", 10111, 10120), ("fleets_enroute", 11613, 11614),
+        ("idle_personnel", 10112, 10121), ("active_personnel", 10139, 10127),
+        ("available_energy", 10134, 10134), ("available_raw_materials", 10135, 10135),
+        ("mines", 10136, 10136), ("refineries", 10137, 10137),
+        ("shipyards", 10131, 10131), ("idle_shipyards", 10131, 10131),
+        ("training_facilities", 10132, 10132), ("idle_training_facilities", 10132, 10132),
+        ("construction_yards", 10133, 10133), ("idle_construction_yards", 10133, 10133),
+        ("defense_batteries", 11610, 11610), ("shield_generators", 10143, 10143),
+        ("fighter_squadrons", 10141, 10126), ("trooper_regiments", 10139, 10127),
+        ("death_star_shields", 10142, 10142),
     };
 
     // The original's menus' check mark (the droids' menus, manual p077 Fig
@@ -773,6 +798,12 @@ public sealed class Importer
             if (SaveSprite(strategy, id, P("windows", $"console_{name}.{faction}.pressed.png"))) pictureCount++;
             else missing.Add($"windows/console_{name}.{faction}.pressed: no bitmap {id} in STRATEGY.DLL");
         }
+        foreach (var (name, alliance, empire) in GidMenuIcons)
+            foreach (var (faction, id) in new[] { ("alliance", alliance), ("empire", empire) })
+            {
+                if (SaveSprite(strategy, id, P("windows", $"gid_menu_{name}.{faction}.png"))) pictureCount++;
+                else missing.Add($"windows/gid_menu_{name}.{faction}: no bitmap {id} in STRATEGY.DLL");
+            }
         int droids = 0;
         var droidDlls = new Dictionary<string, PeResources?>();
         foreach (var (dllName, name, anchor, first, last) in DroidRuns)

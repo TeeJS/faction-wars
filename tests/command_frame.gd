@@ -323,15 +323,15 @@ func _init() -> void:
 
 		# THE CONTROL PANEL (manual p022 Fig 2.3): the consoles' monitors open
 		# their finders and the Encyclopedia, with the original's tooltips and
-		# their pressed pictures while held; the GID's waits for its menu.
+		# their pressed pictures while held; the GID's opens its menu.
 		# CLASSIC CONTROLS hides our row of finders, nothing else.
 		var cons: Dictionary = frame.Consoles()
-		var consAt := cons.size() == 5 and not cons.has("gid")
+		var consAt := cons.size() == 6 and cons.has("gid")
 		for key in cons:
 			var want: Rect2 = CommandFrame.Layout[side]["consoles"][key]
 			var got: Rect2 = (cons[key] as Control).get_global_rect()
 			consAt = consAt and got.position.distance_to(origin + want.position * s) < 1.0 and (cons[key] as Control).tooltip_text == CommandFrame.ConsoleTips[key]
-		_check(consAt, "%s: five console monitors where the frame has them, with the original's tooltips" % side)
+		_check(consAt, "%s: six console monitors where the frame has them, with the original's tooltips" % side)
 		var opened := true
 		for pair in [["system_finder", "PlanetFinder"], ["fleet_finder", "FleetFinder"], ["troop_finder", "TroopFinder"], ["personnel_finder", "PersonnelFinder"], ["encyclopedia", "Encyclopedia"]]:
 			if cons.has(pair[0]):
@@ -349,6 +349,36 @@ func _init() -> void:
 			_check(down and not held.visible and optHeld != null and not optHeld.visible
 				and (frame.get_node("GameOptions") as Button).tooltip_text == "Game Controls",
 				"%s: a monitor shows its pressed picture while held; Game Options is 'Game Controls'" % side)
+		# THE GID CONTROL'S MENU (manual p024 Fig 2.7): where the original
+		# opens it, its bottom-right on the original's; a category under the
+		# mouse opens its submenu to the left, touching it, bottom-aligned
+		# where it would pass the menu's bottom; a mode chosen goes on the map.
+		(cons["gid"] as Button).pressed.emit()
+		await process_frame
+		var gidMenu: Control = ui.get_node_or_null("GidControlMenu")
+		var gmAt: Rect2 = CommandFrame.Layout[side]["gid_menu"]
+		var mainBox: Rect2 = gidMenu.call("MainBox") if gidMenu != null else Rect2()
+		_check(gidMenu != null and mainBox.end.distance_to((origin + gmAt.end * s).floor()) < 1.5 and mainBox.size == Vector2(158, 158) * OUI.K,
+			"%s: the GID monitor opens its menu where the original has it (%s)" % [side, str(mainBox)])
+		if gidMenu != null:
+			var mv := InputEventMouseMotion.new()
+			mv.position = mainBox.position + Vector2(100, (8 + 5 * 22 + 11) * OUI.K)
+			gidMenu._gui_input(mv)
+			var sub: Rect2 = gidMenu.call("SubBox")
+			var defense: Gid.GidCategory = Gid.Categories[5]
+			_check(int(gidMenu.call("OpenCategory")) == 5 and absf(sub.end.x - (mainBox.position.x + OUI.K)) < 0.5
+				and absf(sub.end.y - (mainBox.position.y + (8 + 6 * 22) * OUI.K)) < 0.5 and sub.size.x == 238 * OUI.K
+				and (gidMenu.get_node("Sub/Mode_trooper_regiments") as Label).text == "Troopers",
+				"%s: Defense's submenu to the left, bottom on its row, in the original's words (%s)" % [side, str(sub)])
+			var up := InputEventMouseButton.new()
+			up.button_index = MOUSE_BUTTON_LEFT
+			up.pressed = false
+			up.position = sub.position + Vector2(100, (5 + 22 + 11) * OUI.K)
+			gidMenu._gui_input(up)
+			await process_frame
+			_check(Gid.ActiveMode() == defense.Modes[1] and ui.get_node_or_null("GidControlMenu") == null,
+				"%s: choosing a mode puts it on the map and closes the menu" % side)
+			(main.get_node("GalaxyMap") as GalaxyMap).SetMode(Gid.Default())
 		var classic: CheckBox = ui.get_node_or_null("ClassicControls")
 		var row: Control = ui.get_node("HBoxContainer")
 		var wasRow: bool = row.visible

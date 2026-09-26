@@ -944,12 +944,17 @@ class GidModeDef:
 	## The mode's line in the Command Center's left-hand menu, under its
 	## category's heading ("Idle" under Fleets); empty -> the label.
 	var MenuLabel: String
+	## The mode's line in the GID control's own menu, the Control Panel's
+	## (TEXTSTRA 5632-5662: "Troopers" where the map says "Trooper
+	## Regiments"); empty -> the label.
+	var ControlLabel: String
 
 	static func from_dict(d: Dictionary) -> GidModeDef:
 		var o := GidModeDef.new()
 		o.Id = JsonUtil.str_or(d, "id", "")
 		o.LabelText = JsonUtil.str_or(d, "label", "")
 		o.MenuLabel = JsonUtil.str_or(d, "menu_label", "")
+		o.ControlLabel = JsonUtil.str_or(d, "control_label", "")
 		o.Title = JsonUtil.str_or(d, "title", "")
 		o.TitleFrom = JsonUtil.str_or(d, "title_from", "")
 		var q: Variant = JsonUtil.get_ci(d, "quantity")

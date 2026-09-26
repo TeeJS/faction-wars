@@ -3421,6 +3421,7 @@
         "Modes": [
           {
             "Args": {},
+            "ControlLabel": "",
             "Id": "popular_support",
             "Kind": "support",
             "LabelText": "Popular Support",
@@ -3452,6 +3453,7 @@
           },
           {
             "Args": {},
+            "ControlLabel": "",
             "Id": "uprisings",
             "Kind": "uprising",
             "LabelText": "Uprisings",
@@ -3481,6 +3483,7 @@
             "Args": {
               "status": "awaiting_orders"
             },
+            "ControlLabel": "",
             "Id": "idle_fleets",
             "Kind": "my_fleets",
             "LabelText": "Idle Fleets",
@@ -3514,6 +3517,7 @@
             "Args": {
               "status": "enroute"
             },
+            "ControlLabel": "",
             "Id": "fleets_enroute",
             "Kind": "my_fleets",
             "LabelText": "Fleets Enroute",
@@ -3553,6 +3557,7 @@
             "Args": {
               "busy": false
             },
+            "ControlLabel": "",
             "Id": "idle_personnel",
             "Kind": "personnel",
             "LabelText": "Idle Personnel",
@@ -3576,6 +3581,7 @@
             "Args": {
               "busy": true
             },
+            "ControlLabel": "",
             "Id": "active_personnel",
             "Kind": "personnel",
             "LabelText": "Active Personnel",
@@ -3605,6 +3611,7 @@
             "Args": {
               "key": "energy"
             },
+            "ControlLabel": "",
             "Id": "available_energy",
             "Kind": "status_figure",
             "LabelText": "Available Energy",
@@ -3638,6 +3645,7 @@
             "Args": {
               "key": "materials"
             },
+            "ControlLabel": "Available Raw Material",
             "Id": "available_raw_materials",
             "Kind": "status_figure",
             "LabelText": "Available Raw Materials",
@@ -3671,6 +3679,7 @@
             "Args": {
               "family": "mine"
             },
+            "ControlLabel": "",
             "Id": "mines",
             "Kind": "facility_count",
             "LabelText": "Mines",
@@ -3704,6 +3713,7 @@
             "Args": {
               "family": "refinery"
             },
+            "ControlLabel": "",
             "Id": "refineries",
             "Kind": "facility_count",
             "LabelText": "Refineries",
@@ -3743,6 +3753,7 @@
             "Args": {
               "family": "shipyard"
             },
+            "ControlLabel": "",
             "Id": "shipyards",
             "Kind": "facility_count",
             "LabelText": "Shipyards",
@@ -3776,6 +3787,7 @@
             "Args": {
               "role": "produces_unit"
             },
+            "ControlLabel": "",
             "Id": "idle_shipyards",
             "Kind": "idle_producer",
             "LabelText": "Idle Shipyards",
@@ -3799,6 +3811,7 @@
             "Args": {
               "family": "training_facility"
             },
+            "ControlLabel": "",
             "Id": "training_facilities",
             "Kind": "facility_count",
             "LabelText": "Training Facilities",
@@ -3832,6 +3845,7 @@
             "Args": {
               "role": "produces_troop"
             },
+            "ControlLabel": "",
             "Id": "idle_training_facilities",
             "Kind": "idle_producer",
             "LabelText": "Idle Training Facilities",
@@ -3855,6 +3869,7 @@
             "Args": {
               "family": "construction_yard"
             },
+            "ControlLabel": "",
             "Id": "construction_yards",
             "Kind": "facility_count",
             "LabelText": "Construction Yards",
@@ -3888,6 +3903,7 @@
             "Args": {
               "role": "produces_facility"
             },
+            "ControlLabel": "",
             "Id": "idle_construction_yards",
             "Kind": "idle_producer",
             "LabelText": "Idle Construction Yards",
@@ -3917,6 +3933,7 @@
             "Args": {
               "key": "batteries"
             },
+            "ControlLabel": "Planetary Defense Batteries",
             "Id": "defense_batteries",
             "Kind": "defence_figure",
             "LabelText": "Defense Batteries",
@@ -3950,6 +3967,7 @@
             "Args": {
               "key": "shields"
             },
+            "ControlLabel": "Planetary Shield Generators",
             "Id": "shield_generators",
             "Kind": "defence_figure",
             "LabelText": "Shield Generators",
@@ -3983,6 +4001,7 @@
             "Args": {
               "section": "fighters"
             },
+            "ControlLabel": "",
             "Id": "fighter_squadrons",
             "Kind": "intel_line_count",
             "LabelText": "Fighter Squadrons",
@@ -4016,6 +4035,7 @@
             "Args": {
               "section": "troopers"
             },
+            "ControlLabel": "Troopers",
             "Id": "trooper_regiments",
             "Kind": "intel_line_count",
             "LabelText": "Trooper Regiments",
@@ -4047,6 +4067,7 @@
           },
           {
             "Args": {},
+            "ControlLabel": "",
             "Id": "death_star_shields",
             "Kind": "constant_zero",
             "LabelText": "Death Star Shields",
