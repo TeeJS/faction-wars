@@ -44,10 +44,19 @@ static func reset() -> void:
 	GameSettings.SpeedRule = "slowest"
 
 
+## Tests only: the relay every screen talks to, whatever the command line says.
+## A test that opens a screen which connects (Locate Session's open-games list
+## connects as it opens) points it at a dead local port, so no test ever
+## reaches the live relay.
+static var RelayOverride: String = ""
+
+
 ## The relay to talk to. In the browser: the page's own origin (hosting option
 ## A), or ?relay=ws://... on the page URL for a test against a local relay. On
 ## the desktop: --relay=, else the production relay. Never a field on a screen.
 static func relay_url() -> String:
+	if not RelayOverride.is_empty():
+		return RelayOverride
 	var arg := _arg("--relay=")
 	if not arg.is_empty():
 		return arg

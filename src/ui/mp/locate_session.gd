@@ -22,11 +22,26 @@ extends MpScreen
 ## strangers plan PR 5): another game build stops with "whoever is older,
 ## reload"; another installed version of the pack is switched to; a pack not
 ## installed opens the Get-pack dialog, whose upload comes back here and joins.
+##
+## The OPEN-GAMES LIST under the code box (strangers plan PR 6): Fig 5.8's
+## "Select a game to connect to from the following list", back, merged into
+## this screen - the relay's open games, asked for every 2 s, one row each:
+## "Game name (Host) · Pack title v1.3 · have it / get it / no link" (the
+## pack's version and whether this client has it, can get it by the host's
+## link, or cannot: additions). Picking a row is its code and OK - the same
+## path as a typed code. A private game is still reached only by its code.
 
 const OriginalMp := preload("res://src/ui/mp/original_mp.gd")
 const GetPack := preload("res://src/ui/mp/get_pack_dialog.gd")
 
 const CodeLength := 6
+## How often the open games are asked for again.
+const ListSeconds := 2.0
+## The list in the original's look: in its list panel, under the code and the
+## status line, two rows of green Arial 12 a row every 16.
+const ListTop := 322
+const ListRows := 2
+const ListPx := 12.0
 
 ## The original's Join Game screen (px of its 640 x 480, measured on TeeJ's
 ## screenshot): "What would you like your player name to be?" centred on x
@@ -51,6 +66,10 @@ var _code: String = ""
 var _look: OriginalMp
 var _getpack: AcceptDialog = null
 var _last_import: Dictionary = {}
+## The open-games list's own connection to the relay, and the rooms it shows.
+var _lister: RelayClient = null
+var _listed: Array = []
+var _since_list: float = 0.0
 
 
 func _ready() -> void:
@@ -68,10 +87,18 @@ func _ready() -> void:
 	(get_node("%BtnOK") as Button).pressed.connect(_ok)
 	(get_node("%BtnCancel") as Button).pressed.connect(func() -> void: go(ConfigurationScene))
 	(get_node("%BtnClose") as Button).pressed.connect(func() -> void: go(ConfigurationScene))
+	var games: ItemList = get_node("%Games")
+	games.item_selected.connect(_pick)
+	_fill([])
 	if OriginalMp.CanBuild("mp_connect"):
 		_dress()
 	_refresh()
 	box.grab_focus()
+	_lister = RelayClient.new(MpSetup.relay_url(), MpSetup.player_name)
+	_lister.list()
+	tree_exiting.connect(func() -> void:
+		if _lister != null:
+			_lister.transport.close())
 
 
 func _dress() -> void:
@@ -81,6 +108,7 @@ func _dress() -> void:
 	_look.Field(get_node("%PlayerName") as LineEdit, FieldX, NameTop, FieldW, FieldPx, OriginalMp.Green)
 	_look.Field(get_node("%CodeBox") as LineEdit, FieldX, CodeTop, FieldW, FieldPx, OriginalMp.Green)
 	_look.Line(get_node("%Status") as Label, FieldX, StatusTop, FieldW, FieldPx, OriginalMp.Grey)
+	_look.Items(get_node("%Games") as ItemList, FieldX, ListTop, FieldW, ListRows, ListPx, 16.0, OriginalMp.Green, OriginalMp.Red)
 	var bar := _look.Bar()
 	bar.set_previous(true, "Go back")
 	bar.previous.connect(func() -> void: go(ConfigurationScene))
@@ -127,7 +155,8 @@ func _stop(text: String) -> void:
 	_refresh()
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
+	_poll_list(delta)
 	if _lobby == null or _phase.is_empty():
 		return
 	_lobby.poll()
@@ -156,6 +185,76 @@ func _process(_delta: float) -> void:
 	elif _phase == "join":
 		if _lobby.side != "" and not _lobby.code.is_empty():
 			go(OptionsScene)
+
+
+## The open games, asked for every ListSeconds. The list is rebuilt only when
+## the set of games changes: the reply comes every 2 s as new objects, and
+## rebuilding on each flickered and could swallow a click (the old Join Game
+## screen's lesson).
+func _poll_list(delta: float) -> void:
+	if _lister == null:
+		return
+	_lister.poll()
+	_since_list += delta
+	if _since_list >= ListSeconds:
+		_since_list = 0.0
+		_lister.list()
+	if _codes(_lister.rooms) != _codes(_listed):
+		_fill(_lister.rooms)
+
+
+static func _codes(rooms: Array) -> Array:
+	var out: Array = []
+	for r in rooms:
+		if r is Dictionary:
+			out.append(str(r.get("code", "")))
+	return out
+
+
+## The rows, from the relay's rooms; a line saying there are none.
+func _fill(rooms: Array) -> void:
+	_listed = rooms.filter(func(r: Variant) -> bool: return r is Dictionary)
+	var games: ItemList = get_node("%Games")
+	games.clear()
+	if _listed.is_empty():
+		games.add_item("No open games right now.")
+		games.set_item_selectable(0, false)
+		games.set_item_disabled(0, true)
+		return
+	for r in _listed:
+		var i := games.add_item(RowWords(r))
+		games.set_item_tooltip(i, "Game code %s. Picking it joins it." % str(r.get("code", "")))
+
+
+## "Game name (Host) · Pack title v1.3 · have it" - plain text: the names are
+## strangers' and an ItemList never parses them.
+static func RowWords(r: Dictionary) -> String:
+	var s: Dictionary = r.get("settings", {}) if r.get("settings") is Dictionary else {}
+	return "%s (%s) · %s · %s" % [str(r.get("name", "")), str(r.get("host", "")), GetPack.PackWords(s), Availability(s)]
+
+
+## Whether this client has the room's pack ("have it"), can get it by the
+## host's link ("get it"), or cannot ("no link"). Words, not symbols: the
+## theme's font has no check or cross.
+static func Availability(s: Dictionary) -> String:
+	var id := str(s.get("pack", ""))
+	var hash := str(s.get("pack_hash", ""))
+	if not id.is_empty() and not hash.is_empty() and ((id == FactionRegistry.LoadedId() and hash == FactionRegistry.PackHash)
+			or not FactionRegistry.FindByHash(id, hash).is_empty()):
+		return "have it"
+	if not PackDefs.PackManifest.SafeUrl(str(s.get("pack_url", ""))).is_empty():
+		return "get it"
+	return "no link"
+
+
+## A row picked: its code, and OK - the same path as a typed code.
+func _pick(i: int) -> void:
+	if not _phase.is_empty() or i < 0 or i >= _listed.size():
+		return
+	var box: LineEdit = get_node("%CodeBox")
+	box.text = str(_listed[i].get("code", "")).to_upper()
+	_refresh()
+	_ok()
 
 
 ## The room is there with a seat: its pack and build decide what happens

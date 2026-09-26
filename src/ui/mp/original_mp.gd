@@ -140,6 +140,8 @@ func _size_text(c: Control, px: float, pitch: float) -> void:
 	if c is RichTextLabel:
 		c.add_theme_font_size_override("normal_font_size", roundi(px * _s))
 		c.add_theme_constant_override("line_separation", roundi(maxf(0.0, pitch - 1.15 * px) * _s))
+	elif c is ItemList:
+		c.add_theme_constant_override("v_separation", roundi(maxf(0.0, pitch - 1.15 * px) * _s))
 
 
 ## Puts a part on the screen at its rect in the original's pixels.
@@ -245,6 +247,27 @@ func Line(l: Label, x: float, cap_top: float, w: float, px: float, color: Color,
 	l.add_theme_font_override("font", OUI.Face(false))
 	l.add_theme_color_override("font_color", color)
 	_track(l, Rect2(x, cap_top - 0.19 * px, w, px * 1.4), px)
+	return l
+
+
+## The screen's own list moved onto the original's: its rows in `color`, the
+## picked or pointed-at one in `chosen` (the original's lists pick in red),
+## `pitch` apart, `rows` of them showing from `top`; no box of its own, and no
+## scroll bar - the wheel scrolls.
+func Items(l: ItemList, x: float, top: float, w: float, rows: int, px: float, pitch: float, color: Color, chosen: Color) -> ItemList:
+	l.reparent(_canvas, false)
+	l.custom_minimum_size = Vector2.ZERO
+	l.add_theme_font_override("font", OUI.Face(false))
+	l.add_theme_color_override("font_color", color)
+	l.add_theme_color_override("font_selected_color", chosen)
+	l.add_theme_color_override("font_hovered_color", chosen)
+	l.add_theme_color_override("font_hovered_selected_color", chosen)
+	for st in ["panel", "focus", "selected", "selected_focus", "hovered", "hovered_selected", "hovered_selected_focus", "cursor", "cursor_unfocused"]:
+		l.add_theme_stylebox_override(st, StyleBoxEmpty.new())
+	var bar := l.get_v_scroll_bar()
+	bar.modulate = Color(1, 1, 1, 0)
+	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_track(l, Rect2(x, top, w, pitch * rows), px, pitch)
 	return l
 
 

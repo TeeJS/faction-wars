@@ -164,6 +164,19 @@ func _locate_and_join(code: String, what: String) -> void:
 	change_scene_to_file(LocateSessionScene)
 	if not await _until(_scene_named("LocateSession"), "the Locate Session screen"): return
 	(current_scene.get_node("%PlayerName") as LineEdit).text = MpSetup.player_name
+	# An unstarted game is in the open-games list first (strangers plan PR 6):
+	# the relay's listing, polled by the screen.
+	if what == "the game to be found by code":
+		var games: ItemList = current_scene.get_node("%Games")
+		var listed := func() -> bool:
+			for i in games.item_count:
+				if games.get_item_tooltip(i).contains(code):
+					return true
+			return false
+		if not await _until(listed, "the host's game in the open-games list", 20.0): return
+		for i in games.item_count:
+			if games.get_item_tooltip(i).contains(code):
+				print("[mp_flow] guest sees the game in the open-games list: %s" % games.get_item_text(i))
 	var box: LineEdit = current_scene.get_node("%CodeBox")
 	box.text = code
 	box.text_changed.emit(code)

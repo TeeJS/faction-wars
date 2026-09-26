@@ -19,6 +19,9 @@ func _init() -> void:
 	# Never the player's own art: the screens take the original's look from it.
 	Art.IgnoreProjectFolder = true
 	Art.UserArtRoot = ArtRoot
+	# NEVER THE LIVE RELAY: Locate Session's open-games list connects as the
+	# screen opens. A dead local port instead.
+	MpSetup.RelayOverride = "ws://127.0.0.1:1/ws"
 	FactionRegistry.EnsureLoaded()
 	await _menu()
 	await _configuration()
@@ -469,8 +472,35 @@ func _locate() -> void:
 	_check(box.text == "AB12CD", "Fig 5.6: the code is upper-cased as typed")
 	_check(not ok.disabled, "TeeJ #197: six characters enable OK")
 	_check(s.get_node_or_null("%Status") != null, "the relay's answer has a line to land on")
+	await _open_games(s)
 	await _close(s)
 	MpSetup.reset()
+
+
+## The open-games list (strangers plan PR 6; Fig 5.8's list, back): the
+## relay's open games, a row each - game (host), pack and version, and whether
+## this client has it, can get it, or cannot - and a row picked is its code
+## and OK.
+func _open_games(s: Node) -> void:
+	var games: ItemList = s.get_node_or_null("%Games")
+	_check(games != null and games.item_count == 1 and games.get_item_text(0) == "No open games right now." and games.is_item_disabled(0),
+		"PR 6: the open-games list under the code box; none yet")
+	_check(s.get("_lister") != null and (s.get("_lister") as RelayClient).transport.url == "ws://127.0.0.1:1/ws", "PR 6: the list asks the relay (here a dead local port, never the live one)")
+	var mine := MpSetup.pack_settings()
+	var lister: RelayClient = s.get("_lister")
+	lister.rooms = [
+		{ "code": "AAAAAA", "name": "The End of the Empire", "host": "Han", "settings": mine },
+		{ "code": "CCCCCC", "name": "Hoth", "host": "Leia", "settings": { "pack": "somebodys-pack", "pack_hash": "1".repeat(64), "pack_title": "Somebody's Pack", "pack_version": "1.3", "pack_url": "https://example.com/p" } },
+		{ "code": "DDDDDD", "name": "<b>Bold</b> [b]x[/b]", "host": "Wedge", "settings": { "pack": "other", "pack_hash": "2".repeat(64), "pack_title": "Other", "pack_url": "javascript:alert(1)" } },
+	]
+	s.call("_poll_list", 0.0)
+	var mine_words := "%s%s" % [mine.pack_title, (" v" + mine.pack_version) if not str(mine.pack_version).is_empty() else ""]
+	_check(games.item_count == 3 and games.get_item_text(0) == "The End of the Empire (Han) · %s · have it" % mine_words, "PR 6: a game on my pack: have it (%s)" % games.get_item_text(0))
+	_check(games.get_item_text(1) == "Hoth (Leia) · Somebody's Pack v1.3 · get it", "PR 6: a pack I lack with a link: get it")
+	_check(games.get_item_text(2) == "<b>Bold</b> [b]x[/b] (Wedge) · Other · no link", "PR 6: a pack I lack with no sound link: no link; a stranger's text shown as written")
+	s.call("_pick", 1)
+	_check((s.get_node("%CodeBox") as LineEdit).text == "CCCCCC" and s.get("_phase") == "lookup", "PR 6: picking a row is its code and OK")
+	s.set("_phase", "")
 
 
 func _options(host: bool) -> void:

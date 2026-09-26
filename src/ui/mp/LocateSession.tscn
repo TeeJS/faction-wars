@@ -90,6 +90,17 @@ theme_override_colors/font_color = Color(0.6, 0.7, 0.8, 1)
 theme_override_font_sizes/font_size = 12
 autowrap_mode = 3
 
+[node name="GamesCaption" type="Label" parent="CenterContainer/Dialog/VBox/Body/Left"]
+layout_mode = 2
+text = "Or select a game to connect to from the following list."
+autowrap_mode = 3
+
+[node name="Games" type="ItemList" parent="CenterContainer/Dialog/VBox/Body/Left"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 130)
+layout_mode = 2
+tooltip_text = "The open games. Picking one joins it."
+
 [node name="Right" type="VBoxContainer" parent="CenterContainer/Dialog/VBox/Body"]
 layout_mode = 2
 theme_override_constants/separation = 8
