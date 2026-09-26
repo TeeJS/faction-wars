@@ -11,12 +11,34 @@ static var _cached: String = ""
 static func version() -> String:
 	if not _cached.is_empty():
 		return _cached
-	_cached = "dev"
+	# A web export without the file is not a local run: it says so, and
+	# matches no other build (same_build).
+	_cached = "web-dev" if OS.has_feature("web") else "dev"
 	if FileAccess.file_exists("res://version.txt"):
 		var line := FileAccess.get_file_as_string("res://version.txt").strip_edges()
 		if not line.is_empty():
 			_cached = line
 	return _cached
+
+
+## Can two builds play each other? Their commits - the last word of "<date>
+## <sha7>" - must be the same. "dev", a local run (never the web: a web
+## export always carries its version file), plays any build, so a local run
+## can be tested against the web. A missing build is a mismatch, never a
+## wildcard.
+static func same_build(a: String, b: String) -> bool:
+	a = a.strip_edges()
+	b = b.strip_edges()
+	if a.is_empty() or b.is_empty():
+		return false
+	if a == "dev" or b == "dev":
+		return true
+	return _commit(a) == _commit(b)
+
+
+static func _commit(v: String) -> String:
+	var words := v.split(" ", false)
+	return words[words.size() - 1] if words.size() > 0 else ""
 
 
 ## A small grey label for a corner or a bar.

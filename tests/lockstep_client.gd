@@ -21,6 +21,11 @@ func _init() -> void:
 		quit(2)
 		return
 
+	# --build=<version>: this client says it is another build, so the hello's
+	# backstop must refuse the pair (lockstep-local.ps1 -MismatchBuild).
+	var build := _arg("--build=", "")
+	if not build.is_empty():
+		BuildInfo._cached = build
 	FactionRegistry.EnsureLoaded()
 	var humans: Array = []
 	for f in FactionRegistry.Playable:
@@ -84,6 +89,7 @@ func _init() -> void:
 			quit(6)
 			return
 		engine = session.engine
+		session.start()   # the hello after a rebuild, as GameManager sends it
 	else:
 		session.absorb(held)
 		session.start()

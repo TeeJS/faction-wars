@@ -46,6 +46,9 @@ var remote_speed: int = 2
 var remote_hello: Dictionary = {}
 ## The relay said the opponent's seat dropped (`left`) and has not been retaken.
 var opponent_gone: bool = false
+## Every way the opponent's game differs from ours, from their hello
+## (hello_differences); "" = none. Any at all and the game cannot continue:
+## GameManager puts up its modal and both sides leave.
 var hello_mismatch: String = ""
 ## After a resync: did our replay reproduce our own hash (true = the opponent diverged)?
 var last_resync_faithful: bool = false
@@ -58,6 +61,9 @@ func _init(t: Transport, local_side: Faction, remote_side: Faction, is_host: boo
 	hosting = is_host
 
 
+## The hello: this client's game (CommandLog.Header - the build, the pack, the
+## settings) for the opponent to compare. Sent at the start, and again after
+## a rebuild_from_log (a rejoin or a Load), which never sent one.
 func start() -> void:
 	var hello := CommandLog.Header()
 	hello["t"] = "hello"
@@ -129,22 +135,7 @@ func _handle(msg: Dictionary) -> void:
 	match str(msg.get("t", "")):
 		"hello":
 			remote_hello = msg
-			# JSON numbers arrive as floats; compare by value, not by text.
-			var mine := CommandLog.Header()
-			# The pack first: everything else is meaningless across packs, and a
-			# same-id/different-content pair would otherwise desync on day 1's
-			# hash with nothing to say why (BACKLOG #13).
-			if str(mine.get("pack", "")) != str(msg.get("pack", "")):
-				hello_mismatch = "pack: ours %s, theirs %s" % [str(mine.get("pack")), str(msg.get("pack"))]
-			elif str(mine.get("pack_hash", "")) != str(msg.get("pack_hash", "")):
-				hello_mismatch = "pack content differs (same id '%s', different files)" % str(mine.get("pack"))
-			for k in ["seed", "size", "difficulty"]:
-				if int(mine.get(k, 0)) != int(msg.get(k, 0)):
-					hello_mismatch = "%s: ours %s, theirs %s" % [k, str(mine.get(k)), str(msg.get(k))]
-			if bool(mine.get("hq_only", false)) != bool(msg.get("hq_only", false)):
-				hello_mismatch = "hq_only differs"
-			if str(mine.get("host", "")) != str(msg.get("host", "")):
-				hello_mismatch = "host: ours %s, theirs %s" % [str(mine.get("host")), str(msg.get("host"))]
+			hello_mismatch = hello_differences(CommandLog.Header(), msg)
 		"cmd":
 			var c := _command_of(msg)
 			if not _remote_batch.has(c.Phase):
@@ -163,6 +154,30 @@ func _handle(msg: Dictionary) -> void:
 			opponent_gone = true
 		"guest", "host":
 			opponent_gone = false
+
+
+## What makes two clients' games different, every difference found (each used
+## to overwrite the last), or "" when they are the same game: the build first
+## (two builds may simulate differently), then the pack - everything else is
+## meaningless across packs, and a same-id/different-content pair would
+## otherwise desync on day 1's hash with nothing to say why (BACKLOG #13) -
+## then the settings. JSON numbers arrive as floats: compared by value.
+static func hello_differences(mine: Dictionary, theirs: Dictionary) -> String:
+	var found: Array[String] = []
+	if not BuildInfo.same_build(str(mine.get("build", "")), str(theirs.get("build", ""))):
+		found.append("game version: ours %s, theirs %s" % [str(mine.get("build", "?")), str(theirs.get("build", "missing"))])
+	if str(mine.get("pack", "")) != str(theirs.get("pack", "")):
+		found.append("pack: ours %s, theirs %s" % [str(mine.get("pack")), str(theirs.get("pack"))])
+	elif str(mine.get("pack_hash", "")) != str(theirs.get("pack_hash", "")):
+		found.append("pack content differs (same id '%s', different files)" % str(mine.get("pack")))
+	for k in ["seed", "size", "difficulty"]:
+		if int(mine.get(k, 0)) != int(theirs.get(k, 0)):
+			found.append("%s: ours %s, theirs %s" % [k, str(mine.get(k)), str(theirs.get(k))])
+	if bool(mine.get("hq_only", false)) != bool(theirs.get("hq_only", false)):
+		found.append("hq_only differs")
+	if str(mine.get("host", "")) != str(theirs.get("host", "")):
+		found.append("host: ours %s, theirs %s" % [str(mine.get("host")), str(theirs.get("host"))])
+	return "; ".join(found)
 
 
 static func _command_of(msg: Dictionary) -> Command:

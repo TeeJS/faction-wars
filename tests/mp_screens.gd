@@ -424,6 +424,7 @@ func _options(host: bool) -> void:
 	if host:
 		_check(not (sides[0] as Button).disabled and (sides[0] as Button).button_pressed, "Fig 5.9 (host): the host edits; Alliance preselected")
 		_check((sizes[1] as Button).button_pressed and (s.get_node("%BtnStandardGame") as Button).button_pressed, "Fig 5.9 (host): Large and Standard Game preselected")
+		_start_gate(s, lobby, proceed)
 	else:
 		_check(not (sides[1] as Button).disabled and (sides[1] as Button).mouse_filter == Control.MOUSE_FILTER_IGNORE and (sides[1] as Button).button_pressed, "Fig 5.9 (guest): sees the host's side pressed, cannot change it")
 		_check((sizes[2] as Button).button_pressed and (s.get_node("%BtnHQOnlyVictory") as Button).button_pressed, "Fig 5.9 (guest): sees Huge and HQ Only Victory")
@@ -431,6 +432,45 @@ func _options(host: bool) -> void:
 		_check(text.contains("Average speed rule selected.") and (rules[1] as Button).button_pressed and (rules[1] as Button).mouse_filter == Control.MOUSE_FILTER_IGNORE, "speed rule (guest): sees Average pressed, cannot change it")
 	await _close(s)
 	MpSetup.reset()
+
+
+## The hard block before Start (strangers plan, PR 1): with a guest seated the
+## host's Start waits for the guest's seat_info, and stays off on another
+## build or another pack. Builds match on their commit; "dev" (a local run)
+## plays any build; a missing one plays none.
+func _start_gate(s: Node, lobby: RelayClient, proceed: Button) -> void:
+	lobby.guest_name = "Luke"
+	lobby.seat_info = {}
+	s._refresh_start()
+	_check(proceed.disabled and proceed.tooltip_text == "Opponent's game is out of date.", "host: a seated guest who sent no seat_info - Start stays off")
+	var was: String = BuildInfo._cached
+	BuildInfo._cached = "2026-09-26 abc1234"
+	lobby.seat_info = { "build": "2026-09-26 abc1234", "pack": FactionRegistry.LoadedId(), "pack_hash": FactionRegistry.PackHash }
+	s._refresh_start()
+	_check(not proceed.disabled, "host: the guest's build and pack match - Start is on")
+	lobby.seat_info["build"] = "2026-09-27 abc1234"
+	s._refresh_start()
+	_check(not proceed.disabled, "host: the same commit built another day is the same build")
+	lobby.seat_info["build"] = "2026-09-26 def5678"
+	s._refresh_start()
+	_check(proceed.disabled and proceed.tooltip_text == "Opponent's game version differs - whoever is older, reload the page.", "host: another build - Start stays off")
+	lobby.seat_info["build"] = "2026-09-26 abc1234"
+	lobby.seat_info["pack_hash"] = "0".repeat(64)
+	s._refresh_start()
+	_check(proceed.disabled and proceed.tooltip_text.begins_with("Opponent's pack differs"), "host: the same pack id with other files - Start stays off")
+	lobby.seat_info["pack_hash"] = FactionRegistry.PackHash
+	lobby.seat_info["pack"] = "ww2"
+	s._refresh_start()
+	_check(proceed.disabled and proceed.tooltip_text.begins_with("Opponent's pack differs"), "host: another pack - Start stays off")
+	BuildInfo._cached = was
+	_check(BuildInfo.same_build("dev", "2026-09-26 abc1234") and BuildInfo.same_build("2026-09-26 abc1234", "dev")
+		and not BuildInfo.same_build("", "dev") and not BuildInfo.same_build("web-dev", "2026-09-26 abc1234"),
+		"builds: a local run (dev) plays any build; a missing build or a web export without its version plays none")
+	var diff := LockstepSession.hello_differences({ "build": "a 1", "pack": "p", "pack_hash": "h", "seed": 1, "size": 1, "difficulty": 1 },
+		{ "build": "a 2", "pack": "p", "pack_hash": "h2", "seed": 2, "size": 1, "difficulty": 1 })
+	_check(diff.contains("game version") and diff.contains("pack content differs") and diff.contains("seed"), "the hello names every difference, not only the last: %s" % diff)
+	lobby.guest_name = ""
+	lobby.seat_info = {}
 
 
 func _compose() -> void:
