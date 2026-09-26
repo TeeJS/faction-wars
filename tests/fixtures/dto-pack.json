@@ -9006,6 +9006,20 @@
           "Value": "huge"
         },
         {
+          "Action": "cycle",
+          "Quad": "[]",
+          "QuadGiven": false,
+          "Rect": [
+            242,
+            271,
+            44,
+            47
+          ],
+          "SelectedColorHex": "",
+          "Tooltip": "Set the size of the galaxy: the next one.",
+          "Value": "galaxy_size"
+        },
+        {
           "Action": "load_game",
           "Quad": "[]",
           "QuadGiven": false,

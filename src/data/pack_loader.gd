@@ -56,7 +56,9 @@ const KNOWN_TERMS := [
 ## p021, Fig. 2.2); a picture menu must offer each one, so no function is lost
 ## behind an image that forgot it.
 const KNOWN_MENU_ACTIONS := ["difficulty", "galaxy_size", "start", "load_game",
-	"credits", "hq_only_victory", "multiplayer", "exit"]
+	"credits", "hq_only_victory", "multiplayer", "exit", "cycle"]
+## A `cycle` region's value: a choice the Cockpit offers several regions for.
+const CYCLE_CHOICES := ["difficulty", "galaxy_size"]
 const KNOWN_DIFFICULTIES := ["easy", "medium", "hard"]
 ## SCHEMA.md section 7. Day-zero placement and the story parts. Each story
 ## part is ONE character - the set-pieces are written for one pilgrim, one
@@ -324,6 +326,10 @@ static func _validate_menu(pack: LoadedPack, pack_dir: String, errors: Array[Str
 				if not faction_ids.has(r.Value):
 					errors.append("%s: start value '%s' is not a faction id in factions.json." % [ctx, r.Value])
 				key = "start:%s" % r.Value
+			"cycle":
+				if not CYCLE_CHOICES.has(r.Value):
+					errors.append("%s: cycle value '%s' is not one of %s." % [ctx, r.Value, ", ".join(CYCLE_CHOICES)])
+				key = "cycle:%s" % r.Value
 		seen[key] = seen.get(key, 0) + 1
 
 	var required: Array[String] = ["load_game", "credits", "hq_only_victory", "multiplayer", "exit"]
