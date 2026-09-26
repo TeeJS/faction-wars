@@ -116,6 +116,79 @@ const hostBack = await g3.next();
 check(hostBack.t === "host" && hostBack.player === "Leia", "and the guest is told the host is back (it sends its seat_info again)");
 h4.ws.close(); g3.ws.close(); await sleep(50);
 
+// Strangers (strangers plan PR 4): the open-games list shows strangers only
+// what they may see; a peeking guest does not close a game; a game whose host
+// has gone is not offered; settings have a size; abandoned games expire.
+const h5 = client("Han"); const g5 = client("Peek"); const g6 = client("Late");
+await h5.opened; await g5.opened; await g6.opened;
+h5.send({ t: "create", name: "N".repeat(100), player: "H".repeat(50), settings: {
+  pack: "my-pack", pack_title: "T".repeat(80), pack_version: "1.2.3.4.5.6.7.8.9.10", pack_hash: "A".repeat(64),
+  pack_url: "https://example.com/" + "a".repeat(400), build: "2026-09-26 abc1234", side: "alliance", secret: "not for strangers" } });
+const room5 = await h5.next();
+g5.send({ t: "list" });
+const row5 = ((await g5.next()).rooms as any[]).find((x) => x.code === room5.code);
+check(row5 && row5.name.length === 64 && row5.host.length === 32, "the list cuts a game's name to 64 and its host's to 32");
+check(row5 && row5.settings.pack === "my-pack" && row5.settings.pack_title.length === 64 && row5.settings.pack_version.length === 16
+  && row5.settings.pack_hash === "a".repeat(64) && row5.settings.build === "2026-09-26 abc1234",
+  "the list shows the pack's id, title (64), version (16), hash (lower case) and the build");
+check(row5 && !("pack_url" in row5.settings) && !("side" in row5.settings) && !("secret" in row5.settings),
+  "... and nothing else: a link too long to be whole is dropped, not cut; other settings stay between the players");
+g5.send({ t: "lookup", code: room5.code });
+const info5 = await g5.next();
+check(info5.found === true && !("secret" in info5.settings) && info5.settings.pack === "my-pack", "a code's lookup shows the same, no more");
+g5.send({ t: "join", code: room5.code, player: "Peek" });
+check((await g5.next()).t === "joined" && (await h5.next()).t === "guest", "a stranger joins");
+g6.send({ t: "list" });
+check(!((await g6.next()).rooms as any[]).some((x) => x.code === room5.code), "a game with its seat taken is not listed");
+g5.ws.close(); await sleep(50);
+check((await h5.next()).t === "left", "the stranger leaves: the host is told");
+g6.send({ t: "list" });
+check(((await g6.next()).rooms as any[]).some((x) => x.code === room5.code), "... the seat is free again, and the game is listed again");
+g6.send({ t: "join", code: room5.code, player: "Late" });
+const late = await g6.next();
+check(late.t === "joined" && late.side === "guest" && late.settings.secret === "not for strangers", "another player takes the seat, and the players' own settings reach them");
+await h5.next();   // the guest notice
+g6.ws.close(); await sleep(50); await h5.next();   // left
+h5.ws.close(); await sleep(50);
+g6 === g6;
+const g7 = client("Look"); await g7.opened;
+g7.send({ t: "list" });
+check(!((await g7.next()).rooms as any[]).some((x) => x.code === room5.code), "a game whose host has gone is not listed");
+g7.send({ t: "lookup", code: room5.code });
+check((await g7.next()).found === true, "... though its code still finds it");
+g7.send({ t: "create", name: "Big", player: "Big", settings: { note: "x".repeat(5000) } });
+const big = await g7.next();
+check(big.t === "error" && big.error === "settings too large", "settings over 4 KB are refused");
+g7.send({ t: "create", name: "Private", player: "Priv", settings: {}, open: false });
+const priv = await g7.next();
+g7.send({ t: "list" });
+check(!((await g7.next()).rooms as any[]).some((x) => x.code === priv.code), "a game created with open:false is not listed");
+g7.send({ t: "settings", settings: { note: "y".repeat(5000) } });
+const big2 = await g7.next();
+check(big2.t === "error" && big2.error === "settings too large", "... nor are its settings changed to over 4 KB");
+g7.ws.close(); await sleep(50);
+
+// Expiry: an unstarted room whose host has been gone abandonedMs is deleted
+// (an hour in production; 150 ms on this relay).
+{
+  const dir3 = mkdtempSync(join(tmpdir(), "relay-expiry-"));
+  const relay3 = startRelay({ port: 0, dataDir: dir3, abandonedMs: 150, sweepMs: 25 });
+  const ws = new WebSocket(`ws://127.0.0.1:${relay3.port}/ws`);
+  const got: any[] = [];
+  ws.onmessage = (e) => got.push(JSON.parse(String(e.data)));
+  await new Promise<void>((res) => { ws.onopen = () => res(); });
+  ws.send(JSON.stringify({ t: "create", name: "Gone", player: "Ghost", settings: {} }));
+  await sleep(50);
+  const code = got.find((m) => m.t === "room").code;
+  const { existsSync: ex2 } = await import("node:fs");
+  const hadDir = ex2(join(dir3, "rooms", code));
+  ws.close(); await sleep(60);
+  const stillThere = relay3.rooms.has(code);
+  await sleep(300);
+  check(hadDir && stillThere && !relay3.rooms.has(code) && !ex2(join(dir3, "rooms", code)), "an unstarted room abandoned by its host is deleted after abandonedMs, and its folder with it");
+  relay3.stop();
+}
+
 // relay was started without a FEEDBACK_TOKEN: the reports cannot be read at all.
 const closed = await fetch(`http://127.0.0.1:${relay.port}/feedback`);
 check(closed.status === 401, "with no FEEDBACK_TOKEN on the relay the reports are closed to everyone");
