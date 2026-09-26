@@ -7,7 +7,7 @@
 //   bun run relay/server.ts            (PORT, DATA_DIR, STATIC_DIR from the environment)
 //   bun run relay/test.ts              (two fake clients through a relay on a random port)
 
-import { mkdirSync, existsSync, readdirSync, readFileSync, appendFileSync, writeFileSync, statSync, renameSync } from "node:fs";
+import { mkdirSync, existsSync, readdirSync, readFileSync, appendFileSync, writeFileSync, statSync, renameSync, rmSync } from "node:fs";
 import { join, resolve, sep } from "node:path";
 import { timingSafeEqual } from "node:crypto";
 
@@ -19,7 +19,39 @@ const LIMITS = {
   codeLength: 6,
   heartbeatMs: 25_000,    // a ping to every open socket this often - see startRelay
   idleSeconds: 120,       // a socket that sends nothing for this long is closed
+  // Strangers (the open-games list, strangers plan PR 4): what a room may
+  // carry, and how long an unstarted room outlives its host.
+  settingsBytes: 4 * 1024,        // a room's settings, as JSON
+  nameChars: 64,                  // a game's name
+  playerChars: 32,                // a player's name
+  abandonedMs: 60 * 60 * 1000,    // an unstarted room whose host has been gone this long is deleted (TeeJ's call)
+  sweepMs: 60 * 1000,             // how often that is checked
 };
+
+// The settings a stranger may see - the open-games list and a code's lookup -
+// each cut to its length or dropped: the pack's id, title, version, content
+// hash and link, and the game build. Everything else stays between the two
+// players (it reaches the guest on join).
+const LISTED: Record<string, (v: unknown) => string | null> = {
+  pack: (v) => text(v, 64),
+  pack_title: (v) => text(v, 64),
+  pack_version: (v) => text(v, 16),
+  pack_hash: (v) => (typeof v === "string" && /^[0-9a-fA-F]{64}$/.test(v) ? v.toLowerCase() : null),
+  // A link cut short points somewhere else: one too long is dropped, not cut.
+  pack_url: (v) => (typeof v === "string" && v.length <= 300 ? v : null),
+  build: (v) => text(v, 32),
+};
+function text(v: unknown, n: number): string | null {
+  return typeof v === "string" || typeof v === "number" ? String(v).slice(0, n) : null;
+}
+function listed(settings: Record<string, unknown>): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const [k, keep] of Object.entries(LISTED)) {
+    const v = keep(settings?.[k]);
+    if (v !== null) out[k] = v;
+  }
+  return out;
+}
 
 type Side = "host" | "guest";
 type Peer = { player: string; ws: any | null };
@@ -37,6 +69,9 @@ type Room = {
   // Start. Kept here, handed to the host now or when it (re)joins; never in
   // the log, which is the game's lockstep replay.
   seat: SeatInfo | null;
+  // When the host's socket last closed on an unstarted room (null while the
+  // host is there): abandonedMs after it, the room is deleted.
+  hostGoneAt: number | null;
 };
 type SeatInfo = { build: string; pack: string; pack_hash: string };
 type Data = { room: Room | null; side: Side | null };
@@ -44,7 +79,7 @@ type Data = { room: Room | null; side: Side | null };
 // No look-alikes: 0/O, 1/I, S/5, Z/2, B/8 are all out (TeeJ, room #103).
 const ALPHABET = "ACDEFGHJKLMNPQRTUVWXY34679";
 
-export function startRelay(opts: { port?: number; dataDir?: string; staticDir?: string; heartbeatMs?: number; feedbackToken?: string } = {}) {
+export function startRelay(opts: { port?: number; dataDir?: string; staticDir?: string; heartbeatMs?: number; feedbackToken?: string; abandonedMs?: number; sweepMs?: number } = {}) {
   const port = opts.port ?? Number(process.env.PORT ?? 8787);
   const dataDir = opts.dataDir ?? process.env.DATA_DIR ?? "./data";
   const staticDir = opts.staticDir ?? process.env.STATIC_DIR ?? "";
@@ -109,9 +144,26 @@ export function startRelay(opts: { port?: number; dataDir?: string; staticDir?: 
         code, name: m.name, settings: m.settings ?? {}, created: m.created, open: !!m.open, started: !!m.started,
         host: { player: m.host, ws: null }, guest: m.guest ? { player: m.guest, ws: null } : null,
         lines: readLog({ code } as Room, 0).length, seat: m.seat ?? null,
+        // Nobody is connected after a restart: an unstarted room's clock runs
+        // from when its host left, or from now.
+        hostGoneAt: m.started ? null : (m.hostGoneAt ?? Date.now()),
       });
     } catch { /* a broken room is skipped, not fatal */ }
   }
+
+  // An unstarted room whose host has been gone for abandonedMs is deleted, so
+  // the open-games list does not fill with games nobody will host. A started
+  // game is a save and is kept.
+  const abandonedMs = opts.abandonedMs ?? LIMITS.abandonedMs;
+  const sweep = setInterval(() => {
+    const now = Date.now();
+    for (const r of Array.from(rooms.values())) {
+      if (r.started || r.host.ws || r.hostGoneAt === null || now - r.hostGoneAt < abandonedMs) continue;
+      if (r.guest?.ws) send(r.guest.ws, { t: "error", error: "the host left; this game is closed" });
+      rooms.delete(r.code);
+      try { rmSync(roomDir(r.code), { recursive: true, force: true }); } catch { /* gone already */ }
+    }
+  }, opts.sweepMs ?? LIMITS.sweepMs);
 
   const newCode = () => {
     let code = "";
@@ -120,9 +172,14 @@ export function startRelay(opts: { port?: number; dataDir?: string; staticDir?: 
     } while (rooms.has(code));
     return code;
   };
+  // The open-games list: open, unstarted, a free seat, and its host THERE - a
+  // game whose host has gone is not offered to strangers. Only the settings a
+  // stranger may see (LISTED), cut to length.
   const listing = () => Array.from(rooms.values())
-    .filter((r) => r.open && !r.started && !r.guest)
-    .map((r) => ({ code: r.code, name: r.name, host: r.host.player, created: r.created, settings: r.settings }));
+    .filter((r) => r.open && !r.started && !r.guest && r.host.ws)
+    .map((r) => ({ code: r.code, name: r.name.slice(0, LIMITS.nameChars), host: r.host.player.slice(0, LIMITS.playerChars), created: r.created, settings: listed(r.settings) }));
+  // A room's settings, refused when too large to be settings.
+  const tooLarge = (s: unknown) => JSON.stringify(s ?? {}).length > LIMITS.settingsBytes;
   // The saves of one player: every started game they are in, newest first.
   // "Load" on the Multiplayer Options (manual p161) offers the games both
   // players are in; the client intersects two of these.
@@ -254,9 +311,11 @@ export function startRelay(opts: { port?: number; dataDir?: string; staticDir?: 
         switch (msg.t) {
           case "create": {
             if (rooms.size >= LIMITS.rooms) { send(ws, { t: "error", error: "relay full" }); return; }
+            if (tooLarge(msg.settings)) { send(ws, { t: "error", error: "settings too large" }); return; }
             const r: Room = {
-              code: newCode(), name: String(msg.name ?? "Game"), settings: msg.settings ?? {}, created: Date.now(),
-              open: msg.open !== false, started: false, host: { player: String(msg.player ?? "Player"), ws }, guest: null, lines: 0, seat: null,
+              code: newCode(), name: String(msg.name ?? "Game").slice(0, LIMITS.nameChars), settings: msg.settings ?? {}, created: Date.now(),
+              open: msg.open !== false, started: false, host: { player: String(msg.player ?? "Player").slice(0, LIMITS.playerChars), ws }, guest: null, lines: 0, seat: null,
+              hostGoneAt: null,
             };
             mkdirSync(roomDir(r.code), { recursive: true });
             rooms.set(r.code, r); saveMeta(r);
@@ -269,15 +328,16 @@ export function startRelay(opts: { port?: number; dataDir?: string; staticDir?: 
           case "lookup": {   // a typed game code finds its game, listed or not (manual p159: the host's address)
             const r = rooms.get(String(msg.code ?? "").toUpperCase());
             if (!r) { send(ws, { t: "room_info", code: String(msg.code ?? "").toUpperCase(), found: false }); return; }
-            send(ws, { t: "room_info", code: r.code, found: true, name: r.name, host: r.host.player, created: r.created, settings: r.settings, started: r.started, full: !!(r.guest && r.guest.ws) });
+            // Whoever has the code sees what the open-games list shows, no more (LISTED).
+            send(ws, { t: "room_info", code: r.code, found: true, name: r.name, host: r.host.player, created: r.created, settings: listed(r.settings), started: r.started, full: !!(r.guest && r.guest.ws) });
             return;
           }
           case "join": {
             const r = rooms.get(String(msg.code ?? "").toUpperCase());
             if (!r) { send(ws, { t: "error", error: "no such game" }); return; }
-            const player = String(msg.player ?? "Player");
+            const player = String(msg.player ?? "Player").slice(0, LIMITS.playerChars);
             // A returning host or guest takes its seat back (reconnect, M5).
-            if (r.host.player === player && !r.host.ws) { r.host.ws = ws; d.room = r; d.side = "host"; }
+            if (r.host.player === player && !r.host.ws) { r.host.ws = ws; r.hostGoneAt = null; d.room = r; d.side = "host"; }
             else if (r.guest && r.guest.player === player && !r.guest.ws) { r.guest.ws = ws; d.room = r; d.side = "guest"; }
             else if (!r.guest) { r.guest = { player, ws }; r.seat = null; d.room = r; d.side = "guest"; saveMeta(r); }
             else { send(ws, { t: "error", error: "game is full" }); return; }
@@ -298,6 +358,7 @@ export function startRelay(opts: { port?: number; dataDir?: string; staticDir?: 
           }
           case "settings": {   // the host changes the Multiplayer Options (manual p161)
             const r = d.room; if (!r || d.side !== "host") return;
+            if (tooLarge(msg.settings)) { send(ws, { t: "error", error: "settings too large" }); return; }
             r.settings = msg.settings ?? r.settings; saveMeta(r);
             if (r.guest?.ws) send(r.guest.ws, { t: "settings", settings: r.settings });
             return;
@@ -328,13 +389,21 @@ export function startRelay(opts: { port?: number; dataDir?: string; staticDir?: 
         sockets.delete(ws);
         const d = ws.data; const r = d.room; if (!r || !d.side) return;
         const me = d.side === "host" ? r.host : r.guest;
-        if (me && me.ws === ws) me.ws = null;
+        if (!me || me.ws !== ws) return;   // a socket that no longer holds the seat
+        me.ws = null;
+        if (!r.started) {
+          // Before the game starts, a guest who leaves gives the seat up - a
+          // stranger peeking at an open game must not close it to everyone -
+          // and a host who leaves starts the room's abandonedMs clock.
+          if (d.side === "guest") { r.guest = null; r.seat = null; saveMeta(r); }
+          else { r.hostGoneAt = Date.now(); saveMeta(r); }
+        }
         const o = other(r, d.side);
         if (o?.ws) send(o.ws, { t: "left", side: d.side });
       },
     },
   });
-  return { server, port: server.port, rooms, pongs: () => pongs, stop: () => { clearInterval(heartbeat); server.stop(true); } };
+  return { server, port: server.port, rooms, pongs: () => pongs, stop: () => { clearInterval(heartbeat); clearInterval(sweep); server.stop(true); } };
 }
 
 if (import.meta.main) {
