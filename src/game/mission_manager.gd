@@ -1113,6 +1113,8 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 					agent.CombatRating += RuleManager.Get(RuleId.SuperweaponSabotageCombatGain, m.Faction)
 				Report(m, day, "Death Star Sabotaged", "The %s has sabotaged the Death Star at %s.\n\nIt is destroyed." % [m.Faction.DisplayName, m.Target.Name])
 				m.Finished = true
+				# The original's movie 104 (manual p106), for both sides.
+				EventBus.Cue("superweapon_sabotaged", [m.Faction, station.Faction])
 				EventBus.BroadcastChanged()
 
 		Enums.MissionType.SpecialPowerTraining:
