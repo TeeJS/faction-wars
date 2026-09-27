@@ -76,7 +76,11 @@ const KNOWN_MUSIC_SIDE_EVENTS := ["strong_advantage.", "advantage.", "disadvanta
 const KNOWN_ADVISOR_EVENTS := ["support_gained", "support_lost", "production", "research",
 	"fleet_arrived", "units_arrived", "ship_repaired", "squadron_repaired", "maintenance",
 	"blockade_started", "blockade_detected", "personnel_report", "agent_report", "captured",
-	"released", "planet_status", "intercepted", "bombardment", "assault"]
+	"released", "planet_status", "intercepted", "bombardment", "assault",
+	# The agent's answers (phase 3): played at once, when an order is refused
+	# for a reason he has words for (Result.code) or a toggle of his is set.
+	"answer_in_transit", "answer_not_controlled", "answer_no_mission", "answer_no_maintenance",
+	"answer_garrisons_on", "answer_garrisons_off", "answer_production_on", "answer_production_off"]
 const KNOWN_ADVISOR_CHARACTER_EVENTS := ["report.", "captured.", "released."]
 ## `advisor`'s own settings beside the sides.
 const KNOWN_ADVISOR_SETTINGS := ["repeat_days", "frame_seconds"]

@@ -14,6 +14,11 @@ extends Node
 ## within `repeat_days`. A character's own line (the pack's `voices`) follows.
 ## Nothing plays without the art set's sounds and animations (exporter 2.6.0).
 ##
+## THE AGENT'S ANSWERS (phase 3): an order the agent turns down, or one of his
+## own toggles, he answers at once in his own words - the pack's
+## "answer_<code>" (Result.code, where the engine refuses; the agent's menu).
+## An answer stops the news playing: that news is in the Message Index.
+##
 ## Added by UIManager beside the Command Center's droids.
 
 const SoundLib := preload("res://src/ui/sound.gd")
@@ -32,6 +37,9 @@ var _allowed: Dictionary = {}   # event -> the first day it may play again
 var _voices: Array = []         # character lines waiting, each a reference or a pool
 var _busy: bool = false
 var _waiting: int = 0           # parts of the playing step not yet done
+var _token: int = 0             # a part's callbacks count only while its step plays
+var _players: Array = []        # the sounds of the step playing
+var _answering: String = ""     # the answer playing, if one is
 
 
 func _ready() -> void:
@@ -110,28 +118,79 @@ func _process(_delta: float) -> void:
 		_say(Events()[event])
 	elif not _voices.is_empty():
 		_busy = true
-		SoundLib.Play(get_tree(), _voices.pop_front(), func() -> void: _busy = false)
+		_token += 1
+		var mine := _token
+		var player := SoundLib.Play(get_tree(), _voices.pop_front(), func() -> void:
+			if mine == _token:
+				_busy = false)
+		if player != null and mine == _token:
+			_players.append(player)
 
 
 ## One event: the message droid, then the agent (when it speaks).
 func _say(entry: Dictionary) -> void:
 	_busy = true
+	_token += 1
+	var mine := _token
 	var agent: Variant = entry.get("agent")
 	var speaks: bool = agent is Dictionary and (not bool(agent.get("translated", false)) or SoundLib.TranslateCounterpart)
-	_part(Messenger, entry.get("messenger"), func() -> void:
+	_part(Messenger, entry.get("messenger"), mine, func() -> void:
 		if speaks:
-			_part(Agent, agent, func() -> void: _busy = false)
+			_part(Agent, agent, mine, func() -> void: _busy = false)
 		else:
 			_busy = false)
 
 
-## A droid's animation and sound together; `done` once both have ended.
-func _part(droid: Node, part: Variant, done: Callable) -> void:
+## The agent answers at once ("answer_<code>" for this side), stopping the
+## news playing; the same answer already playing is not begun again.
+func Answer(code: String) -> void:
+	var event := "answer_" + code
+	var events := Events()
+	if code.is_empty() or not events.has(event) or _answering == event or FactionRegistry.Pack == null:
+		return
+	_interrupt()
+	_busy = true
+	_answering = event
+	var mine := _token
+	_part(Agent, (events[event] as Dictionary).get("agent"), mine, func() -> void:
+		_answering = ""
+		_busy = false)
+
+
+## What is playing stops, its callbacks void.
+func _interrupt() -> void:
+	_token += 1
+	for p in _players:
+		if is_instance_valid(p):
+			(p as AudioStreamPlayer).stop()
+			(p as Node).queue_free()
+	_players.clear()
+	for d in [Agent, Messenger]:
+		if d != null and is_instance_valid(d) and d.has_method("Stop"):
+			d.Stop()
+	_answering = ""
+	_busy = false
+
+
+## The advisor on `tree`'s Command Center answers `code` (see Answer).
+static func AnswerOn(tree: SceneTree, code: String) -> void:
+	if tree == null or code.is_empty():
+		return
+	var a: Node = tree.root.find_child("Advisor", true, false)
+	if a != null and a.has_method("Answer"):
+		a.Answer(code)
+
+
+## A droid's animation and sound together; `done` once both have ended, if
+## the step `mine` is still the one playing.
+func _part(droid: Node, part: Variant, mine: int, done: Callable) -> void:
 	if not part is Dictionary:
 		done.call()
 		return
 	var left := [2]
 	var one := func() -> void:
+		if mine != _token:
+			return
 		left[0] -= 1
 		if left[0] == 0:
 			done.call()
@@ -143,7 +202,10 @@ func _part(droid: Node, part: Variant, done: Callable) -> void:
 		droid.Play(run, float(Config().get("frame_seconds", 0.067)), one)
 	else:
 		one.call()
-	SoundLib.Play(get_tree(), part.get("sound", ""), one)
+	var player := SoundLib.Play(get_tree(), part.get("sound", ""), one)
+	if player != null and mine == _token:
+		_players = _players.filter(func(p: Variant) -> bool: return is_instance_valid(p))
+		_players.append(player)
 
 
 ## An order given: the first of `group` with a voice acknowledges it (its

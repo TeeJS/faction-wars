@@ -118,7 +118,7 @@ func _init() -> void:
 	await process_frame
 	_check(b.Skipped() and not _playing(al_lines[1]["sound"]) and _playing(al["skip"][1]["sound"]),
 		"Esc: the line stops and the skip's plays (\"I do hope you know what you're doing\")")
-	var ended := await _until(func() -> bool: return not is_instance_valid(b) or b.is_queued_for_deletion(), 8.0)
+	var ended := await _until(func() -> bool: return ui.get_node_or_null("Briefing") == null, 8.0)
 	await process_frame
 	_check(ended and ui.get_node_or_null("Briefing") == null, "then the briefing is over")
 	var comms: Node = ui._openWindows.get("Communications")

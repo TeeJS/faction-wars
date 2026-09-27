@@ -312,6 +312,8 @@ func OpenCreateMission(team: Array, origin: Planet, target: Planet, picked: Vari
 			why = MissionManager.CanTarget(elsewhere[0], actor, target).error
 			if why.is_empty():
 				why = "%s is not a valid target for this team." % target.Name
+		# "C-3PO or IMP-22 indicates the error" (manual p102).
+		preload("res://src/ui/advisor.gd").AnswerOn(get_tree(), "no_mission")
 		var refuse := AcceptDialog.new()
 		refuse.title = "No Mission Available"
 		refuse.dialog_text = why

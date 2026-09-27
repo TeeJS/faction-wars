@@ -540,7 +540,7 @@ func DropOnFleet(fleet: Fleet, data: Variant) -> void:
 		if r.ok:
 			Populate(_associatedPlanet, _uiManager)
 		elif not r.error.is_empty():
-			_uiManager.ShowRefusal(r.error)
+			_uiManager.ShowRefusal(r.error, r.code)
 		return
 	var cargo: Array = _uiManager.DraggedUnits
 	_uiManager.EndUnitDrag()

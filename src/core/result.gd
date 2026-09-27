@@ -6,6 +6,9 @@ extends RefCounted
 var ok: bool
 var error: String = ""
 var value: Variant = null
+## Why, as a word the interface can act on (the agent's answer, docs/advisor-plan.md
+## phase 3): "no_maintenance", "not_controlled", "in_transit"; "" when nothing says.
+var code: String = ""
 
 
 static func success(value: Variant = null) -> Result:
@@ -13,6 +16,12 @@ static func success(value: Variant = null) -> Result:
 	r.ok = true
 	r.value = value
 	return r
+
+
+## This result with its reason's `code`.
+func coded(c: String) -> Result:
+	code = c
+	return self
 
 
 static func fail(error: String, value: Variant = null) -> Result:

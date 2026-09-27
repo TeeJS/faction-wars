@@ -136,7 +136,8 @@ func _OnHqMenuAction(id: int, planet: Planet) -> void:
 			ui.StartTargeting(func(dest: Planet) -> void:
 				var r: Result = CommandBus.issue("move_hq", { "destination": dest.Name })
 				if not r.ok:
-					print("[HQ] %s" % r.error))
+					print("[HQ] %s" % r.error)
+					preload("res://src/ui/advisor.gd").AnswerOn(get_tree(), r.code))
 		4:   # Encyclopedia - the headquarters building's entry
 			var hq: Facility = Lq.first_or_null(planet.Facilities, func(f: Facility) -> bool: return f.HasRole("headquarters"))
 			if hq != null and hq.Def != null:
