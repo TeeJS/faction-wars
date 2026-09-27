@@ -397,7 +397,7 @@ static func QueueStatusData(planet: Planet, producer: String) -> Dictionary:
 	for t in queue:
 		var task: ConstructionTask = t
 		days += ceili(float(maxi(0, task.TotalWork - task.Progress)) / float(maxi(1, workers)))
-	var done: String = str(StrategicTickManager.Today + days) if not queue.is_empty() and workers > 0 else "n/a"
+	var done: String = str(StrategicTickManager.Shown(StrategicTickManager.Today + days)) if not queue.is_empty() and workers > 0 else "n/a"
 	return {
 		"title": info[0],
 		"fields": [["Location:", planet.Name], ["Status:", info[3] if not queue.is_empty() else "Idle"],
@@ -1205,7 +1205,7 @@ func StaleFacilityTab(tabs: TabContainer, tabName: String, family: String, yards
 			var seenDef: PackDefs.FacilityDef = FacilityCatalog.Get(family, 2 if str(line).begins_with("Advanced") else 1)
 			OUI.Card(row, str(line), OUI.Mini("facilities", seenDef.Id if seenDef != null else family),
 				Color.WHITE, OUI.SideColor(GameSettings.PlayerFaction), "", null, false, false)
-			row.tooltip_text = "%s (seen day %d)" % [line, yards.Day]
+			row.tooltip_text = "%s (seen day %d)" % [line, StrategicTickManager.Shown(yards.Day)]
 		list.add_child(row)
 
 

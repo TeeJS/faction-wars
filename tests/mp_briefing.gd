@@ -127,7 +127,7 @@ func _Waiting(a: Faction, b: Faction) -> void:
 	host.set_speed(2)
 	for _i in 4:
 		await process_frame
-	_check(not main.WaitingForBriefing() and label.text == "Day: %d" % StrategicTickManager.Today and label.modulate == Color.WHITE,
+	_check(not main.WaitingForBriefing() and label.text == "Day: %d" % StrategicTickManager.Shown(StrategicTickManager.Today) and label.modulate == Color.WHITE,
 		"the host's briefing ends: the day again, as it was (%s)" % label.text)
 	MpSetup.session = null
 	main.queue_free()

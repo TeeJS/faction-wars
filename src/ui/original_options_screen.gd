@@ -264,7 +264,7 @@ func _refresh_slots() -> void:
 		var field: LineEdit = _names[k]
 		if s["used"] and field.text.is_empty():
 			field.text = str(s["name"])
-		field.tooltip_text = ("%s - Day %d" % [s["name"], int(s["day"])]) if s["used"] else "Click here and type a name, then Save"
+		field.tooltip_text = ("%s - Day %d" % [s["name"], StrategicTickManager.Shown(int(s["day"]))]) if s["used"] else "Click here and type a name, then Save"
 		(_loadBtns[k] as TextureButton).disabled = not s["used"] or (MpSetup.session != null)
 		var icon: Texture2D = _side_icon(str(s.get("side", ""))) if s["used"] else null
 		var rect: TextureRect = _sideIcons[k]
@@ -292,7 +292,7 @@ func _save(slot: int) -> void:
 		return
 	if MpSetup.session != null:
 		if MpSetup.hosting:
-			_tell("Save Game", "Saved on both computers: \"%s\", Day %d." % [MpSetup.lobby.name if MpSetup.lobby != null else "this game", StrategicTickManager.Today])
+			_tell("Save Game", "Saved on both computers: \"%s\", Day %d." % [MpSetup.lobby.name if MpSetup.lobby != null else "this game", StrategicTickManager.Shown(StrategicTickManager.Today)])
 		return
 	var nm: String = (_names[slot] as LineEdit).text.strip_edges()
 	if nm.is_empty():

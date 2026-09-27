@@ -284,7 +284,7 @@ func RefreshCategory(categoryFilter: String) -> void:
 	# row is picked, and clicking also shows the message as before.
 	for msg in filteredMessages:
 		var msgBtn := Button.new()
-		msgBtn.text = "[Day %d] %s" % [msg.DayReceived, msg.Title]
+		msgBtn.text = "[Day %d] %s" % [StrategicTickManager.Shown(msg.DayReceived), msg.Title]
 		msgBtn.custom_minimum_size = Vector2(0, 30)
 		msgBtn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		msgBtn.flat = true
@@ -450,7 +450,7 @@ func ShowDetail(message: GameMessage, clickedButton: Button, markRead: bool = tr
 		clickedButton.add_theme_color_override("font_color", Color.GRAY)
 
 	# Instantly update the right-hand panel
-	_detailSubject.text = "Day %d: %s" % [message.DayReceived, message.Title]
+	_detailSubject.text = "Day %d: %s" % [StrategicTickManager.Shown(message.DayReceived), message.Title]
 	_detailBody.text = message.Body
 	# The message's picture: the character it is about, else its world.
 	Art.Fill(get_node_or_null(PortraitPath), MessagePicture(message))
@@ -950,7 +950,7 @@ func _o_row(m: GameMessage) -> Control:
 			OUI.Place(row, _o_icon14(icon), OIconAt.x, OIconAt.y, "Icon")
 	var title := OUI.Text(row, m.Title, 35, 1, 338, 19, 10, Color.WHITE if picked or not m.IsRead else OGrey, HORIZONTAL_ALIGNMENT_LEFT, true, "Title")
 	title.clip_text = true
-	row.tooltip_text = "Day %d: %s" % [m.DayReceived, m.Title]
+	row.tooltip_text = "Day %d: %s" % [StrategicTickManager.Shown(m.DayReceived), m.Title]
 	row.gui_input.connect(func(e: InputEvent) -> void:
 		if not (e is InputEventMouseButton) or not e.pressed or e.button_index != MOUSE_BUTTON_LEFT:
 			return

@@ -70,7 +70,7 @@ func _save() -> void:
 	var box := AcceptDialog.new()
 	box.title = "Save Game"
 	if ok:
-		box.dialog_text = "Saved on both computers: \"%s\", Day %d." % [lobby.name, StrategicTickManager.Today]
+		box.dialog_text = "Saved on both computers: \"%s\", Day %d." % [lobby.name, StrategicTickManager.Shown(StrategicTickManager.Today)]
 	else:
 		box.dialog_text = "Not saved: the relay cannot be reached right now."
 	add_child(box)

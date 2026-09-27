@@ -33,7 +33,7 @@ func Populate(fleet: Fleet) -> void:
 	# "ETA Destination: Day N" - the original states the ARRIVAL DAY, not the
 	# number of days left, so the player can read it against the day counter
 	# without doing arithmetic.
-	var eta: String = ("Day %d" % (StrategicTickManager.Today + fleet.DaysToDestination)) \
+	var eta: String = ("Day %d" % StrategicTickManager.Shown(StrategicTickManager.Today + fleet.DaysToDestination)) \
 		if fleet.Status == Enums.Status.Enroute and fleet.DaysToDestination > 0 \
 		else "-"
 
@@ -135,7 +135,7 @@ static func StatusData(fleet: Fleet) -> Dictionary:
 	var rows: Array = []
 	rows.append(["Status:", UnitStatusWindow.StatusWord(fleet.Status)])
 	if fleet.Status == Enums.Status.Enroute and fleet.DaysToDestination > 0:
-		rows.append(["ETA Destination:", "Day %d" % (StrategicTickManager.Today + fleet.DaysToDestination)])
+		rows.append(["ETA Destination:", "Day %d" % StrategicTickManager.Shown(StrategicTickManager.Today + fleet.DaysToDestination)])
 	rows.append(["Admiral:", Holder.call(Enums.Rank.Admiral)])
 	rows.append(["General:", Holder.call(Enums.Rank.General)])
 	rows.append(["Commander:", Holder.call(Enums.Rank.Commander)])

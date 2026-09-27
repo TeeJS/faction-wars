@@ -109,7 +109,7 @@ func PopulateLists(filterText: String) -> void:
 			continue
 		var where: Planet = seen[c.Name]["planet"]
 		var day: int = int(seen[c.Name]["day"])
-		_AddCharacterRow(c, "%s - %s (day %d)" % [c.Name, where.Name, day], func() -> void: _OpenDefense(where))
+		_AddCharacterRow(c, "%s - %s (day %d)" % [c.Name, where.Name, StrategicTickManager.Shown(day)], func() -> void: _OpenDefense(where))
 
 
 ## One clickable, coloured row on the correct side tab.

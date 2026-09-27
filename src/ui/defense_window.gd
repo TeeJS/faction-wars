@@ -625,7 +625,7 @@ func PopulateDefenceTab(tabs: TabContainer, tabName: String, index: int, planet:
 		var nth: int = int(counted.get(type, 0))
 		counted[type] = nth + 1
 		var seenDef: PackDefs.FacilityDef = FacilityCatalog.Get(type, 2 if str(line).begins_with("Advanced") else 1)
-		_defence_row(list, str(line), type, "(day %d)" % view.Day, Color.LIGHT_GRAY, func() -> Facility:
+		_defence_row(list, str(line), type, "(day %d)" % StrategicTickManager.Shown(view.Day), Color.LIGHT_GRAY, func() -> Facility:
 			var ofType: Array = Lq.where(world.Facilities, func(f: Facility) -> bool: return f.Family() == type)
 			return ofType[nth] if nth < ofType.size() else null, seenDef.Id if seenDef != null else "")
 
@@ -723,12 +723,12 @@ func _intel_target_row(list: Container, text: String, day: int, resolve: Callabl
 		# THE ORIGINAL'S CARD for a sighting; the day it was seen is in
 		# its tooltip only.
 		OUI.Card(rowBtn, text, mini, Color.WHITE, OUI.SideColor(GameSettings.PlayerFaction), "", null, plated)
-		rowBtn.tooltip_text = "%s (seen day %d)\n%s" % [text, day, rowBtn.tooltip_text]
+		rowBtn.tooltip_text = "%s (seen day %d)\n%s" % [text, StrategicTickManager.Shown(day), rowBtn.tooltip_text]
 		list.add_child(rowBtn)
 		return
 	row.add_child(rowBtn)
 	var dayLbl := Label.new()
-	dayLbl.text = "(seen day %d)" % day
+	dayLbl.text = "(seen day %d)" % StrategicTickManager.Shown(day)
 	dayLbl.add_theme_font_size_override("font_size", 11)
 	dayLbl.add_theme_color_override("font_color", Color.DARK_GRAY)
 	row.add_child(dayLbl)
