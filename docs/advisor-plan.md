@@ -50,7 +50,8 @@ supported'" ... "yes write the plan". BACKLOG #41 (sound) stays for the sound ef
 ## How
 
 1. **The exporter** writes the recordings as Ogg Vorbis (as the music: 11 kHz mono, about
-   **15 MB for all ~750**) and the talking animations as frame strips (the idle runs'
+   **10 MB for all 753** - 42 minutes at the music's 4 MB per 18) and the talking animations
+   as frame strips (the idle runs'
    decoder), into the file of decision 1.
 2. **The pack** maps the engine's events to lines, per side (like `music`): event → the
    message droid's animation and sound, the agent's animation and recording, a pool where the
