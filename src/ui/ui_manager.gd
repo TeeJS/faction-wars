@@ -1990,7 +1990,29 @@ func ExecuteCharacterMove(characters: Array, destination: Planet, requireConfirm
 		issue.call()
 
 
+## A SHIP'S MOVE TO A SYSTEM (manual p115): the ships go as a fleet of their
+## own (OrderManager.MoveShips) - an order, so a save and the other computer
+## see it.
+func ExecuteShipMove(ships: Array, destination: Planet, _requireConfirmation: bool) -> void:
+	var first: Fleet = OrderManager.FleetOfShip(ships[0]) if not ships.is_empty() else null
+	var from: Planet = first.Attached if first != null else null
+	if from == null or destination == null:
+		return
+	var r: Result = CommandBus.issue("move_ships", { "ships": EntityIndex.ids_of_units(ships), "destination": destination.Name })
+	if r.ok:
+		RefreshAfterMove(from, destination)
+	elif not r.error.is_empty():
+		ShowRefusal(r.error, r.code)
+
+
 func ExecuteUnitMove(units: Array, destination: Planet, _requireConfirmation: bool) -> void:
+	# Capital ships go as ships do, a fleet of their own (ExecuteShipMove).
+	var ships: Array = Lq.where(units, func(u: Unit) -> bool: return u.Type == Enums.UnitType.CapitalShip)
+	if not ships.is_empty():
+		ExecuteShipMove(ships, destination, _requireConfirmation)
+		units = Lq.where(units, func(u: Unit) -> bool: return u.Type != Enums.UnitType.CapitalShip)
+		if units.is_empty():
+			return
 	# The system, not the base: a unit aboard a fleet is Attached to the FLEET.
 	var first: Unit = Lq.first_or_null(units, func(u: Unit) -> bool: return u.Status != Enums.Status.Enroute)
 	var currentPlanet: Planet = OrderManager.SystemOf(first.Attached if first != null else null)

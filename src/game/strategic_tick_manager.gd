@@ -133,6 +133,7 @@ func AdvanceDay() -> void:
 
 	# --- PROCESS FLEET MOVEMENT ---
 	var charted := false
+	var joining: Array[Fleet] = []
 	for sector in _galaxy:
 		for planet in sector.Planets:
 			for fleet in planet.OrbitingFleets:
@@ -158,6 +159,8 @@ func AdvanceDay() -> void:
 					if fleet.Faction != null and landing.ControllingFaction != fleet.Faction:
 						IntelManager.Capture(fleet.Faction, landing, CurrentDay, IntelManager.ReconnaissanceCategories)
 						charted = true
+					if fleet.IsTransit():
+						joining.append(fleet)
 				for ship in fleet.Ships:
 					ship.DaysToDestination = fleet.DaysToDestination
 					if arrived:
@@ -179,6 +182,26 @@ func AdvanceDay() -> void:
 					rider.DaysToDestination = fleet.DaysToDestination
 					if arrived:
 						rider.Status = Enums.Status.AwaitingOrders
+	# Ships that went to join a fleet fold into it on arriving, if it is still
+	# there and free (manual p122); otherwise they stay a fleet of their own.
+	for transit in joining:
+		var target: Fleet = transit.JoinFleet
+		transit.JoinFleet = null
+		var here: Planet = transit.Attached
+		if target == null or here == null or not here.OrbitingFleets.has(target) \
+				or target.Status == Enums.Status.Enroute or target.Faction != transit.Faction:
+			print("%s arrives at %s; the fleet it was joining is not there." % [transit.Name, here.Name if here != null else "?"])
+			if target != null and transit.Name == target.Name:
+				transit.Name = Fleet.NextName(transit.Faction)
+			continue
+		for ship in transit.Ships.duplicate():
+			transit.Ships.erase(ship)
+			target.AddShip(ship)
+		for rider in GameState.ActiveRoster:
+			if rider.Attached == transit:
+				rider.Attached = target
+		here.OrbitingFleets.erase(transit)
+		print("Ships arriving at %s join %s." % [here.Name, target.Name])
 	if charted:
 		EventBus.BroadcastChanged()   # the map recolours, as it does after a Reconnaissance report
 
