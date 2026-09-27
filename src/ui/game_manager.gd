@@ -653,7 +653,8 @@ func _ApplyClock() -> void:
 		_speedReadout.text = SpeedNames[_speed]
 
 	if _oBars != null:
-		_oBars.texture = Art.WindowPicture("speed_bars.%s.%d" % [_oSide, clampi(effective, 0, SpeedNames.size() - 1)])
+		# Blank while the opening briefing holds the clock (RefreshStatusBar).
+		_oBars.texture = null if _briefing else Art.WindowPicture("speed_bars.%s.%d" % [_oSide, clampi(effective, 0, SpeedNames.size() - 1)])
 		_oBars.size = _oBars.texture.get_size() * HudScaleNow if _oBars.texture != null else Vector2.ZERO
 		_timeControls.tooltip_text = "Game Speed Control: %s" % _speedReadout.text
 	if _speed == 0:
@@ -713,6 +714,7 @@ func HoldForBriefing(on: bool) -> void:
 	if session != null:
 		session.set_speed(0 if on or _menuOpen else _speed, "briefing" if on else "")
 	_ApplyClock()
+	RefreshStatusBar()
 
 
 ## Waiting for Opponent (manual p163; docs/multiplayer-ui-design.md section 11):
@@ -976,9 +978,19 @@ func RefreshStatusBar() -> void:
 	# The opponent's briefing still plays: the day greyed out, at 0 (the
 	# original's, WaitingForBriefing).
 	var shown: int = 0 if _dayGreyed else StrategicTickManager.Shown(currentDay)
-	_dayLabel.text = "Day: %d" % shown
+	# THE TIME BAR IS BLANK WHILE THE OPENING BRIEFING HOLDS THE CLOCK - no day,
+	# no bars - as a recording of the original's shows it (SuperPaulGames,
+	# https://www.youtube.com/watch?v=5h_55gx9Sgo, 5:30-7:47: the day window
+	# and the bars black throughout; the day and the bars back at its end).
+	# Single-source, BACKLOG #53.
+	if _briefing:
+		_dayLabel.text = ""
+		if _oDay != null:
+			_oDay.text = ""
+	else:
+		_dayLabel.text = "Day: %d" % shown
 	_dayLabel.modulate = OriginalMp.Grey if _dayGreyed else Color.WHITE
-	if _oDay != null:
+	if _oDay != null and not _briefing:
 		_oDay.text = str(shown)
 		_oDay.add_theme_color_override("font_color", OriginalMp.Grey if _dayGreyed else OUI.SideColor(GameSettings.PlayerFaction))
 	_availMines.text = "Raw: %d  (%d %s)" % [econ.RawMaterials, Economy.TotalMines(player), Terms.label("mines")]
