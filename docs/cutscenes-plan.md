@@ -70,7 +70,7 @@ moment it plays is a second question, answered in the next table):
 |---|---|---|---|
 | `000`, `001` | at launch, before the Cockpit ("To skip the introductory graphics, click the mouse", manual p022) | **Confirmed**: the manual, and the Rebellion 2 remake's boot ("intro", then "opening-crawl") | the game's start (`PackPicker` -> Cockpit) |
 | `005` | the Cockpit's **View credits** | **Confirmed** (TeeJ's description of the original, BACKLOG #43, the movie's content, and Rebellion 2's credits button) | `menu.gd` credits action |
-| `003` / `004` | a **new game**, before play: the player's side's intro | **The moment confirmed**: Rebellion 2 plays the player's side's intro movie on a new game only; **the side by content**: 004 has the Star Destroyer and stormtroopers, so it is the Empire's, 003 the Alliance's | `start.<side>` in `menu.gd` StartGame |
+| `003` / `004` | ~~a **new game**, before play: the player's side's intro~~ **not at a new game** - TeeJ, 2026-09-27, playing the original: 001 ("A long time ago...", the crawl, the credits over the shuttle) plays before the Cockpit, and a new game starts with no movie. **Moment unknown** (TeeJ thinks victory cutscenes; unconfirmed), so unmapped | Rebellion 2's reading (a side's intro on a new game) was wrong | `start.<side>` stays in the engine; the Star Wars pack maps nothing to it |
 | `102` / `103` | a side's **headquarters captured or destroyed**: that side's movie, for every player, and before the war's end when it ends it | **The moment**: Rebellion 2 (`HeadquartersDestroyedCutscenePath` per side, the defender's queued, then the ending); **the side by content**: 102 is TIEs destroying Cloud City (the Alliance's), 103 a Rebel fleet over a city-world (the Empire's) | `headquarters_lost.<side>`, `VictoryManager.HeadquartersDestroyed` |
 | `101` | the Death Star destroys a system (manual p124) | **Confirmed** (manual event + content) | `BombardmentManager` `DestroySystem` |
 | `104` | a Death Star Sabotage mission succeeds (manual p124, p106) | **Confirmed** (manual event + content) | `mission_manager.gd` Death Star Sabotage result |
@@ -105,8 +105,6 @@ way `menu` and `map_image` do (SCHEMA.md gets the field and a validator rule):
 "movies": {
   "launch": ["swr-original:movies/000.ogv", "swr-original:movies/001.ogv"],
   "credits": "swr-original:movies/005.ogv",
-  "start.alliance": "swr-original:movies/003.ogv",
-  "start.empire": "swr-original:movies/004.ogv",
   "system_destroyed": "swr-original:movies/101.ogv",
   "superweapon_sabotaged": "swr-original:movies/104.ogv",
   "victory.alliance": "swr-original:movies/105.ogv",
