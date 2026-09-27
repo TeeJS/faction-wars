@@ -246,6 +246,11 @@ public sealed class Importer
         // advice message (FUN_0048b2e0, open-rebellion's Ghidra notes) takes
         // 0x42f / 0x430 by side.
         ("advice.alliance", 1071), ("advice.empire", 1072),
+        // Compose Chat Message's picture (manual p163 Fig 5.11): a figure at a
+        // console, the Imperial crest on its screen (1040) or the Alliance's
+        // (1041) - the side's own is shown (which one the manual's grey
+        // figure is, is not known).
+        ("chat.empire", 1040), ("chat.alliance", 1041),
         // A character's status icons (manual p096, "Character Status
         // Icons": Ready, In transit, Captured, Injured): the ship's windows
         // behind one in transit between systems, the green trace over one
@@ -598,8 +603,8 @@ public sealed class Importer
         11554, 11558, 11553,
         // Build Selection's plate is opaque; so are the Scrap pictures.
         10800, 1032, 1033,
-        // The advice pictures are photographs.
-        1071, 1072,
+        // The advice and chat pictures are photographs.
+        1071, 1072, 1040, 1041,
         // The cockpit, the galaxy map and the Game Options screen are whole screens.
         CockpitBitmap, GalaxyBitmap, GalaxyOffBitmap, OptionsBitmap };
 

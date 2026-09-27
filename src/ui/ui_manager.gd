@@ -684,6 +684,13 @@ const ComposeChatMessageWindowScene := "res://src/ui/ComposeChatMessageWindow.ts
 
 
 func OpenComposeChatMessage() -> void:
+	# The original's: the Message window's own Compose Chat Message view (manual
+	# p163, Fig 5.11), over its Chat Messages; the plain window without its art.
+	if MessageWindow._can_build_original():
+		OnMessageIndexClicked("Chat")
+		var comms: Variant = _openWindows.get("Communications")
+		if comms != null and is_instance_valid(comms) and comms.ComposeChat():
+			return
 	OpenWindow("Compose Chat Message", load(ComposeChatMessageWindowScene),
 		func(window) -> void: window.Setup(self),
 		Vector2(120, 120))
