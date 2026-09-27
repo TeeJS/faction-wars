@@ -234,6 +234,14 @@ TeeJ: "Make it match the original" - how the briefings end in head-to-head. REBE
 opponent, its reason gone); the droids' news and the Message Index wait for the end. Head-to-head's waiting box
 stays off while my briefing is on screen. tests/briefing.gd.
 
+**The side that finishes first (TeeJ, 2026-09-27, testing the original):** "the player who finishes 1st can look
+at the board/game, but can not make any changes - their day counter is greyed out and stays at 0 until opponent
+finishes"; "there is no indication what's going on, other than the time bar being greyed out". **Built:** no
+Waiting box for the opponent's briefing; the day shows 0 in the original's grey (OriginalMp.Grey), the bars unlit,
+the Speed Control and Alt+P / Alt+= / Alt+- do nothing; an order is dropped as if taken (`CommandBus.issue`),
+chat still goes (not a change to the game). How the original refuses an attempted order is **unknown** beyond "no
+indication". tests/mp_briefing.gd.
+
 ## What the code does today
 
 | | |
