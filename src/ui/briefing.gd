@@ -38,6 +38,10 @@ var Agent: Node = null
 var Map: Node = null
 ## Called once at the end, finished or skipped.
 var Finished := Callable()
+## Called once when the briefing lets the game's clock go: at its `release`
+## step (the original's action 11, REBEXE FUN_0041dbe0 - after the last line,
+## or at once on a skip, before the skip's line), or at the end if it has none.
+var Released := Callable()
 ## The Command Center's frame (command_frame.gd), for the button's place.
 var Frame: Node = null
 ## Single player: the Stop Briefing button. Head-to-head: none.
@@ -50,6 +54,7 @@ var _over := false
 var _token := 0                 # a line's callbacks count only while it is the one playing
 var _sound: AudioStreamPlayer = null
 var _mode_before: RefCounted = null   # the display's mode when the briefing began
+var _released := false
 
 
 ## This side's briefing, or {} - the pack's `briefing`.
@@ -153,8 +158,10 @@ func _line(step: Dictionary) -> void:
 
 
 ## A focus step: its view on the display; a number the pack gives no view
-## leaves the display as it is.
+## leaves the display as it is. The `release` step lets the clock go.
 func _focus(n: int) -> void:
+	if n == int(ForSide().get("release", -1)):
+		_release()
 	if Map == null or not is_instance_valid(Map):
 		return
 	var views: Variant = ForSide().get("views", {})
@@ -235,6 +242,14 @@ func Skip() -> void:
 	_next()
 
 
+func _release() -> void:
+	if _released:
+		return
+	_released = true
+	if Released.is_valid():
+		Released.call()
+
+
 func _finish() -> void:
 	if _over:
 		return
@@ -244,8 +259,14 @@ func _finish() -> void:
 		if _mode_before != null and Gid.ActiveMode() != _mode_before:
 			Map.SetMode(_mode_before)
 	queue_free()
+	_release()
 	if Finished.is_valid():
 		Finished.call()
+
+
+## Whether the briefing has let the clock go.
+func HasReleased() -> bool:
+	return _released
 
 
 ## Every key is the briefing's while it plays, and does nothing - Esc too - so

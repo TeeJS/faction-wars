@@ -1589,7 +1589,8 @@ func OpenGidControlMenu() -> void:
 
 ## THE OPENING BRIEFING at a new game (manual p022; src/ui/briefing.gd): the
 ## agent droid speaks it in its place while `hold` keeps the clock (true, then
-## false) and the droids keep their news; afterwards BriefingOver. Only with
+## false at its release step) and the droids keep their news; afterwards
+## BriefingOver. Only with
 ## the droids in the frame and the art set's recordings; returns the briefing,
 ## or null.
 ##
@@ -1613,13 +1614,18 @@ func StartBriefing(hold: Callable = Callable()) -> Control:
 	var top := CanvasLayer.new()
 	top.name = "BriefingLayer"
 	top.layer = BriefingLayer
+	# The clock goes at the briefing's release step, as the original's (its
+	# action 11 clears the main loop's hold, REBEXE FUN_0041dbe0): after the
+	# last line, or at once on Stop Briefing, while the skip's line plays. The
+	# droids' news waits for the end (action 13).
+	b.Released = func() -> void:
+		if hold.is_valid():
+			hold.call(false)
 	b.Finished = func() -> void:
 		if is_instance_valid(top):
 			top.queue_free()
 		if is_instance_valid(advisor):
 			advisor.Held = false
-		if hold.is_valid():
-			hold.call(false)
 		BriefingOver()
 	add_child(top)
 	top.add_child(b)
