@@ -16,7 +16,9 @@ extends Control
 ## the systems lit, or the display off, as recordings of the original show);
 ## at the end the display is as it was.
 ##
-## Over the whole screen while it plays, so a left click anywhere is a skip.
+## Over the whole screen while it plays, on a layer above every other, so a
+## left click anywhere is a skip and nothing else can be done: no window,
+## console, pause or shortcut until it ends (it takes every key too).
 ## Whoever starts it holds the clock and the droids' news until `Finished`.
 ## Nothing plays without the art set's recordings (exporter 2.6.0).
 ##
@@ -214,9 +216,14 @@ func _gui_input(event: InputEvent) -> void:
 		Skip()
 
 
+## Every key is the briefing's while it plays: Esc skips, and nothing else
+## reaches the game - no pause, no speed, no window's shortcut (TeeJ,
+## 2026-09-27). The mouse is kept by the briefing lying over everything.
 func _input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_ESCAPE:
-		get_viewport().set_input_as_handled()
+	if not event is InputEventKey:
+		return
+	get_viewport().set_input_as_handled()
+	if event.pressed and not event.echo and event.keycode == KEY_ESCAPE:
 		Skip()
 
 
