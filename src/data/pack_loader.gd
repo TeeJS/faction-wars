@@ -93,6 +93,10 @@ const KNOWN_VOICE_LINES := ["order", "personnel_arrived", "mission_success", "mi
 	"advanced_enemy_detected", "advanced_force_growth", "advanced_rescue_attempt"]
 ## SCHEMA.md section 2, `sounds`: the controls' sounds.
 const KNOWN_SOUND_EVENTS := ["cockpit_galaxy_size", "cockpit_load", "cockpit_exit", "cockpit_control"]
+## SCHEMA.md section 2, `briefing.<side>.views`: what the display shows at a
+## focus step - "off", or "<kind>:<id>" for the kinds that name something.
+const KNOWN_BRIEFING_VIEWS := ["off", "military", "unexplored", "defenses"]
+const KNOWN_BRIEFING_VIEW_KINDS := ["mode:", "loyal:", "system:", "hq:", "character:"]
 const KNOWN_DIFFICULTIES := ["easy", "medium", "hard"]
 ## SCHEMA.md section 7. Day-zero placement and the story parts. Each story
 ## part is ONE character - the set-pieces are written for one pilgrim, one
@@ -385,7 +389,8 @@ static func _validate_sounds(pack: LoadedPack, pack_dir: String, errors: Array[S
 
 
 ## Rule 28: `briefing` - the opening briefing, per side: `steps` and `skip`,
-## each a list whose items are a line (anim, sound) or a `focus` (a number).
+## each a list whose items are a line (anim, sound) or a `focus` (a number);
+## `views`, a focus number -> what the display shows then (show, caption).
 static func _validate_briefing(pack: LoadedPack, pack_dir: String, errors: Array[String]) -> void:
 	var m := pack.Manifest
 	if not m.BriefingGiven:
@@ -407,8 +412,11 @@ static func _validate_briefing(pack: LoadedPack, pack_dir: String, errors: Array
 			continue
 		for part in side:
 			var where := "pack.json briefing.%s.%s" % [k, part]
+			if str(part) == "views":
+				_validate_briefing_views(pack, side[part], where, errors)
+				continue
 			if not ["steps", "skip"].has(str(part)):
-				errors.append("pack.json briefing.%s: '%s' is neither steps nor skip." % [k, part])
+				errors.append("pack.json briefing.%s: '%s' is neither steps, skip nor views." % [k, part])
 				continue
 			if not side[part] is Array:
 				errors.append("%s: must be a list of steps." % where)
@@ -429,6 +437,49 @@ static func _validate_briefing(pack: LoadedPack, pack_dir: String, errors: Array
 						_check_ref(step["anim"], ".fwa", "an animation", at + ".anim", pack, pack_dir, errors)
 					if step.has("sound"):
 						_check_ref(step["sound"], ".ogg", "a sound", at + ".sound", pack, pack_dir, errors)
+
+
+## Rule 28's `views`: each key a focus number, each value {show, caption}; a
+## show that names something names what the pack has.
+static func _validate_briefing_views(pack: LoadedPack, views: Variant, where: String, errors: Array[String]) -> void:
+	if not views is Dictionary:
+		errors.append("%s: must be an object of focus number -> view." % where)
+		return
+	var ids := {
+		"mode:": [] as Array[String], "loyal:": [] as Array[String], "hq:": [] as Array[String],
+		"system:": [] as Array[String], "character:": _character_ids(pack)}
+	if pack.Display != null:
+		for c in pack.Display.Categories:
+			for m in c.Modes:
+				ids["mode:"].append(m.Id)
+	for f in pack.Factions:
+		ids["loyal:"].append(f.Id)
+		ids["hq:"].append(f.Id)
+	if pack.Map != null:
+		for pl in pack.Map.Planets:
+			ids["system:"].append(pl.Id)
+	for key in views:
+		var at := "%s['%s']" % [where, key]
+		if not str(key).is_valid_int() or int(str(key)) < 0:
+			errors.append("%s: the key must be a focus number." % at)
+			continue
+		var v: Variant = views[key]
+		if not v is Dictionary or not v.get("show") is String:
+			errors.append("%s: must be an object with a show." % at)
+			continue
+		if v.has("caption") and not v["caption"] is String:
+			errors.append("%s.caption: must be text." % at)
+		var show := str(v["show"])
+		if KNOWN_BRIEFING_VIEWS.has(show):
+			continue
+		var kind := ""
+		for k in KNOWN_BRIEFING_VIEW_KINDS:
+			if show.begins_with(k):
+				kind = k
+		if kind.is_empty():
+			errors.append("%s.show: '%s' is not a view. Known: %s, or %s<id>." % [at, show, ", ".join(KNOWN_BRIEFING_VIEWS), "/".join(KNOWN_BRIEFING_VIEW_KINDS)])
+		elif not (ids[kind] as Array).has(show.substr(kind.length())):
+			errors.append("%s.show: '%s' names nothing this pack has." % [at, show])
 
 
 ## Rule 24: `music` maps known moments to a track or a pool of tracks - each a

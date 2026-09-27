@@ -1,6 +1,6 @@
 # Plan: the droids speak - the original's advisor voices and the opening briefing
 
-Status: **phases 0-4 built, 2026-09-27** (TeeJ: "go - continue independently until done"): the exporter (2.6.0, #275) and the game side - the droids, the characters' lines, Translate Counterpart, the sound effects volume, the cockpit's sounds (TeeJ: "include those this round"), the opening briefing, the agent's answers. Two parts are not built: how the original shows the system the agent points out (phase 4), and the answers to orders our interface greys out (phase 3, below).
+Status: **phases 0-4 built, 2026-09-27** (TeeJ: "go - continue independently until done"): the exporter (2.6.0, #275) and the game side - the droids, the characters' lines, Translate Counterpart, the sound effects volume, the cockpit's sounds (TeeJ: "include those this round"), the opening briefing, the agent's answers. The briefing's views are read off recordings of the original (phase 4, below); a build short only of maintenance now lets the agent answer (#280).
 TeeJ, 2026-09-27: "What about the dialogue, like emperor's 'you have not adequately
 supported'" ... "yes write the plan". BACKLOG #41 (sound) stays for the sound effects.
 
@@ -114,11 +114,41 @@ own recogniser - **inferred**, rough) says `n` is what he points out:
 **Built:** the pack's `briefing` (rule 28), `src/ui/briefing.gd` - at a new single-player game, the agent
 speaks the lines in his place, the clock held and the droids' news waiting; Esc or a left click (manual
 p022) stops the line and plays the skip's; then the Message Index opens on Agent Advice. tests/briefing.gd.
-**Not built:** the `focus` - how the original shows the system he points out (no source: not the manual,
-the guide, open-rebellion's ledger - `RE-ADV-02` open - or Rebellion 2, whose briefing data never reached
-its repo). TeeJ's copy has the briefing switched off (`.OLD`), so it cannot be watched there as it is.
-Also inferred: the clock waits for the briefing (its last line, "we await your orders"), and head-to-head
-has none (the other side's clock would wait 3 minutes).
+**The views (2026-09-27).** Watched on two recordings of the original's briefing (YouTube: SuperPaulGames,
+"Let's Play Star Wars Rebellion - Part 1 As the Rebels", 4:55-7:47; "Star Wars: Rebellion Let's Play |
+Galactic Empire: Part 1", 1:37-4:46). At each focus step the display changes: a caption where the mode's
+name goes (TEXTSTRA 5652-5674 hold them all), only the systems the line is about lit in their side's star,
+every other system its smallest grey star; or the display off - the bright galaxy (STRATEGY 902, not the
+map's dimmed 903) and no systems.
+
+| focus | Alliance | Empire |
+|---|---|---|
+| 12, 9, 10 | display off | display off |
+| 1 | Popular Support (the mode) | Popular Support |
+| 14 / 15 | Systems Loyal to the Alliance / to the Empire | to the Empire / to the Alliance |
+| 16 | Systems Under Military Control | the same |
+| 17 | Unexplored Systems (lit cyan) | the same |
+| 18 | Yavin | Coruscant |
+| 3 | Alliance Headquarters | Yavin |
+| 4 | Coruscant | Unexplored Systems |
+| 5 | Idle Fleets (the mode) | Idle Fleets (by its caption's length) |
+| 6 | All Defenses | All Defenses (by its caption's length) |
+| 7 / 19 | Mon Mothma / Luke Skywalker (their system) | Emperor Palpatine / Darth Vader |
+| 20 | Coruscant | Yavin |
+| after | Popular Support again | the same |
+
+Which systems "Military Control" and "All Defenses" light is **inferred**: held short of popular support
+(a garrison requirement, manual p089), and any defenses the player knows of. **Built** (exporter 2.6.1
+for 902; the pack's `views`; `GalaxyMap.ShowView`). Esc: community sources (GOG forum, open-rebellion's
+GAME-FLOW) say it does not skip on modern Windows and players rename the briefing DLLs instead - which is
+why TeeJ's are `.OLD`; ours skips, as the manual says. The clock is held (TeeJ: "game clock is paused";
+both recordings show no day until it ends). Head-to-head has none: no source shows a head-to-head start
+(the one multiplayer recording found starts single-player); REBEXE would settle it.
+
+**Two things the recordings show that differ from us** (not changed here): after the briefing **no Message
+Index opens** in either recording, where manual p022 says it opens on Agent Advice (ours follows the
+manual); and before the briefing **the side's shuttle film plays** - Cloud City for the Alliance, the Star
+Destroyer for the Empire (MDATA 003 / 004) - which #269 removed on TeeJ's report from his own copy.
 
 **A lead for phase 3.** The same scripts hold the agent's other actions (C3POACT's 1-39 and 69-85 name one
 record each; 42-68 pair a message-droid record with a C-3PO one). Transcribing their lines as above would
@@ -178,7 +208,7 @@ without the maintenance - the Build button is greyed): making them live is TeeJ'
 | 1 | **Exporter**: the recordings and the talking animations | the game can play them; size stated - **built** (2.6.0, #275): 890 sounds 13.8 MB, 110 runs 14.9 MB |
 | 2 | **Game**: the droids report events; Translate Counterpart; the effects volume | a test per event; TeeJ hears them - **built**: `src/ui/advisor.gd`, `sound.gd`, `fwa.gd`; the pack's `advisor`, `voices`, `sounds` (rules 25-27); news tagged where the simulation writes it (GameMessage.Advisor / Voice); the cockpit's sounds (open-rebellion's map of COMMON.DLL); tests/advisor.gd. TeeJ's listen owed |
 | 3 | **Game**: the instant answers (invalid order, in transit, under construction, the droid toggles, maintenance) | a test each - **built** from the agent's own action scripts (phase 3 section): `Advisor.Answer`, the pack's `answer_*`, `Result.code` where the engine refuses; tests/advisor.gd. Not built: the answers to orders our interface greys (under construction, a build without the maintenance) |
-| 4 | **Game**: the opening briefing (decision 2) | it plays at a new game, **Esc skips it**, then Agent Advice opens - **built** from the original's own script (above): `src/ui/briefing.gd`, the pack's `briefing` (rule 28), tests/briefing.gd. The `focus` (the system pointed out) not drawn: unknown |
+| 4 | **Game**: the opening briefing (decision 2) | it plays at a new game, **Esc skips it**, then Agent Advice opens - **built** from the original's own script (above): `src/ui/briefing.gd`, the pack's `briefing` (rule 28), tests/briefing.gd; its views from recordings of the original |
 
 ## Decisions for TeeJ
 

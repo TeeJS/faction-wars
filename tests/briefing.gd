@@ -7,6 +7,9 @@ extends SceneTree
 ##     order, and the skip's line; rule 28 refuses bad briefings;
 ##   - a new game with the recordings: the agent droid speaks the lines in
 ##     order in its own place, the clock held and the droids' news waiting;
+##   - each focus step puts its view on the display (the pack's `views`, as
+##     recordings of the original show): the display off, a mode, a caption
+##     with the systems it names lit; at the end the display is as it was;
 ##   - Esc skips: the line stops and the skip's plays; then the Message Index
 ##     opens on Agent Advice and the clock runs;
 ##   - a left click skips too, and a second skip ends it at once;
@@ -64,6 +67,10 @@ func _init() -> void:
 		"the Empire's first line is IMP-22's 1147 (run 2100)")
 	_check((al["skip"] as Array).size() == 3 and al["skip"][1]["sound"] == "swr-original:sound/albrief/1165.ogg"
 		and em["skip"][1]["sound"] == "swr-original:sound/embrief/1157.ogg", "the skip's line: 1165 / 1157")
+	_check((al["views"] as Dictionary).size() == 16 and (em["views"] as Dictionary).size() == 16
+		and al["views"]["18"] == {"caption": "Yavin", "show": "system:yavin"} and em["views"]["18"]["show"] == "system:coruscant"
+		and em["views"]["4"]["show"] == "unexplored" and al["views"]["12"]["show"] == "off",
+		"the views: 16 a side as the recordings show them - the Alliance's 18 Yavin, the Empire's Coruscant, its 4 Unexplored Systems")
 	_Rules()
 
 	# The stand-ins: a plain frame with its droids, three lines and the skip's.
@@ -104,10 +111,20 @@ func _init() -> void:
 	_check(b.anchor_left == 0.0 and b.anchor_top == 0.0 and b.anchor_right == 1.0 and b.anchor_bottom == 1.0 and b.mouse_filter == Control.MOUSE_FILTER_STOP,
 		"... over the whole screen: a click anywhere is the briefing's")
 	_check(agent.Talking() and _playing(al_lines[0]["sound"]) and b.At() == 1, "C-3PO speaks the first line in his own place (its animation and its recording)")
+	var map: GalaxyMap = ui.ActiveGalaxyMap
+	var before: Gid.GidMode = Gid.ActiveMode()
+	_check(map != null and bool(map.ViewShown().get("off", false)), "his introduction: the display off (focus 12)")
 	_check(main._briefing and main._tickTimer.is_stopped() and advisor.Held, "the clock is held and the droids keep their news")
 	var day: int = StrategicTickManager.Today
 	var second := await _until(func() -> bool: return _playing(al_lines[1]["sound"]), 8.0)
 	_check(second and b.At() == 3 and StrategicTickManager.Today == day, "then the second line (past the focus between them); no day has passed")
+	_check(map.ViewShown().is_empty() and Gid.ActiveMode() != null and Gid.ActiveMode().Id == "popular_support", "... over Popular Support (focus 1)")
+	var third := await _until(func() -> bool: return _playing(al_lines[2]["sound"]), 8.0)
+	var lit: Dictionary = map.ViewShown().get("lit", {})
+	var ours: Faction = FactionRegistry.ById("alliance")
+	_check(third and str(map.ViewShown().get("caption", "")) == "Systems Loyal to the Alliance" and not lit.is_empty()
+		and Lq.all(lit.keys(), func(p: Planet) -> bool: return p.ControllingFaction == ours and lit[p] == ours.ArtSkin),
+		"the third line: \"Systems Loyal to the Alliance\", only the Alliance's systems lit (%d)" % lit.size())
 
 	# Esc: the line stops, the skip's plays.
 	var esc := InputEventKey.new()
@@ -116,7 +133,7 @@ func _init() -> void:
 	root.push_input(esc)
 	await process_frame
 	await process_frame
-	_check(b.Skipped() and not _playing(al_lines[1]["sound"]) and _playing(al["skip"][1]["sound"]),
+	_check(b.Skipped() and not _playing(al_lines[2]["sound"]) and _playing(al["skip"][1]["sound"]),
 		"Esc: the line stops and the skip's plays (\"I do hope you know what you're doing\")")
 	var ended := await _until(func() -> bool: return ui.get_node_or_null("Briefing") == null, 8.0)
 	await process_frame
@@ -124,6 +141,8 @@ func _init() -> void:
 	var comms: Node = ui._openWindows.get("Communications")
 	_check(comms != null and is_instance_valid(comms) and _category(comms) == "Advice", "the Message Index opens on Agent Advice (%s)" % (_category(comms) if comms != null else "none"))
 	_check(not main._briefing and not main._tickTimer.is_stopped() and not advisor.Held, "the clock runs again and the droids may speak")
+	_check(map.ViewShown().is_empty() and Gid.ActiveMode() == before, "the display is as it was before the briefing")
+	_Views(map)
 	await _stop(main)
 
 	# A left click skips too; a second skip ends it at once.
@@ -155,6 +174,29 @@ func _init() -> void:
 	_finish(null)
 
 
+## What each view lights, on the game running.
+func _Views(map: GalaxyMap) -> void:
+	var yavin: Planet = Lq.first_or_null(GameState.AllPlanets(), func(p: Planet) -> bool: return p.PackId == "yavin")
+	var one: Dictionary = BriefingScript.Lit("system:yavin")
+	_check(one.size() == 1 and one.has(yavin), "system:yavin lights Yavin alone")
+	var hq: Dictionary = BriefingScript.Lit("hq:alliance")
+	_check(hq.size() == 1 and (hq.keys()[0] as Planet).HasHeadquarters(), "hq:alliance lights the Alliance's headquarters")
+	var luke: Character = Lq.first_or_null(GameState.ActiveRoster, func(c: Character) -> bool: return c.PackId == "luke_skywalker")
+	var at: Dictionary = BriefingScript.Lit("character:luke_skywalker")
+	_check(luke != null and at.size() == 1 and at.has(OrderManager.SystemOf(luke.Attached)), "character:luke_skywalker lights his system")
+	var dark: Dictionary = BriefingScript.Lit("unexplored")
+	_check(not dark.is_empty() and Lq.all(dark.keys(), func(p: Planet) -> bool: return not p.IsExplored) and Lq.all(dark.values(), func(s: String) -> bool: return s == "neutral"),
+		"unexplored lights the unexplored systems, in neutral's star (%d)" % dark.size())
+	var held: Dictionary = BriefingScript.Lit("military")
+	_check(Lq.all(held.keys(), func(p: Planet) -> bool: return p.GarrisonRequirement() > 0), "military lights only systems held short of support (%d)" % held.size())
+	map.ShowView("Test", one, false)
+	_check(map.VisualSignature().begins_with("view|Test"), "a view shows its caption")
+	map.ShowView("", {}, true)
+	_check(bool(map.ViewShown().off), "the off view")
+	map.ClearView()
+	_check(map.ViewShown().is_empty(), "and back")
+
+
 func _Rules() -> void:
 	var pack: PackLoader.LoadedPack = FactionRegistry.Pack
 	var m := pack.Manifest
@@ -165,7 +207,15 @@ func _Rules() -> void:
 		["no", "must be an object"],
 		[{"rebels": {}}, "is not a faction"],
 		[{"alliance": []}, "must be an object (steps, skip)"],
-		[{"alliance": {"prologue": []}}, "neither steps nor skip"],
+		[{"alliance": {"prologue": []}}, "neither steps, skip nor views"],
+		[{"alliance": {"views": {"12": {"show": "off"}, "14": {"caption": "Ours", "show": "loyal:alliance"}, "18": {"show": "system:yavin"},
+			"7": {"show": "character:mon_mothma"}, "1": {"show": "mode:popular_support"}, "3": {"show": "hq:empire"}}}}, ""],
+		[{"alliance": {"views": []}}, "must be an object of focus number -> view"],
+		[{"alliance": {"views": {"first": {"show": "off"}}}}, "the key must be a focus number"],
+		[{"alliance": {"views": {"1": {"caption": "x"}}}}, "must be an object with a show"],
+		[{"alliance": {"views": {"1": {"show": "sparkle"}}}}, "is not a view"],
+		[{"alliance": {"views": {"1": {"show": "system:alderaan_two"}}}}, "names nothing this pack has"],
+		[{"alliance": {"views": {"1": {"show": "mode:weather"}}}}, "names nothing this pack has"],
 		[{"alliance": {"steps": "all of it"}}, "must be a list"],
 		[{"alliance": {"steps": [7]}}, "must be an object"],
 		[{"alliance": {"steps": [{"focus": "Yavin"}]}}, "focus: must be a number"],

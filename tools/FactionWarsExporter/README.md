@@ -129,7 +129,7 @@ buttons/<name>.png (+ .pressed / .disabled)   cursors/pointer.png, crosshair.png
 portraits/<kind>/<id>.png (80x80)   miniatures/<kind>/<id>.png (61x25)
 gid/<faction>.<tier>.png  gid/unexplored.<tier>.png  icons/uprising.png (+ .hover.png)
 alerts/<faction>.<category>.png (+ .lit.png)
-screens/cockpit.png   screens/galaxy.png
+screens/cockpit.png   screens/galaxy.png   screens/galaxy_off.png (since 2.6.1: the display off, 902)
 descriptions.json     { "characters": { "<id>": "text" }, "units": ..., ... }
 music/<nnn>.ogg       the score, MDATA.300-315 as Ogg Vorbis (11 kHz mono, about 4 MB)
 sound/<dll>/<id>.ogg  since 2.6.0: every voice and sound effect, by the original's own id -

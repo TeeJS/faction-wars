@@ -10684,7 +10684,68 @@
           {
             "focus": 13.0
           }
-        ]
+        ],
+        "views": {
+          "1": {
+            "show": "mode:popular_support"
+          },
+          "10": {
+            "show": "off"
+          },
+          "12": {
+            "show": "off"
+          },
+          "14": {
+            "caption": "Systems Loyal to the Alliance",
+            "show": "loyal:alliance"
+          },
+          "15": {
+            "caption": "Systems Loyal to the Empire",
+            "show": "loyal:empire"
+          },
+          "16": {
+            "caption": "Systems Under Military Control",
+            "show": "military"
+          },
+          "17": {
+            "caption": "Unexplored Systems",
+            "show": "unexplored"
+          },
+          "18": {
+            "caption": "Yavin",
+            "show": "system:yavin"
+          },
+          "19": {
+            "caption": "Luke Skywalker",
+            "show": "character:luke_skywalker"
+          },
+          "20": {
+            "caption": "Coruscant",
+            "show": "system:coruscant"
+          },
+          "3": {
+            "caption": "Alliance Headquarters",
+            "show": "hq:alliance"
+          },
+          "4": {
+            "caption": "Coruscant",
+            "show": "system:coruscant"
+          },
+          "5": {
+            "show": "mode:idle_fleets"
+          },
+          "6": {
+            "caption": "All Defenses",
+            "show": "defenses"
+          },
+          "7": {
+            "caption": "Mon Mothma",
+            "show": "character:mon_mothma"
+          },
+          "9": {
+            "show": "off"
+          }
+        }
       },
       "empire": {
         "skip": [
@@ -10818,7 +10879,68 @@
           {
             "focus": 13.0
           }
-        ]
+        ],
+        "views": {
+          "1": {
+            "show": "mode:popular_support"
+          },
+          "10": {
+            "show": "off"
+          },
+          "12": {
+            "show": "off"
+          },
+          "14": {
+            "caption": "Systems Loyal to the Empire",
+            "show": "loyal:empire"
+          },
+          "15": {
+            "caption": "Systems Loyal to the Alliance",
+            "show": "loyal:alliance"
+          },
+          "16": {
+            "caption": "Systems Under Military Control",
+            "show": "military"
+          },
+          "17": {
+            "caption": "Unexplored Systems",
+            "show": "unexplored"
+          },
+          "18": {
+            "caption": "Coruscant",
+            "show": "system:coruscant"
+          },
+          "19": {
+            "caption": "Darth Vader",
+            "show": "character:darth_vader"
+          },
+          "20": {
+            "caption": "Yavin",
+            "show": "system:yavin"
+          },
+          "3": {
+            "caption": "Yavin",
+            "show": "system:yavin"
+          },
+          "4": {
+            "caption": "Unexplored Systems",
+            "show": "unexplored"
+          },
+          "5": {
+            "show": "mode:idle_fleets"
+          },
+          "6": {
+            "caption": "All Defenses",
+            "show": "defenses"
+          },
+          "7": {
+            "caption": "Emperor Palpatine",
+            "show": "character:emperor_palpatine"
+          },
+          "9": {
+            "show": "off"
+          }
+        }
       }
     },
     "BriefingGiven": true,
@@ -10955,7 +11077,68 @@
           {
             "focus": 13.0
           }
-        ]
+        ],
+        "views": {
+          "1": {
+            "show": "mode:popular_support"
+          },
+          "10": {
+            "show": "off"
+          },
+          "12": {
+            "show": "off"
+          },
+          "14": {
+            "caption": "Systems Loyal to the Alliance",
+            "show": "loyal:alliance"
+          },
+          "15": {
+            "caption": "Systems Loyal to the Empire",
+            "show": "loyal:empire"
+          },
+          "16": {
+            "caption": "Systems Under Military Control",
+            "show": "military"
+          },
+          "17": {
+            "caption": "Unexplored Systems",
+            "show": "unexplored"
+          },
+          "18": {
+            "caption": "Yavin",
+            "show": "system:yavin"
+          },
+          "19": {
+            "caption": "Luke Skywalker",
+            "show": "character:luke_skywalker"
+          },
+          "20": {
+            "caption": "Coruscant",
+            "show": "system:coruscant"
+          },
+          "3": {
+            "caption": "Alliance Headquarters",
+            "show": "hq:alliance"
+          },
+          "4": {
+            "caption": "Coruscant",
+            "show": "system:coruscant"
+          },
+          "5": {
+            "show": "mode:idle_fleets"
+          },
+          "6": {
+            "caption": "All Defenses",
+            "show": "defenses"
+          },
+          "7": {
+            "caption": "Mon Mothma",
+            "show": "character:mon_mothma"
+          },
+          "9": {
+            "show": "off"
+          }
+        }
       },
       "empire": {
         "skip": [
@@ -11089,7 +11272,68 @@
           {
             "focus": 13.0
           }
-        ]
+        ],
+        "views": {
+          "1": {
+            "show": "mode:popular_support"
+          },
+          "10": {
+            "show": "off"
+          },
+          "12": {
+            "show": "off"
+          },
+          "14": {
+            "caption": "Systems Loyal to the Empire",
+            "show": "loyal:empire"
+          },
+          "15": {
+            "caption": "Systems Loyal to the Alliance",
+            "show": "loyal:alliance"
+          },
+          "16": {
+            "caption": "Systems Under Military Control",
+            "show": "military"
+          },
+          "17": {
+            "caption": "Unexplored Systems",
+            "show": "unexplored"
+          },
+          "18": {
+            "caption": "Coruscant",
+            "show": "system:coruscant"
+          },
+          "19": {
+            "caption": "Darth Vader",
+            "show": "character:darth_vader"
+          },
+          "20": {
+            "caption": "Yavin",
+            "show": "system:yavin"
+          },
+          "3": {
+            "caption": "Yavin",
+            "show": "system:yavin"
+          },
+          "4": {
+            "caption": "Unexplored Systems",
+            "show": "unexplored"
+          },
+          "5": {
+            "show": "mode:idle_fleets"
+          },
+          "6": {
+            "caption": "All Defenses",
+            "show": "defenses"
+          },
+          "7": {
+            "caption": "Emperor Palpatine",
+            "show": "character:emperor_palpatine"
+          },
+          "9": {
+            "show": "off"
+          }
+        }
       }
     },
     "CardImage": "milky_way.jpg",

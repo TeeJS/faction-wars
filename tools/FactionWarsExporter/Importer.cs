@@ -66,6 +66,7 @@ namespace FactionWarsExporter;
 ///   original/cursors/pointer.png, crosshair.png, hotspots.json   the mouse pointers (REBEXE.EXE)
 ///   original/screens/cockpit.png   the Shuttle Cockpit (COMMON.DLL 20001), the menu picture
 ///   original/screens/galaxy.png    the galaxy map (STRATEGY.DLL 903), the map's backdrop
+///   original/screens/galaxy_off.png  the display off (902): the bright galaxy, no systems
 ///   original/manifest.json         every file's SHA-256 (ArtSink)
 /// </summary>
 public sealed class Importer
@@ -176,6 +177,9 @@ public sealed class Importer
     // COMMON.DLL; the galaxy map, the map's backdrop, in STRATEGY.DLL. The
     // pack's old galaxyShaded.bmp was an edited copy of 903.
     public const int CockpitBitmap = 20001, GalaxyBitmap = 903;
+    // The display off (902): the same galaxy undimmed - the briefing's "off"
+    // steps, seen on recordings of the original.
+    public const int GalaxyOffBitmap = 902;
     // The galaxy map is 607x437; the Star Wars pack's map frame is 640x480, the
     // size of its old galaxyShaded.bmp (an edited copy of 903 at its top-left).
     // The strips right of and below the picture are its own edge, mirrored, so the
@@ -588,7 +592,7 @@ public sealed class Importer
         // Build Selection's plate is opaque; so are the Scrap pictures.
         10800, 1032, 1033,
         // The cockpit, the galaxy map and the Game Options screen are whole screens.
-        CockpitBitmap, GalaxyBitmap, OptionsBitmap };
+        CockpitBitmap, GalaxyBitmap, GalaxyOffBitmap, OptionsBitmap };
 
     // COMMON.DLL: the Game Options screen (manual p075-p076, Fig. 3.16), placed
     // by template matching on TeeJ's screenshot of the original's (2026-09-23).
@@ -996,8 +1000,10 @@ public sealed class Importer
             }
             Say($"cockpit monitors: {monitors} (COMMON.DLL).");
         }
-        if (SaveGalaxy(strategy, P("screens", "galaxy.png"))) pictureCount++;
+        if (SaveGalaxy(strategy, GalaxyBitmap, P("screens", "galaxy.png"))) pictureCount++;
         else missing.Add($"screens/galaxy: no bitmap {GalaxyBitmap} in STRATEGY.DLL");
+        if (SaveGalaxy(strategy, GalaxyOffBitmap, P("screens", "galaxy_off.png"))) pictureCount++;
+        else missing.Add($"screens/galaxy_off: no bitmap {GalaxyOffBitmap} in STRATEGY.DLL");
 
         // Portraits and list miniatures: GOKRES.DLL, by the id map built into the exe.
         var idMapText = BuiltIn("gokres_map.json");
@@ -1427,12 +1433,12 @@ public sealed class Importer
         return true;
     }
 
-    /// <summary>The galaxy map, 903, mirrored out to GalaxyWidth x GalaxyHeight.</summary>
-    private bool SaveGalaxy(PeResources dll, string outPath)
+    /// <summary>A galaxy picture (903 the map, 902 the display off), mirrored out to GalaxyWidth x GalaxyHeight.</summary>
+    private bool SaveGalaxy(PeResources dll, int id, string outPath)
     {
-        if (!dll.Bitmaps.ContainsKey(GalaxyBitmap))
+        if (!dll.Bitmaps.ContainsKey(id))
             return false;
-        using var stream = new MemoryStream(dll.BitmapFile(GalaxyBitmap));
+        using var stream = new MemoryStream(dll.BitmapFile(id));
         using var src = new Bitmap(stream);
         using var dst = new Bitmap(GalaxyWidth, GalaxyHeight, PixelFormat.Format24bppRgb);
         int w = src.Width, h = src.Height;
