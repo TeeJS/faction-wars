@@ -1,6 +1,6 @@
 # Plan: the droids speak - the original's advisor voices and the opening briefing
 
-Status: **phases 0-2 and 4 built, 2026-09-27** (TeeJ: "go - continue independently until done"): the exporter (2.6.0, #275) and the game side - the droids, the characters' lines, Translate Counterpart, the sound effects volume, the cockpit's sounds (TeeJ: "include those this round"), the opening briefing. Phase 3 has no source yet (a lead below). One part of the briefing is not built: how the original shows the system the agent points out (below).
+Status: **phases 0-4 built, 2026-09-27** (TeeJ: "go - continue independently until done"): the exporter (2.6.0, #275) and the game side - the droids, the characters' lines, Translate Counterpart, the sound effects volume, the cockpit's sounds (TeeJ: "include those this round"), the opening briefing, the agent's answers. Two parts are not built: how the original shows the system the agent points out (phase 4), and the answers to orders our interface greys out (phase 3, below).
 TeeJ, 2026-09-27: "What about the dialogue, like emperor's 'you have not adequately
 supported'" ... "yes write the plan". BACKLOG #41 (sound) stays for the sound effects.
 
@@ -124,6 +124,29 @@ has none (the other side's clock would wait 3 minutes).
 record each; 42-68 pair a message-droid record with a C-3PO one). Transcribing their lines as above would
 say which is "that destination is invalid" and the others - by content, not by the binary's own map.
 
+## Phase 3: the agent's answers (2026-09-27)
+
+The agent's action scripts (phase 4's) name every recording he has; what each says (transcribed, **inferred**)
+picks the answer. The moments are the manual's (p102 "C-3PO or IMP-22 indicates the error"; p047 "C-3PO will
+tell you if you don't have the maintenance capacity") and Rebellion 2's (in transit, under construction, the
+toggles). The Empire's recordings say the same at the same ids.
+
+| Answer | Script (Alliance / Empire) | Recording | Says (transcribed) | Where the game answers |
+|---|---|---|---|---|
+| `in_transit` | 1 / 1 | 1096 / 1596 | "no messages may be sent to units in transit; wait until they arrive" | a fleet order refused, in transit |
+| `not_controlled` | 2 / 2 | 1097 / 1597 | "... system we control" | personnel or the headquarters sent to a world not ours |
+| `no_mission` | 3 / 3 | 1098 / 1598 | "none of the personnel ... capable ... no mission can be performed" | No Mission Available (p102) |
+| `no_maintenance` | 10 / 10 | 1105 / 1105 | "your order ... cannot be carried out; we don't have the maintenance capacity" | a build queued short of its number (p047) |
+| `garrisons_on` / `_off` | 36-37 / 29-30 | 1137-1138 / 1135-1136 | "you won't need to supervise the garrisons" / "relinquish control of the garrisons to you" | the agent's menu |
+| `production_on` / `_off` | 38-39 / 31-32 | 1139-1140 / 1137-1138 | "maximize the output of our mines and refineries" / "... satisfactory" | the agent's menu |
+
+**Also in the scripts, not wired** (no moment in our interface yet): "that unit is still under construction"
+(1214), "you cannot move those units to the selected target" (1215), "you can't move a facility once it has
+been deployed" (1203), "the Empire has blockaded that system" (1213), a fleet's capacity (1102-1104), energy
+and raw materials (1106-1109), "Special Forces cannot be assigned as decoys alone" (1212). **Our interface greys
+the orders the original lets you try and then answers** (a unit in transit or under construction, a build
+without the maintenance - the Build button is greyed): making them live is TeeJ's call.
+
 ## What the code does today
 
 | | |
@@ -154,7 +177,7 @@ say which is "that destination is invalid" and the others - by content, not by t
 | 0 | **Map the lines**: Rebellion 2's table, checked against the binary (TeeJ's approval each time, manual mode) and by listening; what VOICEFX is; where TeeJ's line is | every mapped event has a named recording and a confidence - **done** from Rebellion 2's map (decision 3), every recording checked in the files (above) |
 | 1 | **Exporter**: the recordings and the talking animations | the game can play them; size stated - **built** (2.6.0, #275): 890 sounds 13.8 MB, 110 runs 14.9 MB |
 | 2 | **Game**: the droids report events; Translate Counterpart; the effects volume | a test per event; TeeJ hears them - **built**: `src/ui/advisor.gd`, `sound.gd`, `fwa.gd`; the pack's `advisor`, `voices`, `sounds` (rules 25-27); news tagged where the simulation writes it (GameMessage.Advisor / Voice); the cockpit's sounds (open-rebellion's map of COMMON.DLL); tests/advisor.gd. TeeJ's listen owed |
-| 3 | **Game**: the instant answers (invalid order, in transit, under construction, the droid toggles, maintenance) | a test each - **no source**: Rebellion 2's last in-repo data has no ids for them, and none other maps them; the binary would (TeeJ's approval) |
+| 3 | **Game**: the instant answers (invalid order, in transit, under construction, the droid toggles, maintenance) | a test each - **built** from the agent's own action scripts (phase 3 section): `Advisor.Answer`, the pack's `answer_*`, `Result.code` where the engine refuses; tests/advisor.gd. Not built: the answers to orders our interface greys (under construction, a build without the maintenance) |
 | 4 | **Game**: the opening briefing (decision 2) | it plays at a new game, **Esc skips it**, then Agent Advice opens - **built** from the original's own script (above): `src/ui/briefing.gd`, the pack's `briefing` (rule 28), tests/briefing.gd. The `focus` (the system pointed out) not drawn: unknown |
 
 ## Decisions for TeeJ

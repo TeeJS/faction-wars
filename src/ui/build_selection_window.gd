@@ -205,6 +205,9 @@ func _on_build() -> void:
 		print("[Build] Queued %d of %d - %s" % [made, want, res.error])
 	elif made == 0:
 		print("[Build] %s" % res.error)
+	# "C-3PO will tell you if you don't have the maintenance capacity" (manual p047).
+	if made < want:
+		preload("res://src/ui/advisor.gd").AnswerOn(get_tree(), res.code)
 	var done: Callable = _onDone
 	CloseWindow()
 	if done.is_valid():

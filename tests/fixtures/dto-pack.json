@@ -8755,6 +8755,54 @@
             "sound": "swr-original:sound/alsprite/1512.ogg"
           }
         },
+        "answer_garrisons_off": {
+          "agent": {
+            "anim": "swr-original:anim/alsprite/3531.fwa",
+            "sound": "swr-original:sound/alsprite/1138.ogg"
+          }
+        },
+        "answer_garrisons_on": {
+          "agent": {
+            "anim": "swr-original:anim/alsprite/2551.fwa",
+            "sound": "swr-original:sound/alsprite/1137.ogg"
+          }
+        },
+        "answer_in_transit": {
+          "agent": {
+            "anim": "swr-original:anim/alsprite/3002.fwa",
+            "sound": "swr-original:sound/alsprite/1096.ogg"
+          }
+        },
+        "answer_no_maintenance": {
+          "agent": {
+            "anim": "swr-original:anim/alsprite/3002.fwa",
+            "sound": "swr-original:sound/alsprite/1105.ogg"
+          }
+        },
+        "answer_no_mission": {
+          "agent": {
+            "anim": "swr-original:anim/alsprite/3002.fwa",
+            "sound": "swr-original:sound/alsprite/1098.ogg"
+          }
+        },
+        "answer_not_controlled": {
+          "agent": {
+            "anim": "swr-original:anim/alsprite/3002.fwa",
+            "sound": "swr-original:sound/alsprite/1097.ogg"
+          }
+        },
+        "answer_production_off": {
+          "agent": {
+            "anim": "swr-original:anim/alsprite/2941.fwa",
+            "sound": "swr-original:sound/alsprite/1140.ogg"
+          }
+        },
+        "answer_production_on": {
+          "agent": {
+            "anim": "swr-original:anim/alsprite/3800.fwa",
+            "sound": "swr-original:sound/alsprite/1139.ogg"
+          }
+        },
         "assault": {
           "agent": {
             "anim": "swr-original:anim/alsprite/2941.fwa",
@@ -9155,6 +9203,54 @@
           "messenger": {
             "anim": "swr-original:anim/emsprite/3001.fwa",
             "sound": "swr-original:sound/emsprite/1812.ogg"
+          }
+        },
+        "answer_garrisons_off": {
+          "agent": {
+            "anim": "swr-original:anim/emsprite/6100.fwa",
+            "sound": "swr-original:sound/emsprite/1136.ogg"
+          }
+        },
+        "answer_garrisons_on": {
+          "agent": {
+            "anim": "swr-original:anim/emsprite/7200.fwa",
+            "sound": "swr-original:sound/emsprite/1135.ogg"
+          }
+        },
+        "answer_in_transit": {
+          "agent": {
+            "anim": "swr-original:anim/emsprite/6600.fwa",
+            "sound": "swr-original:sound/emsprite/1596.ogg"
+          }
+        },
+        "answer_no_maintenance": {
+          "agent": {
+            "anim": "swr-original:anim/emsprite/6600.fwa",
+            "sound": "swr-original:sound/emsprite/1105.ogg"
+          }
+        },
+        "answer_no_mission": {
+          "agent": {
+            "anim": "swr-original:anim/emsprite/6600.fwa",
+            "sound": "swr-original:sound/emsprite/1598.ogg"
+          }
+        },
+        "answer_not_controlled": {
+          "agent": {
+            "anim": "swr-original:anim/emsprite/6600.fwa",
+            "sound": "swr-original:sound/emsprite/1597.ogg"
+          }
+        },
+        "answer_production_off": {
+          "agent": {
+            "anim": "swr-original:anim/emsprite/6100.fwa",
+            "sound": "swr-original:sound/emsprite/1138.ogg"
+          }
+        },
+        "answer_production_on": {
+          "agent": {
+            "anim": "swr-original:anim/emsprite/6500.fwa",
+            "sound": "swr-original:sound/emsprite/1137.ogg"
           }
         },
         "assault": {
@@ -9563,6 +9659,54 @@
             "sound": "swr-original:sound/alsprite/1512.ogg"
           }
         },
+        "answer_garrisons_off": {
+          "agent": {
+            "anim": "swr-original:anim/alsprite/3531.fwa",
+            "sound": "swr-original:sound/alsprite/1138.ogg"
+          }
+        },
+        "answer_garrisons_on": {
+          "agent": {
+            "anim": "swr-original:anim/alsprite/2551.fwa",
+            "sound": "swr-original:sound/alsprite/1137.ogg"
+          }
+        },
+        "answer_in_transit": {
+          "agent": {
+            "anim": "swr-original:anim/alsprite/3002.fwa",
+            "sound": "swr-original:sound/alsprite/1096.ogg"
+          }
+        },
+        "answer_no_maintenance": {
+          "agent": {
+            "anim": "swr-original:anim/alsprite/3002.fwa",
+            "sound": "swr-original:sound/alsprite/1105.ogg"
+          }
+        },
+        "answer_no_mission": {
+          "agent": {
+            "anim": "swr-original:anim/alsprite/3002.fwa",
+            "sound": "swr-original:sound/alsprite/1098.ogg"
+          }
+        },
+        "answer_not_controlled": {
+          "agent": {
+            "anim": "swr-original:anim/alsprite/3002.fwa",
+            "sound": "swr-original:sound/alsprite/1097.ogg"
+          }
+        },
+        "answer_production_off": {
+          "agent": {
+            "anim": "swr-original:anim/alsprite/2941.fwa",
+            "sound": "swr-original:sound/alsprite/1140.ogg"
+          }
+        },
+        "answer_production_on": {
+          "agent": {
+            "anim": "swr-original:anim/alsprite/3800.fwa",
+            "sound": "swr-original:sound/alsprite/1139.ogg"
+          }
+        },
         "assault": {
           "agent": {
             "anim": "swr-original:anim/alsprite/2941.fwa",
@@ -9963,6 +10107,54 @@
           "messenger": {
             "anim": "swr-original:anim/emsprite/3001.fwa",
             "sound": "swr-original:sound/emsprite/1812.ogg"
+          }
+        },
+        "answer_garrisons_off": {
+          "agent": {
+            "anim": "swr-original:anim/emsprite/6100.fwa",
+            "sound": "swr-original:sound/emsprite/1136.ogg"
+          }
+        },
+        "answer_garrisons_on": {
+          "agent": {
+            "anim": "swr-original:anim/emsprite/7200.fwa",
+            "sound": "swr-original:sound/emsprite/1135.ogg"
+          }
+        },
+        "answer_in_transit": {
+          "agent": {
+            "anim": "swr-original:anim/emsprite/6600.fwa",
+            "sound": "swr-original:sound/emsprite/1596.ogg"
+          }
+        },
+        "answer_no_maintenance": {
+          "agent": {
+            "anim": "swr-original:anim/emsprite/6600.fwa",
+            "sound": "swr-original:sound/emsprite/1105.ogg"
+          }
+        },
+        "answer_no_mission": {
+          "agent": {
+            "anim": "swr-original:anim/emsprite/6600.fwa",
+            "sound": "swr-original:sound/emsprite/1598.ogg"
+          }
+        },
+        "answer_not_controlled": {
+          "agent": {
+            "anim": "swr-original:anim/emsprite/6600.fwa",
+            "sound": "swr-original:sound/emsprite/1597.ogg"
+          }
+        },
+        "answer_production_off": {
+          "agent": {
+            "anim": "swr-original:anim/emsprite/6100.fwa",
+            "sound": "swr-original:sound/emsprite/1138.ogg"
+          }
+        },
+        "answer_production_on": {
+          "agent": {
+            "anim": "swr-original:anim/emsprite/6500.fwa",
+            "sound": "swr-original:sound/emsprite/1137.ogg"
           }
         },
         "assault": {

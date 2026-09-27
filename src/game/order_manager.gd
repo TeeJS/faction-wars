@@ -69,7 +69,7 @@ static func MoveUnits(units: Array, destination: Planet) -> Result:
 	# SPECFORCES ARE PERSONNEL AND CARRY THE SAME RESTRICTION as characters (p126).
 	var blocked: Unit = Lq.first_or_null(units, func(u): return u.Type == Enums.UnitType.SpecForce and destination.ControllingFaction != u.Faction)
 	if blocked != null:
-		return Result.fail("%s is not under your control - personnel can only be moved to worlds your side holds." % destination.Name, 0)
+		return Result.fail("%s is not under your control - personnel can only be moved to worlds your side holds." % destination.Name, 0).coded("not_controlled")
 
 	# A UNIT RIDING A FLEET COMES OFF IT FIRST - dropped on the world below, it
 	# lands there ("drag them onto the system, or right-click -> Move", manual
@@ -144,7 +144,7 @@ static func MoveCharacters(characters: Array, destination: Planet) -> Result:
 
 	# ★ A MOVE ONLY EVER GOES TO A WORLD YOUR SIDE CONTROLS (measured).
 	if destination.ControllingFaction != lead.Faction:
-		return Result.fail("%s is not under your control - personnel can only be moved to worlds your side holds." % destination.Name, 0)
+		return Result.fail("%s is not under your control - personnel can only be moved to worlds your side holds." % destination.Name, 0).coded("not_controlled")
 
 	# ALREADY IN THAT ORBIT MEANS WALK OFF THE SHIP.
 	if from == destination:
@@ -175,7 +175,7 @@ static func MoveHeadquarters(faction: Faction, destination: Planet) -> Result:
 	if seat == destination:
 		return Result.fail("The headquarters is already at %s." % destination.Name)
 	if destination.ControllingFaction != faction:
-		return Result.fail("%s is not under your control - the headquarters can only move to a world your side holds." % destination.Name)
+		return Result.fail("%s is not under your control - the headquarters can only move to a world your side holds." % destination.Name).coded("not_controlled")
 	if BlockadeManager.IsBlockaded(seat):
 		return Result.fail("%s is blockaded - the headquarters cannot relocate until the blockade is broken." % seat.Name)
 
@@ -200,7 +200,7 @@ static func BoardFleet(characters: Array, fleet: Fleet) -> Result:
 	if characters == null or characters.is_empty():
 		return Result.fail("Nobody selected.")
 	if fleet.Status == Enums.Status.Enroute:
-		return Result.fail("%s is %s." % [fleet.Name, Terms.label("in_transit")])
+		return Result.fail("%s is %s." % [fleet.Name, Terms.label("in_transit")]).coded("in_transit")
 	var orbit: Planet = fleet.Attached
 	if orbit == null:
 		return Result.fail("%s is not in orbit anywhere." % fleet.Name)
@@ -227,7 +227,7 @@ static func LoadAboard(units: Array, fleet: Fleet) -> Result:
 	if fleet == null:
 		return Result.fail("No fleet.", 0)
 	if fleet.Status == Enums.Status.Enroute:
-		return Result.fail("%s is %s." % [fleet.Name, Terms.label("in_transit")], 0)
+		return Result.fail("%s is %s." % [fleet.Name, Terms.label("in_transit")], 0).coded("in_transit")
 	if not (fleet.Attached is Planet):
 		return Result.fail("%s is not in orbit." % fleet.Name, 0)
 	var orbit: Planet = fleet.Attached
@@ -309,7 +309,7 @@ static func UnloadUnits(units: Array) -> Result:
 	for u in riding:
 		var fleet: Fleet = CarrierOf(u)
 		if fleet.Status == Enums.Status.Enroute:
-			return Result.fail("%s is %s." % [fleet.Name, Terms.label("in_transit")])
+			return Result.fail("%s is %s." % [fleet.Name, Terms.label("in_transit")]).coded("in_transit")
 		if not (fleet.Attached is Planet):
 			return Result.fail("%s is not in orbit anywhere." % fleet.Name)
 		var orbit: Planet = fleet.Attached
@@ -333,7 +333,7 @@ static func Disembark(characters: Array) -> Result:
 	for c in leaving:
 		var from: Fleet = c.Attached
 		if from.Status == Enums.Status.Enroute:
-			return Result.fail("%s is %s." % [from.Name, Terms.label("in_transit")])
+			return Result.fail("%s is %s." % [from.Name, Terms.label("in_transit")]).coded("in_transit")
 		if not (from.Attached is Planet):
 			return Result.fail("%s is not in orbit anywhere." % from.Name)
 		var orbit: Planet = from.Attached

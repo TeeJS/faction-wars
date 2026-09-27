@@ -1606,8 +1606,15 @@ func OnAgentMenu(id: int) -> void:
 	match id:
 		3: OpenGalaxyOverview()
 		4: OpenObjectives()
-		5: CommandBus.issue("droid", { "manage": "garrisons", "on": not AgentDroid.ManagingGarrisons(us) })
-		6: CommandBus.issue("droid", { "manage": "production", "on": not AgentDroid.ManagingProduction(us) })
+		# The agent says he has taken it on, or handed it back (docs/advisor-plan.md phase 3).
+		5:
+			var on: bool = not AgentDroid.ManagingGarrisons(us)
+			if CommandBus.issue("droid", { "manage": "garrisons", "on": on }).ok:
+				AdvisorScript.AnswerOn(get_tree(), "garrisons_on" if on else "garrisons_off")
+		6:
+			var on: bool = not AgentDroid.ManagingProduction(us)
+			if CommandBus.issue("droid", { "manage": "production", "on": on }).ok:
+				AdvisorScript.AnswerOn(get_tree(), "production_on" if on else "production_off")
 		# A preference of this player's, not an order: nothing for the log.
 		7: SoundLib.SetTranslateCounterpart(not SoundLib.TranslateCounterpart)
 
@@ -1903,7 +1910,7 @@ func ExecuteCharacterMove(characters: Array, destination: Planet, requireConfirm
 			RefreshAfterMove(currentPlanet, destination)
 			AdvisorScript.SayOrder(get_tree(), characters)
 		elif not r.error.is_empty():
-			ShowRefusal(r.error)
+			ShowRefusal(r.error, r.code)
 
 	if requireConfirmation:
 		OpenTransitConfirm(characters, days, issue)
@@ -1934,7 +1941,7 @@ func ExecuteUnitMove(units: Array, destination: Planet, _requireConfirmation: bo
 	if r.ok:
 		RefreshAfterMove(currentPlanet, destination)
 	elif not r.error.is_empty():
-		ShowRefusal(r.error)
+		ShowRefusal(r.error, r.code)
 
 
 ## The original's own dialog, word for word.
@@ -1966,11 +1973,14 @@ func ExecuteLoadAboard(units: Array, fleet: Fleet) -> void:
 	if int(r.value) > 0 and orbit != null:
 		RefreshAfterMove(orbit, orbit)
 	if not r.error.is_empty():
-		ShowRefusal(r.error)
+		ShowRefusal(r.error, r.code)
 
 
-func ShowRefusal(reason: String) -> void:
+## The agent answers it aloud too, where the refusal names a reason he has
+## words for (`code`, Result.code; docs/advisor-plan.md phase 3).
+func ShowRefusal(reason: String, code: String = "") -> void:
 	print("[Move] %s" % reason)
+	AdvisorScript.AnswerOn(get_tree(), code)
 	var dialog := AcceptDialog.new()
 	dialog.title = "Order Refused"
 	dialog.dialog_text = reason
@@ -1992,6 +2002,7 @@ func ExecuteFleetMove(fleets: Array, destination: Planet, _requireConfirmation: 
 		RefreshAfterMove(currentPlanet, destination)
 	elif not r.error.is_empty():
 		print("[Move] %s" % r.error)
+		AdvisorScript.AnswerOn(get_tree(), r.code)
 
 
 ## C#: ExecuteFleetMove(Fleet, Planet, bool) overload.

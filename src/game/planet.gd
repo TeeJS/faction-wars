@@ -258,7 +258,7 @@ func CanQueueFacility(type: String, tier: int, destination: Planet) -> Result:
 	# A zero-maintenance item is ALWAYS buildable (manual p086's escape hatch).
 	var available_maintenance := Economy.MaintenanceAvailable(owner)
 	if stats.MaintenanceCost > 0 and available_maintenance < stats.MaintenanceCost:
-		return Result.fail("Need %d maintenance capacity, have %d. Build a %s/%s pair." % [stats.MaintenanceCost, available_maintenance, Terms.lower("mine"), Terms.lower("refinery")])
+		return Result.fail("Need %d maintenance capacity, have %d. Build a %s/%s pair." % [stats.MaintenanceCost, available_maintenance, Terms.lower("mine"), Terms.lower("refinery")]).coded("no_maintenance")
 
 	return Result.success()
 
@@ -324,7 +324,7 @@ func TryQueueMany(type: String, tier: int, destination: Planet, count: int) -> R
 		if not last.ok:
 			break
 		placed += 1
-	return Result.success(placed) if placed > 0 else Result.fail(last.error, 0)
+	return _Placed(placed, last)
 
 
 func TryQueueManyUnits(rule: PackDefs.UnitDef, destination: Planet, count: int) -> Result:
@@ -335,7 +335,17 @@ func TryQueueManyUnits(rule: PackDefs.UnitDef, destination: Planet, count: int) 
 		if not last.ok:
 			break
 		placed += 1
-	return Result.success(placed) if placed > 0 else Result.fail(last.error, 0)
+	return _Placed(placed, last)
+
+
+## How many were placed; when fewer than asked, why the next was not (its
+## error and code, on a success when some were).
+static func _Placed(placed: int, last: Result) -> Result:
+	var r: Result = Result.success(placed) if placed > 0 else Result.fail(last.error, 0)
+	if not last.ok:
+		r.error = last.error
+		r.code = last.code
+	return r
 
 
 func TryQueueFacility(type: String, tier: int, destination: Planet) -> Result:
@@ -398,7 +408,7 @@ func CanQueueUnit(rule: PackDefs.UnitDef, destination: Planet) -> Result:
 
 	var available_maintenance := Economy.MaintenanceAvailable(owner)
 	if rule.MaintenanceCost > 0 and available_maintenance < rule.MaintenanceCost:
-		return Result.fail("Need %d maintenance capacity, have %d. Build a %s/%s pair." % [rule.MaintenanceCost, available_maintenance, Terms.lower("mine"), Terms.lower("refinery")])
+		return Result.fail("Need %d maintenance capacity, have %d. Build a %s/%s pair." % [rule.MaintenanceCost, available_maintenance, Terms.lower("mine"), Terms.lower("refinery")]).coded("no_maintenance")
 
 	return Result.success()
 

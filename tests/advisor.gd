@@ -12,7 +12,9 @@ extends SceneTree
 ##   - news waits its days and does not play again within repeat_days;
 ##   - a character's own line follows; an order is acknowledged;
 ##   - Translate Counterpart and the sound effects volume are kept;
-##   - the cockpit's controls make their sounds.
+##   - the cockpit's controls make their sounds;
+##   - the agent answers at once, stopping the news playing (phase 3), and the
+##     engine's refusals carry the reason he answers (Result.code).
 ## Writes and removes its own files under user://.
 ##
 ##   .\tools\run-gd.ps1 tests/advisor.gd
@@ -57,9 +59,13 @@ func _init() -> void:
 	GameSettings.PlayerFaction = alliance
 	StrategicTickManager.Today = 100
 	var m: PackDefs.PackManifest = FactionRegistry.Pack.Manifest
-	_check(m.AdvisorGiven and (m.Advisor["alliance"] as Dictionary).size() == 37 and (m.Advisor["empire"] as Dictionary).size() == 37
+	_check(m.AdvisorGiven and (m.Advisor["alliance"] as Dictionary).size() == 45 and (m.Advisor["empire"] as Dictionary).size() == 45
 		and int(m.Advisor["repeat_days"]) == 60 and not m.Advisor.has("_comment"),
-		"the Star Wars pack's advisor: 37 kinds of news a side, repeat_days 60, the comment left out")
+		"the Star Wars pack's advisor: 37 kinds of news and 8 answers a side, repeat_days 60, the comment left out")
+	_check(m.Advisor["alliance"]["answer_in_transit"]["agent"]["sound"] == "swr-original:sound/alsprite/1096.ogg"
+		and m.Advisor["empire"]["answer_in_transit"]["agent"]["sound"] == "swr-original:sound/emsprite/1596.ogg"
+		and m.Advisor["alliance"]["answer_no_maintenance"]["agent"]["sound"] == "swr-original:sound/alsprite/1105.ogg",
+		"the agent's answers: in transit 1096 / 1596, not enough maintenance 1105")
 	_check(m.Voices.size() == 6 and m.Voices["emperor_palpatine"]["mission_failure"] == "swr-original:sound/emsprite/1387.ogg",
 		"its voices: six characters; the Emperor's mission failure is 1387")
 	_check(m.Sounds.get("cockpit_exit", "") == "swr-original:sound/common/8002.ogg", "its sounds: the cockpit's ejector handle is COMMON 8002")
@@ -182,6 +188,38 @@ func _init() -> void:
 	await process_frame
 	_check(_playing(m.Sounds["cockpit_exit"]), "the cockpit's ejector handle makes its sound")
 	menu.queue_free()
+
+	# The agent's answer: at once, over the news, which stops.
+	for e in ["answer_in_transit", "answer_garrisons_on"]:
+		_stand_in(str(events[e]["agent"]["anim"]), run_bytes)
+		_stand_in(str(events[e]["agent"]["sound"]), FileAccess.get_file_as_bytes(Tone))
+	await _until(func() -> bool: return not advisor.Busy() and _sounds().is_empty(), 6.0)
+	StrategicTickManager.Today = 300
+	EventBus.Tell(alliance, GameMessage.new("New technology", "", Enums.MessageCategory.Manufacturing, 300).With("research"))
+	await process_frame
+	await process_frame
+	_check(messenger.Talking() and _playing(events["research"]["messenger"]["sound"]), "news playing: the message droid reports research")
+	AdvisorScript.AnswerOn(self, "in_transit")
+	await process_frame
+	_check(not messenger.Talking() and not _playing(events["research"]["messenger"]["sound"]) and agent.Talking()
+		and _playing(events["answer_in_transit"]["agent"]["sound"]), "an order refused, in transit: the news stops and the agent answers (1096)")
+	var over := await _until(func() -> bool: return not advisor.Busy(), 6.0)
+	await process_frame
+	_check(over and not agent.Talking() and not messenger.Talking(), "... and the interrupted news does not come back to finish")
+	advisor.Answer("no_such_answer")
+	advisor.Answer("")
+	_check(not advisor.Busy(), "an answer the pack does not have: nothing")
+	AdvisorScript.AnswerOn(self, "garrisons_on")
+	await process_frame
+	_check(_playing(events["answer_garrisons_on"]["agent"]["sound"]), "Manage Garrisons on: the agent says so (1137)")
+
+	# The engine's refusals carry their reason.
+	var short: Result = Result.fail("Need 3 maintenance capacity, have 1.").coded("no_maintenance")
+	var some: Result = Planet._Placed(1, short)
+	var none: Result = Planet._Placed(0, short)
+	_check(some.ok and int(some.value) == 1 and some.code == "no_maintenance" and some.error == short.error
+		and not none.ok and none.code == "no_maintenance" and Planet._Placed(2, Result.success()).code == "",
+		"a build refused for maintenance says so (code no_maintenance), also when some were queued")
 	advisor.queue_free()
 	await process_frame
 	_finish()
