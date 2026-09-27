@@ -198,8 +198,10 @@ func OpenMultiplayer() -> void:
 
 ## View credits: the original's credits movie when the player imported the
 ## movies (TeeJ's description of the original, BACKLOG #43), else the pack's
-## credits. The picture's own attribution is then on the pack picker's card
-## ("Credits and licences", docs/cutscenes-plan.md decision 6).
+## credits. ⚠ With the movie, the card picture's CC BY attribution shows
+## nowhere in the game: the picker card's "Credits and licences" link is
+## gone until a better credits page is made (TeeJ, 2026-09-27;
+## docs/cutscenes-plan.md decision 6).
 func OpenCredits() -> void:
 	if MoviesLib.Has("credits"):
 		MoviesLib.Play(get_tree(), "credits")
