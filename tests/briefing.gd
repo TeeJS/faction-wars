@@ -10,10 +10,12 @@ extends SceneTree
 ##   - each focus step puts its view on the display (the pack's `views`, as
 ##     recordings of the original show): the display off, a mode, a caption
 ##     with the systems it names lit; at the end the display is as it was;
-##   - Esc skips: the line stops and the skip's plays; then, in an Easy game
-##     (Agent Advice on, manual p022), the Message Index opens on Agent Advice,
-##     and the clock runs; in Medium no Message Index opens (the original's);
-##   - a left click skips too, and a second skip ends it at once;
+##   - nothing else can be done while it plays: no key (Esc too), no click;
+##   - its Stop Briefing button, left of C-3PO (TeeJ, 2026-09-27), is the one
+##     way out: the line stops and the skip's plays, and a second press ends
+##     it at once; then, in an Easy game (Agent Advice on, manual p022), the
+##     Message Index opens on Agent Advice, and the clock runs; in Medium no
+##     Message Index opens (the original's);
 ##   - without the recordings there is no briefing, and a loaded game has none.
 ## Writes and removes its own files under user://.
 ##
@@ -111,8 +113,8 @@ func _init() -> void:
 	if b == null or agent == null:
 		_finish(main)
 		return
-	_check(b.anchor_left == 0.0 and b.anchor_top == 0.0 and b.anchor_right == 1.0 and b.anchor_bottom == 1.0 and b.mouse_filter == Control.MOUSE_FILTER_STOP,
-		"... over the whole screen: a click anywhere is the briefing's")
+	_check(b.get_global_rect().size == root.get_visible_rect().size and b.get_global_rect().position == Vector2.ZERO and b.mouse_filter == Control.MOUSE_FILTER_STOP,
+		"... over the whole screen - its size, not only its anchors (%s): a click anywhere is kept by the briefing" % str(b.get_global_rect()))
 	_check(agent.Talking() and _playing(al_lines[0]["sound"]) and b.At() == 1, "C-3PO speaks the first line in his own place (its animation and its recording)")
 	var map: GalaxyMap = ui.ActiveGalaxyMap
 	var before: Gid.GidMode = Gid.ActiveMode()
@@ -131,15 +133,26 @@ func _init() -> void:
 
 	await _Modal(main, ui, b, day)
 
-	# Esc: the line stops, the skip's plays.
+	# Esc and a left click do nothing (TeeJ, 2026-09-27).
 	var esc := InputEventKey.new()
 	esc.keycode = KEY_ESCAPE
 	esc.pressed = true
 	root.push_input(esc)
 	await process_frame
-	await process_frame
+	await _click(Vector2(20, 20))
+	_check(not b.Skipped() and _playing(al_lines[2]["sound"]) and ui.Briefing() == b, "Esc and a left click do nothing: the line plays on")
+
+	# Stop Briefing: beside C-3PO; the line stops, the skip's plays.
+	var stop: Button = b.get_node_or_null("StopBriefing")
+	var at: Rect2 = stop.get_global_rect() if stop != null else Rect2()
+	var droid: Rect2 = (agent as Control).get_global_rect()
+	var screen: Rect2 = Rect2(Vector2.ZERO, root.get_visible_rect().size)
+	_check(stop != null and stop.text == "Stop Briefing" and stop.visible and screen.encloses(at)
+		and at.end.x <= droid.position.x + 1.0 and at.end.y > droid.position.y + droid.size.y * 0.5,
+		"Stop Briefing, on screen at the left of C-3PO's feet (%s, C-3PO %s)" % [str(at), str(droid)])
+	await _click(at.get_center())
 	_check(b.Skipped() and not _playing(al_lines[2]["sound"]) and _playing(al["skip"][1]["sound"]),
-		"Esc: the line stops and the skip's plays (\"I do hope you know what you're doing\")")
+		"Stop Briefing: the line stops and the skip's plays (\"I do hope you know what you're doing\")")
 	var ended := await _until(func() -> bool: return ui.Briefing() == null, 8.0)
 	await process_frame
 	_check(ended and ui.Briefing() == null, "then the briefing is over")
@@ -150,24 +163,19 @@ func _init() -> void:
 	_Views(map)
 	await _stop(main)
 
-	# A left click skips too; a second skip ends it at once.
+	# Stop Briefing twice: the second press, during the skip's line, ends it at once.
 	main = await _start(side, Enums.Difficulty.Easy)
 	ui = main.get_node("UIManager")
 	b = ui.Briefing()
 	_check(b != null, "another new game: the briefing again")
 	if b != null:
-		var click := InputEventMouseButton.new()
-		click.button_index = MOUSE_BUTTON_LEFT
-		click.pressed = true
-		click.position = Vector2(20, 20)
-		b._gui_input(click)
-		await process_frame
-		_check(b.Skipped() and _playing(al["skip"][1]["sound"]), "a left click skips it")
-		b.Skip()
-		await process_frame
+		var button: Button = b.get_node("StopBriefing")
+		await _click(button.get_global_rect().get_center())
+		_check(b.Skipped() and _playing(al["skip"][1]["sound"]), "Stop Briefing: the skip's line")
+		await _click(button.get_global_rect().get_center())
 		await process_frame
 		_check(ui.Briefing() == null and not main._briefing and ui._openWindows.get("Communications") != null,
-			"a second skip during the skip's line ends it at once, and the Message Index opens")
+			"pressed again during the skip's line: it ends at once, and the Message Index opens")
 	await _stop(main)
 
 	# Medium: Agent Advice starts off, and after the briefing no Message Index.
@@ -202,7 +210,7 @@ func _Modal(main: Node, ui: UIManager, b: Control, day: int) -> void:
 	_check(layer != null and layer.layer > ui.layer and layer.layer > UIManager.FrameLayer,
 		"the briefing lies above the windows and the frame (layer %d)" % (layer.layer if layer != null else -1))
 	var speed: int = main._speed
-	for spec in [[KEY_P, true], [KEY_EQUAL, true], [KEY_O, true], [KEY_H, true], [KEY_F1, false], [KEY_F2, false], [KEY_F5, false], [KEY_F6, false]]:
+	for spec in [[KEY_ESCAPE, false], [KEY_P, true], [KEY_EQUAL, true], [KEY_O, true], [KEY_H, true], [KEY_F1, false], [KEY_F2, false], [KEY_F5, false], [KEY_F6, false]]:
 		for pressed in [true, false]:
 			var k := InputEventKey.new()
 			k.keycode = spec[0]
@@ -218,7 +226,7 @@ func _Modal(main: Node, ui: UIManager, b: Control, day: int) -> void:
 			rc.pressed = pressed
 			rc.position = agent.get_global_rect().get_center()
 			rc.global_position = rc.position
-			root.push_input(rc)
+			root.push_input(rc, true)
 		await process_frame
 	await process_frame
 	var popup: PopupMenu = ui.get_node_or_null("AgentPopup")
@@ -369,6 +377,19 @@ func _sounds() -> Array:
 func _playing(ref: Variant) -> bool:
 	var file := SoundLib.FileOf(str(ref))
 	return not file.is_empty() and _sounds().any(func(p: AudioStreamPlayer) -> bool: return str(p.get_meta("path", "")) == file)
+
+
+## A left click at `at`, pressed and released, as the player makes it.
+func _click(at: Vector2) -> void:
+	for pressed in [true, false]:
+		var e := InputEventMouseButton.new()
+		e.button_index = MOUSE_BUTTON_LEFT
+		e.pressed = pressed
+		e.position = at
+		e.global_position = at
+		root.push_input(e, true)
+	await process_frame
+	await process_frame
 
 
 func _until(cond: Callable, seconds: float) -> bool:

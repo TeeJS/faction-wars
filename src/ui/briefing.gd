@@ -11,14 +11,19 @@ extends Control
 ## its animation and its recording together - the pack's `briefing` for this
 ## side, the original's own script. A skip ends the line playing and plays the
 ## skip's instead (the original's script 40 / 73, "I do hope you know what
-## you're doing"). A `focus` step - the agent pointing out what his next line
+## you're doing"); a skip during the skip's line ends it at once. A `focus` step - the agent pointing out what his next line
 ## is about - puts its view on the display (the pack's `views`: a caption and
 ## the systems lit, or the display off, as recordings of the original show);
 ## at the end the display is as it was.
 ##
-## Over the whole screen while it plays, on a layer above every other, so a
-## left click anywhere is a skip and nothing else can be done: no window,
-## console, pause or shortcut until it ends (it takes every key too).
+## Over the whole screen while it plays, on a layer above every other, so
+## nothing else can be done: no window, console, pause or shortcut until it
+## ends (it takes every key too). ★ BY TEEJ'S RULING (2026-09-27), not the
+## manual's Esc or left click: in single player the one way out is its STOP
+## BRIEFING button, beside the agent (command_frame.gd Layout's
+## stop_briefing) - "the only function that works during the briefing - even
+## ESC will do nothing now". In head-to-head the players choose before the
+## game whether it plays, and it has no button.
 ## Whoever starts it holds the clock and the droids' news until `Finished`.
 ## Nothing plays without the art set's recordings (exporter 2.6.0).
 ##
@@ -33,6 +38,10 @@ var Agent: Node = null
 var Map: Node = null
 ## Called once at the end, finished or skipped.
 var Finished := Callable()
+## The Command Center's frame (command_frame.gd), for the button's place.
+var Frame: Node = null
+## Single player: the Stop Briefing button. Head-to-head: none.
+var Stoppable: bool = true
 
 var _steps: Array = []
 var _at := -1
@@ -65,12 +74,41 @@ static func CanPlay() -> bool:
 
 func _ready() -> void:
 	name = "Briefing"
-	set_anchors_preset(Control.PRESET_FULL_RECT)
+	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	var steps: Variant = ForSide().get("steps", [])
 	_steps = steps if steps is Array else []
 	_mode_before = Gid.ActiveMode() if Map != null else null
+	if Stoppable:
+		_add_stop()
 	_next()
+
+
+## The Stop Briefing button: green on black like the original's own buttons,
+## at the frame's place for it.
+func _add_stop() -> void:
+	if Frame == null or not is_instance_valid(Frame) or not Frame.has_method("StopBriefingRect"):
+		return
+	var r: Rect2 = Frame.StopBriefingRect()
+	var scale: float = r.size.y / 19.0
+	var b := Button.new()
+	b.name = "StopBriefing"
+	b.text = "Stop Briefing"
+	b.focus_mode = Control.FOCUS_NONE
+	b.position = r.position
+	b.size = r.size
+	b.tooltip_text = "Stop the briefing."
+	for state in ["normal", "hover", "pressed"]:
+		var box := StyleBoxFlat.new()
+		box.bg_color = Color(0.02, 0.08, 0.02) if state == "normal" else Color(0.05, 0.18, 0.05)
+		box.border_color = Color(0, 0.78, 0)
+		box.set_border_width_all(maxi(1, roundi(scale)))
+		b.add_theme_stylebox_override(state, box)
+	b.add_theme_font_size_override("font_size", roundi(11.0 * scale))
+	for c in ["font_color", "font_hover_color", "font_pressed_color"]:
+		b.add_theme_color_override(c, Color(0, 1, 0))
+	b.pressed.connect(Skip)
+	add_child(b)
 
 
 ## The next step, or the end.
@@ -175,7 +213,7 @@ func _frame_seconds() -> float:
 	return float(advisor.get("frame_seconds", 0.067)) if advisor is Dictionary else 0.067
 
 
-## Esc or a left click: the line stops and the skip's plays; during the skip's,
+## Stop Briefing: the line stops and the skip's plays; during the skip's,
 ## the briefing ends at once.
 func Skip() -> void:
 	if _over:
@@ -210,21 +248,12 @@ func _finish() -> void:
 		Finished.call()
 
 
-func _gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		accept_event()
-		Skip()
-
-
-## Every key is the briefing's while it plays: Esc skips, and nothing else
-## reaches the game - no pause, no speed, no window's shortcut (TeeJ,
+## Every key is the briefing's while it plays, and does nothing - Esc too - so
+## nothing reaches the game: no pause, no speed, no window's shortcut (TeeJ,
 ## 2026-09-27). The mouse is kept by the briefing lying over everything.
 func _input(event: InputEvent) -> void:
-	if not event is InputEventKey:
-		return
-	get_viewport().set_input_as_handled()
-	if event.pressed and not event.echo and event.keycode == KEY_ESCAPE:
-		Skip()
+	if event is InputEventKey:
+		get_viewport().set_input_as_handled()
 
 
 ## For tests: the step playing (-1 before the first), and whether it is the skip's.

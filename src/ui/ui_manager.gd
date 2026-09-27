@@ -1596,8 +1596,8 @@ func OpenGidControlMenu() -> void:
 ## Nothing else can be done while it plays (TeeJ, 2026-09-27: "shouldn't be
 ## able to pause or do anything else during the briefing"): it lies over the
 ## whole screen on a layer above every other (BriefingLayer), so no window,
-## console or control below takes a click, and it takes every key but its own
-## Esc (briefing.gd).
+## console or control below takes a click, and it takes every key; in single
+## player its Stop Briefing button is the one way out (briefing.gd).
 func StartBriefing(hold: Callable = Callable()) -> Control:
 	var advisor: Node = get_node_or_null("Advisor")
 	if advisor == null or advisor.Agent == null or not BriefingScript.CanPlay():
@@ -1605,6 +1605,8 @@ func StartBriefing(hold: Callable = Callable()) -> Control:
 	var b: Control = BriefingScript.new()
 	b.Agent = advisor.Agent
 	b.Map = ActiveGalaxyMap
+	b.Frame = CommandFrameRef
+	b.Stoppable = MpSetup.session == null
 	advisor.Held = true
 	if hold.is_valid():
 		hold.call(true)
