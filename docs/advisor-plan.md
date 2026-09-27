@@ -177,6 +177,38 @@ and raw materials (1106-1109), "Special Forces cannot be assigned as decoys alon
 the orders the original lets you try and then answers** (a unit in transit or under construction, a build
 without the maintenance - the Build button is greyed): making them live is TeeJ's call.
 
+## Phase 5: the agent's advice messages (2026-09-27)
+
+TeeJ: "there are no advice messages loaded when the briefing ends", with a screenshot of the original's
+Advice tab (Alliance): Victory Conditions; Mon Mothma, Luke Skywalker and other Rebel Leaders; The Galactic
+Information Display; Positioning Fleets; The Battle Alert; Manufacturing New Items; Adjusting Time;
+Furthering Our Cause; Advice Available.
+
+| | Source | Confidence |
+|---|---|---|
+| The texts: TEXTSTRA.DLL RCDATA, the Alliance's from 0x6000, the Empire's from 0x6800. The base holds the count (31 a side); message n (from 1) is three records from base + 3n: a u16 group and a u16 key, the title, the text | read off the DLL; the original's advice message reads title 0x6001 + 3n and text 0x6002 + 3n by side (FUN_0048b2e0, open-rebellion's Ghidra notes) | **Confirmed** (the data, the decompilation) |
+| A game opens with **group 7**: the nine above, in the list's order | the nine group-7 messages are exactly TeeJ's screenshot, in its order; the advice's start posts every group-7 entry (FUN_00439f20) | **Confirmed** (screenshot, decompilation) |
+| The picture: STRATEGY.DLL 1071 (C-3PO) / 1072 (IMP-22), 400x200 | the advice message takes 0x42f / 0x430 by side (FUN_0048b2e0) | **Confirmed** (decompilation; the pictures are the agents) |
+| The advice message also names STRATEGY.DLL WAVE 1121 / 1122 (0x461 / 0x462, ~3.5 s each) | FUN_0048b2e0 | When it plays is **unknown** - not played |
+| The rest (groups 1, 2, 3, 5, 6; keys 100-310, a tutorial sequence): each of five first-time events posts the next pending tip of its group (bit 1 -> group 6, 2 -> 2, 4 -> 3, 8 -> 5, 16 -> 4; FUN_0043a0b0); a periodic pass posts the next pending tip whose group's event has happened, group 1 always (FUN_00439fb0) | open-rebellion's Ghidra notes | The model **single-source**; **which events** set the five bits and **how often** the pass runs are **unknown** - their callers are not in the published notes; REBEXE would settle it |
+| Showing the Advice tab drops the game to Very Slow; any other tab or closing the Message Index restores the speed | open-rebellion's message-index evidence (FUN_004697b0 -> FUN_00487ff0) | **Single-source** - not built |
+
+**Built** (exporter 2.6.2 writes `advice.json` and `windows/advice.<side>.png`): the pack's `advice` (rule 29)
+names the list, `opening` 7 and the picture per side. **Agent Advice** is the agent's menu's check item
+and Alt+A (manual p078); "Agent Advice only appears in an Easy game. If you wish for advice in Medium or
+Hard games, you must enable Agent Advice on the Agent menu" (manual p022, read in the OCR at the old repo's
+research/SWR_Manual.txt) - so it starts on in Easy only. While it is on the side has its opening advice,
+posted to the Advice category (`src/ui/advice.gd`) in the list's order - the Message Index shows same-day
+messages in the order they came, so top to bottom as the original: at a new game in Easy, or when switched
+on, once a game. With no briefing to play (an art set without its recordings - the GOG copy's briefing DLLs
+are `.OLD`, and the exporter reads either name) the Message Index opens on Agent Advice at once. All
+Messages' unread count leaves advice out, as its list does (p079). The Message Summary keeps a text to the
+box measured on TeeJ's screenshot (four lines) and the mouse wheel moves through a longer one -
+how the original shows the rest is **unknown** (its window has scroll commands 0x96 / 0x9a). Not in
+head-to-head, as the briefing. Messages are not saved (game_message.gd), so a loaded game has none.
+**Not built**: the later tips, the Very Slow drop, the 1121 / 1122 sound.
+tests/advice.gd.
+
 ## What the code does today
 
 | | |
@@ -209,6 +241,7 @@ without the maintenance - the Build button is greyed): making them live is TeeJ'
 | 2 | **Game**: the droids report events; Translate Counterpart; the effects volume | a test per event; TeeJ hears them - **built**: `src/ui/advisor.gd`, `sound.gd`, `fwa.gd`; the pack's `advisor`, `voices`, `sounds` (rules 25-27); news tagged where the simulation writes it (GameMessage.Advisor / Voice); the cockpit's sounds (open-rebellion's map of COMMON.DLL); tests/advisor.gd. TeeJ's listen owed |
 | 3 | **Game**: the instant answers (invalid order, in transit, under construction, the droid toggles, maintenance) | a test each - **built** from the agent's own action scripts (phase 3 section): `Advisor.Answer`, the pack's `answer_*`, `Result.code` where the engine refuses; tests/advisor.gd. Not built: the answers to orders our interface greys (under construction, a build without the maintenance) |
 | 4 | **Game**: the opening briefing (decision 2) | it plays at a new game, **Esc skips it**, then Agent Advice opens - **built** from the original's own script (above): `src/ui/briefing.gd`, the pack's `briefing` (rule 28), tests/briefing.gd; its views from recordings of the original |
+| 5 | **Game**: the agent's advice messages (TeeJ's report) | a new game in Easy opens with the original's nine; Agent Advice switches them on in Medium / Hard - **built** (phase 5 section): exporter 2.6.2 `advice.json`, the pack's `advice` (rule 29), `src/ui/advice.gd`, the agent's menu and Alt+A; tests/advice.gd. The later tips **not built** (their triggers unknown) |
 
 ## Decisions for TeeJ
 

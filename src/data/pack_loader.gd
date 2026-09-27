@@ -249,9 +249,10 @@ static func _validate(pack: LoadedPack, pack_dir: String, errors: Array[String])
 	_validate_voices(pack, pack_dir, errors)
 	_validate_sounds(pack, pack_dir, errors)
 	_validate_briefing(pack, pack_dir, errors)
+	_validate_advice(pack, pack_dir, errors)
 
 
-## One reference (rules 24-28): a file the pack ships, or "<art set>:<path>"
+## One reference (rules 24-29): a file the pack ships, or "<art set>:<path>"
 ## in a declared art set, ending in `ext`. `where` names it in the error.
 static func _check_ref(v: Variant, ext: String, kind: String, where: String, pack: LoadedPack, pack_dir: String, errors: Array[String]) -> void:
 	if not v is String or str(v).strip_edges().is_empty():
@@ -480,6 +481,45 @@ static func _validate_briefing_views(pack: LoadedPack, views: Variant, where: St
 			errors.append("%s.show: '%s' is not a view. Known: %s, or %s<id>." % [at, show, ", ".join(KNOWN_BRIEFING_VIEWS), "/".join(KNOWN_BRIEFING_VIEW_KINDS)])
 		elif not (ids[kind] as Array).has(show.substr(kind.length())):
 			errors.append("%s.show: '%s' names nothing this pack has." % [at, show])
+
+
+## Rule 29: `advice` - the agent's advice messages, per side: `messages` the
+## file holding them (.json, needed), `list` its list for this side (needed),
+## `opening` the group posted when a game starts, `picture` what a message
+## shows (.png).
+static func _validate_advice(pack: LoadedPack, pack_dir: String, errors: Array[String]) -> void:
+	var m := pack.Manifest
+	if not m.AdviceGiven:
+		return
+	if not m.AdviceRaw is Dictionary:
+		errors.append("pack.json advice: must be an object of side -> the advice.")
+		return
+	var faction_ids: Array[String] = []
+	for f in pack.Factions:
+		faction_ids.append(f.Id)
+	for key in m.AdviceRaw:
+		var k := str(key)
+		var where := "pack.json advice.%s" % k
+		if not faction_ids.has(k):
+			errors.append("pack.json advice: '%s' is not a faction in factions.json." % k)
+			continue
+		var side: Variant = m.AdviceRaw[key]
+		if not side is Dictionary:
+			errors.append("%s: must be an object (messages, list, opening, picture)." % where)
+			continue
+		for part in side:
+			if not ["messages", "list", "opening", "picture"].has(str(part)):
+				errors.append("%s: '%s' is none of messages, list, opening, picture." % [where, part])
+		if not side.has("messages"):
+			errors.append("%s: names no messages file." % where)
+		else:
+			_check_ref(side["messages"], ".json", "a messages file", where + ".messages", pack, pack_dir, errors)
+		if not side.get("list") is String or str(side.get("list")).strip_edges().is_empty():
+			errors.append("%s.list: must name the file's list for this side." % where)
+		if side.has("opening") and (not (side["opening"] is int or side["opening"] is float) or float(side["opening"]) < 0):
+			errors.append("%s.opening: must be a group number." % where)
+		if side.has("picture"):
+			_check_ref(side["picture"], ".png", "a picture", where + ".picture", pack, pack_dir, errors)
 
 
 ## Rule 24: `music` maps known moments to a track or a pool of tracks - each a

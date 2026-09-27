@@ -4250,7 +4250,7 @@ The agent menu's own descriptions:
 | **Manage Garrisons** | "will try, to the best of their abilities, to make sure **garrison requirements are met**" |
 | **Manage Production** | "will try to the best of their abilities to **maximize the output of mines and refineries**" |
 | **Translate Counterpart** | on by default |
-| **Agent Advice** | on by default; periodic tips **through the message system** |
+| **Agent Advice** | on by default - **in an Easy game only** (p022); periodic tips **through the message system** |
 
 ### Message categories *(PDF p077 / manual p079)*
 
@@ -4361,7 +4361,11 @@ Which is why "idle" and "has nothing queued" are the same thing (§20's GID mode
   bar**, **Game Options**, the **GID**, the **GID state control**, the **agent
   droid**, and the **message droid**.
 - After the opening briefing, the Display Message Index **opens on the Agent
-  Advice tab**.
+  Advice tab**; "the messages under this tab make up your initial agent
+  advice". **"Agent Advice only appears in an Easy game.** If you wish for
+  advice in Medium or Hard games, you must enable Agent Advice on the Agent
+  menu." (p022; the initial advice is TEXTSTRA's group-7 messages -
+  docs/advisor-plan.md phase 5)
 - The **Window Reference Bar has twelve slots** for minimized System windows; the
   name of the system sits next to an icon showing **what kind of window** it is.
 

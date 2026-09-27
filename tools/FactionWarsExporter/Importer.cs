@@ -49,6 +49,8 @@ namespace FactionWarsExporter;
 ///   original/missions/&lt;id&gt;.&lt;faction&gt;.png (alliance / empire), and
 ///     .small.png: the 130x65 Create Mission picture (GOKRES.DLL)
 ///   original/descriptions.json     { "characters": { id: text }, ... }
+///   original/advice.json           the agent's advice messages per side (ExportAdvice)
+///   original/windows/advice.&lt;faction&gt;.png   an advice message's picture
 ///   original/portraits/&lt;kind&gt;/&lt;id&gt;.png   original/miniatures/&lt;kind&gt;/&lt;id&gt;.png
 ///   original/icons/&lt;glyph&gt;.&lt;faction&gt;.png (+ .hover.png)   sector-window corners
 ///   original/icons/uprising.png (+ .hover.png)             the flame, two frames
@@ -239,6 +241,11 @@ public sealed class Importer
         // plate behind a completed one, hyperspace streaks behind one en route,
         // and the side's grid over one being built.
         ("card_plate", 11500), ("card_enroute", 11505),
+        // An agent advice message's 400x200 picture per side: C-3PO beside the
+        // Alliance crest, IMP-22 beside the Imperial one. The original's
+        // advice message (FUN_0048b2e0, open-rebellion's Ghidra notes) takes
+        // 0x42f / 0x430 by side.
+        ("advice.alliance", 1071), ("advice.empire", 1072),
         // A character's status icons (manual p096, "Character Status
         // Icons": Ready, In transit, Captured, Injured): the ship's windows
         // behind one in transit between systems, the green trace over one
@@ -591,6 +598,8 @@ public sealed class Importer
         11554, 11558, 11553,
         // Build Selection's plate is opaque; so are the Scrap pictures.
         10800, 1032, 1033,
+        // The advice pictures are photographs.
+        1071, 1072,
         // The cockpit, the galaxy map and the Game Options screen are whole screens.
         CockpitBitmap, GalaxyBitmap, GalaxyOffBitmap, OptionsBitmap };
 
@@ -1133,6 +1142,8 @@ public sealed class Importer
 
         _sink.WriteText(P("descriptions.json"),
             descriptions.ToJsonString(new JsonSerializerOptions { WriteIndented = true, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping }) + "\n");
+        _sink.WriteText(P("advice.json"),
+            ExportAdvice(missing, Say).ToJsonString(new JsonSerializerOptions { WriteIndented = true, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping }) + "\n");
         _sink.WriteText(P("README.txt"),
             "Artwork and text exported from YOUR installed copy of Star Wars: Rebellion by the\n" +
             "Faction Wars Exporter. It belongs to LucasArts / Disney and is for your own use\n" +
@@ -1431,6 +1442,61 @@ public sealed class Importer
             g.DrawImage(bmp, 0, 0, bmp.Width, bmp.Height);
         _sink.Write(outPath, Png(rgb));
         return true;
+    }
+
+    // TEXTSTRA.DLL: the agent's advice messages per side (manual p079: "agent
+    // advice messages"), read as the original's advice message reads them
+    // (FUN_0048b2e0, open-rebellion's Ghidra notes): RCDATA base holds the
+    // count (u16); message n, from 1, is the three records from base + 3n -
+    // its u16 group and u16 key, its title, its text (each ending in 0x01).
+    // The group says when it is posted: 7 at the start of a game (the nine on
+    // TeeJ's screenshot of the original's Advice tab, 2026-09-27).
+    public const int AdviceAlliance = 0x6000, AdviceEmpire = 0x6800;
+
+    /// <summary>advice.json: { "alliance": [ { n, group, key, title, text } ], "empire": [...] }.</summary>
+    private JsonObject ExportAdvice(List<string> missing, Action<string> say)
+    {
+        var sides = new JsonObject();
+        var path = Path.Combine(_gameDir, "TEXTSTRA.DLL");
+        if (!File.Exists(path))
+        {
+            missing.Add("advice: TEXTSTRA.DLL not found");
+            return sides;
+        }
+        var dll = new PeResources(path);
+        foreach (var (side, first) in new[] { ("alliance", AdviceAlliance), ("empire", AdviceEmpire) })
+        {
+            if (!dll.RcData.ContainsKey(first))
+            {
+                missing.Add($"advice/{side}: no RCDATA {first} in TEXTSTRA.DLL");
+                continue;
+            }
+            var head = dll.RcDataBytes(first);
+            int count = head.Length >= 2 ? BitConverter.ToUInt16(head, 0) : 0;
+            var list = new JsonArray();
+            for (int n = 1; n <= count; n++)
+            {
+                int at = first + 3 * n;
+                if (!dll.RcData.ContainsKey(at) || !dll.RcData.ContainsKey(at + 1) || !dll.RcData.ContainsKey(at + 2)
+                    || dll.RcDataBytes(at).Length < 4)
+                {
+                    missing.Add($"advice/{side}/{n}: no RCDATA {at}-{at + 2} in TEXTSTRA.DLL");
+                    continue;
+                }
+                var h = dll.RcDataBytes(at);
+                list.Add(new JsonObject
+                {
+                    ["n"] = n,
+                    ["group"] = (int)BitConverter.ToUInt16(h, 0),
+                    ["key"] = (int)BitConverter.ToUInt16(h, 2),
+                    ["title"] = dll.RcDataText(at + 1).TrimEnd('\u0001', '\0'),
+                    ["text"] = dll.RcDataText(at + 2).TrimEnd('\u0001', '\0'),
+                });
+            }
+            sides[side] = list;
+            say($"advice: {list.Count} {side} messages (TEXTSTRA.DLL).");
+        }
+        return sides;
     }
 
     /// <summary>A galaxy picture (903 the map, 902 the display off), mirrored out to GalaxyWidth x GalaxyHeight.</summary>
