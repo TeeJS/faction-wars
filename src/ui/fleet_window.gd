@@ -232,6 +232,16 @@ func DisplayFleetContents(fleet: Fleet) -> void:
 	fighters.append_array(Lq.where(fleet.Ships, func(u: Unit) -> bool: return u.Type == Enums.UnitType.Fighter))
 	troops.append_array(Lq.where(fleet.Ships, func(u: Unit) -> bool: return u.Type == Enums.UnitType.Troop or u.Type == Enums.UnitType.SpecForce))
 
+	# Picked means picked in this fleet now: a regiment landed or moved off
+	# stays out of the next order (it made the rest's landing "Already at
+	# Coruscant" - TeeJ, 2026-09-27).
+	for u in SelectedTroops.duplicate():
+		if not troops.has(u):
+			SelectedTroops.erase(u)
+	for u in SelectedFighters.duplicate():
+		if not fighters.has(u):
+			SelectedFighters.erase(u)
+
 	if capitalShipsTab != null:
 		PopulateUnitTab(capitalShipsTab, capShips, "No capital ships in this fleet.", SelectedCapitalShips)
 	if fightersTab != null:
