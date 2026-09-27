@@ -59,6 +59,15 @@ static func MoveFleets(fleets: Array, destination: Planet) -> Result:
 
 
 static func MoveUnits(units: Array, destination: Planet) -> Result:
+	# A unit already standing on the destination needs nothing: a regiment
+	# landed a moment ago can still be among those picked, and it must not turn
+	# the rest's landing into "Already at" (TeeJ, 2026-09-27, the Coruscant
+	# fleet's troops). Only when nothing is left to move is that the answer.
+	if units != null and destination != null:
+		var needed: Array = Lq.where(units, func(u): return not (u.Attached == destination and CarrierOf(u) == null))
+		if needed.is_empty() and not units.is_empty():
+			return Result.fail("Already at %s." % destination.Name, 0)
+		units = needed
 	var free: Unit = Lq.first_or_null(units, func(u): return u.Status != Enums.Status.Enroute) if units != null else null
 	var from: Location = free.Attached if free != null else null
 	if from == null:
