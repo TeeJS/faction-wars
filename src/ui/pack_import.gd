@@ -59,10 +59,12 @@ const REASONS_SHOWN := 8
 ## Control Panel's monitors held down and the menus' check mark (released
 ## 2026-09-25). 2.4.6: the GID control's menu icons (released 2026-09-25).
 ## 2.4.7: the head-to-head screens, their buttons and parts (released
-## 2026-09-26).
+## 2026-09-26). 2.5.0: the music (music/300-315.ogg), the Assault Summary's
+## and bombardment results' pictures and the defenses tab; the movies file
+## is its own, optional (released 2026-09-27).
 ## Raise it when the game needs pictures an older exporter did not write;
 ## the picker then asks for a new export.
-const MIN_EXPORTER := {"swr-original": "2.4.7"}
+const MIN_EXPORTER := {"swr-original": "2.5.0"}
 
 
 ## Called with each import's result (the pack picker refreshes its cards).
