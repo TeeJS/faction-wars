@@ -228,7 +228,20 @@ The window exists (`src/ui/message_window.gd`, `MessageWindow.tscn`). Changes:
 
 ## 9. Compose Chat Message window (Fig 5.11, p163)
 
-A `DraggableWindow`, `ComposeChatMessageWindow.tscn`, sized like the Message
+**With the original's art (TeeJ, 2026-09-27: "chat window needs to match
+original"): the Message window's own third view** (`MessageWindow.ComposeChat`,
+opened by `UIManager.OpenComposeChatMessage` over Chat Messages) - Fig 5.11 is
+that window: its frame and side column, laid out as a message read. The title
+on the band; the picture a figure at a console (STRATEGY.DLL 1040 Imperial /
+1041 Alliance, exporter 2.6.3: the side's own - which the manual's grey figure
+shows is not known); the line to type in at (17, 235) where a message's text
+goes; **Send message** (the check) and **Cancel** (the cross) at (355, 244) /
+(355, 281), where a mission report's tick and cross sit; the column's **Close
+button** and **Return to Display Message Index** (its second button, the art it
+wears while a message is read), the other three idle. Send and Cancel go back
+to the index; so does Esc. tests/original_windows.gd.
+
+Without the art: a `DraggableWindow`, `ComposeChatMessageWindow.tscn`, sized like the Message
 window it comes from:
 
 | # | Figure element | Design |

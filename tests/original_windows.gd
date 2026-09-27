@@ -527,6 +527,39 @@ func _init() -> void:
 		mw.OpenToCategory("All")
 		for _i in 2:
 			await process_frame
+		# Compose Chat Message (manual p163, Fig 5.11): the same window's view.
+		ui.OpenComposeChatMessage()
+		for _i in 2:
+			await process_frame
+		var cv: Control = mw._oCompose
+		var entry: LineEdit = cv.find_child("Entry", true, false) if cv != null else null
+		var send: TextureButton = cv.find_child("decision_ok", true, false) if cv != null else null
+		var cancel: TextureButton = cv.find_child("decision_cancel", true, false) if cv != null else null
+		_check(cv != null and cv.visible and not mw._oIndex.visible and not mw._oSummary.visible
+			and (cv.find_child("Title", true, false) as Label).text == "Compose Chat Message"
+			and ui._openWindows.get("Compose Chat Message") == null,
+			"Compose Chat Message is the Message window's own view, not a window of its own")
+		_check(entry != null and entry.position == Vector2(17, 235) * K and entry.placeholder_text == "Type your message here."
+			and send != null and send.position == Vector2(355, 244) * K and send.tooltip_text == "Send message"
+			and cancel != null and cancel.position == Vector2(355, 281) * K and cancel.tooltip_text == "Cancel",
+			"the line to type in where a message's text goes; Send message (check) and Cancel (cross) at (355, 244) / (355, 281)")
+		var ret: TextureButton = mw.find_child("msgindex_summary_%s" % us.Id, true, false)
+		_check(ret.tooltip_text == "Return to Display Message Index" and not ret.disabled and mw._oPostBtn.disabled
+			and mw._oOpenBtn.disabled and mw._oComposeBtn.disabled, "the column: Return to Display Message Index; the others idle")
+		if Art.WindowPicture("chat." + us.Id) != null:
+			_check(mw._oComposePicture.texture != null, "the figure at the console (exporter 2.6.3)")
+		cancel.pressed.emit()
+		await process_frame
+		_check(not cv.visible and mw._oIndex.visible and mw._oComposeBtn.disabled == (GameSettings.HumanFactions.size() < 2), "Cancel: back to the index")
+		ui.OpenComposeChatMessage()
+		await process_frame
+		entry.text = "I have you now."
+		send.pressed.emit()
+		await process_frame
+		_check(not cv.visible and mw._oIndex.visible and entry.text.is_empty(), "Send message: sent, back to the index")
+		ui.OpenComposeChatMessage()
+		await process_frame
+		_check(mw.StepBack() and mw._oIndex.visible and not cv.visible, "Esc: back to the index")
 		(mw.find_child("ency_close_%s" % us.Id, true, false) as TextureButton).pressed.emit()
 		for _i in 3:
 			await process_frame

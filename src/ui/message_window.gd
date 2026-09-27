@@ -597,6 +597,9 @@ var _oOk: TextureButton
 var _oCancel: TextureButton
 var _oUp: TextureButton
 var _oDown: TextureButton
+var _oCompose: Control
+var _oComposePicture: TextureRect
+var _oComposeEntry: LineEdit
 
 ## Post Messages Silently, per tab (manual p080). The original silences the
 ## droid's whirs and beeps; this build has no message sounds yet, so the
@@ -604,7 +607,7 @@ var _oDown: TextureButton
 static var _silent: Dictionary = {}
 
 
-func _can_build_original() -> bool:
+static func _can_build_original() -> bool:
 	return OUI.Has(["frame.empire", "frame.alliance", "msgindex_plate", "msgindex_selection.empire", "ency_topic_plate"]) \
 		and Art.ButtonIcon("msgindex_select_all") != null and Art.ButtonIcon("msgindex_summary.empire") != null \
 		and Art.TabIcon("msg_all", "") != null
@@ -749,6 +752,53 @@ func _build_original() -> void:
 	_oDown = OUI.PictureButton(_oSummary, "msgsummary_down", 390, 15, "Scroll through messages")
 	_oDown.pressed.connect(func() -> void: _o_step(1))
 
+	# ---- Compose Chat Message (manual p163, Fig 5.11) ----
+	# The same window's third view, laid out as a message read: the title on
+	# the band, a picture of a figure at a console where the subject's picture
+	# goes, the line to type in where a message's text goes ("I have you
+	# now."), Send message (the check) and Cancel (the cross) where a mission
+	# report's tick and cross sit. The picture is the side's own - STRATEGY.DLL
+	# 1040 (the Imperial crest on the screen) / 1041 (the Alliance's), exporter
+	# 2.6.3; which side's the manual's grey figure shows is not known (INFERRED).
+	_oCompose = Control.new()
+	_oCompose.name = "ComposeView"
+	_oCompose.size = OriginalSize()
+	_oCompose.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	body.add_child(_oCompose)
+	var dark := ColorRect.new()
+	dark.name = "Black"
+	dark.color = Color.BLACK
+	dark.position = Vector2(12, 14) * K
+	dark.size = Vector2(400, 305) * K
+	dark.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_oCompose.add_child(dark)
+	_oCompose.visible = false
+	OUI.Text(_oCompose, "Compose Chat Message", 40, 14, 325, 17, 13, Color.WHITE, HORIZONTAL_ALIGNMENT_LEFT, false, "Title")
+	_oComposePicture = TextureRect.new()
+	_oComposePicture.name = "Picture"
+	_oComposePicture.position = Vector2(12, 33) * K
+	_oComposePicture.size = Vector2(400, 200) * K
+	_oComposePicture.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
+	_oComposePicture.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	_oComposePicture.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_oCompose.add_child(_oComposePicture)
+	_oComposeEntry = LineEdit.new()
+	_oComposeEntry.name = "Entry"
+	_oComposeEntry.position = Vector2(17, 235) * K
+	_oComposeEntry.size = Vector2(331, 18) * K
+	_oComposeEntry.placeholder_text = "Type your message here."
+	_oComposeEntry.add_theme_font_override("font", OUI.Face(false))
+	_oComposeEntry.add_theme_font_size_override("font_size", 13 * K)
+	_oComposeEntry.add_theme_color_override("font_color", Color.WHITE)
+	_oComposeEntry.add_theme_color_override("font_placeholder_color", OGrey)
+	_oComposeEntry.add_theme_color_override("caret_color", Color.WHITE)
+	for st in ["normal", "focus", "read_only"]:
+		_oComposeEntry.add_theme_stylebox_override(st, StyleBoxEmpty.new())
+	_oComposeEntry.text_submitted.connect(func(_t: String) -> void: _o_send())
+	_oCompose.add_child(_oComposeEntry)
+	OUI.PictureButton(_oCompose, "decision_ok", 355, 244, "Send message").pressed.connect(_o_send)
+	OUI.PictureButton(_oCompose, "decision_cancel", 355, 281, "Cancel").pressed.connect(_o_show_index)
+
 	# ---- the frame over both, and its side buttons ----
 	var frame := OUI.PlaceHit(body, OUI.Pic("frame." + _oSide), 0, 0, "Frame")
 	frame.gui_input.connect(OnTitleBarGuiInput)
@@ -757,6 +807,7 @@ func _build_original() -> void:
 	# The views' own pictures on the band sit above the frame.
 	body.move_child(_oIndex, body.get_child_count() - 1)
 	body.move_child(_oSummary, body.get_child_count() - 1)
+	body.move_child(_oCompose, body.get_child_count() - 1)
 	var x: int = OSideX[_oSide]
 	var ys: Array = OSideYs[_oSide]
 	# With a message open, the close box goes back to the index, as Esc does
@@ -769,7 +820,7 @@ func _build_original() -> void:
 			_uiManager.RefreshCommsHighlights.call_deferred())
 	_oSummaryBtn = _o_side_button(body, "msgindex_summary." + _oSide, x, ys[1], "Message Summary")
 	_oSummaryBtn.pressed.connect(func() -> void:
-		if _oSummary.visible:
+		if _oSummary.visible or _oCompose.visible:
 			_o_show_index()
 		elif _selectedMessage != null:
 			_o_show_summary(_selectedMessage))
@@ -790,7 +841,7 @@ func _build_original() -> void:
 ## Esc with a message open goes back to the Message Index, not out to the
 ## galaxy (TeeJ, 2026-09-25).
 func StepBack() -> bool:
-	if _oSummary == null or not _oSummary.visible:
+	if (_oSummary == null or not _oSummary.visible) and (_oCompose == null or not _oCompose.visible):
 		return false
 	_o_show_index()
 	return true
@@ -817,6 +868,7 @@ func _o_show_index() -> void:
 		return
 	_oIndex.visible = true
 	_oSummary.visible = false
+	_o_leave_compose()
 	for i in _oTabs.size():
 		(_oTabs[i] as TextureButton).texture_normal = _oTabs[i].get_meta("current" if OTabCategories[i] == _oCategory else "normal")
 		# The unread count on each tab, as on the column's sockets (TeeJ,
@@ -963,6 +1015,7 @@ func _o_show_summary(m: GameMessage) -> void:
 		return
 	_oIndex.visible = false
 	_oSummary.visible = true
+	_o_leave_compose()
 	var wasUnread: bool = not m.IsRead
 	m.IsRead = true
 	if wasUnread:
@@ -984,6 +1037,48 @@ func _o_show_summary(m: GameMessage) -> void:
 	# Both arrows stay lit, as on the original's (it showed them on the
 	# tab's first message); a step past either end does nothing.
 	_o_update_buttons()
+
+
+## COMPOSE CHAT MESSAGE in this window (Fig 5.11): false when it is not the
+## original's (the plain Compose Chat Message window serves then). The column
+## keeps the Close button and Return to Display Message Index; its other three
+## have nothing to do here.
+func ComposeChat() -> bool:
+	if not _original:
+		return false
+	_oIndex.visible = false
+	_oSummary.visible = false
+	_oCompose.visible = true
+	var pic: Texture2D = OUI.Pic("chat." + _oSide)
+	_oComposePicture.texture = pic
+	_oComposeEntry.text = ""
+	_o_side_summary(true)
+	_oSummaryBtn.tooltip_text = "Return to Display Message Index"
+	_oSummaryBtn.disabled = false
+	_oPostBtn.disabled = true
+	_oOpenBtn.disabled = true
+	_oComposeBtn.disabled = true
+	_oComposeEntry.grab_focus.call_deferred()
+	return true
+
+
+## Send message: the text goes to the opponent's Chat Messages (a `chat`
+## order; manual p162), and the window goes back to its index.
+func _o_send() -> void:
+	var text: String = _oComposeEntry.text.strip_edges()
+	if text.is_empty():
+		return
+	CommandBus.issue("chat", { "text": text })
+	_oComposeEntry.text = ""
+	_o_show_index()
+
+
+func _o_leave_compose() -> void:
+	if _oCompose == null or not _oCompose.visible:
+		return
+	_oCompose.visible = false
+	_oPostBtn.disabled = false
+	_oComposeBtn.disabled = GameSettings.HumanFactions.size() < 2
 
 
 ## The mouse wheel over a message's text: a line up or down, within the text.
