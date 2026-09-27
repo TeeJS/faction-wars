@@ -5,6 +5,8 @@ extends SceneTree
 ## so nothing could be built at a shipyard or a training facility from the
 ## Manufacturing window. The build command finds the unit by that same
 ## DisplayName, so an order placed from the list must land in the queue.
+## Short only of maintenance, Build stays live and the order is refused
+## with its reason (the agent answers it - manual p047).
 ##
 ##   Godot_console.exe --headless --path . -s tests/build_chooser.gd [-- --faction=alliance]
 
@@ -75,10 +77,13 @@ func _init() -> void:
 			_check(listed == wanted, "%s: it lists the catalogue's units by name %s" % [role, str(listed)])
 			# The first item nothing blocks here (day 0 blocks some for want of
 			# materials or research).
+			var free := func(i: int) -> bool:
+				var def: PackDefs.UnitDef = Lq.first_or_null(MilitaryCatalog.All(), func(r) -> bool: return r.DisplayName == picker.get_item_text(i))
+				return def != null and world.CanQueueUnit(def, world).ok
 			for i in picker.item_count:
 				picker.select(i)
 				picker.item_selected.emit(i)
-				if not dialog.get_ok_button().disabled:
+				if not dialog.get_ok_button().disabled and free.call(i):
 					break
 			var before: int = world.ShipyardQueue.size() + world.TrainingQueue.size()
 			if dialog.get_ok_button().disabled:
@@ -89,6 +94,44 @@ func _init() -> void:
 				await process_frame
 				var after: int = world.ShipyardQueue.size() + world.TrainingQueue.size()
 				_check(after == before + 1, "%s: ordering %s queues it (%d -> %d)" % [role, named, before, after])
+		# Short of maintenance only: Build live, the order refused, nothing queued
+		# (the original's window or the plain dialog, whichever opens).
+		var dear: PackDefs.UnitDef = MilitaryCatalog.BuildableAt(role, us)[0]
+		var kept: int = dear.MaintenanceCost
+		dear.MaintenanceCost = 999999
+		var why: Result = world.CanQueueUnit(dear, world)
+		_check(not why.ok and why.code == "no_maintenance", "%s: %s beyond the maintenance: refused, code no_maintenance" % [role, dear.DisplayName])
+		for c in ew.get_children():
+			if c is ConfirmationDialog:
+				c.queue_free()
+		ew.OpenBuildChooser(world, role)
+		for _i in 3:
+			await process_frame
+		var was: int = world.ShipyardQueue.size() + world.TrainingQueue.size()
+		var sel: Node = ui._openWindows.get("Build Selection")
+		var plain: ConfirmationDialog = Lq.first_or_null(ew.get_children(), func(c) -> bool: return c is ConfirmationDialog and not c.is_queued_for_deletion())
+		if sel != null:
+			var at: int = Lq.select(sel._items, func(it: Dictionary) -> String: return str(it.name)).find(dear.DisplayName)
+			sel._choice = at
+			sel._show(at)
+			_check(not sel._ok.disabled and sel._ok.tooltip_text == why.error, "%s: in the original's window Build stays live, the reason on it" % role)
+			sel._on_build()
+			await process_frame
+			_check(world.ShipyardQueue.size() + world.TrainingQueue.size() == was and ui._openWindows.get("Build Selection") != null,
+				"%s: pressing it queues nothing and the window stays" % role)
+			sel.CloseWindow()
+		elif plain != null:
+			var pick: OptionButton = plain.find_children("*", "OptionButton", true, false)[0]
+			var at: int = wanted.find(dear.DisplayName)
+			pick.select(at)
+			pick.item_selected.emit(at)
+			_check(not plain.get_ok_button().disabled, "%s: its Build stays live, so the agent can say why" % role)
+			plain.confirmed.emit()
+			await process_frame
+			_check(world.ShipyardQueue.size() + world.TrainingQueue.size() == was, "%s: pressing it queues nothing" % role)
+		dear.MaintenanceCost = kept
+		for _i in 2:
+			await process_frame
 		ew.CloseWindow()
 		for _i in 2:
 			await process_frame

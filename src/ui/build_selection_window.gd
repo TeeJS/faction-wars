@@ -47,7 +47,7 @@ const ButtonY := 224
 const ListRect := Rect2(9, 111, 195, 144)
 const ListLayout := {"top": 8, "pitch": 70, "picture_x": 38, "picture_y": 0, "name_y": 44, "name_px": 11}
 
-## [{ name, picture (drawn size), refined, maint, days, blocked, place:
+## [{ name, picture (drawn size), refined, maint, days, blocked, blocked_code, place:
 ##    Callable(count) -> Result, encyclopedia: [kind, id] }]
 var _items: Array = []
 var _deployDays: int = 0
@@ -181,7 +181,9 @@ func _show(index: int) -> void:
 	_deployment.text = "%d Days" % _deployDays
 	_deployment.tooltip_text = "Delivered to %s" % _destination if not _destination.is_empty() else ""
 	var blocked: String = str(it.get("blocked", ""))
-	_ok.disabled = not blocked.is_empty()
+	# Short of maintenance, Build stays live: the agent answers it (manual p047,
+	# "C-3PO will tell you"); the reason stays on the button.
+	_ok.disabled = not blocked.is_empty() and str(it.get("blocked_code", "")) != "no_maintenance"
 	_ok.tooltip_text = blocked if not blocked.is_empty() else "Build"
 
 
@@ -208,6 +210,9 @@ func _on_build() -> void:
 	# "C-3PO will tell you if you don't have the maintenance capacity" (manual p047).
 	if made < want:
 		preload("res://src/ui/advisor.gd").AnswerOn(get_tree(), res.code)
+	# Nothing built: the window stays, its reason on the button.
+	if made == 0:
+		return
 	var done: Callable = _onDone
 	CloseWindow()
 	if done.is_valid():
