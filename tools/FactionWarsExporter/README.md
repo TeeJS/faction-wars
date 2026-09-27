@@ -171,8 +171,9 @@ their unmodified sources in `native\xiph\`, fetched from downloads.xiph.org on
 publishes ONE exe, `dist\FactionWarsExporter.exe`: self-contained, compressed,
 its data and the DLL built in. .NET extracts nothing to disk when it runs (a
 WinForms app has no native libraries of its own to unpack; checked: nothing
-appears under `%TEMP%\.net`). Only **Export movies** writes the DLL out, to
-`%LOCALAPPDATA%\FactionWarsExporter\<its hash>\fwxiph.dll` (never Temp), and it
+appears under `%TEMP%\.net`). Only the Vorbis and Theora encoders need the DLL -
+**Export movies**, and since 2.5.0 the art export's music - and they write it out
+to `%LOCALAPPDATA%\FactionWarsExporter\<its hash>\fwxiph.dll` (never Temp), and it
 checks the hash again before loading it. The script fails if anything lands beside
 the exe:
 
