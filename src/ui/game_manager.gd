@@ -265,15 +265,17 @@ func _ready() -> void:
 	RefreshStatusBar()
 
 	# THE AGENT'S ADVICE (advice.gd): single player, Agent Advice on in Easy.
-	# THE OPENING BRIEFING (manual p022): a new game, not a loaded one; not in
-	# head-to-head, where the other side's clock would wait for it. When it
-	# ends - at once, with none to play (an art set without its recordings) -
-	# the opening advice and the Message Index on it (UIManager.BriefingOver).
+	# THE OPENING BRIEFING (manual p022): a new game, not a loaded one. In
+	# head-to-head only when the host chose it (GameSettings.MpBriefing, the
+	# Multiplayer Options' second page); each side hears its own, and the game
+	# waits for both (HoldForBriefing). When it ends - at once, with none to
+	# play (an art set without its recordings) - the opening advice and the
+	# Message Index on it (UIManager.BriefingOver).
 	if not mp:
 		AdviceLib.Start(GameSettings.LocalFaction())
 	else:
 		AdviceLib.Start(null)
-	if not loaded and not mp:
+	if not loaded and (not mp or GameSettings.MpBriefing):
 		if _uiManager.StartBriefing(HoldForBriefing) == null:
 			_uiManager.BriefingOver()
 
@@ -675,10 +677,16 @@ func MenuOpened(open: bool) -> void:
 
 
 ## THE OPENING BRIEFING plays (on = true) or has ended: the clock waits for
-## it ("We await your orders", its last line). Single player only.
+## it ("We await your orders", its last line). In head-to-head my speed goes
+## to the opponent as a pause while mine plays - a pause on either side stops
+## both (LockstepSession) - with the reason, so the side that finishes first
+## is told whose briefing it waits for.
 func HoldForBriefing(on: bool) -> void:
 	_briefing = on
 	print("[GameManager] opening briefing %s on day %d" % ["started" if on else "ended", StrategicTickManager.Today])
+	var session: LockstepSession = MpSetup.session
+	if session != null:
+		session.set_speed(0 if on or _menuOpen else _speed, "briefing" if on else "")
 	_ApplyClock()
 
 
@@ -707,8 +715,9 @@ func _MpWatch(session: LockstepSession) -> void:
 	# longer than a phase plus a generous round trip.
 	var waiting: bool = session.remote_speed == 0 or session.opponent_gone \
 		or session.overdue_ms() > WaitingAfterMs
-	# My own pause box has the screen; the manual's message is for the other side.
-	if _speed == 0 or _menuOpen:
+	# My own pause box has the screen; the manual's message is for the other
+	# side. My own briefing has the screen too.
+	if _speed == 0 or _menuOpen or _briefing:
 		waiting = false
 
 	if waiting:
@@ -716,7 +725,9 @@ func _MpWatch(session: LockstepSession) -> void:
 			_BuildWaitBox()
 		# TeeJ (room #106): say WHY - a deliberate departure from the manual's
 		# single "Waiting for Opponent" message.
-		var text := "Opponent paused." if session.remote_speed == 0 else "Waiting for opponent..."
+		var text := "Waiting for opponent..."
+		if session.remote_speed == 0:
+			text = "Your opponent's briefing is still playing." if session.remote_why == "briefing" else "Opponent paused."
 		if session.opponent_gone:
 			text += "\nConnection to your opponent was lost; waiting for them to rejoin."
 			if MpSetup.lobby != null and not MpSetup.lobby.code.is_empty():

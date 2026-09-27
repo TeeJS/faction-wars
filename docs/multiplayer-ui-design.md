@@ -162,6 +162,21 @@ Layout in the figure, top to bottom, and the callouts:
 | 6 | Scrolling view under it (callout "View chat messages and game settings"; the figure's lines read like "Luke Skywalker: ..." and "Darth Vader: Standard game victory selected. Small galaxy size selected. Host has chosen the Alliance side.") | A read-only `RichTextLabel` log. Chat lines as "<player>: <text>". **Every settings change the host makes is echoed into this log as a line from the host**, e.g. "Darth Vader: Large galaxy size selected." - that is what the figure shows, and it is how the guest learns the settings. Also "<player> has joined." / "<player> has left." from the relay's `guest` / `left` lines. |
 | 7 | Bottom bar: **Start Game (Host)** checkmark, **Previous**, **Cancel** | `MpBottomBar` with a **checkmark** as Proceed: host only ("only the host starts", relay). Enabled once a guest is seated. Guest: checkmark disabled with tooltip "The host starts the game." Previous → Host Game / Join Game. Cancel → Cockpit (the relay closes the seat). |
 
+**Two pages (TeeJ, 2026-09-27).** The screen above is page 1, the original's
+as it is (with the art imported: its picture unchanged, the chat four lines).
+The host's checkmark goes on to **page 2**, ours - **Skip the opening
+briefing? Yes / No** (No, the default: each side hears its own briefing, and
+the game waits for both) and **What speed rule would you like? Slowest wins /
+Average** - where the checkmark starts the game and the back arrow returns to
+page 1. The chat goes with both pages (on page 2 moved up into the victory
+row's place, eight lines). The guest follows the host's page (settings
+`page`) and sees page 2's choices greyed. Settings `briefing`: `play` /
+`skip` (GameSettings.MpBriefing). In play each side's briefing is a pause
+with a reason (`speed` line `why: "briefing"`), so both clocks wait and the
+side that finishes first reads "Your opponent's briefing is still playing."
+Head-to-head's briefing has no Stop Briefing button: the choice was made
+here. `tests/mp_screens.gd`, `tests/mp_briefing.gd`.
+
 **No difficulty control** (GAMEPLAY.md ★ note): head-to-head uses the
 Multiplayer column; nothing to choose.
 
@@ -228,7 +243,7 @@ manual's word, and a copy would be an invented message type.
 
 | Manual | Today (code) | Design |
 |---|---|---|
-| Either player adjusts; game runs at the slower; five settings Pause / Very Slow / Slow / Medium / Fast | The GID bar's speed menu, five radio items (`game_manager.gd:138-155`); `set_speed`/`pause`/`resume` commands exist but the clock ignores them (`command_applier.gd:155-158`) | Choosing a speed issues `set_speed` (the local menu item checks as chosen) and `LockstepSession.set_speed`; the timer runs at `effective_speed()` = min(mine, theirs). The readout shows my setting, and **"Slow (set by opponent)"** when the opponent's slower setting is what governs, so a player knows why the game is slower than they set. **Addition (not a figure element):** the "(set by opponent)" suffix; the manual only states the rule. Speed and pause travel as the M2 protocol's `speed` line rather than as commands, so a rebuilt game resumes at the speeds the log last recorded. **Deviation, requested by TeeJ (room AM-LFGGG3LVQSSJGXSP7P7JE9Q745 #75, plan #77 reviewed by Sonnet #78):** a host-chosen **Game speed rule** row on Multiplayer Options, *Slowest wins* (the manual, default) or *Average*: floor((a + b) / 2), so Slow + Fast = Medium, Fast + Very Slow = Slow, adjacent settings give the slower; Pause on either side pauses both under either rule. Under Average the face reads "(averaged with opponent)" when the effective speed differs from your own. `LockstepSession.combine_speeds`, `tests/speed_rule.gd`. |
+| Either player adjusts; game runs at the slower; five settings Pause / Very Slow / Slow / Medium / Fast | The GID bar's speed menu, five radio items (`game_manager.gd:138-155`); `set_speed`/`pause`/`resume` commands exist but the clock ignores them (`command_applier.gd:155-158`) | Choosing a speed issues `set_speed` (the local menu item checks as chosen) and `LockstepSession.set_speed`; the timer runs at `effective_speed()` = min(mine, theirs). The readout shows my setting, and **"Slow (set by opponent)"** when the opponent's slower setting is what governs, so a player knows why the game is slower than they set. **Addition (not a figure element):** the "(set by opponent)" suffix; the manual only states the rule. Speed and pause travel as the M2 protocol's `speed` line rather than as commands, so a rebuilt game resumes at the speeds the log last recorded. **Deviation, requested by TeeJ (room AM-LFGGG3LVQSSJGXSP7P7JE9Q745 #75, plan #77 reviewed by Sonnet #78):** a host-chosen **Game speed rule** on Multiplayer Options (page 2 since 2026-09-27), *Slowest wins* (the manual, default) or *Average*: floor((a + b) / 2), so Slow + Fast = Medium, Fast + Very Slow = Slow, adjacent settings give the slower; Pause on either side pauses both under either rule. Under Average the face reads "(averaged with opponent)" when the effective speed differs from your own. `LockstepSession.combine_speeds`, `tests/speed_rule.gd`. |
 | Pause on the Game Speed menu; "click on the checkbox to resume play" | Pause is modal with a **Resume** button (`_pauseBox`, `game_manager.gd:157-167`) | Pause issues `pause`; the pauser sees today's box; Resume issues `resume`. The **opponent sees Waiting for Opponent** (section 11) while the other side is paused - a paused opponent is one who is not playing, and the manual's "slowest speed" with Pause as a speed says the same. |
 
 ## 11. Waiting for Opponent (p163)

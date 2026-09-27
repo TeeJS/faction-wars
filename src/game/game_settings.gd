@@ -42,6 +42,10 @@ static var HQOnlyVictory: bool = false
 ## the slower one and an unbalanced pair rounds down. Pause on either side
 ## pauses both under either rule.
 static var SpeedRule: String = "slowest"
+## Head-to-head only (TeeJ, 2026-09-27): the opening briefing plays for both
+## players (the host's "briefing": "play", the default) or for neither
+## ("skip"). Chosen on the Multiplayer Options' second page.
+static var MpBriefing: bool = true
 ## "Provide feedback" on the Cockpit (TeeJ, room #80): show the feedback box
 ## in any game this client starts. Remembered in user:// (MpSetup prefs).
 ## Ticked until the player unticks it (TeeJ, 2026-09-23).

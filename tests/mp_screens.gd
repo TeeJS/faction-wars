@@ -369,9 +369,11 @@ func _host_original() -> void:
 	MpSetup.reset()
 
 
-## Multiplayer Options on the original's screen, rearranged as TeeJ chose
-## (2026-09-26, mockup 2): the speed row under the galaxy size, the lower rows
-## 62 down, the code and Copy on the Chat> bar.
+## Multiplayer Options on the original's screen, in two pages (TeeJ,
+## 2026-09-27): page 1 the original's as it is - its two questions, Standard
+## Game / HQ Victory and Load Game in their places, a four-line chat - and
+## page 2 ours: the opening briefing and the speed rule on the two rows, the
+## chat moved up and eight lines long; the guest follows the host's page.
 func _options_original(host: bool) -> void:
 	var who := "host" if host else "guest"
 	MpSetup.player_name = "Han" if host else "Luke"
@@ -383,7 +385,7 @@ func _options_original(host: bool) -> void:
 	lobby.host_name = "Han"
 	lobby.name = MpSetup.game_name
 	if not host:
-		lobby.settings = { "side": "empire", "size": 2, "hq_only": true, "speed_rule": "average" }
+		lobby.settings = { "side": "empire", "size": 2, "hq_only": true, "speed_rule": "average", "briefing": "skip", "page": 1 }
 	MpSetup.lobby = lobby
 	var opened := await _open_original("res://src/ui/mp/MultiplayerOptions.tscn", "CenterContainer")
 	var s: Control = opened[0]
@@ -392,22 +394,23 @@ func _options_original(host: bool) -> void:
 		await _close(s)
 		MpSetup.reset()
 		return
-	var q: Array = []
-	for i in 3:
-		q.append((c.get_node("Question%d" % i) as Label).text)
-	_check(q == ["Which side do you want to play?", "What size galaxy would you like?", "What speed rule would you like?"],
-		"%s: the two questions, and TeeJ's third row" % who)
+	# Page 1: the original's.
+	_check((c.get_node("Question0") as Label).text == "Which side do you want to play?" and (c.get_node("Question1") as Label).text == "What size galaxy would you like?"
+		and c.get_node_or_null("Question2") == null and (c.get_node("Question0") as Control).visible, "%s page 1: the original's two questions" % who)
 	_check((c.get_node("Side0") as Control).position == Vector2(389, 71) * 2.0 and (c.get_node("Size2") as Control).position == Vector2(491, 133) * 2.0
-		and (c.get_node("Speed1") as Control).position == Vector2(440, 195) * 2.0, "%s: sides, sizes, and the speed row one row under the sizes" % who)
-	_check((c.get_node("Lamp0") as Control).position == Vector2(142, 267) * 2.0 and (c.get_node("Load") as Control).position == Vector2(502, 261) * 2.0,
-		"%s: Standard Game / HQ Victory and Load Game 62 lower" % who)
+		and (c.get_node("Lamp0") as Control).position == Vector2(142, 205) * 2.0 and (c.get_node("Load") as Control).position == Vector2(502, 199) * 2.0,
+		"%s page 1: sides, sizes, Standard Game / HQ Victory and Load Game in the original's places" % who)
+	_check(not (c.get_node("Speed0") as Control).visible and not (c.get_node("Briefing0") as Control).visible and not (c.get_node("Page2Question0") as Control).visible,
+		"%s page 1: page 2's choices hidden" % who)
+	_check((c.get_node("Plate") as TextureRect).texture == Art.Screen("mp_options"), "%s page 1: the original's picture as it is" % who)
 	_check((c.get_node("Code") as Label).text == "Code: TEST01" and (c.get_node("Copy") as Label).get_theme_color("font_color") == Color(1, 0, 0),
 		"%s: the game code and Copy on the Chat> bar" % who)
 	var entry: LineEdit = s.get_node("%ChatEntry")
 	var log: RichTextLabel = s.get_node("%ChatLog")
-	_check(entry.get_parent() == c and log.get_parent() == c and is_equal_approx(log.size.y, 32 * 2.0), "%s: the chat entry and a two-line log on the screen" % who)
-	var start: TextureButton = c.get_node("Next")
-	_check(start.texture_normal == Art.ButtonIcon("mp_start") and start.disabled, "%s: the checkmark, waiting" % who)
+	_check(entry.get_parent() == c and log.get_parent() == c and is_equal_approx(log.size.y, 64 * 2.0) and is_equal_approx((c.get_node("ChatLabel") as Control).position.y, (266 - 0.19 * 13.0) * 2.0),
+		"%s page 1: the chat in the original's place, its log four lines" % who)
+	var next: TextureButton = c.get_node("Next")
+	_check(next.texture_normal == Art.ButtonIcon("mp_next") and next.disabled == (not host), "%s page 1: the forward arrow - the host's, greyed for the guest" % who)
 	var s1: TextureButton = c.get_node("Size1")
 	var s2: TextureButton = c.get_node("Size2")
 	if host:
@@ -416,16 +419,56 @@ func _options_original(host: bool) -> void:
 		s2.pressed.emit()
 		_check(int(s._settings.get("size", -1)) == 2 and s2.texture_normal == Art.WindowPicture("mp_size.huge.chosen")
 			and s1.texture_normal == Art.WindowPicture("mp_size.large"), "host: a click on Huge chooses it")
-		(c.get_node("Speed1") as TextureButton).pressed.emit()
-		_check(str(s._settings.get("speed_rule", "")) == "average" and (c.get_node("SpeedMark1") as Control).visible
-			and not (c.get_node("SpeedMark0") as Control).visible, "host: a click on Average chooses it, its brackets shown")
+		# On to page 2.
+		next.pressed.emit()
+		await process_frame
 	else:
 		_check(s2.texture_normal == Art.WindowPicture("mp_size.huge.chosen") and s1.texture_normal == Art.WindowPicture("mp_size.large.grey"),
 			"guest: the host's Huge lit, the others greyed")
 		s1.pressed.emit()
-		_check(int(s._settings.get("size", -1)) == 2, "guest: a click changes nothing")
-		_check((c.get_node("SpeedMark1") as Control).visible and (c.get_node("Lamp1") as TextureRect).texture == Art.WindowPicture("mp_lamp.on"),
-			"guest: the host's Average and HQ Victory shown")
+		_check(int(s._settings.get("size", -1)) == 2 and (c.get_node("Lamp1") as TextureRect).texture == Art.WindowPicture("mp_lamp.on"),
+			"guest: a click changes nothing; the host's HQ Victory shown")
+		# The host goes on: the guest follows.
+		lobby.settings = lobby.settings.duplicate()
+		lobby.settings["page"] = 2
+		await process_frame
+		await process_frame
+	# Page 2: ours.
+	_check(int(s._page) == 2 and (c.get_node("Page2Question0") as Label).text == "Skip the opening briefing?" and (c.get_node("Page2Question1") as Label).text == "What speed rule would you like?"
+		and not (c.get_node("Question0") as Control).visible and not (c.get_node("Lamp0") as Control).visible and not (c.get_node("Load") as Control).visible,
+		"%s page 2: the opening briefing and the speed rule; page 1's parts hidden" % who)
+	_check((c.get_node("Briefing0") as Control).position == Vector2(389, 71) * 2.0 and (c.get_node("Briefing1") as Control).position == Vector2(440, 71) * 2.0
+		and (c.get_node("Speed0") as Control).position == Vector2(389, 133) * 2.0 and (c.get_node("Speed1") as Control).position == Vector2(440, 133) * 2.0
+		and (c.get_node("BriefingWords0_0") as Label).text == "Yes" and (c.get_node("BriefingWords1_0") as Label).text == "No",
+		"%s page 2: Yes / No on the first row, Slowest wins / Average on the second" % who)
+	var plate: Texture2D = (c.get_node("Plate") as TextureRect).texture
+	_check(plate != Art.Screen("mp_options") and plate != null and plate.get_size() == Art.Screen("mp_options").get_size(), "%s page 2: its own picture, made from the original's" % who)
+	_check(is_equal_approx(log.size.y, 128 * 2.0) and is_equal_approx((c.get_node("ChatLabel") as Control).position.y, (196 - 0.19 * 13.0) * 2.0)
+		and entry.visible and log.visible, "%s page 2: the chat moved up into the lamp row's place, its log eight lines" % who)
+	var start: TextureButton = c.get_node("Next")
+	_check(start.texture_normal == Art.ButtonIcon("mp_start") and start.disabled, "%s page 2: the checkmark, waiting" % who)
+	var b0: TextureButton = c.get_node("Briefing0")
+	if host:
+		_check((c.get_node("BriefingMark1") as Control).visible and not (c.get_node("BriefingMark0") as Control).visible
+			and (c.get_node("SpeedMark0") as Control).visible, "host: the briefing plays and Slowest wins, the defaults")
+		b0.pressed.emit()
+		(c.get_node("Speed1") as TextureButton).pressed.emit()
+		_check(str(s._settings.get("briefing", "")) == "skip" and str(s._settings.get("speed_rule", "")) == "average"
+			and (c.get_node("BriefingMark0") as Control).visible and (c.get_node("SpeedMark1") as Control).visible,
+			"host: Yes skips the briefing, Average chosen, their brackets shown")
+		_check(log.get_parsed_text().contains("The opening briefing will be skipped.") and log.get_parsed_text().contains("Average speed rule selected."),
+			"host: both in the chat")
+		(c.get_node("Back") as TextureButton).pressed.emit()
+		await process_frame
+		_check(int(s._page) == 1 and int(s._settings.get("page", 0)) == 1 and (c.get_node("Question0") as Control).visible
+			and (c.get_node("Plate") as TextureRect).texture == Art.Screen("mp_options") and is_equal_approx(log.size.y, 64 * 2.0),
+			"host: the back arrow returns to page 1, the chat to its place")
+	else:
+		_check((c.get_node("BriefingMark0") as Control).visible and (c.get_node("SpeedMark1") as Control).visible
+			and (c.get_node("BriefingWords1_0") as Label).get_theme_color("font_color") == preload("res://src/ui/mp/original_mp.gd").Grey,
+			"guest: the host's Yes and Average shown, the others greyed")
+		b0.pressed.emit()
+		_check(str(s._settings.get("briefing", "")) == "skip", "guest: a click changes nothing")
 	await _close(s)
 	MpSetup.reset()
 
@@ -514,7 +557,7 @@ func _options(host: bool) -> void:
 	lobby.host_name = "Han"
 	lobby.name = MpSetup.game_name
 	if not host:
-		lobby.settings = { "side": "empire", "size": 2, "hq_only": true, "speed_rule": "average" }
+		lobby.settings = { "side": "empire", "size": 2, "hq_only": true, "speed_rule": "average", "briefing": "skip", "page": 2 }
 	MpSetup.lobby = lobby
 	var s := await _open("res://src/ui/mp/MultiplayerOptions.tscn")
 	_check(_label(s, "SideRow/SideCaption") == "Which side do you want to play?", "Fig 5.9 (%s): side caption" % who)
@@ -535,16 +578,28 @@ func _options(host: bool) -> void:
 	_check(text.contains("galaxy size selected.") and text.contains("victory selected.") and text.contains("Host has chosen the"), "Fig 5.9 (%s): the settings are echoed into the chat view" % who)
 	var bar: MpBottomBar = s.get_node("%BottomBar")
 	var proceed: Button = bar.get_node("%BtnProceed")
-	_check(proceed.text == "Start Game" and proceed.disabled, "Fig 5.9 (%s): the checkmark starts, and waits" % who)
 	if host:
+		_check(proceed.text == "Next" and not proceed.disabled and s.get_node("CenterContainer/Console/SideRow").visible
+			and not s.get_node("CenterContainer/Console/SpeedRow").visible and not s.get_node("CenterContainer/Console/BriefingRow").visible,
+			"page 1 (host): side, size and victory; the checkmark goes on")
 		_check(not (sides[0] as Button).disabled and (sides[0] as Button).button_pressed, "Fig 5.9 (host): the host edits; Alliance preselected")
 		_check((sizes[1] as Button).button_pressed and (s.get_node("%BtnStandardGame") as Button).button_pressed, "Fig 5.9 (host): Large and Standard Game preselected")
+		bar.proceed.emit()
+		var briefs := (s.get_node("CenterContainer/Console/BriefingRow/BriefingHBox") as HBoxContainer).get_children()
+		_check(proceed.text == "Start Game" and proceed.disabled and not s.get_node("CenterContainer/Console/SideRow").visible
+			and s.get_node("CenterContainer/Console/SpeedRow").visible and s.get_node("CenterContainer/Console/BriefingRow").visible
+			and briefs.size() == 2 and (briefs[0] as Button).text == "Yes" and (briefs[1] as Button).text == "No" and (briefs[1] as Button).button_pressed
+			and int(s._settings.get("page", 0)) == 2, "page 2 (host): Skip the opening briefing? (No, the default) and the speed rule; the checkmark starts, and waits")
 		_start_gate(s, lobby, proceed)
 	else:
 		_check(not (sides[1] as Button).disabled and (sides[1] as Button).mouse_filter == Control.MOUSE_FILTER_IGNORE and (sides[1] as Button).button_pressed, "Fig 5.9 (guest): sees the host's side pressed, cannot change it")
 		_check((sizes[2] as Button).button_pressed and (s.get_node("%BtnHQOnlyVictory") as Button).button_pressed, "Fig 5.9 (guest): sees Huge and HQ Only Victory")
 		_check(text.contains("Huge galaxy size selected.") and text.contains("HQ Only victory selected."), "Fig 5.9 (guest): the host's choices are in the view")
 		_check(text.contains("Average speed rule selected.") and (rules[1] as Button).button_pressed and (rules[1] as Button).mouse_filter == Control.MOUSE_FILTER_IGNORE, "speed rule (guest): sees Average pressed, cannot change it")
+		var briefs := (s.get_node("CenterContainer/Console/BriefingRow/BriefingHBox") as HBoxContainer).get_children()
+		_check(text.contains("The opening briefing will be skipped.") and (briefs[0] as Button).button_pressed and (briefs[0] as Button).mouse_filter == Control.MOUSE_FILTER_IGNORE
+			and s.get_node("CenterContainer/Console/BriefingRow").visible and proceed.text == "Start Game" and proceed.disabled,
+			"page 2 (guest): follows the host there; sees Yes (skip) pressed, cannot change it; the host starts")
 	await _close(s)
 	MpSetup.reset()
 

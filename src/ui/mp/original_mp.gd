@@ -170,6 +170,28 @@ func Place(tex: Texture2D, x: float, y: float, node_name: String) -> TextureRect
 	return r
 
 
+## Moves a placed part to another rect in the original's pixels (a screen
+## with two pages moves its chat between them).
+func Move(c: Control, rect: Rect2) -> void:
+	for it in _items:
+		if it[0] == c:
+			it[1] = rect
+	_layout()
+
+
+## Where a placed part is, in the original's pixels.
+func RectOf(c: Control) -> Rect2:
+	for it in _items:
+		if it[0] == c:
+			return it[1]
+	return Rect2()
+
+
+## The screen's own picture (Place's "Plate").
+func Plate() -> TextureRect:
+	return _canvas.get_node_or_null("Plate") as TextureRect
+
+
 ## Swaps a placed picture, its size following.
 func Repicture(r: TextureRect, tex: Texture2D) -> void:
 	r.texture = tex
