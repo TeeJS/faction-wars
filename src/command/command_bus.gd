@@ -31,9 +31,16 @@ static func resume_seq(commands: Array) -> void:
 
 ## Issue an order from the local side. Returns the applier's Result when
 ## applied immediately; a queued command returns success (it is accepted).
+##
+## Head-to-head, while the opponent's opening briefing still plays, an order is
+## dropped as if taken - the original's (TeeJ, 2026-09-27, testing it): the
+## side that finished first "can look at the board/game, but can not make any
+## changes", with "no indication what's going on". Chat is not a change.
 static func issue(kind: String, args: Dictionary) -> Result:
 	var c := Command.make(kind, args)
 	if Session != null:
+		if Session.opponent_briefing() and kind != "chat":
+			return Result.success()
 		Session.issue(c)   # assigns Day, Seq and Faction; logs; sends
 		return Result.success()
 	c.Day = StrategicTickManager.Today

@@ -54,6 +54,7 @@ var _pauseBox: AcceptDialog
 const OUI := preload("res://src/ui/original_ui.gd")
 const Art := preload("res://src/ui/artwork.gd")
 const AdviceLib := preload("res://src/ui/advice.gd")
+const OriginalMp := preload("res://src/ui/mp/original_mp.gd")
 const HudScale := 1.5
 ## The scale the HUD is drawn at now: HudScale, or the Command Center frame's
 ## own (the screen's height over the frame's) when the frame is the screen, so
@@ -111,6 +112,7 @@ var _phaseTimer: Timer               # ends the open phase every PhaseSeconds
 const PhaseSeconds := 0.3            # room #99/#118: orders apply within a phase plus one round trip
 var _menuOpen: bool = false          # the Game Options screen is up: the opponent waits
 var _briefing: bool = false          # the opening briefing plays: no clock (single player)
+var _dayGreyed: bool = false         # head-to-head: the opponent's briefing still plays (WaitingForBriefing)
 var _appliedEffective: int = -1
 var _stallSince: int = -1            # ms; the opponent's end-of-day is overdue
 var _waitingSince: int = -1          # ms; the Waiting for Opponent box is up
@@ -375,6 +377,9 @@ func BuildSpeedMenu() -> void:
 	# either button drops it from the control's lower edge.
 	_timeControls.gui_input.connect(func(event: InputEvent) -> void:
 		if event is InputEventMouseButton and event.pressed 				and (event.button_index == MOUSE_BUTTON_RIGHT or event.button_index == MOUSE_BUTTON_LEFT):
+			if WaitingForBriefing():
+				_timeControls.accept_event()
+				return
 			var at: Vector2 = _timeControls.global_position + Vector2(0, _timeControls.size.y)
 			var menu: Window = _speedMenu
 			if _oSpeedMenu != null:
@@ -630,6 +635,9 @@ func _ApplyClock() -> void:
 	var session: LockstepSession = MpSetup.session
 	var effective: int = _speed if session == null else session.effective_speed()
 	_appliedEffective = effective
+	if WaitingForBriefing() != _dayGreyed:
+		_dayGreyed = WaitingForBriefing()
+		RefreshStatusBar()
 
 	# THE CURRENT SETTING, ON THE FACE OF THE CONTROL (user-reported behaviour
 	# of the original). Addition for head-to-head: when the opponent's setting
@@ -676,6 +684,19 @@ func MenuOpened(open: bool) -> void:
 	_ApplyClock()
 
 
+## HEAD-TO-HEAD, MY BRIEFING OVER AND THE OPPONENT'S STILL PLAYING: as the
+## original (TeeJ, 2026-09-27, testing it), "the player who finishes 1st can
+## look at the board/game, but can not make any changes - their day counter is
+## greyed out and stays at 0 until opponent finishes", and "there is no
+## indication what's going on, other than the time bar being greyed out". So:
+## no Waiting box, the day at 0 in the original's grey, the bars unlit (the
+## clock is stopped), the Speed Control and its keys do nothing, and an order is
+## dropped as if taken (CommandBus.issue). Chat still goes.
+func WaitingForBriefing() -> bool:
+	var session: LockstepSession = MpSetup.session
+	return session != null and session.opponent_briefing()
+
+
 ## THE OPENING BRIEFING plays (on = true) or has let the clock go: the clock
 ## waits for it - as the original's, until its release step (after "We await
 ## your orders", its last line; on Stop Briefing, before the skip's line
@@ -696,8 +717,9 @@ func HoldForBriefing(on: bool) -> void:
 ## up while the opponent is in their Game Options screen, chose Pause, or
 ## dropped; after a minute a Leave Game button appears, behind a confirmation.
 func _MpWatch(session: LockstepSession) -> void:
-	# The opponent's speed changed: the slower of the two governs.
-	if session.effective_speed() != _appliedEffective:
+	# The opponent's speed changed: the slower of the two governs. Their
+	# briefing's end also lifts the greyed time bar.
+	if session.effective_speed() != _appliedEffective or session.opponent_briefing() != _dayGreyed:
 		_ApplyClock()
 
 	# A desync: rebuild from the shared log (M2). Whoever drifted is repaired;
@@ -715,7 +737,11 @@ func _MpWatch(session: LockstepSession) -> void:
 	var now := Time.get_ticks_msec()
 	# The opponent is overdue when my end for the open phase has been out for
 	# longer than a phase plus a generous round trip.
-	var waiting: bool = session.remote_speed == 0 or session.opponent_gone \
+	# The opponent's opening briefing puts up no box: as the original, the
+	# side that finished first looks at the board, its time bar greyed out
+	# (WaitingForBriefing).
+	var paused: bool = session.remote_speed == 0 and not session.opponent_briefing()
+	var waiting: bool = paused or session.opponent_gone \
 		or session.overdue_ms() > WaitingAfterMs
 	# My own pause box has the screen; the manual's message is for the other
 	# side. My own briefing has the screen too, to its very end.
@@ -728,8 +754,8 @@ func _MpWatch(session: LockstepSession) -> void:
 		# TeeJ (room #106): say WHY - a deliberate departure from the manual's
 		# single "Waiting for Opponent" message.
 		var text := "Waiting for opponent..."
-		if session.remote_speed == 0:
-			text = "Your opponent's briefing is still playing." if session.remote_why == "briefing" else "Opponent paused."
+		if paused:
+			text = "Opponent paused."
 		if session.opponent_gone:
 			text += "\nConnection to your opponent was lost; waiting for them to rejoin."
 			if MpSetup.lobby != null and not MpSetup.lobby.code.is_empty():
@@ -813,6 +839,9 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		return
 	if not event.alt_pressed or _speedMenu == null:
 		return
+	if WaitingForBriefing() and event.keycode in [KEY_P, KEY_EQUAL, KEY_PLUS, KEY_KP_ADD, KEY_MINUS, KEY_KP_SUBTRACT]:
+		get_viewport().set_input_as_handled()
+		return
 
 	match event.keycode:
 		KEY_P:
@@ -851,9 +880,14 @@ func RefreshStatusBar() -> void:
 	# The count is gone from here (TeeJ, 2026-09-23: "the unread message count
 	# is not needed there"): the Message Alert column and the Message Index's
 	# tabs carry it.
-	_dayLabel.text = "Day: %d" % currentDay
+	# The opponent's briefing still plays: the day greyed out, at 0 (the
+	# original's, WaitingForBriefing).
+	var shown: int = 0 if _dayGreyed else currentDay
+	_dayLabel.text = "Day: %d" % shown
+	_dayLabel.modulate = OriginalMp.Grey if _dayGreyed else Color.WHITE
 	if _oDay != null:
-		_oDay.text = str(currentDay)
+		_oDay.text = str(shown)
+		_oDay.add_theme_color_override("font_color", OriginalMp.Grey if _dayGreyed else OUI.SideColor(GameSettings.PlayerFaction))
 	_availMines.text = "Raw: %d  (%d %s)" % [econ.RawMaterials, Economy.TotalMines(player), Terms.label("mines")]
 	_availRefineries.text = "Refined: %d  (%d %s)" % [econ.RefinedMaterials, Economy.TotalRefineries(player), Terms.label("refineries")]
 	# Maintenance is a pool, so it reads as remaining/total rather than a rate.

@@ -97,6 +97,11 @@ func issue(c: Command) -> void:
 	transport.send({ "t": "cmd", "day": c.Day, "phase": c.Phase, "seq": c.Seq, "faction": c.Faction, "kind": c.Kind, "args": c.Args })
 
 
+## The opponent's opening briefing holds the clock: they said pause, for it.
+func opponent_briefing() -> bool:
+	return remote_speed == 0 and remote_why == "briefing"
+
+
 func set_speed(level: int, why: String = "") -> void:
 	my_speed = level
 	transport.send({ "t": "speed", "side": local.Id, "level": level, "why": why })

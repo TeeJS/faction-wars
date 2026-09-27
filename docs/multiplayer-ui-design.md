@@ -172,8 +172,13 @@ page 1. The chat goes with both pages (on page 2 moved up into the victory
 row's place, eight lines). The guest follows the host's page (settings
 `page`) and sees page 2's choices greyed. Settings `briefing`: `play` /
 `skip` (GameSettings.MpBriefing). In play each side's briefing is a pause
-with a reason (`speed` line `why: "briefing"`), so both clocks wait and the
-side that finishes first reads "Your opponent's briefing is still playing."
+with a reason (`speed` line `why: "briefing"`), so both clocks wait. The side
+that finishes first waits as the original's (TeeJ, 2026-09-27, testing it: "can
+look at the board/game, but can not make any changes - their day counter is
+greyed out and stays at 0", "no indication what's going on, other than the time
+bar being greyed out"): no box, the day at 0 in the original's grey, the Speed
+Control and its keys dead, an order dropped as if taken (chat still goes) -
+GameManager.WaitingForBriefing, CommandBus.issue.
 Head-to-head's briefing has no Stop Briefing button: the choice was made
 here. `tests/mp_screens.gd`, `tests/mp_briefing.gd`.
 
