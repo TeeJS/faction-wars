@@ -279,6 +279,10 @@ class Droid extends TextureRect:
 		_run.Reset()
 		texture = ImageTexture.create_from_image(_run.Picture())
 
+	## Stops the run playing, at rest again, without its `done`.
+	func Stop() -> void:
+		_stop(false)
+
 	## Whether a run is playing.
 	func Talking() -> bool:
 		return _run != null

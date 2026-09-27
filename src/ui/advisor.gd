@@ -24,6 +24,8 @@ const CHARACTER_EVENTS := {"personnel_report": "report", "captured": "captured",
 
 var Agent: Node = null       # the Command Center's droids (command_frame.gd Droid)
 var Messenger: Node = null
+## While true the droids keep their news for later (the opening briefing).
+var Held: bool = false
 
 var _pending: Dictionary = {}   # event -> the last day it may still play
 var _allowed: Dictionary = {}   # event -> the first day it may play again
@@ -98,7 +100,7 @@ func _next_event(today: int) -> String:
 
 
 func _process(_delta: float) -> void:
-	if _busy or FactionRegistry.Pack == null:
+	if _busy or Held or FactionRegistry.Pack == null:
 		return
 	var today: int = StrategicTickManager.Today
 	var event := _next_event(today)

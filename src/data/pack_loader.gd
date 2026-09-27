@@ -240,9 +240,10 @@ static func _validate(pack: LoadedPack, pack_dir: String, errors: Array[String])
 	_validate_advisor(pack, pack_dir, errors)
 	_validate_voices(pack, pack_dir, errors)
 	_validate_sounds(pack, pack_dir, errors)
+	_validate_briefing(pack, pack_dir, errors)
 
 
-## One reference (rules 24-27): a file the pack ships, or "<art set>:<path>"
+## One reference (rules 24-28): a file the pack ships, or "<art set>:<path>"
 ## in a declared art set, ending in `ext`. `where` names it in the error.
 static func _check_ref(v: Variant, ext: String, kind: String, where: String, pack: LoadedPack, pack_dir: String, errors: Array[String]) -> void:
 	if not v is String or str(v).strip_edges().is_empty():
@@ -377,6 +378,53 @@ static func _validate_sounds(pack: LoadedPack, pack_dir: String, errors: Array[S
 			errors.append("pack.json sounds: '%s' is not a moment. Known: %s." % [s, ", ".join(KNOWN_SOUND_EVENTS)])
 			continue
 		_check_refs(m.SoundsRaw[key], ".ogg", "sound", "pack.json sounds.%s" % s, pack, pack_dir, errors)
+
+
+## Rule 28: `briefing` - the opening briefing, per side: `steps` and `skip`,
+## each a list whose items are a line (anim, sound) or a `focus` (a number).
+static func _validate_briefing(pack: LoadedPack, pack_dir: String, errors: Array[String]) -> void:
+	var m := pack.Manifest
+	if not m.BriefingGiven:
+		return
+	if not m.BriefingRaw is Dictionary:
+		errors.append("pack.json briefing: must be an object of side -> the briefing.")
+		return
+	var faction_ids: Array[String] = []
+	for f in pack.Factions:
+		faction_ids.append(f.Id)
+	for key in m.BriefingRaw:
+		var k := str(key)
+		if not faction_ids.has(k):
+			errors.append("pack.json briefing: '%s' is not a faction in factions.json." % k)
+			continue
+		var side: Variant = m.BriefingRaw[key]
+		if not side is Dictionary:
+			errors.append("pack.json briefing.%s: must be an object (steps, skip)." % k)
+			continue
+		for part in side:
+			var where := "pack.json briefing.%s.%s" % [k, part]
+			if not ["steps", "skip"].has(str(part)):
+				errors.append("pack.json briefing.%s: '%s' is neither steps nor skip." % [k, part])
+				continue
+			if not side[part] is Array:
+				errors.append("%s: must be a list of steps." % where)
+				continue
+			var i := 0
+			for step in side[part]:
+				var at := "%s[%d]" % [where, i]
+				i += 1
+				if not step is Dictionary:
+					errors.append("%s: must be an object (a focus, or anim and sound)." % at)
+				elif step.has("focus"):
+					if not (step["focus"] is int or step["focus"] is float) or float(step["focus"]) < 0:
+						errors.append("%s.focus: must be a number." % at)
+				elif not (step.has("anim") or step.has("sound")):
+					errors.append("%s: is neither a focus nor a line (anim, sound)." % at)
+				else:
+					if step.has("anim"):
+						_check_ref(step["anim"], ".fwa", "an animation", at + ".anim", pack, pack_dir, errors)
+					if step.has("sound"):
+						_check_ref(step["sound"], ".ogg", "a sound", at + ".sound", pack, pack_dir, errors)
 
 
 ## Rule 24: `music` maps known moments to a track or a pool of tracks - each a

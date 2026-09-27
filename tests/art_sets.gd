@@ -98,8 +98,9 @@ func _make_pack(dir: String) -> void:
 	# "advantage.alliance"): rules 23 and 24 would refuse them.
 	manifest.erase("movies")
 	manifest.erase("music")
-	# ... and the droids' news is by side (rule 25).
+	# ... and the droids' news and the briefing are by side (rules 25, 28).
 	manifest.erase("advisor")
+	manifest.erase("briefing")
 	_write_text(dir + "/pack.json", JSON.stringify(manifest, "  "))
 	var factions: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(dir + "/factions.json"))
 	for f in factions["factions"]:

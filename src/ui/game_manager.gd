@@ -109,6 +109,7 @@ var _mpDayDue: bool = false          # the host's day clock fired: the next phas
 var _phaseTimer: Timer               # ends the open phase every PhaseSeconds
 const PhaseSeconds := 0.3            # room #99/#118: orders apply within a phase plus one round trip
 var _menuOpen: bool = false          # the Game Options screen is up: the opponent waits
+var _briefing: bool = false          # the opening briefing plays: no clock (single player)
 var _appliedEffective: int = -1
 var _stallSince: int = -1            # ms; the opponent's end-of-day is overdue
 var _waitingSince: int = -1          # ms; the Waiting for Opponent box is up
@@ -261,6 +262,11 @@ func _ready() -> void:
 	# "Day: 0" until the first tick and then jump to 2 (TeeJ, 2026-09-22).
 	_lastDay = StrategicTickManager.Today
 	RefreshStatusBar()
+
+	# THE OPENING BRIEFING (manual p022): a new game, not a loaded one; not in
+	# head-to-head, where the other side's clock would wait for it.
+	if not loaded and not mp:
+		_uiManager.StartBriefing(HoldForBriefing)
 
 
 func _exit_tree() -> void:
@@ -633,8 +639,9 @@ func _ApplyClock() -> void:
 		return
 	if _PauseShowing():
 		_HidePause()
-	if effective == 0 or _menuOpen:
-		# The opponent paused, or I am in the Game Options screen: no clock.
+	if effective == 0 or _menuOpen or _briefing:
+		# The opponent paused, I am in the Game Options screen, or the briefing
+		# plays: no clock.
 		_tickTimer.stop()
 		return
 	# Idempotent: re-choosing the running setting must not restart the day.
@@ -652,6 +659,14 @@ func MenuOpened(open: bool) -> void:
 	var session: LockstepSession = MpSetup.session
 	if session != null:
 		session.set_speed(0 if open else _speed)
+	_ApplyClock()
+
+
+## THE OPENING BRIEFING plays (on = true) or has ended: the clock waits for
+## it ("We await your orders", its last line). Single player only.
+func HoldForBriefing(on: bool) -> void:
+	_briefing = on
+	print("[GameManager] opening briefing %s on day %d" % ["started" if on else "ended", StrategicTickManager.Today])
 	_ApplyClock()
 
 
