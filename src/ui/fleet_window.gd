@@ -1519,3 +1519,8 @@ class FleetUnitMenuButton extends Button:
 
 		set_drag_preview(previewVBox)
 		return "unit_move"
+
+
+## Where a crosshair picking a place lands when this window is clicked.
+func TargetSystem() -> Planet:
+	return _associatedPlanet

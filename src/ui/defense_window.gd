@@ -969,3 +969,8 @@ func OnUnitMenuAction(actionId: int, units: Array, uiManager: UIManager) -> void
 			SelectedFighters.erase(u)
 		if is_instance_valid(self):
 			Populate(_associatedPlanet, uiManager))
+
+
+## Where a crosshair picking a place lands when this window is clicked.
+func TargetSystem() -> Planet:
+	return _associatedPlanet

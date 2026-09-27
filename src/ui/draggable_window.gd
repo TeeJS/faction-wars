@@ -90,6 +90,12 @@ func Refresh() -> void:
 	pass
 
 
+## The system this window is about, for a crosshair picking a place (a
+## system's Manufacturing, Defense and Fleet windows); null for the rest.
+func TargetSystem() -> Planet:
+	return null
+
+
 ## What this window is currently showing, as a cheap string. Null means "I
 ## cannot describe my state" - such a window is left to the day tick. See
 ## GameSignature for why it is derived rather than announced.
@@ -152,8 +158,20 @@ var _clickHeld: bool = false
 func _input(event: InputEvent) -> void:
 	if not event is InputEventMouseButton:
 		return
-	if (event as InputEventMouseButton).pressed:
+	var mb := event as InputEventMouseButton
+	if mb.pressed:
 		if is_visible_in_tree() and Rect2(Vector2.ZERO, size).has_point((make_input_local(event) as InputEventMouseButton).position):
+			# THE CROSSHAIR ON A SYSTEM'S WINDOW NAMES THAT SYSTEM when a place
+			# is being picked - a move, a destination - not a thing (TeeJ,
+			# 2026-09-27: "for destination, I should be able to click on another
+			# planet's defense/mfg window as well as the planet"). Anywhere on
+			# the window, its rows and buttons too; the topmost window takes it.
+			var ui: UIManager = _uiManager if _uiManager != null else get_parent() as UIManager
+			if mb.button_index == MOUSE_BUTTON_LEFT and ui != null and ui.IsTargeting and not ui.IsTargetingObject() \
+					and TargetSystem() != null:
+				get_viewport().set_input_as_handled()
+				ui.ResolveTarget(TargetSystem())
+				return
 			_clickHeld = true
 	elif _clickHeld:
 		_clickHeld = false
