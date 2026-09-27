@@ -8,6 +8,7 @@ extends RefCounted
 
 const Kinds := [
 	"move_fleets", "move_units", "move_characters", "move_hq", "board_fleet", "load_aboard",
+	"create_fleet", "move_ships",
 	"unload", "unload_units", "disembark", "run_blockade",
 	"queue_facility", "queue_units", "cancel_build", "scrap_facility", "scrap_unit",
 	"retire", "take_command", "launch_mission", "abort_mission",
@@ -30,6 +31,10 @@ static func apply(c: Command) -> Result:
 			return OrderManager.MoveHeadquarters(FactionRegistry.ById(c.Faction), EntityIndex.planet(str(a.get("destination", ""))))
 		"board_fleet":
 			return OrderManager.BoardFleet(EntityIndex.characters(a.get("characters", [])), EntityIndex.fleet(str(a.get("fleet", ""))))
+		"create_fleet":
+			return OrderManager.CreateFleet(EntityIndex.units(a.get("ships", [])))
+		"move_ships":
+			return OrderManager.MoveShips(EntityIndex.units(a.get("ships", [])), EntityIndex.planet(str(a.get("destination", ""))))
 		"load_aboard":
 			return OrderManager.LoadAboard(EntityIndex.units(a.get("units", [])), EntityIndex.fleet(str(a.get("fleet", ""))))
 		"unload":

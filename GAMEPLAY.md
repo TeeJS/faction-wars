@@ -2547,8 +2547,14 @@ can hold 2") - its berth taken at once, in hyperspace for its travel days
 bombard until it arrives; troops leaving a blockaded world run the blockade,
 asked first. Applying p122's ship rule to troops is **inferred** (the manual
 names ships; the mini-mission moves characters "onto the fleet" the same way,
-p046). **Not implemented:** moving *ships* between fleets at all (p120, p122), and
-a character sent to a fleet at another system (p046) - BACKLOG #57, #58.
+p046). **Ships (2026-09-27, BACKLOG #57):** a ship dragged onto a fleet in the same
+orbit joins it at once, a fleet emptied is disbanded and its people go with the
+ships; onto a fleet at another system it travels as a fleet named for it
+(`Fleet.JoinFleet`), listed in the fleet it joins in hyperspace, and folds into it
+on arrival - or stays a fleet of its own if that fleet has gone; a ship's Move to a
+system and Create Fleet are orders now (`OrderManager.MoveShipsToFleet`,
+`MoveShips`, `CreateFleet`). **Not implemented:** a character sent to a fleet at
+another system (p046) - BACKLOG #58.
 
 ---
 

@@ -17,6 +17,18 @@ var DaysToDestination: int
 ## "the Imperial fleet is threatening..."; p141 Fig. 4.1: "the Alliance fleet
 ## has entered the ... system") - the later arrival of the two.
 var ArrivedDay: int = -1
+## ON ITS WAY TO JOIN THAT FLEET: ships moved onto a fleet at another system
+## are "immediately ... a member of the fleet but will still be in hyperspace
+## for several days until it arrives" (manual p122). They travel as a fleet of
+## their own, named for the one they join, and fold into it on arrival if it
+## is still there (StrategicTickManager); the Fleet window shows them in it.
+var JoinFleet: Fleet = null
+
+
+## A fleet only carrying ships to another (JoinFleet): not a fleet of its own
+## to the player.
+func IsTransit() -> bool:
+	return JoinFleet != null
 
 ## FLEET SERIALS ARE DETERMINISTIC (HANDOFF step 0b): a per-game counter gives the
 ## same "Fleet_0007" on every replay.

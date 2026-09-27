@@ -63,7 +63,7 @@ func Populate(planet: Planet, uiManager: UIManager) -> void:
 		# Fully interactive, unlike everything else in this branch: these
 		# are the player's own ships, and the menus mean something.
 		var mine: Array = Lq.where(
-			Lq.where(planet.OrbitingFleets, func(f: Fleet) -> bool: return f.Faction == GameSettings.PlayerFaction),
+			Lq.where(planet.OrbitingFleets, func(f: Fleet) -> bool: return f.Faction == GameSettings.PlayerFaction and not f.IsTransit()),
 			func(f: Fleet) -> bool: return f.Status != Enums.Status.Enroute or f.Destination == planet)
 
 		for fleet in mine:
@@ -104,8 +104,10 @@ func Populate(planet: Planet, uiManager: UIManager) -> void:
 			DisplayRememberedFleet(view.Groups[0])
 		return
 
+	# A fleet only carrying ships to another is not one of its own: its ships
+	# show in the fleet they join (DisplayFleetContents).
 	var orbitingFleets: Array = Lq.where(planet.OrbitingFleets,
-		func(f: Fleet) -> bool: return f.Status != Enums.Status.Enroute or f.Destination == planet)
+		func(f: Fleet) -> bool: return (f.Status != Enums.Status.Enroute or f.Destination == planet) and not f.IsTransit())
 
 	if orbitingFleets.size() == 0:
 		selectedFleetName.text = "" if original else "No fleets detected in orbit."
@@ -219,6 +221,13 @@ func DisplayFleetContents(fleet: Fleet) -> void:
 	var personnelTab: MarginContainer = tabs.get_node_or_null("Personnel")
 
 	var capShips: Array = Lq.where(fleet.Ships, func(u: Unit) -> bool: return u.Type == Enums.UnitType.CapitalShip)
+	# Ships on their way to join it are "immediately considered a member of the
+	# fleet but will still be in hyperspace ... until it arrives" (manual p122):
+	# listed with it, in hyperspace (Fig 3.65's blue streams: the en-route plate).
+	if fleet.Attached != null:
+		for f in fleet.Attached.OrbitingFleets:
+			if f.JoinFleet == fleet:
+				capShips.append_array(Lq.where(f.Ships, func(u: Unit) -> bool: return u.Type == Enums.UnitType.CapitalShip))
 	var fighters: Array = []
 	var troops: Array = []
 
@@ -473,19 +482,14 @@ func _AttachUnitMenu(unitBtn: Control, unit: Unit, selection: Array = []) -> voi
 	var onShipMenu := func(id: int) -> void:
 		match id:
 			0, 1:
-				# Split FIRST, then move what came out. A ship alone in
-				# its fleet detaches to itself, so this is also the
-				# plain "move the fleet" case with no special-casing.
-				var solo: Fleet = _associatedPlanet.DetachIntoOwnFleet(rowShip) if _associatedPlanet != null else null
-				if solo == null:
-					return
-				var confirm: bool = id == 1
-				_uiManager.StartTargeting(func(target: Planet) -> void:
-					_uiManager.ExecuteSingleFleetMove(solo, target, confirm))
+				_StartShipMove(_PickedShips(rowShip), id == 1)
 			2:
-				# Create Fleet, without going anywhere.
-				if _associatedPlanet != null:
-					_associatedPlanet.DetachIntoOwnFleet(rowShip)
+				# Create Fleet, without going anywhere - an order, so a save
+				# and the other computer see it (it changed the world here
+				# directly, outside the log).
+				var r: Result = CommandBus.issue("create_fleet", { "ships": EntityIndex.ids_of_units(_PickedShips(rowShip)) })
+				if not r.ok and not r.error.is_empty():
+					_uiManager.ShowRefusal(r.error, r.code)
 				Populate(_associatedPlanet, _uiManager)
 			4:
 				_uiManager.OpenEncyclopedia("units", rowShip.PackId)
@@ -498,6 +502,28 @@ func _AttachUnitMenu(unitBtn: Control, unit: Unit, selection: Array = []) -> voi
 						CommandBus.issue("scrap_unit", { "unit": rowShip.Serial })
 					Populate(_associatedPlanet, _uiManager))
 	popup.id_pressed.connect(onShipMenu)
+
+
+## The ships a ship's menu acts on: those picked, when it is one of them.
+func _PickedShips(rowShip: Unit) -> Array:
+	return SelectedCapitalShips.duplicate() if SelectedCapitalShips.has(rowShip) else [rowShip]
+
+
+## A SHIP'S MOVE (manual p115): the crosshair names a system - the ships go
+## there as a fleet of their own - or a fleet, which they join (p120, p122;
+## OrderManager.MoveShipsToFleet).
+func _StartShipMove(ships: Array, confirm: bool) -> void:
+	_uiManager.StartTargetingObject(
+		func(target: Planet) -> void: _uiManager.ExecuteShipMove(ships, target, confirm),
+		func(picked: Variant) -> void: _ShipsOnto(ships, picked))
+
+
+func _ShipsOnto(ships: Array, picked: Variant) -> void:
+	var to: Fleet = OrderManager.FleetOf(picked)
+	if to == null:
+		print("[Move] That is not somewhere a ship can be sent.")
+		return
+	_uiManager.ExecuteLoadAboard(ships, to)
 
 
 ## A troop's, fighter squadron's or Special Forces unit's row aboard a ship:

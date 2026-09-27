@@ -243,6 +243,16 @@ static func LoadAboard(units: Array, fleet: Fleet) -> Result:
 	if units == null or units.is_empty():
 		return Result.fail("Nothing selected.", 0)
 
+	# CAPITAL SHIPS JOIN THE FLEET ITSELF, not a hangar: "Drag ships or troops
+	# between fleets in the open Fleet display" (manual p120), and from
+	# another system p122 (MoveShipsToFleet).
+	var ships: Array = Lq.where(units, func(u): return u.Type == Enums.UnitType.CapitalShip)
+	if not ships.is_empty():
+		var moved: Result = MoveShipsToFleet(ships, fleet)
+		units = Lq.where(units, func(u): return u.Type != Enums.UnitType.CapitalShip)
+		if units.is_empty():
+			return moved
+
 	# Troops leaving a blockaded world for a fleet elsewhere run the blockade,
 	# as any evacuation does ("Troops attempting to move MAY BE KILLED",
 	# manual p124; the player is asked first, UIManager.ExecuteLoadAboard).
@@ -309,6 +319,135 @@ static func LoadAboard(units: Array, fleet: Fleet) -> Result:
 	elif error.is_empty():
 		error = "Nothing there could be loaded."
 	return Result.success(loaded) if error.is_empty() else Result.fail(error, loaded)
+
+
+## THE FLEET A CAPITAL SHIP BELONGS TO, wherever it orbits; null if none.
+static func FleetOfShip(ship: Unit) -> Fleet:
+	if ship == null:
+		return null
+	for p in GameState.AllPlanets():
+		for f in p.OrbitingFleets:
+			if f.Ships.has(ship):
+				return f
+	return null
+
+
+## SHIPS INTO A NEW FLEET where they orbit (all at one system, free to
+## move): out of their fleets, a fleet left with no ship disbanded ("If you
+## move all the ships out of a fleet, the fleet is automatically disbanded",
+## manual p120) and the people aboard it going with the ships. The whole of
+## one fleet is that fleet. `name` names it (a transit fleet takes its
+## target's); a new name otherwise.
+static func _ShipsIntoFleetHere(ships: Array, name: String = "") -> Fleet:
+	var sources: Array = []
+	for s in ships:
+		var f: Fleet = FleetOfShip(s)
+		if f == null or f.Status == Enums.Status.Enroute or s.Status == Enums.Status.Enroute:
+			return null
+		if not sources.has(f):
+			sources.append(f)
+	var orbit: Planet = sources[0].Attached if not sources.is_empty() else null
+	if orbit == null or Lq.any(sources, func(f: Fleet) -> bool: return f.Attached != orbit):
+		return null
+	if sources.size() == 1 and sources[0].Ships.size() == ships.size() and name.is_empty():
+		return sources[0]
+	var fleet := Fleet.new()
+	fleet.ID = Fleet.IdFor(Fleet.NextSerial())
+	fleet.Faction = sources[0].Faction
+	fleet.Name = name if not name.is_empty() else Fleet.NextName(fleet.Faction)
+	fleet.Attached = orbit
+	fleet.Status = Enums.Status.AwaitingOrders
+	orbit.OrbitingFleets.append(fleet)
+	for s in ships:
+		FleetOfShip(s).Ships.erase(s)
+		fleet.AddShip(s)
+	_Disband(sources, fleet)
+	return fleet
+
+
+## Fleets left with no ship go, the people aboard moving to `heir`.
+static func _Disband(fleets: Array, heir: Fleet) -> void:
+	for f in fleets:
+		if not f.Ships.is_empty():
+			continue
+		for c in GameState.ActiveRoster:
+			if c.Attached == f:
+				c.Attached = heir
+		if f.Attached != null:
+			f.Attached.OrbitingFleets.erase(f)
+		print("%s disbanded: its ships have gone to other fleets." % f.Name)
+
+
+## CREATE FLEET (a ship's menu, manual p115; "Ctrl-select several first for a
+## bigger one", p120): the ships picked, a new fleet where they are.
+static func CreateFleet(ships: Array) -> Result:
+	if ships == null or ships.is_empty():
+		return Result.fail("Nothing selected.")
+	var f: Fleet = _ShipsIntoFleetHere(ships)
+	if f == null:
+		return Result.fail("Those ships are not together and free to move.")
+	EventBus.BroadcastChanged()
+	return Result.success(f.Ships.size())
+
+
+## A SHIP'S MOVE TO A SYSTEM (manual p115): the ships picked leave their fleet
+## as a fleet of their own and go - the whole fleet when all of it is picked.
+static func MoveShips(ships: Array, destination: Planet) -> Result:
+	if ships == null or ships.is_empty():
+		return Result.fail("Nothing selected.", 0)
+	var f: Fleet = _ShipsIntoFleetHere(ships)
+	if f == null:
+		return Result.fail("Those ships are not together and free to move.", 0)
+	return MoveFleets([f], destination)
+
+
+## SHIPS ONTO ANOTHER FLEET. In the same orbit they join it at once ("Drag
+## ships or troops between fleets", manual p120). From another system: "If you
+## move a ship onto a fleet in a different sector, that ship will immediately
+## be considered a member of the fleet but will still be in hyperspace for
+## several days until it arrives" (p122) - they travel as a fleet named for
+## it (JoinFleet) and fold into it on arrival. value = how many.
+static func MoveShipsToFleet(ships: Array, fleet: Fleet) -> Result:
+	if fleet == null:
+		return Result.fail("No fleet.", 0)
+	if fleet.Status == Enums.Status.Enroute:
+		return Result.fail("%s is %s." % [fleet.Name, Terms.label("in_transit")], 0).coded("in_transit")
+	var going: Array = Lq.where(ships, func(s): return s.Faction == fleet.Faction and s.Status != Enums.Status.Enroute \
+		and not fleet.Ships.has(s) and FleetOfShip(s) != null and FleetOfShip(s).Status != Enums.Status.Enroute)
+	if going.is_empty():
+		return Result.fail("Nothing there could join %s." % fleet.Name, 0)
+	var moved := 0
+	var by_orbit := {}
+	for s in going:
+		var at: Planet = FleetOfShip(s).Attached
+		if not by_orbit.has(at):
+			by_orbit[at] = []
+		by_orbit[at].append(s)
+	for at in by_orbit:
+		var group: Array = by_orbit[at]
+		if at == fleet.Attached:
+			var sources: Array = []
+			for s in group:
+				var f: Fleet = FleetOfShip(s)
+				if not sources.has(f):
+					sources.append(f)
+				f.Ships.erase(s)
+				fleet.AddShip(s)
+			_Disband(sources, fleet)
+			print("%d ship(s) join %s at %s." % [group.size(), fleet.Name, at.Name])
+			moved += group.size()
+			continue
+		var transit: Fleet = _ShipsIntoFleetHere(group, fleet.Name)
+		if transit == null:
+			continue
+		transit.JoinFleet = fleet
+		var r: Result = MoveFleets([transit], fleet.Attached)
+		if r.ok:
+			print("%d ship(s) leave %s to join %s at %s. ETA: %d days." % [group.size(), at.Name, fleet.Name, fleet.Attached.Name, int(r.value)])
+			moved += group.size()
+	if moved > 0:
+		EventBus.BroadcastChanged()
+	return Result.success(moved) if moved > 0 else Result.fail("Nothing there could join %s." % fleet.Name, 0)
 
 
 ## The system a unit stands at: its carrier's orbit, or its own world.
