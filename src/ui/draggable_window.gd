@@ -103,9 +103,9 @@ func RefreshIfChanged() -> void:
 	var now: Variant = StateSignature()
 	if now == null:
 		return
-	# A menu or a dialog is open on this window, or something is being dragged
-	# - leave it completely alone.
-	if HasOpenPopup() or _Dragging():
+	# A menu or a dialog is open on this window, something is being dragged,
+	# or a click is under way on it - leave it completely alone.
+	if HasOpenPopup() or _Dragging() or _clickHeld:
 		return
 	if _everPainted and now == _paintedSignature:
 		return
@@ -134,11 +134,36 @@ static func _HasOpenPopup(node: Node) -> bool:
 func CanRefresh() -> bool:
 	# Checked here as well, so the day tick and the state event cannot walk over
 	# a dialog either - they call Refresh() directly, bypassing the poll.
-	if HasOpenPopup() or _Dragging():
+	if HasOpenPopup() or _Dragging() or _clickHeld:
 		_pendingRefresh = true
 		return false
 	_pendingRefresh = false
 	return true
+
+
+## NOT UNDER A CLICK. A repaint between a button's press and its release
+## replaces the button, the release lands on a new one that never saw the
+## press, and nothing happens: the crosshair's click on an enemy battery was
+## lost that way when a day passed mid-click (TeeJ, 2026-09-27, BACKLOG #55).
+## A button held on the window holds its repaint until the release.
+var _clickHeld: bool = false
+
+
+func _input(event: InputEvent) -> void:
+	if not event is InputEventMouseButton:
+		return
+	if (event as InputEventMouseButton).pressed:
+		if is_visible_in_tree() and Rect2(Vector2.ZERO, size).has_point((make_input_local(event) as InputEventMouseButton).position):
+			_clickHeld = true
+	elif _clickHeld:
+		_clickHeld = false
+		# After the release has reached the button.
+		_AfterClick.call_deferred()
+
+
+func _AfterClick() -> void:
+	if is_inside_tree() and _pendingRefresh and CanRefresh():
+		Refresh()
 
 
 ## NOT UNDER A DRAG. A repaint rebuilds the window's buttons, so one in the

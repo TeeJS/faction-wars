@@ -1342,8 +1342,9 @@ func RefreshActiveWindows(_currentDay: int) -> void:
 
 	for windowName in _openWindows.keys():
 		var window: DraggableWindow = _openWindows[windowName]
-		# Only refresh if the window is valid AND currently visible (not minimized!)
-		if is_instance_valid(window) and window.visible:
+		# Only refresh if the window is valid AND currently visible (not minimized!),
+		# and not under a menu, a drag or a click (CanRefresh: it follows after).
+		if is_instance_valid(window) and window.visible and window.CanRefresh():
 			window.Refresh()
 
 
