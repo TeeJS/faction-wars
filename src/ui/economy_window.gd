@@ -857,6 +857,10 @@ func OpenBuildChooser(planet: Planet, producer: String) -> void:
 	var days: Array[int] = []
 	var place: Array[Callable] = []   # C#: List<Func<int, (int made, string error)>> - each returns a Result (value = made, error)
 	var blocked: Array[String] = []   # C#: null when nothing blocks - "" here
+	# Why, as Result.code: "no_maintenance" leaves Build live, so the agent can
+	# say so - "C-3PO will tell you if you don't have the maintenance capacity
+	# for something you want to build" (manual p047).
+	var blockedCodes: Array[String] = []
 	# The original's window names an item plainly and shows its picture.
 	var titles: Array[String] = []
 	var encyclopedia: Array = []
@@ -876,6 +880,7 @@ func OpenBuildChooser(planet: Planet, producer: String) -> void:
 			days.append(r.ConstructionCost * rate)
 			var why: Result = planet.CanQueueFacility(rFamily, r.Tier, target)
 			blocked.append(why.error)
+			blockedCodes.append(why.code)
 			place.append(func(n: int) -> Result:
 				return CommandBus.issue("queue_facility", { "planet": planet.Name, "type": rFamily, "tier": r.Tier, "destination": target.Name if target != null else "", "count": n }))
 	else:
@@ -891,6 +896,7 @@ func OpenBuildChooser(planet: Planet, producer: String) -> void:
 			days.append(r.ConstructionCost * rate)
 			var why: Result = planet.CanQueueUnit(r, target)
 			blocked.append(why.error)
+			blockedCodes.append(why.code)
 			place.append(func(n: int) -> Result:
 				return CommandBus.issue("queue_units", { "planet": planet.Name, "rule": r.DisplayName, "destination": target.Name if target != null else "", "count": n }))
 
@@ -912,7 +918,7 @@ func OpenBuildChooser(planet: Planet, producer: String) -> void:
 		var items: Array = []
 		for i in order:
 			items.append({ "name": titles[i], "picture": Art.Scaled(Art.Portrait(encyclopedia[i][0], encyclopedia[i][1]), OUI.K),
-				"refined": refined[i], "maint": maint[i], "days": days[i], "blocked": blocked[i], "place": place[i],
+				"refined": refined[i], "maint": maint[i], "days": days[i], "blocked": blocked[i], "blocked_code": blockedCodes[i], "place": place[i],
 				"encyclopedia": encyclopedia[i] })
 		ui.OpenBuildSelection(owner, items, planet.DeploymentDaysTo(target), target.Name, helpers,
 			func() -> void:
@@ -980,7 +986,7 @@ func OpenBuildChooser(planet: Planet, producer: String) -> void:
 			+ (("   (%d with one)" % days[i]) if helpers > 1 else "")
 		deployment.text = "Best Time To Deployment: %d Days" % deployDays
 		reason.text = blocked[i]
-		dialog.get_ok_button().disabled = not blocked[i].is_empty()
+		dialog.get_ok_button().disabled = not blocked[i].is_empty() and blockedCodes[i] != "no_maintenance"
 
 	picker.item_selected.connect(func(_i: int) -> void: Show.call())
 	Show.call()
@@ -1003,6 +1009,8 @@ func OpenBuildChooser(planet: Planet, producer: String) -> void:
 			print("[Build] Queued %d of %d - %s" % [made, want, err])
 		elif made == 0:
 			print("[Build] %s" % err)
+		if made < want:
+			preload("res://src/ui/advisor.gd").AnswerOn(get_tree(), res.code)
 		Populate(planet)
 		dialog.queue_free())
 	dialog.canceled.connect(dialog.queue_free)
