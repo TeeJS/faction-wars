@@ -62,6 +62,8 @@ func IsTargetingObject() -> bool:
 
 
 const OriginalMenu := preload("res://src/ui/original_menu.gd")
+const AdvisorScript := preload("res://src/ui/advisor.gd")
+const SoundLib := preload("res://src/ui/sound.gd")
 
 
 func _ready() -> void:
@@ -186,6 +188,15 @@ func BuildCommandFrame(side: String) -> void:
 		"gid": func() -> void: OpenGidControlMenu(),
 	})
 	CommandFrameRef = frame
+	# The droids speak (docs/advisor-plan.md): the agent first, then the
+	# message droid, as Droids() lists them.
+	var advisor := AdvisorScript.new()
+	for d in frame.Droids():
+		if str(d.name) == "Droid_agent":
+			advisor.Agent = d
+		elif str(d.name) == "Droid_messenger":
+			advisor.Messenger = d
+	add_child(advisor)
 	MapFrame = frame.MapWindow()
 	layer = WindowsLayer
 	var map: Node2D = get_node_or_null("../GalaxyMap")
@@ -1461,19 +1472,21 @@ func _AgentPopup() -> PopupMenu:
 	popup.add_item("Objectives", 4)
 	popup.add_check_item("Manage Garrisons", 5)
 	popup.add_check_item("Manage Production", 6)
-	popup.add_item("Translate Counterpart", 7)
+	popup.add_check_item("Translate Counterpart", 7)
 	popup.add_item("Agent Advice", 8)
 
 	popup.set_item_checked(popup.get_item_index(5), AgentDroid.ManagingGarrisons(us))
 	popup.set_item_checked(popup.get_item_index(6), AgentDroid.ManagingProduction(us))
+	SoundLib.Load()
+	popup.set_item_checked(popup.get_item_index(7), SoundLib.TranslateCounterpart)
 
-	for id in [0, 1, 2, 7, 8]:
+	for id in [0, 1, 2, 8]:
 		popup.set_item_disabled(popup.get_item_index(id), true)
 
 	popup.set_item_tooltip(popup.get_item_index(0), "Order ships from a shipyard's own menu.")
 	popup.set_item_tooltip(popup.get_item_index(1), "Order troops from a training facility's own menu.")
 	popup.set_item_tooltip(popup.get_item_index(2), "Order facilities from a construction yard's own menu.")
-	popup.set_item_tooltip(popup.get_item_index(7), "Not built - the message droid's announcements are not voiced.")
+	popup.set_item_tooltip(popup.get_item_index(7), "%s says aloud what %s reports (Alt+V)." % [AgentDroid.NameFor(us), AgentDroid.MessengerFor(us)])
 	popup.set_item_tooltip(popup.get_item_index(8), "Not built.")
 	return popup
 
@@ -1570,6 +1583,8 @@ func OnAgentMenu(id: int) -> void:
 		4: OpenObjectives()
 		5: CommandBus.issue("droid", { "manage": "garrisons", "on": not AgentDroid.ManagingGarrisons(us) })
 		6: CommandBus.issue("droid", { "manage": "production", "on": not AgentDroid.ManagingProduction(us) })
+		# A preference of this player's, not an order: nothing for the log.
+		7: SoundLib.SetTranslateCounterpart(not SoundLib.TranslateCounterpart)
 
 
 ## THE BATTLE ALERT (manual p124, Fig 4.1). Raised from the repaint poll rather
@@ -1709,6 +1724,10 @@ func _unhandled_input(event: InputEvent) -> void:
 					return
 				KEY_U:                        # ALT-U toggle Manage Production (agent)
 					OnAgentMenu(6)
+					get_viewport().set_input_as_handled()
+					return
+				KEY_V:                        # ALT-V toggle Translate Counterpart (agent)
+					OnAgentMenu(7)
 					get_viewport().set_input_as_handled()
 					return
 		else:
@@ -1857,6 +1876,7 @@ func ExecuteCharacterMove(characters: Array, destination: Planet, requireConfirm
 		var r: Result = CommandBus.issue("move_characters", { "characters": EntityIndex.names_of(characters), "destination": destination.Name })
 		if r.ok:
 			RefreshAfterMove(currentPlanet, destination)
+			AdvisorScript.SayOrder(get_tree(), characters)
 		elif not r.error.is_empty():
 			ShowRefusal(r.error)
 

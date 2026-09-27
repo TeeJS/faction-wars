@@ -1,6 +1,6 @@
 # Plan: the droids speak - the original's advisor voices and the opening briefing
 
-Status: **decisions answered, phase 0 done, 2026-09-27** - stopped for TeeJ's go on phase 1.
+Status: **phases 0-2 built, 2026-09-27** (TeeJ: "go - continue independently until done"): the exporter (2.6.0, #275) and the game side - the droids, the characters' lines, Translate Counterpart, the sound effects volume, the cockpit's sounds (TeeJ: "include those this round"). Phase 3 has no source; phase 4 next.
 TeeJ, 2026-09-27: "What about the dialogue, like emperor's 'you have not adequately
 supported'" ... "yes write the plan". BACKLOG #41 (sound) stays for the sound effects.
 
@@ -114,9 +114,9 @@ only, by name); about 45 recordings per side nothing references; the names of co
 | # | Phase | Done when |
 |---|---|---|
 | 0 | **Map the lines**: Rebellion 2's table, checked against the binary (TeeJ's approval each time, manual mode) and by listening; what VOICEFX is; where TeeJ's line is | every mapped event has a named recording and a confidence - **done** from Rebellion 2's map (decision 3), every recording checked in the files (above) |
-| 1 | **Exporter**: the recordings and the talking animations | the game can play them; size stated |
-| 2 | **Game**: the droids report events; Translate Counterpart; the effects volume | a test per event; TeeJ hears them |
-| 3 | **Game**: the instant answers (invalid order, in transit, under construction, the droid toggles, maintenance) | a test each |
+| 1 | **Exporter**: the recordings and the talking animations | the game can play them; size stated - **built** (2.6.0, #275): 890 sounds 13.8 MB, 110 runs 14.9 MB |
+| 2 | **Game**: the droids report events; Translate Counterpart; the effects volume | a test per event; TeeJ hears them - **built**: `src/ui/advisor.gd`, `sound.gd`, `fwa.gd`; the pack's `advisor`, `voices`, `sounds` (rules 25-27); news tagged where the simulation writes it (GameMessage.Advisor / Voice); the cockpit's sounds (open-rebellion's map of COMMON.DLL); tests/advisor.gd. TeeJ's listen owed |
+| 3 | **Game**: the instant answers (invalid order, in transit, under construction, the droid toggles, maintenance) | a test each - **no source**: Rebellion 2's last in-repo data has no ids for them, and none other maps them; the binary would (TeeJ's approval) |
 | 4 | **Game**: the opening briefing (decision 2) | it plays at a new game, **Esc skips it**, then Agent Advice opens |
 
 ## Decisions for TeeJ

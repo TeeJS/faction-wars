@@ -143,7 +143,7 @@ static func ProcessBountyHunters(day: int, rng: Prng) -> void:
 			return
 		EventBus.Tell(han.Faction, GameMessage.new("Bounty hunters tried for %s" % han.Name,
 			"%s was set upon by bounty hunters at %s and fought his way clear." % [han.Name, han.Attached.Name if han.Attached != null else "his post"],
-			Enums.MessageCategory.Missions, day, han.Attached if han.Attached is Planet else null, han))
+			Enums.MessageCategory.Missions, day, han.Attached if han.Attached is Planet else null, han).With("", "bounty_attack"))
 		return
 
 	TakeToPalace(han, day, rng)
@@ -191,7 +191,7 @@ static func TakeToPalace(han: Character, day: int, rng: Prng) -> void:
 		"Bounty hunters have seized %s and carried him to Jabba's palace.\n\n%s" % [han.Name,
 			("%s %s gone after him without waiting for orders. None of them can be located or given orders until this is settled." % [names, "has" if party.size() == 1 else "have"]) if not party.is_empty()
 			else "There is nobody free to go after him."],
-		Enums.MessageCategory.Missions, day, null, han))
+		Enums.MessageCategory.Missions, day, null, han).With("captured"))
 
 
 ## THE PALACE RESOLUTION (0x55C910): score = Espionage / entry 109 + Combat / entry 110,
@@ -233,7 +233,7 @@ static func FreeFromPalace(han: Character, rescuer: Character, day: int) -> void
 	EventBus.Tell(han.Faction, GameMessage.new("%s is free" % han.Name,
 		"%s has got %s out of Jabba's palace.\n\n%s %s back at %s and awaiting orders." % [
 			rescuer.Name, han.Name, Lq.join(Lq.select(party, func(c): return c.Name)), "is" if party.size() == 1 else "are", home_name],
-		Enums.MessageCategory.Missions, day, home if home is Planet else null, han))
+		Enums.MessageCategory.Missions, day, home if home is Planet else null, han).With("released", "released"))
 
 
 ## ⚠ OURS: the headquarters world when held, any held world otherwise.

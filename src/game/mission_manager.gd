@@ -309,10 +309,12 @@ static func AwardForceForSuccess(m: Mission, day: int) -> void:
 		print("[Force] %s has advanced to %s (level %d)." % [c.Name, Character.RankLabel(c.SpecialPowerRankOf()), c.SpecialPowerLevel])
 		if not GameSettings.IsHuman(m.Faction):
 			continue
-		EventBus.Tell(m.Faction, GameMessage.new(
+		var grown := GameMessage.new(
 			"%s is now a %s" % [c.Name, Pretty(c.SpecialPowerRankOf())],
 			"%s's command of the Force has deepened through service. They stand at %s." % [c.Name, Pretty(c.SpecialPowerRankOf())],
-			Enums.MessageCategory.Missions, day, m.Target, c))
+			Enums.MessageCategory.Missions, day, m.Target, c)
+		grown.Voice = "force_growth"
+		EventBus.Tell(m.Faction, grown)
 
 
 ## Characters improve the skill their mission exercised, on success (guide p094-095;
@@ -353,7 +355,9 @@ static func DisplayNameOf(u: Unit) -> Variant:
 	return u.Name if u != null else null
 
 
-static func Report(m: Mission, day: int, title: String, body: String, asks_to_continue: bool = false) -> void:
+## `voice`: the line the reporting character speaks with it (GameMessage.Voice:
+## "mission_success", "mission_failure", "mission_abort"), or "".
+static func Report(m: Mission, day: int, title: String, body: String, asks_to_continue: bool = false, voice: String = "") -> void:
 	if not GameSettings.IsHuman(m.Faction):
 		return
 	var leader := Leader(m)
@@ -366,6 +370,8 @@ static func Report(m: Mission, day: int, title: String, body: String, asks_to_co
 		Enums.MessageCategory.Missions, day, m.Target, character)
 	msg.PendingMission = m if asks_to_continue else null
 	msg.Type = Enums.MessageType.MissionReport   # ALWAYS MissionReport, NEVER MissionFailed (see source)
+	msg.Advisor = "personnel_report"
+	msg.Voice = voice
 	EventBus.Tell(m.Faction, msg)
 
 
@@ -381,6 +387,8 @@ static func _tell_defender(planet: Planet, day: int, title: String, body: String
 		return
 	var msg := GameMessage.new(title, body, Enums.MessageCategory.Missions, day, planet, null)
 	msg.Type = Enums.MessageType.MissionReport
+	# An enemy mission foiled is the agent's report; one that struck is a loss.
+	msg.Advisor = "agent_report" if title == "Enemy Mission Foiled" else "maintenance"
 	EventBus.Tell(planet.ControllingFaction, msg)
 
 
@@ -699,7 +707,7 @@ static func ProcessDay(rng: Prng, day: int) -> void:
 		if m.Type == Enums.MissionType.SpecialPowerTraining and m.Arrived() and m.Target.ControllingFaction != m.Faction:
 			var lost := SeizeFoiledTeam(m, rng)
 			Report(m, day, "Jedi Training foiled at %s" % m.Target.Name,
-				"%s is no longer ours. The training was broken off.\n\n%s" % [m.Target.Name, lost])
+				"%s is no longer ours. The training was broken off.\n\n%s" % [m.Target.Name, lost], false, "mission_failure")
 			Conclude(m)
 			_active.remove_at(i)
 			EventBus.BroadcastChanged()
@@ -889,7 +897,7 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 	if m.Attempts == 0 and Foiled(m, rng):
 		var fate := SeizeFoiledTeam(m, rng)
 		Report(m, day, "%s mission foiled" % m.DisplayName(),
-			"%s was detected by defenders at %s. The mission was foiled.\n\n%s" % [m.FoiledBy.Name if m.FoiledBy != null else "My team", m.Target.Name, fate])
+			"%s was detected by defenders at %s. The mission was foiled.\n\n%s" % [m.FoiledBy.Name if m.FoiledBy != null else "My team", m.Target.Name, fate], false, "mission_failure")
 		_tell_defender(m.Target, day, "Enemy Mission Foiled",
 			"Our forces foiled an enemy mission at %s." % m.Target.Name)
 		m.Finished = true
@@ -906,7 +914,7 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 			betrayer.TraitorRevealed = true
 			print("[Mission] %s at %s BETRAYED by %s." % [JsonUtil.enum_name(Enums.MissionType, m.Type), m.Target.Name, betrayer.Name])
 			Report(m, day, "%s mission betrayed" % m.DisplayName(),
-				"%s betrayed our %s mission at %s. Nothing was achieved.\n\nTheir loyalty has been in question for some time. They can be retired from their right-click menu, or left to come round if our fortunes improve." % [betrayer.Name, m.DisplayName().to_lower(), m.Target.Name])
+				"%s betrayed our %s mission at %s. Nothing was achieved.\n\nTheir loyalty has been in question for some time. They can be retired from their right-click menu, or left to come round if our fortunes improve." % [betrayer.Name, m.DisplayName().to_lower(), m.Target.Name], false, "mission_failure")
 			m.Finished = true
 			EventBus.BroadcastChanged()
 			return
@@ -936,7 +944,7 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 		Report(m, day, "%s attempt %d failed" % [m.DisplayName(), m.Attempts],
 			("My team made no progress at %s on attempt %d.\n\nDo you wish the mission to continue?" % [m.Target.Name, m.Attempts]) if persistent
 			else ("The %s mission at %s failed. The team is returning to base." % [m.DisplayName().to_lower(), m.Target.Name]),
-			persistent)
+			persistent, "mission_failure")
 		if not persistent:
 			m.Finished = true
 		return
@@ -968,11 +976,12 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 					"%s is now loyal to us and under our control." % m.Target.Name,
 					Enums.MessageCategory.Loyalty, day, m.Target, null)
 				joined.Type = Enums.MessageType.SystemControl
+				joined.Advisor = "support_gained"
 				EventBus.Tell(m.Faction, joined)
 			Report(m, day, "Diplomacy succeeding at %s" % m.Target.Name,
 				"Support for the %s on %s has risen to %d%%.%s" % [m.Faction.DisplayName, m.Target.Name, now,
 					" The system is now wholly with us and the mission is complete." if now >= 100 else "\n\nDo you wish the mission to continue?"],
-				now < 100)
+				now < 100, "mission_success")
 			if now >= 100:
 				m.Finished = true
 
@@ -981,7 +990,7 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 			print("[Mission] Espionage at %s succeeded - full snapshot taken." % m.Target.Name)
 			var leaked := LeakExtraSystems(m, rng)
 			Report(m, day, "Espionage successful at %s" % m.Target.Name,
-				"My agents have returned detailed intelligence on %s.\n\nEverything the System Defenses and Manufacturing windows show for it is accurate as of today. It will not update itself.%s" % [m.Target.Name, leaked])
+				"My agents have returned detailed intelligence on %s.\n\nEverything the System Defenses and Manufacturing windows show for it is accurate as of today. It will not update itself.%s" % [m.Target.Name, leaked], false, "mission_success")
 			m.Finished = true
 
 		Enums.MissionType.InciteUprising:
@@ -992,7 +1001,7 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 				"Support for the %s on %s has fallen to %d%%.%s%s" % [holder.DisplayName if holder != null else "occupier", m.Target.Name, m.Target.SupportFor(holder),
 					" The system is in open revolt." if rioting else "",
 					" The system has thrown them out." if m.Target.ControllingFaction != holder else "\n\nDo you wish the mission to continue?"],
-				m.Target.ControllingFaction == holder)
+				m.Target.ControllingFaction == holder, "mission_success")
 			if m.Target.ControllingFaction != holder:
 				m.Finished = true
 
@@ -1006,7 +1015,7 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 			Report(m, day, "Order returning to %s" % m.Target.Name,
 				"Support on %s has risen to %d%%.%s" % [m.Target.Name, restored,
 					"\n\nDo you wish the mission to continue?" if still_rioting else " The uprising has ended."],
-				still_rioting)
+				still_rioting, "mission_success")
 			if not still_rioting:
 				m.Finished = true
 
@@ -1024,7 +1033,7 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 			]
 			print("[Mission] Reconnaissance of %s complete - system charted." % m.Target.Name)
 			Report(m, day, "Reconnaissance report: %s" % m.Target.Name,
-				"\n".join(lines) + "\n\nOur probe detected no information on personnel or special forces.")
+				"\n".join(lines) + "\n\nOur probe detected no information on personnel or special forces.", false, "mission_success")
 			m.Finished = true
 			EventBus.BroadcastChanged()
 
@@ -1032,7 +1041,7 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 			var recruit := Recruitable(m.Faction, rng)
 			if recruit == null:
 				print("[Mission] Recruitment at %s succeeded but no one remains to recruit." % m.Target.Name)
-				Report(m, day, "Recruitment at %s" % m.Target.Name, "My agents found no new officers to recruit.")
+				Report(m, day, "Recruitment at %s" % m.Target.Name, "My agents found no new officers to recruit.", false, "mission_failure")
 				m.Finished = true
 			else:
 				recruit.Attached = m.Target
@@ -1040,7 +1049,7 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 				recruit.DaysToDestination = 0
 				recruit.Status = Enums.Status.AwaitingOrders
 				print("[Mission] Recruitment at %s succeeded - %s joins." % [m.Target.Name, recruit.Name])
-				Report(m, day, "Recruitment successful at %s" % m.Target.Name, "%s has joined our cause at %s." % [recruit.Name, m.Target.Name])
+				Report(m, day, "Recruitment successful at %s" % m.Target.Name, "%s has joined our cause at %s." % [recruit.Name, m.Target.Name], false, "mission_success")
 				m.Finished = true
 				EventBus.BroadcastChanged()
 
@@ -1056,7 +1065,7 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 				victim.DaysToDestination = 0
 				print("[Mission] %s abducted at %s by %s." % [victim.Name, m.Target.Name, m.Faction.DisplayName])
 				Report(m, day, "%s captured" % victim.Name,
-					"My team has taken %s prisoner at %s. They will be held there until rescued or the system is retaken." % [victim.Name, m.Target.Name])
+					"My team has taken %s prisoner at %s. They will be held there until rescued or the system is retaken." % [victim.Name, m.Target.Name], false, "mission_success")
 				m.Finished = true
 				EventBus.BroadcastChanged()
 
@@ -1069,7 +1078,7 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 				if can_die:
 					Kill(victim)
 					print("[Mission] %s assassinated at %s." % [victim.Name, m.Target.Name])
-					Report(m, day, "%s is dead" % victim.Name, "My team reached %s at %s. The target did not survive." % [victim.Name, m.Target.Name])
+					Report(m, day, "%s is dead" % victim.Name, "My team reached %s at %s. The target did not survive." % [victim.Name, m.Target.Name], false, "mission_success")
 				else:
 					var died := Injure(victim, rng, RuleId.AssassinInjuryBase, RuleId.AssassinInjurySpread)
 					print("[Mission] %s %s at %s." % [victim.Name, "died of wounds" if died else "injured", m.Target.Name])
@@ -1077,7 +1086,7 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 						("My team struck %s at %s. The wounds proved fatal." % [victim.Name, m.Target.Name]) if died
 						else ("My team reached %s at %s. They are badly hurt - %sand will not recover until they rest on a system their own side controls." % [
 							victim.Name, m.Target.Name,
-							"too well protected to kill outright, but far easier to capture now, " if victim.IsMajor else "unable to take a mission or hold a command, "]))
+							"too well protected to kill outright, but far easier to capture now, " if victim.IsMajor else "unable to take a mission or hold a command, "]), false, "mission_success")
 				m.Finished = true
 				EventBus.BroadcastChanged()
 
@@ -1085,11 +1094,11 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 			var what: String = m.TargetObjectName() if m.TargetObjectName() != null else "the target"
 			var gone := m.Target.DestroyFacility(m.TargetFacility) if m.TargetFacility != null else m.Target.DestroyUnit(m.TargetUnit)
 			if not gone:
-				Report(m, day, "%s is already gone" % what, "My team reached %s to find %s no longer there." % [m.Target.Name, what])
+				Report(m, day, "%s is already gone" % what, "My team reached %s to find %s no longer there." % [m.Target.Name, what], false, "mission_abort")
 				m.Finished = true
 			else:
 				print("[Mission] Sabotage at %s destroyed %s." % [m.Target.Name, what])
-				Report(m, day, "%s destroyed" % what, "My team has destroyed %s at %s." % [what, m.Target.Name])
+				Report(m, day, "%s destroyed" % what, "My team has destroyed %s at %s." % [what, m.Target.Name], false, "mission_success")
 				_tell_defender(m.Target, day, "%s destroyed" % what,
 					"%s at %s was destroyed by enemy sabotage." % [what, m.Target.Name])
 				m.Finished = true
@@ -1097,7 +1106,7 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 		Enums.MissionType.SuperweaponSabotage:
 			var station := DeathStarAt(m.Target)
 			if station == null:
-				Report(m, day, "The Death Star has gone", "My team reached %s to find the Death Star no longer there." % m.Target.Name)
+				Report(m, day, "The Death Star has gone", "My team reached %s to find the Death Star no longer there." % m.Target.Name, false, "mission_abort")
 				m.Finished = true
 			else:
 				for f in m.Target.OrbitingFleets.duplicate():
@@ -1111,7 +1120,7 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 				for agent in Lq.of_type_character(m.Team):
 					agent.EspionageRating += RuleManager.Get(RuleId.SuperweaponSabotageEspionageGain, m.Faction)
 					agent.CombatRating += RuleManager.Get(RuleId.SuperweaponSabotageCombatGain, m.Faction)
-				Report(m, day, "Death Star Sabotaged", "The %s has sabotaged the Death Star at %s.\n\nIt is destroyed." % [m.Faction.DisplayName, m.Target.Name])
+				Report(m, day, "Death Star Sabotaged", "The %s has sabotaged the Death Star at %s.\n\nIt is destroyed." % [m.Faction.DisplayName, m.Target.Name], false, "mission_success")
 				m.Finished = true
 				# The original's movie 104 (manual p106), for both sides.
 				EventBus.Cue("superweapon_sabotaged", [m.Faction, station.Faction])
@@ -1134,14 +1143,14 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 						risen.append("%s is now a %s" % [s.Name, Pretty(s.SpecialPowerRankOf())])
 				print("[Mission] Jedi Training at %s: +%d to %s" % [m.Target.Name, gain, Lq.join(Lq.select(students, func(s): return s.Name))])
 				Report(m, day, "Jedi Training at %s" % m.Target.Name,
-					(".\n".join(risen) + ".\n\n" if not risen.is_empty() else "") + "%s has completed a course of training." % teacher.Name)
+					(".\n".join(risen) + ".\n\n" if not risen.is_empty() else "") + "%s has completed a course of training." % teacher.Name, false, "mission_success")
 				m.Finished = true
 
 		Enums.MissionType.ShipDesignResearch, Enums.MissionType.TroopTrainingResearch, Enums.MissionType.FacilityDesignResearch:
 			ResearchManager.MissionProgress(m.Faction, m.ResearchTrack(), day, rng)
 			print("[Mission] %s at %s advanced our research." % [JsonUtil.enum_name(Enums.MissionType, m.Type), m.Target.Name])
 			Report(m, day, "%s progress at %s" % [m.DisplayName(), m.Target.Name],
-				"My researchers have made progress.\n\nDo you wish the mission to continue?", true)
+				"My researchers have made progress.\n\nDo you wish the mission to continue?", true, "mission_success")
 
 		Enums.MissionType.Rescue:
 			var prisoner := m.TargetCharacter
@@ -1153,7 +1162,7 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 				print("[Mission] %s rescued at %s." % [prisoner.Name, m.Target.Name])
 				Report(m, day, "%s rescued" % prisoner.Name,
 					"%s is free, at %s.%s" % [prisoner.Name, m.Target.Name,
-						" They remain injured and will need to rest on one of our systems." if prisoner.IsInjured() else ""])
+						" They remain injured and will need to rest on one of our systems." if prisoner.IsInjured() else ""], false, "mission_success")
 				m.Finished = true
 				EventBus.BroadcastChanged()
 

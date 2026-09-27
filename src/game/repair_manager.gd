@@ -109,4 +109,5 @@ static func Announce(u: Unit, fleet: Fleet, where: Planet, day: int) -> void:
 		else ("%s attached to %s has repaired all battle damage and is fully operational." % [u.Name, at]),
 		Enums.MessageCategory.Missions, day, where)
 	msg.Type = Enums.MessageType.Repair
+	msg.Advisor = "squadron_repaired" if squadron else "ship_repaired"
 	EventBus.Tell(u.Faction, msg)

@@ -373,6 +373,19 @@ class PackManifest:
 	var Music: Dictionary = {}
 	var MusicGiven: bool = false
 	var MusicRaw: Variant = null
+	## SCHEMA.md section 2 (docs/advisor-plan.md): what the droids say for which
+	## news, per side; the characters' own lines; the controls' sounds. Each as
+	## written, less the "_" comment keys at every level. Given/Raw for
+	## validation rules 25-27.
+	var Advisor: Dictionary = {}
+	var AdvisorGiven: bool = false
+	var AdvisorRaw: Variant = null
+	var Voices: Dictionary = {}
+	var VoicesGiven: bool = false
+	var VoicesRaw: Variant = null
+	var Sounds: Dictionary = {}
+	var SoundsGiven: bool = false
+	var SoundsRaw: Variant = null
 
 	## The longest download link offered (the relay's listing keeps as much).
 	const UrlMax := 300
@@ -455,7 +468,28 @@ class PackManifest:
 						if track is String:
 							pool.append(str(track).strip_edges())
 				o.Music[str(event)] = pool
+		o.AdvisorRaw = _deep_without_comments(JsonUtil.get_ci(d, "advisor"))
+		o.AdvisorGiven = o.AdvisorRaw != null
+		o.Advisor = o.AdvisorRaw if o.AdvisorRaw is Dictionary else {}
+		o.VoicesRaw = _deep_without_comments(JsonUtil.get_ci(d, "voices"))
+		o.VoicesGiven = o.VoicesRaw != null
+		o.Voices = o.VoicesRaw if o.VoicesRaw is Dictionary else {}
+		o.SoundsRaw = _deep_without_comments(JsonUtil.get_ci(d, "sounds"))
+		o.SoundsGiven = o.SoundsRaw != null
+		o.Sounds = o.SoundsRaw if o.SoundsRaw is Dictionary else {}
 		return o
+
+	## A map and every map inside it, less their "_" keys.
+	static func _deep_without_comments(v: Variant) -> Variant:
+		if v is Array:
+			return (v as Array).map(func(x: Variant) -> Variant: return _deep_without_comments(x))
+		if not v is Dictionary:
+			return v
+		var out := {}
+		for k in v:
+			if not str(k).begins_with("_"):
+				out[k] = _deep_without_comments(v[k])
+		return out
 
 	## A map as written, less its "_" keys: an author's comments are never data
 	## (SCHEMA.md section 1), not even in what validation reads back.

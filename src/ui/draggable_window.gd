@@ -459,6 +459,8 @@ static func LaunchMission(host: Node, type: int, team: Array, origin: Planet, ta
 	var r: Result = CommandBus.issue("launch_mission", args)
 	if not r.ok and host != null and is_instance_valid(host):
 		RefusalOn(host, "Mission Refused", r.error)
+	elif r.ok and host != null and is_instance_valid(host):
+		preload("res://src/ui/advisor.gd").SayOrder(host.get_tree(), team)
 
 
 ## LaunchMission for one team and target, waiting for the mission and the

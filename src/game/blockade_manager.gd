@@ -128,7 +128,10 @@ static func Begun(p: Planet, blockader: Faction, day: int) -> void:
 		Enums.MessageCategory.Missions, day, p)
 	msg.Type = Enums.MessageType.Blockade
 	for k in audiences.size():
-		EventBus.Tell(audiences[k], msg if k == 0 else msg.Copy())
+		var told: GameMessage = msg if k == 0 else msg.Copy()
+		# The blockader started it; the system's holder has detected it.
+		told.Advisor = "blockade_started" if audiences[k] == blockader else "blockade_detected"
+		EventBus.Tell(audiences[k], told)
 
 
 static func Broke(p: Planet, day: int) -> void:

@@ -257,6 +257,51 @@ class Droid extends TextureRect:
 	var Frames := 1
 	var _strip: Image
 	var _w := 1
+	var _rest: Texture2D = null
+	## The run playing (fwa.gd), its frame time, and what to call at its end.
+	var _run: RefCounted = null
+	var _step := 0.067
+	var _clock := 0.0
+	var _done := Callable()
+
+	## Plays one of the art set's animation runs (docs/advisor-plan.md: the
+	## droid talking), then stands at rest again and calls `done`.
+	func Play(run: RefCounted, seconds_per_frame: float, done: Callable = Callable()) -> void:
+		_stop(false)
+		if run == null:
+			if done.is_valid():
+				done.call()
+			return
+		_run = run
+		_step = maxf(0.01, seconds_per_frame)
+		_clock = 0.0
+		_done = done
+		_run.Reset()
+		texture = ImageTexture.create_from_image(_run.Picture())
+
+	## Whether a run is playing.
+	func Talking() -> bool:
+		return _run != null
+
+	func _process(delta: float) -> void:
+		if _run == null:
+			return
+		_clock += delta
+		while _clock >= _step and _run != null:
+			_clock -= _step
+			if not _run.Next():
+				_stop(true)
+				return
+			(texture as ImageTexture).update(_run.Picture())
+
+	func _stop(call_done: bool) -> void:
+		var done := _done
+		_run = null
+		_done = Callable()
+		if _rest != null:
+			texture = _rest
+		if call_done and done.is_valid():
+			done.call()
 
 	func Setup(strip: Texture2D, frame_width: int) -> void:
 		_w = frame_width
@@ -268,6 +313,7 @@ class Droid extends TextureRect:
 		cut.atlas = strip
 		cut.region = Rect2(0, 0, _w, strip.get_height())
 		texture = cut
+		_rest = cut
 		expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		stretch_mode = TextureRect.STRETCH_SCALE
 		texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST

@@ -261,6 +261,7 @@ static func Announce(r: BombardmentReport, fleet: Fleet, mode: int, day: int) ->
 	# 0xF778); opening it opens the results window, as an assault's does.
 	var msg := GameMessage.new("Orbital bombardment of %s" % t.Name, Sentence(r) + "\n\n" + body, Enums.MessageCategory.Conflict, day, t)
 	msg.Report = r
+	msg.Advisor = "bombardment"
 	EventBus.BroadcastMessage(msg)
 	# "After bombardment, a window will display the bombardment effects"
 	# (p122): at once, for the side that ordered it (UIManager shows it only

@@ -70,6 +70,25 @@ const KNOWN_MOVIE_SIDE_EVENTS := ["start.", "victory.", "defeat.", "headquarters
 const KNOWN_MUSIC_EVENTS := ["menu", "play", "battle_alert"]
 const KNOWN_MUSIC_SIDE_EVENTS := ["strong_advantage.", "advantage.", "disadvantage.",
 	"battle_victory.", "battle_defeat.", "battle_draw."]
+## SCHEMA.md section 2, `advisor` (docs/advisor-plan.md): the news the droids
+## speak about, the engine's names (GameMessage.Advisor); those ending in "."
+## take a character id: "report.luke_skywalker".
+const KNOWN_ADVISOR_EVENTS := ["support_gained", "support_lost", "production", "research",
+	"fleet_arrived", "units_arrived", "ship_repaired", "squadron_repaired", "maintenance",
+	"blockade_started", "blockade_detected", "personnel_report", "agent_report", "captured",
+	"released", "planet_status", "intercepted", "bombardment", "assault"]
+const KNOWN_ADVISOR_CHARACTER_EVENTS := ["report.", "captured.", "released."]
+## `advisor`'s own settings beside the sides.
+const KNOWN_ADVISOR_SETTINGS := ["repeat_days", "frame_seconds"]
+## SCHEMA.md section 2, `voices`: the lines a character speaks (GameMessage.Voice).
+const KNOWN_VOICE_LINES := ["order", "personnel_arrived", "mission_success", "mission_failure",
+	"mission_abort", "released", "recovered", "enemy_detected", "traitor_discovered",
+	"force_growth", "force_ability_revealed", "force_user_discovered", "rescue_attempt",
+	"bounty_attack", "dagobah_completed", "seat_of_power", "advanced_personnel_arrived",
+	"advanced_mission_abort", "advanced_released", "advanced_recovered",
+	"advanced_enemy_detected", "advanced_force_growth", "advanced_rescue_attempt"]
+## SCHEMA.md section 2, `sounds`: the controls' sounds.
+const KNOWN_SOUND_EVENTS := ["cockpit_galaxy_size", "cockpit_load", "cockpit_exit", "cockpit_control"]
 const KNOWN_DIFFICULTIES := ["easy", "medium", "hard"]
 ## SCHEMA.md section 7. Day-zero placement and the story parts. Each story
 ## part is ONE character - the set-pieces are written for one pilgrim, one
@@ -218,6 +237,146 @@ static func _validate(pack: LoadedPack, pack_dir: String, errors: Array[String])
 	_validate_art(pack, errors)
 	_validate_movies(pack, pack_dir, errors)
 	_validate_music(pack, pack_dir, errors)
+	_validate_advisor(pack, pack_dir, errors)
+	_validate_voices(pack, pack_dir, errors)
+	_validate_sounds(pack, pack_dir, errors)
+
+
+## One reference (rules 24-27): a file the pack ships, or "<art set>:<path>"
+## in a declared art set, ending in `ext`. `where` names it in the error.
+static func _check_ref(v: Variant, ext: String, kind: String, where: String, pack: LoadedPack, pack_dir: String, errors: Array[String]) -> void:
+	if not v is String or str(v).strip_edges().is_empty():
+		errors.append("%s: %s is a text reference." % [where, kind])
+		return
+	var ref := str(v).strip_edges()
+	var split := SplitArtRef(ref)
+	if split[0].is_empty():
+		var path := "%s/%s" % [pack_dir, ref]
+		if not (ResourceLoader.exists(path) or FileAccess.file_exists(path)):
+			errors.append("%s: '%s' is not in %s." % [where, ref, pack_dir])
+	elif not pack.Manifest.ArtSets.has(split[0]):
+		errors.append("%s: '%s' is from art set '%s', which art_sets does not declare." % [where, ref, split[0]])
+	elif not split[1].to_lower().ends_with(ext):
+		errors.append("%s: '%s' is not a %s file." % [where, ref, ext])
+
+
+## A reference or a non-empty list of them (a pool).
+static func _check_refs(v: Variant, ext: String, kind: String, where: String, pack: LoadedPack, pack_dir: String, errors: Array[String]) -> void:
+	var list: Array = v if v is Array else [v]
+	if list.is_empty():
+		errors.append("%s: names no %s." % [where, kind])
+	for r in list:
+		_check_ref(r, ext, kind, where, pack, pack_dir, errors)
+
+
+static func _character_ids(pack: LoadedPack) -> Array[String]:
+	var ids: Array[String] = []
+	for c in pack.Characters:
+		ids.append(c.Id)
+	return ids
+
+
+## Rule 25: `advisor` - the droids' part in each piece of news, per side.
+static func _validate_advisor(pack: LoadedPack, pack_dir: String, errors: Array[String]) -> void:
+	var m := pack.Manifest
+	if not m.AdvisorGiven:
+		return
+	if not m.AdvisorRaw is Dictionary:
+		errors.append("pack.json advisor: must be an object of side -> news.")
+		return
+	var faction_ids: Array[String] = []
+	for f in pack.Factions:
+		faction_ids.append(f.Id)
+	var characters := _character_ids(pack)
+	for key in m.AdvisorRaw:
+		var k := str(key)
+		var v: Variant = m.AdvisorRaw[key]
+		if KNOWN_ADVISOR_SETTINGS.has(k):
+			if not (v is int or v is float) or float(v) < 0 or (k == "frame_seconds" and float(v) <= 0):
+				errors.append("pack.json advisor.%s: must be a positive number." % k)
+			continue
+		if not faction_ids.has(k):
+			errors.append("pack.json advisor: '%s' is neither a faction in factions.json nor one of %s." % [k, ", ".join(KNOWN_ADVISOR_SETTINGS)])
+			continue
+		if not v is Dictionary:
+			errors.append("pack.json advisor.%s: must be an object of news -> the droids' part." % k)
+			continue
+		for event in v:
+			var e := str(event)
+			var where := "pack.json advisor.%s['%s']" % [k, e]
+			var known: bool = KNOWN_ADVISOR_EVENTS.has(e)
+			for prefix in KNOWN_ADVISOR_CHARACTER_EVENTS:
+				if e.begins_with(prefix):
+					known = characters.has(e.substr(prefix.length()))
+					if not known:
+						errors.append("%s: names no character in characters.json." % where)
+					break
+			if not known:
+				if not KNOWN_ADVISOR_CHARACTER_EVENTS.any(func(p: String) -> bool: return e.begins_with(p)):
+					errors.append("pack.json advisor.%s: '%s' is not news the droids speak about. Known: %s, and %s<character id>." \
+						% [k, e, ", ".join(KNOWN_ADVISOR_EVENTS), "/".join(KNOWN_ADVISOR_CHARACTER_EVENTS)])
+				continue
+			var entry: Variant = v[event]
+			if not entry is Dictionary:
+				errors.append("%s: must be an object (days, messenger, agent)." % where)
+				continue
+			if entry.has("days") and (not (entry["days"] is int or entry["days"] is float) or float(entry["days"]) < 0):
+				errors.append("%s: days must be a number of days." % where)
+			for role in ["messenger", "agent"]:
+				if not entry.has(role):
+					continue
+				var part: Variant = entry[role]
+				if not part is Dictionary:
+					errors.append("%s.%s: must be an object (anim, sound)." % [where, role])
+					continue
+				if part.has("anim"):
+					_check_ref(part["anim"], ".fwa", "an animation", "%s.%s.anim" % [where, role], pack, pack_dir, errors)
+				if part.has("sound"):
+					_check_ref(part["sound"], ".ogg", "a sound", "%s.%s.sound" % [where, role], pack, pack_dir, errors)
+				if part.has("translated") and not part["translated"] is bool:
+					errors.append("%s.%s.translated: must be true or false." % [where, role])
+
+
+## Rule 26: `voices` - a character's own lines.
+static func _validate_voices(pack: LoadedPack, pack_dir: String, errors: Array[String]) -> void:
+	var m := pack.Manifest
+	if not m.VoicesGiven:
+		return
+	if not m.VoicesRaw is Dictionary:
+		errors.append("pack.json voices: must be an object of character -> lines.")
+		return
+	var characters := _character_ids(pack)
+	for key in m.VoicesRaw:
+		var c := str(key)
+		if not characters.has(c):
+			errors.append("pack.json voices: '%s' is no character in characters.json." % c)
+			continue
+		var lines: Variant = m.VoicesRaw[key]
+		if not lines is Dictionary:
+			errors.append("pack.json voices.%s: must be an object of line -> sound." % c)
+			continue
+		for line in lines:
+			var l := str(line)
+			if not KNOWN_VOICE_LINES.has(l):
+				errors.append("pack.json voices.%s: '%s' is not a line. Known: %s." % [c, l, ", ".join(KNOWN_VOICE_LINES)])
+				continue
+			_check_refs(lines[line], ".ogg", "sound", "pack.json voices.%s.%s" % [c, l], pack, pack_dir, errors)
+
+
+## Rule 27: `sounds` - the controls' sounds.
+static func _validate_sounds(pack: LoadedPack, pack_dir: String, errors: Array[String]) -> void:
+	var m := pack.Manifest
+	if not m.SoundsGiven:
+		return
+	if not m.SoundsRaw is Dictionary:
+		errors.append("pack.json sounds: must be an object of moment -> sound.")
+		return
+	for key in m.SoundsRaw:
+		var s := str(key)
+		if not KNOWN_SOUND_EVENTS.has(s):
+			errors.append("pack.json sounds: '%s' is not a moment. Known: %s." % [s, ", ".join(KNOWN_SOUND_EVENTS)])
+			continue
+		_check_refs(m.SoundsRaw[key], ".ogg", "sound", "pack.json sounds.%s" % s, pack, pack_dir, errors)
 
 
 ## Rule 24: `music` maps known moments to a track or a pool of tracks - each a
