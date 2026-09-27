@@ -25,7 +25,10 @@ function Run-Pair([string]$tag, [string[]]$extra, [string[]]$guestExtra = @()) {
         $args = @('--headless', '--path', $repo, '-s', 'tests/mp_flow.gd', '--',
             "--role=$role", "--relay=ws://127.0.0.1:$RelayPort/ws", "--box=$box", "--days=$Days", "--replay-log=$box\$role$tag.hashes.log") + $extra
         if ($role -eq 'guest') { $args += $guestExtra }
-        $procs += Start-Process -FilePath $Godot -ArgumentList $args -RedirectStandardOutput "$box\$role$tag.stdout.txt" -RedirectStandardError "$box\$role$tag.stderr.txt" -PassThru -NoNewWindow
+        $p = Start-Process -FilePath $Godot -ArgumentList $args -RedirectStandardOutput "$box\$role$tag.stdout.txt" -RedirectStandardError "$box\$role$tag.stderr.txt" -PassThru -NoNewWindow
+        # Windows PowerShell 5.1 leaves ExitCode empty unless the handle is opened now.
+        $null = $p.Handle
+        $procs += $p
     }
     foreach ($p in $procs) { if (-not $p.WaitForExit(900000)) { $p.Kill(); Write-Host "TIMEOUT" } }
     foreach ($role in @('host', 'guest')) {
