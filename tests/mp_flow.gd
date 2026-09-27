@@ -105,14 +105,8 @@ func _host() -> void:
 	var f := FileAccess.open("%s/room.code" % _box, FileAccess.WRITE)
 	f.store_string(MpSetup.lobby.code)
 	f.close()
-	# Start is enabled once the guest is seated.
-	if not await _until(_proceed_enabled, "the opponent to join", 120.0): return
-	if _speed_rule == "average":
-		for b in (current_scene.get_node("%SpeedRuleHBox") as HBoxContainer).get_children():
-			if (b as Button).text == "Average":
-				(b as Button).button_pressed = true
-				(b as Button).pressed.emit()
-		await process_frame
+	# The guest joins (page 1's arrow is the host's at once, so wait for the name).
+	if not await _until(func() -> bool: return not MpSetup.lobby.guest_name.is_empty(), "the opponent to join", 120.0): return
 	if _load:
 		var load_btn: Button = current_scene.get_node("%BtnLoadGame")
 		if not await _until(func() -> bool: return not load_btn.disabled, "Load Game to become available", 20.0): return
@@ -133,6 +127,17 @@ func _host() -> void:
 		list.select(0)
 		dlg.confirmed.emit()
 		await process_frame
+	# On to page 2 (the opening briefing and the speed rule), then Start once
+	# the guest's game checks out.
+	_bar().proceed.emit()
+	await process_frame
+	if _speed_rule == "average" and not _load:
+		for b in (current_scene.get_node("%SpeedRuleHBox") as HBoxContainer).get_children():
+			if (b as Button).text == "Average":
+				(b as Button).button_pressed = true
+				(b as Button).pressed.emit()
+		await process_frame
+	if not await _until(_proceed_enabled, "Start to be on", 60.0): return
 	_bar().proceed.emit()
 	if not await _until(func() -> bool: return current_scene is GameManager, "the game to start", 120.0): return
 

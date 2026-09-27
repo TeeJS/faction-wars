@@ -42,6 +42,7 @@ static func reset() -> void:
 	GameSettings.HumanFactions = []
 	GameSettings.HostFaction = null
 	GameSettings.SpeedRule = "slowest"
+	GameSettings.MpBriefing = true
 
 
 ## Tests only: the relay every screen talks to, whatever the command line says.
@@ -197,6 +198,7 @@ static func apply_settings(settings: Dictionary, my_seat: String) -> void:
 	GameSettings.SelectedSize = int(settings.get("size", Enums.GalaxySize.Large)) as Enums.GalaxySize
 	GameSettings.HQOnlyVictory = bool(settings.get("hq_only", false))
 	GameSettings.SpeedRule = str(settings.get("speed_rule", "slowest"))
+	GameSettings.MpBriefing = str(settings.get("briefing", "play")) != "skip"
 	GameSettings.Seed = int(settings.get("seed", 0))
 
 

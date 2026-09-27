@@ -43,6 +43,9 @@ var last_phase_ms: int = 0
 
 var my_speed: int = 2
 var remote_speed: int = 2
+## Why the opponent's speed is what it is, when they said: "briefing" while
+## their opening briefing plays (GameManager.HoldForBriefing), else "".
+var remote_why: String = ""
 var remote_hello: Dictionary = {}
 ## The relay said the opponent's seat dropped (`left`) and has not been retaken.
 var opponent_gone: bool = false
@@ -94,9 +97,9 @@ func issue(c: Command) -> void:
 	transport.send({ "t": "cmd", "day": c.Day, "phase": c.Phase, "seq": c.Seq, "faction": c.Faction, "kind": c.Kind, "args": c.Args })
 
 
-func set_speed(level: int) -> void:
+func set_speed(level: int, why: String = "") -> void:
 	my_speed = level
-	transport.send({ "t": "speed", "side": local.Id, "level": level })
+	transport.send({ "t": "speed", "side": local.Id, "level": level, "why": why })
 
 
 ## "the game plays at the slowest speed set on either computer" (manual p163) -
@@ -150,6 +153,7 @@ func _handle(msg: Dictionary) -> void:
 			_check(d)
 		"speed":
 			remote_speed = int(msg.get("level", 2))
+			remote_why = str(msg.get("why", ""))
 		"left":
 			opponent_gone = true
 		"guest", "host":

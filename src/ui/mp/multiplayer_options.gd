@@ -7,63 +7,76 @@ extends MpScreen
 ## host (the figure's "Darth Vader: Standard game victory selected."), which is
 ## how the guest learns the settings. The checkmark starts the game (host only).
 ##
-## In the original's look when its screen is imported (original_mp.gd): the
-## original's Multiplayer Options screen (COMMON.DLL 10103), rearranged as
-## TeeJ chose (2026-09-26, mockup 2) to hold our two additions. A third row,
-## "What speed rule would you like?", is the side row's band again under the
-## galaxy-size row. Standard Game, HQ Victory and Load Game sit 62 lower, and
-## the chat box is 62 shorter: its message list goes from 4 lines to 2, and
-## the green-light strip under it is given up. The game code and Copy sit at
-## the right end of the Chat> bar (TeeJ's pick of three).
+## TWO PAGES (TeeJ, 2026-09-27: restore the original's screen, "then add a
+## SEPARATE screen next that is similar, except it has two options: briefing
+## skip (yes / no), speed rule (slowest / average) - that way the chat window
+## can still function"). Page 1 is the manual's: the side, the galaxy size,
+## Standard Game / HQ Victory, Load Game, and the chat; the host's checkmark
+## goes on to page 2. Page 2 is ours: whether the opening briefing plays, and
+## the speed rule; the chat goes with it. There the checkmark starts the game
+## and the back arrow returns to page 1. The guest follows the host's page
+## (the settings' "page") and sees the choices, greyed.
+##
+## In the original's look when its screen is imported (original_mp.gd): page 1
+## is the original's Multiplayer Options screen (COMMON.DLL 10103) as it is.
+## Page 2 is the same screen with its second row the first row's band (two
+## choices), and the chat moved up into the Standard Game / HQ Victory row's
+## place, its message list twice as long (Page2Plate). The game code and Copy
+## sit at the right end of the Chat> bar (TeeJ's pick of three).
 
 const OriginalMp := preload("res://src/ui/mp/original_mp.gd")
 const Art := preload("res://src/ui/artwork.gd")
 const OUI := preload("res://src/ui/original_ui.gd")
 
-## The rearranged screen: each piece is [its first row, the row after its
-## last, the row it moves to], across the content between the left rail and
-## the frame (x 133-575).
-const PlateX := Vector2i(133, 575)
-const PlatePieces := [[62, 124, 186], [186, 256, 248], [256, 294, 318], [294, 326, 356], [366, 372, 388], [392, 400, 394]]
-## The rows under the new one moved down by this much.
-const Down := 62
 ## The parts (px of the original's 640 x 480, measured on TeeJ's screenshot):
-## the questions green Arial 15.5 centred on x 258, capitals at y 82 and 145,
-## the speed row's at 82 + 124; the side symbols (36 x 36) at (389, 71) and
-## (440, 71), the galaxy sizes at x 389 / 440 / 491, y 133; the speed choices
-## in the new row's two empty slots, (389, 195) and (440, 195); the lamps
-## (29 x 27) at (142, 205) and (318, 205), their words Arial 13 centred on
-## x 231 and 407.5, capitals at 213; Load Game (48 x 43) at (502, 199);
-## "Chat>" at x 181, capitals at 266; the rest, the lower rows' parts, all
-## `Down` lower.
+## the questions green Arial 15.5 centred on x 258, capitals at y 82 and 145;
+## the side symbols (36 x 36) at (389, 71) and (440, 71), the galaxy sizes at
+## x 389 / 440 / 491, y 133; the lamps (29 x 27) at (142, 205) and (318, 205),
+## their words Arial 13 centred on x 231 and 407.5, capitals at 213; Load Game
+## (48 x 43) at (502, 199); "Chat>" at x 181, capitals at 266; the message
+## list from 297, four lines 16 apart.
 const QuestionCentre := 258.0
-const QuestionTops := [82, 145, 206]
+const QuestionTops := [82, 145]
 const QuestionPx := 15.5
-const Questions := ["Which side do you want to play?", "What size galaxy would you like?", "What speed rule would you like?"]
+const Questions := ["Which side do you want to play?", "What size galaxy would you like?"]
 const SideAt := [Vector2(389, 71), Vector2(440, 71)]
 const SizeAt := [Vector2(389, 133), Vector2(440, 133), Vector2(491, 133)]
 const SizePictures := ["standard", "large", "huge"]
-const SpeedAt := [Vector2(389, 195), Vector2(440, 195)]
 const Slot := Vector2(36, 36)
-## Each speed choice's words in its slot: the lines, Arial 9, their capitals
-## this far down the slot.
-const SpeedWords := [[["Slowest", 11], ["wins", 22]], [["Average", 16]]]
-const SpeedPx := 9.0
-const LampAt := [Vector2(142, 205 + Down), Vector2(318, 205 + Down)]
+const LampAt := [Vector2(142, 205), Vector2(318, 205)]
 ## The lamp and the bar of words beside it take the click.
-const LampHit := [Rect2(137, 200 + Down, 155, 36), Rect2(313, 200 + Down, 157, 36)]
+const LampHit := [Rect2(137, 200, 155, 36), Rect2(313, 200, 157, 36)]
 const LampWords := [[231.0, "Standard Game"], [407.5, "HQ Victory"]]
-const LampTop := 213 + Down
-const LoadAt := Vector2(502, 199 + Down)
-const ChatTop := 266 + Down
+const LampTop := 213
+const LoadAt := Vector2(502, 199)
+const ChatTop := 266
 const ChatX := 181
 const EntryX := 222
 const EntryW := 182
 const CodeX := 410
 const LogX := 150
-const LogTop := 297 + Down
+const LogTop := 297
 const LogW := 386
-const LogLines := 2
+const LogLines := 4
+
+## Page 2: its questions on the two rows, its choices in the rows' two slots
+## (their words Arial 9 - "Slowest" / "wins" - or 12, their capitals this far
+## down the slot; the chosen one marked with a galaxy size's red brackets).
+const Page2Questions := ["Skip the opening briefing?", "What speed rule would you like?"]
+const BriefingAt := [Vector2(389, 71), Vector2(440, 71)]
+const BriefingWords := [[["Yes", 13]], [["No", 13]]]
+const BriefingPx := 12.0
+const SpeedAt := [Vector2(389, 133), Vector2(440, 133)]
+const SpeedWords := [[["Slowest", 11], ["wins", 22]], [["Average", 16]]]
+const SpeedPx := 9.0
+## Page 2's plate, from the original's (rows [first, after last, where to],
+## across x 133-575): the second row the first row's band; the chat's top
+## (its border, the Chat> bar, the rule under it) up 70 into the lamp row's
+## place; its message grid twice, down to the original's bottom border.
+const PlateX := Vector2i(133, 575)
+const Page2Plate := [[62, 124, 124], [256, 294, 186], [294, 365, 224], [294, 364, 295]]
+const Up := 70
+const Page2LogLines := 8
 
 const SizeNames: Array[String] = ["Standard", "Large", "Huge"]
 ## The win-condition tooltips are the PACK's words (pack.json victory_tips,
@@ -107,6 +120,18 @@ var _oSizes: Array = []
 var _oSpeeds: Array = []
 var _oLamps: Array = []
 var _oLoad: TextureButton
+## Page 1 or 2 (TWO PAGES above), as the host's settings say.
+var _page: int = 1
+## Page 2's briefing choice: the plain look's buttons, the original's slots.
+var _briefing_group: ButtonGroup
+var _briefing_buttons: Array = []
+var _oBriefs: Array = []
+## The original's parts of each page; the chat's parts and their rect on
+## each page; the two pages' pictures.
+var _oPage1: Array = []
+var _oPage2: Array = []
+var _oChat: Array = []
+var _plates: Array = []
 
 
 func _ready() -> void:
@@ -171,6 +196,34 @@ func _ready() -> void:
 		speed_box.add_child(b)
 		_speed_buttons.append(b)
 
+	# Page 2 (TeeJ, 2026-09-27): whether the opening briefing plays, in the
+	# plain look a row like the speed rule's, above it.
+	_briefing_group = ButtonGroup.new()
+	var speed_row: Control = speed_box.get_parent()
+	var briefing_row := HBoxContainer.new()
+	briefing_row.name = "BriefingRow"
+	var caption: Label = (speed_row.get_node("SpeedCaption") as Label).duplicate()
+	caption.name = "BriefingCaption"
+	caption.text = "Skip the opening briefing?"
+	briefing_row.add_child(caption)
+	var briefing_box := HBoxContainer.new()
+	briefing_box.name = "BriefingHBox"
+	briefing_row.add_child(briefing_box)
+	for pair in [["skip", "Yes", "No briefing: the game begins at once."], ["play", "No", "Each side hears its opening briefing; the game waits for both."]]:
+		var b := Button.new()
+		b.text = pair[1]
+		b.custom_minimum_size = Vector2(160, 44)
+		b.toggle_mode = true
+		b.button_group = _briefing_group
+		b.tooltip_text = pair[2]
+		b.set_meta("id", pair[0])
+		var choice: String = pair[0]
+		b.pressed.connect(func() -> void: _host_change("briefing", choice))
+		briefing_box.add_child(b)
+		_briefing_buttons.append(b)
+	speed_row.get_parent().add_child(briefing_row)
+	speed_row.get_parent().move_child(briefing_row, speed_row.get_index())
+
 	# 3 Standard Game / HQ Only Victory.
 	_victory_group = ButtonGroup.new()
 	var std: Button = get_node("%BtnStandardGame")
@@ -210,18 +263,18 @@ func _ready() -> void:
 	if _can_dress():
 		_dress()
 
-	# 5 The checkmark starts the game - host only.
-	bar().set_proceed("Start Game")
+	# 5 The checkmark goes on to page 2, where it starts the game - host only.
 	bar().set_previous(true, "Previous")
-	bar().proceed.connect(_start)
-	bar().previous.connect(_previous)
+	bar().proceed.connect(_on_proceed)
+	bar().previous.connect(_on_previous)
 	bar().cancel.connect(cancel_to_cockpit)
 
 	if _host:
 		# The pack and build first (MpSetup.pack_settings, as the room was
 		# created with), then the game's own choices.
 		_settings = MpSetup.pack_settings()
-		_settings.merge({ "side": FactionRegistry.Playable[0].Id, "size": int(Enums.GalaxySize.Large), "hq_only": false, "speed_rule": "slowest" }, true)
+		_settings.merge({ "side": FactionRegistry.Playable[0].Id, "size": int(Enums.GalaxySize.Large), "hq_only": false, "speed_rule": "slowest",
+			"briefing": "play", "page": 1 }, true)
 		_lobby.set_settings(_settings)
 		_reflect()
 		_say(MpSetup.player_name, "Game \"%s\" created. Code %s." % [MpSetup.game_name, _lobby.code])
@@ -237,7 +290,7 @@ func _ready() -> void:
 		# The guest sees the host's choices but cannot change them. Not
 		# `disabled`: Godot's disabled style hides the pressed look, so the
 		# selection was invisible (TeeJ, room #93). Ignore the mouse instead.
-		for b in _side_buttons + _size_buttons + _victory_buttons + _speed_buttons:
+		for b in _side_buttons + _size_buttons + _victory_buttons + _speed_buttons + _briefing_buttons:
 			_lock(b)
 		load_btn.disabled = true
 		load_btn.tooltip_text = "Only the host loads a saved game."
@@ -353,21 +406,22 @@ func _can_dress() -> bool:
 	return Art.WindowPicture("mp_lamp.on") != null and Art.WindowPicture("mp_lamp.off") != null
 
 
-## The original's screen with the speed row put in (PlatePieces).
-static func _plate() -> Texture2D:
+## The two pages' pictures: the original's screen as it is, and page 2's
+## made from it (Page2Plate).
+static func _page_plates() -> Array:
 	var tex: Texture2D = Art.Screen("mp_options")
 	var src: Image = tex.get_image() if tex != null else null
 	if src == null:
-		return tex
+		return [tex, tex]
 	var out: Image = src.duplicate()
-	for p in PlatePieces:
+	for p in Page2Plate:
 		out.blit_rect(src, Rect2i(PlateX.x, p[0], PlateX.y - PlateX.x, p[1] - p[0]), Vector2i(PlateX.x, p[2]))
-	return ImageTexture.create_from_image(out)
+	return [tex, ImageTexture.create_from_image(out)]
 
 
 ## The red corner brackets of a chosen galaxy size - the pixels that set its
-## chosen picture apart from the plain one - to mark the chosen speed rule the
-## same way.
+## chosen picture apart from the plain one - to mark page 2's chosen choices
+## the same way.
 static func _brackets() -> Texture2D:
 	var on: Texture2D = Art.WindowPicture("mp_size.huge.chosen")
 	var off: Texture2D = Art.WindowPicture("mp_size.huge")
@@ -386,26 +440,17 @@ static func _brackets() -> Texture2D:
 
 
 func _dress() -> void:
-	_look = OriginalMp.Dress(self, "mp_options", _plate()) as OriginalMp
+	_plates = _page_plates()
+	_look = OriginalMp.Dress(self, "mp_options", _plates[0]) as OriginalMp
+	# Page 1: the manual's - side, galaxy size, Standard Game / HQ Victory, Load Game.
 	for i in Questions.size():
-		_look.Text(Questions[i], QuestionCentre - 150, QuestionTops[i], 300, QuestionPx, OriginalMp.Green, HORIZONTAL_ALIGNMENT_CENTER, "Question%d" % i)
+		_oPage1.append(_look.Text(Questions[i], QuestionCentre - 150, QuestionTops[i], 300, QuestionPx, OriginalMp.Green, HORIZONTAL_ALIGNMENT_CENTER, "Question%d" % i))
 	for i in 2:
 		var f: Faction = FactionRegistry.Playable[i]
 		_oSides.append(_slot("Side%d" % i, SideAt[i], (_side_buttons[i] as Button).tooltip_text, "side", f.Id))
 	for i in SizeAt.size():
 		_oSizes.append(_slot("Size%d" % i, SizeAt[i], (_size_buttons[i] as Button).tooltip_text, "size", i))
-	var marks: Texture2D = _brackets()
-	for i in SpeedAt.size():
-		var b := _slot("Speed%d" % i, SpeedAt[i], (_speed_buttons[i] as Button).tooltip_text, "speed_rule", str(_speed_buttons[i].get_meta("id")))
-		var words: Array = []
-		for line in SpeedWords[i]:
-			var l: Label = _look.Text(line[0], SpeedAt[i].x, SpeedAt[i].y + line[1], Slot.x, SpeedPx, OriginalMp.Green, HORIZONTAL_ALIGNMENT_CENTER, "SpeedWords%d_%d" % [i, words.size()])
-			l.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			words.append(l)
-		var mark := _look.Place(marks, SpeedAt[i].x, SpeedAt[i].y, "SpeedMark%d" % i)
-		b.set_meta("words", words)
-		b.set_meta("mark", mark)
-		_oSpeeds.append(b)
+	_oPage1.append_array(_oSides + _oSizes)
 	for i in 2:
 		var lamp := _look.Place(Art.WindowPicture("mp_lamp.off"), LampAt[i].x, LampAt[i].y, "Lamp%d" % i)
 		var words: Label = _look.Text(LampWords[i][1], LampWords[i][0] - 75, LampTop, 150, 13.0, OriginalMp.Green, HORIZONTAL_ALIGNMENT_CENTER, "LampWords%d" % i)
@@ -420,16 +465,27 @@ func _dress() -> void:
 				_pick("hq_only", hq))
 		_look.Add(hit, LampHit[i])
 		_oLamps.append(lamp)
+		_oPage1.append_array([lamp, words, hit])
 	_oLoad = _look.PicButton("mp_load", LoadAt.x, LoadAt.y, "Load")
 	_oLoad.pressed.connect(_open_load_list)
-	# Chat> and the space to its right; the game code and Copy at the bar's end.
-	_look.Text("Chat>", ChatX, ChatTop, 40, 13.0, OriginalMp.Green, HORIZONTAL_ALIGNMENT_LEFT, "ChatLabel")
+	_oPage1.append(_oLoad)
+	# Page 2: ours - the opening briefing, the speed rule.
+	for i in Page2Questions.size():
+		_oPage2.append(_look.Text(Page2Questions[i], QuestionCentre - 150, QuestionTops[i], 300, QuestionPx, OriginalMp.Green, HORIZONTAL_ALIGNMENT_CENTER, "Page2Question%d" % i))
+	var marks: Texture2D = _brackets()
+	for i in 2:
+		_oBriefs.append(_choice("Briefing", i, BriefingAt[i], _briefing_buttons[i], "briefing", BriefingWords[i], BriefingPx, marks))
+		_oSpeeds.append(_choice("Speed", i, SpeedAt[i], _speed_buttons[i], "speed_rule", SpeedWords[i], SpeedPx, marks))
+	# The chat, on both pages: Chat> and the space to its right, the game code
+	# and Copy at the bar's end, the message list.
+	var chat: Array = []
+	chat.append(_look.Text("Chat>", ChatX, ChatTop, 40, 13.0, OriginalMp.Green, HORIZONTAL_ALIGNMENT_LEFT, "ChatLabel"))
 	var entry: LineEdit = get_node("%ChatEntry")
 	entry.placeholder_text = ""
-	_look.Field(entry, EntryX, ChatTop, EntryW, 13.0, OriginalMp.Green)
+	chat.append(_look.Field(entry, EntryX, ChatTop, EntryW, 13.0, OriginalMp.Green))
 	var code_text := "Code: %s" % (_lobby.code if not _lobby.code.is_empty() else "------")
 	var code_w: float = OUI.Face(false).get_string_size(code_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 12).x
-	_look.Text(code_text, CodeX, ChatTop, code_w + 2, 12.0, OriginalMp.Green, HORIZONTAL_ALIGNMENT_LEFT, "Code")
+	chat.append(_look.Text(code_text, CodeX, ChatTop, code_w + 2, 12.0, OriginalMp.Green, HORIZONTAL_ALIGNMENT_LEFT, "Code"))
 	var copy: Label = _look.Text("Copy", CodeX + code_w + 8, ChatTop, 30, 12.0, OriginalMp.Red, HORIZONTAL_ALIGNMENT_LEFT, "Copy")
 	copy.mouse_filter = Control.MOUSE_FILTER_STOP
 	copy.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
@@ -437,7 +493,53 @@ func _dress() -> void:
 	copy.gui_input.connect(func(e: InputEvent) -> void:
 		if e is InputEventMouseButton and e.pressed and e.button_index == MOUSE_BUTTON_LEFT:
 			_copy_code())
+	chat.append(copy)
+	for c in chat:
+		var r: Rect2 = _look.RectOf(c)
+		_oChat.append([c, r, Rect2(r.position - Vector2(0, Up), r.size)])
 	_look.Log(_log, LogX, LogTop, LogW, LogLines, 12.0, 16.0, OriginalMp.Green)
+	var lr: Rect2 = _look.RectOf(_log)
+	_oChat.append([_log, lr, Rect2(lr.position - Vector2(0, Up), Vector2(lr.size.x, 16.0 * Page2LogLines))])
+
+
+## One of page 2's choices: a slot, its words, and the red brackets shown when
+## it is the one chosen (`prefix` "Speed" or "Briefing", `i` its place).
+func _choice(prefix: String, i: int, at: Vector2, plain: Button, key: String, lines: Array, px: float, marks: Texture2D) -> TextureButton:
+	var b := _slot("%s%d" % [prefix, i], at, plain.tooltip_text, key, str(plain.get_meta("id")))
+	var words: Array = []
+	for line in lines:
+		var l: Label = _look.Text(line[0], at.x, at.y + line[1], Slot.x, px, OriginalMp.Green, HORIZONTAL_ALIGNMENT_CENTER, "%sWords%d_%d" % [prefix, i, words.size()])
+		l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		words.append(l)
+	var mark := _look.Place(marks, at.x, at.y, "%sMark%d" % [prefix, i])
+	b.set_meta("words", words)
+	b.set_meta("mark", mark)
+	_oPage2.append(b)
+	_oPage2.append_array(words)
+	return b
+
+
+## Page 1 or 2: the plain look's rows, or the original's parts, its picture
+## and the chat's place; the checkmark goes on (page 1) or starts (page 2).
+func _show_page(page: int) -> void:
+	_page = clampi(page, 1, 2)
+	var one := _page == 1
+	for n in ["SideRow", "SizeRow", "VictoryRow"]:
+		(get_node("CenterContainer/Console/" + n) as Control).visible = one
+	for n in ["BriefingRow", "SpeedRow"]:
+		(get_node("CenterContainer/Console/" + n) as Control).visible = not one
+	if _look != null:
+		for c in _oPage1:
+			(c as CanvasItem).visible = one
+		for c in _oPage2:
+			(c as CanvasItem).visible = not one
+		var plate: TextureRect = _look.Plate()
+		if plate != null and _plates.size() == 2 and plate.texture != _plates[0 if one else 1]:
+			_look.Repicture(plate, _plates[0 if one else 1])
+		for it in _oChat:
+			_look.Move(it[0], it[1] if one else it[2])
+	bar().set_proceed("Next" if one else "Start Game")
+	_refresh_start()
 
 
 ## One of the square choices: a picture button that makes the host's choice.
@@ -481,12 +583,13 @@ func _refresh_look() -> void:
 	for i in _oSizes.size():
 		var chosen: bool = i == int(_settings.get("size", 1))
 		_picture(_oSizes[i], "mp_size.%s%s" % [SizePictures[i], state.call(chosen)], "mp_size.%s" % SizePictures[i])
-	for i in _oSpeeds.size():
-		var b: TextureButton = _oSpeeds[i]
-		var chosen: bool = str((_speed_buttons[i] as Button).get_meta("id")) == str(_settings.get("speed_rule", "slowest"))
-		for l in b.get_meta("words"):
-			(l as Label).add_theme_color_override("font_color", OriginalMp.Red if chosen else (OriginalMp.Grey if locked else OriginalMp.Green))
-		(b.get_meta("mark") as Control).visible = chosen
+	for pair in [[_oSpeeds, _speed_buttons, "speed_rule", "slowest"], [_oBriefs, _briefing_buttons, "briefing", "play"]]:
+		for i in (pair[0] as Array).size():
+			var b: TextureButton = pair[0][i]
+			var chosen: bool = str((pair[1][i] as Button).get_meta("id")) == str(_settings.get(pair[2], pair[3]))
+			for l in b.get_meta("words"):
+				(l as Label).add_theme_color_override("font_color", OriginalMp.Red if chosen else (OriginalMp.Grey if locked else OriginalMp.Green))
+			(b.get_meta("mark") as Control).visible = chosen and _page == 2
 	var hq := bool(_settings.get("hq_only", false))
 	for i in _oLamps.size():
 		var on: bool = (i == 1) == hq
@@ -547,6 +650,9 @@ func _reflect() -> void:
 	_victory_buttons[1].button_pressed = bool(_settings.get("hq_only", false))
 	for b in _speed_buttons:
 		b.button_pressed = str(b.get_meta("id")) == str(_settings.get("speed_rule", "slowest"))
+	for b in _briefing_buttons:
+		b.button_pressed = str(b.get_meta("id")) == str(_settings.get("briefing", "play"))
+	_show_page(int(_settings.get("page", 1)))
 	_refresh_look()
 
 
@@ -563,19 +669,21 @@ func _echo(key: String) -> void:
 			_say(host_name, "%s selected." % ("HQ Only victory" if bool(_settings.get("hq_only", false)) else "Standard game victory"))
 		"speed_rule":
 			_say(host_name, "%s speed rule selected." % ("Average" if str(_settings.get("speed_rule", "slowest")) == "average" else "Slowest"))
+		"briefing":
+			_say(host_name, "The opening briefing will be skipped." if str(_settings.get("briefing", "play")) == "skip" else "The opening briefing will play.")
 		"load":
 			_say(host_name, "Loaded \"%s\", Day %d." % [str(_settings.get("load_name", "")), int(_settings.get("load_day", 0))])
 
 
 func _echo_all() -> void:
-	for k in ["side", "size", "hq_only", "speed_rule"]:
+	for k in ["side", "size", "hq_only", "speed_rule", "briefing"]:
 		_echo(k)
 	if not str(_settings.get("load", "")).is_empty():
 		_echo("load")
 
 
 func _echo_diff() -> void:
-	for k in ["side", "size", "hq_only", "speed_rule", "load"]:
+	for k in ["side", "size", "hq_only", "speed_rule", "briefing", "load"]:
 		if _settings.get(k) != _seen_settings.get(k):
 			_echo(k)
 
@@ -600,6 +708,12 @@ func _check_pack() -> void:
 # --- start / previous ---
 
 func _refresh_start() -> void:
+	if _page == 1:
+		if _host:
+			bar().set_proceed_enabled(not _loading, "Next: the opening briefing and the speed rule.")
+		else:
+			bar().set_proceed_enabled(false, "The host chooses the game's options.")
+		return
 	if not _host:
 		bar().set_proceed_enabled(false, "The host starts the game.")
 	elif _lobby.guest_name.is_empty():
@@ -639,6 +753,29 @@ func _start() -> void:
 		_lobby.set_settings(_settings)
 	_lobby.start()
 	bar().set_proceed_enabled(false, "Starting...")
+
+
+## The checkmark: page 1 goes on to page 2, and the guest follows; page 2
+## starts the game.
+func _on_proceed() -> void:
+	if not _host:
+		return
+	if _page == 1:
+		_host_change("page", 2)
+		_show_page(2)
+		_refresh_look()
+	else:
+		_start()
+
+
+## The back arrow: page 2 returns to page 1; page 1 leaves the game.
+func _on_previous() -> void:
+	if _host and _page == 2 and not _loading:
+		_host_change("page", 1)
+		_show_page(1)
+		_refresh_look()
+		return
+	_previous()
 
 
 func _previous() -> void:
@@ -717,7 +854,7 @@ func _open_load_list() -> void:
 		_settings["load_name"] = str(s.get("name", ""))
 		_settings["load_day"] = int(s.get("day", 0))
 		_lobby.set_settings(_settings)
-		for b in _side_buttons + _size_buttons + _victory_buttons + _speed_buttons:
+		for b in _side_buttons + _size_buttons + _victory_buttons + _speed_buttons + _briefing_buttons:
 			b.disabled = true
 		_reflect()
 		_echo("load")
