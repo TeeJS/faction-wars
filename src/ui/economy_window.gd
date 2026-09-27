@@ -882,6 +882,11 @@ func OpenBuildChooser(planet: Planet, producer: String) -> void:
 			blocked.append(why.error)
 			blockedCodes.append(why.code)
 			place.append(func(n: int) -> Result:
+				# Refused here as the order's applier would refuse it: head-to-head
+				# sends an order to be applied later, and could not say why.
+				var now: Result = planet.CanQueueFacility(rFamily, r.Tier, target)
+				if not now.ok:
+					return Result.fail(now.error, 0).coded(now.code)
 				return CommandBus.issue("queue_facility", { "planet": planet.Name, "type": rFamily, "tier": r.Tier, "destination": target.Name if target != null else "", "count": n }))
 	else:
 		var rate: int = planet.BestProducerRateForUi(producer)
@@ -898,6 +903,9 @@ func OpenBuildChooser(planet: Planet, producer: String) -> void:
 			blocked.append(why.error)
 			blockedCodes.append(why.code)
 			place.append(func(n: int) -> Result:
+				var now: Result = planet.CanQueueUnit(r, target)
+				if not now.ok:
+					return Result.fail(now.error, 0).coded(now.code)
 				return CommandBus.issue("queue_units", { "planet": planet.Name, "rule": r.DisplayName, "destination": target.Name if target != null else "", "count": n }))
 
 	if names.size() == 0:
@@ -1003,7 +1011,8 @@ func OpenBuildChooser(planet: Planet, producer: String) -> void:
 		var i: int = picker.selected
 		var want: int = int(qty.value)
 		var res: Result = place[i].call(want)
-		var made: int = int(res.value) if res.value != null else 0
+		# Head-to-head: accepted now, applied with the phase (no count).
+		var made: int = int(res.value) if res.value != null else (want if res.ok else 0)
 		var err: String = res.error
 		if made > 0 and made < want:
 			print("[Build] Queued %d of %d - %s" % [made, want, err])

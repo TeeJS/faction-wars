@@ -202,7 +202,11 @@ func _on_build() -> void:
 	var place: Callable = _items[_choice].place
 	var want: int = _count
 	var res: Result = place.call(want)
-	var made: int = int(res.value) if res.value != null else 0
+	# Head-to-head an order is accepted here and applied with the phase
+	# (CommandBus.issue: a success with no count) - all of it taken, so the
+	# window closes as after a single-player order (TeeJ, 2026-09-27: "build
+	# window should close after successfully adding a job").
+	var made: int = int(res.value) if res.value != null else (want if res.ok else 0)
 	if made > 0 and made < want:
 		print("[Build] Queued %d of %d - %s" % [made, want, res.error])
 	elif made == 0:
