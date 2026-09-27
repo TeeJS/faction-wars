@@ -46,8 +46,10 @@ pick the disc instead.
 
 **Export movies...** converts the original's 15 movies (`MDATA\MDATA.000`-`202`,
 the intro, the credits, the Death Star's work, victory and defeat) into a second,
-optional file, `swr-original.movies.zip` (about 50 MB; several minutes). Import it
-into the game as you did the art set. The game plays each movie at the moment the
+optional file, `swr-original.movies.zip` (about 350 MB; 10-15 minutes - since 2.5.1
+at Theora's best quality, full colour, to look like the original). Import it into
+the game the same way: drag it onto the game's first screen, or use **Choose a .zip
+file**. The game plays each movie at the moment the
 original did (docs/cutscenes-plan.md); without the file, nothing changes.
 
 The movies are Smacker; Godot plays only Ogg Theora. The exporter decodes them
@@ -114,7 +116,8 @@ A `.zip` of PNGs and JSON with `manifest.json` at its root:
 
 A faction-pack file is the same with `"kind": "faction_pack"` and the pack's id,
 and the movies file with `"kind": "movies"`, the art set's id, and
-`movies/<nnn>.ogv` (Ogg: Theora 640 wide, quality 31 of 63, 4:2:0 BT.601;
+`movies/<nnn>.ogv` (Ogg: Theora 640 wide, quality 63 of 63, 4:4:4 BT.601 - 2.5.0
+wrote 31 of 63, 4:2:0;
 Vorbis at the original's 11 kHz stereo). The game checks every hash on import.
 
 ```
