@@ -156,6 +156,8 @@ const DefaultMapFrame := Rect2(150, 99, 1070, 751)
 ## With the frame: its layer, the GID bar's (GidBar.FramedLayer), and this.
 const FrameLayer := 1
 const WindowsLayer := 3
+## The opening briefing, over everything (StartBriefing).
+const BriefingLayer := 100
 ## The black behind the frame: below everything on the map's canvas.
 const BackgroundZ := -100
 
@@ -1590,6 +1592,12 @@ func OpenGidControlMenu() -> void:
 ## false) and the droids keep their news; afterwards BriefingOver. Only with
 ## the droids in the frame and the art set's recordings; returns the briefing,
 ## or null.
+##
+## Nothing else can be done while it plays (TeeJ, 2026-09-27: "shouldn't be
+## able to pause or do anything else during the briefing"): it lies over the
+## whole screen on a layer above every other (BriefingLayer), so no window,
+## console or control below takes a click, and it takes every key but its own
+## Esc (briefing.gd).
 func StartBriefing(hold: Callable = Callable()) -> Control:
 	var advisor: Node = get_node_or_null("Advisor")
 	if advisor == null or advisor.Agent == null or not BriefingScript.CanPlay():
@@ -1600,14 +1608,25 @@ func StartBriefing(hold: Callable = Callable()) -> Control:
 	advisor.Held = true
 	if hold.is_valid():
 		hold.call(true)
+	var top := CanvasLayer.new()
+	top.name = "BriefingLayer"
+	top.layer = BriefingLayer
 	b.Finished = func() -> void:
+		if is_instance_valid(top):
+			top.queue_free()
 		if is_instance_valid(advisor):
 			advisor.Held = false
 		if hold.is_valid():
 			hold.call(false)
 		BriefingOver()
-	add_child(b)
+	add_child(top)
+	top.add_child(b)
 	return b
+
+
+## The opening briefing playing, or null.
+func Briefing() -> Control:
+	return get_node_or_null("BriefingLayer/Briefing")
 
 
 ## The briefing has ended, or there was none to play. As the original's (its

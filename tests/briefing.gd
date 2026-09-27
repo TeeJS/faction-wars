@@ -104,7 +104,7 @@ func _init() -> void:
 	# A new game in Easy: the briefing plays.
 	var main: Node = await _start(side, Enums.Difficulty.Easy)
 	var ui: UIManager = main.get_node("UIManager")
-	var b: Control = ui.get_node_or_null("Briefing")
+	var b: Control = ui.Briefing()
 	var advisor: Node = ui.get_node_or_null("Advisor")
 	var agent: Node = advisor.Agent if advisor != null else null
 	_check(b != null and agent != null, "a new game with the recordings: the briefing starts")
@@ -129,6 +129,8 @@ func _init() -> void:
 		and Lq.all(lit.keys(), func(p: Planet) -> bool: return p.ControllingFaction == ours and lit[p] == ours.ArtSkin),
 		"the third line: \"Systems Loyal to the Alliance\", only the Alliance's systems lit (%d)" % lit.size())
 
+	await _Modal(main, ui, b, day)
+
 	# Esc: the line stops, the skip's plays.
 	var esc := InputEventKey.new()
 	esc.keycode = KEY_ESCAPE
@@ -138,9 +140,9 @@ func _init() -> void:
 	await process_frame
 	_check(b.Skipped() and not _playing(al_lines[2]["sound"]) and _playing(al["skip"][1]["sound"]),
 		"Esc: the line stops and the skip's plays (\"I do hope you know what you're doing\")")
-	var ended := await _until(func() -> bool: return ui.get_node_or_null("Briefing") == null, 8.0)
+	var ended := await _until(func() -> bool: return ui.Briefing() == null, 8.0)
 	await process_frame
-	_check(ended and ui.get_node_or_null("Briefing") == null, "then the briefing is over")
+	_check(ended and ui.Briefing() == null, "then the briefing is over")
 	var comms: Node = ui._openWindows.get("Communications")
 	_check(comms != null and is_instance_valid(comms) and _category(comms) == "Advice", "the Message Index opens on Agent Advice (%s)" % (_category(comms) if comms != null else "none"))
 	_check(not main._briefing and not main._tickTimer.is_stopped() and not advisor.Held, "the clock runs again and the droids may speak")
@@ -151,7 +153,7 @@ func _init() -> void:
 	# A left click skips too; a second skip ends it at once.
 	main = await _start(side, Enums.Difficulty.Easy)
 	ui = main.get_node("UIManager")
-	b = ui.get_node_or_null("Briefing")
+	b = ui.Briefing()
 	_check(b != null, "another new game: the briefing again")
 	if b != null:
 		var click := InputEventMouseButton.new()
@@ -164,14 +166,14 @@ func _init() -> void:
 		b.Skip()
 		await process_frame
 		await process_frame
-		_check(ui.get_node_or_null("Briefing") == null and not main._briefing and ui._openWindows.get("Communications") != null,
+		_check(ui.Briefing() == null and not main._briefing and ui._openWindows.get("Communications") != null,
 			"a second skip during the skip's line ends it at once, and the Message Index opens")
 	await _stop(main)
 
 	# Medium: Agent Advice starts off, and after the briefing no Message Index.
 	main = await _start(side, Enums.Difficulty.Medium)
 	ui = main.get_node("UIManager")
-	b = ui.get_node_or_null("Briefing")
+	b = ui.Briefing()
 	var started := b != null
 	if started:
 		b.Skip()
@@ -179,7 +181,7 @@ func _init() -> void:
 		b.Skip()
 		for _i in 3:
 			await process_frame
-	_check(started and ui.get_node_or_null("Briefing") == null and ui._openWindows.get("Communications") == null and not main._briefing,
+	_check(started and ui.Briefing() == null and ui._openWindows.get("Communications") == null and not main._briefing,
 		"Medium: the briefing plays and ends; no Message Index opens (Agent Advice off, as the original's)")
 	await _stop(main)
 
@@ -187,9 +189,43 @@ func _init() -> void:
 	_remove("%s/sound" % dir)
 	main = await _start(side, Enums.Difficulty.Medium)
 	ui = main.get_node("UIManager")
-	_check(ui.get_node_or_null("Briefing") == null and not main._briefing, "without the art set's recordings: no briefing, the clock runs")
+	_check(ui.Briefing() == null and not main._briefing, "without the art set's recordings: no briefing, the clock runs")
 	await _stop(main)
 	_finish(null)
+
+
+## While the briefing plays nothing else can be done (TeeJ, 2026-09-27): it
+## lies above every layer, and the game's keys - pause, speed, the finders,
+## the overview, Game Options - and a right-click on the agent do nothing.
+func _Modal(main: Node, ui: UIManager, b: Control, day: int) -> void:
+	var layer: CanvasLayer = b.get_parent() as CanvasLayer
+	_check(layer != null and layer.layer > ui.layer and layer.layer > UIManager.FrameLayer,
+		"the briefing lies above the windows and the frame (layer %d)" % (layer.layer if layer != null else -1))
+	var speed: int = main._speed
+	for spec in [[KEY_P, true], [KEY_EQUAL, true], [KEY_O, true], [KEY_H, true], [KEY_F1, false], [KEY_F2, false], [KEY_F5, false], [KEY_F6, false]]:
+		for pressed in [true, false]:
+			var k := InputEventKey.new()
+			k.keycode = spec[0]
+			k.alt_pressed = spec[1]
+			k.pressed = pressed
+			root.push_input(k)
+		await process_frame
+	var agent: Control = ui.CommandFrameRef.Droids()[0] if ui.CommandFrameRef != null and not ui.CommandFrameRef.Droids().is_empty() else null
+	if agent != null:
+		for pressed in [true, false]:
+			var rc := InputEventMouseButton.new()
+			rc.button_index = MOUSE_BUTTON_RIGHT
+			rc.pressed = pressed
+			rc.position = agent.get_global_rect().get_center()
+			rc.global_position = rc.position
+			root.push_input(rc)
+		await process_frame
+	await process_frame
+	var popup: PopupMenu = ui.get_node_or_null("AgentPopup")
+	_check(main._speed == speed and not main._PauseShowing() and ui._openWindows.is_empty() and ui.get_node_or_null("OptionsScreen") == null
+		and (popup == null or not popup.visible) and StrategicTickManager.Today == day and main._tickTimer.is_stopped(),
+		"Alt+P, Alt+=, Alt+O, Alt+H, F1, F2, F5, F6 and a right-click on the agent: nothing opens, no pause, the speed and the day as they were (%s)" % str(ui._openWindows.keys()))
+	_check(ui.Briefing() == b and not b.Skipped(), "... and the briefing plays on")
 
 
 ## What each view lights, on the game running.
