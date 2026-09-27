@@ -8,10 +8,13 @@ namespace FactionWarsExporter;
 /// THE MOVIES FILE (docs/cutscenes-plan.md, phase 2): the original's 15
 /// movies (MDATA\MDATA.000-202, Smacker) converted for Godot, which plays only
 /// Ogg Theora, into swr-original.movies.zip - a second, optional file beside
-/// the art set (manifest kind "movies"), so 50 MB of movies never ride along
-/// with the pictures. Decisions (TeeJ, 2026-09-26, "Yes to all"): converted in
-/// process (Smacker.cs decodes; libtheora and libvorbis encode, through
-/// fwxiph.dll - no program is run), Theora quality 5 of 10 (31 of 63).
+/// the art set (manifest kind "movies"), so about 350 MB of movies never ride
+/// along with the pictures. Decisions (TeeJ, 2026-09-26, "Yes to all"):
+/// converted in process (Smacker.cs decodes; libtheora and libvorbis encode,
+/// through fwxiph.dll - no program is run). Since 2.5.1 Theora's best quality,
+/// 63 of 63, in 4:4:4 (TeeJ, 2026-09-27: 2.5.0's 31 of 63 in 4:2:0 was "WAY
+/// worse than the original"; measured on 001's crawl, 28.5 dB -> 42.0 dB PSNR
+/// against FFmpeg's decode of the original, about 5x the size).
 ///
 /// fwxiph.dll is built from Xiph's own sources (native\build-xiph.ps1), signed
 /// with the exe and carried inside it. It is written once to the player's
@@ -24,8 +27,8 @@ public static class Movies
     public const string Title = "Star Wars: Rebellion - original movies";
     /// <summary>MDATA.300-315 are the music, not movies.</summary>
     public static readonly string[] Names = { "000", "001", "003", "004", "005", "101", "102", "103", "104", "105", "106", "107", "108", "201", "202" };
-    /// <summary>Theora 0-63: "q5" on FFmpeg's 0-10 scale (x 6.3), the plan's measured 52 MB.</summary>
-    public const int TheoraQuality = 31;
+    /// <summary>Theora 0-63: the best (2.5.0 used 31, "q5" on FFmpeg's 0-10 scale).</summary>
+    public const int TheoraQuality = 63;
     /// <summary>Vorbis -0.1-1.0 (the originals are 11 kHz).</summary>
     public const float VorbisQuality = 0.3f;
 
@@ -77,7 +80,7 @@ public static class Movies
     }
 }
 
-/// <summary>One movie to Ogg: Theora video (BT.601, 4:2:0) and Vorbis audio,
+/// <summary>One movie to Ogg: Theora video (BT.601, 4:4:4) and Vorbis audio,
 /// pages interleaved by time, as libtheora's own encoder example writes them.</summary>
 internal static class OggTheora
 {
@@ -136,7 +139,11 @@ internal static class OggTheora
         }
     }
 
-    public static byte[] Encode(SmackerFile movie, int quality, float vorbisQuality, Action<int> progress)
+    /// <param name="fullChroma">4:4:4 - colour at every pixel, as the palette
+    /// gives it - rather than 4:2:0, one colour per 2x2 block, which smears the
+    /// crawl's yellow letters into the black (TeeJ, 2026-09-27: "WAY worse than
+    /// the original"). Godot 4.7's Theora player reads both.</param>
+    public static byte[] Encode(SmackerFile movie, int quality, float vorbisQuality, Action<int> progress, bool fullChroma = true)
     {
         using var n = new NativeBlocks();
         int w = movie.Width, h = movie.Height;
@@ -159,7 +166,7 @@ internal static class OggTheora
         Marshal.WriteInt32(ti, 36, 1);
         Marshal.WriteInt32(ti, 40, 1);
         Marshal.WriteInt32(ti, 44, 0);     // TH_CS_UNSPECIFIED
-        Marshal.WriteInt32(ti, 48, 0);     // TH_PF_420
+        Marshal.WriteInt32(ti, 48, fullChroma ? 3 : 0);     // TH_PF_444 : TH_PF_420
         Marshal.WriteInt32(ti, 52, 0);     // no bitrate: quality
         Marshal.WriteInt32(ti, 56, quality);
         IntPtr enc = Xiph.th_encode_alloc(ti);
@@ -215,7 +222,7 @@ internal static class OggTheora
 
                 var pages = new List<Page>();
                 // The planes: the picture at the top left, black below it.
-                int cw = fw / 2, ch = fh / 2;
+                int cw = fullChroma ? fw : fw / 2, ch = fullChroma ? fh : fh / 2;
                 IntPtr yp = n.Alloc(fw * fh), up = n.Alloc(cw * ch), vp = n.Alloc(cw * ch);
                 var y = new byte[fw * fh];
                 var u = new byte[cw * ch];
@@ -233,7 +240,7 @@ internal static class OggTheora
                 int last = movie.FrameCount - 1;
                 foreach (var f in movie.Frames())
                 {
-                    ToYCbCr(f, w, h, fw, cw, y, u, v, yl, cbl, crl);
+                    ToYCbCr(f, w, h, fw, cw, fullChroma, y, u, v, yl, cbl, crl);
                     Marshal.Copy(y, 0, yp, y.Length);
                     Marshal.Copy(u, 0, up, u.Length);
                     Marshal.Copy(v, 0, vp, v.Length);
@@ -326,7 +333,7 @@ internal static class OggTheora
     }
 
     /// <summary>Indexed pixels to BT.601 studio-range Y'CbCr, chroma averaged over 2x2.</summary>
-    private static void ToYCbCr(SmackerFile.Frame f, int w, int h, int fw, int cw, byte[] y, byte[] u, byte[] v, byte[] yl, int[] cbl, int[] crl)
+    private static void ToYCbCr(SmackerFile.Frame f, int w, int h, int fw, int cw, bool fullChroma, byte[] y, byte[] u, byte[] v, byte[] yl, int[] cbl, int[] crl)
     {
         var pal = f.Palette;
         for (int i = 0; i < 256; i++)
@@ -343,6 +350,21 @@ internal static class OggTheora
             int src = row * w, dst = row * fw;
             for (int x = 0; x < w; x++)
                 y[dst + x] = yl[px[src + x]];
+        }
+        if (fullChroma)
+        {
+            // Each pixel's own colour (the tables are x16).
+            for (int row = 0; row < h; row++)
+            {
+                int src = row * w, dst = row * cw;
+                for (int x = 0; x < w; x++)
+                {
+                    int p = px[src + x];
+                    u[dst + x] = (byte)Math.Clamp(128 + (int)Math.Round(cbl[p] / 16.0), 0, 255);
+                    v[dst + x] = (byte)Math.Clamp(128 + (int)Math.Round(crl[p] / 16.0), 0, 255);
+                }
+            }
+            return;
         }
         int ch2 = (h + 1) / 2, cw2 = (w + 1) / 2;
         for (int cy = 0; cy < ch2; cy++)

@@ -182,12 +182,12 @@ public sealed class MainForm : Form
         var start = Path.Combine(Path.GetDirectoryName(_outFile.Text) ?? "", Path.GetFileName(Movies.DefaultFile));
         if (PickZip("Save the movies as", start) is not string outZip)
             return;
-        Say("Converting the 15 movies takes several minutes. The window may pause between lines.");
+        Say("Converting the 15 movies takes 10-15 minutes. The window may pause between lines.");
         using (var sink = new ZipSink(outZip))
             Movies.Export(_gameDir.Text, sink, Say);
         Say("");
         Say($"Saved: {outZip}");
-        Say("Import it into Faction Wars as you did the art set (Import artwork file..., or drag it onto the game). Keep it as your backup.");
+        Say("Import it into Faction Wars: drag it onto the game's first screen (the pack cards), or click Choose a .zip file on the Add your own pack card. Keep it as your backup.");
     }
 
     private void ShowLicences()
