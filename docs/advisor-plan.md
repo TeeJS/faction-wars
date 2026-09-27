@@ -1,6 +1,6 @@
 # Plan: the droids speak - the original's advisor voices and the opening briefing
 
-Status: **phases 0-2 built, 2026-09-27** (TeeJ: "go - continue independently until done"): the exporter (2.6.0, #275) and the game side - the droids, the characters' lines, Translate Counterpart, the sound effects volume, the cockpit's sounds (TeeJ: "include those this round"). Phase 3 has no source; phase 4 next.
+Status: **phases 0-2 and 4 built, 2026-09-27** (TeeJ: "go - continue independently until done"): the exporter (2.6.0, #275) and the game side - the droids, the characters' lines, Translate Counterpart, the sound effects volume, the cockpit's sounds (TeeJ: "include those this round"), the opening briefing. Phase 3 has no source yet (a lead below). One part of the briefing is not built: how the original shows the system the agent points out (below).
 TeeJ, 2026-09-27: "What about the dialogue, like emperor's 'you have not adequately
 supported'" ... "yes write the plan". BACKLOG #41 (sound) stays for the sound effects.
 
@@ -24,7 +24,7 @@ his mission fails"; **5** no subtitles.
 |---|---|---|---|---|
 | `ALSPRITE.DLL` / `EMSPRITE.DLL` | the droids of each side: their animations and their lines | 213 / 216 | 10.6 / 11.4 min | mostly 11,025 Hz mono 16-bit (a few 22 kHz stereo 8-bit); animations as type-302 delta frames on RT_BITMAP anchors (1,640 / 2,348 frames; the exporter already decodes them for the idle runs, `Importer.cs` DroidRuns); 752 / 753 RT_RCDATA (not identified) |
 | `VOICEFXA.DLL` / `VOICEFXE.DLL` | more voice | 153 / 132 | 7.1 / 7.1 min | 11 kHz mono 8-bit; **what they are is unknown** - Rebellion 2's advisor uses none of them |
-| `ALBRIEF.DLL` / `EMBRIEF.DLL` | the opening briefing (Mon Mothma / the Emperor) | 17 / 22 | 2.9 / 3.1 min | their animations (2,684 / 2,738 frames). ⚠ In TeeJ's install both are renamed `.DLL.OLD`, so his copy skips the briefing (why is unknown) |
+| `ALBRIEF.DLL` / `EMBRIEF.DLL` | the opening briefing, spoken by the agent droid (C-3PO / IMP-22; the frames show him, 67x116 / 106x133, the agent's own size) - not Mon Mothma or the Emperor as this row first said | 17 / 22 | 2.9 / 3.1 min | their animations (2,684 / 2,738 frames). ⚠ In TeeJ's install both are renamed `.DLL.OLD`, so his copy skips the briefing (why is unknown) |
 | `STRATEGY.DLL` | the interface's sound effects | 66 | 6.7 min | not dialogue - BACKLOG #41 |
 
 **The spoken words are not in any text file** (TEXTSTRA, TEXTCOMM, ENCYTEXT - searched for
@@ -39,7 +39,7 @@ his mission fails"; **5** no subtitles.
 | How often | Rebellion 2: a notification per event type, queued by priority, living a few days (5-10 ticks), the same type not repeated within 60 ticks | Single-source |
 | The agent answers an order at once: an invalid destination ("C-3PO or IMP-22 indicates the error", manual p102), a unit in transit, a unit still being built; Manage Garrisons / Manage Production on and off; not enough maintenance (manual p047) | the manual, and Rebellion 2's authored responses (`InvalidOrderRejected`, `InTransitOrderRejected`, `UnitUnderConstructionOrderRejected`, the four toggles) | **Confirmed** for the moments the manual names; the recordings single-source |
 | "Good news about support for the Alliance" when a system joins | manual p043 | Confirmed (the moment); which recording, Rebellion 2 |
-| The opening briefing, a new game; then the Message Index opens on Agent Advice | manual p022; Rebellion 2's `PlayBriefing` (segments: an animation, a recording, a map focus) - its data not in the snapshot | The moment **confirmed**; the segments unknown |
+| The opening briefing, a new game; then the Message Index opens on Agent Advice | manual p022; the original's own script (GData `C3POACT.SPT` / `IMP22ACT.SPT`, below) | The moment **confirmed**; the lines and their order **confirmed** (the script, and every record's frame count equal to its run's); how the original shows the "key systems he points out" **unknown** |
 | The other ~155 recordings per side, VOICEFX, and TeeJ's "You have not adequately supported..." | - | **Unknown** (phase 0) |
 
 ## Phase 0: the map (2026-09-27, from Rebellion 2's last in-repo data)
@@ -82,9 +82,47 @@ report), an enemy mission foiled (21), uprisings and a system joining / leaving 
 release by the character (22-40).
 
 **Not mapped** (not in Rebellion 2's data): VOICEFXA/E (285 recordings - Rebellion 2 uses
-none); the briefing (its briefing data came after its content left the repo - phase 4 reads
-the briefing files' own order); the instant answers to orders (later Rebellion 2 versions
+none); the briefing (its briefing data came after its content left the repo - phase 4 read
+the original's own script instead); the instant answers to orders (later Rebellion 2 versions
 only, by name); about 45 recordings per side nothing references; the names of codes 44/45.
+
+## Phase 4: the briefing (2026-09-27, from the original's own files)
+
+**The script.** `GData\C3POACT.SPT` / `IMP22ACT.SPT` are the agent's action scripts: a u32 count, then per
+script a u32 id, a u32 type, a u32 step count, 4 bytes, and 14-byte steps (u16 fields). A step names an RC
+record of the side's briefing DLL: 10xxx / 11xxx -> `(4, 4xxx)` -> `(0, recording, 13, frames, run)` - so
+4155 is `(0, 1155, 13, 137, 2101)`: recording 1155 with run 2101, 137 frames (the run has 137). Script **41 /
+74 is the briefing**, **40 / 73 the skip**. Between lines a step `(10000 / 11000, 0, 0, 2, 0, n, 0)`: the agent
+at rest and a number `n` - the pack's `focus`. What each line is about (machine transcription with Windows'
+own recogniser - **inferred**, rough) says `n` is what he points out:
+
+| focus | Alliance line | About (transcribed) | Empire line |
+|---|---|---|---|
+| 12 | 1155 | C-3PO and R2-D2 introduce "a report on the current state of the galaxy" | 1147 |
+| 1 | 1220 | "as you can see on the galactic information display, the galaxy is in a state of turmoil" | 1220 |
+| 14 / 15 | 1221 / 1222 | systems drawn to the Alliance / still loyal to the Empire | 1221 / 1222 |
+| 16 / 17 | 1223 / 1224 | the core systems / the rim, "excellent bases" | 1223 / 1224 |
+| 18 | 1157 | the base on Yavin, "which you can see indicated here"; evacuate it | 1149 |
+| 3 / 4 | 1158 / 1159 | the Alliance headquarters / the Imperial capital, Coruscant | 1150 / 1151 |
+| 5 / 6 | 1160 / 1161 | the fleet ("begin a shipbuilding program") / troops, fighters, defences, facilities | 1152 / 1153 |
+| 7 / 19 / 20 | 1225 / 1226 / 1163 | Mon Mothma at headquarters / Luke / Vader and the Emperor | 1225 / 1226 / 1155 |
+| 9 / 10 | 1164 / 1168 | the briefing ends / "we await your orders ... may the Force be with you" | 1156 / 1160 |
+| 11, 13 | - | the end (also around the skip's line) | - |
+| skip | 1165 | "I do hope you know what you're doing" | 1157 |
+
+16 lines a side; the DLL's 17th recording is the skip's (the Empire's 22 add SD-7's five clicks).
+**Built:** the pack's `briefing` (rule 28), `src/ui/briefing.gd` - at a new single-player game, the agent
+speaks the lines in his place, the clock held and the droids' news waiting; Esc or a left click (manual
+p022) stops the line and plays the skip's; then the Message Index opens on Agent Advice. tests/briefing.gd.
+**Not built:** the `focus` - how the original shows the system he points out (no source: not the manual,
+the guide, open-rebellion's ledger - `RE-ADV-02` open - or Rebellion 2, whose briefing data never reached
+its repo). TeeJ's copy has the briefing switched off (`.OLD`), so it cannot be watched there as it is.
+Also inferred: the clock waits for the briefing (its last line, "we await your orders"), and head-to-head
+has none (the other side's clock would wait 3 minutes).
+
+**A lead for phase 3.** The same scripts hold the agent's other actions (C3POACT's 1-39 and 69-85 name one
+record each; 42-68 pair a message-droid record with a C-3PO one). Transcribing their lines as above would
+say which is "that destination is invalid" and the others - by content, not by the binary's own map.
 
 ## What the code does today
 
@@ -117,7 +155,7 @@ only, by name); about 45 recordings per side nothing references; the names of co
 | 1 | **Exporter**: the recordings and the talking animations | the game can play them; size stated - **built** (2.6.0, #275): 890 sounds 13.8 MB, 110 runs 14.9 MB |
 | 2 | **Game**: the droids report events; Translate Counterpart; the effects volume | a test per event; TeeJ hears them - **built**: `src/ui/advisor.gd`, `sound.gd`, `fwa.gd`; the pack's `advisor`, `voices`, `sounds` (rules 25-27); news tagged where the simulation writes it (GameMessage.Advisor / Voice); the cockpit's sounds (open-rebellion's map of COMMON.DLL); tests/advisor.gd. TeeJ's listen owed |
 | 3 | **Game**: the instant answers (invalid order, in transit, under construction, the droid toggles, maintenance) | a test each - **no source**: Rebellion 2's last in-repo data has no ids for them, and none other maps them; the binary would (TeeJ's approval) |
-| 4 | **Game**: the opening briefing (decision 2) | it plays at a new game, **Esc skips it**, then Agent Advice opens |
+| 4 | **Game**: the opening briefing (decision 2) | it plays at a new game, **Esc skips it**, then Agent Advice opens - **built** from the original's own script (above): `src/ui/briefing.gd`, the pack's `briefing` (rule 28), tests/briefing.gd. The `focus` (the system pointed out) not drawn: unknown |
 
 ## Decisions for TeeJ
 

@@ -63,6 +63,7 @@ func IsTargetingObject() -> bool:
 
 const OriginalMenu := preload("res://src/ui/original_menu.gd")
 const AdvisorScript := preload("res://src/ui/advisor.gd")
+const BriefingScript := preload("res://src/ui/briefing.gd")
 const SoundLib := preload("res://src/ui/sound.gd")
 
 
@@ -1566,6 +1567,30 @@ func OpenGidControlMenu() -> void:
 	menu.connect("chosen", func(mode: Object) -> void:
 		if is_instance_valid(map):
 			map.SetMode(mode))
+
+
+## THE OPENING BRIEFING at a new game (manual p022; src/ui/briefing.gd): the
+## agent droid speaks it in its place while `hold` keeps the clock (true, then
+## false) and the droids keep their news; afterwards the Message Index opens
+## on Agent Advice. Only with the droids in the frame and the art set's
+## recordings; returns the briefing, or null.
+func StartBriefing(hold: Callable = Callable()) -> Control:
+	var advisor: Node = get_node_or_null("Advisor")
+	if advisor == null or advisor.Agent == null or not BriefingScript.CanPlay():
+		return null
+	var b: Control = BriefingScript.new()
+	b.Agent = advisor.Agent
+	advisor.Held = true
+	if hold.is_valid():
+		hold.call(true)
+	b.Finished = func() -> void:
+		if is_instance_valid(advisor):
+			advisor.Held = false
+		if hold.is_valid():
+			hold.call(false)
+		OnMessageIndexClicked("Advice")
+	add_child(b)
+	return b
 
 
 ## The droids stand in the Command Center frame (the bottom row's agent

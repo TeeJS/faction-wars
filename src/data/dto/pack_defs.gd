@@ -386,6 +386,12 @@ class PackManifest:
 	var Sounds: Dictionary = {}
 	var SoundsGiven: bool = false
 	var SoundsRaw: Variant = null
+	## SCHEMA.md section 2 (docs/advisor-plan.md, phase 4): the opening
+	## briefing per side - its steps and the skip's, each a line (anim, sound)
+	## or a `focus`. Less the "_" keys; Given/Raw for validation rule 28.
+	var Briefing: Dictionary = {}
+	var BriefingGiven: bool = false
+	var BriefingRaw: Variant = null
 
 	## The longest download link offered (the relay's listing keeps as much).
 	const UrlMax := 300
@@ -477,6 +483,9 @@ class PackManifest:
 		o.SoundsRaw = _deep_without_comments(JsonUtil.get_ci(d, "sounds"))
 		o.SoundsGiven = o.SoundsRaw != null
 		o.Sounds = o.SoundsRaw if o.SoundsRaw is Dictionary else {}
+		o.BriefingRaw = _deep_without_comments(JsonUtil.get_ci(d, "briefing"))
+		o.BriefingGiven = o.BriefingRaw != null
+		o.Briefing = o.BriefingRaw if o.BriefingRaw is Dictionary else {}
 		return o
 
 	## A map and every map inside it, less their "_" keys.
