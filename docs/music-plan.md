@@ -103,16 +103,28 @@ and the two it never uses (313, 309).
 
 | Claim | Confidence |
 |---|---|
-| Menu = 300 | **Confirmed**: open-rebellion's notes and Rebellion 2, and the binary agrees (no game → entry 0 = 300, with the two inferences above) |
-| Neutral = 301-303 | Single-source (Rebellion 2); fits the table (entries 1-3) |
-| The advantage tracks per side | Single-source (Rebellion 2); the order matches the table, the rule does not have a second source |
-| The thresholds (3:1, 2:1, 1:2), 3 neutral between, ×10 | Single-source (Rebellion 2), origin not stated |
-| Whether the original has six tiers (304 and 312 included) | **Unknown** |
-| Battle alert 307; results 308 / 314 / 315 | Single-source (Rebellion 2) |
-| 309, 313 | **Unknown** - the original has slots for them |
+| Menu = 300 | **Confirmed**: open-rebellion's notes, Rebellion 2, and the binary (no game → `xor eax,eax` at `0x41d3c1` → entry 0 = 300) |
+| Neutral = 301-303, three between each strategic track, the first strategic | **Confirmed**: Rebellion 2 and the binary (below) |
+| The standing tracks per side, the ratio thresholds (300 / 200 / 50, ×10 with none) | **Confirmed**: Rebellion 2 and the binary (below); side 1 = the Alliance is inferred (Rebellion 2's map agrees) |
+| The decisive tiers (304 and 312), from two counters | **Confirmed they exist** (the binary); **what the counters count is unknown** - not built |
+| Battle music: looped entry 10 (307) or 11 (313) by a flag | the binary (`0x44f860`, via `0x417610`); what the flag is and which window plays it is **unknown**. Rebellion 2 plays 307 once at the Battle Alert |
+| Results 308 / 314 / 315 | Single-source (Rebellion 2); not traced in the binary |
+| 309 | **Unknown** - the original has a slot for it (entry 13) |
 
-**What settles the rest:** the in-game selector, `0x487fb0` (open-rebellion's full export may
-have it), and the callers of `0x417610` (the looped tracks - likely the battle and result cues).
+### The in-game selector (REBEXE.EXE, read 2026-09-27 with TeeJ's approval in manual mode)
+
+| Step | Where | What it does |
+|---|---|---|
+| The selector | `0x41d3b0` → `0x4369a0` → `0x487fb0` → `0x43a250` | on the player's side object: while a counter (`+0x190`) is above 0, count down and play entry `1 + random(6)/2` (301-303, a third each); at 0, set it to 3 and ask the side (virtual slot 7) |
+| The side | created at `0x486240`: value 1 → class `0x4c27f0` (vtable `0x65c4c8`), 2 → `0x4c0710` (vtable `0x65c4a0`) | slot 7 (`0x4c48e0` / `0x4c2700`) switches on the side's war-status byte `+0x170` |
+| The tracks | the two switches | state 1 / 2 / 4 / 8 / 16 / 32 / 64 → side 1: 304 / 305 / 306 / random 301-303 / 310 / 311 / 312; side 2: 312 / 311 / 310 / random / 306 / 305 / 304 |
+| The war status | `0x439bf0` (reached through `0x4866e0`, a function pointer at `0x65adc4`) | start at 8 (even). **First** two counters (`+0xc4` - `+0xc8`): > 1 → 1, = 1 → 2, = -1 → 32, < -1 → 64. **Only if still 8**, the planet ratio (`+0xd4` ×100 / `+0xd8`, or ×10 when `+0xd8` is 0): ≥ 300 → 2, ≥ 200 → 4, ≤ 50 → 16. (A "≤ 33 → 32" test follows it but can never run: anything ≤ 50 has already returned) |
+
+**Not found:** what `+0xc4`/`+0xc8` count, and so when the decisive tracks play. Every place
+that writes them together is a constructor zeroing a block or a generic accumulator
+(`0x49dbc9` adds one stats block into another); the next thread is the function pointer at
+`0x65adc4`. Until then the game plays the ratio rule, which is the original's whenever the two
+counters are equal.
 
 ## How
 
