@@ -9,10 +9,10 @@ extends Control
 ##     the Save Game button [showing] whether you were playing the Empire, the
 ##     Alliance, or a head-to-head game". Loading over a running game asks
 ##     first ("the computer asks you to confirm");
-##   Sound options - Play Music and the music volume work (the original's
-##     score, docs/music-plan.md); the sound effects volume is greyed, there
-##     are no sound effects yet. The Tactical Display options are greyed too:
-##     there is no tactical view (BACKLOG);
+##   Sound options - Play Music and the music volume (the original's score,
+##     docs/music-plan.md), and the sound effects volume (the droids' voices
+##     and the controls' sounds, docs/advisor-plan.md). The Tactical Display
+##     options are greyed: there is no tactical view (BACKLOG);
 ##   Restart the game ("abandons the current game and starts over in the
 ##     Shuttle ... asks you to confirm"), Return to the Command Center
 ##     ("unavailable if you come to this screen from the Shuttle Cockpit"),
@@ -28,6 +28,7 @@ extends Control
 const Art := preload("res://src/ui/artwork.gd")
 const OUI := preload("res://src/ui/original_ui.gd")
 const MusicLib := preload("res://src/ui/music.gd")
+const SoundLib := preload("res://src/ui/sound.gd")
 const Picker := preload("res://src/ui/pack_picker.gd")
 
 const W := 640
@@ -190,10 +191,12 @@ func _build() -> void:
 			(b as TextureButton).disabled = true
 			(b as TextureButton).tooltip_text = "Only the host can save." if session != null and playing else "No game to save."
 
-	# ---- Sound Options: Play Music and the music volume (docs/music-plan.md);
-	# the sound effects are not in this game yet ------------------------------
+	# ---- Sound Options: Play Music, the music volume (docs/music-plan.md) and
+	# the sound effects volume - the droids' voices and the controls' sounds
+	# (docs/advisor-plan.md) ------------------------------------------------
 	var not_yet := "Not in this game yet."
 	MusicLib.Load()
+	SoundLib.Load()
 	var on: bool = MusicLib.PlayMusic
 	var sw := _place(Art.WindowPicture("options_music.lit" if on else "options_music.off"), MusicSwitchAt.x, MusicSwitchAt.y, "MusicSwitch")
 	sw.tooltip_text = "Play Music"
@@ -207,16 +210,12 @@ func _build() -> void:
 	_text("On" if on else "Off", StateRight - 60, MusicLabelAt.y, 60, HeadPx, Green if on else DimGreen, HORIZONTAL_ALIGNMENT_RIGHT, true, "MusicState")
 	for i in KnobYs.size():
 		var knob := _place(Art.WindowPicture("options_knob"), KnobX, KnobYs[i], ["MusicKnob", "EffectsKnob"][i])
-		if i == 0:
-			# The music knob slides along its track: left quiet, right full.
-			knob.position.x = (KnobX + MusicLib.Volume * KnobTravel) * _s
-			knob.tooltip_text = "Music volume"
-			knob.mouse_filter = Control.MOUSE_FILTER_STOP
-			knob.gui_input.connect(func(e: InputEvent) -> void: _drag_knob(knob, e))
-			continue
-		knob.modulate = Color(0.55, 0.55, 0.55)
-		knob.tooltip_text = not_yet
-		knob.mouse_filter = Control.MOUSE_FILTER_PASS
+		# Each knob slides along its track: left quiet, right full.
+		var effects: bool = i == 1
+		knob.position.x = (KnobX + (SoundLib.Volume if effects else MusicLib.Volume) * KnobTravel) * _s
+		knob.tooltip_text = "Sound effects volume" if effects else "Music volume"
+		knob.mouse_filter = Control.MOUSE_FILTER_STOP
+		knob.gui_input.connect(func(e: InputEvent) -> void: _drag_knob(knob, e, effects))
 	for i in Toggles.size():
 		var y: float = ToggleTop + i * TogglePitch
 		var light := _place(Art.WindowPicture("options_light.off"), LightX, y, "Light%d" % i)
@@ -240,7 +239,7 @@ func _build() -> void:
 
 ## The music knob follows the mouse along its track while held; the volume
 ## follows the knob.
-func _drag_knob(knob: Control, e: InputEvent) -> void:
+func _drag_knob(knob: Control, e: InputEvent, effects: bool = false) -> void:
 	var drag: bool = (e is InputEventMouseButton and e.button_index == MOUSE_BUTTON_LEFT and e.pressed) \
 		or (e is InputEventMouseMotion and (e.button_mask & MOUSE_BUTTON_MASK_LEFT) != 0)
 	if not drag:
@@ -248,7 +247,10 @@ func _drag_knob(knob: Control, e: InputEvent) -> void:
 	# The mouse on the canvas (the event is the knob's own), held by the knob's middle.
 	var x: float = (knob.position.x + (e as InputEventMouse).position.x) / _s - KnobX - 5.5
 	var v: float = clampf(x / KnobTravel, 0.0, 1.0)
-	MusicLib.SetVolume(v)
+	if effects:
+		SoundLib.SetVolume(v)
+	else:
+		MusicLib.SetVolume(v)
 	knob.position.x = (KnobX + v * KnobTravel) * _s
 	knob.accept_event()
 

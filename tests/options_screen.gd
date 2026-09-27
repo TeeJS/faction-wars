@@ -98,7 +98,8 @@ func _init() -> void:
 	var tactical: Label = screen._canvas.get_node_or_null("Head_TacticalDisplayOptions")
 	_check(tactical != null and tactical.get_theme_color("font_color") == Screen.Greyed, "Tactical Display Options is greyed with its options")
 	var effects: Control = screen._canvas.get_node_or_null("EffectsKnob")
-	_check(effects != null and effects.tooltip_text.begins_with("Not in this game"), "the sound-effects knob is greyed: no sound effects yet")
+	_check(effects != null and effects.tooltip_text == "Sound effects volume" and effects.mouse_filter == Control.MOUSE_FILTER_STOP,
+		"the sound effects knob works (the droids' voices, the controls' sounds)")
 
 	# The switch turns the music off and on, and the setting is kept.
 	var sw: TextureRect = screen._canvas.get_node_or_null("MusicSwitch")

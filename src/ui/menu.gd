@@ -25,6 +25,8 @@ const Picker := preload("res://src/ui/pack_picker.gd")
 const MoviesLib := preload("res://src/ui/movies.gd")
 ## The Cockpit's music (docs/music-plan.md): pack.json `music` `menu`.
 const MusicLib := preload("res://src/ui/music.gd")
+## The cockpit's controls' sounds (docs/advisor-plan.md): pack.json `sounds`.
+const SoundLib := preload("res://src/ui/sound.gd")
 
 var _difficultyGroup: ButtonGroup
 var _sizeGroup: ButtonGroup
@@ -658,6 +660,7 @@ func _scaled_points(q: PackedVector2Array) -> PackedVector2Array:
 
 
 func _on_region(r: PackDefs.MenuRegionDef) -> void:
+	_cockpit_sound(r)
 	match r.Action:
 		"difficulty":
 			_difficultyId = r.Value
@@ -689,6 +692,22 @@ func _on_region(r: PackDefs.MenuRegionDef) -> void:
 			if _press_shown("exit"):
 				await get_tree().create_timer(PressHold).timeout
 			Picker.ExitToPicker(get_tree())
+
+
+## THE COCKPIT'S OWN SOUNDS (docs/advisor-plan.md; pack.json `sounds`,
+## open-rebellion's map of COMMON.DLL's five): the galaxy size, Load, the
+## ejector handle, and every other control.
+func _cockpit_sound(r: PackDefs.MenuRegionDef) -> void:
+	if FactionRegistry.Pack == null:
+		return
+	var moment := "cockpit_control"
+	if r.Action == "galaxy_size" or (r.Action == "cycle" and r.Value == "galaxy_size"):
+		moment = "cockpit_galaxy_size"
+	elif r.Action == "load_game":
+		moment = "cockpit_load"
+	elif r.Action == "exit":
+		moment = "cockpit_exit"
+	SoundLib.Play(get_tree(), FactionRegistry.Pack.Manifest.Sounds.get(moment, ""))
 
 
 ## THE GALAXY-SIZE LEVER (TeeJ, 2026-09-25: "clicking on the handle should

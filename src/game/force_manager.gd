@@ -69,7 +69,7 @@ static func ConcludeDagobah(luke: Character, day: int, completed: bool) -> void:
 		body = "%s's training under Yoda was cut short after %d day(s). He stands at %s - what he had time to learn, and no more." % [luke.Name, served, rank_name]
 	EventBus.Tell(luke.Faction, GameMessage.new("%s has returned" % luke.Name,
 		body + "\n\nHe has returned to %s." % (_return_to.Name if _return_to != null else "our forces"),
-		Enums.MessageCategory.Missions, day, _return_to if _return_to is Planet else null, luke))
+		Enums.MessageCategory.Missions, day, _return_to if _return_to is Planet else null, luke).With("", "dagobah_completed" if completed else ""))
 
 
 static func ProcessDagobah(day: int) -> void:
@@ -139,7 +139,7 @@ static func LeiaLearnsFromLuke(roster: Array, day: int) -> void:
 		return
 	EventBus.Tell(leia.Faction, GameMessage.new("%s knows her heritage" % leia.Name,
 		"%s has told %s the truth about their parentage.\n\nThe Force has been in her all along, and she stands at %s. Her abilities can be developed further with a Jedi Training mission led by a Jedi Master." % [luke.Name, leia.Name, rank_name],
-		Enums.MessageCategory.Missions, day, leia.Attached if leia.Attached is Planet else null, leia))
+		Enums.MessageCategory.Missions, day, leia.Attached if leia.Attached is Planet else null, leia).With("", "force_ability_revealed"))
 
 
 static func ProcessDay(day: int) -> void:

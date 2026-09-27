@@ -74,7 +74,9 @@ static func Load() -> void:
 
 
 static func _save() -> void:
+	# The file holds the sound effects' settings too (sound.gd): keep them.
 	var cfg := ConfigFile.new()
+	cfg.load(SettingsFile)
 	cfg.set_value("music", "play", PlayMusic)
 	cfg.set_value("music", "volume", Volume)
 	cfg.save(SettingsFile)

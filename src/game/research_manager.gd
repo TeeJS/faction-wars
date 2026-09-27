@@ -91,6 +91,7 @@ static func Award(f: Faction, track: int, points: int, day: int, quiet: bool) ->
 			"Our researchers have completed work on the %s. It is available to build immediately." % found,
 			Enums.MessageCategory.Manufacturing, day)
 		msg.Type = Enums.MessageType.ResearchReport
+		msg.Advisor = "research"
 		EventBus.Tell(f, msg)
 
 

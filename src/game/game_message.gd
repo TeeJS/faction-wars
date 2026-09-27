@@ -44,6 +44,17 @@ var PendingMission: Mission
 ## not saved, so neither is this.
 var Report: RefCounted = null
 
+## WHAT THE DROIDS SAY ABOUT IT (docs/advisor-plan.md): the advisor event this
+## news is for the side it is addressed to - the engine's names, which the pack's
+## `advisor` maps to the droids' animations and lines ("" - nothing). A
+## character's own event takes the character from AssociatedCharacter
+## ("personnel_report" plays that character's report where the pack has one).
+## Presentation only: the simulation never reads it.
+var Advisor: String = ""
+## The line AssociatedCharacter speaks with it (the pack's `voices`:
+## "mission_success", "personnel_arrived", ...), or "".
+var Voice: String = ""
+
 
 func _init(title: String = "", body: String = "", category: int = Enums.MessageCategory.All,
 		day: int = 0, planet: Location = null, character: Character = null) -> void:
@@ -62,7 +73,16 @@ func Copy() -> GameMessage:
 	c.Type = Type
 	c.PendingMission = PendingMission
 	c.Report = Report
+	c.Advisor = Advisor
+	c.Voice = Voice
 	return c
+
+
+## The same message, tagged for the droids and the character's own line.
+func With(advisor: String, voice: String = "") -> GameMessage:
+	Advisor = advisor
+	Voice = voice
+	return self
 
 
 func AwaitsDecision() -> bool:

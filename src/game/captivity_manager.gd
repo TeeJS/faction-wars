@@ -62,7 +62,7 @@ static func TryEscape(prisoner: Character, galaxy: Array, day: int, rng: Prng) -
 		return
 	EventBus.Tell(prisoner.Faction, GameMessage.new("%s has escaped" % prisoner.Name,
 		"%s has got out of enemy hands and reached %s." % [prisoner.Name, home.Name if home != null else "our forces"],
-		Enums.MessageCategory.Missions, day, home if home is Planet else null, prisoner))
+		Enums.MessageCategory.Missions, day, home if home is Planet else null, prisoner).With("released", "released"))
 
 
 static func HomeFor(f: Faction, galaxy: Array) -> Location:

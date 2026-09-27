@@ -268,4 +268,5 @@ static func Announce(r: AssaultReport, _fleet: Fleet, attacker: Faction, defende
 			continue
 		var msg := GameMessage.new("Assault on %s" % r.Target.Name, body, Enums.MessageCategory.Conflict, day, r.Target)
 		msg.Report = r
+		msg.Advisor = "assault"
 		EventBus.Tell(side, msg)

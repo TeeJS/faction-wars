@@ -54,6 +54,948 @@
     "battle_defeat.empire": "swr-original:music/315.ogg",
     "battle_draw.empire": "swr-original:music/315.ogg"
   },
+  "advisor": {
+    "_comment": "Rebellion 2's map of the original's own animations and recordings (its information; docs/advisor-plan.md, phase 0): single-source.",
+    "repeat_days": 60,
+    "frame_seconds": 0.067,
+    "alliance": {
+      "bombardment": {
+        "days": 10,
+        "agent": {
+          "anim": "swr-original:anim/alsprite/2941.fwa",
+          "sound": "swr-original:sound/alsprite/1210.ogg"
+        }
+      },
+      "assault": {
+        "days": 10,
+        "agent": {
+          "anim": "swr-original:anim/alsprite/2941.fwa",
+          "sound": "swr-original:sound/alsprite/1211.ogg"
+        }
+      },
+      "captured.mon_mothma": {
+        "days": 40000,
+        "agent": {
+          "anim": "swr-original:anim/alsprite/2041.fwa",
+          "sound": "swr-original:sound/alsprite/1084.ogg"
+        }
+      },
+      "captured.luke_skywalker": {
+        "days": 40000,
+        "agent": {
+          "anim": "swr-original:anim/alsprite/2041.fwa",
+          "sound": "swr-original:sound/alsprite/1085.ogg"
+        }
+      },
+      "captured.leia_organa": {
+        "days": 40000,
+        "agent": {
+          "anim": "swr-original:anim/alsprite/2001.fwa",
+          "sound": "swr-original:sound/alsprite/1058.ogg"
+        }
+      },
+      "captured.han_solo": {
+        "days": 40000,
+        "agent": {
+          "anim": "swr-original:anim/alsprite/2001.fwa",
+          "sound": "swr-original:sound/alsprite/1056.ogg"
+        }
+      },
+      "captured.darth_vader": {
+        "days": 40000,
+        "agent": {
+          "anim": "swr-original:anim/alsprite/3531.fwa",
+          "sound": "swr-original:sound/alsprite/1078.ogg"
+        }
+      },
+      "captured.emperor_palpatine": {
+        "days": 40000,
+        "agent": {
+          "anim": "swr-original:anim/alsprite/3531.fwa",
+          "sound": "swr-original:sound/alsprite/1079.ogg"
+        }
+      },
+      "personnel_report": {
+        "days": 10,
+        "messenger": {
+          "anim": "swr-original:anim/alsprite/3331.fwa",
+          "sound": "swr-original:sound/alsprite/1512.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/alsprite/2941.fwa",
+          "sound": "swr-original:sound/alsprite/1195.ogg",
+          "translated": true
+        }
+      },
+      "report.darth_vader": {
+        "days": 40000,
+        "messenger": {
+          "anim": "swr-original:anim/alsprite/3331.fwa",
+          "sound": "swr-original:sound/alsprite/1512.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/alsprite/2941.fwa",
+          "sound": "swr-original:sound/alsprite/1195.ogg",
+          "translated": true
+        }
+      },
+      "report.emperor_palpatine": {
+        "days": 40000,
+        "messenger": {
+          "anim": "swr-original:anim/alsprite/3331.fwa",
+          "sound": "swr-original:sound/alsprite/1512.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/alsprite/2941.fwa",
+          "sound": "swr-original:sound/alsprite/1195.ogg",
+          "translated": true
+        }
+      },
+      "report.mon_mothma": {
+        "days": 40000,
+        "messenger": {
+          "anim": "swr-original:anim/alsprite/3331.fwa",
+          "sound": "swr-original:sound/alsprite/1514.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/alsprite/2941.fwa",
+          "sound": "swr-original:sound/alsprite/1126.ogg",
+          "translated": true
+        }
+      },
+      "report.leia_organa": {
+        "days": 40000,
+        "messenger": {
+          "anim": "swr-original:anim/alsprite/3331.fwa",
+          "sound": "swr-original:sound/alsprite/1515.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/alsprite/2941.fwa",
+          "sound": "swr-original:sound/alsprite/1127.ogg",
+          "translated": true
+        }
+      },
+      "report.luke_skywalker": {
+        "days": 40000,
+        "messenger": {
+          "anim": "swr-original:anim/alsprite/3331.fwa",
+          "sound": "swr-original:sound/alsprite/1516.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/alsprite/2941.fwa",
+          "sound": "swr-original:sound/alsprite/1128.ogg",
+          "translated": true
+        }
+      },
+      "report.han_solo": {
+        "days": 40000,
+        "messenger": {
+          "anim": "swr-original:anim/alsprite/3331.fwa",
+          "sound": "swr-original:sound/alsprite/1517.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/alsprite/2941.fwa",
+          "sound": "swr-original:sound/alsprite/1129.ogg",
+          "translated": true
+        }
+      },
+      "released.mon_mothma": {
+        "days": 40000,
+        "messenger": {
+          "anim": "swr-original:anim/alsprite/3331.fwa",
+          "sound": "swr-original:sound/alsprite/1531.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/alsprite/3531.fwa",
+          "sound": "swr-original:sound/alsprite/1086.ogg"
+        }
+      },
+      "released.luke_skywalker": {
+        "days": 40000,
+        "messenger": {
+          "anim": "swr-original:anim/alsprite/3331.fwa",
+          "sound": "swr-original:sound/alsprite/1531.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/alsprite/3531.fwa",
+          "sound": "swr-original:sound/alsprite/1087.ogg"
+        }
+      },
+      "released.darth_vader": {
+        "days": 40000,
+        "messenger": {
+          "anim": "swr-original:anim/alsprite/3331.fwa",
+          "sound": "swr-original:sound/alsprite/1531.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/alsprite/2001.fwa",
+          "sound": "swr-original:sound/alsprite/1080.ogg"
+        }
+      },
+      "released.emperor_palpatine": {
+        "days": 40000,
+        "messenger": {
+          "anim": "swr-original:anim/alsprite/3331.fwa",
+          "sound": "swr-original:sound/alsprite/1531.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/alsprite/2001.fwa",
+          "sound": "swr-original:sound/alsprite/1081.ogg"
+        }
+      },
+      "released": {
+        "days": 40000,
+        "messenger": {
+          "anim": "swr-original:anim/alsprite/3331.fwa",
+          "sound": "swr-original:sound/alsprite/1531.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/alsprite/2041.fwa",
+          "sound": "swr-original:sound/alsprite/1191.ogg",
+          "translated": true
+        }
+      },
+      "released.han_solo": {
+        "days": 40000,
+        "messenger": {
+          "anim": "swr-original:anim/alsprite/3331.fwa",
+          "sound": "swr-original:sound/alsprite/1531.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/alsprite/2041.fwa",
+          "sound": "swr-original:sound/alsprite/1191.ogg",
+          "translated": true
+        }
+      },
+      "released.leia_organa": {
+        "days": 40000,
+        "messenger": {
+          "anim": "swr-original:anim/alsprite/3331.fwa",
+          "sound": "swr-original:sound/alsprite/1531.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/alsprite/2041.fwa",
+          "sound": "swr-original:sound/alsprite/1191.ogg",
+          "translated": true
+        }
+      },
+      "support_gained": {
+        "days": 10,
+        "messenger": {
+          "anim": "swr-original:anim/alsprite/3331.fwa",
+          "sound": "swr-original:sound/alsprite/1506.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/alsprite/3531.fwa",
+          "sound": "swr-original:sound/alsprite/1118.ogg",
+          "translated": true
+        }
+      },
+      "support_lost": {
+        "days": 10,
+        "messenger": {
+          "anim": "swr-original:anim/alsprite/3331.fwa",
+          "sound": "swr-original:sound/alsprite/1507.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/alsprite/2551.fwa",
+          "sound": "swr-original:sound/alsprite/1119.ogg",
+          "translated": true
+        }
+      },
+      "planet_status": {
+        "days": 10,
+        "messenger": {
+          "anim": "swr-original:anim/alsprite/3331.fwa",
+          "sound": "swr-original:sound/alsprite/1502.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/alsprite/2941.fwa",
+          "sound": "swr-original:sound/alsprite/1114.ogg",
+          "translated": true
+        }
+      },
+      "production": {
+        "days": 5,
+        "messenger": {
+          "anim": "swr-original:anim/alsprite/3331.fwa",
+          "sound": "swr-original:sound/alsprite/1503.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/alsprite/2941.fwa",
+          "sound": "swr-original:sound/alsprite/1115.ogg",
+          "translated": true
+        }
+      },
+      "maintenance": {
+        "days": 10,
+        "messenger": {
+          "anim": "swr-original:anim/alsprite/3331.fwa",
+          "sound": "swr-original:sound/alsprite/1504.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/alsprite/2041.fwa",
+          "sound": "swr-original:sound/alsprite/1116.ogg",
+          "translated": true
+        }
+      },
+      "research": {
+        "days": 10,
+        "messenger": {
+          "anim": "swr-original:anim/alsprite/3331.fwa",
+          "sound": "swr-original:sound/alsprite/1505.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/alsprite/2941.fwa",
+          "sound": "swr-original:sound/alsprite/1117.ogg",
+          "translated": true
+        }
+      },
+      "fleet_arrived": {
+        "days": 10,
+        "messenger": {
+          "anim": "swr-original:anim/alsprite/3370.fwa",
+          "sound": "swr-original:sound/alsprite/1508.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/alsprite/3002.fwa",
+          "sound": "swr-original:sound/alsprite/1186.ogg",
+          "translated": true
+        }
+      },
+      "ship_repaired": {
+        "days": 10,
+        "messenger": {
+          "anim": "swr-original:anim/alsprite/3331.fwa",
+          "sound": "swr-original:sound/alsprite/1509.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/alsprite/3002.fwa",
+          "sound": "swr-original:sound/alsprite/1187.ogg",
+          "translated": true
+        }
+      },
+      "units_arrived": {
+        "days": 10,
+        "messenger": {
+          "anim": "swr-original:anim/alsprite/3370.fwa",
+          "sound": "swr-original:sound/alsprite/1523.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/alsprite/2941.fwa",
+          "sound": "swr-original:sound/alsprite/1183.ogg",
+          "translated": true
+        }
+      },
+      "squadron_repaired": {
+        "days": 10,
+        "messenger": {
+          "anim": "swr-original:anim/alsprite/3331.fwa",
+          "sound": "swr-original:sound/alsprite/1524.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/alsprite/3002.fwa",
+          "sound": "swr-original:sound/alsprite/1184.ogg",
+          "translated": true
+        }
+      },
+      "blockade_started": {
+        "days": 10,
+        "messenger": {
+          "anim": "swr-original:anim/alsprite/3331.fwa",
+          "sound": "swr-original:sound/alsprite/1528.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/alsprite/2941.fwa",
+          "sound": "swr-original:sound/alsprite/1188.ogg",
+          "translated": true
+        }
+      },
+      "agent_report": {
+        "days": 10,
+        "messenger": {
+          "anim": "swr-original:anim/alsprite/3331.fwa",
+          "sound": "swr-original:sound/alsprite/1512.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/alsprite/2941.fwa",
+          "sound": "swr-original:sound/alsprite/1124.ogg",
+          "translated": true
+        }
+      },
+      "captured": {
+        "days": 10,
+        "messenger": {
+          "anim": "swr-original:anim/alsprite/3331.fwa",
+          "sound": "swr-original:sound/alsprite/1512.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/alsprite/2941.fwa",
+          "sound": "swr-original:sound/alsprite/1124.ogg",
+          "translated": true
+        }
+      },
+      "blockade_detected": {
+        "days": 10,
+        "messenger": {
+          "anim": "swr-original:anim/alsprite/3331.fwa",
+          "sound": "swr-original:sound/alsprite/1529.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/alsprite/2301.fwa",
+          "sound": "swr-original:sound/alsprite/1189.ogg",
+          "translated": true
+        }
+      },
+      "intercepted": {
+        "days": 50,
+        "messenger": {
+          "anim": "swr-original:anim/alsprite/3331.fwa",
+          "sound": "swr-original:sound/alsprite/1519.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/alsprite/3100.fwa",
+          "sound": "swr-original:sound/alsprite/1131.ogg",
+          "translated": true
+        }
+      }
+    },
+    "empire": {
+      "report.darth_vader": {
+        "days": 40000,
+        "messenger": {
+          "anim": "swr-original:anim/emsprite/3001.fwa",
+          "sound": "swr-original:sound/emsprite/1815.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/emsprite/6200.fwa",
+          "sound": "swr-original:sound/emsprite/1126.ogg",
+          "translated": true
+        }
+      },
+      "report.emperor_palpatine": {
+        "days": 40000,
+        "messenger": {
+          "anim": "swr-original:anim/emsprite/3001.fwa",
+          "sound": "swr-original:sound/emsprite/1814.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/emsprite/6200.fwa",
+          "sound": "swr-original:sound/emsprite/1127.ogg",
+          "translated": true
+        }
+      },
+      "bombardment": {
+        "days": 10,
+        "agent": {
+          "anim": "swr-original:anim/emsprite/6600.fwa",
+          "sound": "swr-original:sound/emsprite/1210.ogg"
+        }
+      },
+      "assault": {
+        "days": 10,
+        "agent": {
+          "anim": "swr-original:anim/emsprite/6400.fwa",
+          "sound": "swr-original:sound/emsprite/1211.ogg"
+        }
+      },
+      "released.mon_mothma": {
+        "days": 40000,
+        "messenger": {
+          "anim": "swr-original:anim/emsprite/3001.fwa",
+          "sound": "swr-original:sound/emsprite/1829.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/emsprite/8300.fwa"
+        }
+      },
+      "released.luke_skywalker": {
+        "days": 40000,
+        "messenger": {
+          "anim": "swr-original:anim/emsprite/3001.fwa",
+          "sound": "swr-original:sound/emsprite/1829.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/emsprite/8300.fwa",
+          "sound": "swr-original:sound/emsprite/1581.ogg"
+        }
+      },
+      "released.darth_vader": {
+        "days": 40000,
+        "messenger": {
+          "anim": "swr-original:anim/emsprite/3001.fwa",
+          "sound": "swr-original:sound/emsprite/1829.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/emsprite/6600.fwa",
+          "sound": "swr-original:sound/emsprite/1586.ogg"
+        }
+      },
+      "released.emperor_palpatine": {
+        "days": 40000,
+        "messenger": {
+          "anim": "swr-original:anim/emsprite/3001.fwa",
+          "sound": "swr-original:sound/emsprite/1829.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/emsprite/8300.fwa",
+          "sound": "swr-original:sound/emsprite/1587.ogg"
+        }
+      },
+      "captured.mon_mothma": {
+        "days": 40000,
+        "agent": {
+          "anim": "swr-original:anim/emsprite/7100.fwa",
+          "sound": "swr-original:sound/emsprite/1578.ogg"
+        }
+      },
+      "captured.luke_skywalker": {
+        "days": 40000,
+        "agent": {
+          "anim": "swr-original:anim/emsprite/7200.fwa",
+          "sound": "swr-original:sound/emsprite/1579.ogg"
+        }
+      },
+      "captured.leia_organa": {
+        "days": 40000,
+        "agent": {
+          "anim": "swr-original:anim/emsprite/7200.fwa",
+          "sound": "swr-original:sound/emsprite/1558.ogg"
+        }
+      },
+      "captured.han_solo": {
+        "days": 40000,
+        "agent": {
+          "anim": "swr-original:anim/emsprite/7200.fwa",
+          "sound": "swr-original:sound/emsprite/1556.ogg"
+        }
+      },
+      "captured.darth_vader": {
+        "days": 40000,
+        "agent": {
+          "anim": "swr-original:anim/emsprite/6800.fwa",
+          "sound": "swr-original:sound/emsprite/1584.ogg"
+        }
+      },
+      "captured.emperor_palpatine": {
+        "days": 40000,
+        "agent": {
+          "anim": "swr-original:anim/emsprite/8500.fwa",
+          "sound": "swr-original:sound/emsprite/1585.ogg"
+        }
+      },
+      "released": {
+        "days": 40000,
+        "messenger": {
+          "anim": "swr-original:anim/emsprite/3001.fwa",
+          "sound": "swr-original:sound/emsprite/1829.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/emsprite/7800.fwa",
+          "sound": "swr-original:sound/emsprite/1182.ogg",
+          "translated": true
+        }
+      },
+      "released.han_solo": {
+        "days": 40000,
+        "messenger": {
+          "anim": "swr-original:anim/emsprite/3001.fwa",
+          "sound": "swr-original:sound/emsprite/1829.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/emsprite/7800.fwa",
+          "sound": "swr-original:sound/emsprite/1182.ogg",
+          "translated": true
+        }
+      },
+      "released.leia_organa": {
+        "days": 40000,
+        "messenger": {
+          "anim": "swr-original:anim/emsprite/3001.fwa",
+          "sound": "swr-original:sound/emsprite/1829.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/emsprite/7800.fwa",
+          "sound": "swr-original:sound/emsprite/1182.ogg",
+          "translated": true
+        }
+      },
+      "support_gained": {
+        "days": 10,
+        "messenger": {
+          "anim": "swr-original:anim/emsprite/3001.fwa",
+          "sound": "swr-original:sound/emsprite/1806.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/emsprite/6200.fwa",
+          "sound": "swr-original:sound/emsprite/1118.ogg",
+          "translated": true
+        }
+      },
+      "support_lost": {
+        "days": 10,
+        "messenger": {
+          "anim": "swr-original:anim/emsprite/3001.fwa",
+          "sound": "swr-original:sound/emsprite/1807.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/emsprite/6200.fwa",
+          "sound": "swr-original:sound/emsprite/1119.ogg",
+          "translated": true
+        }
+      },
+      "planet_status": {
+        "days": 40000,
+        "messenger": {
+          "anim": "swr-original:anim/emsprite/3001.fwa",
+          "sound": "swr-original:sound/emsprite/1802.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/emsprite/6200.fwa",
+          "sound": "swr-original:sound/emsprite/1114.ogg",
+          "translated": true
+        }
+      },
+      "production": {
+        "days": 10,
+        "messenger": {
+          "anim": "swr-original:anim/emsprite/3001.fwa",
+          "sound": "swr-original:sound/emsprite/1803.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/emsprite/6200.fwa",
+          "sound": "swr-original:sound/emsprite/1115.ogg",
+          "translated": true
+        }
+      },
+      "maintenance": {
+        "days": 10,
+        "messenger": {
+          "anim": "swr-original:anim/emsprite/3001.fwa",
+          "sound": "swr-original:sound/emsprite/1804.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/emsprite/6200.fwa",
+          "sound": "swr-original:sound/emsprite/1116.ogg",
+          "translated": true
+        }
+      },
+      "research": {
+        "days": 10,
+        "messenger": {
+          "anim": "swr-original:anim/emsprite/3001.fwa",
+          "sound": "swr-original:sound/emsprite/1805.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/emsprite/6200.fwa",
+          "sound": "swr-original:sound/emsprite/1117.ogg",
+          "translated": true
+        }
+      },
+      "fleet_arrived": {
+        "days": 10,
+        "messenger": {
+          "anim": "swr-original:anim/emsprite/3001.fwa",
+          "sound": "swr-original:sound/emsprite/1808.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/emsprite/6300.fwa",
+          "sound": "swr-original:sound/emsprite/1177.ogg",
+          "translated": true
+        }
+      },
+      "ship_repaired": {
+        "days": 10,
+        "messenger": {
+          "anim": "swr-original:anim/emsprite/3001.fwa",
+          "sound": "swr-original:sound/emsprite/1810.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/emsprite/6300.fwa",
+          "sound": "swr-original:sound/emsprite/1178.ogg",
+          "translated": true
+        }
+      },
+      "units_arrived": {
+        "days": 10,
+        "messenger": {
+          "anim": "swr-original:anim/emsprite/3001.fwa",
+          "sound": "swr-original:sound/emsprite/1822.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/emsprite/6300.fwa",
+          "sound": "swr-original:sound/emsprite/1174.ogg",
+          "translated": true
+        }
+      },
+      "squadron_repaired": {
+        "days": 10,
+        "messenger": {
+          "anim": "swr-original:anim/emsprite/3001.fwa",
+          "sound": "swr-original:sound/emsprite/1823.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/emsprite/6300.fwa",
+          "sound": "swr-original:sound/emsprite/1175.ogg",
+          "translated": true
+        }
+      },
+      "blockade_started": {
+        "days": 10,
+        "messenger": {
+          "anim": "swr-original:anim/emsprite/3001.fwa",
+          "sound": "swr-original:sound/emsprite/1826.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/emsprite/7300.fwa",
+          "sound": "swr-original:sound/emsprite/1179.ogg",
+          "translated": true
+        }
+      },
+      "blockade_detected": {
+        "days": 5,
+        "messenger": {
+          "anim": "swr-original:anim/emsprite/3001.fwa",
+          "sound": "swr-original:sound/emsprite/1827.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/emsprite/2001.fwa",
+          "sound": "swr-original:sound/emsprite/1180.ogg",
+          "translated": true
+        }
+      },
+      "agent_report": {
+        "days": 10,
+        "messenger": {
+          "anim": "swr-original:anim/emsprite/3001.fwa",
+          "sound": "swr-original:sound/emsprite/1812.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/emsprite/6200.fwa",
+          "sound": "swr-original:sound/emsprite/1124.ogg",
+          "translated": true
+        }
+      },
+      "captured": {
+        "days": 10,
+        "messenger": {
+          "anim": "swr-original:anim/emsprite/3001.fwa",
+          "sound": "swr-original:sound/emsprite/1812.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/emsprite/6200.fwa",
+          "sound": "swr-original:sound/emsprite/1124.ogg",
+          "translated": true
+        }
+      },
+      "personnel_report": {
+        "days": 10,
+        "messenger": {
+          "anim": "swr-original:anim/emsprite/3001.fwa",
+          "sound": "swr-original:sound/emsprite/1812.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/emsprite/6100.fwa",
+          "sound": "swr-original:sound/emsprite/1185.ogg",
+          "translated": true
+        }
+      },
+      "report.han_solo": {
+        "days": 40000,
+        "messenger": {
+          "anim": "swr-original:anim/emsprite/3001.fwa",
+          "sound": "swr-original:sound/emsprite/1812.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/emsprite/6100.fwa",
+          "sound": "swr-original:sound/emsprite/1185.ogg",
+          "translated": true
+        }
+      },
+      "report.leia_organa": {
+        "days": 40000,
+        "messenger": {
+          "anim": "swr-original:anim/emsprite/3001.fwa",
+          "sound": "swr-original:sound/emsprite/1812.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/emsprite/6100.fwa",
+          "sound": "swr-original:sound/emsprite/1185.ogg",
+          "translated": true
+        }
+      },
+      "report.luke_skywalker": {
+        "days": 40000,
+        "messenger": {
+          "anim": "swr-original:anim/emsprite/3001.fwa",
+          "sound": "swr-original:sound/emsprite/1812.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/emsprite/6100.fwa",
+          "sound": "swr-original:sound/emsprite/1185.ogg",
+          "translated": true
+        }
+      },
+      "report.mon_mothma": {
+        "days": 40000,
+        "messenger": {
+          "anim": "swr-original:anim/emsprite/3001.fwa",
+          "sound": "swr-original:sound/emsprite/1812.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/emsprite/6100.fwa",
+          "sound": "swr-original:sound/emsprite/1185.ogg",
+          "translated": true
+        }
+      },
+      "intercepted": {
+        "days": 50,
+        "messenger": {
+          "anim": "swr-original:anim/emsprite/3001.fwa",
+          "sound": "swr-original:sound/emsprite/1817.ogg"
+        },
+        "agent": {
+          "anim": "swr-original:anim/emsprite/6200.fwa",
+          "sound": "swr-original:sound/emsprite/1129.ogg",
+          "translated": true
+        }
+      }
+    }
+  },
+  "voices": {
+    "_comment": "Rebellion 2's map of the characters' own lines (single-source; docs/advisor-plan.md).",
+    "emperor_palpatine": {
+      "order": "swr-original:sound/emsprite/1385.ogg",
+      "personnel_arrived": "swr-original:sound/emsprite/1388.ogg",
+      "mission_success": "swr-original:sound/emsprite/1386.ogg",
+      "mission_failure": "swr-original:sound/emsprite/1387.ogg",
+      "mission_abort": "swr-original:sound/emsprite/1389.ogg",
+      "released": "swr-original:sound/emsprite/1390.ogg",
+      "recovered": "swr-original:sound/emsprite/1391.ogg",
+      "enemy_detected": "swr-original:sound/emsprite/1392.ogg",
+      "traitor_discovered": "swr-original:sound/emsprite/1393.ogg",
+      "seat_of_power": "swr-original:sound/emsprite/1394.ogg"
+    },
+    "darth_vader": {
+      "order": "swr-original:sound/emsprite/1376.ogg",
+      "personnel_arrived": "swr-original:sound/emsprite/1379.ogg",
+      "mission_success": "swr-original:sound/emsprite/1377.ogg",
+      "mission_failure": "swr-original:sound/emsprite/1378.ogg",
+      "mission_abort": "swr-original:sound/emsprite/1380.ogg",
+      "released": "swr-original:sound/emsprite/1381.ogg",
+      "recovered": "swr-original:sound/emsprite/1382.ogg",
+      "enemy_detected": "swr-original:sound/emsprite/1383.ogg",
+      "traitor_discovered": "swr-original:sound/emsprite/1384.ogg"
+    },
+    "mon_mothma": {
+      "order": "swr-original:sound/alsprite/1368.ogg",
+      "personnel_arrived": "swr-original:sound/alsprite/1372.ogg",
+      "mission_success": "swr-original:sound/alsprite/1369.ogg",
+      "mission_failure": "swr-original:sound/alsprite/1370.ogg",
+      "mission_abort": "swr-original:sound/alsprite/1373.ogg",
+      "released": "swr-original:sound/alsprite/1374.ogg",
+      "recovered": "swr-original:sound/alsprite/1375.ogg"
+    },
+    "leia_organa": {
+      "order": [
+        "swr-original:sound/alsprite/1333.ogg",
+        "swr-original:sound/alsprite/1334.ogg"
+      ],
+      "personnel_arrived": "swr-original:sound/alsprite/1344.ogg",
+      "mission_success": [
+        "swr-original:sound/alsprite/1335.ogg",
+        "swr-original:sound/alsprite/1336.ogg"
+      ],
+      "mission_failure": [
+        "swr-original:sound/alsprite/1337.ogg",
+        "swr-original:sound/alsprite/1338.ogg"
+      ],
+      "mission_abort": "swr-original:sound/alsprite/1345.ogg",
+      "released": "swr-original:sound/alsprite/1346.ogg",
+      "recovered": "swr-original:sound/alsprite/1347.ogg",
+      "enemy_detected": "swr-original:sound/alsprite/1351.ogg",
+      "force_growth": "swr-original:sound/alsprite/1350.ogg",
+      "force_ability_revealed": "swr-original:sound/alsprite/1349.ogg",
+      "traitor_discovered": "swr-original:sound/alsprite/1352.ogg",
+      "rescue_attempt": "swr-original:sound/alsprite/1348.ogg"
+    },
+    "luke_skywalker": {
+      "order": [
+        "swr-original:sound/alsprite/1301.ogg",
+        "swr-original:sound/alsprite/1302.ogg",
+        "swr-original:sound/alsprite/1303.ogg"
+      ],
+      "personnel_arrived": [
+        "swr-original:sound/alsprite/1311.ogg",
+        "swr-original:sound/alsprite/1312.ogg"
+      ],
+      "advanced_personnel_arrived": [
+        "swr-original:sound/alsprite/1322.ogg",
+        "swr-original:sound/alsprite/1323.ogg"
+      ],
+      "mission_success": [
+        "swr-original:sound/alsprite/1304.ogg",
+        "swr-original:sound/alsprite/1305.ogg",
+        "swr-original:sound/alsprite/1306.ogg"
+      ],
+      "mission_failure": [
+        "swr-original:sound/alsprite/1307.ogg",
+        "swr-original:sound/alsprite/1308.ogg"
+      ],
+      "mission_abort": [
+        "swr-original:sound/alsprite/1313.ogg",
+        "swr-original:sound/alsprite/1314.ogg"
+      ],
+      "advanced_mission_abort": "swr-original:sound/alsprite/1324.ogg",
+      "released": [
+        "swr-original:sound/alsprite/1315.ogg",
+        "swr-original:sound/alsprite/1316.ogg"
+      ],
+      "advanced_released": "swr-original:sound/alsprite/1325.ogg",
+      "recovered": "swr-original:sound/alsprite/1317.ogg",
+      "advanced_recovered": "swr-original:sound/alsprite/1326.ogg",
+      "enemy_detected": "swr-original:sound/alsprite/1319.ogg",
+      "advanced_enemy_detected": "swr-original:sound/alsprite/1328.ogg",
+      "force_growth": "swr-original:sound/alsprite/1320.ogg",
+      "advanced_force_growth": "swr-original:sound/alsprite/1329.ogg",
+      "force_user_discovered": "swr-original:sound/alsprite/1331.ogg",
+      "traitor_discovered": "swr-original:sound/alsprite/1321.ogg",
+      "rescue_attempt": "swr-original:sound/alsprite/1318.ogg",
+      "advanced_rescue_attempt": "swr-original:sound/alsprite/1328.ogg",
+      "dagobah_completed": "swr-original:sound/alsprite/1332.ogg"
+    },
+    "han_solo": {
+      "order": "swr-original:sound/alsprite/1353.ogg",
+      "personnel_arrived": [
+        "swr-original:sound/alsprite/1361.ogg",
+        "swr-original:sound/alsprite/1362.ogg"
+      ],
+      "mission_success": [
+        "swr-original:sound/alsprite/1354.ogg",
+        "swr-original:sound/alsprite/1355.ogg",
+        "swr-original:sound/alsprite/1356.ogg",
+        "swr-original:sound/alsprite/1357.ogg"
+      ],
+      "mission_failure": [
+        "swr-original:sound/alsprite/1358.ogg",
+        "swr-original:sound/alsprite/1359.ogg"
+      ],
+      "mission_abort": [
+        "swr-original:sound/alsprite/1363.ogg",
+        "swr-original:sound/alsprite/1364.ogg"
+      ],
+      "released": "swr-original:sound/alsprite/1365.ogg",
+      "recovered": "swr-original:sound/alsprite/1366.ogg",
+      "bounty_attack": "swr-original:sound/alsprite/1367.ogg"
+    }
+  },
+  "sounds": {
+    "_comment": "open-rebellion's map of COMMON.DLL's cockpit sounds (single-source).",
+    "cockpit_galaxy_size": "swr-original:sound/common/8000.ogg",
+    "cockpit_load": "swr-original:sound/common/8001.ogg",
+    "cockpit_exit": "swr-original:sound/common/8002.ogg",
+    "cockpit_control": "swr-original:sound/common/8004.ogg"
+  },
   "setup": {
     "difficulty_default": "easy",
     "galaxy_sizes": [

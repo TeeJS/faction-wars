@@ -568,6 +568,7 @@ func ConsiderUprising(need: int, have: int) -> void:
 		"An uprising has begun on %s. Production there has stopped, and the garrison requirement has doubled to %d regiments while it lasts.\n\nUprisings can be subdued by placing twice the normal garrison on the system, or by sending a character to perform a 'Subdue Uprising' mission at that location." % [Name, GarrisonRequirement()],
 		Enums.MessageCategory.Defense, StrategicTickManager.Today, self)
 	msg.Type = Enums.MessageType.Uprising
+	msg.Advisor = "support_lost"
 	EventBus.Tell(ControllingFaction, msg)
 
 
@@ -584,6 +585,7 @@ func WarnGarrison(need: int, have: int) -> void:
 		"Unrest has pushed %s close to uprising.\n\nIt holds %d %s against a garrison requirement of %d. Move troops there, or train more, before the populace rises." % [Name, have, Terms.lower("trooper_regiments"), need],
 		Enums.MessageCategory.Defense, StrategicTickManager.Today, self)
 	msg.Type = Enums.MessageType.GarrisonWarning
+	msg.Advisor = "support_lost"
 	EventBus.Tell(ControllingFaction, msg)
 
 
@@ -792,6 +794,8 @@ static func ReportDelivery(where: Planet, what: String, category: int) -> void:
 		"Construction of %s is complete and it has been deployed on %s." % [what, where.Name],
 		category, StrategicTickManager.Today, where)
 	msg.Type = Enums.MessageType.UnitDeployment
+	# Capital ships come to the fleets; troops and fighters are production.
+	msg.Advisor = "units_arrived" if category == Enums.MessageCategory.Fleets else "production"
 	EventBus.Tell(where.ControllingFaction, msg)
 
 
