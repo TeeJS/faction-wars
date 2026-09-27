@@ -125,6 +125,8 @@ func _init() -> void:
 	var before: Gid.GidMode = Gid.ActiveMode()
 	_check(map != null and bool(map.ViewShown().get("off", false)), "his introduction: the display off (focus 12)")
 	_check(main._briefing and main._tickTimer.is_stopped() and advisor.Held, "the clock is held and the droids keep their news")
+	_check(main._dayLabel.text == "" and (main._oDay == null or main._oDay.text == "") and (main._oBars == null or main._oBars.texture == null),
+		"... and the time bar is blank, no day and no bars (a recording of the original)")
 	var day: int = StrategicTickManager.Today
 	var second := await _until(func() -> bool: return _playing(al_lines[1]["sound"]), 8.0)
 	_check(second and b.At() == 3 and StrategicTickManager.Today == day, "then the second line (past the focus between them); no day has passed")
@@ -167,6 +169,7 @@ func _init() -> void:
 	var comms: Node = ui._openWindows.get("Communications")
 	_check(comms != null and is_instance_valid(comms) and _category(comms) == "Advice", "the Message Index opens on Agent Advice (%s)" % (_category(comms) if comms != null else "none"))
 	_check(not main._briefing and not main._tickTimer.is_stopped() and not advisor.Held, "the clock runs and the droids may speak")
+	_check(main._dayLabel.text == "Day: %d" % StrategicTickManager.Shown(StrategicTickManager.Today), "the time bar shows the day again (%s)" % main._dayLabel.text)
 	_check(map.ViewShown().is_empty() and Gid.ActiveMode() == before, "the display is as it was before the briefing")
 	_Views(map)
 	await _stop(main)
