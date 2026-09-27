@@ -58,7 +58,9 @@ internal static class Music
         return written;
     }
 
-    /// <summary>A RIFF WAVE file's 16-bit PCM samples (interleaved), channels and rate.</summary>
+    /// <summary>A RIFF WAVE file's PCM samples as 16-bit (interleaved), channels
+    /// and rate. 8-bit PCM (unsigned, as the original's voice files are) is
+    /// widened.</summary>
     public static (short[] Samples, int Channels, int Rate) ReadWav(byte[] b)
     {
         if (b.Length < 12 || System.Text.Encoding.ASCII.GetString(b, 0, 4) != "RIFF" || System.Text.Encoding.ASCII.GetString(b, 8, 4) != "WAVE")
@@ -81,8 +83,15 @@ internal static class Music
             }
             else if (id == "data")
             {
-                if (format != 1 || bits != 16 || channels < 1)
-                    throw new InvalidDataException($"not 16-bit PCM (format {format}, {bits}-bit, {channels} channel(s))");
+                if (format != 1 || (bits != 16 && bits != 8) || channels < 1)
+                    throw new InvalidDataException($"not 8- or 16-bit PCM (format {format}, {bits}-bit, {channels} channel(s))");
+                if (bits == 8)
+                {
+                    var wide = new short[size / channels * channels];
+                    for (int i = 0; i < wide.Length; i++)
+                        wide[i] = (short)((b[body + i] - 128) << 8);
+                    return (wide, channels, rate);
+                }
                 var samples = new short[size / 2 / channels * channels];
                 Buffer.BlockCopy(b, body, samples, 0, samples.Length * 2);
                 return (samples, channels, rate);

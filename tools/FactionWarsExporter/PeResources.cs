@@ -6,8 +6,8 @@ namespace FactionWarsExporter;
 /// Reads the resource table of a Win32 DLL straight from its bytes - no
 /// LoadLibrary, so nothing from the game ever executes and a 32-bit DLL reads
 /// fine from a 64-bit process. What the importer needs: RT_STRING tables,
-/// RT_RCDATA blobs, RT_BITMAP pictures, RT_CURSOR pointers and the droids'
-/// type-302 animation frames.
+/// RT_RCDATA blobs, RT_BITMAP pictures, RT_CURSOR pointers, the droids'
+/// type-302 animation frames and the "WAVE" sounds (a named resource type).
 /// </summary>
 public sealed class PeResources
 {
@@ -35,6 +35,9 @@ public sealed class PeResources
 
     /// <summary>String table entries by string id, as the game reads them.</summary>
     public IReadOnlyDictionary<int, string> Strings { get; }
+
+    /// <summary>id -> (offset, size) for every "WAVE" entry (a complete RIFF WAVE file).</summary>
+    public IReadOnlyDictionary<int, (int Offset, int Size)> Waves { get; }
 
     public PeResources(string path)
     {
@@ -89,11 +92,35 @@ public sealed class PeResources
                 }
             }
         }
+        // The sounds sit under a type named "WAVE", not a number.
+        var waves = new Dictionary<int, (int, int)>();
+        if (_resourceRva != 0)
+        {
+            int root = RvaToOffset(_resourceRva);
+            foreach (var (name, typeDir) in NamedEntries(root))
+            {
+                if (name != "WAVE") continue;
+                foreach (var (nameId, nameDir) in Entries(typeDir))
+                    foreach (var (_, dataEntry) in Entries(nameDir, leaf: true))
+                    {
+                        waves[nameId] = (RvaToOffset((uint)ReadInt32(dataEntry)), ReadInt32(dataEntry + 4));
+                        break;   // first language only
+                    }
+            }
+        }
         RcData = rcdata;
         Bitmaps = bitmaps;
         Strings = strings;
         Cursors = cursors;
         DroidFrames = droidFrames;
+        Waves = waves;
+    }
+
+    /// <summary>The bytes of one "WAVE" entry.</summary>
+    public byte[] WaveBytes(int id)
+    {
+        var (offset, size) = Waves[id];
+        return _bytes.AsSpan(offset, size).ToArray();
     }
 
     /// <summary>
@@ -234,6 +261,24 @@ public sealed class PeResources
             {
                 yield return (id, childOffset);
             }
+        }
+    }
+
+    // The named entries of one resource directory: (name, offset of the child
+    // directory). A name is a u16 length, then UTF-16 characters.
+    private IEnumerable<(string Name, int Child)> NamedEntries(int dirOffset)
+    {
+        int named = ReadUInt16(dirOffset + 12);
+        int root = RvaToOffset(_resourceRva);
+        for (int i = 0; i < named; i++)
+        {
+            int e = dirOffset + 16 + i * 8;
+            int nameRef = ReadInt32(e);
+            int child = ReadInt32(e + 4);
+            if (nameRef >= 0 || (child & unchecked((int)0x80000000)) == 0) continue;
+            int at = root + (nameRef & 0x7FFFFFFF);
+            int length = ReadUInt16(at);
+            yield return (Encoding.Unicode.GetString(_bytes, at + 2, length * 2), root + (child & 0x7FFFFFFF));
         }
     }
 

@@ -57,6 +57,8 @@ namespace FactionWarsExporter;
 ///   original/planet_sprites/&lt;artwork_id&gt;.png              the map's planets
 ///   original/windows/&lt;name&gt;.png                            window pictures
 ///   original/windows/droid_&lt;agent|messenger&gt;.&lt;faction&gt;.png   the droids' idle runs, frames side by side
+///   anim/&lt;dll&gt;/&lt;anchor&gt;.fwa   every droid and briefing run (ExportAnimations)
+///   sound/&lt;dll&gt;/&lt;id&gt;.ogg     every voice and sound effect (Sound.cs)
 ///   original/windows/console_&lt;name&gt;.&lt;faction&gt;.pressed.png   the Control Panel's monitors, held down
 ///   original/windows/gid_menu_&lt;id&gt;.&lt;faction&gt;.png   the GID control's menu icons, by category / mode
 ///   original/tabs/&lt;name&gt;[.&lt;faction&gt;].png (+ .pressed / .grey)   window tab icons
@@ -1118,6 +1120,10 @@ public sealed class Importer
         // The score, as Ogg Vorbis (Music.cs; TeeJ, 2026-09-26: "yes to
         // including the music with the art").
         Music.Export(_gameDir, _sink, missing, Say);
+        // The voices and the sound effects (Sound.cs), and every droid and
+        // briefing animation (docs/advisor-plan.md, phase 1).
+        Sound.Export(_gameDir, _sink, missing, Say);
+        ExportAnimations(missing, Say);
 
         _sink.WriteText(P("descriptions.json"),
             descriptions.ToJsonString(new JsonSerializerOptions { WriteIndented = true, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping }) + "\n");
@@ -1256,6 +1262,114 @@ public sealed class Importer
                 }
         _sink.Write(outPath, Png(strip));
         return true;
+    }
+
+    /// <summary>The DLLs whose animations go into the art set, and their folder
+    /// (the same names as their sounds, Sound.Sources).</summary>
+    private static readonly (string Dll, string Folder)[] AnimationSources =
+    {
+        ("ALSPRITE.DLL", "alsprite"), ("EMSPRITE.DLL", "emsprite"),
+        ("ALBRIEF.DLL", "albrief"), ("EMBRIEF.DLL", "embrief"),
+    };
+
+    /// <summary>
+    /// EVERY RUN OF THE DROIDS AND THE BRIEFING (docs/advisor-plan.md, phase 1):
+    /// an anchor RT_BITMAP and the type-302 frames after it, up to the next
+    /// anchor or the first missing frame. Kept as the original has them - each
+    /// frame a change on the one before - since as pictures they would be
+    /// 106 million pixels; the game applies them as a run plays. One file per
+    /// run, anim/&lt;dll&gt;/&lt;anchor&gt;.fwa (little-endian):
+    ///   "FWA1", u16 width, u16 height, u16 frames (the anchor counted),
+    ///   the palette (256 x R, G, B; index 0 is clear), the anchor's indices
+    ///   (width x height, top row first), then each later frame as u32 length
+    ///   and its type-302 bytes as stored (checked against the frame before).
+    /// </summary>
+    private void ExportAnimations(List<string> missing, Action<string> say)
+    {
+        int runs = 0, frames = 0;
+        long bytes = 0;
+        foreach (var (dllName, folder) in AnimationSources)
+        {
+            var path = Sound.Find(_gameDir, dllName);
+            if (path == null)
+            {
+                missing.Add($"anim/{folder}: {dllName} not found");
+                continue;
+            }
+            var dll = new PeResources(path);
+            foreach (var anchor in dll.Bitmaps.Keys.OrderBy(k => k))
+            {
+                var run = RunFile(dll, anchor);
+                if (run == null)
+                {
+                    missing.Add($"anim/{folder}/{anchor}: not an 8-bit anchor frame");
+                    continue;
+                }
+                _sink.Write(P("anim", folder, $"{anchor}.fwa"), run.Value.Bytes);
+                runs++;
+                frames += run.Value.Frames;
+                bytes += run.Value.Bytes.Length;
+            }
+        }
+        say($"Animations: {runs} runs, {frames} frames, {bytes / 1048576.0:0.0} MB.");
+    }
+
+    /// <summary>One run's .fwa file and its frame count, or null when the
+    /// anchor is not an uncompressed 8-bit picture.</summary>
+    private static (byte[] Bytes, int Frames)? RunFile(PeResources dll, int anchor)
+    {
+        var dib = dll.BitmapDib(anchor);
+        int headerSize = BitConverter.ToInt32(dib, 0);
+        int w = BitConverter.ToInt32(dib, 4), hSigned = BitConverter.ToInt32(dib, 8);
+        int bpp = BitConverter.ToUInt16(dib, 14), compression = BitConverter.ToInt32(dib, 16);
+        if (bpp != 8 || compression != 0 || w <= 0 || w > 0xFFFF || hSigned == 0)
+            return null;
+        int h = Math.Abs(hSigned);
+        int colours = BitConverter.ToInt32(dib, 32);
+        if (colours == 0) colours = 256;
+        int pixels = headerSize + colours * 4, stride = (w + 3) & ~3;
+        var index = new byte[w * h];
+        for (int row = 0; row < h; row++)
+        {
+            int src = hSigned > 0 ? h - 1 - row : row;
+            Buffer.BlockCopy(dib, pixels + src * stride, index, row * w, w);
+        }
+        // The later frames: the ones that follow the anchor, up to the next
+        // anchor, each checked on the frame before (the chain stops at the
+        // first missing or malformed one).
+        var later = new List<byte[]>();
+        var current = index;
+        for (int id = anchor + 1; dll.DroidFrames.ContainsKey(id) && !dll.Bitmaps.ContainsKey(id); id++)
+        {
+            var data = dll.DroidFrameBytes(id);
+            var next = ApplyDroidFrame(data, w, h, current);
+            if (next == null)
+                break;
+            later.Add(data);
+            current = next;
+        }
+        using var ms = new MemoryStream();
+        using (var bw = new BinaryWriter(ms))
+        {
+            bw.Write("FWA1"u8);
+            bw.Write((ushort)w);
+            bw.Write((ushort)h);
+            bw.Write((ushort)(1 + later.Count));
+            for (int i = 0; i < 256; i++)
+            {
+                bool has = i < colours;
+                bw.Write(has ? dib[headerSize + i * 4 + 2] : (byte)0);
+                bw.Write(has ? dib[headerSize + i * 4 + 1] : (byte)0);
+                bw.Write(has ? dib[headerSize + i * 4] : (byte)0);
+            }
+            bw.Write(index);
+            foreach (var f in later)
+            {
+                bw.Write(f.Length);
+                bw.Write(f);
+            }
+        }
+        return (ms.ToArray(), 1 + later.Count);
     }
 
     /// <summary>One type-302 frame on the frame before it, or null when it is

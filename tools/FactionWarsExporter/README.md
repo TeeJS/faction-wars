@@ -132,6 +132,16 @@ alerts/<faction>.<category>.png (+ .lit.png)
 screens/cockpit.png   screens/galaxy.png
 descriptions.json     { "characters": { "<id>": "text" }, "units": ..., ... }
 music/<nnn>.ogg       the score, MDATA.300-315 as Ogg Vorbis (11 kHz mono, about 4 MB)
+sound/<dll>/<id>.ogg  since 2.6.0: every voice and sound effect, by the original's own id -
+                      the droids and characters (alsprite, emsprite), the briefing
+                      (albrief, embrief; read as .DLL.OLD too), the battle voices
+                      (voicefxa, voicefxe), the cockpit (common), the Command Center
+                      (strategy), the battle view (tactical): 890, about 14 MB
+anim/<dll>/<anchor>.fwa  since 2.6.0: every droid and briefing animation run (alsprite,
+                      emsprite, albrief, embrief): 110 runs, 9,520 frames, about 15 MB,
+                      kept as the original's frame-on-frame changes ("FWA1": u16 width,
+                      height, frames; 256 x RGB palette, index 0 clear; the anchor's
+                      indices; each later frame as u32 length + its type-302 bytes)
 README.txt            keep it; do not share or upload it
 ```
 
