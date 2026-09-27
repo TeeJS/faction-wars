@@ -14,8 +14,11 @@ extends SceneTree
 ##   - its Stop Briefing button, left of C-3PO (TeeJ, 2026-09-27), is the one
 ##     way out: the line stops and the skip's plays, and a second press ends
 ##     it at once; then, in an Easy game (Agent Advice on, manual p022), the
-##     Message Index opens on Agent Advice, and the clock runs; in Medium no
-##     Message Index opens (the original's);
+##     Message Index opens on Agent Advice; in Medium no Message Index opens
+##     (the original's);
+##   - the clock goes at the pack's `release` step, the original's action 11
+##     (REBEXE FUN_0041dbe0): after the last line, or on Stop Briefing at once,
+##     while the skip's line plays; the droids' news waits for the end;
 ##   - without the recordings there is no briefing, and a loaded game has none.
 ## Writes and removes its own files under user://.
 ##
@@ -74,6 +77,8 @@ func _init() -> void:
 		and al["views"]["18"] == {"caption": "Yavin", "show": "system:yavin"} and em["views"]["18"]["show"] == "system:coruscant"
 		and em["views"]["4"]["show"] == "unexplored" and al["views"]["12"]["show"] == "off",
 		"the views: 16 a side as the recordings show them - the Alliance's 18 Yavin, the Empire's Coruscant, its 4 Unexplored Systems")
+	_check(int(al.get("release", -1)) == 11 and int(em.get("release", -1)) == 11 and int(al["skip"][0].get("focus", -1)) == 11 and int(al["steps"][-2].get("focus", -1)) == 11,
+		"the clock goes at step 11, as the original's: after the last line, or first in the skip")
 	_Rules()
 
 	# The stand-ins: a plain frame with its droids, three lines and the skip's.
@@ -153,15 +158,19 @@ func _init() -> void:
 	await _click(at.get_center())
 	_check(b.Skipped() and not _playing(al_lines[2]["sound"]) and _playing(al["skip"][1]["sound"]),
 		"Stop Briefing: the line stops and the skip's plays (\"I do hope you know what you're doing\")")
+	_check(b.HasReleased() and not main._briefing and not main._tickTimer.is_stopped() and ui.Briefing() == b and advisor.Held
+		and ui._openWindows.get("Communications") == null,
+		"... the clock runs while it plays (the original's step 11); the droids' news and the Message Index wait for the end")
 	var ended := await _until(func() -> bool: return ui.Briefing() == null, 8.0)
 	await process_frame
 	_check(ended and ui.Briefing() == null, "then the briefing is over")
 	var comms: Node = ui._openWindows.get("Communications")
 	_check(comms != null and is_instance_valid(comms) and _category(comms) == "Advice", "the Message Index opens on Agent Advice (%s)" % (_category(comms) if comms != null else "none"))
-	_check(not main._briefing and not main._tickTimer.is_stopped() and not advisor.Held, "the clock runs again and the droids may speak")
+	_check(not main._briefing and not main._tickTimer.is_stopped() and not advisor.Held, "the clock runs and the droids may speak")
 	_check(map.ViewShown().is_empty() and Gid.ActiveMode() == before, "the display is as it was before the briefing")
 	_Views(map)
 	await _stop(main)
+	await _Release(al_lines)
 
 	# Stop Briefing twice: the second press, during the skip's line, ends it at once.
 	main = await _start(side, Enums.Difficulty.Easy)
@@ -236,6 +245,30 @@ func _Modal(main: Node, ui: UIManager, b: Control, day: int) -> void:
 	_check(ui.Briefing() == b and not b.Skipped(), "... and the briefing plays on")
 
 
+## The full briefing lets the clock go at its release step, after the last
+## line, and not before: a briefing of one line, then focus 11, then 13.
+func _Release(al_lines: Array) -> void:
+	var m: PackDefs.PackManifest = FactionRegistry.Pack.Manifest
+	var saved: Variant = m.Briefing.get("alliance")
+	m.Briefing["alliance"] = {"release": 11, "steps": [{"focus": 12}, al_lines[0], {"focus": 11}, {"focus": 13}]}
+	var b: Control = BriefingScript.new()
+	b.Stoppable = false
+	var seen := {"released_at": -99, "finished": false}
+	b.Released = func() -> void:
+		seen["released_at"] = b.At()
+		seen["finished_first"] = seen["finished"]
+	b.Finished = func() -> void:
+		seen["finished"] = true
+	root.add_child(b)
+	await process_frame
+	_check(_playing(al_lines[0]["sound"]) and not b.HasReleased(), "the whole briefing: during its last line the clock is held")
+	await _until(func() -> bool: return bool(seen["finished"]), 8.0)
+	_check(int(seen["released_at"]) == 2 and not bool(seen.get("finished_first", true)) and bool(seen["finished"]),
+		"... after it, at step 11, the clock goes; then the end (%s)" % str(seen))
+	m.Briefing["alliance"] = saved
+	await process_frame
+
+
 ## What each view lights, on the game running.
 func _Views(map: GalaxyMap) -> void:
 	var yavin: Planet = Lq.first_or_null(GameState.AllPlanets(), func(p: Planet) -> bool: return p.PackId == "yavin")
@@ -269,7 +302,9 @@ func _Rules() -> void:
 		["no", "must be an object"],
 		[{"rebels": {}}, "is not a faction"],
 		[{"alliance": []}, "must be an object (steps, skip)"],
-		[{"alliance": {"prologue": []}}, "neither steps, skip nor views"],
+		[{"alliance": {"prologue": []}}, "neither steps, skip, views nor release"],
+		[{"alliance": {"release": 11}}, ""],
+		[{"alliance": {"release": "last"}}, "release: must be a focus number"],
 		[{"alliance": {"views": {"12": {"show": "off"}, "14": {"caption": "Ours", "show": "loyal:alliance"}, "18": {"show": "system:yavin"},
 			"7": {"show": "character:mon_mothma"}, "1": {"show": "mode:popular_support"}, "3": {"show": "hq:empire"}}}}, ""],
 		[{"alliance": {"views": []}}, "must be an object of focus number -> view"],

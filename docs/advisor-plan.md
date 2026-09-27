@@ -217,6 +217,23 @@ head-to-head, as the briefing. Messages are not saved (game_message.gd), so a lo
 **Not built**: the Very Slow drop, the 1121 / 1122 sound.
 tests/advice.gd.
 
+## Phase 6: when the briefing lets the clock go (2026-09-27)
+
+TeeJ: "Make it match the original" - how the briefings end in head-to-head. REBEXE read with his approval.
+
+| | Source | Confidence |
+|---|---|---|
+| The clock is held by the main loop's controller (`DAT_006b1218`, its `+0x14`): set at a new game (FUN_0041df40, and state 3, FUN_0040a050), cleared only by FUN_0041e320 via FUN_0041dbe0 - called from one place, the briefing's action handler (FUN_004c0fc0 / FUN_004c30c0), **action 11** | the code, read | **Confirmed** (the code) |
+| **Action 13** is the end: the briefing DLL unloaded (FUN_0042d760), the opening advice and the Message Index while Agent Advice is on (phase 5), the input hooks off (FUN_0041da80) | the code, read | **Confirmed** (the code) |
+| The scripts: the briefing (C3POACT 41 / IMP22ACT 74) ends `... focus 10, line, focus 11, focus 13`; the skip (40 / 73) is `focus 11, line, focus 13`. So the clock goes after the last line - or, on a skip, at once, while the skip's line plays; the briefing keeps the screen and the droids' news until 13 | the scripts (phase 4) and the handler | **Confirmed** |
+| Head-to-head: each side's own briefing holds its own clock; a pause on either side stops both (manual p163), so whoever finishes first waits for the other | manual p163; the hold is per program | **Single-source** for the wait (the lockstep rule; not watched in a two-player game) |
+| Agent Advice in head-to-head: off at the start (its advice-off bit is set unless the game is Easy, and a network game is its own setting, `+0x104` = 7), but the agent's menu can switch it on | the code, read | **Confirmed** (the code) - ours has none in head-to-head, **not built** |
+
+**Built:** the pack's `briefing.<side>.release` (rule 28; Star Wars' 11): at that focus step the briefing calls
+`Released` and the clock goes (`GameManager.HoldForBriefing(false)`; in head-to-head my speed goes back to the
+opponent, its reason gone); the droids' news and the Message Index wait for the end. Head-to-head's waiting box
+stays off while my briefing is on screen. tests/briefing.gd.
+
 ## What the code does today
 
 | | |

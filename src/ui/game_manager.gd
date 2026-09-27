@@ -676,14 +676,16 @@ func MenuOpened(open: bool) -> void:
 	_ApplyClock()
 
 
-## THE OPENING BRIEFING plays (on = true) or has ended: the clock waits for
-## it ("We await your orders", its last line). In head-to-head my speed goes
+## THE OPENING BRIEFING plays (on = true) or has let the clock go: the clock
+## waits for it - as the original's, until its release step (after "We await
+## your orders", its last line; on Stop Briefing, before the skip's line
+## plays; briefing.gd Released). In head-to-head my speed goes
 ## to the opponent as a pause while mine plays - a pause on either side stops
 ## both (LockstepSession) - with the reason, so the side that finishes first
 ## is told whose briefing it waits for.
 func HoldForBriefing(on: bool) -> void:
 	_briefing = on
-	print("[GameManager] opening briefing %s on day %d" % ["started" if on else "ended", StrategicTickManager.Today])
+	print("[GameManager] opening briefing %s on day %d" % ["started" if on else "released the clock", StrategicTickManager.Today])
 	var session: LockstepSession = MpSetup.session
 	if session != null:
 		session.set_speed(0 if on or _menuOpen else _speed, "briefing" if on else "")
@@ -716,8 +718,8 @@ func _MpWatch(session: LockstepSession) -> void:
 	var waiting: bool = session.remote_speed == 0 or session.opponent_gone \
 		or session.overdue_ms() > WaitingAfterMs
 	# My own pause box has the screen; the manual's message is for the other
-	# side. My own briefing has the screen too.
-	if _speed == 0 or _menuOpen or _briefing:
+	# side. My own briefing has the screen too, to its very end.
+	if _speed == 0 or _menuOpen or _briefing or _uiManager.Briefing() != null:
 		waiting = false
 
 	if waiting:

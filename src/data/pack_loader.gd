@@ -391,7 +391,8 @@ static func _validate_sounds(pack: LoadedPack, pack_dir: String, errors: Array[S
 
 ## Rule 28: `briefing` - the opening briefing, per side: `steps` and `skip`,
 ## each a list whose items are a line (anim, sound) or a `focus` (a number);
-## `views`, a focus number -> what the display shows then (show, caption).
+## `views`, a focus number -> what the display shows then (show, caption);
+## `release`, the focus number that lets the clock go.
 static func _validate_briefing(pack: LoadedPack, pack_dir: String, errors: Array[String]) -> void:
 	var m := pack.Manifest
 	if not m.BriefingGiven:
@@ -416,8 +417,12 @@ static func _validate_briefing(pack: LoadedPack, pack_dir: String, errors: Array
 			if str(part) == "views":
 				_validate_briefing_views(pack, side[part], where, errors)
 				continue
+			if str(part) == "release":
+				if not (side[part] is int or side[part] is float) or float(side[part]) < 0:
+					errors.append("%s: must be a focus number." % where)
+				continue
 			if not ["steps", "skip"].has(str(part)):
-				errors.append("pack.json briefing.%s: '%s' is neither steps, skip nor views." % [k, part])
+				errors.append("pack.json briefing.%s: '%s' is neither steps, skip, views nor release." % [k, part])
 				continue
 			if not side[part] is Array:
 				errors.append("%s: must be a list of steps." % where)
