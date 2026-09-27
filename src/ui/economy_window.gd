@@ -109,12 +109,9 @@ func Populate(planet: Planet) -> void:
 		# "Each with its own DESTINATION: line" (manual p084). The three
 		# queues can be aimed at different worlds, so each reports its own
 		# rather than all three parroting the host system.
-		var dest: Planet = _destination if _destination != null else planet
-		var destLine: String = ("Destination: %s" % planet.Name) if dest == planet \
-			else ("Destination: %s  (+%dd)" % [dest.Name, planet.DeploymentDaysTo(dest)])
-		(get_node("%ShipDestLabel") as Label).text = destLine
-		(get_node("%TroopDestLabel") as Label).text = destLine
-		(get_node("%FacDestLabel") as Label).text = destLine
+		(get_node("%ShipDestLabel") as Label).text = DestinationLine(planet, "produces_unit")
+		(get_node("%TroopDestLabel") as Label).text = DestinationLine(planet, "produces_troop")
+		(get_node("%FacDestLabel") as Label).text = DestinationLine(planet, "produces_facility")
 
 		# "Right-click a production entry" for Build, Stop, Destination -
 		# the orders live on the QUEUE, not on the facility (manual p084,
@@ -483,7 +480,7 @@ func _OnQueueOrder(id: int, producer: String) -> void:
 		1:
 			CommandBus.issue("cancel_build", { "planet": planet.Name, "producer": producer })
 			Populate(planet)
-		2: OpenDestinationChooser(planet)
+		2: OpenDestinationChooser(planet, producer)
 
 
 # A tab with nothing of that type on the system is greyed out (manual p084).
@@ -564,8 +561,8 @@ func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, fa
 			# to X", so a yard mid-job showed where its output was going and
 			# the same yard between jobs did not - which is exactly when the
 			# player is deciding whether to queue something.
-			statusText = ("[Idle] (to %s)" % _destination.Name) if _destination != null and _destination != planet \
-				else "[Idle]"
+			var sendsTo: Planet = DestinationOf(planet, rowFac.ProducerRole())
+			statusText = ("[Idle] (to %s)" % sendsTo.Name) if sendsTo != planet else "[Idle]"
 			statusColor = Color.GRAY
 		else:
 			var job: ConstructionTask = ownQ[0]
@@ -728,7 +725,7 @@ func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, fa
 					if ui2 != null and rowFac.Def != null:
 						ui2.OpenEncyclopedia("facilities", rowFac.Def.Id)
 				4:
-					OpenDestinationChooser(planet)
+					OpenDestinationChooser(planet, rowFac.ProducerRole())
 				6:
 					CommandBus.issue("cancel_build", { "planet": planet.Name, "producer": rowFac.ProducerRole() })
 					Populate(planet)
@@ -848,7 +845,7 @@ func OpenBuildChooser(planet: Planet, producer: String) -> void:
 	if owner == null or owner != GameSettings.PlayerFaction:
 		return
 
-	var target: Planet = _destination if _destination != null else planet
+	var target: Planet = DestinationOf(planet, producer)
 	var helpers: int = maxi(1, Lq.count(_selected, func(f: Facility) -> bool: return f.HasRole(producer)))
 
 	# One shape for both catalogues, so the window does not care whether it
@@ -1038,7 +1035,16 @@ func OpenBuildChooser(planet: Planet, producer: String) -> void:
 # the same targeting gesture the game uses everywhere else you name a place,
 # not a list of names in a box - a list also cannot show you where the world
 # is, which is half of what makes the choice.
-func OpenDestinationChooser(planet: Planet) -> void:
+##
+## EACH QUEUE HAS ITS OWN (manual p084, "Setting the Destination System":
+## "right-clicking under Facilities Under Construction and selecting the
+## Destination menu option"; p045 the same for the yard): the command is on
+## each production area's own menu, so Ship Construction, Troops in Training
+## and Facilities Under Construction each keep theirs (TeeJ, 2026-09-27:
+## "select destination is by facility, not planet"). The crosshair takes the
+## system on the map, or a click on any system's Manufacturing, Defense or
+## Fleet window (DraggableWindow.TargetSystem; TeeJ, the same day).
+func OpenDestinationChooser(planet: Planet, producer: String) -> void:
 	var ui: UIManager = get_parent() as UIManager
 	if ui == null:
 		return
@@ -1054,13 +1060,38 @@ func OpenDestinationChooser(planet: Planet) -> void:
 			print("[Build] %s is not yours - finished items cannot be sent there." % chosen.Name)
 			return
 
-		_destination = chosen
-		print("[Build] Destination set to %s (+%dd transit)." % [chosen.Name, planet.DeploymentDaysTo(chosen)])
-		Populate(planet))
+		if not _destinations.has(planet):
+			_destinations[planet] = {}
+		_destinations[planet][producer] = chosen
+		print("[Build] %s destination set to %s (+%dd transit)." % [producer, chosen.Name, planet.DeploymentDaysTo(chosen)])
+		if is_instance_valid(self):
+			Populate(planet))
 
 
-# Sticky destination choice across repopulates.
-var _destination: Planet
+## Where each queue of each system sends what it builds: system -> {producer
+## role -> system}. Kept past the window (the yard's setting, not the
+## window's: "Generally, it's better to set your destination, then begin
+## building", manual p045); a world no longer ours falls back to home.
+static var _destinations: Dictionary = {}
+
+
+static func DestinationOf(planet: Planet, producer: String) -> Planet:
+	var chosen: Variant = (_destinations.get(planet, {}) as Dictionary).get(producer)
+	if chosen is Planet and planet.ValidDestinations().has(chosen):
+		return chosen
+	return planet
+
+
+## A queue's own "Destination:" line (manual p084), the transit days after it.
+static func DestinationLine(planet: Planet, producer: String) -> String:
+	var dest: Planet = DestinationOf(planet, producer)
+	return ("Destination: %s" % planet.Name) if dest == planet \
+		else ("Destination: %s  (+%dd)" % [dest.Name, planet.DeploymentDaysTo(dest)])
+
+
+## Where a crosshair picking a place lands when this window is clicked.
+func TargetSystem() -> Planet:
+	return _associatedPlanet
 
 # Which facilities the player has picked, and which catalogue they asked to
 # see. Held on the window rather than in the buttons: this window rebuilds
