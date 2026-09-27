@@ -119,6 +119,8 @@ var _waitingSince: int = -1          # ms; the Waiting for Opponent box is up
 var _wasWaiting: bool = false        # true while a wait is in progress; keeps _waitingSince from resetting when the box is closed and re-shown
 var _waitBox: AcceptDialog
 var _leaveBtn: Button
+var _oWait: Control = null           # the original's alert box saying so (_OriginalAlert)
+var _oWaitKey: String = ""           # what it shows: rebuilt when that changes
 var _resyncing: bool = false
 const WaitingAfterMs := 3000         # an overdue opponent becomes "waiting" after this
 const LeaveAfterMs := 60000          # Leave Game appears after this (design question D)
@@ -749,36 +751,137 @@ func _MpWatch(session: LockstepSession) -> void:
 		waiting = false
 
 	if waiting:
-		if _waitBox == null:
-			_BuildWaitBox()
-		# TeeJ (room #106): say WHY - a deliberate departure from the manual's
-		# single "Waiting for Opponent" message.
-		var text := "Waiting for opponent..."
-		if paused:
-			text = "Opponent paused."
+		# THE ORIGINAL'S WORDS (REBDLOG.DLL's string table, 4614 / 4615; manual
+		# p163: "Your opponent will receive a Waiting for Opponent message, until
+		# you return to the game"), in the original's alert box (TeeJ,
+		# 2026-09-27: "this is not the right UI"). An opponent gone: its 4612,
+		# and ours after it - the game code, since ours can rejoin (TeeJ, room
+		# #110). The To Cockpit cross (the original's X, tip 6414) comes at once
+		# for a lost opponent and after LeaveAfterMs for a mere wait, so nobody
+		# is trapped (TeeJ, room #197).
+		var lines: Array = ["Waiting For Opponent To Resume", "See the Troubleshooting Guide for more help."]
 		if session.opponent_gone:
-			text += "\nConnection to your opponent was lost; waiting for them to rejoin."
+			lines = ["Your Opponent Has Left The Game"]
 			if MpSetup.lobby != null and not MpSetup.lobby.code.is_empty():
-				# TeeJ (room #110): the code is what a dropped player needs to come back.
-				text += "\nGame code: %s - give it to your opponent to rejoin (same player name)." % MpSetup.lobby.code
-		_waitBox.dialog_text = text
+				lines.append("Game code: %s - give it to your opponent to rejoin." % MpSetup.lobby.code)
 		# Timestamp the wait ONCE, on the false->true transition - not every time
 		# the box is re-shown. Closing the box (X) and having it re-pop next tick
 		# must not restart the Leave-Game clock (TeeJ, room, 2026-09-03).
 		if not _wasWaiting:
 			_wasWaiting = true
 			_waitingSince = now
-		if not _waitBox.visible:
 			print("[GameManager] Waiting for Opponent (day %d)" % StrategicTickManager.Today)
-			_waitBox.popup_centered()
-		# Leave Game appears IMMEDIATELY on a real disconnect (the seat is empty,
-		# no reason to wait), and after LeaveAfterMs on a mere pause.
-		_leaveBtn.visible = session.opponent_gone or (now - _waitingSince > LeaveAfterMs)
-	elif _waitBox != null and _waitBox.visible:
+		var leave: bool = session.opponent_gone or (now - _waitingSince > LeaveAfterMs)
+		_ShowWait(lines, leave)
+	elif _WaitShowing():
 		print("[GameManager] opponent is back (day %d)" % StrategicTickManager.Today)
-		_waitBox.hide()
+		_HideWait()
 		_waitingSince = -1
 		_wasWaiting = false
+
+
+## Waiting for Opponent on screen, the original's box or the plain one.
+func _WaitShowing() -> bool:
+	return (_oWait != null and is_instance_valid(_oWait)) or (_waitBox != null and _waitBox.visible)
+
+
+func _ShowWait(lines: Array, leave: bool) -> void:
+	var key: String = "%s|%s" % [str(lines), leave]
+	if _oWait != null and is_instance_valid(_oWait) and key == _oWaitKey:
+		return
+	_Drop(_oWait)
+	_oWait = _OriginalAlert("OriginalWait", lines, Callable(), _ConfirmLeave if leave else Callable(), "", "To Cockpit")
+	_oWaitKey = key
+	if _oWait != null:
+		return
+	# Without the art: the plain box, the same words.
+	if _waitBox == null:
+		_BuildWaitBox()
+	_waitBox.dialog_text = "\n".join(lines)
+	_leaveBtn.visible = leave
+	if not _waitBox.visible:
+		_waitBox.popup_centered()
+
+
+func _HideWait() -> void:
+	_Drop(_oWait)
+	_oWait = null
+	_oWaitKey = ""
+	if _waitBox != null and _waitBox.visible:
+		_waitBox.hide()
+
+
+## THE ORIGINAL'S ALERT BOX - REBDLOG's plates (10621-10623: no, one, two
+## button sockets) and its check and cross, as the pause box's: over the whole
+## screen and taking every click; up to two lines of its words, white Arial
+## bold 13 centred on the plate's screen; a check (`ok`) and / or a cross in
+## the sockets - measured on the plates: one at x 176, two at 137 and 228;
+## y 134 as the pause box's, measured on TeeJ's screenshot. Two lines sit
+## either side of the pause box's one (INFERRED: no two-line box of the
+## original has been seen). Null without the art.
+func _OriginalAlert(node_name: String, lines: Array, ok: Callable, cross: Callable, ok_tip: String, cross_tip: String) -> Control:
+	var buttons: int = int(ok.is_valid()) + int(cross.is_valid())
+	var plate: Texture2D = OUI.Pic("dialog_plate%d" % buttons)
+	if plate == null or Art.ButtonIcon("dialog_ok") == null or Art.ButtonIcon("dialog_cancel") == null:
+		return null
+	var layer := Control.new()
+	layer.name = node_name
+	layer.mouse_filter = Control.MOUSE_FILTER_STOP
+	_uiManager.add_child(layer)
+	# Its size, not only its anchors: under a CanvasLayer anchors alone leave it
+	# 0 x 0, and it would take no click at all.
+	layer.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var box := Control.new()
+	box.name = "Box"
+	box.size = plate.get_size()
+	box.position = ((layer.get_viewport_rect().size - box.size) / 2.0).floor()
+	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	layer.add_child(box)
+	OUI.Place(box, plate, 0, 0, "Plate")
+	var top: float = 60.5 - 9.0 * (lines.size() - 1)
+	for i in lines.size():
+		OUI.Text(box, str(lines[i]), 0, top + 18.0 * i, 412, 18, 13, Color(1, 251 / 255.0, 240 / 255.0), HORIZONTAL_ALIGNMENT_CENTER, true, "Text%d" % i)
+	var xs: Array = [176] if buttons == 1 else [137, 228]
+	var at := 0
+	if ok.is_valid():
+		OUI.PictureButton(box, "dialog_ok", xs[at], 134, ok_tip).pressed.connect(ok)
+		at += 1
+	if cross.is_valid():
+		OUI.PictureButton(box, "dialog_cancel", xs[at], 134, cross_tip).pressed.connect(cross)
+	return layer
+
+
+## Out of the tree at once, so its name is free for the next box; freed after.
+static func _Drop(n: Node) -> void:
+	if n == null or not is_instance_valid(n):
+		return
+	if n.get_parent() != null:
+		n.get_parent().remove_child(n)
+	n.queue_free()
+
+
+## To Cockpit: asked first, in the original's box and words (REBDLOG 4618,
+## "Quit and return to cockpit?"): the check leaves, the cross goes back.
+func _ConfirmLeave() -> void:
+	var go := func() -> void:
+		MpSetup.reset()
+		get_tree().change_scene_to_file("res://Menu.tscn")
+	var ask: Control = _uiManager.get_node_or_null("OriginalLeave")
+	if ask != null:
+		return
+	var back := func() -> void:
+		_Drop(_uiManager.get_node_or_null("OriginalLeave"))
+	ask = _OriginalAlert("OriginalLeave", ["Quit and return to cockpit?"], go, back, "To Cockpit", "Cancel")
+	if ask != null:
+		return
+	var confirm := ConfirmationDialog.new()
+	confirm.title = "Leave Game"
+	confirm.dialog_text = "Leave this game? It will be available to reload from either player."
+	confirm.ok_button_text = "Leave"
+	add_child(confirm)
+	confirm.confirmed.connect(go)
+	confirm.canceled.connect(func() -> void: confirm.queue_free())
+	confirm.popup_centered()
 
 
 ## The hello's backstop (the Multiplayer Options screen blocks Start first): two
@@ -816,18 +919,8 @@ func _BuildWaitBox() -> void:
 	_leaveBtn = _waitBox.add_button("Leave Game", true, "leave")
 	_leaveBtn.visible = false
 	_waitBox.custom_action.connect(func(action: StringName) -> void:
-		if action != &"leave":
-			return
-		var confirm := ConfirmationDialog.new()
-		confirm.title = "Leave Game"
-		confirm.dialog_text = "Leave this game? It will be available to reload from either player."
-		confirm.ok_button_text = "Leave"
-		add_child(confirm)
-		confirm.confirmed.connect(func() -> void:
-			MpSetup.reset()
-			get_tree().change_scene_to_file("res://Menu.tscn"))
-		confirm.canceled.connect(func() -> void: confirm.queue_free())
-		confirm.popup_centered())
+		if action == &"leave":
+			_ConfirmLeave())
 	add_child(_waitBox)
 
 
