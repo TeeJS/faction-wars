@@ -88,6 +88,21 @@ static func SideColor(f: Faction) -> Color:
 	return f.FactionColor
 
 
+## A SYSTEM'S WINDOW WEARS THE SYSTEM'S SIDE, as the original's (TeeJ,
+## 2026-09-27: "mfg/defense windows not matching planetary alignment - Svivren
+## should be blue (unaligned) and Corsin should be red (Alliance)"): the title
+## bar in the colour of whoever holds the system as this player knows it
+## (IntelManager.OwnerSeen, as the map colours it - Planet.GetFactionColor),
+## unaligned in neutral's, uncharted in the unexplored colour. Called at every
+## Populate: a system can change hands with its window open.
+static func SystemTitle(window: Control, p: Planet) -> void:
+	var bar: ColorRect = window.get_node_or_null("%TitleBar")
+	if bar == null or p == null or not bar.has_meta("original"):
+		return
+	var owner: Faction = IntelManager.OwnerSeen(GameSettings.LocalFaction(), p)
+	bar.color = SideColor(owner) if owner != null else FactionRegistry.Unknown.FactionColor
+
+
 ## True when every named window part is imported.
 static func Has(parts: Array) -> bool:
 	for p in parts:

@@ -214,8 +214,10 @@ func Populate(planet: Planet, uiManager: UIManager) -> void:
 	var original: bool = _BuildOriginal()
 	# Looked up after the build: the original's grid takes the list's name.
 	var _personnelList: Container = get_node_or_null("%PersonnelList")
-	# The original titles the window with the system's name alone.
+	# The original titles the window with the system's name alone, in the
+	# system's side's colour.
 	_titleBarLabel.text = planet.Name if original else " %s Defenses" % planet.Name
+	OUI.SystemTitle(self, planet)
 
 	PopulateOrbitalDefenses(_tabs, planet)
 	PopulateTroops(_tabs, planet, uiManager)
