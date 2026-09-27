@@ -276,18 +276,6 @@ static func _outdated_sets(pack: PackLoader.LoadedPack) -> Array[Dictionary]:
 	return out
 
 
-## "Credits and licences" on a card: the pack's credits (`menu.credits`, else
-## `credits`), over the picker.
-func _show_credits(pack: PackLoader.LoadedPack) -> void:
-	var old: Node = get_node_or_null("CreditsWindow")
-	if old != null:
-		old.queue_free()
-	var m := pack.Manifest
-	var lines: Array[String] = m.Menu.Credits if m.Menu != null and not m.Menu.Credits.is_empty() else m.Credits
-	var w := CreditsWindow.new(m.DisplayName, lines)
-	add_child(w)
-
-
 ## A pack the player imported (user://packs), not one that ships with the game.
 static func _is_imported(pack_id: String) -> bool:
 	return FactionRegistry.PackDir(pack_id).begins_with(FactionRegistry.USER_PACKS_ROOT)
@@ -510,14 +498,6 @@ func _card(id: String, pack: PackLoader.LoadedPack, errors: Array[String]) -> Bu
 	links.add_theme_constant_override("separation", 10)
 	foot.add_child(links)
 
-	# Who made it, and the licences of what it shows (the card picture's CC BY):
-	# here, now that View credits may play the original's credits movie
-	# (docs/cutscenes-plan.md, decision 6).
-	if pack != null:
-		var credits := _link("Credits", "Credits and licences")
-		credits.tooltip_text = "Who made %s, and the licences of its pictures." % pack.Manifest.DisplayName
-		credits.pressed.connect(func() -> void: _show_credits(pack))
-		links.add_child(credits)
 	# The imported artwork (and movies), clearable - only when there is some.
 	if pack != null and not _imported_sets(pack).is_empty():
 		var clear := _link("ClearArtwork", "Clear artwork pack")

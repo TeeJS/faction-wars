@@ -177,7 +177,7 @@ All six answered 2026-09-26: **"Yes to all"** - each as recommended.
 | 3 | Movies as a separate optional file, or inside the art set? | **Separate** (browser memory, and not every player wants 50+ MB) |
 | 4 | Map only what is confirmed, or also the inferred ones (003/004) before phase 0? | **Confirmed only** until TeeJ's check (the charter's no-guess rule); 005 is confirmed |
 | 5 | A Game Options switch to turn movies off? | **Answered: no.** The original's Game Options screen has none (checked 2026-09-26); click or Esc skips |
-| 6 | Where does the Milky Way card picture's CC BY 4.0 attribution go when the credits movie replaces the credits popup (BACKLOG #43)? | Keep a small **"Credits and licences"** link on the pack's card in the pack picker (the picker already shows the picture): the licence is satisfied wherever the picture is shown, and the Cockpit monitor is then free for the movie. Until the movies file is imported, the monitor keeps today's popup |
+| 6 | Where does the Milky Way card picture's CC BY 4.0 attribution go when the credits movie replaces the credits popup (BACKLOG #43)? | Keep a small **"Credits and licences"** link on the pack's card in the pack picker (the picker already shows the picture): the licence is satisfied wherever the picture is shown, and the Cockpit monitor is then free for the movie. Until the movies file is imported, the monitor keeps today's popup. **2026-09-27: the link is removed** (TeeJ: "remove the buttons until we make something better") - with the movies imported the attribution shows nowhere in the game; a better credits page is owed |
 
 ## Related, not in this plan
 
