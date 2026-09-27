@@ -111,6 +111,26 @@ func AdvanceDay() -> void:
 			u.Attached = destination
 		print("%s has arrived at %s." % [u.Name, destination.Name])
 
+	# --- UNITS ON THEIR WAY TO A FLEET: "a member of the fleet but ... still in
+	# hyperspace for several days until it arrives" (manual p122;
+	# OrderManager.LoadAboard). A fleet that moves takes them along
+	# (CascadeFleetPayloads) and they arrive with it.
+	for sector in _galaxy:
+		for planet in sector.Planets:
+			for fleet in planet.OrbitingFleets:
+				if fleet.Status == Enums.Status.Enroute:
+					continue
+				for ship in fleet.Ships:
+					for cargo in ship.Hangar:
+						if not OrderManager.Inbound(cargo):
+							continue
+						cargo.DaysToDestination -= 1
+						if cargo.DaysToDestination <= 0:
+							cargo.DaysToDestination = 0
+							cargo.Destination = null
+							cargo.Status = Enums.Status.AwaitingOrders
+							print("%s has joined %s at %s." % [cargo.Name, fleet.Name, planet.Name])
+
 	# --- PROCESS FLEET MOVEMENT ---
 	var charted := false
 	for sector in _galaxy:

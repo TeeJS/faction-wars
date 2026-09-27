@@ -49,7 +49,7 @@ static func LandingForce(fleet: Fleet) -> Array:
 	var out := []
 	for s in fleet.Ships:
 		for u in s.Hangar:
-			if u != null and u.Type == Enums.UnitType.Troop and not out.has(u):
+			if u != null and u.Type == Enums.UnitType.Troop and not out.has(u) and not OrderManager.Inbound(u):
 				out.append(u)
 	for u in fleet.Ships:
 		if u != null and u.Type == Enums.UnitType.Troop and not out.has(u):
@@ -197,7 +197,7 @@ static func Forces(r: AssaultReport, fleet: Fleet, target: Planet, attackers: Ar
 		if s.Type == Enums.UnitType.CapitalShip:
 			a.add("CapitalShipsOperational", s.Name, "units", s.PackId, false)
 		for h in s.Hangar:
-			if h != null and h.Type == Enums.UnitType.Fighter:
+			if h != null and h.Type == Enums.UnitType.Fighter and not OrderManager.Inbound(h):
 				a.add("SquadronsOperational", h.Name, "units", h.PackId, false)
 	for u in attackers:
 		a.add("TroopsOperational" if attacker_alive.has(u) else "TroopsDestroyed", u.Name, "units", u.PackId, false)

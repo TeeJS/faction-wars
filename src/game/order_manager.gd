@@ -243,9 +243,25 @@ static func LoadAboard(units: Array, fleet: Fleet) -> Result:
 	if units == null or units.is_empty():
 		return Result.fail("Nothing selected.", 0)
 
+	# Troops leaving a blockaded world for a fleet elsewhere run the blockade,
+	# as any evacuation does ("Troops attempting to move MAY BE KILLED",
+	# manual p124; the player is asked first, UIManager.ExecuteLoadAboard).
+	var going: Array = []
+	var by_origin := {}
+	for u in units:
+		var here: Planet = _SystemOfUnit(u)
+		if here != null and here != orbit and u.Status != Enums.Status.Enroute and MustRunBlockade(here, [u]):
+			if not by_origin.has(here):
+				by_origin[here] = []
+			by_origin[here].append(u)
+		else:
+			going.append(u)
+	for here in by_origin:
+		going.append_array(RunBlockade(by_origin[here], here, Prng.Session))
+
 	var loaded := 0
 	var error := ""
-	for u in units:
+	for u in going:
 		if u.Type != Enums.UnitType.Troop and u.Type != Enums.UnitType.Fighter:
 			continue
 		if u.Faction != fleet.Faction:
@@ -257,9 +273,10 @@ static func LoadAboard(units: Array, fleet: Fleet) -> Result:
 		var carrier: Fleet = CarrierOf(u)
 		if carrier == fleet:
 			continue   # already aboard this one
-		if carrier != null and (carrier.Status == Enums.Status.Enroute or carrier.Attached != orbit):
+		if carrier != null and carrier.Status == Enums.Status.Enroute:
 			continue
-		if carrier == null and u.Attached != orbit:
+		var here: Planet = _SystemOfUnit(u)
+		if here == null:
 			continue
 		var berth: Unit = Lq.first_or_null(fleet.Ships, func(s): return HasRoomFor(s, u.Type))
 		if berth == null:
@@ -268,10 +285,22 @@ static func LoadAboard(units: Array, fleet: Fleet) -> Result:
 		if carrier != null:
 			for ship in carrier.Ships:
 				ship.Hangar.erase(u)
-		orbit.Garrison.erase(u)
-		orbit.FighterSquadrons.erase(u)
+		here.Garrison.erase(u)
+		here.FighterSquadrons.erase(u)
 		berth.Hangar.append(u)
 		u.Attached = fleet
+		if here != orbit:
+			# FROM ANOTHER SYSTEM: "If you move a ship onto a fleet in a different
+			# sector, that ship will immediately be considered a member of the
+			# fleet but will still be in hyperspace for several days until it
+			# arrives" (manual p122) - a regiment or squadron the same way (TeeJ,
+			# 2026-09-27: the fleet "is not taking troops, even though it can hold
+			# 2"). Its berth is taken at once; it is not there - to land, fight
+			# or blockade - until it arrives (Inbound; the day's tick).
+			u.Destination = fleet
+			u.DaysToDestination = maxi(1, UnitTravelDays([u], here, orbit))
+			u.Status = Enums.Status.Enroute
+			print("%s leaves %s to join %s at %s. ETA: %d days." % [u.Name, here.Name, fleet.Name, orbit.Name, u.DaysToDestination])
 		loaded += 1
 
 	if loaded > 0:
@@ -280,6 +309,20 @@ static func LoadAboard(units: Array, fleet: Fleet) -> Result:
 	elif error.is_empty():
 		error = "Nothing there could be loaded."
 	return Result.success(loaded) if error.is_empty() else Result.fail(error, loaded)
+
+
+## The system a unit stands at: its carrier's orbit, or its own world.
+static func _SystemOfUnit(u: Unit) -> Planet:
+	var carrier: Fleet = CarrierOf(u)
+	if carrier != null:
+		return SystemOf(carrier)
+	return u.Attached as Planet if u.Attached is Planet else null
+
+
+## ON ITS WAY TO JOIN A FLEET: a member already, in hyperspace until it arrives
+## (manual p122; LoadAboard). Not there to land, fight, blockade or bombard.
+static func Inbound(u: Unit) -> bool:
+	return u != null and u.Status == Enums.Status.Enroute and u.Destination is Fleet
 
 
 static func HasRoomFor(ship: Unit, kind: int) -> bool:
@@ -298,6 +341,8 @@ static func Unload(fleet: Fleet) -> Result:
 	var off := 0
 	for ship in fleet.Ships:
 		for u in ship.Hangar.duplicate():
+			if Inbound(u):
+				continue   # not here yet
 			ship.Hangar.erase(u)
 			u.Attached = orbit
 			if u.Type == Enums.UnitType.Fighter:
@@ -312,7 +357,7 @@ static func Unload(fleet: Fleet) -> Result:
 
 ## NAMED UNITS OFF THE SHIPS CARRYING THEM.
 static func UnloadUnits(units: Array) -> Result:
-	var riding := Lq.where(units, func(u): return CarrierOf(u) != null) if units != null else []
+	var riding := Lq.where(units, func(u): return CarrierOf(u) != null and not Inbound(u)) if units != null else []
 	if riding.is_empty():
 		return Result.fail("Nothing is aboard a fleet.")
 	for u in riding:

@@ -57,7 +57,7 @@ static func WithdrawPercent(p: Planet) -> int:
 		capitals += Lq.count(f.Ships, func(s): return s.Type == Enums.UnitType.CapitalShip)
 		fighters += Lq.count(f.Ships, func(s): return s.Type == Enums.UnitType.Fighter)
 		for s in f.Ships:
-			fighters += Lq.count(s.Hangar, func(h): return h.Type == Enums.UnitType.Fighter)
+			fighters += Lq.count(s.Hangar, func(h): return h.Type == Enums.UnitType.Fighter and not OrderManager.Inbound(h))
 	var per_capital := RuleManager.Get(RuleId.BlockadeCapitalShipPenalty, blockader)
 	var per_fighter := RuleManager.Get(RuleId.BlockadeFighterPenalty, blockader)
 	return max(0, 100 - per_capital * capitals - per_fighter * fighters)

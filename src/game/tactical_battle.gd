@@ -129,7 +129,7 @@ static func Build(fleet: Fleet, index: int) -> TacticalSide:
 		else:
 			side.Ships.append(tu)
 		for carried in ship.Hangar:
-			if carried.Type != Enums.UnitType.Fighter:
+			if carried.Type != Enums.UnitType.Fighter or OrderManager.Inbound(carried):
 				continue
 			var sq := TacticalUnit.new()
 			sq.Source = carried

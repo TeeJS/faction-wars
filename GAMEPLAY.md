@@ -2540,6 +2540,16 @@ emphasis from §11:
 Membership is instant; presence is not. A fleet's roster can therefore include
 ships that have not physically arrived.
 
+**The code (2026-09-27):** a **regiment or squadron** dropped on a fleet at another
+system joins it the same way (TeeJ: the fleet "is not taking troops, even though it
+can hold 2") - its berth taken at once, in hyperspace for its travel days
+(`OrderManager.LoadAboard`, `Inbound`), not there to land, fight, blockade or
+bombard until it arrives; troops leaving a blockaded world run the blockade,
+asked first. Applying p122's ship rule to troops is **inferred** (the manual
+names ships; the mini-mission moves characters "onto the fleet" the same way,
+p046). **Not implemented:** moving *ships* between fleets at all (p120, p122), and
+a character sent to a fleet at another system (p046) - BACKLOG #57, #58.
+
 ---
 
 ## 14. Bombardment, assault and blockade — the reference treatment

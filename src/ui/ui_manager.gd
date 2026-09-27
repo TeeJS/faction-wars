@@ -2040,12 +2040,25 @@ func ConfirmEvacuation(odds: int, onProceed: Callable) -> void:
 func ExecuteLoadAboard(units: Array, fleet: Fleet) -> void:
 	if fleet == null or units.is_empty():
 		return
-	var r: Result = CommandBus.issue("load_aboard", { "units": EntityIndex.ids_of_units(units), "fleet": fleet.ID })
 	var orbit: Planet = OrderManager.SystemOf(fleet)
-	if int(r.value) > 0 and orbit != null:
-		RefreshAfterMove(orbit, orbit)
-	if not r.error.is_empty():
-		ShowRefusal(r.error, r.code)
+	# From a blockaded world elsewhere: asked first, as any evacuation is
+	# (TEXTSTRA.DLL 0xF168); the order runs the blockade (LoadAboard).
+	var leaving: Planet = null
+	for u in units:
+		var here: Planet = OrderManager._SystemOfUnit(u)
+		if here != null and here != orbit and OrderManager.MustRunBlockade(here, [u]):
+			leaving = here
+			break
+	var issue := func() -> void:
+		var r: Result = CommandBus.issue("load_aboard", { "units": EntityIndex.ids_of_units(units), "fleet": fleet.ID })
+		if (r.value == null or int(r.value) > 0) and r.ok and orbit != null:
+			RefreshAfterMove(orbit, orbit)
+		if not r.error.is_empty():
+			ShowRefusal(r.error, r.code)
+	if leaving != null:
+		ConfirmEvacuation(BlockadeManager.WithdrawPercent(leaving), issue)
+		return
+	issue.call()
 
 
 ## The agent answers it aloud too, where the refusal names a reason he has
