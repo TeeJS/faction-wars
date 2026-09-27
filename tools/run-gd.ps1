@@ -26,6 +26,9 @@ $out = Join-Path $env:TEMP ('gd-' + $tag + '-' + [IO.Path]::GetFileNameWithoutEx
 function Invoke-Godot([string[]]$GodotArgs, [string]$Log, [int]$Timeout) {
     Remove-Item $Log, ($Log + '.err') -ErrorAction SilentlyContinue
     $p = Start-Process -FilePath $Godot -ArgumentList $GodotArgs -RedirectStandardOutput $Log -RedirectStandardError ($Log + '.err') -PassThru -NoNewWindow
+    # Windows PowerShell 5.1 returns an empty ExitCode (so exit 0) unless the process
+    # handle is opened before the process ends; touching Handle caches it.
+    $null = $p.Handle
     if (-not $p.WaitForExit($Timeout * 1000)) { $p.Kill(); Write-Host "TIMEOUT after ${Timeout}s"; return 124 }
     return $p.ExitCode
 }

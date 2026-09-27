@@ -23,6 +23,9 @@ New-Item -ItemType Directory -Force $OutDir | Out-Null
 
 function Invoke-Godot([string[]]$GodotArgs, [string]$Log, [int]$Seconds = 120) {
     $p = Start-Process -FilePath $Godot -ArgumentList $GodotArgs -RedirectStandardOutput $Log -RedirectStandardError ($Log + '.err') -PassThru -NoNewWindow
+    # Windows PowerShell 5.1 returns an empty ExitCode (so exit 0) unless the process
+    # handle is opened before the process ends; touching Handle caches it.
+    $null = $p.Handle
     if (-not $p.WaitForExit($Seconds * 1000)) { $p.Kill(); Write-Host "  timed out after ${Seconds}s: $($GodotArgs -join ' ')"; return 124 }
     Get-Content ($Log + '.err') -ErrorAction SilentlyContinue | Add-Content $Log
     return $p.ExitCode
