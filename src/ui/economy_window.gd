@@ -55,8 +55,10 @@ func Populate(planet: Planet) -> void:
 
 	_associatedPlanet = planet
 	var original: bool = _BuildOriginal()
-	# The original titles the window with the system's name alone.
+	# The original titles the window with the system's name alone, in the
+	# system's side's colour.
 	(get_node("%TitleBarLabel") as Label).text = planet.Name if original else " %s Economy" % planet.Name
+	OUI.SystemTitle(self, planet)
 
 	var tabs: TabContainer = get_node("%EconomyTabs")
 	# Only jump to the first tab when this window is opened on a NEW

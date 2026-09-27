@@ -166,6 +166,34 @@ func _init() -> void:
 	_check(garrison != null and garrison.text == "Garrison Requirement: %d" % home.GarrisonRequirement(), "Troops page: the garrison requirement line")
 	dw.CloseWindow()
 
+	# ---- A system's windows wear the system's side (TeeJ, 2026-09-27:
+	# "Svivren should be blue (unaligned) and Corsin should be red (Alliance)") ----
+	for want in ["neutral", "enemy", "uncharted"]:
+		var p: Planet = Lq.first_or_null(GameState.AllPlanets(), func(x: Planet) -> bool:
+			var seen: Faction = IntelManager.OwnerSeen(GameSettings.LocalFaction(), x)
+			match want:
+				"neutral": return seen == FactionRegistry.Neutral
+				"enemy": return seen != null and seen != us and seen != FactionRegistry.Neutral
+			return seen == null)
+		if p == null:
+			print("[original_windows] (no %s system to open)" % want)
+			continue
+		var seen: Faction = IntelManager.OwnerSeen(GameSettings.LocalFaction(), p)
+		var colour: Color = OUI.SideColor(seen) if seen != null else FactionRegistry.Unknown.FactionColor
+		if want == "neutral":
+			_check(colour == FactionRegistry.Neutral.FactionColor and colour.b > colour.r, "unaligned is neutral's blue (%s)" % colour.to_html(false))
+		for spec in [[" Defenses", "OnDefenseClicked"], [" Economy", "OnEconomyClicked"], [" Fleets", "OnFleetClicked"]]:
+			ui.call(spec[1], p)
+			for _i in 3:
+				await process_frame
+			var w: DraggableWindow = ui._openWindows.get(p.Name + str(spec[0]))
+			var bar: ColorRect = w.get_node("%TitleBar") if w != null else null
+			_check(bar != null and bar.color == colour, "%s (%s):%s window's title bar in its side's colour (%s)" % [p.Name, want, spec[0], bar.color.to_html(false) if bar != null else "none"])
+			if w != null:
+				w.CloseWindow()
+				for _i in 2:
+					await process_frame
+
 	# ---- Manufacturing and Production ----
 	ui.OnEconomyClicked(home)
 	for _i in 4:

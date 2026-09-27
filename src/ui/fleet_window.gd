@@ -22,8 +22,10 @@ func Populate(planet: Planet, uiManager: UIManager) -> void:
 	var selectedFleetName: Label = get_node("%SelectedFleetName")
 	var original: bool = _BuildOriginal()
 
-	# The original titles the window with the system's name alone.
+	# The original titles the window with the system's name alone, in the
+	# system's side's colour.
 	titleBarLabel.text = planet.Name if original else " %s System Fleets" % planet.Name
+	OUI.SystemTitle(self, planet)
 
 	# Clear existing fleet buttons on the left
 	for child in fleetList.get_children():
