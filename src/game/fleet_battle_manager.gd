@@ -168,7 +168,7 @@ static func StrengthOf(f: Fleet) -> int:
 	for ship in f.Ships:
 		total += PowerOf(ship, false)
 		for carried in ship.Hangar:
-			if carried.Type == Enums.UnitType.Fighter:
+			if carried.Type == Enums.UnitType.Fighter and not OrderManager.Inbound(carried):
 				total += PowerOf(carried, false)
 	return total
 
@@ -356,7 +356,7 @@ static func Tally(side: TacticalBattle.TacticalSide, into: Casualties, fleet: Fl
 	if fleet != null:
 		for ship in fleet.Ships:
 			for carried in ship.Hangar:
-				if carried.Type == Enums.UnitType.Troop:
+				if carried.Type == Enums.UnitType.Troop and not OrderManager.Inbound(carried):
 					into.add("TroopsDestroyed" if sunk.has(ship) else "TroopsOperational", carried.Name, "units", carried.PackId, false)
 	# Everyone aboard survives the fight itself; a fleet wiped out takes them
 	# with it (LoseCrews). The injured and captured splits are NOT reproduced.

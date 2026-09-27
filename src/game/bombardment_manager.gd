@@ -118,7 +118,7 @@ static func Bombard(fleet: Fleet, target: Planet, mode: int, rng: Prng, day: int
 			admiral = max(admiral, c.LeadershipRating)
 
 	var raw := Lq.sum(able, func(s): return s.Bombardment) \
-		+ Lq.sum(able, func(s): return Lq.sum(Lq.where(s.Hangar, func(h): return h.Type == Enums.UnitType.Fighter), func(h): return h.Bombardment))
+		+ Lq.sum(able, func(s): return Lq.sum(Lq.where(s.Hangar, func(h): return h.Type == Enums.UnitType.Fighter and not OrderManager.Inbound(h)), func(h): return h.Bombardment))
 
 	var officer_div: int = maxi(1, RuleManager.Get(RuleId.ShipBombardOfficerDiv, fleet.Faction))
 	report.Firepower = raw + raw * admiral / officer_div
@@ -284,7 +284,7 @@ static func Forces(r: BombardmentReport, fleet: Fleet) -> void:
 		if s.Type == Enums.UnitType.CapitalShip:
 			a.add("CapitalShipsDestroyed" if lost else "CapitalShipsOperational", s.Name, "units", s.PackId, r.Damaged.has(s.Name) and not lost)
 		for h in s.Hangar:
-			if h != null and h.Type == Enums.UnitType.Fighter:
+			if h != null and h.Type == Enums.UnitType.Fighter and not OrderManager.Inbound(h):
 				a.add("SquadronsDestroyed" if lost else "SquadronsOperational", h.Name, "units", h.PackId, false)
 	var d := r.DefenderForces
 	var t := r.Target
