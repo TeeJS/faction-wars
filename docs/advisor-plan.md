@@ -1,8 +1,12 @@
 # Plan: the droids speak - the original's advisor voices and the opening briefing
 
-Status: **proposed, 2026-09-27** - awaiting TeeJ's decisions at the end. Nothing is built.
+Status: **decisions answered, phase 0 done, 2026-09-27** - stopped for TeeJ's go on phase 1.
 TeeJ, 2026-09-27: "What about the dialogue, like emperor's 'you have not adequately
 supported'" ... "yes write the plan". BACKLOG #41 (sound) stays for the sound effects.
+
+TeeJ's decisions (2026-09-27): **1** the art set; **2** include the briefing, **Esc skips it**;
+**3** build from Rebellion 2's map; **4** the Emperor's line plays "when playing as empire and
+his mission fails"; **5** no subtitles.
 
 ## Charter
 
@@ -38,6 +42,50 @@ supported'" ... "yes write the plan". BACKLOG #41 (sound) stays for the sound ef
 | The opening briefing, a new game; then the Message Index opens on Agent Advice | manual p022; Rebellion 2's `PlayBriefing` (segments: an animation, a recording, a map focus) - its data not in the snapshot | The moment **confirmed**; the segments unknown |
 | The other ~155 recordings per side, VOICEFX, and TeeJ's "You have not adequately supported..." | - | **Unknown** (phase 0) |
 
+## Phase 0: the map (2026-09-27, from Rebellion 2's last in-repo data)
+
+Source: Rebellion 2 at `f4d4386` (the last commit before its content left the repo, 2026-08-01):
+`Assets/Resources/Configs/FactionThemes.xml` (`StrategyAdvisor`), `Assets/Resources/Data/Officers.xml`,
+and `Assets/Scripts/Game/Messages/MessageFactory.cs` / `Message.cs`. We take **facts** from it
+(which of the original's recordings and frames goes with which event), none of its code
+(PolyForm Noncommercial; its licence excludes game data).
+
+**The chain.** A message carries an advisor **code** - the original's own event numbers,
+gaps and all: 1 positive support, 2 negative support, 3 manufacturing, 4 research, 5 fleet
+arrived, 6 units arrived, 8 capital ship repaired, 9 starfighter repaired, 12 maintenance,
+13 blockade initiated, 14 blockade detected, 20 field personnel, 21 agent report, 22-27 a
+major character's report, 28 planetary status, 30-35 a major character captured, 36-40
+released, 41 intercepted communication, 44 / 45 (one per side, unnamed), 46 bombardment,
+47 planetary assault. The code gives an **entry** and a **lifetime** (5 or 10 days); the
+entry gives the message droid's animation and sound, and the agent's animation and
+recording (first frame, frame count, recording id) - the agent's only with Translate
+Counterpart on. Pending entries play lowest entry number first; the same entry not again
+within 60 days; frames every 0.067 s.
+
+**The characters' own lines**, by line type (order acknowledged, arrived, mission success /
+failure / abort, released, recovered, enemy detected, traitor discovered, and per character
+more: the Force, Dagobah, bounty hunters, the Emperor's seat of power): Luke 29, Leia 15,
+Han 14, Emperor 10, Vader 9, Mon Mothma 7. **The Emperor's mission failure is recording
+1387** - TeeJ's line (confirmed: his report and Rebellion 2 agree).
+
+| | Mapped | In the files |
+|---|---|---|
+| The droids' lines, Alliance (`ALSPRITE.DLL`) | 35 codes → 33 entries, 57 recordings | 57 of 57 |
+| The droids' lines, Empire (`EMSPRITE.DLL`) | 35 codes → 31 entries, 53 recordings | 52 of 53 - **1580 is in neither file** |
+| The characters' lines | 84 recordings | all, in both files |
+
+**Which events send which code** (Rebellion 2's message builders): fleet arrived (5), ships
+arrived (6), a producer idle (3), repaired (8 / 9), sabotage, a facility lost, maintenance
+auto-scrap (12), research (4), blockades (13 / 14), personnel arrived (20, or the character's
+report), an enemy mission foiled (21), uprisings and a system joining / leaving by support
+(1 / 2 / 28), bombardment (46), assault (47); a major character's report, capture and
+release by the character (22-40).
+
+**Not mapped** (not in Rebellion 2's data): VOICEFXA/E (285 recordings - Rebellion 2 uses
+none); the briefing (its briefing data came after its content left the repo - phase 4 reads
+the briefing files' own order); the instant answers to orders (later Rebellion 2 versions
+only, by name); about 45 recordings per side nothing references; the names of codes 44/45.
+
 ## What the code does today
 
 | | |
@@ -65,18 +113,18 @@ supported'" ... "yes write the plan". BACKLOG #41 (sound) stays for the sound ef
 
 | # | Phase | Done when |
 |---|---|---|
-| 0 | **Map the lines**: Rebellion 2's table, checked against the binary (TeeJ's approval each time, manual mode) and by listening; what VOICEFX is; where TeeJ's line is | every mapped event has a named recording and a confidence |
+| 0 | **Map the lines**: Rebellion 2's table, checked against the binary (TeeJ's approval each time, manual mode) and by listening; what VOICEFX is; where TeeJ's line is | every mapped event has a named recording and a confidence - **done** from Rebellion 2's map (decision 3), every recording checked in the files (above) |
 | 1 | **Exporter**: the recordings and the talking animations | the game can play them; size stated |
 | 2 | **Game**: the droids report events; Translate Counterpart; the effects volume | a test per event; TeeJ hears them |
 | 3 | **Game**: the instant answers (invalid order, in transit, under construction, the droid toggles, maintenance) | a test each |
-| 4 | **Game**: the opening briefing (decision 2) | it plays at a new game, skippable, then Agent Advice opens |
+| 4 | **Game**: the opening briefing (decision 2) | it plays at a new game, **Esc skips it**, then Agent Advice opens |
 
 ## Decisions for TeeJ
 
 | # | Question | Recommendation |
 |---|---|---|
-| 1 | Where do the voices go: the **art set** (+~10 MB, plus the animations), or a **voices file** of its own like the movies? | **The art set** - the droids' idle pictures are already there, and 10 MB is small |
-| 2 | Build the **opening briefing** too? Your copy has it switched off (the `.OLD` files) - do you know why? | **Yes**, skippable like the movies - the manual has it (p022) |
-| 3 | Build from **Rebellion 2's map** (as the music was), or read the binary first? | **Rebellion 2's map**, marked single-source; phase 0's binary check in parallel |
-| 4 | "You have not adequately supported..." - which side, and when did you hear it? | it tells phase 0 where to look |
-| 5 | The lines have no text in the game's files. Show nothing, as the original, or subtitles (they would have to be transcribed)? | **Nothing**, as the original |
+| 1 | Where do the voices go: the **art set** (+~10 MB, plus the animations), or a **voices file** of its own like the movies? | **Answered: the art set** |
+| 2 | Build the **opening briefing** too? Your copy has it switched off (the `.OLD` files) - do you know why? | **Answered: yes, Esc skips it** |
+| 3 | Build from **Rebellion 2's map** (as the music was), or read the binary first? | **Answered: Rebellion 2's map** |
+| 4 | "You have not adequately supported..." - which side, and when did you hear it? | **Answered:** the Emperor, playing the Empire, when his mission fails - recording 1387 |
+| 5 | The lines have no text in the game's files. Show nothing, as the original, or subtitles (they would have to be transcribed)? | **Answered: none** |
