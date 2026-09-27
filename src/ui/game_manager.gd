@@ -53,6 +53,7 @@ var _pauseBox: AcceptDialog
 # on the Alliance's is INFERRED (the Empire's is green): the side's.
 const OUI := preload("res://src/ui/original_ui.gd")
 const Art := preload("res://src/ui/artwork.gd")
+const AdviceLib := preload("res://src/ui/advice.gd")
 const HudScale := 1.5
 ## The scale the HUD is drawn at now: HudScale, or the Command Center frame's
 ## own (the screen's height over the frame's) when the frame is the screen, so
@@ -263,18 +264,18 @@ func _ready() -> void:
 	_lastDay = StrategicTickManager.Today
 	RefreshStatusBar()
 
+	# THE AGENT'S ADVICE (advice.gd): single player, Agent Advice on in Easy.
 	# THE OPENING BRIEFING (manual p022): a new game, not a loaded one; not in
-	# head-to-head, where the other side's clock would wait for it. The agent's
-	# opening advice is posted first (Agent Advice: on in Easy, advice.gd); the
-	# briefing opens the Message Index on it when it ends, and with no briefing
-	# to play (an art set without its recordings) it opens at once.
-	var adviceLib := preload("res://src/ui/advice.gd")
-	if not loaded and not mp:
-		var advice: int = adviceLib.Start(GameSettings.LocalFaction(), StrategicTickManager.Today)
-		if _uiManager.StartBriefing(HoldForBriefing) == null and advice > 0:
-			_uiManager.OnMessageIndexClicked("Advice")
+	# head-to-head, where the other side's clock would wait for it. When it
+	# ends - at once, with none to play (an art set without its recordings) -
+	# the opening advice and the Message Index on it (UIManager.BriefingOver).
+	if not mp:
+		AdviceLib.Start(GameSettings.LocalFaction())
 	else:
-		adviceLib.Reset()
+		AdviceLib.Start(null)
+	if not loaded and not mp:
+		if _uiManager.StartBriefing(HoldForBriefing) == null:
+			_uiManager.BriefingOver()
 
 
 func _exit_tree() -> void:
@@ -322,9 +323,12 @@ func _EndPhase() -> void:
 			_mpDayDue = false
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	var session: LockstepSession = MpSetup.session
 	if session == null:
+		# The agent's advice keeps the original's clock: ticks as the day runs.
+		if not _tickTimer.is_stopped():
+			AdviceLib.Advance(AdviceLib.TicksIn(delta, _tickTimer.wait_time, _speed), StrategicTickManager.Today)
 		return
 	# The two games differ (the hello): nothing more is played.
 	if not session.hello_mismatch.is_empty():

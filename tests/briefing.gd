@@ -10,8 +10,9 @@ extends SceneTree
 ##   - each focus step puts its view on the display (the pack's `views`, as
 ##     recordings of the original show): the display off, a mode, a caption
 ##     with the systems it names lit; at the end the display is as it was;
-##   - Esc skips: the line stops and the skip's plays; then the Message Index
-##     opens on Agent Advice and the clock runs;
+##   - Esc skips: the line stops and the skip's plays; then, in an Easy game
+##     (Agent Advice on, manual p022), the Message Index opens on Agent Advice,
+##     and the clock runs; in Medium no Message Index opens (the original's);
 ##   - a left click skips too, and a second skip ends it at once;
 ##   - without the recordings there is no briefing, and a loaded game has none.
 ## Writes and removes its own files under user://.
@@ -96,10 +97,12 @@ func _init() -> void:
 		_stand_in(str(al_lines[i]["anim"]), run)
 	_stand_in(str(al["skip"][1]["sound"]), tone)
 	_stand_in(str(al["skip"][1]["anim"]), run)
+	# One opening advice message, so the Message Index has it to open on.
+	_stand_in("swr-original:advice.json", JSON.stringify({"alliance": [{"n": 1, "group": 7, "key": 10, "title": "Tip", "text": "Advice."}]}).to_utf8_buffer())
 	Art.Reset()
 
-	# A new game: the briefing plays.
-	var main: Node = await _start(side)
+	# A new game in Easy: the briefing plays.
+	var main: Node = await _start(side, Enums.Difficulty.Easy)
 	var ui: UIManager = main.get_node("UIManager")
 	var b: Control = ui.get_node_or_null("Briefing")
 	var advisor: Node = ui.get_node_or_null("Advisor")
@@ -146,7 +149,7 @@ func _init() -> void:
 	await _stop(main)
 
 	# A left click skips too; a second skip ends it at once.
-	main = await _start(side)
+	main = await _start(side, Enums.Difficulty.Easy)
 	ui = main.get_node("UIManager")
 	b = ui.get_node_or_null("Briefing")
 	_check(b != null, "another new game: the briefing again")
@@ -165,9 +168,24 @@ func _init() -> void:
 			"a second skip during the skip's line ends it at once, and the Message Index opens")
 	await _stop(main)
 
+	# Medium: Agent Advice starts off, and after the briefing no Message Index.
+	main = await _start(side, Enums.Difficulty.Medium)
+	ui = main.get_node("UIManager")
+	b = ui.get_node_or_null("Briefing")
+	var started := b != null
+	if started:
+		b.Skip()
+		await process_frame
+		b.Skip()
+		for _i in 3:
+			await process_frame
+	_check(started and ui.get_node_or_null("Briefing") == null and ui._openWindows.get("Communications") == null and not main._briefing,
+		"Medium: the briefing plays and ends; no Message Index opens (Agent Advice off, as the original's)")
+	await _stop(main)
+
 	# Without the recordings: none.
 	_remove("%s/sound" % dir)
-	main = await _start(side)
+	main = await _start(side, Enums.Difficulty.Medium)
 	ui = main.get_node("UIManager")
 	_check(ui.get_node_or_null("Briefing") == null and not main._briefing, "without the art set's recordings: no briefing, the clock runs")
 	await _stop(main)
@@ -243,11 +261,11 @@ func _category(w: Node) -> String:
 	return str(tc.get_child(tc.current_tab).name)
 
 
-func _start(side: String) -> Node:
+func _start(side: String, difficulty: int) -> Node:
 	Art.Reset()
 	MpSetup.reset()
 	GameSettings.PendingLoadPath = ""
-	GameSettings.SelectedDifficulty = Enums.Difficulty.Medium
+	GameSettings.SelectedDifficulty = difficulty
 	GameSettings.SelectedSize = Enums.GalaxySize.Standard
 	GameSettings.PlayerFaction = FactionRegistry.ById(side)
 	var main: Node = load("res://Main.tscn").instantiate()

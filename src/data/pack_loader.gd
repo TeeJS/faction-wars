@@ -483,10 +483,17 @@ static func _validate_briefing_views(pack: LoadedPack, views: Variant, where: St
 			errors.append("%s.show: '%s' names nothing this pack has." % [at, show])
 
 
+## Rule 29's keys, and the windows whose first opening is one of the agent's
+## moments (advice.gd KINDS).
+const ADVICE_KEYS: Array[String] = ["messages", "list", "opening", "picture", "events", "periodic", "every"]
+const KNOWN_ADVICE_EVENTS: Array[String] = ["sector", "manufacturing", "fleet", "defenses", "missions"]
+
+
 ## Rule 29: `advice` - the agent's advice messages, per side: `messages` the
 ## file holding them (.json, needed), `list` its list for this side (needed),
 ## `opening` the group posted when a game starts, `picture` what a message
-## shows (.png).
+## shows (.png), `events` known window kinds -> the group each releases,
+## `periodic` the group always due, `every` the ticks between tips.
 static func _validate_advice(pack: LoadedPack, pack_dir: String, errors: Array[String]) -> void:
 	var m := pack.Manifest
 	if not m.AdviceGiven:
@@ -505,19 +512,31 @@ static func _validate_advice(pack: LoadedPack, pack_dir: String, errors: Array[S
 			continue
 		var side: Variant = m.AdviceRaw[key]
 		if not side is Dictionary:
-			errors.append("%s: must be an object (messages, list, opening, picture)." % where)
+			errors.append("%s: must be an object (messages, list, opening, picture, events, periodic, every)." % where)
 			continue
 		for part in side:
-			if not ["messages", "list", "opening", "picture"].has(str(part)):
-				errors.append("%s: '%s' is none of messages, list, opening, picture." % [where, part])
+			if not ADVICE_KEYS.has(str(part)):
+				errors.append("%s: '%s' is none of %s." % [where, part, ", ".join(ADVICE_KEYS)])
 		if not side.has("messages"):
 			errors.append("%s: names no messages file." % where)
 		else:
 			_check_ref(side["messages"], ".json", "a messages file", where + ".messages", pack, pack_dir, errors)
 		if not side.get("list") is String or str(side.get("list")).strip_edges().is_empty():
 			errors.append("%s.list: must name the file's list for this side." % where)
-		if side.has("opening") and (not (side["opening"] is int or side["opening"] is float) or float(side["opening"]) < 0):
-			errors.append("%s.opening: must be a group number." % where)
+		for part in ["opening", "periodic"]:
+			if side.has(part) and (not (side[part] is int or side[part] is float) or float(side[part]) < 0):
+				errors.append("%s.%s: must be a group number." % [where, part])
+		if side.has("every") and (not (side["every"] is int or side["every"] is float) or float(side["every"]) <= 0):
+			errors.append("%s.every: must be a number of ticks." % where)
+		if side.has("events"):
+			if not side["events"] is Dictionary:
+				errors.append("%s.events: must be an object of window -> group." % where)
+			else:
+				for kind in side["events"]:
+					if not KNOWN_ADVICE_EVENTS.has(str(kind)):
+						errors.append("%s.events: '%s' is not a window. Known: %s." % [where, kind, ", ".join(KNOWN_ADVICE_EVENTS)])
+					elif not (side["events"][kind] is int or side["events"][kind] is float) or float(side["events"][kind]) < 0:
+						errors.append("%s.events.%s: must be a group number." % [where, kind])
 		if side.has("picture"):
 			_check_ref(side["picture"], ".png", "a picture", where + ".picture", pack, pack_dir, errors)
 

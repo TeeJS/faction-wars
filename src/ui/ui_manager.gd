@@ -850,6 +850,9 @@ func OnSectorClicked(sector: Sector) -> void:
 			window.Populate(sector, self)
 			_WireSectorPinMenu(window, sector),
 		targetPos)
+	# The first sector window opened is one of the agent's moments (advice.gd).
+	if fresh:
+		AdviceLib.Opened("sector", StrategicTickManager.Today)
 
 
 ## Which side a new sector window opens on: its usual side (the right for the
@@ -898,7 +901,15 @@ func OnPlanetClicked(planetData: Planet) -> void:
 			targetPos)
 
 
+## A system's window of `kind` opening afresh - not one already open - is
+## one of the agent's moments, as the original's (advice.gd).
+func _AdviceMoment(kind: String, window_name: String) -> void:
+	if not (_openWindows.has(window_name) and is_instance_valid(_openWindows[window_name])):
+		AdviceLib.Opened(kind, StrategicTickManager.Today)
+
+
 func OnDefenseClicked(planetData: Planet) -> void:
+	_AdviceMoment("defenses", planetData.Name + " Defenses")
 	var targetPos: Vector2 = get_viewport().get_mouse_position() + Vector2(20, 20)
 	OpenWindow(planetData.Name + " Defenses", DefenseWindowTemplate,
 		func(window) -> void: window.Populate(planetData, self),
@@ -906,6 +917,7 @@ func OnDefenseClicked(planetData: Planet) -> void:
 
 
 func OnFleetClicked(planetData: Planet) -> void:
+	_AdviceMoment("fleet", planetData.Name + " Fleets")
 	var targetPos: Vector2 = get_viewport().get_mouse_position() + Vector2(20, 20)
 	OpenWindow(planetData.Name + " Fleets", FleetWindowTemplate,
 		func(window) -> void: window.Populate(planetData, self),
@@ -913,6 +925,7 @@ func OnFleetClicked(planetData: Planet) -> void:
 
 
 func OnEconomyClicked(planetData: Planet) -> void:
+	_AdviceMoment("manufacturing", planetData.Name + " Economy")
 	var targetPos: Vector2 = get_viewport().get_mouse_position() + Vector2(20, 20)
 	OpenWindow(planetData.Name + " Economy", EconomyWindowTemplate,
 		func(window) -> void: window.Populate(planetData),
@@ -926,6 +939,7 @@ const OriginalMissionScript := preload("res://src/ui/original_mission_window.gd"
 
 
 func OnMissionClicked(planetData: Planet) -> void:
+	_AdviceMoment("missions", planetData.Name + " Missions")
 	var targetPos: Vector2 = get_viewport().get_mouse_position() + Vector2(20, 20)
 	OpenWindow(planetData.Name + " Missions",
 		OriginalMissionScene if OriginalMissionScript.CanBuild() else MissionWindowTemplate,
@@ -1573,9 +1587,9 @@ func OpenGidControlMenu() -> void:
 
 ## THE OPENING BRIEFING at a new game (manual p022; src/ui/briefing.gd): the
 ## agent droid speaks it in its place while `hold` keeps the clock (true, then
-## false) and the droids keep their news; afterwards the Message Index opens
-## on Agent Advice. Only with the droids in the frame and the art set's
-## recordings; returns the briefing, or null.
+## false) and the droids keep their news; afterwards BriefingOver. Only with
+## the droids in the frame and the art set's recordings; returns the briefing,
+## or null.
 func StartBriefing(hold: Callable = Callable()) -> Control:
 	var advisor: Node = get_node_or_null("Advisor")
 	if advisor == null or advisor.Agent == null or not BriefingScript.CanPlay():
@@ -1591,9 +1605,21 @@ func StartBriefing(hold: Callable = Callable()) -> Control:
 			advisor.Held = false
 		if hold.is_valid():
 			hold.call(false)
-		OnMessageIndexClicked("Advice")
+		BriefingOver()
 	add_child(b)
 	return b
+
+
+## The briefing has ended, or there was none to play. As the original's (its
+## briefing's last step, FUN_004c0fc0 case 0xd): with Agent Advice on, its
+## opening advice, and the Message Index open on Agent Advice (manual p022,
+## an Easy game's); with it off, neither.
+func BriefingOver() -> void:
+	if not AdviceLib.On:
+		return
+	AdviceLib.BriefingEnded(StrategicTickManager.Today)
+	if AdviceLib.Given():
+		OnMessageIndexClicked("Advice")
 
 
 ## The droids stand in the Command Center frame (the bottom row's agent
@@ -1620,9 +1646,10 @@ func OnAgentMenu(id: int) -> void:
 				AdvisorScript.AnswerOn(get_tree(), "production_on" if on else "production_off")
 		# A preference of this player's, not an order: nothing for the log.
 		7: SoundLib.SetTranslateCounterpart(not SoundLib.TranslateCounterpart)
-		# Agent Advice (manual p078; advice.gd): switched on, the opening advice
-		# arrives if this game has not had it. Presentation only, as 7.
-		8: AdviceLib.SetOn(us, not AdviceLib.On, StrategicTickManager.Today)
+		# Agent Advice (manual p078; advice.gd): switched on, the advice comes at
+		# its next moment, the opening's first if this game has not had it.
+		# Presentation only, as 7.
+		8: AdviceLib.SetOn(not AdviceLib.On)
 
 
 ## THE BATTLE ALERT (manual p124, Fig 4.1). Raised from the repaint poll rather

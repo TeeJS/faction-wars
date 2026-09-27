@@ -146,8 +146,9 @@ both recordings show no day until it ends). Head-to-head has none: no source sho
 (the one multiplayer recording found starts single-player); REBEXE would settle it.
 
 **Two things the recordings show that differ from us** (not changed here): after the briefing **no Message
-Index opens** in either recording, where manual p022 says it opens on Agent Advice (ours follows the
-manual); and before the briefing **the side's shuttle film plays** - Cloud City for the Alliance, the Star
+Index opens** in either recording, where manual p022 says it opens on Agent Advice - **explained by REBEXE
+(phase 5)**: the briefing's end opens it only while Agent Advice is on, and that is Easy's default only, so
+the recordings were not Easy games; and before the briefing **the side's shuttle film plays** - Cloud City for the Alliance, the Star
 Destroyer for the Empire (MDATA 003 / 004) - which #269 removed on TeeJ's report from his own copy.
 
 **A lead for phase 3.** The same scripts hold the agent's other actions (C3POACT's 1-39 and 69-85 name one
@@ -190,7 +191,10 @@ Furthering Our Cause; Advice Available.
 | A game opens with **group 7**: the nine above, in the list's order | the nine group-7 messages are exactly TeeJ's screenshot, in its order; the advice's start posts every group-7 entry (FUN_00439f20) | **Confirmed** (screenshot, decompilation) |
 | The picture: STRATEGY.DLL 1071 (C-3PO) / 1072 (IMP-22), 400x200 | the advice message takes 0x42f / 0x430 by side (FUN_0048b2e0) | **Confirmed** (decompilation; the pictures are the agents) |
 | The advice message also names STRATEGY.DLL WAVE 1121 / 1122 (0x461 / 0x462, ~3.5 s each) | FUN_0048b2e0 | When it plays is **unknown** - not played |
-| The rest (groups 1, 2, 3, 5, 6; keys 100-310, a tutorial sequence): each of five first-time events posts the next pending tip of its group (bit 1 -> group 6, 2 -> 2, 4 -> 3, 8 -> 5, 16 -> 4; FUN_0043a0b0); a periodic pass posts the next pending tip whose group's event has happened, group 1 always (FUN_00439fb0) | open-rebellion's Ghidra notes | The model **single-source**; **which events** set the five bits and **how often** the pass runs are **unknown** - their callers are not in the published notes; REBEXE would settle it |
+| The rest (groups 1, 2, 3, 5, 6; keys 100-310, a tutorial sequence) wait in **key order** (a tree sorted by key, FUN_005f4f10). Each of five first-time events posts the next waiting tip of its group (bit 1 -> group 6, 2 -> 2, 4 -> 3, 8 -> 5, 16 -> 4; FUN_0043a0b0); a periodic pass posts the next waiting tip of group 1 or of a group whose event has happened (FUN_00439fb0) | open-rebellion's Ghidra notes for the functions; REBEXE for the rest (below) | **Confirmed** (the notes and the binary) |
+| **The events** (REBEXE, disassembled 2026-09-27 with TeeJ's approval): bit 1 when a **sector window** opens anew (FUN_00429ce0, window type 1, 235x360 - our sector window's measured size); from a sector window (its corner icons, FUN_004593e0, or on request, FUN_0045c8e0), a system's **Manufacturing** window (type 9, 226x304) bit 2, **Defenses** (type 10, 235x304) bit 8, **Fleet** (type 4) bit 4, **Missions** (type 11) bit 16 (FUN_0045aac0 -> FUN_0041d2d0 -> FUN_004369d0 -> FUN_00487fd0 -> FUN_0043a0b0). Each group's first tip is about that very window | the call chain, read | **Confirmed** (the code; the tips' own subjects agree) |
+| **How often**: FUN_00439bc0 (called on the game's update, FUN_004866b0) runs the pass when `last + 300 <= now`, `now` being the game object's tick count (`+0xC`, FUN_0051ce00; the day, `+0x10`, advances when a day's ticks are done, FUN_0051dea0). Ticks a day: Very Slow 600, Slow 60, Medium 12, Fast 4 (FUN_00487eb0; with two sides, the slower's) - so a tip every half day at Very Slow, every 75 days at Fast | the code, read | **Confirmed** |
+| **Agent Advice's flag**: the agent (FUN_00439320) sets its advice-off bit (`0x8000` of `DAT_006b28b0`) at creation unless the game is Easy; with it set, no event counts and no pass runs; the briefing's end (FUN_004c0fc0 / FUN_004c30c0 case 0xd) posts the opening advice and opens the Message Index on Advice (FUN_0041d770(1, 0x82)) only without it. Switched on later, the opening comes at the next event or pass | the code, read | **Confirmed** (the code; manual p022) |
 | Showing the Advice tab drops the game to Very Slow; any other tab or closing the Message Index restores the speed | open-rebellion's message-index evidence (FUN_004697b0 -> FUN_00487ff0) | **Single-source** - not built |
 
 **Built** (exporter 2.6.2 writes `advice.json` and `windows/advice.<side>.png`): the pack's `advice` (rule 29)
@@ -200,13 +204,17 @@ Hard games, you must enable Agent Advice on the Agent menu" (manual p022, read i
 research/SWR_Manual.txt) - so it starts on in Easy only. While it is on the side has its opening advice,
 posted to the Advice category (`src/ui/advice.gd`) in the list's order - the Message Index shows same-day
 messages in the order they came, so top to bottom as the original: at a new game in Easy, or when switched
-on, once a game. With no briefing to play (an art set without its recordings - the GOG copy's briefing DLLs
-are `.OLD`, and the exporter reads either name) the Message Index opens on Agent Advice at once. All
+on, at its next moment (the original's), once a game. When the briefing ends - at once with none to play
+(an art set without its recordings - the GOG copy's briefing DLLs are `.OLD`, and the exporter reads either
+name) - the opening advice and the Message Index on Agent Advice, only while Agent Advice is on. The later
+tips as REBEXE gives them (above): the pack's `events` (sector 6, manufacturing 2, fleet 3, defenses 5,
+missions 4), `periodic` 1, `every` 300 ticks; the clock counts the original's ticks as our day runs
+(`AdviceLib.TicksIn`, from GameManager), hooks on UIManager's sector and system windows. All
 Messages' unread count leaves advice out, as its list does (p079). The Message Summary keeps a text to the
 box measured on TeeJ's screenshot (four lines) and the mouse wheel moves through a longer one -
 how the original shows the rest is **unknown** (its window has scroll commands 0x96 / 0x9a). Not in
 head-to-head, as the briefing. Messages are not saved (game_message.gd), so a loaded game has none.
-**Not built**: the later tips, the Very Slow drop, the 1121 / 1122 sound.
+**Not built**: the Very Slow drop, the 1121 / 1122 sound.
 tests/advice.gd.
 
 ## What the code does today
@@ -241,7 +249,7 @@ tests/advice.gd.
 | 2 | **Game**: the droids report events; Translate Counterpart; the effects volume | a test per event; TeeJ hears them - **built**: `src/ui/advisor.gd`, `sound.gd`, `fwa.gd`; the pack's `advisor`, `voices`, `sounds` (rules 25-27); news tagged where the simulation writes it (GameMessage.Advisor / Voice); the cockpit's sounds (open-rebellion's map of COMMON.DLL); tests/advisor.gd. TeeJ's listen owed |
 | 3 | **Game**: the instant answers (invalid order, in transit, under construction, the droid toggles, maintenance) | a test each - **built** from the agent's own action scripts (phase 3 section): `Advisor.Answer`, the pack's `answer_*`, `Result.code` where the engine refuses; tests/advisor.gd. Not built: the answers to orders our interface greys (under construction, a build without the maintenance) |
 | 4 | **Game**: the opening briefing (decision 2) | it plays at a new game, **Esc skips it**, then Agent Advice opens - **built** from the original's own script (above): `src/ui/briefing.gd`, the pack's `briefing` (rule 28), tests/briefing.gd; its views from recordings of the original |
-| 5 | **Game**: the agent's advice messages (TeeJ's report) | a new game in Easy opens with the original's nine; Agent Advice switches them on in Medium / Hard - **built** (phase 5 section): exporter 2.6.2 `advice.json`, the pack's `advice` (rule 29), `src/ui/advice.gd`, the agent's menu and Alt+A; tests/advice.gd. The later tips **not built** (their triggers unknown) |
+| 5 | **Game**: the agent's advice messages (TeeJ's report) | a new game in Easy opens with the original's nine; Agent Advice switches them on in Medium / Hard - **built** (phase 5 section): exporter 2.6.2 `advice.json`, the pack's `advice` (rule 29), `src/ui/advice.gd`, the agent's menu and Alt+A; the later tips from REBEXE (`events`, `periodic`, `every`); tests/advice.gd |
 
 ## Decisions for TeeJ
 
