@@ -268,7 +268,8 @@ func StartGame(chosenFaction: Faction) -> void:
 	print("Starting Game... Faction: %s | Difficulty: %s | Size: %s | HQ Only: %s" % [str(chosenFaction), JsonUtil.enum_name(Enums.Difficulty, difficultyLevel), JsonUtil.enum_name(Enums.GalaxySize, sizeLevel), str(isHqOnly)])
 
 	# The Cockpit's music ends; the side's own opening, when the pack has one
-	# (`start.<faction>`: the Star Wars pack's 003 and 004), then the Main scene.
+	# (`start.<faction>`; the Star Wars pack has none - a new game in the
+	# original starts with no movie, TeeJ 2026-09-27), then the Main scene.
 	var tree := get_tree()
 	MusicLib.Stop()
 	MoviesLib.Play(tree, "start.%s" % chosenFaction.Id, func() -> void: tree.change_scene_to_file("res://Main.tscn"))
