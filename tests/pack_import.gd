@@ -283,7 +283,7 @@ static func _summary(pack_dir: String) -> String:
 
 ## A pack file as the exporter writes it: the files, and manifest.json listing
 ## each one's SHA-256 (`bad_hashes` overrides some, to damage it).
-func _zip(path: String, kind: String, id: String, files: Dictionary, bad_hashes: Dictionary = {}, exporter: String = "2.6.2") -> void:
+func _zip(path: String, kind: String, id: String, files: Dictionary, bad_hashes: Dictionary = {}, exporter: String = "2.6.3") -> void:
 	var hashes := {}
 	for rel in files:
 		hashes[rel] = bad_hashes.get(rel, PackImport._sha256(files[rel]))
