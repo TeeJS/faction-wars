@@ -1218,9 +1218,11 @@
     }
   },
   "advice": {
-    "_comment": "The agent's advice messages (manual p079: the Message Index's Advice tab), from the original's own lists: TEXTSTRA.DLL RCDATA 0x6000 (Alliance) / 0x6800 (Empire), exported by the Faction Wars Exporter 2.6.2 as advice.json - per side, each message's group, key, title and text. A game opens with group 7, the nine on TeeJ's screenshot of the original's Advice tab (2026-09-27), the group the original posts when its advice starts (FUN_00439f20, open-rebellion's Ghidra notes). The picture is STRATEGY.DLL 1071 / 1072, the one the original's advice message takes by side (FUN_0048b2e0).",
-    "alliance": {"messages": "swr-original:advice.json", "list": "alliance", "opening": 7, "picture": "swr-original:windows/advice.alliance.png"},
-    "empire": {"messages": "swr-original:advice.json", "list": "empire", "opening": 7, "picture": "swr-original:windows/advice.empire.png"}
+    "_comment": "The agent's advice messages (manual p079: the Message Index's Advice tab), from the original's own lists: TEXTSTRA.DLL RCDATA 0x6000 (Alliance) / 0x6800 (Empire), exported by the Faction Wars Exporter 2.6.2 as advice.json - per side, each message's group, key, title and text. A game opens with group 7, the nine on TeeJ's screenshot of the original's Advice tab (2026-09-27), the group the original posts when its advice starts (FUN_00439f20, open-rebellion's Ghidra notes). The picture is STRATEGY.DLL 1071 / 1072, the one the original's advice message takes by side (FUN_0048b2e0). The rest wait in key order; `events` are REBEXE's: the first sector window opened releases group 6's next tip, a system's Manufacturing window group 2's, Fleet 3's, Defenses 5's, Missions 4's (FUN_0043a0b0 through FUN_00429ce0 / FUN_0045aac0); every 300 ticks since the last tip the next of group 1 or of a group whose window was opened (FUN_00439bc0 / FUN_00439fb0).",
+    "alliance": {"messages": "swr-original:advice.json", "list": "alliance", "opening": 7, "picture": "swr-original:windows/advice.alliance.png",
+      "events": {"sector": 6, "manufacturing": 2, "fleet": 3, "defenses": 5, "missions": 4}, "periodic": 1, "every": 300},
+    "empire": {"messages": "swr-original:advice.json", "list": "empire", "opening": 7, "picture": "swr-original:windows/advice.empire.png",
+      "events": {"sector": 6, "manufacturing": 2, "fleet": 3, "defenses": 5, "missions": 4}, "periodic": 1, "every": 300}
   },
   "setup": {
     "difficulty_default": "easy",

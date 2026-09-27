@@ -4250,7 +4250,7 @@ The agent menu's own descriptions:
 | **Manage Garrisons** | "will try, to the best of their abilities, to make sure **garrison requirements are met**" |
 | **Manage Production** | "will try to the best of their abilities to **maximize the output of mines and refineries**" |
 | **Translate Counterpart** | on by default |
-| **Agent Advice** | on by default - **in an Easy game only** (p022); periodic tips **through the message system** |
+| **Agent Advice** | on by default - **in an Easy game only** (p022); periodic tips **through the message system**. REBEXE: a tip every 300 ticks (a day is 600 at Very Slow, 60 Slow, 12 Medium, 4 Fast), and one at once the first time a sector window, or a system's Manufacturing / Fleet / Defenses / Missions window, is opened (docs/advisor-plan.md phase 5) |
 
 ### Message categories *(PDF p077 / manual p079)*
 

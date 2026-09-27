@@ -45,11 +45,16 @@ func _init() -> void:
 	# The pack's advice: the art set's lists, group 7 at the start.
 	var al: Dictionary = m.Advice.get("alliance", {})
 	var em: Dictionary = m.Advice.get("empire", {})
-	_check(m.AdviceGiven and not m.Advice.has("_comment") and al.size() == 4
+	_check(m.AdviceGiven and not m.Advice.has("_comment") and al.size() == 7
 		and str(al.get("messages", "")) == "swr-original:advice.json" and str(al.get("list", "")) == "alliance"
 		and int(al.get("opening", -1)) == 7 and str(al.get("picture", "")) == "swr-original:windows/advice.alliance.png"
 		and str(em.get("messages", "")) == "swr-original:advice.json" and str(em.get("list", "")) == "empire" and int(em.get("opening", -1)) == 7 and str(em.get("picture", "")) == "swr-original:windows/advice.empire.png",
 		"the Star Wars pack's advice: advice.json's list per side, group 7 at the start, the side's picture")
+	var ev: Dictionary = al.get("events", {})
+	_check(int(ev.get("sector", -1)) == 6 and int(ev.get("manufacturing", -1)) == 2 and int(ev.get("fleet", -1)) == 3
+		and int(ev.get("defenses", -1)) == 5 and int(ev.get("missions", -1)) == 4 and int(al.get("periodic", -1)) == 1 and int(al.get("every", -1)) == 300
+		and em.get("events", {}) == al.get("events", {}),
+		"... its moments, REBEXE's: a sector window 6, Manufacturing 2, Fleet 3, Defenses 5, Missions 4; group 1 every 300 ticks")
 	_Rules()
 
 	# A new game without the art set's file: nothing.
@@ -69,6 +74,10 @@ func _init() -> void:
 			{"n": 2, "group": 7, "key": 20, "title": "Second Tip", "text": "Two."},
 			{"n": 3, "group": 1, "key": 140, "title": "Later Tip", "text": "Not yet."},
 			{"n": 4, "group": 7, "key": 30, "title": "Third Tip", "text": "Three."},
+			{"n": 5, "group": 6, "key": 100, "title": "Intel Tip", "text": "About sectors."},
+			{"n": 6, "group": 2, "key": 110, "title": "Factory Tip", "text": "About building."},
+			{"n": 7, "group": 1, "key": 150, "title": "Second General", "text": "More."},
+			{"n": 8, "group": 3, "key": 120, "title": "Fleet Tip", "text": "About fleets."},
 		],
 		"empire": [{"n": 1, "group": 7, "key": 10, "title": "Imperial Tip", "text": "For the other side."}],
 	}
@@ -89,7 +98,7 @@ func _init() -> void:
 		_png("%s/%s.png" % [dir, rel], 20, 16)
 	Art.Reset()
 	var ours: Faction = FactionRegistry.ById("alliance")
-	_check(AdviceLib.Messages(ours).size() == 4 and AdviceLib.Opening(ours).size() == 3, "the Alliance's list: 4, of them 3 in group 7")
+	_check(AdviceLib.Messages(ours).size() == 8 and AdviceLib.Opening(ours).size() == 3, "the Alliance's list: 8, of them 3 in group 7")
 
 	# A new game in Easy: the opening advice.
 	main = await _start("alliance", Enums.Difficulty.Easy)
@@ -116,6 +125,7 @@ func _init() -> void:
 	_check(comms != null and is_instance_valid(comms) and _category(comms) == "Advice",
 		"with no briefing to play, the Message Index opens on Agent Advice (%s)" % (_category(comms) if comms != null else "none"))
 	_Scroll(comms, first)
+	await _Later(main, ours)
 	await _stop(main)
 
 	# Medium: Agent Advice starts off; switched on, the opening advice arrives.
@@ -127,12 +137,19 @@ func _init() -> void:
 	var at: int = popup.get_item_index(8)
 	_check(popup.get_item_text(at) == "Agent Advice" and popup.is_item_checkable(at) and not popup.is_item_checked(at) and not popup.is_item_disabled(at),
 		"the agent's menu: Agent Advice, a check item, unchecked")
+	var ticked := await _until(func() -> bool: return AdviceLib._ticks > 0.0, 3.0)
+	_check(ticked, "the clock runs the advice's ticks as the day runs (%.2f)" % AdviceLib._ticks)
+	main._tickTimer.stop()
 	ui.OnAgentMenu(8)
-	_check(AdviceLib.On and MessageWindow.MessagesFor("Advice").size() == 3 and ui._AgentPopup().is_item_checked(at),
-		"switched on: checked, and the opening advice arrives (%d)" % MessageWindow.MessagesFor("Advice").size())
+	_check(AdviceLib.On and ui._AgentPopup().is_item_checked(at) and MessageWindow.MessagesFor("Advice").is_empty(),
+		"switched on: checked; the advice waits for its next moment, as the original's")
+	AdviceLib.Advance(300.0, StrategicTickManager.Today)
+	var titles2: Array = MessageWindow.MessagesFor("Advice").map(func(msg: GameMessage) -> String: return msg.Title)
+	_check(titles2 == ["First Tip", "Second Tip", "Third Tip", "Later Tip"],
+		"at its next moment, the opening advice, then the first tip due: %s" % str(titles2))
 	ui.OnAgentMenu(8)
 	ui.OnAgentMenu(8)
-	_check(AdviceLib.On and MessageWindow.MessagesFor("Advice").size() == 3, "off and on again: the advice stays and does not come twice")
+	_check(AdviceLib.On and MessageWindow.MessagesFor("Advice").size() == 4, "off and on again: the advice stays and does not come twice")
 	var alt_a := InputEventKey.new()
 	alt_a.keycode = KEY_A
 	alt_a.alt_pressed = true
@@ -141,6 +158,50 @@ func _init() -> void:
 	_check(not AdviceLib.On, "Alt+A switches it off")
 	await _stop(main)
 	_finish()
+
+
+## The tips after the opening, in an Easy game with the opening given: every
+## 300 ticks the first due by key; the first sector / system window of each
+## kind its group's; nothing with Agent Advice off.
+func _Later(main: Node, ours: Faction) -> void:
+	var ui: UIManager = main.get_node("UIManager")
+	main._tickTimer.stop()
+	AdviceLib._ticks = 0.0
+	AdviceLib._last = 0.0
+	var day: int = StrategicTickManager.Today
+	var titles := func() -> Array: return MessageWindow.MessagesFor("Advice").map(func(msg: GameMessage) -> String: return msg.Title)
+	_check(AdviceLib.Advance(299.0, day) == 0 and titles.call().size() == 3, "299 ticks: no tip yet")
+	_check(AdviceLib.Advance(1.0, day) == 1 and titles.call()[-1] == "Later Tip",
+		"at 300: the first due by key - group 1 (\"Later Tip\", key 140), not the groups whose windows are unopened")
+	var sector: Sector = GameState.ActiveGalaxy[0]
+	ui.OnSectorClicked(sector)
+	_check(titles.call()[-1] == "Intel Tip", "the first sector window opened: group 6's tip at once")
+	ui.OnSectorClicked(GameState.ActiveGalaxy[1])
+	_check(titles.call().size() == 5, "another sector window: nothing more")
+	_check(AdviceLib.Advance(299.0, day) == 0, "... and it restarted the 300 ticks")
+	_check(AdviceLib.Advance(1.0, day) == 1 and titles.call()[-1] == "Second General",
+		"then the next due: group 1's key 150 (group 2's 110 still waits for its window)")
+	var ourWorld: Planet = Lq.first_or_null(GameState.AllPlanets(), func(p: Planet) -> bool: return p.ControllingFaction == ours)
+	ui.OnEconomyClicked(ourWorld)
+	_check(titles.call()[-1] == "Factory Tip", "a system's Manufacturing window, the first: group 2's tip")
+	ui.OnEconomyClicked(ourWorld)
+	_check(titles.call().size() == 7, "the same window again: nothing")
+	AdviceLib.SetOn(false)
+	ui.OnFleetClicked(ourWorld)
+	_check(AdviceLib.Advance(5000.0, day) == 0 and titles.call().size() == 7, "Agent Advice off: no tips, whatever opens or however long")
+	AdviceLib.SetOn(true)
+	_check(AdviceLib.Advance(1.0, day) == 0 and titles.call().size() == 7,
+		"switched on again: the Fleet window opened while it was off does not count")
+	await process_frame
+
+
+func _until(cond: Callable, seconds: float) -> bool:
+	var t0 := Time.get_ticks_msec()
+	while Time.get_ticks_msec() - t0 < seconds * 1000.0:
+		if cond.call():
+			return true
+		await process_frame
+	return cond.call()
 
 
 ## A text longer than the Message Summary's box stays in it; the wheel moves it.
@@ -179,8 +240,14 @@ func _Rules() -> void:
 		[{"alliance": {"messages": "swr-original:advice.json", "list": "alliance"}}, ""],
 		["no", "must be an object"],
 		[{"rebels": good}, "is not a faction"],
-		[{"alliance": []}, "must be an object (messages, list, opening, picture)"],
-		[{"alliance": {"messages": "swr-original:advice.json", "list": "alliance", "voice": "x"}}, "is none of messages, list, opening, picture"],
+		[{"alliance": []}, "must be an object (messages, list, opening, picture, events, periodic, every)"],
+		[{"alliance": {"messages": "swr-original:advice.json", "list": "alliance", "voice": "x"}}, "is none of messages, list, opening, picture, events, periodic, every"],
+		[{"alliance": {"messages": "swr-original:advice.json", "list": "alliance", "events": {"sector": 6, "missions": 4}, "periodic": 1, "every": 300}}, ""],
+		[{"alliance": {"messages": "swr-original:advice.json", "list": "alliance", "events": []}}, "events: must be an object of window -> group"],
+		[{"alliance": {"messages": "swr-original:advice.json", "list": "alliance", "events": {"cantina": 2}}}, "'cantina' is not a window"],
+		[{"alliance": {"messages": "swr-original:advice.json", "list": "alliance", "events": {"fleet": "three"}}}, "events.fleet: must be a group number"],
+		[{"alliance": {"messages": "swr-original:advice.json", "list": "alliance", "periodic": -1}}, "periodic: must be a group number"],
+		[{"alliance": {"messages": "swr-original:advice.json", "list": "alliance", "every": 0}}, "every: must be a number of ticks"],
 		[{"alliance": {"list": "alliance"}}, "names no messages file"],
 		[{"alliance": {"messages": "swr-original:advice.txt", "list": "alliance"}}, "is not a .json file"],
 		[{"alliance": {"messages": "other-set:advice.json", "list": "alliance"}}, "which art_sets does not declare"],
