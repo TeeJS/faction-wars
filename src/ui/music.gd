@@ -104,7 +104,11 @@ static func SetVolume(v: float) -> void:
 	_apply_volume()
 
 
-## The Music bus, made when first needed, sending to Master.
+## The Music bus, sending to Master. It comes from default_bus_layout.tres:
+## on the web, Godot 4.7.1 misplaces a bus added at run time (its web driver
+## puts an appended bus one place early, so the buses end up sending in a
+## ring with nothing reaching the speakers, and every sound is silent -
+## TeeJ, 2026-09-27). Made here only if the layout is ever missing.
 static func Bus() -> int:
 	var idx := AudioServer.get_bus_index(BUS)
 	if idx < 0:

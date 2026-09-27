@@ -61,7 +61,8 @@ static func SetTranslateCounterpart(on: bool) -> void:
 	_save()
 
 
-## The Effects bus, made when first needed, sending to Master.
+## The Effects bus, sending to Master: from default_bus_layout.tres, as the
+## Music bus (music.gd Bus: a bus added at run time silences the web).
 static func Bus() -> int:
 	var idx := AudioServer.get_bus_index(BUS)
 	if idx < 0:
