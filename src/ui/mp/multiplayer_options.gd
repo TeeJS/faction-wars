@@ -672,7 +672,7 @@ func _echo(key: String) -> void:
 		"briefing":
 			_say(host_name, "The opening briefing will be skipped." if str(_settings.get("briefing", "play")) == "skip" else "The opening briefing will play.")
 		"load":
-			_say(host_name, "Loaded \"%s\", Day %d." % [str(_settings.get("load_name", "")), int(_settings.get("load_day", 0))])
+			_say(host_name, "Loaded \"%s\", Day %d." % [str(_settings.get("load_name", "")), StrategicTickManager.Shown(int(_settings.get("load_day", 0)))])
 
 
 func _echo_all() -> void:
@@ -825,7 +825,7 @@ func _open_load_list() -> void:
 	for i in shared.size():
 		var s: Dictionary = shared[i]
 		var when := Time.get_datetime_string_from_unix_time(int(float(s.get("updated", 0)) / 1000.0), true)
-		var line := "%s - Day %d - last played %s" % [str(s.get("name", "")), int(s.get("day", 0)), when]
+		var line := "%s - Day %d - last played %s" % [str(s.get("name", "")), StrategicTickManager.Shown(int(s.get("day", 0))), when]
 		var need := _save_pack_words(s)
 		if not need.is_empty():
 			line += " - made with %s" % need

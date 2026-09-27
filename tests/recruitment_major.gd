@@ -36,8 +36,10 @@ func _init() -> void:
 		await process_frame
 
 	var gm: GameManager = main
-	_check(gm._dayLabel.text.begins_with("Day: %d" % StrategicTickManager.Today),
-		"the status bar reads the engine's day from the start ('%s', day %d)" % [gm._dayLabel.text, StrategicTickManager.Today])
+	# As the original's counter, the days passed since the game began (manual
+	# p033): the engine's first day reads 0, in step with it from the start.
+	_check(gm._dayLabel.text.begins_with("Day: %d" % StrategicTickManager.Shown(StrategicTickManager.Today)),
+		"the status bar reads the engine's day from the start, as days passed ('%s', day %d)" % [gm._dayLabel.text, StrategicTickManager.Today])
 
 	var us: Faction = GameSettings.PlayerFaction
 	var at_home := func(c: Character) -> bool:

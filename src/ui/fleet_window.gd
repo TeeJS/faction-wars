@@ -137,7 +137,7 @@ func AddFleetToList(fleet: Fleet, list: VBoxContainer, uiManager: UIManager) -> 
 	# Same on the fleet's own row - the whole fleet is what is travelling.
 	var fleetLabel: String = fleet.Name
 	if fleet.Status == Enums.Status.Enroute and fleet.DaysToDestination > 0:
-		fleetLabel += " (Enroute - arrives Day %d)" % (StrategicTickManager.Today + fleet.DaysToDestination)
+		fleetLabel += " (Enroute - arrives Day %d)" % StrategicTickManager.Shown(StrategicTickManager.Today + fleet.DaysToDestination)
 
 	# CLIPPED, NOT EXPANDING. A Button reports its full text width as its
 	# minimum size, so a long fleet name - and the "(Enroute - arrives Day
@@ -369,7 +369,7 @@ func PopulateUnitTab(tab: MarginContainer, units: Array, emptyText: String, sele
 		# that only says "(Enroute)" leaves the player with no idea whether
 		# that means tomorrow or in two months.
 		if unit.Status == Enums.Status.Enroute:
-			displayText += (" (Enroute - arrives Day %d)" % (StrategicTickManager.Today + unit.DaysToDestination)) \
+			displayText += (" (Enroute - arrives Day %d)" % StrategicTickManager.Shown(StrategicTickManager.Today + unit.DaysToDestination)) \
 				if unit.DaysToDestination > 0 else " (Enroute)"
 			nameColor = Color.DARK_GRAY
 

@@ -7,6 +7,15 @@ extends RefCounted
 var CurrentDay: int = 1
 ## The same day, reachable without a handle on the tick manager.
 static var Today: int = 1
+
+
+## A day AS THE PLAYER SEES IT: the original's counter is "a number indicating
+## how many days have passed since the game began" (manual p033) - 0 on the
+## first day, as TeeJ saw it (2026-09-27). The game counts its first day 1
+## (day 0 is the setup before it), so every day shown - the counter, a
+## message's date, an arrival, a sighting, a save - is this, never the raw one.
+static func Shown(day: int) -> int:
+	return maxi(0, day - 1)
 var _galaxy: Array[Sector]
 
 

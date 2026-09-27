@@ -533,7 +533,7 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 					if not inbound.is_empty():
 						cornerBtn.tooltip_text = ((cornerBtn.tooltip_text + "
 ") if not fleetsHere.is_empty() else "") 							+ "En route: " + ", ".join(Lq.select(inbound, func(f: Fleet) -> String:
-								return "%s (arrives day %d)" % [f.Name, StrategicTickManager.Today + f.DaysToDestination]))
+								return "%s (arrives day %d)" % [f.Name, StrategicTickManager.Shown(StrategicTickManager.Today + f.DaysToDestination)]))
 					AttachFleetMenu(cornerBtn, menuFleets, planet, uiManager)
 					# DRAGGED TO ANOTHER SYSTEM, the icon moves our fleets here -
 					# the ones its menu's Move moves ("anything movable - character,

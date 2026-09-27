@@ -350,6 +350,13 @@ Facilities" modes report: a production facility with nothing queued.
 A **day counter** sits at the top of the screen; next to it is the Game Speed
 control: **Pause, Very Slow, Slow, Medium, Fast**. One "day" is the game's tick.
 
+The counter is *"a number indicating how many days have passed since the game
+began"* (PDF p032 / manual p033) - **0 on the first day**, as TeeJ saw it in the
+original (2026-09-27). **Confirmed** (the manual and his observation). The code
+counts the first day 1 (day 0 is the setup) and shows every day - the counter,
+message dates, arrivals, sightings, saves - as days passed
+(`StrategicTickManager.Shown`).
+
 ### The agent droid menu *(PDF p029, p031, Figs. 2.16 / on-page)*
 
 Right-clicking your agent droid (C-3PO for the Alliance, IMP-22 for the Empire)

@@ -975,7 +975,7 @@ func RefreshStatusBar() -> void:
 	# tabs carry it.
 	# The opponent's briefing still plays: the day greyed out, at 0 (the
 	# original's, WaitingForBriefing).
-	var shown: int = 0 if _dayGreyed else currentDay
+	var shown: int = 0 if _dayGreyed else StrategicTickManager.Shown(currentDay)
 	_dayLabel.text = "Day: %d" % shown
 	_dayLabel.modulate = OriginalMp.Grey if _dayGreyed else Color.WHITE
 	if _oDay != null:

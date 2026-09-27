@@ -40,7 +40,7 @@ func _ready() -> void:
 		label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		label.add_theme_font_size_override("font_size", 12)
 		if s["used"]:
-			label.text = "Slot %d: %s (Day %d)" % [int(s["slot"]) + 1, s["name"], int(s["day"])]
+			label.text = "Slot %d: %s (Day %d)" % [int(s["slot"]) + 1, s["name"], StrategicTickManager.Shown(int(s["day"]))]
 			any_used = true
 		else:
 			label.text = "Slot %d: (empty)" % (int(s["slot"]) + 1)

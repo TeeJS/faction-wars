@@ -76,7 +76,7 @@ func _refresh() -> void:
 		var state: Label = _rows[i]["state"]
 		var nameEdit: LineEdit = _rows[i]["name"]
 		if s["used"]:
-			state.text = "Slot %d: %s (Day %d)" % [i + 1, s["name"], s["day"]]
+			state.text = "Slot %d: %s (Day %d)" % [i + 1, s["name"], StrategicTickManager.Shown(int(s["day"]))]
 			if nameEdit.text.is_empty():
 				nameEdit.text = str(s["name"])
 		else:
