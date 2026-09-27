@@ -61,10 +61,12 @@ const REASONS_SHOWN := 8
 ## 2.4.7: the head-to-head screens, their buttons and parts (released
 ## 2026-09-26). 2.5.0: the music (music/300-315.ogg), the Assault Summary's
 ## and bombardment results' pictures and the defenses tab; the movies file
-## is its own, optional (released 2026-09-27).
+## is its own, optional (released 2026-09-27). 2.6.0: the voices and sound
+## effects (sound/<dll>/<id>.ogg) and the droids' and briefing's talking
+## animations (anim/<dll>/<anchor>.fwa) (released 2026-09-27).
 ## Raise it when the game needs pictures an older exporter did not write;
 ## the picker then asks for a new export.
-const MIN_EXPORTER := {"swr-original": "2.5.0"}
+const MIN_EXPORTER := {"swr-original": "2.6.0"}
 
 
 ## Called with each import's result (the pack picker refreshes its cards).
