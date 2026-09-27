@@ -67,10 +67,11 @@ const REASONS_SHOWN := 8
 ## display off (screens/galaxy_off.png, STRATEGY 902) for the briefing's views
 ## (released 2026-09-27). 2.6.2: the agent's advice messages (advice.json,
 ## TEXTSTRA) and their picture (windows/advice.<side>.png) (released
-## 2026-09-27).
+## 2026-09-27). 2.6.3: Compose Chat Message's picture (windows/chat.<side>.png,
+## STRATEGY 1040 / 1041) (released 2026-09-27).
 ## Raise it when the game needs pictures an older exporter did not write;
 ## the picker then asks for a new export.
-const MIN_EXPORTER := {"swr-original": "2.6.2"}
+const MIN_EXPORTER := {"swr-original": "2.6.3"}
 
 
 ## Called with each import's result (the pack picker refreshes its cards).
