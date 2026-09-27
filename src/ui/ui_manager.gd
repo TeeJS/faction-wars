@@ -1580,6 +1580,7 @@ func StartBriefing(hold: Callable = Callable()) -> Control:
 		return null
 	var b: Control = BriefingScript.new()
 	b.Agent = advisor.Agent
+	b.Map = ActiveGalaxyMap
 	advisor.Held = true
 	if hold.is_valid():
 		hold.call(true)

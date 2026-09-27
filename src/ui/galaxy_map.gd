@@ -20,6 +20,17 @@ var _planetStars: Dictionary = {}    # Planet -> Label
 ## Coordinates are never rescaled to the picture: Planet.DistanceTo reads
 ## them, so they are travel time.
 var _backdrop: Sprite2D = null
+## The map picture, kept while a briefing view shows the display-off one.
+var _backdropTex: Texture2D = null
+
+## THE BRIEFING'S VIEWS (src/ui/briefing.gd): "As C-3PO talks, notice the
+## location of key systems that he points out" (manual p022). As two
+## recordings of the original's briefing show it: a caption where the mode's
+## name goes, the systems a line is about lit in their side's colour, every
+## other system its smallest grey star; the "off" view is the display off -
+## the bright galaxy (STRATEGY 902: the map picture's "_off" twin, e.g.
+## screens/galaxy_off.png) and no systems at all. {} when none shows.
+var _view: Dictionary = {}
 ## The player's own artwork overlay (tools/FactionWarsExporter).
 const Art := preload("res://src/ui/artwork.gd")
 const OUI := preload("res://src/ui/original_ui.gd")
@@ -271,6 +282,49 @@ func OnDayAdvanced(_day: int) -> void:
 	RefreshVisuals()
 
 
+## Show a briefing view: `caption` over the display, the systems in `lit`
+## (Planet -> the side whose star it wears: alliance, empire, neutral) lit,
+## the rest grey; `off` shows the display off instead.
+func ShowView(caption: String, lit: Dictionary, off: bool) -> void:
+	_view = {"caption": caption, "lit": lit, "off": off}
+	if _bar != null:
+		_bar.SetActiveLabel(caption)
+	_swap_backdrop(off)
+	RefreshVisuals()
+
+
+## Back to the mode from a briefing view.
+func ClearView() -> void:
+	if _view.is_empty():
+		return
+	_view = {}
+	_swap_backdrop(false)
+	if _bar != null and _mode() != null:
+		_bar.SetActiveLabel(_mode().LabelText)
+	RefreshVisuals()
+
+
+## For tests: the view showing, {} for none.
+func ViewShown() -> Dictionary:
+	return _view
+
+
+## The display-off picture in place of the map's (when the art set has it).
+func _swap_backdrop(off: bool) -> void:
+	if _backdrop == null:
+		return
+	if _backdropTex == null:
+		_backdropTex = _backdrop.texture
+	var tex: Texture2D = _backdropTex
+	if off and FactionRegistry.Pack != null:
+		var ref: String = FactionRegistry.Pack.Manifest.MapImage
+		var dot: int = ref.rfind(".")
+		var twin: Texture2D = Art.PackImage(ref.substr(0, dot) + "_off" + ref.substr(dot)) if dot > 0 else null
+		if twin != null:
+			tex = twin
+	_backdrop.texture = tex
+
+
 ## Switch the active GID mode (from the selector bar).
 func SetMode(mode: Gid.GidMode) -> void:
 	Gid.SetActiveMode(mode)
@@ -292,6 +346,8 @@ static func FindMode(id: String) -> Gid.GidMode:
 ## repaint the map the instant any of it changes (the map is a Node2D, not a
 ## DraggableWindow, so it has no StateSignature).
 func VisualSignature() -> String:
+	if not _view.is_empty():
+		return "view|%s|%s|%d" % [_view.caption, _view.off, (_view.lit as Dictionary).size()]
 	var m: Gid.GidMode = _mode()
 	if m == null:
 		return "-"
@@ -317,6 +373,9 @@ func _process(delta: float) -> void:
 
 
 func RefreshVisuals() -> void:
+	if not _view.is_empty():
+		_paint_view()
+		return
 	var displayOff: bool = _mode() == Gid.DisplayOff
 	_hqPlanet = null
 
@@ -373,6 +432,43 @@ func RefreshVisuals() -> void:
 			Place(flare, "", 0, faction, planet)
 
 	queue_redraw()   # repaint the HQ highlight
+
+
+## A briefing view: only its lit systems in colour, or nothing when it is off.
+func _paint_view() -> void:
+	_hqPlanet = null
+	_paintedVisuals = VisualSignature()
+	var lit: Dictionary = _view.lit
+	for planet in _planetStars.keys():
+		var dot: Label = _planetStars[planet]
+		var flare: Label = _planetFlares[planet]
+		var sprite: TextureRect = _planetSprites[planet]
+		dot.visible = false
+		flare.visible = false
+		sprite.visible = false
+		if _view.off:
+			continue
+		var side: String = str(lit.get(planet, "unexplored"))
+		var starTex: Texture2D = Art.GidStar(side, "mid" if lit.has(planet) else "none")
+		if starTex != null:
+			sprite.texture = starTex
+			sprite.size = starTex.get_size() * StarScale
+			sprite.position = MapPos(planet.MapX, planet.MapY) - sprite.size / 2.0
+			sprite.visible = true
+			continue
+		Place(flare, "+", Gid.FlareMid if lit.has(planet) else 16, _side_color(side), planet)
+	queue_redraw()
+
+
+## The colour of a side's stars without the art: its faction's, neutral's, or
+## unexplored grey.
+static func _side_color(side: String) -> Color:
+	if side == "neutral":
+		return Gid.CNeutral()
+	for f in FactionRegistry.Playable:
+		if f.ArtSkin == side:
+			return f.FactionColor
+	return Gid.CUnexplored()
 
 
 ## Show or hide a theatre's name: text and outline together, so nothing of it

@@ -1093,7 +1093,7 @@
     "cockpit_control": "swr-original:sound/common/8004.ogg"
   },
   "briefing": {
-    "_comment": "The opening briefing (manual p022), from the original's own tables: the agent's action script (GData C3POACT.SPT script 41 / IMP22ACT.SPT script 74; the skip, scripts 40 / 73) through the briefing DLL's records to each line's recording and animation. A `focus` step is the original's 'points out' step between lines (its number, as the script has it); how the original shows it is not known, so it is not drawn yet.",
+    "_comment": "The opening briefing (manual p022), from the original's own tables: the agent's action script (GData C3POACT.SPT script 41 / IMP22ACT.SPT script 74; the skip, scripts 40 / 73) through the briefing DLL's records to each line's recording and animation. A `focus` step is the original's step between lines where the agent points out what the next line is about; `views` says what the display shows for each (its caption, and the systems lit), read off two recordings of the original's briefing (TEXTSTRA 5652-5674 hold the captions): the Empire's 5 and 6 by their captions' length, the rest seen.",
     "alliance": {
       "steps": [
         {"focus": 12},
@@ -1135,7 +1135,25 @@
         {"focus": 11},
         {"anim": "swr-original:anim/albrief/19500.fwa", "sound": "swr-original:sound/albrief/1165.ogg"},
         {"focus": 13}
-      ]
+      ],
+      "views": {
+        "12": {"show": "off"},
+        "1": {"show": "mode:popular_support"},
+        "14": {"caption": "Systems Loyal to the Alliance", "show": "loyal:alliance"},
+        "15": {"caption": "Systems Loyal to the Empire", "show": "loyal:empire"},
+        "16": {"caption": "Systems Under Military Control", "show": "military"},
+        "17": {"caption": "Unexplored Systems", "show": "unexplored"},
+        "18": {"caption": "Yavin", "show": "system:yavin"},
+        "3": {"caption": "Alliance Headquarters", "show": "hq:alliance"},
+        "4": {"caption": "Coruscant", "show": "system:coruscant"},
+        "5": {"show": "mode:idle_fleets"},
+        "6": {"caption": "All Defenses", "show": "defenses"},
+        "7": {"caption": "Mon Mothma", "show": "character:mon_mothma"},
+        "19": {"caption": "Luke Skywalker", "show": "character:luke_skywalker"},
+        "20": {"caption": "Coruscant", "show": "system:coruscant"},
+        "9": {"show": "off"},
+        "10": {"show": "off"}
+      }
     },
     "empire": {
       "steps": [
@@ -1178,7 +1196,25 @@
         {"focus": 11},
         {"anim": "swr-original:anim/embrief/5500.fwa", "sound": "swr-original:sound/embrief/1157.ogg"},
         {"focus": 13}
-      ]
+      ],
+      "views": {
+        "12": {"show": "off"},
+        "1": {"show": "mode:popular_support"},
+        "14": {"caption": "Systems Loyal to the Empire", "show": "loyal:empire"},
+        "15": {"caption": "Systems Loyal to the Alliance", "show": "loyal:alliance"},
+        "16": {"caption": "Systems Under Military Control", "show": "military"},
+        "17": {"caption": "Unexplored Systems", "show": "unexplored"},
+        "18": {"caption": "Coruscant", "show": "system:coruscant"},
+        "3": {"caption": "Yavin", "show": "system:yavin"},
+        "4": {"caption": "Unexplored Systems", "show": "unexplored"},
+        "5": {"show": "mode:idle_fleets"},
+        "6": {"caption": "All Defenses", "show": "defenses"},
+        "7": {"caption": "Emperor Palpatine", "show": "character:emperor_palpatine"},
+        "19": {"caption": "Darth Vader", "show": "character:darth_vader"},
+        "20": {"caption": "Yavin", "show": "system:yavin"},
+        "9": {"show": "off"},
+        "10": {"show": "off"}
+      }
     }
   },
   "setup": {
