@@ -65,6 +65,7 @@ const OriginalMenu := preload("res://src/ui/original_menu.gd")
 const AdvisorScript := preload("res://src/ui/advisor.gd")
 const BriefingScript := preload("res://src/ui/briefing.gd")
 const SoundLib := preload("res://src/ui/sound.gd")
+const AdviceLib := preload("res://src/ui/advice.gd")
 
 
 func _ready() -> void:
@@ -1453,7 +1454,7 @@ func ResolveTarget(targetPlanet: Planet) -> void:
 ## Empire) gives: Build Ships, Build Troops, Build Facilities, Galaxy Overview,
 ## Objectives, Manage Garrisons, Manage Production, Translate Counterpart, Agent
 ## Advice." All nine appear, in the manual's order and with no separators (Fig
-## 3.17); five are disabled and say why. Under the Command Center frame the
+## 3.17); three are disabled and say why. Under the Command Center frame the
 ## droid itself opens it, at the click (OpenAgentMenuAt); otherwise the bottom
 ## row's button does. Styled as the original's menus are (original_menu.gd).
 func _AgentPopup() -> PopupMenu:
@@ -1474,21 +1475,22 @@ func _AgentPopup() -> PopupMenu:
 	popup.add_check_item("Manage Garrisons", 5)
 	popup.add_check_item("Manage Production", 6)
 	popup.add_check_item("Translate Counterpart", 7)
-	popup.add_item("Agent Advice", 8)
+	popup.add_check_item("Agent Advice", 8)
 
 	popup.set_item_checked(popup.get_item_index(5), AgentDroid.ManagingGarrisons(us))
 	popup.set_item_checked(popup.get_item_index(6), AgentDroid.ManagingProduction(us))
 	SoundLib.Load()
 	popup.set_item_checked(popup.get_item_index(7), SoundLib.TranslateCounterpart)
+	popup.set_item_checked(popup.get_item_index(8), AdviceLib.On)
 
-	for id in [0, 1, 2, 8]:
+	for id in [0, 1, 2]:
 		popup.set_item_disabled(popup.get_item_index(id), true)
 
 	popup.set_item_tooltip(popup.get_item_index(0), "Order ships from a shipyard's own menu.")
 	popup.set_item_tooltip(popup.get_item_index(1), "Order troops from a training facility's own menu.")
 	popup.set_item_tooltip(popup.get_item_index(2), "Order facilities from a construction yard's own menu.")
 	popup.set_item_tooltip(popup.get_item_index(7), "%s says aloud what %s reports (Alt+V)." % [AgentDroid.NameFor(us), AgentDroid.MessengerFor(us)])
-	popup.set_item_tooltip(popup.get_item_index(8), "Not built.")
+	popup.set_item_tooltip(popup.get_item_index(8), "%s gives you tips on playing the game, through the message system (Alt+A)." % AgentDroid.NameFor(us))
 	return popup
 
 
@@ -1618,6 +1620,9 @@ func OnAgentMenu(id: int) -> void:
 				AdvisorScript.AnswerOn(get_tree(), "production_on" if on else "production_off")
 		# A preference of this player's, not an order: nothing for the log.
 		7: SoundLib.SetTranslateCounterpart(not SoundLib.TranslateCounterpart)
+		# Agent Advice (manual p078; advice.gd): switched on, the opening advice
+		# arrives if this game has not had it. Presentation only, as 7.
+		8: AdviceLib.SetOn(us, not AdviceLib.On, StrategicTickManager.Today)
 
 
 ## THE BATTLE ALERT (manual p124, Fig 4.1). Raised from the repaint poll rather
@@ -1761,6 +1766,10 @@ func _unhandled_input(event: InputEvent) -> void:
 					return
 				KEY_V:                        # ALT-V toggle Translate Counterpart (agent)
 					OnAgentMenu(7)
+					get_viewport().set_input_as_handled()
+					return
+				KEY_A:                        # ALT-A toggle Agent Advice (agent)
+					OnAgentMenu(8)
 					get_viewport().set_input_as_handled()
 					return
 		else:

@@ -54,6 +54,10 @@ var Advisor: String = ""
 ## The line AssociatedCharacter speaks with it (the pack's `voices`:
 ## "mission_success", "personnel_arrived", ...), or "".
 var Voice: String = ""
+## The picture it shows when read, as a pack reference ("<art set>:<path>"),
+## or "" - the character's or the world's, as before. An agent advice
+## message's is the agent's own (the pack's `advice`). Presentation only.
+var Picture: String = ""
 
 
 func _init(title: String = "", body: String = "", category: int = Enums.MessageCategory.All,
@@ -75,6 +79,7 @@ func Copy() -> GameMessage:
 	c.Report = Report
 	c.Advisor = Advisor
 	c.Voice = Voice
+	c.Picture = Picture
 	return c
 
 

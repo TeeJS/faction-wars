@@ -131,6 +131,9 @@ gid/<faction>.<tier>.png  gid/unexplored.<tier>.png  icons/uprising.png (+ .hove
 alerts/<faction>.<category>.png (+ .lit.png)
 screens/cockpit.png   screens/galaxy.png   screens/galaxy_off.png (since 2.6.1: the display off, 902)
 descriptions.json     { "characters": { "<id>": "text" }, "units": ..., ... }
+advice.json           since 2.6.2: the agent's advice messages, per side (TEXTSTRA.DLL) -
+                      { "alliance": [ { n, group, key, title, text } ], "empire": [...] },
+                      31 a side; windows/advice.<faction>.png their picture (STRATEGY 1071/1072)
 music/<nnn>.ogg       the score, MDATA.300-315 as Ogg Vorbis (11 kHz mono, about 4 MB)
 sound/<dll>/<id>.ogg  since 2.6.0: every voice and sound effect, by the original's own id -
                       the droids and characters (alsprite, emsprite), the briefing

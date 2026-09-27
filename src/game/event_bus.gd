@@ -88,11 +88,15 @@ static func DeleteMessage(message: GameMessage) -> void:
 	BroadcastChanged()   # a deletion is a state change, not an arrival
 
 
-## Unread messages waiting, per category (manual p068).
+## Unread messages waiting, per category (manual p068). All counts what All
+## Messages lists: every category but Advice ("advice messages are the only
+## category that are not also displayed under the All Messages tab", p079).
 static func UnreadCount(category: int) -> int:
 	var n := 0
 	for m in MessageLog:
-		if Visible(m) and not m.IsRead and (category == Enums.MessageCategory.All or m.Category == category):
+		if not Visible(m) or m.IsRead:
+			continue
+		if m.Category == category or (category == Enums.MessageCategory.All and m.Category != Enums.MessageCategory.Advice):
 			n += 1
 	return n
 

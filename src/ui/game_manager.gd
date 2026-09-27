@@ -264,9 +264,17 @@ func _ready() -> void:
 	RefreshStatusBar()
 
 	# THE OPENING BRIEFING (manual p022): a new game, not a loaded one; not in
-	# head-to-head, where the other side's clock would wait for it.
+	# head-to-head, where the other side's clock would wait for it. The agent's
+	# opening advice is posted first (Agent Advice: on in Easy, advice.gd); the
+	# briefing opens the Message Index on it when it ends, and with no briefing
+	# to play (an art set without its recordings) it opens at once.
+	var adviceLib := preload("res://src/ui/advice.gd")
 	if not loaded and not mp:
-		_uiManager.StartBriefing(HoldForBriefing)
+		var advice: int = adviceLib.Start(GameSettings.LocalFaction(), StrategicTickManager.Today)
+		if _uiManager.StartBriefing(HoldForBriefing) == null and advice > 0:
+			_uiManager.OnMessageIndexClicked("Advice")
+	else:
+		adviceLib.Reset()
 
 
 func _exit_tree() -> void:

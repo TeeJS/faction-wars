@@ -392,6 +392,12 @@ class PackManifest:
 	var Briefing: Dictionary = {}
 	var BriefingGiven: bool = false
 	var BriefingRaw: Variant = null
+	## SCHEMA.md section 2: the agent's advice messages per side - the art
+	## set's list, which of it, when, and its picture. Less the "_" keys;
+	## Given/Raw for validation rule 29.
+	var Advice: Dictionary = {}
+	var AdviceGiven: bool = false
+	var AdviceRaw: Variant = null
 
 	## The longest download link offered (the relay's listing keeps as much).
 	const UrlMax := 300
@@ -486,6 +492,9 @@ class PackManifest:
 		o.BriefingRaw = _deep_without_comments(JsonUtil.get_ci(d, "briefing"))
 		o.BriefingGiven = o.BriefingRaw != null
 		o.Briefing = o.BriefingRaw if o.BriefingRaw is Dictionary else {}
+		o.AdviceRaw = _deep_without_comments(JsonUtil.get_ci(d, "advice"))
+		o.AdviceGiven = o.AdviceRaw != null
+		o.Advice = o.AdviceRaw if o.AdviceRaw is Dictionary else {}
 		return o
 
 	## A map and every map inside it, less their "_" keys.

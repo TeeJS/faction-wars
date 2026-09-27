@@ -337,10 +337,15 @@ var _composeBtn: Button
 
 
 ## The picture a message can carry, from the player's imported originals:
-## the character's portrait, else the world's Encyclopedia picture.
+## its own (an agent advice message's), else the character's portrait, else
+## the world's Encyclopedia picture.
 static func MessagePicture(message: GameMessage) -> Texture2D:
 	if message == null:
 		return null
+	if not message.Picture.is_empty():
+		var own: Texture2D = Art.PackImage(message.Picture)
+		if own != null:
+			return own
 	if message.AssociatedCharacter != null:
 		# The original's 400x200 character panel fits this slot; the small
 		# portrait is the fallback, shown 1:1 rather than blown up.
@@ -533,6 +538,11 @@ func Refresh() -> void:
 
 const OriginalW := 470
 const OriginalH := 330
+## A message's text box: 76 high as measured on TeeJ's screenshot of a message
+## read (open-rebellion's notes give the window's text rect as 395x80, its
+## margin included), a line every 16: four lines.
+const SumTextH := 76
+const SumTextPitch := 16
 const OTabNames := ["msg_all", "msg_loyalty", "msg_fleets", "msg_missions", "msg_resources",
 	"msg_manufacturing", "msg_defense", "msg_conflict", "msg_chat", "msg_advice"]
 const OTabCategories := ["All", "Loyalty", "Fleets", "Missions", "Resources",
@@ -712,9 +722,17 @@ func _build_original() -> void:
 	_oSumPicture.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	_oSumPicture.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_oSummary.add_child(_oSumPicture)
-	_oSumText = OUI.Text(_oSummary, "", 17, 235, 394, 76, 13, Color.WHITE, HORIZONTAL_ALIGNMENT_LEFT, false, "Text")
+	# The text box holds four lines (SumTextH). A longer text - the agent's
+	# advice runs to fifteen - stays in it and the mouse wheel moves through
+	# it. How the original shows the rest is not known (its window has two
+	# scroll commands, 0x96 / 0x9a: open-rebellion's Message Index notes).
+	_oSumText = OUI.Text(_oSummary, "", 17, 235, 394, SumTextH, 13, Color.WHITE, HORIZONTAL_ALIGNMENT_LEFT, false, "Text")
 	_oSumText.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	OUI.LinePitch(_oSumText, 13, 16)
+	OUI.LinePitch(_oSumText, 13, SumTextPitch)
+	_oSumText.clip_text = true
+	_oSumText.max_lines_visible = SumTextH / SumTextPitch
+	_oSumText.mouse_filter = Control.MOUSE_FILTER_PASS
+	_oSumText.gui_input.connect(_o_scroll_text)
 	_oOk = OUI.PictureButton(_oSummary, "decision_ok", 355, 244, "Continue the mission")
 	_oOk.pressed.connect(func() -> void:
 		if _selectedMessage != null:
@@ -961,10 +979,26 @@ func _o_show_summary(m: GameMessage) -> void:
 	_oOk.visible = asks
 	_oCancel.visible = asks
 	_oSumText.size.x = (331 if asks else 394) * OUI.K
+	_oSumText.lines_skipped = 0
 	_oSumText.text = m.Body
 	# Both arrows stay lit, as on the original's (it showed them on the
 	# tab's first message); a step past either end does nothing.
 	_o_update_buttons()
+
+
+## The mouse wheel over a message's text: a line up or down, within the text.
+func _o_scroll_text(event: InputEvent) -> void:
+	if not (event is InputEventMouseButton and event.pressed):
+		return
+	var step := 0
+	match (event as InputEventMouseButton).button_index:
+		MOUSE_BUTTON_WHEEL_UP: step = -1
+		MOUSE_BUTTON_WHEEL_DOWN: step = 1
+	if step == 0:
+		return
+	var last: int = maxi(0, _oSumText.get_line_count() - _oSumText.max_lines_visible)
+	_oSumText.lines_skipped = clampi(_oSumText.lines_skipped + step, 0, last)
+	_oSumText.accept_event()
 
 
 ## The band's arrows: the previous or next message on this tab.
