@@ -819,9 +819,13 @@ cross-sector reading used a ship, so an unshipped traveller crossing sectors at
 Standard Speed 100 is inference from the constant, not observation.
 
 ⚠ **Fleet moves commit instantly** — *"the fleet immediately goes into hyperspace"*
-(p111). Only a **character's Confirmed Move** previews the days and can be
-cancelled, which is why the character legs above were free to measure and the
-fleet legs each cost a real journey.
+(p111). A **Confirmed Move** previews the days and can be cancelled - for a
+character (p110), and for a ship (p115) and a fleet (p122) too: *"This option
+brings up a window that tells you the transit time (in days) it will take for the
+fleet to reach its destination"*. The fleet legs above were measured by real
+journeys all the same. **The code** (2026-09-27): Confirmed Move asks first for
+characters, fleets, ships and units, onto a fleet at another system too
+(`UIManager.ExecuteFleetMove` and the rest; `TransitConfirmWindow`).
 
 **Alliance HQ placement, confirmed:** *"the Alliance headquarters, which begins
 the game at a **random system on the Galactic Rim**."* And Yavin is a bad base

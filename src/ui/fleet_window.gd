@@ -515,15 +515,15 @@ func _PickedShips(rowShip: Unit) -> Array:
 func _StartShipMove(ships: Array, confirm: bool) -> void:
 	_uiManager.StartTargetingObject(
 		func(target: Planet) -> void: _uiManager.ExecuteShipMove(ships, target, confirm),
-		func(picked: Variant) -> void: _ShipsOnto(ships, picked))
+		func(picked: Variant) -> void: _ShipsOnto(ships, picked, confirm))
 
 
-func _ShipsOnto(ships: Array, picked: Variant) -> void:
+func _ShipsOnto(ships: Array, picked: Variant, confirm: bool = false) -> void:
 	var to: Fleet = OrderManager.FleetOf(picked)
 	if to == null:
 		print("[Move] That is not somewhere a ship can be sent.")
 		return
-	_uiManager.ExecuteLoadAboard(ships, to)
+	_uiManager.ExecuteLoadAboard(ships, to, confirm)
 
 
 ## A troop's, fighter squadron's or Special Forces unit's row aboard a ship:
@@ -700,8 +700,7 @@ static func _OnFleetMenu(id: int, fleets: Array, uiManager: UIManager, popup: Po
 	match id:
 		0, 1:
 			uiManager.StartTargeting(func(selectedPlanet: Planet) -> void:
-				for f in fleets:
-					uiManager.ExecuteSingleFleetMove(f, selectedPlanet, id == 1))
+				uiManager.ExecuteFleetsMove(fleets, selectedPlanet, id == 1))
 		3:
 			for f in fleets:
 				uiManager.OpenFleetStatusWindow(f)
@@ -1321,8 +1320,7 @@ func OnFleetMenuAction(actionId: int, fleets: Array, uiManager: UIManager) -> vo
 				return
 
 			uiManager.StartTargeting(func(selectedPlanet: Planet) -> void:
-				for fleet in fleets:
-					uiManager.ExecuteSingleFleetMove(fleet, selectedPlanet, actionId == 1))
+				uiManager.ExecuteFleetsMove(fleets, selectedPlanet, actionId == 1))
 		# No case 2. It called an empty InitiateFleetAttack, and "Attack" is
 		# not a fleet order the manual has - Planetary Bombardment and
 		# Planetary Assault are (p111).
