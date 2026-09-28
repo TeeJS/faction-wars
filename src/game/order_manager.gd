@@ -219,9 +219,33 @@ static func BoardFleet(characters: Array, fleet: Fleet) -> Result:
 	for c in boarding:
 		if c.Faction != fleet.Faction:
 			return Result.fail("%s cannot board another side's fleet." % c.Name)
-		if c.Attached != orbit and c.Attached != fleet:
-			return Result.fail("%s is not at %s." % [c.Name, orbit.Name])
+		if c.Attached != fleet and SystemOf(c.Attached) == null:
+			return Result.fail("%s is nowhere to leave from." % c.Name)
+	# FROM ANOTHER SYSTEM THEY TRAVEL TO IT: "move that character onto the fleet
+	# as well. It will take the characters some time to get to the fleet, and
+	# significantly longer if they are traveling between sectors" (manual
+	# p046). Together, as a move is (the Millennium Falcon effect with it);
+	# aboard - Attached to it - on the way, and there on arrival (the day's
+	# tick); a fleet gone by then, they fall back to a world their side holds.
+	var far: Array = Lq.where(boarding, func(c): return c.Attached != fleet and SystemOf(c.Attached) != orbit)
+	var by_origin := {}
+	for c in far:
+		var from: Planet = SystemOf(c.Attached)
+		if not by_origin.has(from):
+			by_origin[from] = []
+		by_origin[from].append(c)
+	for from in by_origin:
+		var group: Array = by_origin[from]
+		var days: int = maxi(1, CharacterTravelDays(group, from, orbit))
+		for c in group:
+			c.Attached = fleet
+			c.Destination = fleet
+			c.DaysToDestination = days
+			c.Status = Enums.Status.Enroute
+			print("%s leaves %s to join %s at %s. ETA: %d days." % [c.Name, from.Name, fleet.Name, orbit.Name, days])
 	for c in boarding:
+		if far.has(c):
+			continue
 		c.Attached = fleet
 		c.Destination = null
 		c.DaysToDestination = 0
@@ -365,7 +389,8 @@ static func _ShipsIntoFleetHere(ships: Array, name: String = "") -> Fleet:
 	return fleet
 
 
-## Fleets left with no ship go, the people aboard moving to `heir`.
+## Fleets left with no ship go, the people aboard moving to `heir` - those on
+## their way to them too.
 static func _Disband(fleets: Array, heir: Fleet) -> void:
 	for f in fleets:
 		if not f.Ships.is_empty():
@@ -373,6 +398,8 @@ static func _Disband(fleets: Array, heir: Fleet) -> void:
 		for c in GameState.ActiveRoster:
 			if c.Attached == f:
 				c.Attached = heir
+			if c.Destination == f:
+				c.Destination = heir
 		if f.Attached != null:
 			f.Attached.OrbitingFleets.erase(f)
 		print("%s disbanded: its ships have gone to other fleets." % f.Name)

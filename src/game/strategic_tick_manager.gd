@@ -73,6 +73,18 @@ func AdvanceDay() -> void:
 			character.DaysToDestination -= 1
 			if character.DaysToDestination <= 0:
 				var destination := character.Destination
+				# Bound for a fleet no longer in orbit anywhere (lost, or merged
+				# away): the world it was over if their side holds it, else the
+				# nearest that it does - where personnel stand (GAMEPLAY.md, the
+				# measured rule; the refuge "NEAREST", manual p111).
+				if destination is Fleet and ((destination as Fleet).Attached == null \
+						or not (destination as Fleet).Attached.OrbitingFleets.has(destination)):
+					var over: Planet = (destination as Fleet).Attached
+					destination = over if over != null and over.ControllingFaction == character.Faction \
+						else MilitaryCatalog.NearestHeldBy(character.Faction, over)
+					if destination == null:
+						character.DaysToDestination = 1
+						continue
 				character.Attached = destination
 				character.Destination = null
 				character.Status = Enums.Status.AwaitingOrders
@@ -200,6 +212,8 @@ func AdvanceDay() -> void:
 		for rider in GameState.ActiveRoster:
 			if rider.Attached == transit:
 				rider.Attached = target
+			if rider.Destination == transit:
+				rider.Destination = target
 		here.OrbitingFleets.erase(transit)
 		print("Ships arriving at %s join %s." % [here.Name, target.Name])
 	if charted:
