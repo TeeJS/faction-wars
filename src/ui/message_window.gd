@@ -367,20 +367,25 @@ static var _reportPictures: Dictionary = {}
 
 
 ## A REPORT AS THE ORIGINAL DRAWS IT: the report's scene (windows/report.<mission>,
-## STRATEGY 1044 for Diplomacy) with the reporting character's Encyclopedia
-## picture laid over it, its crest and gradient left out - the colours the pack
-## names for the character's side (`report_backdrop`), filled from the picture's
-## edges so the same colours inside the figure stay. Matched on TeeJ's screenshot
-## of the original's Diplomacy Mission Report (98% of pixels). Null without the
-## scene or the picture: the message shows the character's picture as before.
+## STRATEGY 1044 for Diplomacy) with the reporting character's REPORT FIGURE laid
+## over it - the Encyclopedia picture cut out by hand (characters/<id>.report,
+## STRATEGY at the Encyclopedia id, exporter 2.6.5; REBEXE 0x46a320). An art set
+## from an older exporter has no figure: the Encyclopedia picture then, its crest
+## and gradient left out - the colours the pack names for the character's side
+## (`report_backdrop`), filled from the picture's edges (93-99% of the original's
+## pixels; a figure as dark as its backdrop, Palpatine, loses its robe). Null
+## without the scene or a picture: the message shows the character's as before.
 static func ReportPicture(scene: String, character: Character) -> Texture2D:
 	var key := "%s|%s" % [scene, character.PackId]
 	if _reportPictures.has(key):
 		return _reportPictures[key]
 	var back: Texture2D = Art.WindowPicture("report.%s" % scene)
+	var figure: Texture2D = Art.Picture("characters", character.PackId + ".report")
 	var front: Texture2D = Art.Picture("characters", character.PackId)
 	var out: Texture2D = null
-	if back != null and front != null:
+	if back != null and figure != null:
+		out = _Over(back.get_image(), figure.get_image())
+	elif back != null and front != null:
 		var side: String = Faction.SkinOf(character.Faction.Id) if character.Faction != null else ""
 		var colours: Dictionary = {}
 		var manifest = FactionRegistry.Pack.Manifest if FactionRegistry.Pack != null else null
@@ -389,6 +394,20 @@ static func ReportPicture(scene: String, character: Character) -> Texture2D:
 		out = _LayOver(back.get_image(), front.get_image(), colours)
 	_reportPictures[key] = out
 	return out
+
+
+## `front`, transparent where it is cut away, over `back`.
+static func _Over(back: Image, front: Image) -> Texture2D:
+	if back == null or front == null:
+		return null
+	var img: Image = back.duplicate()
+	var fr: Image = front.duplicate()
+	for i in [img, fr]:
+		if i.is_compressed():
+			i.decompress()
+		i.convert(Image.FORMAT_RGBA8)
+	img.blend_rect(fr, Rect2i(0, 0, mini(img.get_width(), fr.get_width()), mini(img.get_height(), fr.get_height())), Vector2i.ZERO)
+	return ImageTexture.create_from_image(img)
 
 
 ## `front` over `back`, less the region of `front` reached from its edges
