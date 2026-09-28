@@ -542,11 +542,58 @@ func CreateEmptyLabel(list: Container, text: String, color: Color) -> void:
 	list.add_child(lbl)
 
 
+## Set while a SHIFT-click presses the buttons of its range.
+var _ranging: bool = false
+## The last one picked without SHIFT, and the selection it was picked into -
+## by what it is, not its button: a repaint rebuilds the list.
+var _anchorEntity: Variant = null
+var _anchorList: Variant = null
+
+
+## After a list button's toggle. SHIFT: every one from the last picked in this
+## list to this one, as the Message Index's ("Select all the messages between
+## two messages by selecting one, holding down the SHIFT key, and selecting the
+## other", manual p079; TeeJ, 2026-09-27: the same for every list). Otherwise
+## this one becomes the anchor. The button carries meta "select_entity".
+func ShiftRange(btn: BaseButton, entityData: Variant, selectionList: Array, isPressed: bool) -> void:
+	if _ranging:
+		return
+	if isPressed and Input.is_key_pressed(KEY_SHIFT) and _SelectRange(btn, selectionList):
+		return
+	_anchorEntity = entityData
+	_anchorList = selectionList
+
+
+## A SHIFT-click's range: every selectable button from the anchor (the last
+## one picked in the same selection without SHIFT) to `btn`, among `btn`'s
+## neighbours, pressed - each one's own toggle adds it to its selection.
+## False when the anchor is not in this list.
+func _SelectRange(btn: BaseButton, selectionList: Array) -> bool:
+	var list: Node = btn.get_parent()
+	if list == null or _anchorEntity == null or not is_same(_anchorList, selectionList):
+		return false
+	var a: int = -1
+	for sib in list.get_children():
+		if sib != btn and sib.get_meta("select_entity", null) == _anchorEntity:
+			a = sib.get_index()
+	if a < 0:
+		return false
+	var b: int = btn.get_index()
+	_ranging = true
+	for i in range(mini(a, b), maxi(a, b) + 1):
+		var sib: Node = list.get_child(i)
+		if sib is BaseButton and (sib as BaseButton).toggle_mode and not (sib as BaseButton).disabled:
+			(sib as BaseButton).button_pressed = true
+	_ranging = false
+	return true
+
+
 ## Wires up button, toggle, and popup logic. C#: SetupMenuButton<T> where
 ## T : ITransitEntity; on_menu_action is Action<int, List<T>>.
 func SetupMenuButton(btn: Button, entityData: Variant, selectionList: Array, popup: PopupMenu, onMenuAction: Callable) -> void:
 	# 1. Sync Toggle State
 	btn.toggle_mode = true
+	btn.set_meta("select_entity", entityData)
 	if selectionList.has(entityData):
 		btn.button_pressed = true
 
@@ -560,7 +607,8 @@ func SetupMenuButton(btn: Button, entityData: Variant, selectionList: Array, pop
 		if isPressed and not selectionList.has(entityData):
 			selectionList.append(entityData)
 		elif not isPressed:
-			selectionList.erase(entityData))
+			selectionList.erase(entityData)
+		ShiftRange(btn, entityData, selectionList, isPressed))
 
 	# 2. Attach Popup
 	RegisterPopupMenu(popup)
