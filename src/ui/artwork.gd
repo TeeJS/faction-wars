@@ -67,6 +67,11 @@ static func Screen(name: String) -> Texture2D:
 	return _texture("screens/%s.png" % name)
 
 
+## A cockpit monitor's strip of frames, side by side: menu/<name>.png.
+static func MenuPicture(name: String) -> Texture2D:
+	return _texture("menu/%s.png" % name)
+
+
 ## A window tab's icon: tabs/<name>[.<side>][.pressed|.grey].png.
 ## The per-side icons (manufacturing, fighters, troops, personnel) fall back
 ## to the sideless file, so a pack with one set still gets it.

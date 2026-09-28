@@ -849,6 +849,13 @@ static func _card_name(card: Control, title: String, color: Color) -> Label:
 	name.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	name.clip_text = true
 	name.add_theme_constant_override("line_spacing", 3 * K / 2)
+	# The box again, now it wraps: Text() set it while the label was one
+	# unwrapped line, and a name wider than the card grew it to fit - so
+	# "Imperial Probe" (143 of the card's 136) stayed on one line, into the next
+	# card (TeeJ, 2026-09-28, the Coruscant Personnel page). Wrapped at 68 as
+	# the original's: its Yavin page has "Jan Dodonna" (65 px) on one line,
+	# "Wedge Antilles" (73) on two.
+	name.size = Vector2(CardW - 2, CardH - 29) * K
 	return name
 
 

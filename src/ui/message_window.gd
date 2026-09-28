@@ -1056,7 +1056,10 @@ func _o_row(m: GameMessage) -> Control:
 		OUI.Place(row, OUI.Pic("msgindex_selection." + _oSide), 2, 0, "Bar")
 	var cat: String = JsonUtil.enum_name(Enums.MessageCategory, m.Category)
 	var icon: String = _o_icon(cat)
-	if not icon.is_empty():
+	var own: Texture2D = OwnIcon(m)
+	if own != null:
+		OUI.Place(row, Art.Scaled(own, OUI.K), OIconAt.x, OIconAt.y, "Icon")
+	elif not icon.is_empty():
 		if picked:
 			var whole: Texture2D = OUI.Pic(icon + ".picked")
 			var plate: Texture2D = OUI.Pic("msgindex_plate")
@@ -1088,6 +1091,57 @@ func _o_row(m: GameMessage) -> Control:
 func _o_icon(cat: String) -> String:
 	var icon: String = str(ORowIcons.get(cat, ""))
 	return icon % _oSide if icon.contains("%s") else icon
+
+
+## A message's own icon (GameMessage.Icon) at the original's size, or null
+## for its category's.
+static func OwnIcon(m: GameMessage) -> Texture2D:
+	return ImportedIcon() if m != null and m.Icon == "imported" else null
+
+
+## GAME IMPORTED'S ICON: the cockpit's load disc (TeeJ, 2026-09-28: "could
+## you use the CD from the cockpit?") - the load monitor's strip (COMMON.DLL
+## 11241-11270, menu/load.png), its frame with the three red arrows (11251,
+## as on TeeJ's picture), the disc cut out of its dark screen and brought to a
+## row icon's 15 x 16: the frame's 26 x 27 round it, an ellipse's cover for
+## the alpha, the arrows kept whole.
+const LoadFrames := 30
+const LoadIconFrame := 10
+const LoadIconCrop := Rect2i(3, 5, 26, 27)
+const RowIconSize := Vector2i(15, 16)
+static var _importedIcon: Texture2D = null
+static var _importedFrom: Texture2D = null
+
+
+static func ImportedIcon() -> Texture2D:
+	var strip: Texture2D = Art.MenuPicture("load")
+	if strip == null:
+		return null
+	if strip == _importedFrom:
+		return _importedIcon
+	_importedFrom = strip
+	var fw: int = strip.get_width() / LoadFrames
+	var img: Image = strip.get_image()
+	if img.is_compressed():
+		img.decompress()
+	var cut: Image = img.get_region(Rect2i(LoadIconCrop.position + Vector2i(fw * LoadIconFrame, 0), LoadIconCrop.size))
+	cut.convert(Image.FORMAT_RGB8)
+	cut.resize(RowIconSize.x, RowIconSize.y, Image.INTERPOLATE_LANCZOS)
+	cut.convert(Image.FORMAT_RGBA8)
+	var c := Vector2(RowIconSize) / 2.0
+	for y in RowIconSize.y:
+		for x in RowIconSize.x:
+			var px: Color = cut.get_pixel(x, y)
+			var cover := 0
+			for i in 4:
+				for j in 4:
+					var d := (Vector2(x + (i + 0.5) / 4.0, y + (j + 0.5) / 4.0) - c) / c
+					cover += 1 if d.length_squared() <= 1.0 else 0
+			var arrow: bool = px.r > 0.35 and px.g < 0.2
+			px.a = 1.0 if arrow else cover / 16.0
+			cut.set_pixel(x, y, px)
+	_importedIcon = ImageTexture.create_from_image(cut)
+	return _importedIcon
 
 
 ## An icon's first 14 columns: all an unpicked row or the band draws.
@@ -1146,7 +1200,8 @@ func _o_show_summary(m: GameMessage) -> void:
 	_o_side_summary(true)
 	var cat: String = JsonUtil.enum_name(Enums.MessageCategory, m.Category)
 	var icon: String = _o_icon(cat)
-	_oSumIcon.texture = _o_icon14(icon) if not icon.is_empty() else null
+	var own: Texture2D = OwnIcon(m)
+	_oSumIcon.texture = Art.Scaled(own, OUI.K) if own != null else (_o_icon14(icon) if not icon.is_empty() else null)
 	_oSumIcon.size = _oSumIcon.texture.get_size() if _oSumIcon.texture != null else Vector2.ZERO
 	_oSumTitle.text = m.Title
 	var pic: Texture2D = MessagePicture(m)
