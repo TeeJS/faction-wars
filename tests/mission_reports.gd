@@ -11,6 +11,11 @@ extends SceneTree
 ##
 ##   .\tools\run-gd.ps1 tests/mission_reports.gd
 
+const Art := preload("res://src/ui/artwork.gd")
+const MessageSounds := preload("res://src/ui/sound.gd")
+const Tone := "res://tests/fixtures/music_test.ogg"
+const ArtRoot := "user://test-mission-reports-art"
+
 var _fails := 0
 var _checks := 0
 
@@ -65,9 +70,27 @@ func _init() -> void:
 		var body := ("The mission to rescue %s from %s succeeded.\n" if who == minor else "My mission to rescue %s from %s was a success.\n") % [prisoner.Name, enemy.Name] + back
 		_check(report != null and report.Body == body, "%s rescue: '%s' (%s)" % ["minor" if who == minor else "major", body.replace("\n", "/"), report.Body.replace("\n", "/") if report != null else "none"])
 		_check(report != null and report.Scene == "message.1042", "... over the Alliance's ship, STRATEGY 1042 (%s)" % (report.Scene if report != null else ""))
+		_check(report != null and report.Sound == "strategy/1148", "... with the Alliance's report sound, STRATEGY 1148 (%s)" % (report.Sound if report != null else ""))
 		var escaped: GameMessage = _titled(got, "%s Escaped" % prisoner.Name)
 		var free := "%s escaped from the %s at %s." % [prisoner.Name, them.ShortName, enemy.Name]
-		_check(escaped != null and escaped.Body == free and escaped.Still == "message.1029", "... and '%s Escaped' / '%s', STRATEGY 1029" % [prisoner.Name, free])
+		_check(escaped != null and escaped.Body == free and escaped.Still == "message.1029" and escaped.Sound == "strategy/1100",
+			"... and '%s Escaped' / '%s', STRATEGY 1029 and 1100" % [prisoner.Name, free])
+		if who == minor:
+			# The sound plays from the art set, when the message is shown.
+			Art.IgnoreProjectFolder = true
+			Art.UserArtRoot = ArtRoot
+			MessageSounds.PlayHeadless = true
+			var set_dir := "%s/%s/sound/strategy" % [ArtRoot, FactionRegistry.Pack.Manifest.ArtSets[0]]
+			DirAccess.make_dir_recursive_absolute(set_dir)
+			var out := FileAccess.open(set_dir + "/1148.ogg", FileAccess.WRITE)
+			out.store_buffer(FileAccess.get_file_as_bytes(Tone))
+			out.close()
+			_check(report != null and MessageWindow.MessageSoundFile(report).ends_with("sound/strategy/1148.ogg"), "... which the message window plays from the art set's sound/strategy/1148.ogg (%s)" % MessageWindow.MessageSoundFile(report))
+			_check(escaped != null and MessageWindow.MessageSoundFile(escaped).is_empty(), "... and a sound the art set lacks, nothing")
+			_remove(ArtRoot)
+			Art.IgnoreProjectFolder = false
+			Art.UserArtRoot = "user://art"
+			MessageSounds.PlayHeadless = false
 
 	# Sabotage, done and not done.
 	for case in [["done", AlwaysOnePrng.new(), "The target was destroyed."], ["not done", AlwaysMaxPrng.new(), "  The target was not destroyed."]]:   # 28901's own two spaces
@@ -81,12 +104,12 @@ func _init() -> void:
 	var recon: GameMessage = _titled(_run(Enums.MissionType.Reconnaissance, minor, enemy, home, AlwaysOnePrng.new()), "Recon Mission Report")
 	_check(recon != null and recon.Body == "The reconnaissance mission to %s was successful.\n" % enemy.Name + back, "recon: 'Recon Mission Report' / 'The reconnaissance mission to %s was successful.' (%s)" % [enemy.Name, recon.Body.replace("\n", "/") if recon != null else "none"])
 	var spy: GameMessage = _titled(_run(Enums.MissionType.Espionage, minor, enemy, home, AlwaysOnePrng.new()), "Espionage Mission Report")
-	_check(spy != null and spy.Body.begins_with("The espionage mission to %s was successful.  " % enemy.Name) and spy.Scene == "message.1045",
+	_check(spy != null and spy.Body.begins_with("The espionage mission to %s was successful.  " % enemy.Name) and spy.Scene == "message.1045" and spy.Sound == "strategy/1152",
 		"espionage: 'The espionage mission to %s was successful.', its surveillance room 1045 (%s)" % [enemy.Name, spy.Body.replace("\n", "/") if spy != null else "none"])
 
 	# A research mission: its own name, the question.
 	var lab: GameMessage = _titled(_run(Enums.MissionType.ShipDesignResearch, minor, home, home, AlwaysOnePrng.new()), "Ship Design Research Mission Report")
-	_check(lab != null and lab.Body.begins_with("The Ship Design Research Mission at %s " % home.Name) and lab.Body.ends_with("  Do you wish the mission to continue?") and lab.Scene == "message.1017",
+	_check(lab != null and lab.Body.begins_with("The Ship Design Research Mission at %s " % home.Name) and lab.Body.ends_with("  Do you wish the mission to continue?") and lab.Scene == "message.1017" and lab.Sound == "strategy/1151",
 		"research: 'The Ship Design Research Mission at %s ...  Do you wish the mission to continue?', R&D 1017 (%s)" % [home.Name, lab.Body if lab != null else "none"])
 
 	# One message a person.
@@ -98,8 +121,19 @@ func _init() -> void:
 	before = EventBus.MessageLog.size()
 	MissionManager.Kill(prisoner)
 	var dead: GameMessage = _titled(EventBus.MessageLog.slice(before), "%s Killed" % prisoner.Name)
-	_check(dead != null and dead.Body == "%s has been killed." % prisoner.Name, "'%s Killed' / '%s has been killed.'" % [prisoner.Name, prisoner.Name])
+	_check(dead != null and dead.Body == "%s has been killed." % prisoner.Name and dead.Sound == "strategy/1140", "'%s Killed' / '%s has been killed.', 1140" % [prisoner.Name, prisoner.Name])
+	_check(taken != null and taken.Sound == "strategy/1100", "... 'Captured' with 1100")
 	_finish()
+
+
+static func _remove(path: String) -> void:
+	if not DirAccess.dir_exists_absolute(path):
+		return
+	for sub in DirAccess.get_directories_at(path):
+		_remove("%s/%s" % [path, sub])
+	for file in DirAccess.get_files_at(path):
+		DirAccess.remove_absolute("%s/%s" % [path, file])
+	DirAccess.remove_absolute(path)
 
 
 func _imprison(c: Character, at: Planet) -> void:

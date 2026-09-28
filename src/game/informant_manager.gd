@@ -67,6 +67,7 @@ static func Deliver(listener: Faction, target: Planet, day: int, rng: Prng) -> v
 		Enums.MessageCategory.Missions, day, target)
 	msg.Type = Enums.MessageType.InformantReport
 	msg.Still = "message.1000"
+	msg.Sound = "strategy/1100"
 	EventBus.Tell(listener, msg)
 
 

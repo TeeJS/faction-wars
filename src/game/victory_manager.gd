@@ -23,6 +23,18 @@ static func HeadquartersDestroyed(owner: Faction) -> void:
 	_hq_destroyed[owner.Id] = true
 	print("[Victory] %s headquarters destroyed - permanently." % owner.DisplayName)
 	LoyaltyManager.RebelHeadquartersDestroyed(owner)
+	# The original's words and picture, to both sides (TEXTSTRA 29064 / 29065,
+	# REBEXE 0x48e570, STRATEGY 1024): "Alliance Headquarters Destroyed" / "The
+	# Empire has destroyed the Alliance Headquarters."
+	var by: Faction = Lq.first_or_null(FactionRegistry.Playable, func(f: Faction) -> bool: return f != owner)
+	for side in FactionRegistry.Playable:
+		if not GameSettings.IsHuman(side):
+			continue
+		var msg := GameMessage.new("%s Headquarters Destroyed" % owner.ShortName,
+			"The %s has destroyed the %s Headquarters." % [by.ShortName if by != null else "enemy", owner.ShortName],
+			Enums.MessageCategory.Missions, StrategicTickManager.Today)
+		msg.Still = "message.1024"
+		EventBus.Tell(side, msg)
 	# The side that lost it has its own movie, shown to everyone - and before
 	# the war's end, when this ends it (the order Rebellion 2's remake plays
 	# them in: its GameFlowController queues the defender's headquarters movie,

@@ -213,6 +213,24 @@ static func Relocate(unit: Unit, to: Planet) -> void:
 	unit.Attached = to
 
 
+## A SIDE'S CAPITAL TAKEN, in the original's words, to both sides (TEXTSTRA
+## 29040 / 29041, REBEXE 0x48f700): "Coruscant Captured" / "The Alliance has
+## seized the Imperial capital system of Coruscant." A capital is a fixed
+## headquarters world (a hidden one is destroyed, never taken).
+static func _tell_capital_taken(p: Planet, former_holder: Faction) -> void:
+	var taker: Faction = p.ControllingFaction
+	if taker == null or FactionRegistry.OrderOf(taker) < 0 or former_holder.HasHiddenHq():
+		return
+	if former_holder.Hq == null or former_holder.Hq.Planet != p.PackId:
+		return
+	for side in FactionRegistry.Playable:
+		if not GameSettings.IsHuman(side):
+			continue
+		EventBus.Tell(side, GameMessage.new("%s Captured" % p.Name,
+			"The %s has seized the %s capital system of %s." % [taker.ShortName, former_holder.Adjective, p.Name],
+			Enums.MessageCategory.Conflict, StrategicTickManager.Today, p))
+
+
 ## EVERYTHING THE LOSER LEAVES BEHIND WHEN A WORLD CHANGES HANDS. One entry
 ## point, called from every place ControllingFaction is reassigned. Both fates
 ## are ★ measured in the original game.
@@ -223,6 +241,7 @@ static func OnControlChanged(lost: Planet, former_holder: Faction) -> void:
 		return
 	_withdraw_personnel(lost, former_holder)
 	_disband_ground_fighters(lost, former_holder)
+	_tell_capital_taken(lost, former_holder)
 	# LOSING A WORLD IS WITNESSING IT. Without a sighting captured now, a world you
 	# just lost has no owner-of-record (View is live only while you HOLD it), so the
 	# map would grey it out or keep showing it as yours. A battle/uprising at the

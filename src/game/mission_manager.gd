@@ -356,7 +356,7 @@ static func DisplayNameOf(u: Unit) -> Variant:
 ## "mission_success", "mission_failure", "mission_abort"), or "". `named`: the
 ## title leads with who reports; the original's own titles ("Diplomacy Mission
 ## Report") stand alone.
-static func Report(m: Mission, day: int, title: String, body: String, asks_to_continue: bool = false, voice: String = "", named: bool = true, scene: String = "") -> void:
+static func Report(m: Mission, day: int, title: String, body: String, asks_to_continue: bool = false, voice: String = "", named: bool = true, scene: String = "", sound: String = "") -> void:
 	if not GameSettings.IsHuman(m.Faction):
 		return
 	var leader := Leader(m)
@@ -369,6 +369,7 @@ static func Report(m: Mission, day: int, title: String, body: String, asks_to_co
 		Enums.MessageCategory.Missions, day, m.Target, character)
 	msg.PendingMission = m if asks_to_continue else null
 	msg.Scene = scene
+	msg.Sound = sound if not sound.is_empty() else (ReportSound(m, voice) if not scene.is_empty() else "")
 	msg.Type = Enums.MessageType.MissionReport   # ALWAYS MissionReport, NEVER MissionFailed (see source)
 	msg.Advisor = "personnel_report"
 	msg.Voice = voice
@@ -427,6 +428,24 @@ static func ReportScene(m: Mission) -> String:
 	return "message.%d" % int(ReportScenes.get(m.Type, ours))
 
 
+## ITS SOUND, which the builder sets beside the scene (REBEXE 0x4927c0):
+## Diplomacy 1150, Espionage 1152, research 1151, Subdue Uprising 1109 when
+## order is restored and 1108 when not; every other the side's own, 1148 for
+## the Alliance, 1149 for the Empire. (A mission foiled, failed for want of its
+## target, or aborted has its own builder, 0x491500, and 1152.)
+static func ReportSound(m: Mission, voice: String) -> String:
+	match m.Type:
+		Enums.MissionType.Diplomacy:
+			return "strategy/1150"
+		Enums.MissionType.Espionage:
+			return "strategy/1152"
+		Enums.MissionType.ShipDesignResearch, Enums.MissionType.TroopTrainingResearch, Enums.MissionType.FacilityDesignResearch:
+			return "strategy/1151"
+		Enums.MissionType.SubdueUprising:
+			return "strategy/1109" if voice == "mission_success" else "strategy/1108"
+	return "strategy/1148" if m.Faction != null and Faction.SkinOf(m.Faction.Id) == "alliance" else "strategy/1149"
+
+
 ## THE ORIGINAL'S MISSION REPORTS (TEXTSTRA 28880-29125, built by REBEXE
 ## 0x4927c0; TeeJ, 2026-09-28: "make all of the messages text match"): a major
 ## character reports in the first person under "<name> Mission Report", anyone
@@ -436,9 +455,10 @@ static func ReportScene(m: Mission) -> String:
 ## Sabotage, Recon, Abduction, Assassination and Rescue then say where the team
 ## is bound (28902 / 28903). `asks`: the mission goes on - "Do you wish the
 ## mission to continue?" (28891). `titles`: [the major's, anyone else's] in
-## place of the two Mission Report titles.
+## place of the two Mission Report titles. `sound`: in place of the report's own
+## (ReportSound).
 static func MissionReport(m: Mission, day: int, voice: String, mine: String, theirs: String,
-		asks: bool = false, returning: bool = false, titles: Array = []) -> void:
+		asks: bool = false, returning: bool = false, titles: Array = [], sound: String = "") -> void:
 	var first := ReportsFirstPerson(m)
 	var body := mine if first else theirs
 	if returning:
@@ -450,7 +470,7 @@ static func MissionReport(m: Mission, day: int, voice: String, mine: String, the
 		heading = str(titles[0] if first else titles[1])
 	else:
 		heading = "%s Mission Report" % Leader(m).Name if first else ReportTitle(m)
-	Report(m, day, heading, body, asks, voice, false, ReportScene(m))
+	Report(m, day, heading, body, asks, voice, false, ReportScene(m), sound)
 
 
 ## A MISSION THAT FAILED, in the original's words for each (TEXTSTRA 28898-29125;
@@ -521,7 +541,7 @@ static func NotFoundReport(m: Mission, day: int) -> void:
 	MissionReport(m, day, "mission_abort",
 		"My %s Mission to %s has failed because the target was not found at that location.  " % [name, m.Target.Name],
 		"The %s Mission to %s has failed because the target was not found at that location.  " % [name, m.Target.Name],
-		false, true, ["%s Mission Failed" % Leader(m).Name, "%s Mission Failed" % name])
+		false, true, ["%s Mission Failed" % Leader(m).Name, "%s Mission Failed" % name], "strategy/1152")
 
 
 ## "<Mission> Mission Report" - the original's own for each (TEXTSTRA).
@@ -558,7 +578,7 @@ static func DiplomacyReport(m: Mission, increased: bool, asks: bool = true, ours
 ## destroyed is Manufacturing's (TeeJ, 2026-09-27: "messages about items being
 ## destroyed or failing should be manufacturing, not mission").
 static func _tell_defender(planet: Planet, day: int, title: String, body: String,
-		category: Enums.MessageCategory = Enums.MessageCategory.Missions) -> void:
+		category: Enums.MessageCategory = Enums.MessageCategory.Missions, sound: String = "") -> void:
 	if planet == null or planet.ControllingFaction == null:
 		return
 	if not GameSettings.IsHuman(planet.ControllingFaction):
@@ -567,6 +587,7 @@ static func _tell_defender(planet: Planet, day: int, title: String, body: String
 	msg.Type = Enums.MessageType.MissionReport
 	# An enemy mission foiled is the agent's report; one that struck is a loss.
 	msg.Advisor = "agent_report" if title == "Enemy Mission Foiled" else "maintenance"
+	msg.Sound = sound
 	EventBus.Tell(planet.ControllingFaction, msg)
 
 
@@ -676,6 +697,7 @@ static func _notify_injured(c: Character) -> void:
 		Enums.MessageCategory.Missions, StrategicTickManager.Today,
 		c.Attached if c.Attached is Planet else null, c)
 	msg.Type = Enums.MessageType.CharacterHealth
+	msg.Sound = "strategy/1140"
 	EventBus.Tell(c.Faction, msg)
 
 
@@ -691,6 +713,7 @@ static func Kill(c: Character, how: String = "") -> void:
 			Enums.MessageCategory.Missions, StrategicTickManager.Today,
 			c.Attached if c.Attached is Planet else null, c)
 		msg.Type = Enums.MessageType.CharacterHealth
+		msg.Sound = "strategy/1140"
 		EventBus.Tell(c.Faction, msg)
 	c.Status = Enums.Status.Dead
 	c.Injury = 0
@@ -905,7 +928,7 @@ static func ProcessDay(rng: Prng, day: int) -> void:
 			SeizeFoiledTeam(m, rng)
 			MissionReport(m, day, "mission_failure",
 				"My %s mission to %s has been aborted because %s" % [name, m.Target.Name, why],
-				"The %s mission to %s has been aborted because %s" % [name, m.Target.Name, why], false, true, titles)
+				"The %s mission to %s has been aborted because %s" % [name, m.Target.Name, why], false, true, titles, "strategy/1152")
 			Conclude(m)
 			_active.remove_at(i)
 			EventBus.BroadcastChanged()
@@ -1087,6 +1110,7 @@ static func TellEscaped(c: Character, captor: Faction, at: Planet, day: int) -> 
 		Enums.MessageCategory.Missions, day, at, c)
 	msg.Type = Enums.MessageType.CharacterHealth
 	msg.Still = "message.1029"
+	msg.Sound = "strategy/1100"
 	EventBus.Tell(c.Faction, msg.With("released", "released"))
 
 
@@ -1113,6 +1137,7 @@ static func TellCaptured(c: Character, at: Planet) -> void:
 		"%s was captured by the %s at %s." % [c.Name, captor.ShortName if captor != null else "enemy", at.Name],
 		Enums.MessageCategory.Missions, StrategicTickManager.Today, at, c)
 	msg.Type = Enums.MessageType.CharacterHealth
+	msg.Sound = "strategy/1100"
 	EventBus.Tell(c.Faction, msg)
 
 
@@ -1129,9 +1154,9 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 		MissionReport(m, day, "mission_failure",
 			"My %s mission to %s has been foiled by opposing forces.  " % [what, m.Target.Name],
 			"The %s mission to %s has been foiled by opposing forces.  " % [what, m.Target.Name],
-			false, true, titles)
+			false, true, titles, "strategy/1152")
 		_tell_defender(m.Target, day, "Enemy Mission Foiled",
-			"An enemy %s mission to %s has been foiled by our forces." % [what, m.Target.Name])
+			"An enemy %s mission to %s has been foiled by our forces." % [what, m.Target.Name], Enums.MessageCategory.Missions, "strategy/1152")   # 0x491500
 		m.Finished = true
 		return
 
@@ -1212,6 +1237,7 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 				joined.Type = Enums.MessageType.SystemControl
 				joined.Advisor = "support_gained"
 				joined.Still = "message.1005"
+				joined.Sound = "strategy/1104"
 				EventBus.Tell(m.Faction, joined)
 			Report(m, day, DiplomacyTitle(m), DiplomacyReport(m, true, now < 100,
 					"The system is now wholly with us and the mission is complete." if now >= 100 else ""),
@@ -1282,7 +1308,10 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 			var recruit := Recruitable(m.Faction, rng)
 			if recruit == null:
 				print("[Mission] Recruitment at %s succeeded but no one remains to recruit." % m.Target.Name)
-				FailureReport(m, day, false)
+				# Nobody left at all: the original's own (TEXTSTRA 29200 / 29201,
+				# REBEXE 0x48ae30) - "Recruitment Done" / "We regret to report that
+				# there are no more candidates to be recruited."
+				Report(m, day, "Recruitment Done", "We regret to report that there are no more candidates to be recruited.", false, "mission_failure", false)
 				m.Finished = true
 			else:
 				recruit.Attached = m.Target
@@ -1362,7 +1391,7 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 				# "The following units were destroyed by saboteurs at <system>:".
 				_tell_defender(m.Target, day, "Saboteurs Strike at %s" % m.Target.Name,
 					"The following units were destroyed by saboteurs at %s:\n%s\n" % [m.Target.Name, what],   # 28804, then 28805 a unit
-					Enums.MessageCategory.Manufacturing)
+					Enums.MessageCategory.Manufacturing, "strategy/1110")   # 0x48b950
 				m.Finished = true
 
 		Enums.MissionType.SuperweaponSabotage:

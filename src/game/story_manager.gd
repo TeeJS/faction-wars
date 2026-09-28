@@ -109,6 +109,7 @@ static func ResolveEncounter(a: Character, b: Character, p: Array, day: int, rng
 		msg = GameMessage.new("%s Discovers His Heritage" % ForceManager.FirstName(a), body,
 			Enums.MessageCategory.Missions, day, a.Attached if a.Attached is Planet else null, a)
 		msg.Still = "message.1058"
+		msg.Sound = "strategy/1133"
 	else:
 		msg = GameMessage.new("%s Confronts %s" % [a.Name, b.Name],
 			"%s has fought %s.  %s" % [a.Name, b.Name, ("%s was injured." % a.Name) if injured else "Both combatants escaped uninjured."],
@@ -152,7 +153,7 @@ static func ProcessBountyHunters(day: int, rng: Prng) -> void:
 		# The original's words (TEXTSTRA 29032 / 29033).
 		EventBus.Tell(han.Faction, GameMessage.new("%s Attacked by Bounty Hunters" % han.Name,
 			"%s was attacked by bounty hunters, who failed to capture him." % han.Name,
-			Enums.MessageCategory.Missions, day, han.Attached if han.Attached is Planet else null, han).With("", "bounty_attack"))
+			Enums.MessageCategory.Missions, day, han.Attached if han.Attached is Planet else null, han).With("", "bounty_attack").Sounding("strategy/1141"))
 		return
 
 	TakeToPalace(han, day, rng)
@@ -200,7 +201,7 @@ static func TakeToPalace(han: Character, day: int, rng: Prng) -> void:
 	# in their own voice (29162 / 29163).
 	EventBus.Tell(han.Faction, GameMessage.new("%s Captured by Bounty Hunters" % han.Name,
 		"%s was captured by bounty hunters and taken to Jabba's Palace." % han.Name,
-		Enums.MessageCategory.Missions, day, null, han).With("captured"))
+		Enums.MessageCategory.Missions, day, null, han).With("captured").Sounding("strategy/1142"))
 	for c in party:
 		EventBus.Tell(han.Faction, GameMessage.new("%s Rescue Attempt" % c.Name,
 			"%s has been captured by bounty hunters and taken to Jabba's palace.  I will be departing immediately to attempt a rescue." % han.Name,
@@ -331,6 +332,7 @@ static func FinalBattleWon(luke: Character, vader: Character, emperor: Character
 				ForceManager.FirstName(luke), LastName(vader), ForceManager.FirstName(luke), emperor.Name, vader.Name],
 			Enums.MessageCategory.Missions, day, home if home is Planet else null, luke)
 		msg.Still = "message.1063"
+		msg.Sound = "strategy/1138"
 		EventBus.Tell(side, msg)
 	EventBus.BroadcastChanged()
 
@@ -353,4 +355,5 @@ static func FinalBattleLost(luke: Character, day: int, rng: Prng) -> void:
 			ForceManager.FirstName(luke), LastName(vader) if vader != null else "Vader", ForceManager.FirstName(luke)],
 		Enums.MessageCategory.Missions, day, luke.Attached if luke.Attached is Planet else null, luke)
 	msg.Still = "message.1064"
+	msg.Sound = "strategy/1139"
 	EventBus.Tell(luke.Faction, msg)

@@ -134,6 +134,7 @@ static func Begun(p: Planet, blockader: Faction, day: int) -> void:
 		msg.Type = Enums.MessageType.Blockade
 		# The blockader started it; the system's holder has detected it.
 		msg.Advisor = "blockade_started" if ours else "blockade_detected"
+		msg.Sound = "strategy/1118"   # REBEXE 0x496080
 		EventBus.Tell(side, msg)
 
 
