@@ -259,10 +259,9 @@ static func Adjective(f: Faction) -> String:
 ## window ("Assault on |", TEXTSTRA.DLL 0xF664; TeeJ's screenshot of the
 ## original's Conflict Messages, 2026-09-26) and opening it opens the window.
 static func Announce(r: AssaultReport, _fleet: Fleet, attacker: Faction, defender: Faction, day: int) -> void:
-	var body := "%s\n\n%d rounds.\nAttacking regiments lost: %d%s\nDefending regiments lost: %d" % [
-		Sentence(r), r.Steps, r.AttackerLost.size(),
-		(" (%d to defensive batteries)" % r.LostToBatteries.size()) if not r.LostToBatteries.is_empty() else "",
-		r.DefenderLost.size()]
+	# The body is the original's sentence alone (TEXTSTRA 28817-28820): the
+	# rounds and losses are in the Assault Summary it opens.
+	var body := Sentence(r)
 	for side in [attacker, defender]:
 		if side == null or not GameSettings.IsHuman(side):
 			continue

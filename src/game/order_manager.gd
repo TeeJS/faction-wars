@@ -268,9 +268,11 @@ static func AdvanceHeadquarters() -> void:
 		# Arrives" / "The Alliance Headquarters has arrived at <system>." Filed
 		# with deliveries - the category is OURS.
 		var msg := GameMessage.new("Headquarters Arrives",
-			"The %s Headquarters has arrived at %s." % [faction.ShortName, to.Name],
+			"The %s Headquarters has arrived at %s" % [faction.ShortName, to.Name],   # 28797: no full stop
 			Enums.MessageCategory.Manufacturing, StrategicTickManager.Today, to)
 		msg.Type = Enums.MessageType.UnitArrival
+		if Faction.SkinOf(faction.Id) == "alliance":
+			msg.Still = "message.1022"   # the original's picture of it (REBEXE 0x4981b0)
 		EventBus.Tell(faction, msg)
 		EventBus.BroadcastChanged()
 
@@ -721,7 +723,8 @@ static func RunBlockade(units: Array, from: Planet, rng: Prng) -> Array:
 		from.FighterSquadrons.erase(u)
 	if not lost.is_empty():
 		var msg := GameMessage.new("Evacuation Losses",
-			"The following units were lost running an enemy blockade of %s:\n\n  %s" % [from.Name, "\n  ".join(lost)],
+			# TEXTSTRA 28841 then 28842 a unit: "... of <system>.\n" and "\n<unit>".
+			"The following units were lost running an enemy blockade of %s.\n\n%s" % [from.Name, "\n".join(lost)],
 			Enums.MessageCategory.Manufacturing, StrategicTickManager.Today, from)   # items destroyed (TeeJ, 2026-09-27)
 		msg.Type = Enums.MessageType.EvacuationLosses
 		EventBus.Tell(units[0].Faction, msg)   # own-side only, not broadcast

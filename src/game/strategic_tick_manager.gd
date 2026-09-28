@@ -41,6 +41,22 @@ static func RestingSomewhereFriendly(c: Character) -> bool:
 ## 28864-28869): one, "<name> Arrives at <system>" / "I have arrived at
 ## <system>."; several, "Personnel Arrive at <system>" / "The following
 ## personnel have arrived at <system>." and their names, one a line.
+## SHIPS OR UNITS THAT LAND TOGETHER, in the original's words and pictures
+## (TEXTSTRA 28790/28791 ships, 28794/28795 units, then 28798 a line each:
+## "<title>" / "The following ... have arrived at <system>:\n" and "<name>\n";
+## STRATEGY `stills` [Alliance, Empire] - REBEXE 0x4981b0).
+static func TellLanded(side: Faction, at: Location, things: Array, title: String, opening: String, stills: Array, category: int) -> void:
+	if side == null or at == null or things.is_empty() or not GameSettings.IsHuman(side):
+		return
+	var body := opening % at.Name
+	for u in things:
+		body += "%s\n" % u.Name
+	var msg := GameMessage.new(title % at.Name, body, category, Today, at if at is Planet else null)
+	msg.Type = Enums.MessageType.UnitArrival
+	msg.Still = stills[0] if Faction.SkinOf(side.Id) == "alliance" else stills[1]
+	EventBus.Tell(side, msg)
+
+
 static func TellArrivals(arrivals: Dictionary, day: int) -> void:
 	for key in arrivals:
 		var g: Dictionary = arrivals[key]
@@ -84,8 +100,9 @@ func AdvanceDay() -> void:
 			if not character.IsInjured():
 				character.DaysResting = 0
 				print("%s has recovered." % character.Name)
-				var msg := GameMessage.new("%s has recovered" % character.Name,
-					"%s is fit again and ready for assignment." % character.Name,
+				# The original's words (TEXTSTRA 29026 / 29027).
+				var msg := GameMessage.new("%s Healed" % character.Name,
+					"%s has been healed of all injuries." % character.Name,
 					Enums.MessageCategory.Missions, CurrentDay,
 					character.Attached if character.Attached is Planet else null, character)
 				msg.Type = Enums.MessageType.CharacterHealth
@@ -139,6 +156,7 @@ func AdvanceDay() -> void:
 					if u.DaysToDestination <= 0:
 						arriving.append(u)
 
+	var landed := {}   # "<faction>|<place>" -> [faction, place, [units]]
 	for u in arriving:
 		var destination := u.Destination
 		u.Destination = null
@@ -149,6 +167,13 @@ func AdvanceDay() -> void:
 		else:
 			u.Attached = destination
 		print("%s has arrived at %s." % [u.Name, destination.Name])
+		var key := "%s|%s" % [u.Faction.Id if u.Faction != null else "", destination.Name]
+		if not landed.has(key):
+			landed[key] = [u.Faction, destination, []]
+		landed[key][2].append(u)
+	for key in landed:
+		var g: Array = landed[key]
+		TellLanded(g[0], g[1], g[2], "Units Arrive at %s", "The following units have arrived at %s:\n", ["message.1020", "message.1021"], Enums.MessageCategory.Defense)
 
 	# --- A RELOCATING HEADQUARTERS (manual p135; OrderManager.MoveHeadquarters).
 	OrderManager.AdvanceHeadquarters()
@@ -191,6 +216,16 @@ func AdvanceDay() -> void:
 					fleet.Status = Enums.Status.AwaitingOrders
 					fleet.ArrivedDay = Today
 					print("%s has arrived at %s." % [fleet.Name, landing.Name])
+					if fleet.IsTransit():
+						TellLanded(fleet.Faction, landing, fleet.Ships, "Ships arrive at %s", "The following ships have arrived at %s:\n", ["message.1018", "message.1019"], Enums.MessageCategory.Fleets)
+					elif fleet.Faction != null and GameSettings.IsHuman(fleet.Faction):
+						# The original's words and picture (TEXTSTRA 28792 / 28793, STRATEGY
+						# 1018 Alliance / 1019 Empire - REBEXE 0x4981b0).
+						var came := GameMessage.new("Fleet Arrives at %s" % landing.Name, "%s has arrived at %s." % [fleet.Name, landing.Name],
+							Enums.MessageCategory.Fleets, CurrentDay, landing)
+						came.Type = Enums.MessageType.UnitArrival
+						came.Still = "message.1018" if Faction.SkinOf(fleet.Faction.Id) == "alliance" else "message.1019"
+						EventBus.Tell(fleet.Faction, came)
 					# "A FLEET CAN EXPLORE AN UNEXPLORED SYSTEM ... WHEN THE FLEET ARRIVES YOU
 					# LEARN THE SAME INFORMATION ABOUT THE SYSTEM THAT YOU DO FROM A RECON
 					# MISSION ... EXCEPT ANY CHARACTERS OR SPECFORCES THAT MAY BE PRESENT AND

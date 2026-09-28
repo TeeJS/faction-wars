@@ -1361,7 +1361,7 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 				# The original's own words (TEXTSTRA): "Saboteurs Strike at <system>" /
 				# "The following units were destroyed by saboteurs at <system>:".
 				_tell_defender(m.Target, day, "Saboteurs Strike at %s" % m.Target.Name,
-					"The following units were destroyed by saboteurs at %s:\n\n  %s" % [m.Target.Name, what],
+					"The following units were destroyed by saboteurs at %s:\n%s\n" % [m.Target.Name, what],   # 28804, then 28805 a unit
 					Enums.MessageCategory.Manufacturing)
 				m.Finished = true
 

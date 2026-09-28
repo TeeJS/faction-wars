@@ -259,9 +259,11 @@ static func Retreat(r: BattleReport, day: int, side: Faction = null) -> Result:
 	_awaiting_orders.erase(r)
 	Withdraw(mine, r.Where)
 	print("[Battle] %s withdrew from %s." % [mine.Name, r.Where.Name])
-	var msg := GameMessage.new("%s has withdrawn" % mine.Name,
-		"%s broke off at %s and fell back to the nearest system we hold." % [mine.Name, r.Where.Name],
-		Enums.MessageCategory.Missions, day, r.Where)
+	# The original's words (TEXTSTRA 28673 / 28684): "Battle at <system>" / "The
+	# <side> fleet has withdrawn."
+	var msg := GameMessage.new("Battle at %s" % r.Where.Name,
+		"The %s fleet has withdrawn. " % AssaultManager.Adjective(mine.Faction),
+		Enums.MessageCategory.Conflict, day, r.Where)
 	msg.Type = Enums.MessageType.TacticalAfterActionReport
 	EventBus.Tell(mine.Faction, msg)
 	EventBus.BroadcastChanged()
@@ -322,24 +324,51 @@ static func Simulate(r: BattleReport, day: int) -> void:
 		return
 
 	_unreported.append(r)
-	var extra := ""
-	if r.HeldByGravityWell:
-		extra = "\n\nA gravity well projector held the losing fleet in place. It could not withdraw."
-	elif r.LoserWithdrew:
-		extra = "\n\nThe losing fleet withdrew to the nearest system its side holds."
 	# A Conflict message titled as its results window is ("Battle at |",
 	# TEXTSTRA.DLL 0xE758), which opening it brings up (TeeJ, 2026-09-26: a
-	# conflict message "opens the actual assault/battle screen"). INFERRED from
-	# the original's assault message, "Assault on <system>" under Conflict
-	# Messages on TeeJ's screenshot; no battle message has been seen.
-	var msg := GameMessage.new("Battle at %s" % r.Where.Name,
-		r.Summary + "\n\nStrength: %s %d, %s %d." % [r.Ours.Name, s0, r.Theirs.Name, s1] + extra
-			+ (("\n\nDestroyed: %s" % Lq.join(r.Destroyed)) if not r.Destroyed.is_empty() else "\n\nNo casualties."),
-		Enums.MessageCategory.Conflict, day, r.Where)
-	msg.Type = Enums.MessageType.TacticalAfterActionReport
-	msg.Report = r
-	for k in audiences.size():
-		EventBus.Tell(audiences[k], msg if k == 0 else msg.Copy())
+	# conflict message "opens the actual assault/battle screen"); its body each
+	# side's own, in the original's words (Outcome).
+	for side in audiences:
+		var msg := GameMessage.new("Battle at %s" % r.Where.Name, Outcome(r, side), Enums.MessageCategory.Conflict, day, r.Where)
+		msg.Type = Enums.MessageType.TacticalAfterActionReport
+		msg.Report = r
+		EventBus.Tell(side, msg)
+
+
+## A BATTLE AS THE ORIGINAL TELLS EACH SIDE (TEXTSTRA 28674-28690, as REBEXE's
+## three battle builders 0x49b150 / 0x49b330 / 0x49b4d0 put them in order): the
+## winner "The <side> fleet is victorious. " then what it means for the system
+## and the other fleet's fate; the loser "The <side> fleet is defeated. " then
+## the system's and its own; both broken "There has been no victor.  All <side>
+## and <side> ships have been destroyed." Which sentence for which case is
+## INFERRED from each builder's order - no battle message of the original's
+## has been seen.
+static func Outcome(r: BattleReport, viewer: Faction) -> String:
+	var ours: Fleet = r.Mine(viewer)
+	var theirs: Fleet = r.Enemy(viewer)
+	var me := AssaultManager.Adjective(ours.Faction if ours != null else viewer)
+	var them := AssaultManager.Adjective(theirs.Faction if theirs != null else null)
+	var world := r.Where.Name
+	var holder: Faction = r.Where.ControllingFaction
+	var neutral := FactionRegistry.OrderOf(holder) < 0
+	if r.DrawBothLost:
+		return "There has been no victor.  All %s and %s ships have been destroyed. " % [me, them]
+	var won := not r.Lost(viewer)
+	var fate := "has withdrawn. " if r.LoserWithdrew else "has been completely destroyed. "
+	if won:
+		if neutral:
+			return "The %s fleet is victorious. The world %s is now under %s blockade. " % [me, world, me] + "The %s fleet %s" % [them, fate]
+		var place := ("%s has been successfully defended from %s forces. " % [world, them]) if holder == viewer \
+			else ("%s is now under blockade by %s forces. " % [world, me])
+		return "The %s fleet is victorious. " % me + place + "The %s fleet %s" % [them, fate]
+	var lost_place: String
+	if neutral:
+		lost_place = "The %s fleet was victorious at the neutral world %s. " % [them, world]
+	elif holder == viewer:
+		lost_place = "%s is now under blockade by %s forces. " % [world, them]
+	else:
+		lost_place = "The %s attack on %s has failed. " % [me, world]
+	return "The %s fleet is defeated. " % me + lost_place + "The %s fleet %s" % [me, fate]
 
 
 static func Tally(side: TacticalBattle.TacticalSide, into: Casualties, fleet: Fleet) -> void:

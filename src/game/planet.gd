@@ -520,6 +520,7 @@ func UpdateGarrisonState() -> void:
 		if IsInUprising:
 			IsInUprising = false
 			print("[%s] Uprising subdued - %d regiments now meet the requirement." % [Name, have])
+			_TellUprisingEnds()
 
 	# WHILE IT RUNS, IT EATS THE OWNER'S SUPPORT (entries 165/166).
 	if IsInUprising and StrategicTickManager.Today >= _next_support_drift:
@@ -534,6 +535,16 @@ func UpdateGarrisonState() -> void:
 		ControllingFaction = FactionRegistry.Neutral
 		IsInUprising = false
 		MilitaryCatalog.OnControlChanged(self, ousted)
+		# The original's words (TEXTSTRA 28730 / 28733, STRATEGY 1005): "<system>
+		# Declares Neutrality" / "Divided loyalty on <system> has caused that world
+		# to abandon the <side> cause."
+		if ousted != null and GameSettings.IsHuman(ousted):
+			var gone := GameMessage.new("%s Declares Neutrality" % Name,
+				"Divided loyalty on %s has caused that world to abandon the %s cause." % [Name, ousted.ShortName],
+				Enums.MessageCategory.Loyalty, StrategicTickManager.Today, self)
+			gone.Type = Enums.MessageType.SystemControl
+			gone.Still = "message.1005"
+			EventBus.Tell(ousted, gone)
 		return
 
 	# ATTRITION (manual p091).
@@ -573,12 +584,28 @@ func ConsiderUprising(need: int, have: int) -> void:
 	if not GameSettings.IsHuman(ControllingFaction):
 		return
 
-	# The original's own strings (TEXTSTRA 0x021a66) and the shipped droid advice.
+	# The original's own words and picture (TEXTSTRA 28720 / 28723, STRATEGY 1010 -
+	# REBEXE 0x499450): "Uprising Begins on <system>" / "An uprising has begun on
+	# the <side> controlled system <system>."
 	var msg := GameMessage.new("Uprising Begins on %s" % Name,
-		"An uprising has begun on %s. Production there has stopped, and the garrison requirement has doubled to %d regiments while it lasts.\n\nUprisings can be subdued by placing twice the normal garrison on the system, or by sending a character to perform a 'Subdue Uprising' mission at that location." % [Name, GarrisonRequirement()],
+		"An uprising has begun on the %s controlled system %s." % [ControllingFaction.ShortName, Name],
 		Enums.MessageCategory.Defense, StrategicTickManager.Today, self)
 	msg.Type = Enums.MessageType.Uprising
 	msg.Advisor = "support_lost"
+	msg.Still = "message.1010"
+	EventBus.Tell(ControllingFaction, msg)
+
+
+## "Uprising Ends on <system>" / "The uprising on <system> has ended." (TEXTSTRA
+## 28721 / 28722) over the holder's own picture of it - STRATEGY 1011 for the
+## Alliance, 1012 for the Empire (REBEXE 0x499450).
+func _TellUprisingEnds() -> void:
+	if ControllingFaction == null or not GameSettings.IsHuman(ControllingFaction):
+		return
+	var msg := GameMessage.new("Uprising Ends on %s" % Name, "The uprising on %s has ended." % Name,
+		Enums.MessageCategory.Defense, StrategicTickManager.Today, self)
+	msg.Type = Enums.MessageType.Uprising
+	msg.Still = "message.1011" if Faction.SkinOf(ControllingFaction.Id) == "alliance" else "message.1012"
 	EventBus.Tell(ControllingFaction, msg)
 
 
@@ -593,11 +620,14 @@ func WarnGarrison(need: int, have: int) -> void:
 	print("[%s] NEAR UPRISING - %d of %d regiments. First unrest check on day %d." % [Name, have, need, _next_uprising_incident])
 	if not GameSettings.IsHuman(ControllingFaction):
 		return
+	# The body word for word too (28785), and the holder's picture: STRATEGY
+	# 1008 for the Alliance, 1009 for the Empire (REBEXE 0x498ca0).
 	var msg := GameMessage.new("%s Near Uprising" % Name,
-		"Unrest has pushed %s close to uprising.\n\nIt holds %d %s against a garrison requirement of %d. Move troops there, or train more, before the populace rises." % [Name, have, Terms.lower("trooper_regiments"), need],
+		"Unrest has pushed %s close to uprising." % Name,
 		Enums.MessageCategory.Defense, StrategicTickManager.Today, self)
 	msg.Type = Enums.MessageType.GarrisonWarning
 	msg.Advisor = "support_lost"
+	msg.Still = "message.1008" if Faction.SkinOf(ControllingFaction.Id) == "alliance" else "message.1009"
 	EventBus.Tell(ControllingFaction, msg)
 
 
@@ -784,7 +814,7 @@ static func Deliver(job: ConstructionTask, destination: Planet) -> void:
 		var unit := MilitaryCatalog.Create(job.UnitRule, destination.ControllingFaction, destination)
 		MilitaryCatalog.Deploy(unit, destination)
 		var cat := Enums.MessageCategory.Defense if (unit.Type == Enums.UnitType.Troop or unit.Type == Enums.UnitType.SpecForce) else Enums.MessageCategory.Manufacturing
-		ReportDelivery(destination, unit.Name, cat)
+		ReportDelivery(destination, unit.Name, cat, unit, job.UnitRule.DisplayName)
 		return
 
 	destination.AddFacility(job.Family, job.Tier)
@@ -799,12 +829,29 @@ static func Deliver(job: ConstructionTask, destination: Planet) -> void:
 	ReportDelivery(destination, rule.DisplayName if rule != null else Facility.NameOf(job.Family, job.Tier), category)
 
 
-static func ReportDelivery(where: Planet, what: String, category: int) -> void:
+## THE ORIGINAL'S WORDS for something new (TEXTSTRA 28806-28815, REBEXE
+## 0x497940): a capital ship "<class> Deployed at <system>" / "The new <class>,
+## <its name>, has been deployed at <system>."; the Death Star "New Death Star
+## Deployed at <system>" / "The new Death Star, <name>, ..."; fighters "<name>
+## Squadron Deployed at <system>" / "A new <name> squadron has been deployed to
+## <system>."; anything else "<name> Deployed at <system>" / "A new <name> has
+## been deployed to <system>."
+static func ReportDelivery(where: Planet, what: String, category: int, unit: Unit = null, kind: String = "") -> void:
 	if not GameSettings.IsHuman(where.ControllingFaction):
 		return
-	var msg := GameMessage.new("%s ready at %s" % [what, where.Name],
-		"Construction of %s is complete and it has been deployed on %s." % [what, where.Name],
-		category, StrategicTickManager.Today, where)
+	var title := "%s Deployed at %s" % [what, where.Name]
+	var body := "A new %s has been deployed to %s." % [what, where.Name]
+	if unit != null and unit.Type == Enums.UnitType.CapitalShip:
+		if unit.HasRole("superweapon"):
+			title = "New %s Deployed at %s" % [kind, where.Name]
+			body = "The new %s, %s, has been deployed at %s." % [kind, unit.Name, where.Name]
+		else:
+			title = "%s Deployed at %s" % [kind, where.Name]
+			body = "The new %s, %s, has been deployed at %s." % [kind, unit.Name, where.Name]
+	elif unit != null and unit.Type == Enums.UnitType.Fighter:
+		title = "%s Squadron Deployed at %s" % [what, where.Name]
+		body = "A new %s squadron has been deployed to %s." % [what, where.Name]
+	var msg := GameMessage.new(title, body, category, StrategicTickManager.Today, where)
 	msg.Type = Enums.MessageType.UnitDeployment
 	# Capital ships come to the fleets; troops and fighters are production.
 	msg.Advisor = "units_arrived" if category == Enums.MessageCategory.Fleets else "production"

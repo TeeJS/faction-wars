@@ -60,9 +60,13 @@ static func TryEscape(prisoner: Character, galaxy: Array, day: int, rng: Prng) -
 
 	if not GameSettings.IsHuman(prisoner.Faction):
 		return
-	EventBus.Tell(prisoner.Faction, GameMessage.new("%s has escaped" % prisoner.Name,
-		"%s has got out of enemy hands and reached %s." % [prisoner.Name, home.Name if home != null else "our forces"],
-		Enums.MessageCategory.Missions, day, home if home is Planet else null, prisoner).With("released", "released"))
+	# The original's words and picture (TEXTSTRA 29022 / 29023, STRATEGY 1029):
+	# "<name> Escaped" / "<name> has escaped from imprisonment at <system>."
+	var msg := GameMessage.new("%s Escaped" % prisoner.Name,
+		"%s has escaped from imprisonment at %s." % [prisoner.Name, held.Name if held != null else captor.ShortName if captor != null else "the enemy"],
+		Enums.MessageCategory.Missions, day, home if home is Planet else null, prisoner).With("released", "released")
+	msg.Still = "message.1029"
+	EventBus.Tell(prisoner.Faction, msg)
 
 
 static func HomeFor(f: Faction, galaxy: Array) -> Location:
