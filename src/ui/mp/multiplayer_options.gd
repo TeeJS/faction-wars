@@ -61,7 +61,10 @@ const LogLines := 4
 
 ## Page 2: its questions on the two rows, its choices in the rows' two slots
 ## (their words Arial 9 - "Slowest" / "wins" - or 12, their capitals this far
-## down the slot; the chosen one marked with a galaxy size's red brackets).
+## down the slot; the chosen one marked with a galaxy size's red brackets,
+## their corners out at the slot's edges so they frame the words rather than
+## cross them; the words green, chosen or not - TeeJ, 2026-09-28: "the red is
+## hard to read on the black background").
 const Page2Questions := ["Skip the opening briefing?", "What speed rule would you like?"]
 const BriefingAt := [Vector2(389, 71), Vector2(440, 71)]
 const BriefingWords := [[["Yes", 13]], [["No", 13]]]
@@ -70,11 +73,15 @@ const SpeedAt := [Vector2(389, 133), Vector2(440, 133)]
 const SpeedWords := [[["Slowest", 11], ["wins", 22]], [["Average", 16]]]
 const SpeedPx := 9.0
 ## Page 2's plate, from the original's (rows [first, after last, where to],
-## across x 133-575): the second row the first row's band; the chat's top
-## (its border, the Chat> bar, the rule under it) up 70 into the lamp row's
-## place; its message grid twice, down to the original's bottom border.
+## across x 133-575): the chat's top (its border, the Chat> bar, the rule
+## under it) up 70 into the lamp row's place; its message grid twice, down to
+## the original's bottom border. The second row keeps its own red and green
+## wires and grid (TeeJ, 2026-09-28: "make the wires match the colors on the
+## previous page"); only its third slot goes, under the first row's plain
+## panel beside it (Page2Cover: that panel, above the wires, and where to).
 const PlateX := Vector2i(133, 575)
-const Page2Plate := [[62, 124, 124], [256, 294, 186], [294, 365, 224], [294, 364, 295]]
+const Page2Plate := [[256, 294, 186], [294, 365, 224], [294, 364, 295]]
+const Page2Cover := [Rect2i(483, 62, 55, 55), Vector2i(483, 124)]
 const Up := 70
 const Page2LogLines := 8
 
@@ -439,15 +446,23 @@ static func _page_plates() -> Array:
 	var src: Image = tex.get_image() if tex != null else null
 	if src == null:
 		return [tex, tex]
+	return [tex, ImageTexture.create_from_image(Page2Picture(src))]
+
+
+## Page 2's picture made from the original's screen `src` (Page2Plate, Page2Cover).
+static func Page2Picture(src: Image) -> Image:
 	var out: Image = src.duplicate()
+	out.blit_rect(src, Page2Cover[0], Page2Cover[1])
 	for p in Page2Plate:
 		out.blit_rect(src, Rect2i(PlateX.x, p[0], PlateX.y - PlateX.x, p[1] - p[0]), Vector2i(PlateX.x, p[2]))
-	return [tex, ImageTexture.create_from_image(out)]
+	return out
 
 
 ## The red corner brackets of a chosen galaxy size - the pixels that set its
 ## chosen picture apart from the plain one - to mark page 2's chosen choices
-## the same way.
+## the same way, each corner moved out to the slot's edges (TeeJ, 2026-09-28:
+## "make the red brackets large enough to not cover the text"): the original's
+## sit 5-7 px in, across "Slowest".
 static func _brackets() -> Texture2D:
 	var on: Texture2D = Art.WindowPicture("mp_size.huge.chosen")
 	var off: Texture2D = Art.WindowPicture("mp_size.huge")
@@ -455,14 +470,32 @@ static func _brackets() -> Texture2D:
 		return null
 	var a: Image = on.get_image()
 	var b: Image = off.get_image()
-	var out := Image.create(a.get_width(), a.get_height(), false, Image.FORMAT_RGBA8)
+	var mask := Image.create(a.get_width(), a.get_height(), false, Image.FORMAT_RGBA8)
 	for y in a.get_height():
 		for x in a.get_width():
 			var ca: Color = a.get_pixel(x, y)
 			var cb: Color = b.get_pixel(x, y)
 			if ca.r > 0.6 and ca.g < 0.35 and absf(ca.r - cb.r) + absf(ca.g - cb.g) + absf(ca.b - cb.b) > 0.25:
-				out.set_pixel(x, y, ca)
-	return ImageTexture.create_from_image(out)
+				mask.set_pixel(x, y, ca)
+	return ImageTexture.create_from_image(Outward(mask))
+
+
+## Corner marks `mask` with each quarter moved out until the marks reach the
+## picture's edges.
+static func Outward(mask: Image) -> Image:
+	var used: Rect2i = mask.get_used_rect()
+	var w := mask.get_width()
+	var h := mask.get_height()
+	var out := Image.create(w, h, false, Image.FORMAT_RGBA8)
+	if used.size == Vector2i.ZERO:
+		return out
+	var mid := used.get_center()
+	for q in [Vector2i(0, 0), Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1)]:
+		var from := Rect2i(used.position.x if q.x == 0 else mid.x, used.position.y if q.y == 0 else mid.y, 0, 0)
+		from.end = Vector2i(mid.x if q.x == 0 else used.end.x, mid.y if q.y == 0 else used.end.y)
+		var shift := Vector2i(-used.position.x if q.x == 0 else w - used.end.x, -used.position.y if q.y == 0 else h - used.end.y)
+		out.blend_rect(mask, from, from.position + shift)
+	return out
 
 
 func _dress() -> void:
@@ -614,7 +647,7 @@ func _refresh_look() -> void:
 			var b: TextureButton = pair[0][i]
 			var chosen: bool = str((pair[1][i] as Button).get_meta("id")) == str(_settings.get(pair[2], pair[3]))
 			for l in b.get_meta("words"):
-				(l as Label).add_theme_color_override("font_color", OriginalMp.Red if chosen else (OriginalMp.Grey if locked else OriginalMp.Green))
+				(l as Label).add_theme_color_override("font_color", OriginalMp.Green if chosen or not locked else OriginalMp.Grey)
 			(b.get_meta("mark") as Control).visible = chosen and _page == 2
 	var hq := bool(_settings.get("hq_only", false))
 	for i in _oLamps.size():
