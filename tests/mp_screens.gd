@@ -374,7 +374,8 @@ func _host_original() -> void:
 ## 2026-09-27): page 1 the original's as it is - its two questions, Standard
 ## Game / HQ Victory and Load Game in their places, a four-line chat - and
 ## page 2 ours: the opening briefing and the speed rule on the two rows, the
-## chat moved up and eight lines long; the guest follows the host's page.
+## game code and Copy on a third, the chat where page 1 has it; the guest
+## follows the host's page.
 func _options_original(host: bool) -> void:
 	var who := "host" if host else "guest"
 	MpSetup.player_name = "Han" if host else "Luke"
@@ -404,8 +405,8 @@ func _options_original(host: bool) -> void:
 	_check(not (c.get_node("Speed0") as Control).visible and not (c.get_node("Briefing0") as Control).visible and not (c.get_node("Page2Question0") as Control).visible,
 		"%s page 1: page 2's choices hidden" % who)
 	_check((c.get_node("Plate") as TextureRect).texture == Art.Screen("mp_options"), "%s page 1: the original's picture as it is" % who)
-	_check((c.get_node("Code") as Label).text == "Code: TEST01" and (c.get_node("Copy") as Label).get_theme_color("font_color") == Color(1, 0, 0),
-		"%s: the game code and Copy on the Chat> bar" % who)
+	_check(not (c.get_node("Code") as Control).visible and not (c.get_node("Copy") as Control).visible,
+		"%s page 1: no game code or Copy (TeeJ, 2026-09-28: Copy off this page)" % who)
 	var entry: LineEdit = s.get_node("%ChatEntry")
 	var log: RichTextLabel = s.get_node("%ChatLog")
 	_check(entry.get_parent() == c and log.get_parent() == c and is_equal_approx(log.size.y, 64 * 2.0) and is_equal_approx((c.get_node("ChatLabel") as Control).position.y, (266 - 0.19 * 13.0) * 2.0),
@@ -444,8 +445,14 @@ func _options_original(host: bool) -> void:
 		"%s page 2: Yes / No on the first row, Slowest wins / Average on the second" % who)
 	var plate: Texture2D = (c.get_node("Plate") as TextureRect).texture
 	_check(plate != Art.Screen("mp_options") and plate != null and plate.get_size() == Art.Screen("mp_options").get_size(), "%s page 2: its own picture, made from the original's" % who)
-	_check(is_equal_approx(log.size.y, 128 * 2.0) and is_equal_approx((c.get_node("ChatLabel") as Control).position.y, (196 - 0.19 * 13.0) * 2.0)
-		and entry.visible and log.visible, "%s page 2: the chat moved up into the lamp row's place, its log eight lines" % who)
+	_check(is_equal_approx(log.size.y, 64 * 2.0) and is_equal_approx((c.get_node("ChatLabel") as Control).position.y, (266 - 0.19 * 13.0) * 2.0)
+		and entry.visible and log.visible, "%s page 2: the chat where page 1 has it, the same size (TeeJ: 'the chat boxes are the same size on both')" % who)
+	var copy: TextureButton = c.get_node("Copy")
+	_check((c.get_node("Code") as Label).text == "Code: TEST01" and (c.get_node("Code") as Control).visible and copy.visible
+		and copy.position == Vector2(389, 195) * 2.0 and (c.get_node("CopyWord") as Label).text == "Copy",
+		"%s page 2: the game code and a Copy button on their own row" % who)
+	copy.pressed.emit()
+	_check(log.get_parsed_text().contains("Copied the game code TEST01."), "%s page 2: Copy copies the code" % who)
 	var start: TextureButton = c.get_node("Next")
 	_check(start.texture_normal == Art.ButtonIcon("mp_start") and start.disabled, "%s page 2: the checkmark, waiting" % who)
 	var b0: TextureButton = c.get_node("Briefing0")
@@ -492,7 +499,10 @@ func _page2_pictures() -> void:
 	_check(out.get_pixel(500, 150) == src.get_pixel(500, 150 - 62) and out.get_pixel(537, 124 + 54) == src.get_pixel(537, 62 + 54)
 		and out.get_pixel(538, 150) == src.get_pixel(538, 150),
 		"page 2's picture: the third slot under the first row's plain panel, above the wires")
-	_check(out.get_pixel(300, 200) == src.get_pixel(300, 270), "page 2's picture: the chat moved up 70")
+	_check(out.get_pixel(300, 200) == src.get_pixel(300, 200 - 124) and out.get_pixel(300, 300) == src.get_pixel(300, 300),
+		"page 2's picture: the first row's band as a third row, the chat where it was")
+	_check(out.get_pixel(450, 210) == src.get_pixel(483 + 16, 62 + 24) and out.get_pixel(520, 249) == src.get_pixel(430, 249),
+		"page 2's picture: the third row's second slot and the Load Game frame's foot under plain panel")
 	# The original's brackets (COMMON 10127 minus 10126): corners 5-7 px in.
 	var mask := Image.create(36, 36, false, Image.FORMAT_RGBA8)
 	mask.fill_rect(Rect2i(5, 7, 9, 2), Color.RED)
