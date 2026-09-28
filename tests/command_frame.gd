@@ -178,12 +178,9 @@ func _init() -> void:
 		_check(not grey.visible and not bar.Panel().visible and ui.get_node_or_null("ClassicControls") == null
 			and ui.find_child("GalaxyMapLayers", true, false) == null,
 			"%s: no grey row of finders, no blue bar, no Classic controls" % side)
-		var band := Rect2(across.position.x, screen.y - 34, across.size.x, 31).grow(1)
-		var ver: Label = ui.find_child("BuildVersion", true, false)
-		var verAt: Rect2 = ver.get_global_rect() if ver != null else Rect2()
-		_check(ver != null and ver.get_parent() == ui and ver.horizontal_alignment == HORIZONTAL_ALIGNMENT_RIGHT
-			and verAt.end.x <= across.end.x and verAt.end.x >= across.end.x - 12 and band.encloses(verAt),
-			"%s: the build label at the frame's bottom right (%s)" % [side, str(verAt)])
+		# No build label on this screen: the Cockpit's and Game Options' do
+		# (TeeJ, 2026-09-28: "please remove the version from the main screen").
+		_check(ui.find_child("BuildVersion", true, false) == null, "%s: no build label on the Command Center" % side)
 		var fb: FeedbackPanel = ui.get_node_or_null("FeedbackPanel")
 		var fbAt: Rect2 = fb.get_global_rect() if fb != null else Rect2()
 		var col: Control = ui.get_node("TaskbarPanel")

@@ -79,21 +79,11 @@ func _ready() -> void:
 		if _IsEscWindow(n):
 			_focusedWindow = n)
 	_taskbarList = get_node("%TaskbarList")
-	var menuButton: Button = get_node_or_null("../MenuButton")
-	if menuButton == null:
-		menuButton = get_node_or_null("%MenuButton")
-	if menuButton == null:
-		menuButton = get_node_or_null("HBoxContainer/MenuButton")
-	if menuButton != null:
-		# The Menu button's `pressed` signal is already wired in Main.tscn (a
-		# [connection] node -> OnMenuButtonClicked). Connecting it again here
-		# raised "Signal already connected" errors on every load (#8), so the
-		# code connect is dropped and the scene connection is the single source.
-		# The build version, right of the Menu button (TeeJ, room #106).
-		var ver := BuildInfo.label()
-		menuButton.get_parent().add_child(ver)
-		menuButton.get_parent().move_child(ver, menuButton.get_index() + 1)
-		_versionLabel = ver
+	# The Menu button's `pressed` signal is wired in Main.tscn (a [connection]
+	# node -> OnMenuButtonClicked); connecting it here too raised "Signal already
+	# connected" on every load (#8). No build version beside it: the Cockpit's
+	# and the Game Options screen's are enough (TeeJ, 2026-09-28: "please remove
+	# the version from the main screen").
 	# Loop through the CommsList to wire the HUD buttons dynamically.
 	var commsList: VBoxContainer = get_node_or_null("CommsPanel/Margin/CommsList")
 	if commsList != null:
@@ -231,10 +221,8 @@ func BuildCommandFrame(side: String) -> void:
 ## eliminate the blue bar" - and the grey one, the row of finders, for the
 ## Control Panel's monitors and the droid - "we have replicated everything
 ## the grey bar does, remove it completely". Feedback is at the foot of the
-## sector column; the build label stays at the frame's bottom right, where
-## the bars ended. Without the left-hand menu (a screen too narrow for it)
-## the blue bar stays, Feedback at its left end, the label at its right.
-var _versionLabel: Label = null
+## sector column. Without the left-hand menu (a screen too narrow for it)
+## the blue bar stays, Feedback at its left end.
 const BarTop := -80.0      # the blue bar, from the screen's bottom (GidBar)
 const BarBottom := -36.0
 const BarInset := 2.0      # what sits on it, in from its edges
@@ -255,21 +243,9 @@ func _FitBottomBars(frame: CommandFrame) -> void:
 		# will completely eliminate the blue bar").
 		if _gidMenu != null and bar.Panel() != null:
 			bar.Panel().visible = false
-	# The build label at the frame's bottom right, where the grey bar ended -
-	# at the blue bar's right end without the left-hand menu.
+	# The rows where the grey bar was - the blue bar's without the left-hand menu.
 	var top: float = BarTop if _gidMenu == null else GreyTop
 	var bottom: float = BarBottom if _gidMenu == null else GreyBottom
-	if _versionLabel != null:
-		_versionLabel.reparent(self)
-		_versionLabel.anchor_left = 0.0
-		_versionLabel.anchor_right = 0.0
-		_versionLabel.anchor_top = 1.0
-		_versionLabel.anchor_bottom = 1.0
-		_versionLabel.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		_versionLabel.offset_right = across.end.x - BarInset * 3.0
-		_versionLabel.offset_left = _versionLabel.offset_right - 200.0
-		_versionLabel.offset_top = top
-		_versionLabel.offset_bottom = bottom
 	# Feedback at the foot of the sector column (TeeJ, 2026-09-25: "move the
 	# feedback button to the bottom of the right hand panel"), where the map
 	# key's button once was; the sectors stop above it. Without the left-hand
