@@ -15,6 +15,7 @@ extends RefCounted
 ## Preloaded by path (as OUI): a new class_name can lag the editor's class cache.
 
 const Art := preload("res://src/ui/artwork.gd")
+const SoundLib := preload("res://src/ui/sound.gd")
 
 ## Every original pixel is drawn K x K.
 const K := 2
@@ -364,6 +365,28 @@ static func PictureButton(parent: Control, name: String, x: float, y: float, tip
 	b.tooltip_text = tip
 	parent.add_child(b)
 	return b
+
+
+## THE ORIGINAL'S CLICK. REBEXE gives a control its click sound at 0x602840
+## (the id at +0xdc, the wave loaded from the control's DLL): STRATEGY 608 on
+## the strategy windows' buttons - the Message Index's, the battle alert's,
+## the Encyclopedia's, the finders' (37 controls) - and on the Control
+## Panel's monitors, the GID's 600 (0x4286b0: controls 0x1500-0x1506, the
+## TEXTSTRA 5376-5382 tooltips). TeeJ, 2026-09-27: "no menu button sounds".
+## The pack names them (pack.json `sounds`); without the art set's sounds,
+## silence.
+## Returns the button, untyped, so a TextureButton stays one where it is kept.
+static func ClickSound(b: BaseButton, moment: String = "window_button"):
+	if b != null:
+		b.pressed.connect(func() -> void: PlayMoment(b, moment))
+	return b
+
+
+## Plays one of the pack's control sounds (pack.json `sounds`).
+static func PlayMoment(node: Node, moment: String) -> void:
+	if FactionRegistry.Pack == null or node == null or not node.is_inside_tree():
+		return
+	SoundLib.Play(node.get_tree(), FactionRegistry.Pack.Manifest.Sounds.get(moment, ""))
 
 
 static func _gap(px: int) -> Control:

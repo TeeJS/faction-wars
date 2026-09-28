@@ -25,6 +25,7 @@ extends Control
 ## the art set, nothing: the plain screen stays.
 
 const Art := preload("res://src/ui/artwork.gd")
+const OUI := preload("res://src/ui/original_ui.gd")
 const FrameSize := Vector2(640, 481)
 
 ## In the frame's own pixels. window: the map's window (the see-through blue);
@@ -366,6 +367,8 @@ func AddConsoles(actions: Dictionary) -> void:
 		b.position = Origin + r.position * S
 		b.size = r.size * S
 		b.tooltip_text = ConsoleTips.get(key, "")
+		# The original's click: 608, the GID's 600 (REBEXE 0x4286b0, OUI.ClickSound).
+		OUI.ClickSound(b, "control_panel_gid" if key == "gid" else "control_panel")
 		b.pressed.connect(actions[key])
 		add_child(b)
 		_hold(b, key, r)
