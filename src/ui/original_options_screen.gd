@@ -81,16 +81,35 @@ const TogglePitch := 27
 const LightX := 357
 const ToggleLabelX := 395
 const ToggleStateRight := 596.0
-## Import Game, Export Game, See all games: the choice box cut to 96 x 33, three
-## across the Saved Games panel where the sixth row was; the words centred,
-## capitals 11 below the box's top (as the multiplayer screens place theirs),
-## Arial 11.5 - the original's 12.5 would not fit "See all games" between the
-## box's brackets.
+## Import Game, Export Game, See all games: the choice box, three across the
+## Saved Games panel where the sixth row was, the space between the panel's
+## sides and between the boxes all one (TeeJ, 2026-09-28: "the spacing between
+## the frame and between the buttons should be equal") - the panel's 308
+## pixels inside its bevels (x 26..333) = 4 gaps x 12 + 3 boxes x 86.67 - with
+## the multiplayer screens' wires behind them and a clamp in every gap (the
+## original's greeblies, saved_games_art.gd). The words centred, capitals 11
+## below the box's top (as the multiplayer screens place theirs), Arial 10.5:
+## "See all games" is 66.5 wide, the box's brackets 66.7 apart (the
+## original's 12.5 would not fit).
 const Bars := ["Import Game", "Export Game", "See all games"]
 const BarTop := 293
-const BarSize := Vector2(96, 33)
-const BarX := [33, 135, 237]
-const BarPx := 11.5
+const BarGap := 12.0
+const BarSize := Vector2((308.0 - 4.0 * BarGap) / 3.0, 33)
+const BarPx := 10.5
+
+
+## Where box `i` starts (x).
+static func BarLeft(i: int) -> float:
+	return SavedArt.PanelInside.x + BarGap + i * (BarSize.x + BarGap)
+
+
+## The row's wires and clamps for the plate: its top, its height, and the gaps'
+## centres - both ends and between the boxes.
+static func BarWiring() -> Array:
+	var clamps: Array = []
+	for i in Bars.size() + 1:
+		clamps.append(SavedArt.PanelInside.x + BarGap / 2.0 + i * (BarSize.x + BarGap))
+	return [BarTop, int(BarSize.y), clamps]
 const Red := Color(1, 0, 0)
 ## The alert box with one socket (REBDLOG): the check at (176, 134), the words
 ## white Arial bold 13, centred, capitals from y 63 (the pause box's).
@@ -179,7 +198,7 @@ func _build() -> void:
 	_s = minf(view.x / W, view.y / H)
 	_origin = ((view - Vector2(W, H) * _s) / 2.0).floor()
 	_canvas.position = _origin
-	_place(SavedArt.OptionsPlate(), 0, 0, "Plate")
+	_place(SavedArt.OptionsPlate(BarWiring()), 0, 0, "Plate")
 	for h in Headings:
 		var head := _text(h[0], h[1] - 150, h[2], 300, HeadPx, Green if h[3] else Greyed, HORIZONTAL_ALIGNMENT_CENTER, true, "Head_" + str(h[0]).replace(" ", ""))
 		if not h[3]:
@@ -484,11 +503,11 @@ func _bar(i: int, tip: String, act: Callable) -> TextureButton:
 	b.texture_disabled = b.texture_normal
 	b.ignore_texture_size = true
 	b.stretch_mode = TextureButton.STRETCH_SCALE
-	b.position = Vector2(BarX[i], BarTop) * _s
+	b.position = Vector2(BarLeft(i), BarTop) * _s
 	b.size = BarSize * _s
 	b.tooltip_text = tip
 	_canvas.add_child(b)
-	var words := _text(Bars[i], BarX[i], BarTop + 11, BarSize.x, BarPx, Green, HORIZONTAL_ALIGNMENT_CENTER, false, "BarText%d" % i)
+	var words := _text(Bars[i], BarLeft(i), BarTop + 11, BarSize.x, BarPx, Green, HORIZONTAL_ALIGNMENT_CENTER, false, "BarText%d" % i)
 	words.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	b.button_down.connect(func() -> void: words.add_theme_color_override("font_color", Red))
 	b.button_up.connect(func() -> void: words.add_theme_color_override("font_color", Greyed if b.disabled else Green))

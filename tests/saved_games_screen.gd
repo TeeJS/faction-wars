@@ -75,6 +75,22 @@ func _init() -> void:
 	_check(Lq.all(screen._barWords, func(l: Label) -> bool: return l.get_theme_color("font_color") == Screen.Green), "in green")
 	_check((screen._bars[0] as TextureButton).texture_pressed != (screen._bars[0] as TextureButton).texture_normal, "pressed, the box shows the chosen (red-ended) box")
 	_check(not (screen._bars[1] as TextureButton).disabled, "Export Game is live in a game")
+	# The panel's sides and the boxes all one gap apart (TeeJ, 2026-09-28), a
+	# clamp on the multiplayer screens' wires in every gap.
+	var s: float = screen._s
+	var edges: Array = [float(SavedArt.PanelInside.x)]
+	for b in screen._bars:
+		edges.append((b as Control).position.x / s)
+		edges.append(((b as Control).position.x + (b as Control).size.x) / s)
+	edges.append(float(SavedArt.PanelInside.y))
+	var gaps: Array = []
+	for i in range(0, edges.size(), 2):
+		gaps.append(edges[i + 1] - edges[i])
+	_check(Lq.all(gaps, func(g: float) -> bool: return absf(g - gaps[0]) < 0.01) and gaps[0] >= 10.0,
+		"the frame to the boxes and the boxes to each other: one gap (%s)" % str(gaps))
+	var mid: int = Screen.BarTop + int(Screen.BarSize.y) / 2
+	for c in Screen.BarWiring()[2]:
+		_check(not plate.get_pixel(int(c), mid).is_equal_approx(band), "a clamp at x %.1f" % c)
 
 	# Save three games, then import an exported one: on top, " (2)", a note.
 	for nm in ["Alpha", "Bravo", "Charlie"]:
@@ -176,6 +192,8 @@ func _write_art() -> void:
 	opt.fill(Color(0.3, 0.3, 0.3))
 	opt.fill_rect(Rect2i(23, 284, 314, 34), Color(0.8, 0.2, 0.2))
 	opt.save_png("%s/screens/options.png" % dir)
+	# A multiplayer screen, for its wires and clamps: yellow.
+	_png("%s/screens/mp_connection.png" % dir, 640, 480, Color(1, 1, 0))
 	for b in ["options_save", "options_load", "options_restart", "options_return", "options_exit", "msgindex_delete", "mp_back", "mp_next", "mp_cancel"]:
 		_png("%s/buttons/%s.png" % [dir, b], 42, 20, Color(0.6, 0.6, 0.6))
 		_png("%s/buttons/%s.disabled.png" % [dir, b], 42, 20, Color(0.2, 0.2, 0.2))

@@ -44,6 +44,15 @@ const SockSave := Vector2i(30, 48)   # x, width
 const SockSide := Vector2i(78, 35)
 const SockName := Vector2i(113, 170)
 const SockLoad := Vector2i(283, 50)
+## THE WIRES AND CLAMPS (TeeJ, 2026-09-28: the buttons "are missing the
+## greeblies ... there should be wires and/or rivets"): the multiplayer
+## screens' bottom strip (mp_connection), its four wires - yellow, red, blue,
+## green - running behind its buttons with a clamp between each two and at
+## each end. Cut from it: the wires where they run straight (x 108..113,
+## y 447..460), tiled along; a clamp (x 98..105, y 439..471, its shadow the
+## last column).
+const WireSource := Rect2i(108, 447, 6, 14)
+const ClampSource := Rect2i(98, 439, 8, 33)
 
 static var _cache: Dictionary = {}
 
@@ -99,10 +108,13 @@ static func Box(size: Vector2i, chosen: bool) -> Texture2D:
 
 
 ## The Game Options picture with its sixth row painted over by the panel's own
-## plain band (the rows above it untouched).
-static func OptionsPlate() -> Texture2D:
-	if _cache.has("options"):
-		return _cache["options"]
+## plain band (the rows above it untouched) - and, given a row of buttons
+## there (`wired`: [its top, its height, the gaps' centres x]), the wires
+## behind it from the panel's one side to the other and a clamp in each gap.
+static func OptionsPlate(wired: Array = []) -> Texture2D:
+	var key := "options.%s" % str(wired)
+	if _cache.has(key):
+		return _cache[key]
 	var src: Texture2D = Art.Screen("options")
 	if src == null:
 		return null
@@ -110,17 +122,50 @@ static func OptionsPlate() -> Texture2D:
 	var band: Image = img.get_region(Band)
 	for y in RowSixCover.size.y:
 		img.blit_rect(band, Rect2i(0, y % Band.size.y, Band.size.x, 1), Vector2i(RowSixCover.position.x, RowSixCover.position.y + y))
+	if wired.size() == 3:
+		Wire(img, PanelInside.x, PanelInside.y, int(wired[0]) + int(wired[1]) / 2, wired[2])
 	var tex := ImageTexture.create_from_image(img)
-	_cache["options"] = tex
+	_cache[key] = tex
 	return tex
+
+
+## The Saved Games panel's inside, between its bevels: x 26..333; widened for
+## See all games, x 26..612.
+const PanelInside := Vector2i(26, 334)
+const WideInside := Vector2i(26, 613)
+
+
+## The multiplayer screens' wires across `img` from x `from` to `to`, centred
+## on row `mid`, and a clamp centred on each of `clamps` (x). Without that
+## screen's picture, nothing.
+static func Wire(img: Image, from: int, to: int, mid: int, clamps: Array) -> void:
+	var tex: Texture2D = Art.Screen("mp_connection")
+	if tex == null:
+		return
+	var strip: Image = _image(tex)
+	var wires: Image = strip.get_region(WireSource)
+	var top: int = mid - WireSource.size.y / 2
+	var x: int = from
+	while x < to:
+		var w: int = mini(WireSource.size.x, to - x)
+		img.blit_rect(wires, Rect2i(0, 0, w, WireSource.size.y), Vector2i(x, top))
+		x += w
+	var clamp: Image = strip.get_region(ClampSource)
+	for cx in clamps:
+		img.blit_rect(clamp, Rect2i(Vector2i.ZERO, ClampSource.size),
+			Vector2i(roundi(float(cx) - ClampSource.size.x / 2.0), mid - ClampSource.size.y / 2))
 
 
 ## See all games: the Game Options picture's frame, with the Saved Games panel
 ## widened over the whole inside (its heading bar with it) and `rows` rows of
 ## sockets from `top`, `pitch` apart, laid out as `columns`: an array of
-## [socket, x, width] - socket one of "save", "side", "name", "load".
-static func AllGamesPlate(rows: int, top: int, pitch: int, columns: Array) -> Texture2D:
-	var key := "all.%d.%d.%d.%s" % [rows, top, pitch, str(columns)]
+## [socket, x, width] - socket one of "save", "side", "name", "load". `foot`,
+## for the row of page boxes (TeeJ, 2026-09-28: "this screen is missing the
+## greeblies as well"): [its middle y, the clamps' centres x, and a name
+## socket for the page line as [x, width, row top]] - the multiplayer screens'
+## wires across the panel's inside behind the boxes, as on those screens.
+static func AllGamesPlate(rows: int, top: int, pitch: int, columns: Array, foot: Array = []) -> Texture2D:
+	var key := "all.%d.%d.%d.%s.%s" % [rows, top, pitch, str(columns), str(foot)]
 	if _cache.has(key):
 		return _cache[key]
 	var src: Texture2D = Art.Screen("options")
@@ -153,6 +198,11 @@ static func AllGamesPlate(rows: int, top: int, pitch: int, columns: Array) -> Te
 				var keep: int = mini(12, s.y / 3)
 				piece = HStretch(piece, keep, keep, int(c[2]))
 			img.blit_rect(piece, Rect2i(Vector2i.ZERO, piece.get_size()), Vector2i(int(c[1]), y0))
+	if foot.size() == 3:
+		Wire(img, WideInside.x, WideInside.y, int(foot[0]), foot[1])
+		var at: Array = foot[2]
+		var socket: Image = HStretch(strip.get_region(Rect2i(SockName.x, 0, SockName.y, RowStrip.y)), 12, 12, int(at[1]))
+		img.blit_rect(socket, Rect2i(Vector2i.ZERO, socket.get_size()), Vector2i(int(at[0]), int(at[2]) - RowStripAbove))
 	var tex := ImageTexture.create_from_image(img)
 	_cache[key] = tex
 	return tex
