@@ -377,15 +377,17 @@ static func Report(m: Mission, day: int, title: String, body: String, asks_to_co
 
 ## Tell the defending faction that an enemy mission resolved against their world.
 ## Fog-blind: never names the attacker (character = null). Only human defenders
-## are notified; AI-on-AI produces no message. Mission category, so foil and
-## success land where the manual puts foil news ("news of enemy missions your
-## forces have foiled", manual p079).
-static func _tell_defender(planet: Planet, day: int, title: String, body: String) -> void:
+## are notified; AI-on-AI produces no message. A foil is Missions news ("news
+## of enemy missions your forces have foiled", manual p079); something of ours
+## destroyed is Manufacturing's (TeeJ, 2026-09-27: "messages about items being
+## destroyed or failing should be manufacturing, not mission").
+static func _tell_defender(planet: Planet, day: int, title: String, body: String,
+		category: Enums.MessageCategory = Enums.MessageCategory.Missions) -> void:
 	if planet == null or planet.ControllingFaction == null:
 		return
 	if not GameSettings.IsHuman(planet.ControllingFaction):
 		return
-	var msg := GameMessage.new(title, body, Enums.MessageCategory.Missions, day, planet, null)
+	var msg := GameMessage.new(title, body, category, day, planet, null)
 	msg.Type = Enums.MessageType.MissionReport
 	# An enemy mission foiled is the agent's report; one that struck is a loss.
 	msg.Advisor = "agent_report" if title == "Enemy Mission Foiled" else "maintenance"
@@ -1099,8 +1101,11 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 			else:
 				print("[Mission] Sabotage at %s destroyed %s." % [m.Target.Name, what])
 				Report(m, day, "%s destroyed" % what, "My team has destroyed %s at %s." % [what, m.Target.Name], false, "mission_success")
-				_tell_defender(m.Target, day, "%s destroyed" % what,
-					"%s at %s was destroyed by enemy sabotage." % [what, m.Target.Name])
+				# The original's own words (TEXTSTRA): "Saboteurs Strike at <system>" /
+				# "The following units were destroyed by saboteurs at <system>:".
+				_tell_defender(m.Target, day, "Saboteurs Strike at %s" % m.Target.Name,
+					"The following units were destroyed by saboteurs at %s:\n\n  %s" % [m.Target.Name, what],
+					Enums.MessageCategory.Manufacturing)
 				m.Finished = true
 
 		Enums.MissionType.SuperweaponSabotage:
