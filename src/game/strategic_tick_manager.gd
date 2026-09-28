@@ -123,6 +123,9 @@ func AdvanceDay() -> void:
 			u.Attached = destination
 		print("%s has arrived at %s." % [u.Name, destination.Name])
 
+	# --- A RELOCATING HEADQUARTERS (manual p135; OrderManager.MoveHeadquarters).
+	OrderManager.AdvanceHeadquarters()
+
 	# --- UNITS ON THEIR WAY TO A FLEET: "a member of the fleet but ... still in
 	# hyperspace for several days until it arrives" (manual p122;
 	# OrderManager.LoadAboard). A fleet that moves takes them along

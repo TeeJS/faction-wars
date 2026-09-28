@@ -10,8 +10,11 @@ extends SceneTree
 ##         type, fog-blind, linked to the planet for Go To).
 ##   AC2 - the helper is silent for an AI-controlled defender.
 ##   AC3 - the SABOTAGE-SUCCESS call site in Resolve() actually fires the helper:
-##         an enemy sabotage that destroys a facility on a human world produces a
-##         "destroyed" Missions message to the defender.
+##         an enemy sabotage that destroys a facility on a human world produces
+##         the original's "Saboteurs Strike at <system>" message to the defender,
+##         filed under Manufacturing - something of ours destroyed (TeeJ,
+##         2026-09-27: "messages about items being destroyed or failing should be
+##         manufacturing, not mission").
 ## The FOIL call site is the identical _tell_defender call two lines above the
 ## sabotage one in Resolve(); AC1 proves that helper, so it is covered by
 ## inspection rather than a second (hard to force deterministically) Resolve run.
@@ -24,6 +27,10 @@ var _checks := 0
 class AlwaysOnePrng extends Prng:
 	func NextRange(min_value: int, max_value: int) -> int: return min_value
 	func NextMax(max_value: int) -> int: return 0
+
+class AlwaysMaxPrng extends Prng:
+	func NextRange(min_value: int, max_value: int) -> int: return max_value - 1
+	func NextMax(max_value: int) -> int: return max_value - 1
 
 func _check(cond: bool, what: String) -> void:
 	_checks += 1
@@ -82,12 +89,41 @@ func _init() -> void:
 		m.DaysToTarget = 0
 		MissionManager.Resolve(m, AlwaysOnePrng.new(), 1)
 		_check(not ally_planet.Facilities.has(fac), "AC3: the sabotaged facility was destroyed")
-		var found := _find_defender(alliance, "destroyed")
+		var found := _find_defender(alliance, ("Saboteurs Strike at %s" % ally_planet.Name).to_lower())
 		_check(found != null, "AC3: the defender received a sabotage-success notification")
 		if found != null:
-			_check(found.Category == Enums.MessageCategory.Missions, "AC3: Missions category")
+			_check(found.Category == Enums.MessageCategory.Manufacturing, "AC3: Manufacturing category - our item destroyed")
+			_check(found.Body.begins_with("The following units were destroyed by saboteurs at %s:" % ally_planet.Name), "AC3: the original's words")
 			_check(found.AssociatedCharacter == null, "AC3: fog-blind - no attacker named")
 			_check(found.AssociatedLocation == ally_planet, "AC3: linked to the sabotaged planet")
+
+	# --- AC4: our troops lost running a blockade are Manufacturing news too ---
+	# (TeeJ, 2026-09-27: items destroyed are Manufacturing's, not Missions').
+	var raider: Fleet = null
+	for p in GameState.AllPlanets():
+		for f in p.OrbitingFleets:
+			if raider == null and f.Faction == empire and not f.IsEmpty():
+				raider = f
+	for f in ally_planet.OrbitingFleets.duplicate():
+		if f.Faction != empire:
+			ally_planet.OrbitingFleets.erase(f)
+	ally_planet.FighterSquadrons.clear()
+	for i in range(ally_planet.Facilities.size() - 1, -1, -1):
+		if ally_planet.Facilities[i].HasRole("disable"):
+			ally_planet.Facilities.remove_at(i)
+	if raider != null:
+		(raider.Attached as Planet).OrbitingFleets.erase(raider)
+		raider.Attached = ally_planet
+		ally_planet.OrbitingFleets.append(raider)
+	var tdef: PackDefs.UnitDef = Lq.first_or_null(MilitaryCatalog.All(), func(d) -> bool: return d.Kind == "troop" and MilitaryCatalog.Create(d, alliance, ally_planet) != null)
+	var troop: Unit = MilitaryCatalog.Create(tdef, alliance, ally_planet) if tdef != null else null
+	if troop != null:
+		MilitaryCatalog.Deploy(troop, ally_planet)
+	_check(raider != null and troop != null and BlockadeManager.IsBlockaded(ally_planet), "AC4: an Imperial blockade of %s and a regiment there" % ally_planet.Name)
+	if troop != null:
+		OrderManager.RunBlockade([troop], ally_planet, AlwaysMaxPrng.new())
+		var lost: GameMessage = Lq.first_or_null(EventBus.MessageLog, func(x: GameMessage) -> bool: return x.Title == "Evacuation Losses" and x.For == alliance)
+		_check(lost != null and lost.Category == Enums.MessageCategory.Manufacturing, "AC4: Evacuation Losses under Manufacturing")
 
 	_finish()
 

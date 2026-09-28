@@ -56,6 +56,15 @@ var hello_mismatch: String = ""
 ## After a resync: did our replay reproduce our own hash (true = the opponent diverged)?
 var last_resync_faithful: bool = false
 
+## THE GAME'S LINES as this client has them - every order, phase end, day hash
+## and speed line, sent or received, as the relay stores them: what a save
+## writes (SaveManager.SaveH2H), and what rebuild_from_log rebuilds from.
+var history: Array = []
+const Recorded := ["cmd", "end", "hash", "speed"]
+## HEAD-TO-HEAD SAVE (manual p163, issue #301): the host's saves the guest has
+## answered - save id -> true when the guest's computer wrote it too.
+var saves_answered: Dictionary = {}
+
 
 func _init(t: Transport, local_side: Faction, remote_side: Faction, is_host: bool = false) -> void:
 	transport = t
@@ -94,7 +103,38 @@ func issue(c: Command) -> void:
 		_batch[p] = []
 	_batch[p].append(c)
 	CommandLog.Append(c)
-	transport.send({ "t": "cmd", "day": c.Day, "phase": c.Phase, "seq": c.Seq, "faction": c.Faction, "kind": c.Kind, "args": c.Args })
+	_send({ "t": "cmd", "day": c.Day, "phase": c.Phase, "seq": c.Seq, "faction": c.Faction, "kind": c.Kind, "args": c.Args })
+
+
+## A game line out, and into the history.
+func _send(msg: Dictionary) -> void:
+	transport.send(msg)
+	_record(msg)
+
+
+func _record(msg: Dictionary) -> void:
+	var t := str(msg.get("t", ""))
+	if not Recorded.has(t):
+		return
+	history.append(msg)
+	if t == "end":
+		_ends_since_compact += 1
+		if _ends_since_compact >= CompactEvery:
+			_compact()
+
+
+## The history keeps what a save or a rebuild reads (SaveManager.H2HLines):
+## every order and day hash, each side's last speed, and of the phase ends the
+## tick phases' and those since the last day both sides hashed. Two ends every
+## 0.3 s would otherwise add some 24 000 lines an hour - a browser tab's memory.
+## A static so a test can compact often (mp_flow --compact-every).
+static var CompactEvery := 2000
+var _ends_since_compact: int = 0
+
+
+func _compact() -> void:
+	_ends_since_compact = 0
+	history = SaveManager.H2HLines(history, 1 << 30, 1 << 30)
 
 
 ## The opponent's opening briefing holds the clock: they said pause, for it.
@@ -104,7 +144,7 @@ func opponent_briefing() -> bool:
 
 func set_speed(level: int, why: String = "") -> void:
 	my_speed = level
-	transport.send({ "t": "speed", "side": local.Id, "level": level, "why": why })
+	_send({ "t": "speed", "side": local.Id, "level": level, "why": why })
 
 
 ## "the game plays at the slowest speed set on either computer" (manual p163) -
@@ -140,6 +180,7 @@ func _handle(msg: Dictionary) -> void:
 	var author := str(msg.get("side", msg.get("faction", "")))
 	if not author.is_empty() and author == local.Id:
 		return
+	_record(msg)
 	match str(msg.get("t", "")):
 		"hello":
 			remote_hello = msg
@@ -163,6 +204,15 @@ func _handle(msg: Dictionary) -> void:
 			opponent_gone = true
 		"guest", "host":
 			opponent_gone = false
+		"save":
+			# The host saved: the game of the same name on this computer too (a
+			# game's name is its identity - SaveManager).
+			if not hosting:
+				var ok := _write_save(str(msg.get("name", "")), int(msg.get("phase", 0)), int(msg.get("day", 0)), msg)
+				transport.send({ "t": "saved", "side": local.Id, "id": str(msg.get("id", "")), "ok": ok })
+		"saved":
+			if hosting:
+				saves_answered[str(msg.get("id", ""))] = bool(msg.get("ok", false))
 
 
 ## What makes two clients' games different, every difference found (each used
@@ -187,6 +237,37 @@ static func hello_differences(mine: Dictionary, theirs: Dictionary) -> String:
 	if str(mine.get("host", "")) != str(theirs.get("host", "")):
 		found.append("host: ours %s, theirs %s" % [str(mine.get("host")), str(theirs.get("host"))])
 	return "; ".join(found)
+
+
+## THE HOST SAVES (manual p163: "only the host player can save the game. Star
+## Wars Rebellion will create a saved game on both computers in the same saved
+## game slots" - here, the game of the same name). The save point is the phases
+## applied here - every one before the open phase - and the guest writes the
+## same point: every line of those phases reached it before this `save` line,
+## which follows them on the wire.
+## Returns the save's id ("" when this computer could not write it); the guest's
+## answer lands in saves_answered under that id.
+func save_game(name: String) -> String:
+	if not hosting:
+		return ""
+	var id := "%s-%d-%d" % [MpSetup.lobby.code if MpSetup.lobby != null else "local", phase, Time.get_ticks_msec()]
+	var msg := {
+		"t": "save", "side": local.Id, "id": id, "name": name, "phase": phase, "day": day(),
+		"host": MpSetup.lobby.host_name if MpSetup.lobby != null else "",
+		"guest": MpSetup.lobby.guest_name if MpSetup.lobby != null else "",
+		"settings": MpSetup.lobby.settings if MpSetup.lobby != null else {},
+		"state_hash": GameSignature.ReplayHash(GameState.ActiveGalaxy),
+	}
+	if not _write_save(name, phase, day(), msg):
+		return ""
+	transport.send(msg)
+	return id
+
+
+func _write_save(name: String, at_phase: int, at_day: int, msg: Dictionary) -> bool:
+	var ok := not SaveManager.SaveH2H(name, history, at_phase, at_day, msg).is_empty()
+	print("[Lockstep] %s the game as \"%s\" (day %d, phase %d)" % ["saved" if ok else "could NOT save", name, at_day, at_phase])
+	return ok
 
 
 static func _command_of(msg: Dictionary) -> Command:
@@ -231,7 +312,7 @@ func end_phase(advance: bool = false) -> bool:
 	var adv := advance and hosting
 	_my_end[phase] = { "n": _batch[phase].size() if _batch.has(phase) else 0, "advance": adv }
 	_end_sent_at_ms = Time.get_ticks_msec()
-	transport.send({ "t": "end", "side": local.Id, "phase": phase, "day": day(), "n": _my_end[phase]["n"], "advance": adv })
+	_send({ "t": "end", "side": local.Id, "phase": phase, "day": day(), "n": _my_end[phase]["n"], "advance": adv })
 	return true
 
 
@@ -264,7 +345,9 @@ func try_phase() -> bool:
 	merged.append_array(_remote_batch.get(p, []))
 	CommandBus.apply_batch("phase %d" % p, merged)
 	last_phase_ms = Time.get_ticks_msec() - _end_sent_at_ms if _end_sent_at_ms >= 0 else 0
-	var advance: bool = bool(_my_end[p]["advance"]) if hosting else bool(_remote_end[p]["advance"])
+	# Only a host's end ever carries advance (end_phase). Either end is read: a
+	# loaded game may have been hosted from the other seat (issue #301).
+	var advance: bool = bool(_my_end[p]["advance"]) or bool(_remote_end[p]["advance"])
 	if advance:
 		_tick()
 	_batch.erase(p)
@@ -282,7 +365,7 @@ func _tick() -> void:
 	var h := GameSignature.ReplayHash(GameState.ActiveGalaxy)
 	_my_hash[now] = h
 	CommandLog.DayDone(now, h)
-	transport.send({ "t": "hash", "side": local.Id, "day": now, "hash": h })
+	_send({ "t": "hash", "side": local.Id, "day": now, "hash": h })
 	_check(now)
 
 
@@ -309,7 +392,9 @@ func rebuild_from_log(lines: Array, header: Dictionary) -> int:
 	var their_end: Dictionary = {}
 	var my_hashes: Dictionary = {}
 	var their_hashes: Dictionary = {}
+	history = []
 	for msg in lines:
+		_record(msg)
 		var t := str(msg.get("t", ""))
 		var author := str(msg.get("side", msg.get("faction", "")))
 		match t:
@@ -361,8 +446,10 @@ func rebuild_from_log(lines: Array, header: Dictionary) -> int:
 	var start_phase := 0
 	var ticks_seen := 0
 	for p in phases:
-		var host_end: Dictionary = my_end.get(p, {}) if hosting else their_end.get(p, {})
-		if bool(host_end.get("advance", false)) and my_end.has(p) and their_end.has(p):
+		# The host's end carries advance - whichever seat hosted when it was
+		# sent: a loaded game may be hosted from the other one now (try_phase).
+		var advance: bool = bool((my_end.get(p, {}) as Dictionary).get("advance", false)) or bool((their_end.get(p, {}) as Dictionary).get("advance", false))
+		if advance and my_end.has(p) and their_end.has(p):
 			ticks_seen += 1
 			if ticks_seen <= resume_day - 1:
 				start_phase = int(p) + 1
@@ -421,5 +508,5 @@ func resync() -> bool:
 		_my_hash[target] = h
 		state = State.Running
 		desync_day = -1
-		transport.send({ "t": "hash", "side": local.Id, "day": target, "hash": h })   # so the other side clears too
+		_send({ "t": "hash", "side": local.Id, "day": target, "hash": h })   # so the other side clears too
 	return ok

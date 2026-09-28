@@ -153,10 +153,25 @@ func _init() -> void:
 	var cap: Label = plist.get_parent().get_parent().get_node_or_null("Caption1")
 	_check(cap != null and cap.text == "Personnel", "the page's caption")
 	var greyed: int = 0
+	var emptyTab: int = -1
 	for i in dtabs.get_tab_count():
 		if dtabs.is_tab_disabled(i):
 			greyed += 1
-			_check(strip[i].disabled, "an empty tab's picture is greyed and unpickable (%s)" % strip[i].tooltip_text)
+			emptyTab = i
+			_check(not strip[i].disabled and strip[i].texture_normal == strip[i].texture_disabled,
+				"an empty tab's picture is greyed, and still pickable (%s)" % strip[i].tooltip_text)
+	# "The button is greyed out to show it's empty, but the page is available"
+	# (TeeJ, 2026-09-27, the original's Chandrila).
+	if emptyTab >= 0:
+		strip[emptyTab].pressed.emit()
+		for _i in 2:
+			await process_frame
+		_check(dtabs.current_tab == emptyTab and strip[emptyTab].texture_normal == strip[emptyTab].get_meta("current"),
+			"pressing the greyed %s opens its empty page, shown as the current tab" % strip[emptyTab].tooltip_text)
+		dw.Populate(home, ui)
+		for _i in 2:
+			await process_frame
+		_check(dtabs.current_tab == emptyTab, "and it stays open through a repaint")
 	dtabs.current_tab = 1
 	for _i in 2:
 		await process_frame
@@ -241,6 +256,26 @@ func _init() -> void:
 				_check(qmenu.visible, "a right-click on %s opens the row's orders" % n)
 				qmenu.hide()
 				await process_frame
+		# THE ITEM BEING BUILT: its portrait in the row, where the original's
+		# KDY-150 matched (+40, +15 from the row's corner); none while idle.
+		var item: TextureRect = mfg.get_node_or_null("Item2")
+		var job := ConstructionTask.new()
+		job.Family = "ion_cannon"
+		job.Tier = 1
+		job.Destination = home
+		var had: Array = home.BuildingQueue.duplicate()
+		home.BuildingQueue.clear()
+		ew.Populate(home)
+		_check(item != null and item.texture == null, "an idle Facilities row shows no item")
+		home.BuildingQueue.append(job)
+		ew.Populate(home)
+		var portrait: Texture2D = Art.Scaled(Art.Portrait("facilities", "ion_cannon"), K)
+		_check(item != null and item.position == Vector2(95, 181) * K and (portrait == null or item.texture == portrait),
+			"the Facilities row shows the KDY-150 being built at (95, 181)")
+		_check(item != null and item.get_index() < ew.get_node("%FacQueueLabel").get_index(), "under the row's words")
+		home.BuildingQueue.clear()
+		home.BuildingQueue.append_array(had)
+		ew.Populate(home)
 		var rowHit: Control = mfg.get_node_or_null("RowHit0")
 		_check(rowHit != null and rowHit.position == Vector2(55, 4) * K and rowHit.size == Vector2(166, 79) * K, "row 0's hit area is its frame")
 	# AN UNSELECTED FACILITY'S MENU OPENS (TeeJ, 2026-09-25: "Right clicking
@@ -283,7 +318,11 @@ func _init() -> void:
 			return c.size == Vector2(70, 70) * K and int(c.position.x) % (70 * K) == 0 and int(c.position.y) % (70 * K) == 0)
 		_check(onGrid, "%d facility cards on the 70-pixel grid, the short row too, none stretched" % shortRow.size())
 	var shipyards: int = Lq.count(home.Facilities, func(f: Facility) -> bool: return f.HasRole("produces_unit"))
-	_check(etabs.is_tab_disabled(1) == (shipyards == 0) and estrip[1].disabled == (shipyards == 0), "the Shipyards picture greyed exactly when there are none")
+	etabs.current_tab = 0
+	ew.Populate(home)
+	await process_frame
+	_check(etabs.is_tab_disabled(1) == (shipyards == 0) and estrip[1].get_meta("empty", false) == (shipyards == 0) and not estrip[1].disabled,
+		"the Shipyards picture greyed exactly when there are none - and pickable")
 	ew.CloseWindow()
 
 	# ---- the Galactic Encyclopedia ----

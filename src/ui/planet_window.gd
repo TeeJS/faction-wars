@@ -104,7 +104,8 @@ func _PopulateFromIntel(planet: Planet, player: Faction, _status: Label, _resour
 
 ## The Alliance HQ's Fig 3.82 menu {Move, Confirmed Move, Encyclopedia, Status}
 ## (GAMEPLAY.md:2996-2998). Move / Confirmed Move raise the map crosshair to pick the
-## destination system (manual p090); OrderManager.MoveHeadquarters re-validates it
+## destination system (manual p135), Confirmed Move showing the transit days before it
+## commits; OrderManager.MoveHeadquarters re-validates it
 ## (own world, not blockaded). Right-click opens the menu, matching the port's other
 ## entity menus. Encyclopedia/Status are stubs, as they are for every facility today.
 func _AddHqMenuRow(list: VBoxContainer, facility: Facility, planet: Planet) -> void:
@@ -133,11 +134,21 @@ func _OnHqMenuAction(id: int, planet: Planet) -> void:
 			var ui: UIManager = get_parent() as UIManager
 			if ui == null:
 				return
-			ui.StartTargeting(func(dest: Planet) -> void:
+			var tree := get_tree()
+			var issue := func(dest: Planet) -> void:
 				var r: Result = CommandBus.issue("move_hq", { "destination": dest.Name })
 				if not r.ok:
 					print("[HQ] %s" % r.error)
-					preload("res://src/ui/advisor.gd").AnswerOn(get_tree(), r.code))
+					preload("res://src/ui/advisor.gd").AnswerOn(tree, r.code)
+			ui.StartTargeting(func(dest: Planet) -> void:
+				# "You can see how much transit time it will take for the move before
+				# you decide for sure by selecting Confirmed Move" (manual p135).
+				if id == 1 and dest != planet:
+					var hq: Facility = Lq.first_or_null(planet.Facilities, func(f: Facility) -> bool: return f.HasRole("headquarters"))
+					ui.OpenTransitConfirm([], OrderManager.HeadquartersTravelDays(planet, dest),
+						func() -> void: issue.call(dest), hq.Name() if hq != null else "Headquarters")
+					return
+				issue.call(dest))
 		4:   # Encyclopedia - the headquarters building's entry
 			var hq: Facility = Lq.first_or_null(planet.Facilities, func(f: Facility) -> bool: return f.HasRole("headquarters"))
 			if hq != null and hq.Def != null:

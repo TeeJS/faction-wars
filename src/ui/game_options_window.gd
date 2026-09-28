@@ -4,9 +4,14 @@ extends PanelContainer
 ## original's art is not imported (original_options_screen.gd is the real one).
 ## The rows are the newest saved games (PROJECT.md): a name is a game - Save
 ## with the name unchanged overwrites it, a new name makes a new game.
+## Head-to-head it is the same screen (manual p163: "follow the same procedure
+## as you would to save a single player game"): the host's Save writes the game
+## on both computers (H2hSave); the guest's Save buttons are off.
 ##
 ## Built in code (repo convention), shown as a centered modal overlay. Opened from
 ## the in-game menu's "Game Options" button.
+
+const H2hSaveLib := preload("res://src/ui/h2h_save.gd")
 
 signal Closed
 
@@ -16,6 +21,7 @@ const SaveFiles := preload("res://src/ui/save_files.gd")
 const AllGamesPlain := preload("res://src/ui/all_games_window.gd")
 
 var _rows: Array = []   # per row: { "name": LineEdit, "state": Label, "id": String }
+var _h2h: H2hSaveLib = H2hSaveLib.new()
 
 
 func _ready() -> void:
@@ -23,6 +29,18 @@ func _ready() -> void:
 	set_anchors_preset(Control.PRESET_CENTER)
 	custom_minimum_size = Vector2(440, 0)
 	mouse_filter = Control.MOUSE_FILTER_STOP
+	# Head-to-head: "bring up the Game Options Screen. Your opponent will
+	# receive a Waiting for Opponent message, until you return to the game"
+	# (manual p163) - unless the Game Menu it was opened from already said so.
+	if MpSetup.session != null:
+		var gm: Node = get_parent()
+		while gm != null and not gm.has_method("MenuOpened"):
+			gm = gm.get_parent()
+		if gm != null and not bool(gm.get("_menuOpen")):
+			gm.MenuOpened(true)
+			tree_exiting.connect(func() -> void:
+				if is_instance_valid(gm):
+					gm.MenuOpened(false))
 
 	var margin := MarginContainer.new()
 	for side in ["left", "top", "right", "bottom"]:
@@ -58,6 +76,10 @@ func _ready() -> void:
 		saveBtn.text = "Save"
 		var slot := i
 		saveBtn.pressed.connect(func() -> void: _on_save(slot))
+		# "Only the host player can save the game" (manual p163).
+		if MpSetup.session != null and not MpSetup.hosting:
+			saveBtn.disabled = true
+			saveBtn.tooltip_text = "Only the host can save."
 		row.add_child(saveBtn)
 
 		box.add_child(row)
@@ -144,5 +166,23 @@ func _on_save(row: int) -> void:
 	var nm: String = (_rows[row]["name"] as LineEdit).text.strip_edges()
 	if nm.is_empty():
 		nm = SaveManager.NameOf(_rows[row]["id"])
+	if MpSetup.session != null:
+		# Head-to-head (manual p163): the host's save, on both computers.
+		if MpSetup.hosting:
+			_h2h.begin(MpSetup.session, nm if not nm.is_empty() else SaveManager.FreeName())
+		return
 	SaveManager.Save(nm)   # an empty name takes the next free "Saved game"
 	_refresh()
+
+
+func _process(_delta: float) -> void:
+	var said: String = _h2h.poll()
+	if said.is_empty():
+		return
+	_refresh()
+	var box := AcceptDialog.new()
+	box.title = "Save Game"
+	box.dialog_text = said
+	add_child(box)
+	box.popup_centered()
+	box.confirmed.connect(box.queue_free)

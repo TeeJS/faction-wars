@@ -656,12 +656,12 @@ func _build_original() -> void:
 		_oIndex.add_child(tb)
 		_oTabs.append(tb)
 	_oCaption = OUI.Text(_oIndex, "", 35, 90, 240, 16, 13, Color.WHITE, HORIZONTAL_ALIGNMENT_LEFT, false, "Caption")
-	OUI.PictureButton(_oIndex, "msgindex_select_all", 282, 87, "Select All").pressed.connect(func() -> void:
+	OUI.ClickSound(OUI.PictureButton(_oIndex, "msgindex_select_all", 282, 87, "Select All")).pressed.connect(func() -> void:
 		for m in MessagesFor(_oCategory):
 			if not _picked.has(m):
 				_picked.append(m)
 		_o_show_index())
-	OUI.PictureButton(_oIndex, "msgindex_delete", 340, 87, "Delete Selected Messages").pressed.connect(func() -> void:
+	OUI.ClickSound(OUI.PictureButton(_oIndex, "msgindex_delete", 340, 87, "Delete Selected Messages")).pressed.connect(func() -> void:
 		if _picked.is_empty():
 			return
 		CommandBus.issue("delete_messages", { "messages": EntityIndex.ids_of_messages(_picked) })
@@ -736,20 +736,20 @@ func _build_original() -> void:
 	_oSumText.max_lines_visible = SumTextH / SumTextPitch
 	_oSumText.mouse_filter = Control.MOUSE_FILTER_PASS
 	_oSumText.gui_input.connect(_o_scroll_text)
-	_oOk = OUI.PictureButton(_oSummary, "decision_ok", 355, 244, "Continue the mission")
+	_oOk = OUI.ClickSound(OUI.PictureButton(_oSummary, "decision_ok", 355, 244, "Continue the mission"))
 	_oOk.pressed.connect(func() -> void:
 		if _selectedMessage != null:
 			_selectedMessage.PendingMission = null
 			_o_show_summary(_selectedMessage))
-	_oCancel = OUI.PictureButton(_oSummary, "decision_cancel", 355, 281, "Abort the mission")
+	_oCancel = OUI.ClickSound(OUI.PictureButton(_oSummary, "decision_cancel", 355, 281, "Abort the mission"))
 	_oCancel.pressed.connect(func() -> void:
 		if _selectedMessage != null and _selectedMessage.PendingMission != null:
 			CommandBus.issue("abort_mission", { "mission": _selectedMessage.PendingMission.Serial })
 			_selectedMessage.PendingMission = null
 			_o_show_summary(_selectedMessage))
-	_oUp = OUI.PictureButton(_oSummary, "msgsummary_up", 367, 15, "Scroll through messages")
+	_oUp = OUI.ClickSound(OUI.PictureButton(_oSummary, "msgsummary_up", 367, 15, "Scroll through messages"))
 	_oUp.pressed.connect(func() -> void: _o_step(-1))
-	_oDown = OUI.PictureButton(_oSummary, "msgsummary_down", 390, 15, "Scroll through messages")
+	_oDown = OUI.ClickSound(OUI.PictureButton(_oSummary, "msgsummary_down", 390, 15, "Scroll through messages"))
 	_oDown.pressed.connect(func() -> void: _o_step(1))
 
 	# ---- Compose Chat Message (manual p163, Fig 5.11) ----
@@ -796,8 +796,8 @@ func _build_original() -> void:
 		_oComposeEntry.add_theme_stylebox_override(st, StyleBoxEmpty.new())
 	_oComposeEntry.text_submitted.connect(func(_t: String) -> void: _o_send())
 	_oCompose.add_child(_oComposeEntry)
-	OUI.PictureButton(_oCompose, "decision_ok", 355, 244, "Send message").pressed.connect(_o_send)
-	OUI.PictureButton(_oCompose, "decision_cancel", 355, 281, "Cancel").pressed.connect(_o_show_index)
+	OUI.ClickSound(OUI.PictureButton(_oCompose, "decision_ok", 355, 244, "Send message")).pressed.connect(_o_send)
+	OUI.ClickSound(OUI.PictureButton(_oCompose, "decision_cancel", 355, 281, "Cancel")).pressed.connect(_o_show_index)
 
 	# ---- the frame over both, and its side buttons ----
 	var frame := OUI.PlaceHit(body, OUI.Pic("frame." + _oSide), 0, 0, "Frame")
@@ -812,7 +812,7 @@ func _build_original() -> void:
 	var ys: Array = OSideYs[_oSide]
 	# With a message open, the close box goes back to the index, as Esc does
 	# (TeeJ, 2026-09-25: "the same for the close button reading a message").
-	OUI.PictureButton(body, "ency_close." + _oSide, x, ys[0], "Close message screen").pressed.connect(func() -> void:
+	OUI.ClickSound(OUI.PictureButton(body, "ency_close." + _oSide, x, ys[0], "Close message screen")).pressed.connect(func() -> void:
 		if StepBack():
 			return
 		CloseWindow()
@@ -859,6 +859,7 @@ func _o_view(body: Control, view_name: String, plate: String) -> Control:
 
 func _o_side_button(parent: Control, button_name: String, x: int, y: int, tip: String) -> TextureButton:
 	var b := OUI.PictureButton(parent, button_name, x, y, tip)
+	OUI.ClickSound(b)
 	b.texture_disabled = OUI.Btn(button_name, "disabled")
 	return b
 
