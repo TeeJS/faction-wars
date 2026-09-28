@@ -1347,11 +1347,13 @@ func _open_art_window(pack_id: String, message: String = "", ok: bool = true, ma
 	rows.add_child(_file_row("Art", "Artwork", source.file, "The original's windows, pictures, sounds and music.", art, set_id, PackImport.KIND_ART_SET, manage, text_w - 56))
 	rows.add_child(_file_row("Movies", "Movies", source.movies, "The original's movies, each where the original played it. Optional.", movies, set_id, PackImport.KIND_MOVIES, manage, text_w - 56))
 	# One wording on the desktop and in the browser (TeeJ, 2026-09-28: "users
-	# should not see a difference between file management on desktop or web").
-	var drop := _label("Or drag a file onto this window. Keep both files: you can import them again at any time.", 13, CMuted)
-	drop.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	drop.custom_minimum_size = Vector2(text_w - 56, 0)
-	rows.add_child(drop)
+	# should not see a difference between file management on desktop or web"),
+	# so no drag instruction: a dropped movies file does not import in the browser.
+	var keep := _label("Keep both files: you can import them again at any time.", 13, CMuted)
+	keep.name = "KeepNote"
+	keep.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	keep.custom_minimum_size = Vector2(text_w - 56, 0)
+	rows.add_child(keep)
 	box.add_child(_step(3, "Import them here", rows, text_w))
 	_result(box, message, ok, text_w)
 	if manage:

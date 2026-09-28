@@ -105,6 +105,9 @@ func _init() -> void:
 		_check(said.contains("own copy") and said.contains("swr-original.art.zip") and said.contains("swr-original.movies.zip")
 			and said.contains("IMPORT THEM HERE") and said.contains("plain windows"),
 			"it says why, the steps, both files, and what going on without them means")
+		# TeeJ, 2026-09-28: the same instructions on both builds, so no drag line.
+		_check(not said.to_lower().contains("drag") and win.find_child("KeepNote", true, false) != null,
+			"no drag instruction; the keep-both-files note stays")
 		_check(((win.find_child("FileRow_Art", true, false) as Node).find_child("StateText", true, false) as Label).text == "NOT IMPORTED",
 			"the artwork's row: not imported")
 	# A refused file: its reasons in the window.
