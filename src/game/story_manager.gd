@@ -96,16 +96,24 @@ static func ResolveEncounter(a: Character, b: Character, p: Array, day: int, rng
 
 	if not GameSettings.IsHuman(a.Faction):
 		return
-	var body := ""
-	body += ("%s has met %s face to face, and has learned the truth of their own parentage.\n\n" % [a.Name, b.Name]) if first \
-		else ("%s has met %s face to face once more.\n\n" % [a.Name, b.Name])
-	if hurt and a.Status != Enums.Status.Dead:
-		body += "%s was badly hurt in the encounter and cannot be sent on missions or hold a command until they have recovered.\n\n" % a.Name
-	if gain > 0:
-		body += "Standing against one so strong has taught them something all the same: %s is now %s." % [a.Name, rank_name]
-	EventBus.Tell(a.Faction, GameMessage.new(
-		("%s has learned the truth" % a.Name) if first else ("%s has faced %s" % [a.Name, b.Name]),
-		body.strip_edges(false, true), Enums.MessageCategory.Missions, day, a.Attached if a.Attached is Planet else null, a))
+	# The original's words (TEXTSTRA 29088-29102): the first time "Luke Discovers
+	# His Heritage" / "Luke has learned that Vader is his father.  " (STRATEGY
+	# 1058); after, "<name> Confronts <name>" / "<name> has fought <name>.  " -
+	# then who was hurt, or "Both combatants escaped uninjured."
+	var injured := hurt and a.Status != Enums.Status.Dead
+	var msg: GameMessage
+	if first:
+		var body := "%s has learned that %s is his father.  " % [ForceManager.FirstName(a), b.Name.get_slice(" ", b.Name.get_slice_count(" ") - 1)]
+		if injured:
+			body += "%s was injured during the battle.  " % ForceManager.FirstName(a)
+		msg = GameMessage.new("%s Discovers His Heritage" % ForceManager.FirstName(a), body,
+			Enums.MessageCategory.Missions, day, a.Attached if a.Attached is Planet else null, a)
+		msg.Still = "message.1058"
+	else:
+		msg = GameMessage.new("%s Confronts %s" % [a.Name, b.Name],
+			"%s has fought %s.  %s" % [a.Name, b.Name, ("%s was injured." % a.Name) if injured else "Both combatants escaped uninjured."],
+			Enums.MessageCategory.Missions, day, a.Attached if a.Attached is Planet else null, a)
+	EventBus.Tell(a.Faction, msg)
 
 
 # --- 2. THE BOUNTY HUNTERS, AND JABBA'S PALACE (entries 103/104/105; RLEVADTB) ---
@@ -141,8 +149,9 @@ static func ProcessBountyHunters(day: int, rng: Prng) -> void:
 	if escaped:
 		if not GameSettings.IsHuman(han.Faction):
 			return
-		EventBus.Tell(han.Faction, GameMessage.new("Bounty hunters tried for %s" % han.Name,
-			"%s was set upon by bounty hunters at %s and fought his way clear." % [han.Name, han.Attached.Name if han.Attached != null else "his post"],
+		# The original's words (TEXTSTRA 29032 / 29033).
+		EventBus.Tell(han.Faction, GameMessage.new("%s Attacked by Bounty Hunters" % han.Name,
+			"%s was attacked by bounty hunters, who failed to capture him." % han.Name,
 			Enums.MessageCategory.Missions, day, han.Attached if han.Attached is Planet else null, han).With("", "bounty_attack"))
 		return
 
@@ -187,11 +196,15 @@ static func TakeToPalace(han: Character, day: int, rng: Prng) -> void:
 
 	if not GameSettings.IsHuman(han.Faction):
 		return
-	EventBus.Tell(han.Faction, GameMessage.new("%s has been taken" % han.Name,
-		"Bounty hunters have seized %s and carried him to Jabba's palace.\n\n%s" % [han.Name,
-			("%s %s gone after him without waiting for orders. None of them can be located or given orders until this is settled." % [names, "has" if party.size() == 1 else "have"]) if not party.is_empty()
-			else "There is nobody free to go after him."],
+	# The original's words (TEXTSTRA 29036 / 29037), then each who goes after him
+	# in their own voice (29162 / 29163).
+	EventBus.Tell(han.Faction, GameMessage.new("%s Captured by Bounty Hunters" % han.Name,
+		"%s was captured by bounty hunters and taken to Jabba's Palace." % han.Name,
 		Enums.MessageCategory.Missions, day, null, han).With("captured"))
+	for c in party:
+		EventBus.Tell(han.Faction, GameMessage.new("%s Rescue Attempt" % c.Name,
+			"%s has been captured by bounty hunters and taken to Jabba's palace.  I will be departing immediately to attempt a rescue." % han.Name,
+			Enums.MessageCategory.Missions, day, null, c).With("", "rescue_attempt"))
 
 
 ## THE PALACE RESOLUTION (0x55C910): score = Espionage / entry 109 + Combat / entry 110,
@@ -309,19 +322,22 @@ static func FinalBattleWon(luke: Character, vader: Character, emperor: Character
 		captive.DaysToDestination = 0
 		captive.Attached = home
 
-	if GameSettings.IsHuman(vader.Faction):
-		EventBus.Tell(vader.Faction, GameMessage.new("Our leaders have been taken",
-			"%s and %s confronted %s and were overcome. Both are now prisoners of the %s." % [vader.Name, emperor.Name, luke.Name, luke.Faction.DisplayName],
-			Enums.MessageCategory.Missions, day, home if home is Planet else null))
-		EventBus.BroadcastChanged()
-	if not GameSettings.IsHuman(luke.Faction):
-		return
-
-	EventBus.Tell(luke.Faction, GameMessage.new("%s has prevailed" % luke.Name,
-		"%s brought %s before %s, and it was the two of them who did not walk away.\n\n%s is free, and both %s and %s are our prisoners at %s." % [
-			vader.Name, luke.Name, emperor.Name, luke.Name, vader.Name, emperor.Name, home.Name if home != null else "our headquarters"],
-		Enums.MessageCategory.Missions, day, home if home is Planet else null, luke))
+	# The original's words (TEXTSTRA 29152 / 29153, STRATEGY 1063), to both sides.
+	for side in [vader.Faction, luke.Faction]:
+		if not GameSettings.IsHuman(side):
+			continue
+		var msg := GameMessage.new("The Final Battle",
+			"%s has been brought before the Emperor by %s.  %s confronted and overcame the Emperor.  Both %s and %s were lost." % [
+				ForceManager.FirstName(luke), LastName(vader), ForceManager.FirstName(luke), emperor.Name, vader.Name],
+			Enums.MessageCategory.Missions, day, home if home is Planet else null, luke)
+		msg.Still = "message.1063"
+		EventBus.Tell(side, msg)
 	EventBus.BroadcastChanged()
+
+
+## "Vader" of "Darth Vader", as the original names him.
+static func LastName(c: Character) -> String:
+	return c.Name.get_slice(" ", c.Name.get_slice_count(" ") - 1)
 
 
 static func FinalBattleLost(luke: Character, day: int, rng: Prng) -> void:
@@ -330,6 +346,11 @@ static func FinalBattleLost(luke: Character, day: int, rng: Prng) -> void:
 	print("[Story] %s lost the final confrontation: injured %d, and can no longer attempt escape." % [luke.Name, luke.Injury])
 	if not GameSettings.IsHuman(luke.Faction):
 		return
-	EventBus.Tell(luke.Faction, GameMessage.new("%s has been broken" % luke.Name,
-		"%s was brought before the Emperor and was not strong enough.\n\nHe remains a prisoner, badly hurt, and will not get himself out. Only a Rescue mission or the retaking of the system holding him will free him now." % luke.Name,
-		Enums.MessageCategory.Missions, day, luke.Attached if luke.Attached is Planet else null, luke))
+	# The original's words (TEXTSTRA 29152 / 29154, STRATEGY 1064).
+	var vader := WhoHas("dark_lord")
+	var msg := GameMessage.new("The Final Battle",
+		"%s has been brought before the Emperor by %s.  The Emperor confronted %s and captured him." % [
+			ForceManager.FirstName(luke), LastName(vader) if vader != null else "Vader", ForceManager.FirstName(luke)],
+		Enums.MessageCategory.Missions, day, luke.Attached if luke.Attached is Planet else null, luke)
+	msg.Still = "message.1064"
+	EventBus.Tell(luke.Faction, msg)

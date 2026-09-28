@@ -120,18 +120,21 @@ static func Begun(p: Planet, blockader: Faction, day: int) -> void:
 	if audiences.is_empty():
 		return
 	var fleet: Fleet = Lq.first_or_null(p.FleetsInOrbit(), func(f): return f.Faction == blockader)
-	var ion := Lq.any(p.Facilities, func(f): return f.HasRole("disable"))
-	var msg := GameMessage.new("Fleet Initiates Blockade of %s" % p.Name,
-		"%s has initiated a blockade of %s.\n\nProduction is halted and the system's facilities cannot be used while it lasts. Units leaving have a %d%% chance of getting clear.%s" % [
-			fleet.Name if fleet != null else blockader.DisplayName, p.Name, WithdrawPercent(p),
-			"\n\nThe ion cannon on the system is letting units through unharmed." if ion else ""],
-		Enums.MessageCategory.Missions, day, p)
-	msg.Type = Enums.MessageType.Blockade
-	for k in audiences.size():
-		var told: GameMessage = msg if k == 0 else msg.Copy()
+	# The original's words for each side (TEXTSTRA 28832-28835): the blockader
+	# "Fleet Initiates Blockade of <system>" / "<fleet> has initiated a blockade of
+	# <system>."; the holder "<system> Under Blockade" / "<side> ships have been
+	# detected at <system>.  The world is under enemy blockade."
+	for side in audiences:
+		var ours: bool = side == blockader
+		var msg := GameMessage.new(
+			("Fleet Initiates Blockade of %s" % p.Name) if ours else ("%s Under Blockade" % p.Name),
+			("%s has initiated a blockade of %s." % [fleet.Name if fleet != null else blockader.DisplayName, p.Name]) if ours
+				else ("%s ships have been detected at %s.  The world is under enemy blockade." % [blockader.Adjective, p.Name]),
+			Enums.MessageCategory.Missions, day, p)
+		msg.Type = Enums.MessageType.Blockade
 		# The blockader started it; the system's holder has detected it.
-		told.Advisor = "blockade_started" if audiences[k] == blockader else "blockade_detected"
-		EventBus.Tell(audiences[k], told)
+		msg.Advisor = "blockade_started" if ours else "blockade_detected"
+		EventBus.Tell(side, msg)
 
 
 static func Broke(p: Planet, day: int) -> void:

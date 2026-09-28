@@ -257,9 +257,9 @@ static func Announce(r: BombardmentReport, fleet: Fleet, mode: int, day: int) ->
 	var body := "\n".join(lines)
 	print("[Bombardment] %s (%s): %s" % [t.Name, JsonUtil.enum_name(BombardmentMode, mode), body.replace("\n", " ")])
 	Forces(r, fleet)
-	# Titled as the original's ("Orbital bombardment of |", TEXTSTRA.DLL
-	# 0xF778); opening it opens the results window, as an assault's does.
-	var msg := GameMessage.new("Orbital bombardment of %s" % t.Name, Sentence(r) + "\n\n" + body, Enums.MessageCategory.Conflict, day, t)
+	# In the original's words, title and body (TEXTSTRA 28824-28826): what it did
+	# is in the results window opening it opens, as an assault's is.
+	var msg := GameMessage.new("Orbital bombardment of %s" % t.Name, Sentence(r), Enums.MessageCategory.Conflict, day, t)
 	msg.Report = r
 	msg.Advisor = "bombardment"
 	EventBus.BroadcastMessage(msg)

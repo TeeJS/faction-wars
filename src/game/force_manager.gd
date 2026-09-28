@@ -62,14 +62,17 @@ static func ConcludeDagobah(luke: Character, day: int, completed: bool) -> void:
 
 	if not GameSettings.IsHuman(luke.Faction):
 		return
-	var body: String
-	if completed:
-		body = "%s's training under Yoda is complete. He stands at %s, and is now strong enough in the Force to sense it in others." % [luke.Name, rank_name]
-	else:
-		body = "%s's training under Yoda was cut short after %d day(s). He stands at %s - what he had time to learn, and no more." % [luke.Name, served, rank_name]
-	EventBus.Tell(luke.Faction, GameMessage.new("%s has returned" % luke.Name,
-		body + "\n\nHe has returned to %s." % (_return_to.Name if _return_to != null else "our forces"),
-		Enums.MessageCategory.Missions, day, _return_to if _return_to is Planet else null, luke).With("", "dagobah_completed" if completed else ""))
+	# The original's words and picture (TEXTSTRA 29114 / 29115, STRATEGY 1042):
+	# "Luke Leaves Dagobah" / "I have finished my training with Yoda."
+	var back := GameMessage.new("%s Leaves Dagobah" % FirstName(luke), "I have finished my training with Yoda.",
+		Enums.MessageCategory.Missions, day, _return_to if _return_to is Planet else null, luke).With("", "dagobah_completed" if completed else "")
+	back.Still = "message.1042"
+	EventBus.Tell(luke.Faction, back)
+
+
+## How the original names its story characters in its messages: "Luke", "Leia".
+static func FirstName(c: Character) -> String:
+	return c.Name.get_slice(" ", 0)
 
 
 static func ProcessDagobah(day: int) -> void:
@@ -112,9 +115,12 @@ static func ProcessDagobah(day: int) -> void:
 
 	if not GameSettings.IsHuman(luke.Faction):
 		return
-	EventBus.Tell(luke.Faction, GameMessage.new("%s has gone" % luke.Name,
-		"%s has left for the Dagobah system, alone and without orders, to seek training under a Jedi Master.\n\nHe cannot be located or given orders until he returns." % luke.Name,
-		Enums.MessageCategory.Missions, day, _return_to if _return_to is Planet else null, luke))
+	# TEXTSTRA 29112 / 29113, STRATEGY 1057.
+	var gone := GameMessage.new("%s Goes to Dagobah" % FirstName(luke),
+		"%s has been sent to Dagobah to be trained by Yoda." % FirstName(luke),
+		Enums.MessageCategory.Missions, day, _return_to if _return_to is Planet else null, luke)
+	gone.Still = "message.1057"
+	EventBus.Tell(luke.Faction, gone)
 
 
 ## LEIA IS THE ONE EXCEPTION (manual p094; REBEXE.EXE 0x560BCF): no rank threshold.
@@ -137,8 +143,9 @@ static func LeiaLearnsFromLuke(roster: Array, day: int) -> void:
 
 	if not GameSettings.IsHuman(leia.Faction):
 		return
-	EventBus.Tell(leia.Faction, GameMessage.new("%s knows her heritage" % leia.Name,
-		"%s has told %s the truth about their parentage.\n\nThe Force has been in her all along, and she stands at %s. Her abilities can be developed further with a Jedi Training mission led by a Jedi Master." % [luke.Name, leia.Name, rank_name],
+	# TEXTSTRA 29144 / 29145, in her own voice.
+	EventBus.Tell(leia.Faction, GameMessage.new("%s Uses Force" % FirstName(leia),
+		"My heritage as a member of the Skywalker family has given me the ability to use the Force, as it has my brother and father.",
 		Enums.MessageCategory.Missions, day, leia.Attached if leia.Attached is Planet else null, leia).With("", "force_ability_revealed"))
 
 
@@ -176,6 +183,10 @@ static func ProcessDay(day: int) -> void:
 
 			if not GameSettings.IsHuman(latent.Faction):
 				continue
-			EventBus.Tell(latent.Faction, GameMessage.new("%s: %s is strong in the Force" % [seer.Name, latent.Name],
-				"%s has been unaware of it until now. They stand at %s.\n\nTheir abilities can be developed further with a Jedi Training mission led by a Jedi Master." % [latent.Name, rank_name],
-				Enums.MessageCategory.Missions, day, latent.Attached if latent.Attached is Planet else null, latent))
+			# TEXTSTRA 29048-29050, in the seer's voice: he can train them now, or
+			# once he is a Jedi Knight.
+			var can_train: bool = MissionManager.CanTeachSpecialPower(seer)
+			EventBus.Tell(latent.Faction, GameMessage.new("Future Jedi Discovered",
+				("I have detected that %s has the ability to use the Force.  We should consider allowing me to conduct training in the way of the Force." if can_train
+					else "I have detected that %s has the ability to use the Force.  Once I reach the rank of Jedi Knight, I should conduct training in the use of the Force.") % latent.Name,
+				Enums.MessageCategory.Missions, day, latent.Attached if latent.Attached is Planet else null, seer))

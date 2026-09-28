@@ -60,18 +60,13 @@ static func Deliver(listener: Faction, target: Planet, day: int, rng: Prng) -> v
 	IntelManager.Capture(listener, target, day, cats)
 	if not GameSettings.IsHuman(listener):
 		return
-	var lines := 0
-	for s in IntelManager.AllSections:
-		if cats.has(IntelManager.CategoryOf(s)):
-			lines += IntelManager.View(listener, target, s).Lines.size()
-	var pretty := Lq.select(cats, func(c): return "  - %s" % Pretty(c))
-	var msg := GameMessage.new("Word from %s" % target.Name,
-		"An informant on %s has passed us what they could:\n\n%s\n\n%s The System Defenses window will show it, dated today - it will not update itself as things change there.%s" % [
-			target.Name, "\n".join(pretty),
-			"They report nothing of that kind on the system." if lines == 0 else "%d item%s noted." % [lines, "" if lines == 1 else "s"],
-			"\n\nThe system is in revolt, which is why we are hearing from it." if target.IsInUprising else ""],
+	# The original's words and picture (TEXTSTRA 29008 / 29009, STRATEGY 1000):
+	# what they told shows in the system's windows.
+	var msg := GameMessage.new("Informants Provide Information",
+		"Informants have provided us with information about %s." % target.Name,
 		Enums.MessageCategory.Missions, day, target)
 	msg.Type = Enums.MessageType.InformantReport
+	msg.Still = "message.1000"
 	EventBus.Tell(listener, msg)
 
 

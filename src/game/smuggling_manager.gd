@@ -6,10 +6,12 @@ extends RefCounted
 ## ⚠ The timer is ours (entry 160, 1000, used for both first and followup).
 
 static var _next_theft: Dictionary = {}   # planet name -> day
+static var _robbed: Dictionary = {}       # planet name -> the Faction told the losses began
 
 
 static func Reset() -> void:
 	_next_theft.clear()
+	_robbed.clear()
 
 
 static func IsSmuggled(p: Planet) -> bool:
@@ -28,10 +30,17 @@ static func ProcessDay(galaxy: Array, day: int, _rng: Prng) -> void:
 		for p in s.Planets:
 			if not IsSmuggled(p):
 				_next_theft.erase(p.Name)
+				if _robbed.has(p.Name):
+					var was: Faction = _robbed[p.Name]
+					_robbed.erase(p.Name)
+					if p.ControllingFaction == was:
+						_Tell(was, p, day, false)
 				continue
 			var holder: Faction = p.ControllingFaction
 			if not _next_theft.has(p.Name):
 				_next_theft[p.Name] = day + Delay(holder)
+				_robbed[p.Name] = holder
+				_Tell(holder, p, day, true)
 				continue
 			if day < _next_theft[p.Name]:
 				continue
@@ -43,13 +52,23 @@ static func ProcessDay(galaxy: Array, day: int, _rng: Prng) -> void:
 			var before: int = p.SupportFor(holder)
 			p.ShiftSupport(holder, shift)
 			print("[Smuggling] %s: support for %s %d -> %d (under %d%%)." % [p.Name, holder.Id, before, p.SupportFor(holder), RuleManager.Get(RuleId.SmugglingSupportThreshold, holder)])
-			if not GameSettings.IsHuman(holder):
-				continue
-			var msg := GameMessage.new("Smuggling on %s" % p.Name,
-				"%s does not strongly support us, and smugglers are working the %s and %s there. Support has fallen to %d%%.\n\nA Diplomacy mission would raise it out of their reach." % [p.Name, Terms.lower("mines"), Terms.lower("refineries"), p.SupportFor(holder)],
-				Enums.MessageCategory.Missions, day, p)
-			msg.Type = Enums.MessageType.Smuggling
-			EventBus.Tell(holder, msg)
+
+
+## THE ORIGINAL TELLS THE LOSSES BEGINNING AND ENDING, not each theft (TEXTSTRA
+## 28768-28773, STRATEGY 1004 - REBEXE 0x499120): "Smuggling Losses" / "Dissention
+## among the population has allowed smugglers to begin operations on <system>.
+## As a result, valuable resources are being lost." and "Smuggling Losses End" /
+## "Increasing support on <system> has put an end to the smuggling losses there."
+static func _Tell(holder: Faction, p: Planet, day: int, begun: bool) -> void:
+	if holder == null or not GameSettings.IsHuman(holder):
+		return
+	var msg := GameMessage.new("Smuggling Losses" if begun else "Smuggling Losses End",
+		("Dissention among the population has allowed smugglers to begin operations on %s.  As a result, valuable resources are being lost." if begun
+			else "Increasing support on %s has put an end to the smuggling losses there.") % p.Name,
+		Enums.MessageCategory.Missions, day, p)
+	msg.Type = Enums.MessageType.Smuggling
+	msg.Still = "message.1004"
+	EventBus.Tell(holder, msg)
 
 
 static func Delay(f: Faction) -> int:
