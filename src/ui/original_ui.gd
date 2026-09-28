@@ -33,16 +33,29 @@ static var _face: Font = null
 static var _bold: Font = null
 
 
-## The original's face - Arial - where the system has it; the engine's own
-## font otherwise (the web build has no system fonts).
+## The original's face - Arial (REBEXE names that one face and ships none:
+## Windows' own) - first to last: its copy in the player's art set
+## (Art.OriginalFont, the Windows Arial the exporter brings in); the system's
+## (desktop builds - the web build cannot reach a system font); the bundled
+## Liberation Sans, built to Arial's metrics so text wraps and fits as the
+## original's (assets/fonts/README.md; TeeJ, 2026-09-28: the web build's
+## Encyclopedia text had to scroll in the engine's own, wider font).
 static func Face(bold: bool = false) -> Font:
+	var own: Font = Art.OriginalFont(bold)
+	if own != null:
+		return own
 	if bold and _bold != null:
 		return _bold
 	if not bold and _face != null:
 		return _face
-	var f := SystemFont.new()
-	f.font_names = PackedStringArray(["Arial", "Liberation Sans", "Helvetica", "Nimbus Sans"])
-	f.font_weight = 700 if bold else 400
+	var f: Font
+	if OS.get_system_fonts().has("Arial"):
+		var sf := SystemFont.new()
+		sf.font_names = PackedStringArray(["Arial"])
+		sf.font_weight = 700 if bold else 400
+		f = sf
+	else:
+		f = load("res://assets/fonts/LiberationSans-Bold.ttf" if bold else "res://assets/fonts/LiberationSans-Regular.ttf")
 	if bold:
 		_bold = f
 	else:
