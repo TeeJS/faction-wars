@@ -4,7 +4,10 @@ extends SceneTree
 ## Yavin - in ours it's always empty"). The original writes all it seeds on
 ## Yavin into the Empire's copy too - a snapshot, stale once they leave (the
 ## Empire's copy in its SAVEGAME.002 and .001). The Alliance gets no such
-## look at Coruscant's people.
+## look at Coruscant's people. Every other charted world a side does not hold
+## is known by its facilities alone, not its forces (the original's day-5
+## save: the Alliance's copy of every Imperial world, and both copies of the
+## neutral ones).
 ##
 ##   .\tools\run-gd.ps1 tests/yavin_known.gd
 
@@ -45,6 +48,16 @@ func _init() -> void:
 	var theirs: IntelManager.IntelView = IntelManager.View(alliance, coruscant, Enums.IntelSection.Characters)
 	_check(not theirs.Known, "the Alliance knows no one at Coruscant")
 	_check(IntelManager.View(empire, yavin, Enums.IntelSection.Troopers).Known, "Yavin's regiments, as before")
+	# Everywhere else: the facilities, not the forces.
+	var sees := func(f: Faction, p: Planet, s: int) -> bool: return IntelManager.View(f, p, s).Known
+	_check(sees.call(alliance, coruscant, Enums.IntelSection.DefensiveFacilities) and sees.call(alliance, coruscant, Enums.IntelSection.ProductionFacilities)
+		and not sees.call(alliance, coruscant, Enums.IntelSection.Troopers) and not sees.call(alliance, coruscant, Enums.IntelSection.OrbitingShips)
+		and not sees.call(alliance, coruscant, Enums.IntelSection.Fighters),
+		"the Alliance knows Coruscant's facilities, not its garrison, squadrons or fleet")
+	var neutral: Planet = Lq.first_or_null(GameState.AllPlanets(), func(p: Planet) -> bool:
+		return not FactionRegistry.Playable.has(p.ControllingFaction) and p.ExploredBy(alliance) and p.ExploredBy(empire))
+	_check(neutral != null and sees.call(empire, neutral, Enums.IntelSection.ProductionFacilities) and not sees.call(empire, neutral, Enums.IntelSection.Troopers),
+		"a charted neutral world (%s): its facilities, not its troops" % (neutral.Name if neutral != null else "none"))
 	# A snapshot: Leia leaves, the Empire still has her at Yavin.
 	var leia: Character = Lq.first_or_null(GameState.ActiveRoster, func(c: Character) -> bool: return c.PackId == "leia_organa")
 	var away: Planet = Lq.first_or_null(GameState.AllPlanets(), func(p: Planet) -> bool: return p.ControllingFaction == alliance and p != yavin)

@@ -260,9 +260,12 @@ static func InitializeGalaxyState(galaxy: Array, human_faction: Faction, difficu
 	var inhabited := Lq.count(all_planets, func(p): return p.IsInhabited)
 	var explored_count := Lq.count(all_planets, func(p): return p.ExploredBy(human_faction))
 
-	# THE OPENING SNAPSHOT: Reconnaissance's categories for every charted world
-	# a side does not hold - and EVERYTHING on a starting world the pack charts
-	# for everyone (`explored`). The original writes all it seeds on Yavin
+	# THE OPENING SNAPSHOT: the facilities of every charted world a side does
+	# not hold (IntelManager.OpeningCategories - not its forces: TeeJ,
+	# 2026-09-28, "ALWAYS MATCH THE ORIGINAL", on the Alliance seeing
+	# Coruscant's garrison and fleet on day one) - and EVERYTHING on a
+	# starting world the pack charts for everyone (`explored`). The original
+	# writes all it seeds on Yavin
 	# into the Empire's copy of the galaxy as well: its six characters, its
 	# Special Force, its ships, regiments and fighters - a snapshot, stale as
 	# they leave (TeeJ, 2026-09-28: "in the original, you always start the
@@ -279,7 +282,7 @@ static func InitializeGalaxyState(galaxy: Array, human_faction: Faction, difficu
 	for f in FactionRegistry.Playable:
 		for p in all_planets:
 			if p.ExploredBy(f) and p.ControllingFaction != f:
-				IntelManager.Capture(f, p, 1, IntelManager.EspionageCategories if open_to_all.has(p.PackId) else IntelManager.ReconnaissanceCategories)
+				IntelManager.Capture(f, p, 1, IntelManager.EspionageCategories if open_to_all.has(p.PackId) else IntelManager.OpeningCategories)
 
 	print("[INTEL] Playing as: %s" % str(GameSettings.PlayerFaction))
 	for f in FactionRegistry.Playable:
