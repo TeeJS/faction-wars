@@ -34,6 +34,8 @@ const RowYs := [4, 85, 166]
 const RowW := 166
 const RowH := 79
 const RowHeaders := ["Ship Construction", "Troops in Training", "Facilities Under Construction"]
+## Where the item being built stands in its row (measured, see _BuildOriginal).
+const ItemAt := Vector2(40, 15)
 ## The Mines page (manual p027 Fig 2.11), in page pixels: the grid's corner,
 ## one cell, and where a mine's 67x35 picture sits in its cell (a pile's sits
 ## at the corner). Every pixel matched on TeeJ's screenshot of the original's
@@ -47,6 +49,8 @@ const RowKeys := ["Ship", "Troop", "Fac"]
 const QueuePaths := ["%ShipQueueLabel", "%TroopQueueLabel", "%FacQueueLabel"]
 
 var _original: bool = false
+## The three rows' pictures of the item being built (the original look).
+var _items: Array = []
 
 
 func Populate(planet: Planet) -> void:
@@ -96,6 +100,11 @@ func Populate(planet: Planet) -> void:
 		(get_node("%ShipQueueLabel") as Label).text = QueueSummary(planet.ShipyardQueue, "No Ships are being built")
 		(get_node("%TroopQueueLabel") as Label).text = QueueSummary(planet.TrainingQueue, "No Troops in training")
 		(get_node("%FacQueueLabel") as Label).text = QueueSummary(planet.BuildingQueue, "No Facilities are being built")
+		var queues: Array = [planet.ShipyardQueue, planet.TrainingQueue, planet.BuildingQueue]
+		for i in _items.size():
+			var tex: Texture2D = QueuePicture(queues[i])
+			(_items[i] as TextureRect).texture = tex
+			(_items[i] as TextureRect).size = tex.get_size() if tex != null else Vector2.ZERO
 
 		# "THIS PROGRESS BAR shows how far along the current construction
 		# progress is" (manual p084). A percentage in text is not a progress
@@ -159,9 +168,14 @@ func Populate(planet: Planet) -> void:
 		# Nothing seen: the rows stay empty (TeeJ: no "Sensors detect no data").
 		var none: String = ""
 
-		(get_node("%ShipCapLabel") as Label).text = "0:0"
-		(get_node("%TroopCapLabel") as Label).text = "0:0"
-		(get_node("%FacCapLabel") as Label).text = "0:0"
+		# WHAT WE KNOW IS THERE (TeeJ, 2026-09-27: a neutral world showed 0:0
+		# beside the shipyard its map icon shows): the producers the sighting
+		# counted - the same counts the Sector window's icons read. What is
+		# being built there is not in that sighting, so both numbers are the
+		# built ones; nothing seen, 0:0.
+		(get_node("%ShipCapLabel") as Label).text = SeenPair(viewer, planet, "produces_unit")
+		(get_node("%TroopCapLabel") as Label).text = SeenPair(viewer, planet, "produces_troop")
+		(get_node("%FacCapLabel") as Label).text = SeenPair(viewer, planet, "produces_facility")
 
 		# The three queue lines carry the snapshot. It is one list in the
 		# game's own category, so it is reported as one list rather than
@@ -268,6 +282,12 @@ func _BuildOriginal() -> bool:
 		fill.size = Vector2(0, 5) * OUI.K
 		fill.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		mfg.add_child(fill)
+		# THE ITEM BEING BUILT, its 122x50 portrait under the row's words
+		# (TeeJ, 2026-09-27, with the original's Facilities Under Construction:
+		# "you should see the item being built/trained"). Measured there: the
+		# KDY-150's portrait matches unscaled at (+40, +15) from the row's
+		# corner; the ship and troop rows are the same frame, so the same place.
+		_items.append(OUI.Place(mfg, null, RowX + ItemAt.x, y + ItemAt.y, "Item%d" % i))
 		var q: Label = get_node("%%%sQueueLabel" % RowKeys[i])
 		OUI.Seat(q, mfg, RowX + 4, y + 16, 158, 40)
 		OUI.Style(q, 11, Color.WHITE)
@@ -490,7 +510,7 @@ static func GreyEmptyTab(tabs: TabContainer, tabName: String, count: int) -> voi
 		return
 	var idx: int = page.get_index()
 	if idx >= 0 and idx < tabs.get_tab_count():
-		tabs.set_tab_disabled(idx, count == 0)
+		tabs.set_tab_disabled(idx, count == 0 and idx != tabs.current_tab)   # the open page is never greyed
 
 
 func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, family: String, emptyMsg: String) -> void:
@@ -626,9 +646,22 @@ func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, fa
 				ui.ResolveObjectTarget(rowFac)
 				return
 
-			# Plain click replaces the selection; shift or ctrl adds to it.
-			var additive: bool = Input.is_key_pressed(KEY_SHIFT) or Input.is_key_pressed(KEY_CTRL)
-			if not additive:
+			# Plain click replaces the selection; CTRL adds or removes one;
+			# SHIFT takes every one from the last picked to this one, as the
+			# Message Index's does ("Select all the messages between two
+			# messages by selecting one, holding down the SHIFT key, and
+			# selecting the other", manual p079; TeeJ, 2026-09-27: the same for
+			# every list).
+			var kin: Array = Lq.where(planet.Facilities, func(f: Facility) -> bool: return f.Family() == rowFac.Family())
+			if Input.is_key_pressed(KEY_SHIFT) and _anchor != null and kin.has(_anchor) and _anchor != rowFac:
+				var a: int = kin.find(_anchor)
+				var b: int = kin.find(rowFac)
+				for f in kin.slice(mini(a, b), maxi(a, b) + 1):
+					if not _selected.has(f):
+						_selected.append(f)
+				Populate(planet)
+				return
+			if not Input.is_key_pressed(KEY_CTRL):
 				for f in _selected.duplicate():
 					if f.Family() == rowFac.Family():
 						_selected.erase(f)
@@ -637,6 +670,7 @@ func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, fa
 					_selected.append(rowFac)
 			else:
 				_selected.erase(rowFac)
+			_anchor = rowFac
 			Populate(planet))
 
 		var row := HBoxContainer.new()
@@ -794,6 +828,18 @@ func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, fa
 		container.add_child(note)
 
 
+## Another side's (or a neutral) world: the producers of a ROLE its last
+## sighting counted (IntelManager ProductionFacilities), "n:n".
+static func SeenPair(viewer: Faction, planet: Planet, producer_role: String) -> String:
+	var counts: Dictionary = IntelManager.SeenData(viewer, planet, Enums.IntelSection.ProductionFacilities).get("counts", {})
+	var n: int = 0
+	for family in counts:
+		var d: PackDefs.FacilityDef = FacilityCatalog.Get(str(family), 1)
+		if d != null and d.HasRole(producer_role):
+			n += int(counts[family])
+	return "%d:%d" % [n, n]
+
+
 # built : built + under construction
 ## Built, and built-plus-queued, for a producer ROLE.
 static func Pair(built: int, planet: Planet, producer_role: String) -> String:
@@ -801,6 +847,17 @@ static func Pair(built: int, planet: Planet, producer_role: String) -> String:
 		var d := FacilityCatalog.Get(t.Family, t.Tier)
 		return d != null and d.HasRole(producer_role))
 	return "%d:%d" % [built, built + building]
+
+
+## The portrait of what heads a queue, at the drawn scale; null when idle.
+static func QueuePicture(queue: Array) -> Texture2D:
+	if queue.is_empty():
+		return null
+	var head: ConstructionTask = queue[0]
+	if head.UnitRule != null:
+		return Art.Scaled(Art.Portrait("units", head.UnitRule.Id), OUI.K)
+	var d := FacilityCatalog.Get(head.Family, head.Tier)
+	return Art.Scaled(Art.Portrait("facilities", d.Id), OUI.K) if d != null else null
 
 
 static func QueueSummary(queue: Array, idle: String = "Idle") -> String:
@@ -1098,6 +1155,8 @@ func TargetSystem() -> Planet:
 # about four times a second, so a selection living in the controls would be
 # wiped before the player finished choosing.
 var _selected: Array = []
+## The facility last picked without SHIFT: a SHIFT-click's range starts there.
+var _anchor: Facility = null
 
 
 # The original confirms before scrapping: "Are you sure you want to scrap

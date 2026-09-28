@@ -92,7 +92,8 @@ const KNOWN_VOICE_LINES := ["order", "personnel_arrived", "mission_success", "mi
 	"advanced_mission_abort", "advanced_released", "advanced_recovered",
 	"advanced_enemy_detected", "advanced_force_growth", "advanced_rescue_attempt"]
 ## SCHEMA.md section 2, `sounds`: the controls' sounds.
-const KNOWN_SOUND_EVENTS := ["cockpit_galaxy_size", "cockpit_load", "cockpit_exit", "cockpit_control"]
+const KNOWN_SOUND_EVENTS := ["cockpit_galaxy_size", "cockpit_load", "cockpit_exit", "cockpit_control",
+	"window_button", "control_panel", "control_panel_gid"]
 ## SCHEMA.md section 2, `briefing.<side>.views`: what the display shows at a
 ## focus step - "off", or "<kind>:<id>" for the kinds that name something.
 const KNOWN_BRIEFING_VIEWS := ["off", "military", "unexplored", "defenses"]

@@ -356,8 +356,10 @@ static func DisplayNameOf(u: Unit) -> Variant:
 
 
 ## `voice`: the line the reporting character speaks with it (GameMessage.Voice:
-## "mission_success", "mission_failure", "mission_abort"), or "".
-static func Report(m: Mission, day: int, title: String, body: String, asks_to_continue: bool = false, voice: String = "") -> void:
+## "mission_success", "mission_failure", "mission_abort"), or "". `named`: the
+## title leads with who reports; the original's own titles ("Diplomacy Mission
+## Report") stand alone.
+static func Report(m: Mission, day: int, title: String, body: String, asks_to_continue: bool = false, voice: String = "", named: bool = true) -> void:
 	if not GameSettings.IsHuman(m.Faction):
 		return
 	var leader := Leader(m)
@@ -366,7 +368,7 @@ static func Report(m: Mission, day: int, title: String, body: String, asks_to_co
 	if character == null:
 		var people := Lq.of_type_character(m.Team)
 		character = people[0] if not people.is_empty() else null
-	var msg := GameMessage.new(title if who == null else "%s: %s" % [who, title], body,
+	var msg := GameMessage.new(title if (who == null or not named) else "%s: %s" % [who, title], body,
 		Enums.MessageCategory.Missions, day, m.Target, character)
 	msg.PendingMission = m if asks_to_continue else null
 	msg.Type = Enums.MessageType.MissionReport   # ALWAYS MissionReport, NEVER MissionFailed (see source)
@@ -375,17 +377,36 @@ static func Report(m: Mission, day: int, title: String, body: String, asks_to_co
 	EventBus.Tell(m.Faction, msg)
 
 
+## THE ORIGINAL'S DIPLOMACY MISSION REPORT (TEXTSTRA RCDATA 28884-28891; TeeJ's
+## screenshot of the original, 2026-09-27): "Diplomacy Mission Report" / "The
+## diplomacy mission to <system> has increased popular support on that system."
+## or "... had no effect on our popular support on that system.", then which side
+## the population supports (28888-28890 - NOT YET: the original reads a system
+## field, REBEXE 0x493179, whose rule is not found), then "Do you wish the mission
+## to continue?". `ours`: our own line - the support figure - meanwhile.
+const DiplomacyReportTitle := "Diplomacy Mission Report"
+
+
+static func DiplomacyReport(m: Mission, outcome: String, asks: bool = true, ours: String = "") -> String:
+	var body := "The diplomacy mission to %s %s" % [m.Target.Name, outcome]
+	if not ours.is_empty():
+		body += "  " + ours
+	return body + ("\nDo you wish the mission to continue?" if asks else "")
+
+
 ## Tell the defending faction that an enemy mission resolved against their world.
 ## Fog-blind: never names the attacker (character = null). Only human defenders
-## are notified; AI-on-AI produces no message. Mission category, so foil and
-## success land where the manual puts foil news ("news of enemy missions your
-## forces have foiled", manual p079).
-static func _tell_defender(planet: Planet, day: int, title: String, body: String) -> void:
+## are notified; AI-on-AI produces no message. A foil is Missions news ("news
+## of enemy missions your forces have foiled", manual p079); something of ours
+## destroyed is Manufacturing's (TeeJ, 2026-09-27: "messages about items being
+## destroyed or failing should be manufacturing, not mission").
+static func _tell_defender(planet: Planet, day: int, title: String, body: String,
+		category: Enums.MessageCategory = Enums.MessageCategory.Missions) -> void:
 	if planet == null or planet.ControllingFaction == null:
 		return
 	if not GameSettings.IsHuman(planet.ControllingFaction):
 		return
-	var msg := GameMessage.new(title, body, Enums.MessageCategory.Missions, day, planet, null)
+	var msg := GameMessage.new(title, body, category, day, planet, null)
 	msg.Type = Enums.MessageType.MissionReport
 	# An enemy mission foiled is the agent's report; one that struck is a loss.
 	msg.Advisor = "agent_report" if title == "Enemy Mission Foiled" else "maintenance"
@@ -941,6 +962,11 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 	if not success:
 		print("[Mission] %s at %s failed (attempt %d, %d%%)." % [JsonUtil.enum_name(Enums.MissionType, m.Type), m.Target.Name, m.Attempts, chance])
 		var persistent := m.IsPersistent()
+		if m.Type == Enums.MissionType.Diplomacy:
+			Report(m, day, DiplomacyReportTitle, DiplomacyReport(m, "had no effect on our popular support on that system.", persistent), persistent, "mission_failure", false)
+			if not persistent:
+				m.Finished = true
+			return
 		Report(m, day, "%s attempt %d failed" % [m.DisplayName(), m.Attempts],
 			("My team made no progress at %s on attempt %d.\n\nDo you wish the mission to continue?" % [m.Target.Name, m.Attempts]) if persistent
 			else ("The %s mission at %s failed. The team is returning to base." % [m.DisplayName().to_lower(), m.Target.Name]),
@@ -978,10 +1004,10 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 				joined.Type = Enums.MessageType.SystemControl
 				joined.Advisor = "support_gained"
 				EventBus.Tell(m.Faction, joined)
-			Report(m, day, "Diplomacy succeeding at %s" % m.Target.Name,
-				"Support for the %s on %s has risen to %d%%.%s" % [m.Faction.DisplayName, m.Target.Name, now,
-					" The system is now wholly with us and the mission is complete." if now >= 100 else "\n\nDo you wish the mission to continue?"],
-				now < 100, "mission_success")
+			Report(m, day, DiplomacyReportTitle, DiplomacyReport(m, "has increased popular support on that system.", now < 100,
+					"Support for the %s is now %d%%." % [m.Faction.DisplayName, now]
+					+ (" The system is now wholly with us and the mission is complete." if now >= 100 else "")),
+				now < 100, "mission_success", false)
 			if now >= 100:
 				m.Finished = true
 
@@ -1099,8 +1125,11 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 			else:
 				print("[Mission] Sabotage at %s destroyed %s." % [m.Target.Name, what])
 				Report(m, day, "%s destroyed" % what, "My team has destroyed %s at %s." % [what, m.Target.Name], false, "mission_success")
-				_tell_defender(m.Target, day, "%s destroyed" % what,
-					"%s at %s was destroyed by enemy sabotage." % [what, m.Target.Name])
+				# The original's own words (TEXTSTRA): "Saboteurs Strike at <system>" /
+				# "The following units were destroyed by saboteurs at <system>:".
+				_tell_defender(m.Target, day, "Saboteurs Strike at %s" % m.Target.Name,
+					"The following units were destroyed by saboteurs at %s:\n\n  %s" % [m.Target.Name, what],
+					Enums.MessageCategory.Manufacturing)
 				m.Finished = true
 
 		Enums.MissionType.SuperweaponSabotage:

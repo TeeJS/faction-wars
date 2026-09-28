@@ -1090,7 +1090,11 @@
     "cockpit_galaxy_size": "swr-original:sound/common/8000.ogg",
     "cockpit_load": "swr-original:sound/common/8001.ogg",
     "cockpit_exit": "swr-original:sound/common/8002.ogg",
-    "cockpit_control": "swr-original:sound/common/8004.ogg"
+    "cockpit_control": "swr-original:sound/common/8004.ogg",
+    "_comment_controls": "REBEXE 0x602840 gives a control its click sound: STRATEGY 608 on the strategy windows' buttons and the Control Panel's monitors, 600 on the GID's (0x4286b0).",
+    "window_button": "swr-original:sound/strategy/608.ogg",
+    "control_panel": "swr-original:sound/strategy/608.ogg",
+    "control_panel_gid": "swr-original:sound/strategy/600.ogg"
   },
   "briefing": {
     "_comment": "The opening briefing (manual p022), from the original's own tables: the agent's action script (GData C3POACT.SPT script 41 / IMP22ACT.SPT script 74; the skip, scripts 40 / 73) through the briefing DLL's records to each line's recording and animation. A `focus` step is the original's step between lines where the agent points out what the next line is about; `release` is the step that lets the game's clock go (action 11 clears the main loop's hold, REBEXE FUN_0041dbe0 -> FUN_0041e320; action 13, the end, unloads the briefing and gives the opening advice): after the last line, or at once on a skip, before its line; `views` says what the display shows for each (its caption, and the systems lit), read off two recordings of the original's briefing (TEXTSTRA 5652-5674 hold the captions): the Empire's 5 and 6 by their captions' length, the rest seen.",

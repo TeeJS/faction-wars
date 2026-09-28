@@ -81,7 +81,11 @@ static func Header() -> Dictionary:
 	var humans: Array = []
 	for f in GameSettings.HumanFactions:
 		humans.append(f.Id)
-	var h := {
+	# A head-to-head game played on alone: the log begins as it was made, both
+	# sides human, and says the day the AI took over (GameSettings.AiTakeoverDay).
+	if GameSettings.AiTakeoverDay > 0:
+		humans = GameSettings.TakeoverHumans.duplicate()
+	var header := {
 		# The game build: two builds may simulate differently, so the hello
 		# compares it (LockstepSession, BuildInfo.same_build).
 		"build": BuildInfo.version(),
@@ -95,10 +99,12 @@ static func Header() -> Dictionary:
 		"size": GameSettings.SelectedSize,
 		"hq_only": GameSettings.HQOnlyVictory,
 	}
+	if GameSettings.AiTakeoverDay > 0:
+		header["ai_takeover_day"] = GameSettings.AiTakeoverDay
 	# An imported game is rebuilt from the original's file (OriginalImport).
 	if not GameSettings.Origin.is_empty():
-		h["origin"] = GameSettings.Origin
-	return h
+		header["origin"] = GameSettings.Origin
+	return header
 
 
 static func Append(c: Command) -> void:

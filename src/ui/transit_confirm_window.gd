@@ -16,7 +16,8 @@ var PersonelInTransit: Variant = null
 
 func Setup(characters: Array, days: int, onConfirm: Callable, label: String = "") -> void:
 	_onConfirm = onConfirm
-	PersonelInTransit = characters.duplicate()
+	# Nothing to watch leave for a move of no personnel or craft (the headquarters).
+	PersonelInTransit = characters.duplicate() if not characters.is_empty() else null
 	# Show Name if it's 1 person, or "X Personnel" if it's a group
 	var nameDisplay: String = label if not label.is_empty() else (characters[0].Name if characters.size() == 1 else "%d Personnel" % characters.size())
 

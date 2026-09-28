@@ -80,6 +80,7 @@ func _init() -> void:
 		_png("%s/buttons/%s.png" % [dir, b], 14, 14, Color(0.8, 0.8, 0.8))
 	_png("%s/windows/card_plate.png" % dir, 61, 25, Color(0.5, 0.5, 0.5))
 	_png("%s/windows/card_enroute.png" % dir, 61, 25, Color(0.1, 0.1, 0.3))
+	_png("%s/windows/card_transit.png" % dir, 61, 25, Color(0.2, 0.3, 0.2))
 	if far.ArtworkId > 0:
 		DirAccess.make_dir_recursive_absolute("%s/planet_sprites" % dir)
 		_png("%s/planet_sprites/%d.png" % [dir, far.ArtworkId], 37, 37, Color(0.5, 0.5, 0.9))
@@ -108,13 +109,13 @@ func _init() -> void:
 	_check(w._targetName.text == far.Name, "the target's name is shown")
 	_check(w._targetPicture.texture != null or far.ArtworkId <= 0, "the target's picture is shown")
 
-	# The Agents tab: the agent, on hyperspace streaks while in transit.
+	# The Agents tab: the agent, on the ship's windows while in transit.
 	var names: Array = Lq.select(w._panel.get_children(), func(c: Control) -> String: return (c.get_node("Name") as Label).text)
 	_check(names == [team[0].Name], "the Agents tab lists the agent only (%s)" % str(names))
 	var member: Control = w._panel.get_child(0) if w._panel.get_child_count() > 0 else null
 	var plate: TextureRect = member.get_node_or_null("Plate") if member != null else null
-	_check(plate != null and plate.texture == Art.Scaled(Art.WindowPicture("card_enroute"), 2),
-		"the team is in hyperspace: starfield streaks behind the picture (Fig 3.51)")
+	_check(plate != null and plate.texture == Art.Scaled(Art.WindowPicture("card_transit" if team[0] is Character else "card_enroute"), 2),
+		"the team is in hyperspace: a character on the ship's windows, p096's In transit icon (Fig 3.51)")
 
 	# The Decoys tab.
 	(w._tabs[1] as TextureButton).pressed.emit()

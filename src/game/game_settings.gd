@@ -24,6 +24,27 @@ static func LocalFaction() -> Faction:
 ## THE HOST'S SIDE in a head-to-head game; null in single player.
 static var HostFaction: Faction = null
 
+## A HEAD-TO-HEAD GAME PLAYED ON ALONE (issue #301, TeeJ: "if you open a saved
+## multi-player game in single player mode you should be able to play it
+## against the ai"). Both sides were human until the tick out of this day; from
+## it on only the local side is, and the AI plays the other. 0 = not such a
+## game. TakeoverHumans keeps the sides that were human before, for the log's
+## header, so a replay hands over on the same day.
+static var AiTakeoverDay: int = 0
+static var TakeoverHumans: Array = []   # faction ids
+
+
+## Hand every side but the local one to the AI from `day` on (AiTakeoverDay).
+static func HandToAi(day: int) -> void:
+	if AiTakeoverDay > 0 or HumanFactions.size() < 2:
+		return
+	TakeoverHumans = []
+	for f in HumanFactions:
+		TakeoverHumans.append(f.Id)
+	AiTakeoverDay = day
+	HumanFactions = [PlayerFaction]
+	print("[GameSettings] the AI takes over %s from day %d" % [", ".join(PackedStringArray(TakeoverHumans.filter(func(id: String) -> bool: return id != PlayerFaction.Id))), day])
+
 
 ## THE SIDE WHOSE ROW OF THE HUMAN-KEYED TABLES IS READ. SDPRTB (side_lottery.json)
 ## is laid out per player side x difficulty x side, so even its "mp" column sits

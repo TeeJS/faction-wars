@@ -41,6 +41,7 @@ const SavedArt := preload("res://src/ui/saved_games_art.gd")
 const SaveFiles := preload("res://src/ui/save_files.gd")
 const AllGames := preload("res://src/ui/original_all_games_screen.gd")
 const AllGamesPlain := preload("res://src/ui/all_games_window.gd")
+const H2hSaveLib := preload("res://src/ui/h2h_save.gd")
 
 const W := 640
 const H := 480
@@ -350,12 +351,25 @@ func SaveNamed(nm: String) -> String:
 	if FromCockpit:
 		return ""
 	if MpSetup.session != null:
+		# Head-to-head (manual p163): the host's save, on both computers, as
+		# the game of the same name; the rows follow when the guest answers.
 		if MpSetup.hosting:
-			_tell("Save Game", "Saved on both computers: \"%s\", Day %d." % [MpSetup.lobby.name if MpSetup.lobby != null else "this game", StrategicTickManager.Shown(StrategicTickManager.Today)])
+			_h2h.begin(MpSetup.session, nm if not nm.strip_edges().is_empty() else SaveManager.FreeName())
 		return ""
 	var id: String = SaveManager.Save(nm)   # an empty name takes the next free "Saved game"
 	_refresh_slots()
 	return id
+
+
+## A head-to-head save waits for the guest's computer to say it wrote it too.
+var _h2h: H2hSaveLib = H2hSaveLib.new()
+
+
+func _process(_delta: float) -> void:
+	var said: String = _h2h.poll()
+	if not said.is_empty():
+		_refresh_slots()
+		_tell("Save Game", said)
 
 
 func _load(slot: int) -> void:

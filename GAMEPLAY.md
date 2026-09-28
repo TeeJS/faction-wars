@@ -3148,6 +3148,28 @@ highlight, GID, own side only.**
 **Move** / **Confirmed Move** (Fig. 3.82 — the HQ's menu is just Move, Confirmed
 Move, Encyclopedia, Status).
 
+> Alternately, you can see **how much transit time it will take for the move**
+> before you decide for sure by selecting **Confirmed Move**. *(manual p135)*
+
+**The move takes days — as many as a facility's deployment.** ★ Confirmed (the
+manual's transit time, p135, and REBEXE, read 2026-09-27):
+
+| REBEXE | what it does |
+|---|---|
+| `FUN_00514a60` | moves any object: re-parents it to its destination, then `FUN_00556430` starts its transit |
+| `FUN_00555d30` / `FUN_00555d90` | the transit days: the object's rating into the travel law `0x55d8c0` (`floor(isqrt(d²) / entry 74) × rating / 100`, at least 1 — the `sub_55c090` law of `Planet.TravelDaysTo`, at its address in this build) |
+| vtable `+0x34` | the rating. A character overrides it (its hyperdrive, `+0x9a` — Han Solo), and so do two ship classes; everything else uses the default `0x4f63f0`: **entry 1** (`DAT_006b9050`, loaded by `push 0x6b9050; push 1; call 0x53e390`) for an **Existing** object (flag bit 6 of `+0x50`, the `GameObjExistingNotif` setter) |
+| `FUN_00538220` | the Build window's **Best Time To Deployment** goes the same way — a facility (family ≥ 0x20) travels at entry 1 |
+
+The Alliance HQ is `ALLFACSD` family **0x20** — a facility, with no hyperdrive
+of its own — so its days are `Planet.DeploymentDaysTo`. On arrival the original
+says so: *"Headquarters Arrives"* / *"The Alliance Headquarters has arrived at
+<system>."* A destination lost on the way **reroutes** it: *"Headquarters
+Rerouted"* / *"The Alliance Headquarters was unable to deploy at <system>. It
+has been rerouted to <system>."* (TEXTSTRA RCDATA 28860-28861). **Not
+established:** where to - the code sends it on to the nearest world its side
+holds, as personnel go (§7), by the same law from the lost world.
+
 > TIP: **Bring along some of the troops, fighters, and personnel** that were
 > helping defend the original HQ location to help defend the new site.
 
