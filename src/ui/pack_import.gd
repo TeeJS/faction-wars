@@ -84,6 +84,7 @@ const MIN_EXPORTER := {"swr-original": "2.6.5"}
 static var OnImported: Callable = Callable()
 static var _listening: bool = false
 static var _js_callback: JavaScriptObject = null
+static var _js_progress: JavaScriptObject = null
 static var _picked: Callable = Callable()
 
 
@@ -99,21 +100,23 @@ static func PickFile(done: Callable) -> void:
 		# fwMovies.take), and only its result comes back, as text.
 		MoviesLib.WebInstall()
 		_js_callback = JavaScriptBridge.create_callback(_on_js_file)
+		_js_progress = JavaScriptBridge.create_callback(_on_js_progress)
 		JavaScriptBridge.eval("""
-			window.factionWarsPickFile = function (cb) {
+			window.factionWarsPickFile = function (cb, progress) {
 				var input = document.createElement('input');
 				input.type = 'file';
 				input.accept = '.zip,application/zip';
 				input.onchange = function () {
 					var f = input.files && input.files[0];
 					if (!f) return;
+					if (progress) progress('reading', 0, 0);
 					var bytes = function () { f.arrayBuffer().then(function (b) { cb(new Uint8Array(b), f.name); }); };
 					if (!window.fwMovies) { bytes(); return; }
-					window.fwMovies.take(f).then(function (r) { if (r) cb(r, f.name); else bytes(); }, bytes);
+					window.fwMovies.take(f, progress).then(function (r) { if (r) cb(r, f.name); else bytes(); }, bytes);
 				};
 				input.click();
 			};""", true)
-		JavaScriptBridge.get_interface("window").factionWarsPickFile(_js_callback)
+		JavaScriptBridge.get_interface("window").factionWarsPickFile(_js_callback, _js_progress)
 		return
 	var start := OS.get_system_dir(OS.SYSTEM_DIR_DOCUMENTS).path_join("Faction Wars")
 	if DisplayServer.has_feature(DisplayServer.FEATURE_NATIVE_DIALOG_FILE):
@@ -121,7 +124,7 @@ static func PickFile(done: Callable) -> void:
 			DisplayServer.FILE_DIALOG_MODE_OPEN_FILE, PackedStringArray(["*.zip ; Faction Wars file"]),
 			func(ok: bool, paths: PackedStringArray, _filter: int) -> void:
 				if ok and paths.size() > 0:
-					_report(ImportFile(paths[0])))
+					_run(paths[0]))
 	else:
 		_report(_fail("There is no file dialog here - drag the file onto the game instead."))
 
@@ -132,6 +135,7 @@ static func _on_js_file(args: Array) -> void:
 		return
 	if args[0] is String:
 		# The browser kept a movies file: its result, then the new list.
+		_progress("", 0, 0)
 		var parsed: Variant = JSON.parse_string(str(args[0]))
 		var result: Dictionary = parsed if parsed is Dictionary else _fail("The movies file could not be read.")
 		if result.get("ok", false):
@@ -139,7 +143,14 @@ static func _on_js_file(args: Array) -> void:
 		else:
 			_report(result)
 		return
-	_report(ImportBytes(JavaScriptBridge.js_buffer_to_packed_byte_array(args[0])))
+	_run_bytes(JavaScriptBridge.js_buffer_to_packed_byte_array(args[0]))
+
+
+## The browser saying how far it has got: reading the file, checking and
+## keeping a movies file (fwMovies.take).
+static func _on_js_progress(args: Array) -> void:
+	if args.size() >= 3:
+		_progress(str(args[0]), int(args[1]), int(args[2]))
 
 
 ## A file dropped anywhere on the game imports too (the web build and the
@@ -154,7 +165,7 @@ static func ListenForDrops(tree: SceneTree) -> void:
 	tree.root.files_dropped.connect(func(files: PackedStringArray) -> void:
 		for f in files:
 			if f.get_extension().to_lower() == "zip":
-				_report(ImportFile(f)))
+				_run(f))
 
 
 static func _report(result: Dictionary) -> void:
@@ -190,6 +201,63 @@ static func ImportBytes(bytes: PackedByteArray) -> Dictionary:
 
 
 static func _import(zip: ZIPReader) -> Dictionary:
+	var job := _job(zip)
+	while JobStep(job):
+		pass
+	return job["result"]
+
+
+## AN IMPORT IN STEPS (TeeJ, 2026-09-28, an import progress bar: "absolutely,
+## yes"): the import's work - every file checked against its checksum, then
+## every file written beside the old copy, then the whole put in place - as a
+## job its caller runs a slice at a time (JobStep), saying how far it has got in
+## job.phase ("check", "write", "place"), job.done and job.total. _import runs
+## one to its end at once, as the import always ran; the file picker and a
+## dropped file run one a slice a frame (_run) and say how it goes (OnProgress).
+static func _job(zip: ZIPReader) -> Dictionary:
+	var job := {"zip": zip, "phase": "check", "done": 0, "total": 0}
+	var r := _begin(job)
+	if not r.is_empty():
+		job["result"] = r
+	return job
+
+
+## One slice of `job`: work for up to `budget_ms`. False once it has finished,
+## its "result" then set; true while there is more.
+static func JobStep(job: Dictionary, budget_ms: int = 1 << 30) -> bool:
+	if job.has("result"):
+		return false
+	var start := Time.get_ticks_msec()
+	while true:
+		var r: Dictionary = {}
+		match str(job["phase"]):
+			"check":
+				if int(job["done"]) < int(job["total"]):
+					r = _check_one(job)
+				else:
+					r = _after_check(job)
+					job["phase"] = "write"
+					job["done"] = 0
+			"write":
+				if int(job["done"]) < int(job["total"]):
+					r = _write_one(job)
+				else:
+					# A slice ends here, so "putting it in place" is said before it runs.
+					job["phase"] = "place"
+					return true
+			_:
+				r = _finish(job)
+		if not r.is_empty():
+			job["result"] = r
+			return false
+		if Time.get_ticks_msec() - start >= budget_ms:
+			return true
+	return false
+
+
+## The file's manifest read and checked; the files it lists, to be checked.
+static func _begin(job: Dictionary) -> Dictionary:
+	var zip: ZIPReader = job["zip"]
 	if not zip.file_exists("manifest.json"):
 		return _fail("That file has no manifest.json - export it with the Faction Wars Exporter, or build it with its Build faction pack.")
 	var manifest: Variant = JSON.parse_string(zip.read_file("manifest.json").get_string_from_utf8())
@@ -197,7 +265,6 @@ static func _import(zip: ZIPReader) -> Dictionary:
 		return _fail("Its manifest.json is not valid JSON.")
 	var kind := str(manifest.get("kind", ""))
 	var id := str(manifest.get("id", ""))
-	var title := str(manifest.get("title", id))
 	if int(manifest.get("format", 0)) != FORMAT:
 		return _fail("It is format %s; this version of Faction Wars reads format %d." % [str(manifest.get("format", "?")), FORMAT])
 	if not kind in [KIND_ART_SET, KIND_FACTION_PACK, KIND_MOVIES]:
@@ -211,20 +278,38 @@ static func _import(zip: ZIPReader) -> Dictionary:
 	var files: Variant = manifest.get("files")
 	if not files is Dictionary or files.is_empty():
 		return _fail("Its manifest lists no files.")
+	job["manifest"] = manifest
+	job["kind"] = kind
+	job["id"] = id
+	job["title"] = str(manifest.get("title", id))
+	job["files"] = files
+	job["keys"] = (files as Dictionary).keys()
+	job["total"] = (files as Dictionary).size()
+	job["contents"] = {}   # path -> bytes: every file checked before anything is written
+	return {}
 
-	# Every file, checked before anything is written.
-	var contents := {}   # path -> bytes
-	for rel in files:
-		var p := str(rel)
-		if not _safe_path(p):
-			return _fail("It lists an unsafe path: %s" % p)
-		if not zip.file_exists(p):
-			return _fail("It is incomplete: %s is listed but missing." % p)
-		var bytes := zip.read_file(p)
-		if _sha256(bytes) != str(files[rel]).to_lower():
-			return _fail("It is damaged: %s does not match its checksum." % p)
-		contents[p] = bytes
 
+static func _check_one(job: Dictionary) -> Dictionary:
+	var zip: ZIPReader = job["zip"]
+	var rel: Variant = job["keys"][int(job["done"])]
+	var p := str(rel)
+	if not _safe_path(p):
+		return _fail("It lists an unsafe path: %s" % p)
+	if not zip.file_exists(p):
+		return _fail("It is incomplete: %s is listed but missing." % p)
+	var bytes := zip.read_file(p)
+	if _sha256(bytes) != str(job["files"][rel]).to_lower():
+		return _fail("It is damaged: %s does not match its checksum." % p)
+	job["contents"][p] = bytes
+	job["done"] = int(job["done"]) + 1
+	return {}
+
+
+## Every file checked: where it goes, and a faction pack's own checks.
+static func _after_check(job: Dictionary) -> Dictionary:
+	var kind: String = job["kind"]
+	var id: String = job["id"]
+	var contents: Dictionary = job["contents"]
 	var dest: String
 	if kind == KIND_ART_SET:
 		dest = "%s/%s" % [Art.UserArtRoot, id]
@@ -241,20 +326,42 @@ static func _import(zip: ZIPReader) -> Dictionary:
 		if str(pj.get("id", "")) != id:
 			return _fail("Its pack.json names the pack '%s' but its manifest '%s'; they must be the same." % [str(pj.get("id", "")), id])
 		dest = "%s/%s" % [FactionRegistry.USER_PACKS_ROOT, id]
-
-	# Write beside the old copy, then swap, so a failure leaves the old intact.
-	# A faction pack is written where the loader can check it first.
+	# Written beside the old copy, then swapped, so a failure leaves the old
+	# intact. A faction pack is written where the loader can check it first.
 	var staging := "%s/%s" % [PACK_STAGING, id] if kind == KIND_FACTION_PACK else dest + ".importing"
 	_remove(staging)
-	for p in contents:
-		var path := "%s/%s" % [staging, p]
-		DirAccess.make_dir_recursive_absolute(path.get_base_dir())
-		var out := FileAccess.open(path, FileAccess.WRITE)
-		if out == null:
-			_remove(staging)
-			return _fail("Could not write %s (%s)." % [path, error_string(FileAccess.get_open_error())])
-		out.store_buffer(contents[p])
-		out.close()
+	job["dest"] = dest
+	job["staging"] = staging
+	job["keys"] = contents.keys()
+	job["total"] = contents.size()
+	return {}
+
+
+static func _write_one(job: Dictionary) -> Dictionary:
+	var p: String = job["keys"][int(job["done"])]
+	var staging: String = job["staging"]
+	var path := "%s/%s" % [staging, p]
+	DirAccess.make_dir_recursive_absolute(path.get_base_dir())
+	var out := FileAccess.open(path, FileAccess.WRITE)
+	if out == null:
+		_remove(staging)
+		return _fail("Could not write %s (%s)." % [path, error_string(FileAccess.get_open_error())])
+	out.store_buffer(job["contents"][p])
+	out.close()
+	job["done"] = int(job["done"]) + 1
+	return {}
+
+
+## Every file written: a faction pack checked by the loader, then the whole put
+## in place of the old copy, and the result.
+static func _finish(job: Dictionary) -> Dictionary:
+	var kind: String = job["kind"]
+	var id: String = job["id"]
+	var title: String = job["title"]
+	var manifest: Dictionary = job["manifest"]
+	var contents: Dictionary = job["contents"]
+	var dest: String = job["dest"]
+	var staging: String = job["staging"]
 	var keep := FileAccess.open("%s/manifest.json" % staging, FileAccess.WRITE)
 	keep.store_string(JSON.stringify(manifest, "  "))
 	keep.close()
@@ -303,6 +410,59 @@ static func _import(zip: ZIPReader) -> Dictionary:
 	var result := {"ok": true, "kind": kind, "id": id, "files": contents.size(), "message": message}
 	result.merge(pack_facts)
 	return result
+
+
+## Said as an import runs a slice at a time: (phase, done, total) - "reading"
+## (the browser reading the file), "check", "write", "place", "verify" and
+## "store" (the browser checking and keeping a movies file) - and ("", 0, 0)
+## once it has finished.
+static var OnProgress: Callable = Callable()
+## How long each frame's slice of an import may run, so the screen keeps drawing.
+const SLICE_MS := 20
+
+
+static func _progress(phase: String, done: int, total: int) -> void:
+	if OnProgress.is_valid():
+		OnProgress.call(phase, done, total)
+
+
+## The file at `path` imported a slice a frame, saying how it goes; its result
+## to the picker as ever. `staged`: the browser's bytes, staged for the zip
+## reader, go once it is done.
+static func _run(path: String, staged: bool = false) -> void:
+	var zip := ZIPReader.new()
+	if zip.open(path) != OK:
+		if staged:
+			_unstage()
+		_report(_fail("That is not a Faction Wars file (it could not be opened as a .zip)."))
+		return
+	var job := _job(zip)
+	var tree := Engine.get_main_loop() as SceneTree
+	while JobStep(job, SLICE_MS):
+		_progress(str(job["phase"]), int(job["done"]), int(job["total"]))
+		await tree.process_frame
+	zip.close()
+	if staged:
+		_unstage()
+	_progress("", 0, 0)
+	_report(job["result"])
+
+
+## The browser's bytes staged, then imported a slice a frame.
+static func _run_bytes(bytes: PackedByteArray) -> void:
+	var f := FileAccess.open(STAGING, FileAccess.WRITE)
+	if f == null:
+		_progress("", 0, 0)
+		_report(_fail("Could not stage the file (%s)." % error_string(FileAccess.get_open_error())))
+		return
+	f.store_buffer(bytes)
+	f.close()
+	_run(STAGING, true)
+
+
+static func _unstage() -> void:
+	DirAccess.remove_absolute(STAGING)
+	_sync()
 
 
 ## A faction pack imported over another version of itself (strangers plan,

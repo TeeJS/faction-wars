@@ -29,6 +29,9 @@ func _init() -> void:
 			picker.call("_open_art_window", "star-wars-rebellion")
 		"manage":
 			picker.call("_open_art_window", "star-wars-rebellion", "", true, true)
+		"progress":
+			picker.call("_open_art_window", "star-wars-rebellion")
+			picker.call("_on_progress", "check", 812, 1960)
 		"tell":
 			picker.call("_tell", {"ok": false, "message": "That is not a Faction Wars file (it could not be opened as a .zip)."})
 	for _i in 4:
