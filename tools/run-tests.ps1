@@ -23,7 +23,7 @@ param([string]$Match = "", [int]$TimeoutSeconds = 300, [int]$Seed = 0)
 $repo = Split-Path -Parent $PSScriptRoot
 Set-Location $repo
 $runGd = Join-Path $PSScriptRoot 'run-gd.ps1'
-$leftToTools = @('capture_', 'bench_', 'soak', 'dto_parity', 'lockstep_client', 'mp_flow', 'ency_clicks', 'feedback_smoke', 'tls_probe')
+$leftToTools = @('capture_', 'bench_', 'soak', 'dto_parity', 'lockstep_client', 'mp_flow', 'h2h_solo', 'ency_clicks', 'feedback_smoke', 'tls_probe')
 # name -> its runs in order, each run's arguments space-separated (run-gd adds
 # Godot's "--"); the test's verdict is the last run's.
 $harness = @{

@@ -1378,14 +1378,11 @@ func OpenTroopFinder() -> void:
 		func(window) -> void: window.Setup(self), Vector2(100, 150))
 
 
-## F1 Game Options - the six-slot save screen (single-player). Head-to-head uses
-## its own relay Save, so this is offered only when there is no MP session. Guards
-## against opening a second copy.
+## F1 Game Options - the six-slot save screen, head-to-head too (manual p163:
+## the host saves there, on both computers). Guards against opening a second copy.
 func OpenGameOptions() -> void:
 	if OptionsScreenScript.CanBuild():
 		OpenOptionsScreen()
-		return
-	if MpSetup.session != null:
 		return
 	if get_node_or_null("GameOptionsWindow") != null:
 		return

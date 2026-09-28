@@ -105,6 +105,12 @@ var _speed_group: ButtonGroup
 var _speed_buttons: Array = []
 var _saves: Array = []
 var _load_for: String = ""      # the opponent the shared-saves check was made for
+## A saved game in one of this computer's slots goes to the relay, line by line,
+## before Start (issue #301): both clients then rebuild it from the room's log.
+var _upload: Array = []
+var _upload_at: int = 0
+var _uploading: bool = false
+var _load_failed: bool = false
 var _loading: bool = false
 var _load_client: RelayClient = null
 var _left: bool = false
@@ -318,6 +324,14 @@ func _process(_delta: float) -> void:
 			_rejoining = false
 		elif _lobby.caught_up:
 			MpSetup.load_lines = _lobby.replayed_lines + _lobby.take_held()
+			# A saved slot whose lines never reached the room would start a new
+			# game in its place: stop and say so instead.
+			if int(_lobby.settings.get("load_slot", -1)) >= 0 and _lobby.replayed_lines.is_empty():
+				MpSetup.load_lines = []
+				_rejoining = false
+				_load_failed = true
+				show_error("Could not load the saved game: the relay has none of it.")
+				return
 			MpSetup.hosting = _lobby.side == "host"
 			MpSetup.apply_settings(_lobby.settings, _lobby.side)
 			_rejoining = false
@@ -368,18 +382,30 @@ func _process(_delta: float) -> void:
 	if _host and (_lobby.saves != _saves or _lobby.guest_name != _load_for):
 		_saves = _lobby.saves.duplicate()
 		_load_for = _lobby.guest_name
-		var shared := _shared_saves()
+		var any := not _shared_saves().is_empty() or not _slot_saves().is_empty()
 		var load_btn: Button = get_node("%BtnLoadGame")
-		load_btn.disabled = shared.is_empty()
-		load_btn.tooltip_text = "Load a game saved with your current opponent." if not shared.is_empty() else "Available once you have saved a game from a previous session with your current opponent."
+		load_btn.disabled = not any
+		load_btn.tooltip_text = "Load a game saved with your current opponent." if any else "Available once you have saved a game from a previous session with your current opponent."
 		_sync_load()
 	# Errors.
 	if not _lobby.last_error.is_empty():
 		show_error(_lobby.last_error.capitalize() + ".")
 		_lobby.last_error = ""
+	# A saved slot going to the relay: a few lines a frame, then Start.
+	if _uploading:
+		_upload_some()
 	# Started - both go to the game.
-	if _lobby.started and not _loading:
+	if _lobby.started and not _loading and not _load_failed:
 		_settings = _lobby.settings.duplicate()
+		if int(_settings.get("load_slot", -1)) >= 0:
+			# A saved slot (issue #301): the host sent its lines to this room
+			# before Start. Both rebuild from the room's log, as a rejoin does -
+			# the guest's copies of those lines, forwarded as they went up, are
+			# the same lines and are dropped.
+			_lobby.take_held()
+			_lobby.fetch_log(0)
+			_rejoining = true
+			return
 		if str(_settings.get("load", "")).is_empty():
 			MpSetup.apply_settings(_settings, _lobby.side)
 			go(MainScene)
@@ -678,14 +704,19 @@ func _echo(key: String) -> void:
 func _echo_all() -> void:
 	for k in ["side", "size", "hq_only", "speed_rule", "briefing"]:
 		_echo(k)
-	if not str(_settings.get("load", "")).is_empty():
+	if not str(_settings.get("load_name", "")).is_empty():
 		_echo("load")
 
 
 func _echo_diff() -> void:
-	for k in ["side", "size", "hq_only", "speed_rule", "briefing", "load"]:
+	for k in ["side", "size", "hq_only", "speed_rule", "briefing"]:
 		if _settings.get(k) != _seen_settings.get(k):
 			_echo(k)
+	# A save picked (a slot's or the relay's): its name and day, once.
+	for k in ["load", "load_slot", "load_name", "load_day"]:
+		if _settings.get(k) != _seen_settings.get(k):
+			_echo("load")
+			break
 
 
 ## A line in the chat view. Names and messages come from strangers: added as
@@ -744,15 +775,48 @@ static func _pack_words(id: String, hash: String) -> String:
 
 
 func _start() -> void:
-	if not _host or _lobby.guest_name.is_empty() or _loading or not _seat_mismatch().is_empty():
+	if not _host or _lobby.guest_name.is_empty() or _loading or _uploading or not _seat_mismatch().is_empty():
 		return
 	if not _settings.has("seed"):
 		# The host picks the seed at Start; it travels in the settings so both
 		# clients build the identical galaxy.
 		_settings["seed"] = int(Time.get_unix_time_from_system() * 1000.0) % 2147483647
 		_lobby.set_settings(_settings)
+	var slot := int(_settings.get("load_slot", -1))
+	if slot >= 0:
+		# A saved slot: its lines go to this room first (_upload_some), then Start.
+		var read: Array = SaveManager.ReadH2H(slot)
+		if (read[0] as Dictionary).is_empty():
+			show_error("Could not read the saved game in slot %d." % (slot + 1))
+			return
+		_upload = read[1]
+		_upload_at = 0
+		_uploading = true
+		_say(MpSetup.player_name, "Loading the saved game...")
+		bar().set_proceed_enabled(false, "Loading the saved game...")
+		return
 	_lobby.start()
 	bar().set_proceed_enabled(false, "Starting...")
+
+
+## Sends the saved slot's lines to the room, as many a frame as the socket
+## takes without its send buffer filling (a line that does not fit is lost), and
+## starts the game when the last is out.
+const UploadBufferBytes := 32 * 1024
+
+
+func _upload_some() -> void:
+	var t: WebSocketTransport = _lobby.transport
+	if not t.is_connected_now():
+		return
+	while _upload_at < _upload.size() and t.buffered() < UploadBufferBytes:
+		t.send(_upload[_upload_at])
+		_upload_at += 1
+	if _upload_at >= _upload.size():
+		_uploading = false
+		_upload = []
+		_lobby.start()
+		bar().set_proceed_enabled(false, "Starting...")
 
 
 ## The checkmark: page 1 goes on to page 2, and the guest follows; page 2
@@ -810,9 +874,32 @@ static func _save_pack_words(s: Dictionary) -> String:
 	return "%s v%s" % [title, version] if not version.is_empty() else "another version of %s" % title
 
 
+## The head-to-head games saved in this computer's slots with the current
+## opponent (issue #301): both names in the save, whichever of the two hosted.
+func _slot_saves() -> Array:
+	var out: Array = []
+	if _lobby.guest_name.is_empty():
+		return out
+	for s: Dictionary in SaveManager.Slots():
+		if not s["used"] or s["side"] != "h2h":
+			continue
+		var names := [str(s.get("host", "")), str(s.get("guest", ""))]
+		if names.has(MpSetup.player_name) and names.has(_lobby.guest_name):
+			out.append(s)
+	return out
+
+
+## The Load list (p162): the games saved in this computer's slots with the
+## current opponent first - each resumes at the day it was saved - then the
+## games the relay holds with the two of you (decision D: a game left from
+## Waiting for Opponent stays loadable), which resume where play stopped.
 func _open_load_list() -> void:
-	var shared := _shared_saves()
-	if shared.is_empty():
+	var entries: Array = []   # [kind, save]
+	for s in _slot_saves():
+		entries.append(["slot", s])
+	for s in _shared_saves():
+		entries.append(["relay", s])
+	if entries.is_empty():
 		return
 	var dlg := ConfirmationDialog.new()
 	dlg.title = "Load Game"
@@ -822,10 +909,14 @@ func _open_load_list() -> void:
 	# Only a save made on the loaded pack version loads (strangers plan): the
 	# others are listed greyed, with the version they need.
 	var first_ok := -1
-	for i in shared.size():
-		var s: Dictionary = shared[i]
-		var when := Time.get_datetime_string_from_unix_time(int(float(s.get("updated", 0)) / 1000.0), true)
-		var line := "%s - Day %d - last played %s" % [str(s.get("name", "")), StrategicTickManager.Shown(int(s.get("day", 0))), when]
+	for i in entries.size():
+		var s: Dictionary = entries[i][1]
+		var line := ""
+		if entries[i][0] == "slot":
+			line = "Slot %d: %s - Day %d - saved %s" % [int(s["slot"]) + 1, str(s.get("name", "")), StrategicTickManager.Shown(int(s.get("day", 0))), str(s.get("saved_at", "")).replace("T", " ")]
+		else:
+			var when := Time.get_datetime_string_from_unix_time(int(float(s.get("updated", 0)) / 1000.0), true)
+			line = "%s - Day %d - last played %s" % [str(s.get("name", "")), StrategicTickManager.Shown(int(s.get("day", 0))), when]
 		var need := _save_pack_words(s)
 		if not need.is_empty():
 			line += " - made with %s" % need
@@ -841,7 +932,8 @@ func _open_load_list() -> void:
 		var picked := list.get_selected_items()
 		if picked.is_empty() or list.is_item_disabled(picked[0]):
 			return
-		var s: Dictionary = shared[picked[0]]
+		var kind: String = entries[picked[0]][0]
+		var s: Dictionary = entries[picked[0]][1]
 		# "it will use the game size and difficulty settings from your previous
 		# game. You will not need to choose them again" (p162).
 		var saved: Dictionary = s.get("settings", {})
@@ -850,9 +942,19 @@ func _open_load_list() -> void:
 		_settings["hq_only"] = bool(saved.get("hq_only", _settings.get("hq_only")))
 		_settings["speed_rule"] = str(saved.get("speed_rule", "slowest"))
 		_settings["seed"] = int(saved.get("seed", 0))
-		_settings["load"] = str(s.get("code", ""))
 		_settings["load_name"] = str(s.get("name", ""))
 		_settings["load_day"] = int(s.get("day", 0))
+		if kind == "slot":
+			# Each player keeps the side they had; the side that hosted when it
+			# was saved stays the one the galaxy was seeded from (apply_settings).
+			_settings["side"] = str(s.get("local", _settings.get("side")))
+			_settings["seeded_by"] = str(s.get("seeded_by", ""))
+			_settings["load_slot"] = int(s["slot"])
+			_settings["load"] = ""
+		else:
+			_settings["load"] = str(s.get("code", ""))
+			_settings["load_slot"] = -1
+			_settings.erase("seeded_by")
 		_lobby.set_settings(_settings)
 		for b in _side_buttons + _size_buttons + _victory_buttons + _speed_buttons + _briefing_buttons:
 			b.disabled = true

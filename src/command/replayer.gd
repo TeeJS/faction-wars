@@ -43,13 +43,20 @@ static func replay_entries(header: Dictionary, commands: Array, upto_day: int = 
 		last = maxi(last, c.Day)
 	if upto_day > 0:
 		last = upto_day
+	# A head-to-head game played on alone hands the opponent to the AI after
+	# that day's orders, before its tick - as the load that began it did.
+	var takeover := int(header.get("ai_takeover_day", 0))
 
 	while StrategicTickManager.Today < last:
 		var d := StrategicTickManager.Today
 		CommandBus.apply_day(d, by_day.get(d, []))
+		if takeover > 0 and d >= takeover:
+			GameSettings.HandToAi(takeover)
 		engine.AdvanceDay()
 		if VictoryManager.IsOver():
 			break
+	if takeover > 0 and StrategicTickManager.Today >= takeover:
+		GameSettings.HandToAi(takeover)
 	# The live session's world: its log history, its file, its wire.
 	CommandLog.Entries = entries
 	CommandLog.Hashes = hashes

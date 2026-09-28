@@ -192,8 +192,14 @@ static func apply_settings(settings: Dictionary, my_seat: String) -> void:
 	var host_side := host_faction(settings)
 	var mine := host_side if my_seat == "host" else other_faction(host_side)
 	GameSettings.PlayerFaction = mine
-	GameSettings.HumanFactions = [host_side, other_faction(host_side)]
-	GameSettings.HostFaction = host_side
+	# A loaded save keeps the side that hosted when it was made (issue #301):
+	# the galaxy was seeded from its row (GameSettings.SeedingFaction), whoever
+	# hosts the room now.
+	var seeded: Faction = FactionRegistry.ById(str(settings.get("seeded_by", "")))
+	if seeded == null or not FactionRegistry.Playable.has(seeded):
+		seeded = host_side
+	GameSettings.HumanFactions = [seeded, other_faction(seeded)]
+	GameSettings.HostFaction = seeded
 	GameSettings.SelectedDifficulty = Enums.Difficulty.Multiplayer
 	GameSettings.SelectedSize = int(settings.get("size", Enums.GalaxySize.Large)) as Enums.GalaxySize
 	GameSettings.HQOnlyVictory = bool(settings.get("hq_only", false))

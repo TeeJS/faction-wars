@@ -3,11 +3,20 @@ extends SceneTree
 ## REAL screens through a relay - Host Game / Locate Session + Join Game,
 ## Multiplayer Options, Start - into Main.tscn running in lockstep, then play N
 ## days at Fast and write their day hashes. With --load the host instead picks
-## the saved game from the Load Game list (M5) and both resume it.
+## the relay's saved game from the Load Game list (M5) and both resume it.
+##
+## THE HEAD-TO-HEAD SAVE (issue #301). --save: on day 6, with the Game Options
+## screen up, the host saves in slot 3 through the screen; both then check
+## their own slot 3 (--save-dir keeps the two computers' saves apart, as they
+## share one user:// here), and the host writes the save's day and state hash
+## to <box>/save.json. --load-slot: the host picks that slot from the Load
+## Game list; both check they resumed at the saved day and state.
 ##
 ##   Godot_console.exe --headless --path . -s tests/mp_flow.gd -- \
-##       --role=host|guest --relay=ws://127.0.0.1:8787/ws --box=D:/tmp/box --days=30 --replay-log=h.log [--load]
+##       --role=host|guest --relay=ws://127.0.0.1:8787/ws --box=D:/tmp/box --days=30 --replay-log=h.log
+##       [--load | --save | --load-slot] [--save-dir=user://mpflow-saves-host]
 
+const Art := preload("res://src/ui/artwork.gd")
 const HostGameScene := "res://src/ui/mp/HostGame.tscn"
 const LocateSessionScene := "res://src/ui/mp/LocateSession.tscn"
 
@@ -18,7 +27,11 @@ var _load: bool
 var _speed_rule: String = ""
 var _quit_at: int = 0
 var _rejoin_code: bool = false
+var _save: bool = false
+var _load_slot: bool = false
 var _log: FileAccess
+const SaveSlot := 2   # slot 3
+const SaveName := "The Battle of Hoth"
 
 
 func _init() -> void:
@@ -39,6 +52,18 @@ func _init() -> void:
 	_speed_rule = _arg("--speed-rule=", "")
 	_quit_at = int(_arg("--quit-at=", "0"))
 	_rejoin_code = OS.get_cmdline_user_args().has("--rejoin-code")
+	_save = OS.get_cmdline_user_args().has("--save")
+	_load_slot = OS.get_cmdline_user_args().has("--load-slot")
+	var save_dir := _arg("--save-dir=", "")
+	if not save_dir.is_empty():
+		SaveManager.Dir = save_dir
+	# --compact-every=N: the session compacts its history every N phase ends
+	# (LockstepSession.CompactEvery), so a short game compacts before its save.
+	LockstepSession.CompactEvery = int(_arg("--compact-every=", str(LockstepSession.CompactEvery)))
+	# --no-art: the plain windows, whatever art this machine has imported.
+	if OS.get_cmdline_user_args().has("--no-art"):
+		Art.IgnoreProjectFolder = true
+		Art.UserArtRoot = "user://mpflow-no-art"
 	var log_path := _arg("--replay-log=", "")
 	_log = FileAccess.open(log_path, FileAccess.WRITE) if not log_path.is_empty() else null
 	FactionRegistry.EnsureLoaded()
@@ -107,7 +132,7 @@ func _host() -> void:
 	f.close()
 	# The guest joins (page 1's arrow is the host's at once, so wait for the name).
 	if not await _until(func() -> bool: return not MpSetup.lobby.guest_name.is_empty(), "the opponent to join", 120.0): return
-	if _load:
+	if _load or _load_slot:
 		var load_btn: Button = current_scene.get_node("%BtnLoadGame")
 		if not await _until(func() -> bool: return not load_btn.disabled, "Load Game to become available", 20.0): return
 		load_btn.pressed.emit()
@@ -123,15 +148,25 @@ func _host() -> void:
 		for c in dlg.get_children():
 			if c is ItemList:
 				list = c
-		print("[mp_flow] host loads: %s" % list.get_item_text(0))
-		list.select(0)
+		# A slot's save (--load-slot) or the relay's game (--load): the list
+		# holds both, the slots first ("Slot 3: ...").
+		var pick := -1
+		for i in list.item_count:
+			if list.get_item_text(i).begins_with("Slot ") == _load_slot:
+				pick = i
+				break
+		if pick < 0:
+			await _fail("no %s in the Load Game list" % ("saved slot" if _load_slot else "relay game"))
+			return
+		print("[mp_flow] host loads: %s" % list.get_item_text(pick))
+		list.select(pick)
 		dlg.confirmed.emit()
 		await process_frame
 	# On to page 2 (the opening briefing and the speed rule), then Start once
 	# the guest's game checks out.
 	_bar().proceed.emit()
 	await process_frame
-	if _speed_rule == "average" and not _load:
+	if _speed_rule == "average" and not _load and not _load_slot:
 		for b in (current_scene.get_node("%SpeedRuleHBox") as HBoxContainer).get_children():
 			if (b as Button).text == "Average":
 				(b as Button).button_pressed = true
@@ -199,7 +234,14 @@ func _play() -> void:
 	print("[mp_flow] %s plays %s from day %d" % [_role, us.Id, start])
 	if _log != null:
 		_log.store_line("# role=%s side=%s from=%d" % [_role, us.Id, start])
+	# --load-slot: the game resumed where the host saved it.
+	if _load_slot:
+		var saved: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("%s/save.json" % _box))
+		var now := GameSignature.ReplayHash(GameState.ActiveGalaxy)
+		print("[mp_flow] %s LOAD-SLOT resumed on day %d (saved on day %d), state %s" % [_role, start, int(saved.get("day", -1)),
+			"MATCHES the save" if now == str(saved.get("hash", "")) else "DIFFERS from the save (%s, saved %s)" % [now.substr(0, 12), str(saved.get("hash", "")).substr(0, 12)]])
 	gm.SetSpeed(4)   # Fast
+	var save_said := ""
 	var last := -1
 	var deadline := Time.get_ticks_msec() + 600000
 	var ui: UIManager = gm.get_node("UIManager")
@@ -226,7 +268,22 @@ func _play() -> void:
 			ui.OnMenuButtonClicked()
 			print("[mp_flow] host opens the Game Options screen")
 			menu_opened_at = Time.get_ticks_msec()
-		if menu_opened_at > 0 and Time.get_ticks_msec() - menu_opened_at > 4000:
+			if _save:
+				# The day's hash first, as the guest logs it: the save holds
+				# this loop a while, and an order goes in during the day.
+				if StrategicTickManager.Today != last:
+					last = StrategicTickManager.Today
+					if _log != null and last > start:
+						_log.store_line("%d,%s" % [last, GameSignature.ReplayHash(GameState.ActiveGalaxy)])
+				await _save_through_screen(ui)
+		# --save: the screen's answer, "Saved on both computers" or not.
+		if _save and _role == "host" and save_said.is_empty():
+			for dlg in root.find_children("*", "AcceptDialog", true, false):
+				if (dlg as AcceptDialog).title == "Save Game":
+					save_said = (dlg as AcceptDialog).dialog_text
+					print("[mp_flow] host SAVE says: %s" % save_said)
+		if menu_opened_at > 0 and Time.get_ticks_msec() - menu_opened_at > 4000 \
+				and (not _save or not save_said.is_empty() or Time.get_ticks_msec() - menu_opened_at > 15000):
 			menu_opened_at = 0
 			for w in ui.get_children():
 				if w is DraggableWindow and w.scene_file_path.ends_with("InGameMenuWindow.tscn"):
@@ -293,8 +350,70 @@ func _play() -> void:
 			print("[mp_flow] host checks: rule=%s, 'Medium (averaged with opponent)' shown=%s" % [GameSettings.SpeedRule, str(saw_average)])
 		else:
 			print("[mp_flow] host checks: opponent's slower speed shown=%s" % str(saw_opponent_speed))
+	if _save:
+		_report_slot()
 	# A closed browser: nothing tidy - the relay keeps the game.
 	quit(0)
+
+
+## --save, the host: on the Game Options screen that is up - the original's
+## (art imported) or the plain one through the Game Menu's Game Options - type
+## the name into slot 3 and press its Save. Writes <box>/save.json: the day
+## and the state hash the save holds.
+func _save_through_screen(ui: UIManager) -> void:
+	# Not on the day's first phase: phases run on while the screen is up (the
+	# day does not), and an order goes in among them - the save point is then
+	# phases after the day's tick, holding an order, which a Load must re-apply.
+	await _wait_ms(1000)
+	CommandBus.issue("chat", { "text": "Saving the game now." })
+	await _wait_ms(1000)
+	var hash_now := GameSignature.ReplayHash(GameState.ActiveGalaxy)
+	var screen: Node = ui.get_node_or_null("OptionsScreen")
+	if screen != null:
+		((screen.get("_names") as Array)[SaveSlot] as LineEdit).text = SaveName
+		screen.call("_save", SaveSlot)
+		print("[mp_flow] host saves in slot %d on the original's Game Options screen" % (SaveSlot + 1))
+	else:
+		for b in root.find_children("*", "Button", true, false):
+			if (b as Button).text == "Game Options" and (b as Button).is_visible_in_tree():
+				(b as Button).pressed.emit()
+				break
+		await process_frame
+		var gow: Node = root.find_child("GameOptionsWindow", true, false)
+		if gow == null:
+			await _fail("the Game Options window did not open")
+			return
+		(((gow.get("_rows") as Array)[SaveSlot] as Dictionary)["name"] as LineEdit).text = SaveName
+		gow.call("_on_save", SaveSlot)
+		print("[mp_flow] host saves in slot %d on the Game Options window" % (SaveSlot + 1))
+	var read: Array = SaveManager.ReadH2H(SaveSlot)
+	var h2h: Dictionary = (read[0] as Dictionary).get("h2h", {})
+	print("[mp_flow] host save holds day %d, state %s (%s the state when Save was pressed)" % [int(h2h.get("day", -1)), str(h2h.get("state_hash", "")).substr(0, 12),
+		"=" if str(h2h.get("state_hash", "")) == hash_now else "DIFFERENT from"])
+	var f := FileAccess.open("%s/save.json" % _box, FileAccess.WRITE)
+	f.store_string(JSON.stringify({ "day": int(h2h.get("day", -1)), "hash": str(h2h.get("state_hash", "")), "id": str(h2h.get("id", "")) }))
+	f.close()
+
+
+func _wait_ms(ms: int) -> void:
+	var until := Time.get_ticks_msec() + ms
+	while Time.get_ticks_msec() < until:
+		await process_frame
+
+
+## --save, both: what this computer's slot 3 holds. The runner compares the two
+## computers' lines.
+func _report_slot() -> void:
+	var s: Dictionary = SaveManager.Slots()[SaveSlot]
+	var read: Array = SaveManager.ReadH2H(SaveSlot)
+	var h2h: Dictionary = (read[0] as Dictionary).get("h2h", {})
+	var orders: Array = []
+	for m: Dictionary in read[1]:
+		if str(m.get("t", "")) in ["cmd", "end"]:
+			orders.append(JSON.stringify(m, "", true))
+	orders.sort()
+	print("[mp_flow] %s SLOT %d: used=%s side=%s name=\"%s\" day=%d id=%s lines=%d orders+ends=%d digest=%s" % [_role, SaveSlot + 1, str(s["used"]), s["side"], s["name"], int(s["day"]),
+		str(h2h.get("id", "")), (read[1] as Array).size(), orders.size(), "\n".join(PackedStringArray(orders)).sha256_text().substr(0, 16)])
 
 
 func _arg(prefix: String, default: String) -> String:

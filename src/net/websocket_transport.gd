@@ -22,7 +22,19 @@ func _init(relay_url: String) -> void:
 	_connect()
 
 
+## What arrives between two frames must fit, or the peer drops it ("Buffer
+## payload full! Dropping data.", Godot's packet_buffer.h): the web build takes
+## a whole burst in the browser's message handler at once. A `since` sends a
+## room's log in one burst - a rejoin, and the Load of a saved slot (issue
+## #301) - so the defaults (64 KiB, 4096 lines) are far too small. Set before
+## connecting: the buffers are made then.
+const InboundBytes := 1 << 24     # 16 MiB
+const InboundLines := 1 << 16
+
+
 func _connect() -> void:
+	_peer.inbound_buffer_size = InboundBytes
+	_peer.max_queued_packets = InboundLines
 	var err := _peer.connect_to_url(url)
 	if err != OK:
 		last_error = "connect_to_url failed: %d" % err
@@ -42,6 +54,12 @@ func send_line(line: String) -> void:
 		_peer.send_text(line)
 	else:
 		_queue.append(line)
+
+
+## Bytes sent but not yet out of the socket: a long run of lines (a saved game
+## going to the relay) is paced on it - the peer drops what its buffer cannot hold.
+func buffered() -> int:
+	return _peer.get_current_outbound_buffered_amount() if _connected else 0
 
 
 ## Drain the socket. Reconnects when dropped; a reconnect asks the relay for

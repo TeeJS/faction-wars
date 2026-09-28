@@ -176,7 +176,21 @@ func _ready() -> void:
 			var upto: int = 1
 			for d: Variant in (saved[2] as Dictionary).keys():
 				upto = maxi(upto, int(d))
+			# A HEAD-TO-HEAD SAVE played on alone (issue #301): the day the host
+			# saved on, its orders up to the save, then the AI plays the opponent.
+			var h2h: Dictionary = (saved[0] as Dictionary).get("h2h", {}) if (saved[0] as Dictionary).get("h2h") is Dictionary else {}
+			var solo: bool = not h2h.is_empty() and int((saved[0] as Dictionary).get("ai_takeover_day", 0)) == 0
+			if solo:
+				upto = int(h2h.get("day", upto))
 			_strategicEngine = Replayer.replay_entries(saved[0], saved[1], upto)
+			if _strategicEngine != null and solo:
+				CommandBus.apply_day(upto, (saved[1] as Array).filter(func(c: Command) -> bool: return c.Day == upto))
+				var want := str(h2h.get("state_hash", ""))
+				var got := GameSignature.ReplayHash(GameState.ActiveGalaxy)
+				GameSettings.HandToAi(upto)
+				if not want.is_empty() and want != got:
+					push_warning("[GameManager] the head-to-head save's state does not match the saved one (saved %s, loaded %s)" % [want.substr(0, 12), got.substr(0, 12)])
+				print("[GameManager] head-to-head save loaded alone on day %d as %s: state %s" % [upto, GameSettings.PlayerFaction.Id, "as saved" if want == got else "DIFFERS from the save"])
 			# The replay queues by day (Immediate off) and leaves it off. Single
 			# player applies an order on the frame it is issued - nothing here
 			# ever drains CommandBus.Pending - so turn it back on.
@@ -199,6 +213,9 @@ func _ready() -> void:
 			GameSettings.HostFaction.Id if mp and GameSettings.HostFaction != null else "")
 	print("[Prng] seed=%d" % seed)
 	if mp:
+		# A rebuild from a log (a rejoin, or Load Game) is a game under way: no
+		# opening briefing (below), as a single-player load has none.
+		loaded = not MpSetup.load_lines.is_empty()
 		_StartLockstep()   # may rebuild the world (Load Game) - the map comes after
 	var authenticGalaxy: Array[Sector] = GameState.ActiveGalaxy
 
