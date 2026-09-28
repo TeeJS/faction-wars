@@ -251,6 +251,7 @@ static func _validate(pack: LoadedPack, pack_dir: String, errors: Array[String])
 	_validate_sounds(pack, pack_dir, errors)
 	_validate_briefing(pack, pack_dir, errors)
 	_validate_advice(pack, pack_dir, errors)
+	_validate_report_backdrop(pack, errors)
 
 
 ## One reference (rules 24-29): a file the pack ships, or "<art set>:<path>"
@@ -372,6 +373,25 @@ static func _validate_voices(pack: LoadedPack, pack_dir: String, errors: Array[S
 				errors.append("pack.json voices.%s: '%s' is not a line. Known: %s." % [c, l, ", ".join(KNOWN_VOICE_LINES)])
 				continue
 			_check_refs(lines[line], ".ogg", "sound", "pack.json voices.%s.%s" % [c, l], pack, pack_dir, errors)
+
+
+## Rule 30: `report_backdrop` - a side's character-picture backdrop colours.
+static func _validate_report_backdrop(pack: LoadedPack, errors: Array[String]) -> void:
+	var m := pack.Manifest
+	if not m.ReportBackdropGiven:
+		return
+	if not m.ReportBackdropRaw is Dictionary:
+		errors.append("pack.json report_backdrop: must be an object of side -> colours.")
+		return
+	for side in m.ReportBackdropRaw:
+		var list: Variant = m.ReportBackdropRaw[side]
+		if not list is Array or (list as Array).is_empty():
+			errors.append("pack.json report_backdrop.%s: must be a non-empty list of \"rrggbb\" colours." % side)
+			continue
+		for c in list:
+			var h := str(c)
+			if h.length() != 6 or not h.is_valid_hex_number():
+				errors.append("pack.json report_backdrop.%s: '%s' is not an \"rrggbb\" colour." % [side, h])
 
 
 ## Rule 27: `sounds` - the controls' sounds.

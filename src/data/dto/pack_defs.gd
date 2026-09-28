@@ -392,6 +392,13 @@ class PackManifest:
 	var Briefing: Dictionary = {}
 	var BriefingGiven: bool = false
 	var BriefingRaw: Variant = null
+	## SCHEMA.md section 2: a side's character-picture backdrop - the colours of
+	## its crest and gradient, as "rrggbb" - filled out from a picture's edges
+	## when the picture is laid over a report's scene. Less the "_" keys;
+	## Given/Raw for validation rule 30.
+	var ReportBackdrop: Dictionary = {}
+	var ReportBackdropGiven: bool = false
+	var ReportBackdropRaw: Variant = null
 	## SCHEMA.md section 2: the agent's advice messages per side - the art
 	## set's list, which of it, when, and its picture. Less the "_" keys;
 	## Given/Raw for validation rule 29.
@@ -492,6 +499,9 @@ class PackManifest:
 		o.BriefingRaw = _deep_without_comments(JsonUtil.get_ci(d, "briefing"))
 		o.BriefingGiven = o.BriefingRaw != null
 		o.Briefing = o.BriefingRaw if o.BriefingRaw is Dictionary else {}
+		o.ReportBackdropRaw = _deep_without_comments(JsonUtil.get_ci(d, "report_backdrop"))
+		o.ReportBackdropGiven = o.ReportBackdropRaw != null
+		o.ReportBackdrop = o.ReportBackdropRaw if o.ReportBackdropRaw is Dictionary else {}
 		o.AdviceRaw = _deep_without_comments(JsonUtil.get_ci(d, "advice"))
 		o.AdviceGiven = o.AdviceRaw != null
 		o.Advice = o.AdviceRaw if o.AdviceRaw is Dictionary else {}
