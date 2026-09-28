@@ -274,6 +274,7 @@ func _build(g: Dictionary) -> StrategicTickManager:
 	_timers()
 	_economy()
 	_intel()
+	_messages()
 
 	for key in _objs:
 		if not _accounted.has(key):
@@ -964,7 +965,82 @@ func _intel() -> void:
 			if p.ExploredBy(f) and p.ControllingFaction != f:
 				IntelManager.Capture(f, p, _day + 1, IntelManager.ReconnaissanceCategories)
 	_leave(0, "when each side last saw each enemy world (sightings are dated the import day)", "")
-	_leave(0, "the message log and open windows", "")
+
+
+## THE ORIGINAL'S MESSAGES: the player's message windows, kept in the human
+## player's block after the game (SAVEGAME-FORMAT.md, "The players"), each with
+## its own title and words - carried as this engine's messages, in the
+## original's order, on the day each was posted. A mission report that asks
+## "Do you wish the mission to continue?" gets its Continue / Abort (manual
+## p110), for the mission it is about.
+func _messages() -> void:
+	var human: Dictionary = _g.get("human", {})
+	var f: Faction = GameSettings.PlayerFaction
+	if human.is_empty() or f == null:
+		_leave(0, "the original's messages (its players' part could not be read: %s)" % str(_g.get("tail_error", "")), "")
+		return
+	var wordless := 0
+	for list in ["windows", "windows2", "windows3"]:
+		for w: Dictionary in human.get(list, []):
+			var title := ""
+			var text := ""
+			if w.has("title"):
+				title = str(w["title"])
+				text = str(w["text"])
+			elif w.has("strings") and not (w["strings"] as Array).is_empty():
+				title = str(w["strings"][0])
+				text = "\n".join((w["strings"] as Array).slice(1))
+			if title.strip_edges().is_empty() and text.strip_edges().is_empty():
+				wordless += 1
+				continue
+			var about: Variant = _units.get(int(w.get("keys", [0])[0]))
+			var mission: Mission = null
+			if about is Unit:
+				mission = Lq.first_or_null(MissionManager._active, func(m): return m.Team.has(about))
+			var where: Location = mission.Target if mission != null else (about.Attached if about is Unit and about.Attached is Planet else null)
+			var msg := GameMessage.new(title, text, _category(w, about, mission), _posted_day(w) + 1, where, about as Character if about is Character else null)
+			if mission != null:
+				msg.Type = Enums.MessageType.MissionReport
+				msg.Advisor = "personnel_report"
+				if text.strip_edges().ends_with("continue?"):
+					msg.PendingMission = mission
+			elif about is Unit:
+				msg.Type = Enums.MessageType.UnitDeployment
+				msg.Advisor = "production"
+			EventBus.Tell(f, msg)
+			_carried["messages"] = int(_carried.get("messages", 0)) + 1
+	if wordless > 0:
+		_leave(0, "open windows with no words of their own (the original's screens)", "%d" % wordless)
+	var queued := 0
+	for g: Dictionary in human.get("log", []):
+		queued += (g["items"] as Array).size()
+	if queued > 0:
+		_leave(0, "messages the original had queued but not yet shown (it words them when it shows them)", "%d" % queued)
+
+
+## The message's category, as this engine files the same news: a mission's
+## report under Missions; a unit delivered under Defense for troops and
+## Special Forces, Manufacturing for the rest (Planet.Deliver).
+func _category(w: Dictionary, about: Variant, mission: Mission) -> int:
+	if mission != null:
+		return Enums.MessageCategory.Missions
+	if about is Unit and not (about is Character):
+		var t: int = (about as Unit).Type
+		return Enums.MessageCategory.Defense if (t == Enums.UnitType.Troop or t == Enums.UnitType.SpecForce) else Enums.MessageCategory.Manufacturing
+	return Enums.MessageCategory.All
+
+
+## The original's day a window was posted: the window keeps the tick (its
+## base's third word); a tick of today is today, earlier ones count back by the
+## day's length in ticks (taken as today's - the game's speed setting sets it).
+func _posted_day(w: Dictionary) -> int:
+	var tick: int = int(w.get("b0", [0, 0, -1])[2])
+	var game: Dictionary = _g["game"]
+	var per_day: int = maxi(1, int(game["ticks_per_day"]))
+	var day_start: int = int(game["sub_tick"]) - int(game["tick_in_day"])
+	if tick < 0 or tick >= day_start:
+		return _day
+	return maxi(0, _day - 1 - (day_start - 1 - tick) / per_day)
 
 
 # ---- the report ---------------------------------------------------------------------------------

@@ -479,15 +479,296 @@ func _read() -> Dictionary:
 	g["one"] = _u32()
 	g["tail"] = _n(20 + 30)                        # 0x5685a0
 	_mark("after game")                            # 0x41de70
-	g["ui"] = _n(6)                                # 0x435ec0; the rest (UI, message log) is not read
+	g["ui"] = _n(6)                                # 0x435ec0
+	g["read_to"] = _pos
+	# The players: the human's block holds the message list (its windows).
+	# A tail that cannot be read loses the messages, never the game.
+	if _ok() and _players:
+		var at := _pos
+		var marks := _marks
+		g["human"] = _find_human()
+		g["tail_error"] = _tail_error
+		_pos = at
+		_marks = marks
 	return g
 
 
+# ---- the players after the game (REBEXE 0x435ec0; SAVEGAME-FORMAT.md) ------------------
+#
+# The UI object writes its players: 1 human (0x486440), 2 remote, 3 AI
+# (0x485990). The human's block is read in full; the AI's is not (its plans
+# are no use here), so the human's is found as the one that ends exactly on
+# the file's closing words: a word, two markers, a word, a marker.
+
+var _tail_error := ""
+## Read the players too (the message list): off for a quick check of a file.
+var _players := false
+
+
+func _u16v() -> int:
+	return _u16()
+
+
+func _u8v() -> int:
+	if _pos + 1 > _b.size():
+		_fail("the file ends early (u8 at 0x%x)" % _pos)
+		return 0
+	var v: int = _b[_pos]
+	_pos += 1
+	return v
+
+
+## A UI message (table 0x6b2fd8): 0x51f840's five words, 0x5840d0's key, then its layout's.
+func _uimsg(code: int) -> Dictionary:
+	var m := {"type": code, "h": _n(5), "key": _u32()}
+	if code in [1, 2, 0x600]:
+		m["a"] = _n(4)                                 # 0x5394f0
+	elif code in [0x500, 0x520]:
+		m["title"] = _s()                              # 0x539660
+		m["text"] = _s()
+	elif (code >= 0x300 and code <= 0x306) or code in [0x320, 0x321, 0x340, 0x360, 0x361, 0x362, 0x370, 0x380, 0x400]:
+		m["keys"] = _n(2)                              # 0x5397a0
+	elif code >= 0x100 and code <= 0x231:
+		m["a"] = _n(2)                                 # 0x539400
+		if code == 0x1e0:
+			m["keys"] = _n(4)                          # 0x43dcf0
+		elif code == 0x200:
+			m["key2"] = _u32()                         # 0x43c7c0
+			m["x"] = _u32()
+	else:
+		_fail("an unknown UI message (0x%x) at 0x%x" % [code, _pos - 4])
+	return m
+
+
+func _msglog() -> Array:                           # 0x4bef30 -> 0x4e4eb0: groups of UI messages
+	var out: Array = []
+	var n: int = _count("message groups")
+	for i in n:
+		if not _ok():
+			break
+		var g := {"id": _u32(), "count": _count("messages"), "g28": _u32(), "items": []}
+		for k in int(g["count"]):
+			if not _ok():
+				break
+			g["items"].append(_uimsg(_u32()))
+		out.append(g)
+	return out
+
+
+func _win_base() -> Array:                          # 0x4c4f30: 7 words, 5 halfwords
+	return [_u32(), _u32(), _u32(), _u16v(), _u32(), _u32(), _u16v(), _u16v(), _u16v(), _u16v(), _u32(), _u32()]
+
+
+## A window (prototype table 0x6b1f40). The base's third word is the tick it was
+## posted; b1/b2 windows carry a title and a text, and two keys (what it is about).
+func _window(t: int) -> Dictionary:
+	var w := {"type": t}
+	var b1 := func() -> void:                       # 0x4c4c90
+		w["b0"] = _win_base()
+		w["title"] = _s()
+		w["text"] = _s()
+		w["keys"] = _n(2)
+	var b2 := func() -> void:                       # 0x4c51f0
+		w["b0"] = _win_base()
+		w["title"] = _s()
+		w["text"] = _s()
+		w["keys"] = [_u32(), _u32()]
+	match t:
+		1:                                          # 0x49afa0
+			w["b0"] = _win_base(); w["x"] = _n(5)
+			for i in 4: _reflist("window", 2)
+			w["strings"] = [_s(), _s(), _s(), _s(), _s()]
+		2:                                          # 0x49c040
+			w["b0"] = _win_base(); w["x"] = _n(4)
+			for i in 2: _reflist("window", 2)
+			w["strings"] = [_s(), _s()]
+		8:                                          # 0x49a2c0
+			w["b0"] = _win_base(); w["strings"] = [_s(), _s()]
+		3, 4, 0xc, 0x22, 0x2b, 0x13, 0x20:          # 0x48b980, 0x495e70, 0x48e820
+			b1.call(); w["x"] = _n(1)
+		5, 6, 7, 0xa, 0xb, 0x18, 0x19, 0x1a, 0x1c, 0x1d, 0x24, 0x25, 0x26, 0x27, 0x29, 0x2a, 0x2c, 0x2d:
+			b1.call()                               # 0x499dd0
+		9, 0xd, 0xe, 0x10, 0x14, 0x28:              # 0x497910, 0x495580, 0x48c490
+			b1.call(); w["x"] = _n(2)
+		0xf:                                        # 0x4966f0
+			b1.call(); w["x"] = _n(4)
+			for i in 4: _reflist("window", 2)
+		0x15:                                       # 0x495090
+			b2.call(); w["x"] = _n(3)
+		0x1e, 0x1f:                                 # 0x48f770
+			b2.call(); w["x"] = _n(1)
+		0x21:                                       # 0x48be20
+			b1.call(); w["x"] = _n(3)
+		0x23:                                       # 0x48d460
+			b2.call()
+		0x16:                                       # 0x492740: a mission report asking to continue
+			b1.call(); w["x"] = _n(7)
+		0x17:                                       # 0x4914a0
+			b1.call(); w["x"] = _n(6)
+		_:
+			_fail("an unknown window (0x%x) at 0x%x" % [t, _pos - 4])
+	return w
+
+
+func _windows() -> Array:                          # 0x437720: u16 count, (type, window)
+	var out: Array = []
+	var n: int = _u16v()
+	for i in n:
+		if not _ok():
+			break
+		out.append(_window(_u32()))
+	return out
+
+
+func _pairs16() -> void:                           # 0x5f5da0: u16 count, items of 2 words (0x5f5f80)
+	var n: int = _u16v()
+	for i in n:
+		_n(2)
+
+
+func _opt_obj() -> void:                           # a class word, then its key when non-zero
+	if _u32() != 0:
+		_u32()
+
+
+func _player_base() -> Dictionary:                  # 0x4886d0 -> 0x48a8a0
+	var p := {"side": _u32(), "p14": _u32()}
+	var flag: int = _u32()
+	p["p1c"] = _u32()
+	if flag != 0:
+		_fail("a player object (class 0x440910) this reader does not know at 0x%x" % _pos)
+		return p
+	_n(2)
+	var n: int = _count("player list")              # 0x536f70: (type, object); type 1 = 0x440ad0
+	for i in n:
+		if _u32() != 1:
+			_fail("a player list object this reader does not know at 0x%x" % (_pos - 4))
+			return p
+		_n(11)
+	_n(6)
+	p["key40"] = _u32()
+	_u32()
+	return p
+
+
+func _member_list() -> void:                        # 0x435720
+	_u32()
+	if _u32() != 0:
+		_fail("a member list this reader does not know at 0x%x" % _pos)
+
+
+func _side_ui() -> void:                            # 0x4397a0
+	_n(4 + 5)
+	_n(4)                                           # 0x49c9f0
+	for node in [124, 172]:                         # containers: systems (0x4ebd80), sectors (0x4c61d0)
+		_u32()
+		var n: int = _count("side records")
+		if node == 124:
+			for i in n:
+				_n(7); _u16v(); _u16v(); _n(23)
+		else:
+			for i in n:
+				_n(5); _u16v(); _u16v(); _u16v(); _n(36)
+		_opt_obj(); _opt_obj()
+	_n(31)
+	_opt_obj()
+	var e: int = _count("side list")                # 0x4e5210 of 0x4c5380
+	for i in e:
+		_n(2)
+		var k: int = _count("side list items")
+		_u32()
+		for j in k:
+			if not _ok():
+				return
+			_u16v(); _n(3)
+	_u32()
+	_u32()                                          # 0x49de40
+	var p: int = _u16v()
+	for i in p:
+		var t: int = _u32()
+		_n(6)
+		match t:
+			0x14: _n(4); _member_list(); _u32()     # 0x4c6c40
+			0x15: _n(5); _member_list(); _u32()     # 0x4c74b0
+			0x17: _n(4); _member_list()             # 0x49e310
+			_: _fail("a side entry (0x%x) this reader does not know" % t)
+		if not _ok():
+			return
+	_n(3)
+	_u32(); _u8v()
+	_n(2)
+	var cnt: int = _count("side array")
+	_n(3)
+	_n(cnt)
+	_n(3)
+	_pairs16()
+
+
+func _human() -> Dictionary:                        # 0x486440
+	var h := {"base": _player_base()}
+	h["h50"] = _n(2)
+	h["log"] = _msglog()
+	h["screen_a"] = _n(2)                           # 0x488ac0
+	h["windows"] = _windows()                       # the message list
+	h["windows2"] = _windows()
+	_pairs16()
+	_n(3)
+	h["windows3"] = _windows()
+	if _ok():
+		_side_ui()
+	return h
+
+
+func _closes(at: int) -> bool:
+	_pos = at
+	_u32()
+	_mark("after ui")
+	_mark("root")
+	_u32()
+	_mark("end")
+	return _ok() and _pos == _b.size()
+
+
+## The human's block, read and proven by the file's closing words; {} with
+## _tail_error set when it cannot be.
+func _find_human() -> Dictionary:
+	var start := _pos
+	var end := _b.size() - 20
+	var kept := _error
+	var first: int = _u32()
+	if first == 1:
+		var h := _human()
+		if _ok() and _u32() == 3 and _closes(end):
+			return h
+		_tail_error = _error if not _error.is_empty() else "the human's block does not end where the AI's begins"
+		_error = kept
+		return {}
+	if first != 3:
+		_tail_error = "the first player is of type %d" % first
+		return {}
+	var p := start + 4
+	while p < end - 8:
+		if _b.decode_u32(p) == 1:
+			_pos = p + 4
+			_error = ""
+			var h := _human()
+			if _ok() and _pos == end and _closes(end):
+				_error = kept
+				return h
+		p += 1
+	_error = kept
+	_tail_error = "no block of the human's ends on the file's closing words"
+	return {}
+
+
 ## Read a saved game. { ok, error, ... } - ok false with the reason if any part
-## of the file is not what the game writes.
-static func Read(bytes: PackedByteArray) -> Dictionary:
+## of the file is not what the game writes. `players`: also the human player's
+## block after the game - its message list - as "human" ({} and "tail_error"
+## when it cannot be read; the game itself is unaffected).
+static func Read(bytes: PackedByteArray, players: bool = false) -> Dictionary:
 	var r = load("res://src/data/original_save.gd").new()
 	r._b = bytes
+	r._players = players
 	var g: Dictionary = r._read()
 	g["ok"] = r._error.is_empty()
 	g["error"] = r._error

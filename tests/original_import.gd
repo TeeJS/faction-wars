@@ -252,6 +252,20 @@ func _spot_checks(engine: StrategicTickManager) -> void:
 	_check(Economy.For(alliance).RawMaterials == 1 and Economy.For(alliance).RefinedMaterials == 0
 		and Economy.For(empire).RawMaterials == 0 and Economy.For(empire).RefinedMaterials == 12,
 		"material on hand: Alliance 1 raw, 0 refined; Empire 0 raw, 12 refined")
+	# The original's messages: its three open message windows, word for word.
+	var msgs: Array = EventBus.VisibleMessages().filter(func(m): return m.Title != "Game imported")
+	var titles: Array = msgs.map(func(m): return m.Title)
+	_check(titles == ["Diplomacy Mission Report", "Ship Design Research Mission Report", "Guerrillas Deployed to Selonia"],
+		"the original's three messages come across (%s)" % str(titles))
+	if msgs.size() == 3:
+		var dip: GameMessage = msgs[0]
+		_check(dip.Body.begins_with("The diplomacy mission to Sullust had no effect") and dip.PendingMission != null
+			and dip.PendingMission.Team.has(person.call("carlist_rieekan")) and dip.Category == Enums.MessageCategory.Missions,
+			"the Sullust report asks to continue Rieekan's mission (Continue / Abort)")
+		var dep: GameMessage = msgs[2]
+		_check(dep.Category == Enums.MessageCategory.Defense and dep.AssociatedLocation is Planet and (dep.AssociatedLocation as Planet).PackId == "selonia"
+			and dep.PendingMission == null, "the deployment notice is filed under Defense, at Selonia")
+		_check(Lq.all(msgs, func(m): return StrategicTickManager.Shown(m.DayReceived) == 116 and not m.IsRead), "all three dated Day 116, unread")
 	var screed: Character = person.call("screed")
 	_check(screed.Rank == Enums.Rank.Admiral and screed.Commanding is Fleet and (screed.Commanding as Fleet).Name == "Fleet 6", "Screed: Admiral of Fleet 6")
 	# Timing, run rather than reasoned: Rieekan's next attempt comes on the
