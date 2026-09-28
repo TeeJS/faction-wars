@@ -273,11 +273,12 @@ and see what got done quickly."* They are **scroll markers inside the running
 work**, not stopping points.
 
 1. The moment an item is finished (its PR opened or merged), print this in the
-   stream - the full form, never a plain line:
+   stream - the full form, never a plain line - and **name the item**, not just
+   its number (TeeJ: "I can't remember what number is what"):
 
    ```
    ---
-   ## 💥💥 **ITEM N DONE — in PR #xxx** 💥💥
+   ## 💥💥 **ITEM N DONE — <what it is, in a few words> — in PR #xxx** 💥💥
    ---
    ```
 
