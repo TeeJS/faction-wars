@@ -106,6 +106,7 @@ func _init() -> void:
 		_check((tile.get_node("Picture") as TextureRect).texture != null, "the icon shows the mission's picture")
 		_check((tile.get_node("Name") as Label).text == m.DisplayName(), "the mission's name is over its picture")
 		_check((tile.get_node("Frame") as Control).visible, "the mission on show is framed in the side's colour")
+		_check(tile.tooltip_text.is_empty(), "no hover text on the icon, as the original's (TeeJ, 2026-09-28)")
 	_check(w._targetName.text == far.Name, "the target's name is shown")
 	_check(w._targetPicture.texture != null or far.ArtworkId <= 0, "the target's picture is shown")
 

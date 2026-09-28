@@ -197,8 +197,9 @@ func _tile(m: Mission, i: int) -> Control:
 	var frame := OUI.Place(b, OUI.Pic("mission_frame.%s" % _side), 0, 0, "Frame")
 	frame.visible = m.Serial == _pickedSerial
 	OUI.Text(b, m.DisplayName(), TileNameAt.x, TileNameAt.y, TileW - 2, 14, TilePx, Color.WHITE, HORIZONTAL_ALIGNMENT_LEFT, false, "Name")
-	# How it is going, on hover: the original's window does not print it.
-	b.tooltip_text = MissionWindow.Describe(m)
+	# No hover text: the original's window has none (TeeJ, 2026-09-28: "YES -
+	# match the original" - ours read "Recruitment (Emperor Palpatine) -
+	# arriving"). How it stands is its Status (the right-click menu).
 	b.pressed.connect(func() -> void:
 		_pickedSerial = m.Serial
 		_page = 0
