@@ -206,12 +206,15 @@ func _init() -> void:
 	var over := await _until(func() -> bool: return not advisor.Busy(), 6.0)
 	await process_frame
 	_check(over and not agent.Talking() and not messenger.Talking(), "... and the interrupted news does not come back to finish")
-	advisor.Answer("no_such_answer")
-	advisor.Answer("")
-	_check(not advisor.Busy(), "an answer the pack does not have: nothing")
-	AdvisorScript.AnswerOn(self, "garrisons_on")
+	var none_said: bool = advisor.Answer("no_such_answer") or advisor.Answer("")
+	_check(not advisor.Busy() and not none_said, "an answer the pack does not have: nothing, and he says he did not")
+	var answered: bool = AdvisorScript.AnswerOn(self, "garrisons_on")
 	await process_frame
-	_check(_playing(events["answer_garrisons_on"]["agent"]["sound"]), "Manage Garrisons on: the agent says so (1137)")
+	_check(answered and _playing(events["answer_garrisons_on"]["agent"]["sound"]), "Manage Garrisons on: the agent says so (1137), and AnswerOn says he did")
+	# An answer whose recording is not there: he says nothing - so a window may
+	# say it instead (the No Mission Available box without the droid's line).
+	_check(not AdvisorScript.AnswerOn(self, "no_mission") or not SoundLib.FileOf(str(events.get("answer_no_mission", {}).get("agent", {}).get("sound", ""))).is_empty(),
+		"an answer without its recording: AnswerOn says he did not")
 
 	# The engine's refusals carry their reason.
 	var short: Result = Result.fail("Need 3 maintenance capacity, have 1.").coded("no_maintenance")

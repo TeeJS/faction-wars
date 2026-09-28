@@ -467,7 +467,9 @@ static func CanTarget(type: int, actor: Faction, target: Planet) -> Result:
 			if target.ControllingFaction == actor:
 				return Result.fail("%s is already yours." % target.Name)
 			if FactionRegistry.OrderOf(target.ControllingFaction) < 0:
-				return Result.fail("%s has no government to turn against." % target.Name)
+				# Its government is its own, not the enemy's (TeeJ, 2026-09-28): the
+				# mission is "a revolt on an enemy controlled system" (Encyclopedia).
+				return Result.fail("%s is not controlled by the enemy." % target.Name)
 			return Result.success()
 		Enums.MissionType.SubdueUprising:
 			if target.ControllingFaction != actor:
