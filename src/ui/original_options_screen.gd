@@ -103,13 +103,28 @@ static func BarLeft(i: int) -> float:
 	return SavedArt.PanelInside.x + BarGap + i * (BarSize.x + BarGap)
 
 
-## The row's wires and clamps for the plate: its top, its height, and the gaps'
-## centres - both ends and between the boxes.
+## The row's wires and clamps for the plate: its top, its height, the gaps'
+## centres - both ends and between the boxes - and the loops.
 static func BarWiring() -> Array:
 	var clamps: Array = []
 	for i in Bars.size() + 1:
 		clamps.append(SavedArt.PanelInside.x + BarGap / 2.0 + i * (BarSize.x + BarGap))
-	return [BarTop, int(BarSize.y), clamps]
+	return [BarTop, int(BarSize.y), clamps, BarLoops]
+
+
+## Wires led out of the clamps through the empty bands above and below the
+## row, after TeeJ's sketch (2026-09-28: blue over all three, green over Import
+## Game, yellow round Export Game and See all games, red under the first two):
+## [colour, from clamp, its side (-1 left, 1 right), to clamp, its side, the
+## run's top row]. Above the row: the band from row 5's sockets (y 273) to the
+## boxes (293); under it: the boxes' foot (326) to the panel's bevel (334).
+const BarLoops := [
+	["blue", 0, -1, 3, 1, 276],
+	["green", 0, 1, 1, -1, 283],
+	["yellow", 1, 1, 3, -1, 283],
+	["red", 0, 1, 2, -1, 328],
+	["green", 2, 1, 3, -1, 328],
+]
 const Red := Color(1, 0, 0)
 ## The alert box with one socket (REBDLOG): the check at (176, 134), the words
 ## white Arial bold 13, centred, capitals from y 63 (the pause box's).
