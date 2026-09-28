@@ -167,6 +167,10 @@ func _dump_save(g: Dictionary) -> Array:
 			int(o["base_leadership"]), int(o["force"]), int(o["injury"])])
 	for k in objs:
 		var o: Dictionary = objs[k]
+		if int(o["class"]) == 0xf3:
+			lines.append("side %s raw %d refined %d" % [owner.call(o), int(o["raw_material"]), int(o["refined_material"])])
+	for k in objs:
+		var o: Dictionary = objs[k]
 		if int(o["class"]) in [0xa0, 0xa2, 0xa4] and int(o["remaining_count"]) > 0:
 			lines.append("order %s at %s x%d for %s" % [str(o["product_name"]), system_of.call(k), int(o["remaining_count"]), system_of.call(int(o["deployment_key"]))])
 	lines.sort()
@@ -198,6 +202,8 @@ func _dump_game() -> Array:
 			for k: String in order:
 				var parts := k.split("|")
 				lines.append("order %s at %s x%d for %s" % [parts[0], p.Name, runs[k], parts[1]])
+	for f: Faction in FactionRegistry.Playable:
+		lines.append("side %s raw %d refined %d" % [f.Id, Economy.For(f).RawMaterials, Economy.For(f).RefinedMaterials])
 	for c: Character in GameState.ActiveRoster:
 		if c.Attached == null:
 			lines.append("person %s not recruited" % c.PackId)
@@ -242,6 +248,10 @@ func _spot_checks(engine: StrategicTickManager) -> void:
 		and ResearchManager.IsUnlockedUnit(alliance, MilitaryCatalog.ById("nebulon_b_frigate"))
 		and not ResearchManager.IsUnlockedUnit(alliance, MilitaryCatalog.ById("mon_calamari_cruiser")),
 		"Alliance ship research at order 1: the Nebulon-B, not yet the Mon Calamari cruiser")
+	var empire := FactionRegistry.ById("empire")
+	_check(Economy.For(alliance).RawMaterials == 1 and Economy.For(alliance).RefinedMaterials == 0
+		and Economy.For(empire).RawMaterials == 0 and Economy.For(empire).RefinedMaterials == 12,
+		"material on hand: Alliance 1 raw, 0 refined; Empire 0 raw, 12 refined")
 	var screed: Character = person.call("screed")
 	_check(screed.Rank == Enums.Rank.Admiral and screed.Commanding is Fleet and (screed.Commanding as Fleet).Name == "Fleet 6", "Screed: Admiral of Fleet 6")
 	# Timing, run rather than reasoned: Rieekan's next attempt comes on the

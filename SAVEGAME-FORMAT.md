@@ -171,7 +171,7 @@ elsewhere are `class << 24 | serial`.
 | Manufacturing facility | ProcFacilState, ETC, flags (Suspended, PointPresent, PointProcessed, Processing, OnStartupCycle); mines and refineries add two words and ProductionModifier |
 | Build manager (0xA0 / A2 / A4) | RemainingGameObjCount, CompletedPointCount, OverflowPointCount, SeedKey, RequiredPointCount, TotalRequiredPointCount, Reserved, ProductKey, DeploymentKey, TargetKey, ProductName |
 | Mission | UserID, UserID2, TaskStatus, CompletionStatus, Phase; OriginLocation, Objective, Target, TargetLocation, Leader, LeaderSeed (keys); Team, Decoys, Captives, Members (lists); flags (ReadyForNextPhase, ImpliedTeam, Mandatory) |
-| Side (0xF3) | MaintState (capacity, allocated) ×3, MaintRequired, 5 unnamed, two lists, 3 unnamed, ShipyardRdOrder, TrainingFacilRdOrder, ConstructionYardRdOrder, 1 unnamed, ShipyardRdDone, TrainingFacilRdDone, ConstructionYardRdDone, RecruitmentDone, VictoryConditions, 2 unnamed, a list, two timer records |
+| Side (0xF3) | MaintState (capacity, allocated) ×3, MaintRequired, 1 unnamed (always = MaintRequired), **raw material on hand, refined material on hand, refineries waiting for raw, factories waiting for refined, the two waiting queues** (named from the code, below), 3 unnamed, ShipyardRdOrder, TrainingFacilRdOrder, ConstructionYardRdOrder, 1 unnamed, ShipyardRdDone, TrainingFacilRdDone, ConstructionYardRdDone, RecruitmentDone, VictoryConditions, 2 unnamed, a list, two timer records |
 
 The **state block** (`[obj+0x54]`) holds the object's timer records (counter +
 arm word: bit 0 armed, bits 1–15 spread, 16–31 minimum delay) and their
@@ -201,13 +201,13 @@ Found while building the import (branch `original-save-import`), both saves.
 | **Side `f90`/`f94`/`f98`** are recomputed totals, not research | open-rebellion: timer `0x381` sums three per-system lists into side `+0x90/+0x94/+0x98` | Single-source |
 | **Each side's chart is its own copy of the galaxy**: the master copy marks every system Explored; the Alliance's copy 32, the Empire's 31 | serials are identical across the three copies | Confirmed (structure) |
 | **The live timer** for an object is the queue entry whose record copy equals one of the object's state records (both words) | open-rebellion `timer-scheduler.md` (`FUN_005862A0`); e.g. Rieekan's diplomacy: entries rec 5 and 7 on day 121, the mission's `rec20` is 7 | Confirmed |
+| **Material on hand is the side's `+0x78` (raw) and `+0x7C` (refined)** — no name strings, named from the code: a mine's finished point adds 1 raw (`0x530670`), a refinery's adds 1 refined (`0x5307E0`), both reached from `0x516360` by class range (0x2C / 0x2D); a refinery takes 1 raw (`0x52FB30`), a factory 1 refined per point (`0x52FB80`); a scrapped item refunds half its cost as refined (`0x530270`, the manual's refund). `+0x80` / `+0x84` count the queues `+0x88` / `+0x8C` of refineries waiting for raw and factories waiting for refined (`0x533570`/`0x5335C0`, `0x533610`). The side's three `MaintState` pairs are min(mines, refineries) × 50, mines × 50, refineries × 50. `.001`: Alliance 1 raw / 0 refined, Empire 0 / 12; `.002`: Alliance 1 / 8, Empire 1 / 2 | REBEXE (setters `0x52EF90`/`0x52EFF0`/`0x52F050`/`0x52F0C0` and every caller); the Empire's 2 waiting in `.001` = its 2 queued refineries (class 0x2D) | Confirmed (code + data) |
 | A character's own `State` field shares a name with the state block: `rebsave.py` read the field over the block. Renamed `character_state` | — | fixed |
 
 ## Not yet known
 
 | | What would settle it |
 |---|---|
-| Raw and refined material on hand | None of the named fields holds them; the side's words `f74`–`f84` and `fc0`/`fc4`, or the galaxy root's `x`, are candidates. Their setters or readers |
 | What `ShipyardRdOrder` and its two siblings count exactly (the importer reads them as the research order reached: `.001` Alliance ships 1, all else 0) | A save with research done, or their readers |
 | Unnamed words (`fNN`, `sNN`, the galaxy root, several side and state words) | Their setters carry no name string: reading the code that uses them |
 | The UI tail: open windows and the message log | More disassembly (`0x486440`, `0x484F60`, `0x485990` and their typed lists) |

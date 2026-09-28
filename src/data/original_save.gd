@@ -318,9 +318,15 @@ func _class(o: Dictionary, code: int, master: bool) -> bool:
 		0xf3:                                      # a side 0x531020
 			if master: o["state"] = _st_base()
 			o["maint_state"] = [_n(2), _n(2), _n(2)]
-			_fields(o, "maint_required f74 f78 f7c f80 f84")
-			o["l88"] = _f3_list()
-			o["l8c"] = _f3_list()
+			# Material ON HAND (REBEXE, 2026-09-28): a mine's finished point adds
+			# 1 raw (0x530670), a refinery's 1 refined (0x5307e0); a refinery
+			# takes 1 raw (0x52fb30), a factory 1 refined per point (0x52fb80),
+			# a scrapped item refunds half its cost as refined (0x530270). The
+			# two waiting counts are the lengths of the two queues after them:
+			# refineries waiting for raw (+0x88), factories for refined (+0x8c).
+			_fields(o, "maint_required f74 raw_material refined_material raw_waiting refined_waiting")
+			o["raw_waiters"] = _f3_list()
+			o["refined_waiters"] = _f3_list()
 			_fields(o, "f90 f94 f98 shipyard_rd_order training_facil_rd_order construction_yard_rd_order fa8 "
 				+ "shipyard_rd_done training_facil_rd_done construction_yard_rd_done recruitment_done "
 				+ "victory_conditions fc0 fc4")
