@@ -241,6 +241,26 @@ func _init() -> void:
 				_check(qmenu.visible, "a right-click on %s opens the row's orders" % n)
 				qmenu.hide()
 				await process_frame
+		# THE ITEM BEING BUILT: its portrait in the row, where the original's
+		# KDY-150 matched (+40, +15 from the row's corner); none while idle.
+		var item: TextureRect = mfg.get_node_or_null("Item2")
+		var job := ConstructionTask.new()
+		job.Family = "ion_cannon"
+		job.Tier = 1
+		job.Destination = home
+		var had: Array = home.BuildingQueue.duplicate()
+		home.BuildingQueue.clear()
+		ew.Populate(home)
+		_check(item != null and item.texture == null, "an idle Facilities row shows no item")
+		home.BuildingQueue.append(job)
+		ew.Populate(home)
+		var portrait: Texture2D = Art.Scaled(Art.Portrait("facilities", "ion_cannon"), K)
+		_check(item != null and item.position == Vector2(95, 181) * K and (portrait == null or item.texture == portrait),
+			"the Facilities row shows the KDY-150 being built at (95, 181)")
+		_check(item != null and item.get_index() < ew.get_node("%FacQueueLabel").get_index(), "under the row's words")
+		home.BuildingQueue.clear()
+		home.BuildingQueue.append_array(had)
+		ew.Populate(home)
 		var rowHit: Control = mfg.get_node_or_null("RowHit0")
 		_check(rowHit != null and rowHit.position == Vector2(55, 4) * K and rowHit.size == Vector2(166, 79) * K, "row 0's hit area is its frame")
 	# AN UNSELECTED FACILITY'S MENU OPENS (TeeJ, 2026-09-25: "Right clicking

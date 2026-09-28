@@ -34,6 +34,8 @@ const RowYs := [4, 85, 166]
 const RowW := 166
 const RowH := 79
 const RowHeaders := ["Ship Construction", "Troops in Training", "Facilities Under Construction"]
+## Where the item being built stands in its row (measured, see _BuildOriginal).
+const ItemAt := Vector2(40, 15)
 ## The Mines page (manual p027 Fig 2.11), in page pixels: the grid's corner,
 ## one cell, and where a mine's 67x35 picture sits in its cell (a pile's sits
 ## at the corner). Every pixel matched on TeeJ's screenshot of the original's
@@ -47,6 +49,8 @@ const RowKeys := ["Ship", "Troop", "Fac"]
 const QueuePaths := ["%ShipQueueLabel", "%TroopQueueLabel", "%FacQueueLabel"]
 
 var _original: bool = false
+## The three rows' pictures of the item being built (the original look).
+var _items: Array = []
 
 
 func Populate(planet: Planet) -> void:
@@ -96,6 +100,11 @@ func Populate(planet: Planet) -> void:
 		(get_node("%ShipQueueLabel") as Label).text = QueueSummary(planet.ShipyardQueue, "No Ships are being built")
 		(get_node("%TroopQueueLabel") as Label).text = QueueSummary(planet.TrainingQueue, "No Troops in training")
 		(get_node("%FacQueueLabel") as Label).text = QueueSummary(planet.BuildingQueue, "No Facilities are being built")
+		var queues: Array = [planet.ShipyardQueue, planet.TrainingQueue, planet.BuildingQueue]
+		for i in _items.size():
+			var tex: Texture2D = QueuePicture(queues[i])
+			(_items[i] as TextureRect).texture = tex
+			(_items[i] as TextureRect).size = tex.get_size() if tex != null else Vector2.ZERO
 
 		# "THIS PROGRESS BAR shows how far along the current construction
 		# progress is" (manual p084). A percentage in text is not a progress
@@ -268,6 +277,12 @@ func _BuildOriginal() -> bool:
 		fill.size = Vector2(0, 5) * OUI.K
 		fill.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		mfg.add_child(fill)
+		# THE ITEM BEING BUILT, its 122x50 portrait under the row's words
+		# (TeeJ, 2026-09-27, with the original's Facilities Under Construction:
+		# "you should see the item being built/trained"). Measured there: the
+		# KDY-150's portrait matches unscaled at (+40, +15) from the row's
+		# corner; the ship and troop rows are the same frame, so the same place.
+		_items.append(OUI.Place(mfg, null, RowX + ItemAt.x, y + ItemAt.y, "Item%d" % i))
 		var q: Label = get_node("%%%sQueueLabel" % RowKeys[i])
 		OUI.Seat(q, mfg, RowX + 4, y + 16, 158, 40)
 		OUI.Style(q, 11, Color.WHITE)
@@ -801,6 +816,17 @@ static func Pair(built: int, planet: Planet, producer_role: String) -> String:
 		var d := FacilityCatalog.Get(t.Family, t.Tier)
 		return d != null and d.HasRole(producer_role))
 	return "%d:%d" % [built, built + building]
+
+
+## The portrait of what heads a queue, at the drawn scale; null when idle.
+static func QueuePicture(queue: Array) -> Texture2D:
+	if queue.is_empty():
+		return null
+	var head: ConstructionTask = queue[0]
+	if head.UnitRule != null:
+		return Art.Scaled(Art.Portrait("units", head.UnitRule.Id), OUI.K)
+	var d := FacilityCatalog.Get(head.Family, head.Tier)
+	return Art.Scaled(Art.Portrait("facilities", d.Id), OUI.K) if d != null else null
 
 
 static func QueueSummary(queue: Array, idle: String = "Idle") -> String:
