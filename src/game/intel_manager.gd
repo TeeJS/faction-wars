@@ -294,7 +294,8 @@ static func Collect(p: Planet, section: int, people: Variant = null) -> Dictiona
 					counts[f.Family()] = int(counts.get(f.Family(), 0)) + 1
 			return { "counts": counts }
 		Enums.IntelSection.SpecForces:
-			return { "units": p.SpecForces().size() }
+			# A unit on a mission is hiding, as an agent is (Characters, below).
+			return { "units": Lq.count(p.SpecForces(), func(u: Unit) -> bool: return u.Status != Enums.Status.OnMission) }
 		Enums.IntelSection.Characters:
 			# ONE DELIBERATE DIFFERENCE FROM Render(): an agent ON A MISSION is not listed.
 			# Such an agent is hiding - the Personnel tab already refuses to show one
