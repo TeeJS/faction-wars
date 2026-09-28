@@ -237,14 +237,27 @@ static func AdvanceHeadquarters() -> void:
 		if int(bound["days"]) > 0 or faction == null:
 			continue
 		var to: Planet = bound["to"]
-		# ⚠ NOT FROM THE SOURCES: a destination lost while the HQ travels. It goes
-		# where personnel go when their world is lost - the nearest world the side
-		# holds (GAMEPLAY.md §7, measured) - and waits a day when there is none.
+		# A destination lost while the HQ travels: the original REROUTES it and says
+		# so (TEXTSTRA RCDATA 28860-28861): "Headquarters Rerouted" / "The Alliance
+		# Headquarters was unable to deploy at <system>. It has been rerouted to
+		# <system>." ⚠ WHERE to is not in the sources: the nearest world the side
+		# holds, where personnel go when their world is lost (GAMEPLAY.md §7,
+		# measured); it travels on from the lost world by the same law. With none
+		# held it waits a day.
 		if to.ControllingFaction != faction:
-			to = MilitaryCatalog.NearestHeldBy(faction, to)
-			if to == null:
+			var refuge: Planet = MilitaryCatalog.NearestHeldBy(faction, to)
+			if refuge == null:
 				bound["days"] = 1
 				continue
+			bound["to"] = refuge
+			bound["days"] = to.DeploymentDaysTo(refuge)
+			print("[HQ] %s headquarters cannot deploy at %s - rerouted to %s, %d days." % [faction.DisplayName, to.Name, refuge.Name, int(bound["days"])])
+			var rerouted := GameMessage.new("Headquarters Rerouted",
+				"The %s Headquarters was unable to deploy at %s.  It has been rerouted to %s." % [faction.ShortName, to.Name, refuge.Name],
+				Enums.MessageCategory.Manufacturing, StrategicTickManager.Today, refuge)
+			rerouted.Type = Enums.MessageType.UnitArrival
+			EventBus.Tell(faction, rerouted)
+			continue
 		_hq_en_route.erase(id)
 		to.AddFacility("headquarters")
 		# The new seat is concealed from other sides for a hidden HQ; a side always knows its own.

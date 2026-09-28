@@ -3162,9 +3162,13 @@ manual's transit time, p135, and REBEXE, read 2026-09-27):
 | `FUN_00538220` | the Build window's **Best Time To Deployment** goes the same way — a facility (family ≥ 0x20) travels at entry 1 |
 
 The Alliance HQ is `ALLFACSD` family **0x20** — a facility, with no hyperdrive
-of its own — so its days are `Planet.DeploymentDaysTo`. **Not established:** what
-becomes of it when its destination is lost while it travels (the code sends it
-to the nearest world its side holds, as personnel go — §7).
+of its own — so its days are `Planet.DeploymentDaysTo`. On arrival the original
+says so: *"Headquarters Arrives"* / *"The Alliance Headquarters has arrived at
+<system>."* A destination lost on the way **reroutes** it: *"Headquarters
+Rerouted"* / *"The Alliance Headquarters was unable to deploy at <system>. It
+has been rerouted to <system>."* (TEXTSTRA RCDATA 28860-28861). **Not
+established:** where to - the code sends it on to the nearest world its side
+holds, as personnel go (§7), by the same law from the lost world.
 
 > TIP: **Bring along some of the troops, fighters, and personnel** that were
 > helping defend the original HQ location to help defend the new site.
