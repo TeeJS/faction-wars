@@ -1938,13 +1938,18 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		w.queue_free()
 
 
-func OpenTransitConfirm(characters: Array, daysRemaining: int, onConfirmCallback: Callable) -> void:
+func OpenTransitConfirm(characters: Array, daysRemaining: int, onConfirmCallback: Callable, label: String = "") -> void:
 	# Spawns near the mouse cursor
 	var targetPos: Vector2 = get_viewport().get_mouse_position() + Vector2(20, 20)
-	var nameDisplay: String = characters[0].Name if characters.size() == 1 else "%d Personnel" % characters.size()
+	var nameDisplay: String = label if not label.is_empty() else (characters[0].Name if characters.size() == 1 else "%d Personnel" % characters.size())
 	OpenWindow("Confirm_%s" % nameDisplay, TransitConfirmWindowTemplate,
-		func(window) -> void: window.Setup(characters, daysRemaining, onConfirmCallback),
+		func(window) -> void: window.Setup(characters, daysRemaining, onConfirmCallback, nameDisplay),
 		targetPos)
+
+
+## What a Confirmed Move names: the one, or how many ("3 Ships").
+static func TransitLabel(things: Array, many: String) -> String:
+	return things[0].Name if things.size() == 1 else "%d %s" % [things.size(), many]
 
 
 func StartCharacterDrag(characters: Array) -> void:
@@ -1998,11 +2003,17 @@ func ExecuteShipMove(ships: Array, destination: Planet, _requireConfirmation: bo
 	var from: Planet = first.Attached if first != null else null
 	if from == null or destination == null:
 		return
-	var r: Result = CommandBus.issue("move_ships", { "ships": EntityIndex.ids_of_units(ships), "destination": destination.Name })
-	if r.ok:
-		RefreshAfterMove(from, destination)
-	elif not r.error.is_empty():
-		ShowRefusal(r.error, r.code)
+	var issue := func() -> void:
+		var r: Result = CommandBus.issue("move_ships", { "ships": EntityIndex.ids_of_units(ships), "destination": destination.Name })
+		if r.ok:
+			RefreshAfterMove(from, destination)
+		elif not r.error.is_empty():
+			ShowRefusal(r.error, r.code)
+	# Confirmed Move: the ships' days first (manual p115).
+	if _requireConfirmation and destination != from:
+		OpenTransitConfirm(ships, from.TravelDaysTo(destination, OrderManager.SlowestHyperdrive(ships)), issue, TransitLabel(ships, "Ships"))
+		return
+	issue.call()
 
 
 func ExecuteUnitMove(units: Array, destination: Planet, _requireConfirmation: bool) -> void:
@@ -2017,6 +2028,12 @@ func ExecuteUnitMove(units: Array, destination: Planet, _requireConfirmation: bo
 	var first: Unit = Lq.first_or_null(units, func(u: Unit) -> bool: return u.Status != Enums.Status.Enroute)
 	var currentPlanet: Planet = OrderManager.SystemOf(first.Attached if first != null else null)
 	if currentPlanet == null:
+		return
+	# Confirmed Move: the units' days first (manual p045), then the move as
+	# Move gives it.
+	if _requireConfirmation and destination != currentPlanet:
+		OpenTransitConfirm(units, OrderManager.UnitTravelDays(units, currentPlanet, destination),
+			func() -> void: ExecuteUnitMove(units, destination, false), TransitLabel(units, "Units"))
 		return
 
 	# RUNNING A BLOCKADE. "Troops attempting to move MAY BE KILLED" (manual p124),
@@ -2059,10 +2076,21 @@ func ConfirmEvacuation(odds: int, onProceed: Callable) -> void:
 ## Move - from the world below or from another fleet in the same orbit
 ## (OrderManager.LoadAboard; "Drag ships or troops between fleets", manual
 ## p120). A refusal says why, as a move's does.
-func ExecuteLoadAboard(units: Array, fleet: Fleet) -> void:
+func ExecuteLoadAboard(units: Array, fleet: Fleet, confirm: bool = false) -> void:
 	if fleet == null or units.is_empty():
 		return
 	var orbit: Planet = OrderManager.SystemOf(fleet)
+	# Confirmed Move onto a fleet at another system: the days to it first.
+	if confirm and orbit != null:
+		var days := 0
+		for u in units:
+			var here: Planet = OrderManager.SystemOf(OrderManager.FleetOfShip(u)) if u.Type == Enums.UnitType.CapitalShip \
+				else OrderManager._SystemOfUnit(u)
+			if here != null and here != orbit:
+				days = maxi(days, here.TravelDaysTo(orbit, u.Hyperdrive) if u.Type == Enums.UnitType.CapitalShip else OrderManager.UnitTravelDays([u], here, orbit))
+		if days > 0:
+			OpenTransitConfirm(units, days, func() -> void: ExecuteLoadAboard(units, fleet, false), TransitLabel(units, "Units"))
+			return
 	# From a blockaded world elsewhere: asked first, as any evacuation is
 	# (TEXTSTRA.DLL 0xF168); the order runs the blockade (LoadAboard).
 	var leaving: Planet = null
@@ -2102,8 +2130,14 @@ func ExecuteFleetMove(fleets: Array, destination: Planet, _requireConfirmation: 
 	var currentPlanet: Planet = first.Attached if first != null else null
 	if currentPlanet == null:
 		return
-	# requireConfirmation is accepted and ignored, exactly as in the source:
-	# Confirmed Move for fleets is not built yet.
+	# CONFIRMED MOVE: "This option brings up a window that tells you the
+	# transit time (in days) it will take for the fleet to reach its
+	# destination. To confirm the move, click the checkmark. To cancel, click
+	# the X button" (manual p122).
+	if _requireConfirmation and destination != currentPlanet:
+		OpenTransitConfirm(fleets, OrderManager.FleetTravelDays(fleets, currentPlanet, destination),
+			func() -> void: ExecuteFleetMove(fleets, destination, false), TransitLabel(fleets, "Fleets"))
+		return
 	var r: Result = CommandBus.issue("move_fleets", { "fleets": EntityIndex.ids_of_fleets(fleets), "destination": destination.Name })
 	if r.ok:
 		RefreshAfterMove(currentPlanet, destination)
@@ -2115,6 +2149,39 @@ func ExecuteFleetMove(fleets: Array, destination: Planet, _requireConfirmation: 
 ## C#: ExecuteFleetMove(Fleet, Planet, bool) overload.
 func ExecuteSingleFleetMove(fleet: Fleet, selectedPlanet: Planet, requireConfirmation: bool) -> void:
 	ExecuteFleetMove([fleet], selectedPlanet, requireConfirmation)
+
+
+## Several fleets sent at once, each at its own pace, as Move gives them;
+## Confirmed Move asks once, with the longest of their days.
+func ExecuteFleetsMove(fleets: Array, selectedPlanet: Planet, requireConfirmation: bool) -> void:
+	var free: Array = Lq.where(fleets, func(f: Fleet) -> bool: return f.Status != Enums.Status.Enroute and f.Attached != null and f.Attached != selectedPlanet)
+	if free.is_empty():
+		return
+	if requireConfirmation:
+		var days := 0
+		for f in free:
+			days = maxi(days, OrderManager.FleetTravelDays([f], f.Attached, selectedPlanet))
+		OpenTransitConfirm(free, days, func() -> void: ExecuteFleetsMove(free, selectedPlanet, false), TransitLabel(free, "Fleets"))
+		return
+	for f in free:
+		ExecuteSingleFleetMove(f, selectedPlanet, false)
+
+
+## A character sent onto a fleet (manual p110: "dragging the icon onto a system
+## or fleet"); Confirmed Move onto one at another system asks with the days.
+func ExecuteBoardFleet(characters: Array, fleet: Fleet, confirm: bool = false) -> void:
+	if fleet == null or characters.is_empty():
+		return
+	var orbit: Planet = OrderManager.SystemOf(fleet)
+	if confirm and orbit != null:
+		var from: Planet = OrderManager.SystemOf(characters[0].Attached)
+		if from != null and from != orbit:
+			OpenTransitConfirm(characters, maxi(1, OrderManager.CharacterTravelDays(characters, from, orbit)),
+				func() -> void: ExecuteBoardFleet(characters, fleet, false))
+			return
+	var r: Result = CommandBus.issue("board_fleet", { "characters": EntityIndex.names_of(characters), "fleet": fleet.ID })
+	if not r.ok and not r.error.is_empty():
+		ShowRefusal(r.error, r.code)
 
 
 func StartUnitDrag(units: Array) -> void:

@@ -724,9 +724,7 @@ func OnCharacterMenuAction(actionId: int, characters: Array, uiManager: UIManage
 						if fleet == null:
 							print("[Move] That is not a place a character can go.")
 							return
-						var r: Result = CommandBus.issue("board_fleet", { "characters": EntityIndex.names_of(characters), "fleet": fleet.ID })
-						if not r.ok:
-							print("[Move] %s" % r.error))
+						_uiManager.ExecuteBoardFleet(characters, fleet, actionId == 1))
 
 		2:
 			# "Right-click on a character or team and select Mission. The cursor
@@ -864,7 +862,7 @@ func RunUnitMenu(actionId: int, units: Array, uiManager: UIManager, after: Calla
 						if fleet == null:
 							print("[Move] That is not somewhere a unit can be sent.")
 							return
-						uiManager.ExecuteLoadAboard(units, fleet))
+						uiManager.ExecuteLoadAboard(units, fleet, actionId == 1))
 
 		2:   # Mission - same flow as a character's, targets first.
 			if TransitEligible(units):
