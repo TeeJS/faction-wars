@@ -8,7 +8,8 @@ extends SceneTree
 ##   writes <out minus .png>_index.png and _summary.png, each the window
 ##
 ## --extra=N posts N read Conflict messages first (a tab long enough for the
-## scroll bar); --pick=K picks the K-th row instead of the first.
+## scroll bar); --pick=K picks the K-th row instead of the first; --imported
+## posts a Game imported message (the disc icon) and reads that one.
 
 func _init() -> void:
 	await process_frame
@@ -32,6 +33,12 @@ func _init() -> void:
 	for i in int(_arg("--extra=", "0")):
 		var filler := GameMessage.new("Filler message %d" % (i + 1), "A message to fill the tab.", Enums.MessageCategory.Conflict)
 		EventBus.BroadcastMessage(filler)
+	var imported: GameMessage = null
+	if OS.get_cmdline_user_args().has("--imported"):
+		imported = GameMessage.new("Game imported", "Imported from Star Wars: Rebellion: \"start\", Day 5, Galactic Empire, Easy, standard galaxy.", Enums.MessageCategory.All, StrategicTickManager.Today)
+		imported.Still = "message.1040"
+		imported.Icon = "imported"
+		EventBus.Tell(GameSettings.PlayerFaction, imported)
 	for m in MessageWindow.MessagesFor("All"):
 		if (m as GameMessage).Title.begins_with("Filler"):
 			(m as GameMessage).IsRead = true
@@ -49,7 +56,7 @@ func _init() -> void:
 			await process_frame
 		ok = _shot(w, out + "_index.png") and ok
 		if not messages.is_empty():
-			w._o_show_summary(messages[0])
+			w._o_show_summary(imported if imported != null else messages[0])
 			for _i in 3:
 				await process_frame
 			ok = _shot(w, out + "_summary.png") and ok

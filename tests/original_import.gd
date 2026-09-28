@@ -266,6 +266,12 @@ func _spot_checks(engine: StrategicTickManager) -> void:
 		_check(dep.Category == Enums.MessageCategory.Defense and dep.AssociatedLocation is Planet and (dep.AssociatedLocation as Planet).PackId == "selonia"
 			and dep.PendingMission == null, "the deployment notice is filed under Defense, at Selonia")
 		_check(Lq.all(msgs, func(m): return StrategicTickManager.Shown(m.DayReceived) == 116 and not m.IsRead), "all three dated Day 116, unread")
+	# Ours (TeeJ, 2026-09-28): the "Imported from" line alone, the side's agent
+	# at the computer, the cockpit's disc for its icon.
+	var imp: GameMessage = Lq.first_or_null(EventBus.VisibleMessages(), func(m): return m.Title == "Game imported")
+	var agent: String = "message.1041" if Faction.SkinOf(GameSettings.PlayerFaction.Id) == "alliance" else "message.1040"
+	_check(imp != null and imp.Body == OriginalImport.LastReport[0] and imp.Body.begins_with("Imported from") and not imp.Body.contains("Carried across")
+		and imp.Still == agent and imp.Icon == "imported", "Game imported: the 'Imported from' line only, %s, the disc icon" % agent)
 	var screed: Character = person.call("screed")
 	_check(screed.Rank == Enums.Rank.Admiral and screed.Commanding is Fleet and (screed.Commanding as Fleet).Name == "Fleet 6", "Screed: Admiral of Fleet 6")
 	# Timing, run rather than reasoned: Rieekan's next attempt comes on the

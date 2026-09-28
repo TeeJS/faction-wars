@@ -1075,5 +1075,13 @@ func _tell_player() -> void:
 	var f: Faction = GameSettings.PlayerFaction
 	if f == null:
 		return
-	var msg := GameMessage.new("Game imported", "\n".join(_report(6)), Enums.MessageCategory.All, _day + 1)
+	# The "Imported from" line alone - the whole report stays in LastReport -
+	# with a picture, the side's agent at the computer (STRATEGY 1040, the
+	# Imperial crest on the screen / 1041, the Alliance's), and the cockpit's
+	# load disc for its icon (TeeJ, 2026-09-28: "Everything from Carried
+	# across: is not needed"; "use the CD from the cockpit"; "the agent at
+	# the computer").
+	var msg := GameMessage.new("Game imported", _report(6)[0], Enums.MessageCategory.All, _day + 1)
+	msg.Still = "message.%d" % (1041 if Faction.SkinOf(f.Id) == "alliance" else 1040)
+	msg.Icon = "imported"
 	EventBus.Tell(f, msg)
