@@ -390,4 +390,10 @@ static func _load(path: String) -> Texture2D:
 	if not FileAccess.file_exists(path):
 		return null
 	var img := Image.load_from_file(ProjectSettings.globalize_path(path))
-	return ImageTexture.create_from_image(img) if img != null and not img.is_empty() else null
+	if img == null or img.is_empty():
+		return null
+	var tex := ImageTexture.create_from_image(img)
+	# Where it came from, as a res:// picture's resource_path says (a user://
+	# one has none): Scaled carries it on, and a picture can be told apart by it.
+	tex.set_meta("source", path)
+	return tex
