@@ -168,9 +168,14 @@ func Populate(planet: Planet) -> void:
 		# Nothing seen: the rows stay empty (TeeJ: no "Sensors detect no data").
 		var none: String = ""
 
-		(get_node("%ShipCapLabel") as Label).text = "0:0"
-		(get_node("%TroopCapLabel") as Label).text = "0:0"
-		(get_node("%FacCapLabel") as Label).text = "0:0"
+		# WHAT WE KNOW IS THERE (TeeJ, 2026-09-27: a neutral world showed 0:0
+		# beside the shipyard its map icon shows): the producers the sighting
+		# counted - the same counts the Sector window's icons read. What is
+		# being built there is not in that sighting, so both numbers are the
+		# built ones; nothing seen, 0:0.
+		(get_node("%ShipCapLabel") as Label).text = SeenPair(viewer, planet, "produces_unit")
+		(get_node("%TroopCapLabel") as Label).text = SeenPair(viewer, planet, "produces_troop")
+		(get_node("%FacCapLabel") as Label).text = SeenPair(viewer, planet, "produces_facility")
 
 		# The three queue lines carry the snapshot. It is one list in the
 		# game's own category, so it is reported as one list rather than
@@ -807,6 +812,18 @@ func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, fa
 		note.add_theme_font_size_override("font_size", 11)
 		note.add_theme_color_override("font_color", Color.LIGHT_GREEN)
 		container.add_child(note)
+
+
+## Another side's (or a neutral) world: the producers of a ROLE its last
+## sighting counted (IntelManager ProductionFacilities), "n:n".
+static func SeenPair(viewer: Faction, planet: Planet, producer_role: String) -> String:
+	var counts: Dictionary = IntelManager.SeenData(viewer, planet, Enums.IntelSection.ProductionFacilities).get("counts", {})
+	var n: int = 0
+	for family in counts:
+		var d: PackDefs.FacilityDef = FacilityCatalog.Get(str(family), 1)
+		if d != null and d.HasRole(producer_role):
+			n += int(counts[family])
+	return "%d:%d" % [n, n]
 
 
 # built : built + under construction
