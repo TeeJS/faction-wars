@@ -68,10 +68,16 @@ const REASONS_SHOWN := 8
 ## (released 2026-09-27). 2.6.2: the agent's advice messages (advice.json,
 ## TEXTSTRA) and their picture (windows/advice.<side>.png) (released
 ## 2026-09-27). 2.6.3: Compose Chat Message's picture (windows/chat.<side>.png,
-## STRATEGY 1040 / 1041) (released 2026-09-27).
+## STRATEGY 1040 / 1041) (released 2026-09-27). 2.6.4: the Diplomacy report's
+## scene (windows/report.diplomacy.png, STRATEGY 1044) and the building grid
+## keyed by black (released 2026-09-28). 2.6.5: the original's message
+## pictures (windows/message.<id>.png, STRATEGY 1000-1075), its font
+## (fonts/arial.ttf, arialbd.ttf) and the mission reports' figures
+## (characters/<id>.report.png, STRATEGY 6208-6811) (released 2026-09-28;
+## required from 2026-09-28, TeeJ: "ok TO BUMP").
 ## Raise it when the game needs pictures an older exporter did not write;
 ## the picker then asks for a new export.
-const MIN_EXPORTER := {"swr-original": "2.6.3"}
+const MIN_EXPORTER := {"swr-original": "2.6.5"}
 
 
 ## Called with each import's result (the pack picker refreshes its cards).
