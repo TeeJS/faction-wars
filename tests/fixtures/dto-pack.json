@@ -8741,6 +8741,71 @@
     }
   ],
   "pack_manifest": {
+    "Advice": {
+      "alliance": {
+        "events": {
+          "defenses": 5.0,
+          "fleet": 3.0,
+          "manufacturing": 2.0,
+          "missions": 4.0,
+          "sector": 6.0
+        },
+        "every": 300.0,
+        "list": "alliance",
+        "messages": "swr-original:advice.json",
+        "opening": 7.0,
+        "periodic": 1.0,
+        "picture": "swr-original:windows/advice.alliance.png"
+      },
+      "empire": {
+        "events": {
+          "defenses": 5.0,
+          "fleet": 3.0,
+          "manufacturing": 2.0,
+          "missions": 4.0,
+          "sector": 6.0
+        },
+        "every": 300.0,
+        "list": "empire",
+        "messages": "swr-original:advice.json",
+        "opening": 7.0,
+        "periodic": 1.0,
+        "picture": "swr-original:windows/advice.empire.png"
+      }
+    },
+    "AdviceGiven": true,
+    "AdviceRaw": {
+      "alliance": {
+        "events": {
+          "defenses": 5.0,
+          "fleet": 3.0,
+          "manufacturing": 2.0,
+          "missions": 4.0,
+          "sector": 6.0
+        },
+        "every": 300.0,
+        "list": "alliance",
+        "messages": "swr-original:advice.json",
+        "opening": 7.0,
+        "periodic": 1.0,
+        "picture": "swr-original:windows/advice.alliance.png"
+      },
+      "empire": {
+        "events": {
+          "defenses": 5.0,
+          "fleet": 3.0,
+          "manufacturing": 2.0,
+          "missions": 4.0,
+          "sector": 6.0
+        },
+        "every": 300.0,
+        "list": "empire",
+        "messages": "swr-original:advice.json",
+        "opening": 7.0,
+        "periodic": 1.0,
+        "picture": "swr-original:windows/advice.empire.png"
+      }
+    },
     "Advisor": {
       "alliance": {
         "agent_report": {
@@ -10553,6 +10618,7 @@
     ],
     "Briefing": {
       "alliance": {
+        "release": 11.0,
         "skip": [
           {
             "focus": 11.0
@@ -10748,6 +10814,7 @@
         }
       },
       "empire": {
+        "release": 11.0,
         "skip": [
           {
             "focus": 11.0
@@ -10946,6 +11013,7 @@
     "BriefingGiven": true,
     "BriefingRaw": {
       "alliance": {
+        "release": 11.0,
         "skip": [
           {
             "focus": 11.0
@@ -11141,6 +11209,7 @@
         }
       },
       "empire": {
+        "release": 11.0,
         "skip": [
           {
             "focus": 11.0
