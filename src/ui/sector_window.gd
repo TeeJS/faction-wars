@@ -1322,9 +1322,39 @@ class CornerButton extends Button:
 		var at: Vector2 = point - ((size - drawn) / 2.0).floor()
 		if at.x < 0.0 or at.y < 0.0 or at.x >= drawn.x or at.y >= drawn.y:
 			return false
-		# Scaled like the picture, should it ever be drawn at another size.
+		# THE GLYPH'S WHOLE BOX, not its lines alone (TeeJ, 2026-09-27: the
+		# icons "feel harder to click than on the original"): its drawn pixels
+		# were some 10-12% of the cell, the thin lines of the glyph, and a
+		# click between them fell through. The box around them is the glyph as
+		# the eye sees it, and it stays in the cell's outer corner - off the
+		# planet's picture, which the rest of the cell covers.
 		var bits: Vector2i = mask.get_size()
-		return mask.get_bit(int(at.x * bits.x / drawn.x), int(at.y * bits.y / drawn.y))
+		var box: Rect2 = BoxFor(icon)
+		return box.has_point(Vector2(at.x * bits.x / drawn.x, at.y * bits.y / drawn.y))
+
+	## Texture instance id -> the box round its drawn pixels, in its own pixels.
+	static var _boxes: Dictionary = {}
+
+	## The smallest box holding the picture's drawn pixels (empty when none).
+	static func BoxFor(tex: Texture2D) -> Rect2:
+		var key: int = tex.get_instance_id()
+		if _boxes.has(key):
+			return _boxes[key]
+		var mask: BitMap = MaskFor(tex)
+		var box := Rect2()
+		if mask != null:
+			var bits: Vector2i = mask.get_size()
+			var lo := Vector2i(bits.x, bits.y)
+			var hi := Vector2i(-1, -1)
+			for y in bits.y:
+				for x in bits.x:
+					if mask.get_bit(x, y):
+						lo = Vector2i(mini(lo.x, x), mini(lo.y, y))
+						hi = Vector2i(maxi(hi.x, x), maxi(hi.y, y))
+			if hi.x >= 0:
+				box = Rect2(Vector2(lo), Vector2(hi - lo + Vector2i.ONE))
+		_boxes[key] = box
+		return box
 
 	## The picture's drawn pixels, read once per picture.
 	static func MaskFor(tex: Texture2D) -> BitMap:
