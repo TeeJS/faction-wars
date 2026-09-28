@@ -582,13 +582,18 @@ func UpdateGarrisonState() -> void:
 		SufferUprisingLosses()
 
 
-## ⚠ AN UNDER-GARRISONED WORLD DOES NOT RIOT ON THE SPOT. IT IS WARNED, AND THEN
-## IT IS ROLLED FOR, PERIODICALLY (entries 169/170, 175/176, UPRIS1TB).
+## ⚠ AN UNDER-GARRISONED WORLD DOES NOT RIOT ON THE SPOT. IT IS ROLLED FOR,
+## PERIODICALLY (entries 169/170, 175/176, UPRIS1TB) - and WARNED WHEN A ROLL
+## COMES DUE AND ORDER HOLDS, NOT BEFORE. The first check is 30 + 0..70 days out
+## (the incident timer, REBEXE 0x50e200 arms it at +0x38), and the original's
+## "Near Uprising" (REBEXE 0x498cb0, event 0x148 TroopRegSurplus) is gated on a
+## system flag its unrest sets; TeeJ, 2026-09-28: "I get near uprising messages
+## in the 1st few days every game, and never got them on the original this
+## early" - ours warned the day the timer was armed.
 func ConsiderUprising(need: int, have: int) -> void:
 	var rng := Prng.Session
 	if _next_uprising_incident == 0:
 		_next_uprising_incident = StrategicTickManager.Today + RuleManager.Roll(RuleId.UprisingIncidentBase, RuleId.UprisingIncidentSpread, rng, ControllingFaction)
-		WarnGarrison(need, have)
 		return
 
 	if StrategicTickManager.Today < _next_uprising_incident:
