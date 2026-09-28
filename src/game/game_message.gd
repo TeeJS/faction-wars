@@ -71,6 +71,10 @@ var Still: String = ""
 ## as REBEXE's builder for it sets one beside its picture - or "".
 ## Presentation only.
 var Sound: String = ""
+## Its own icon in the Message Index, in place of its category's, or "":
+## "imported" - the cockpit's load disc (TeeJ, 2026-09-28, for Game imported).
+## Presentation only.
+var Icon: String = ""
 
 
 func _init(title: String = "", body: String = "", category: int = Enums.MessageCategory.All,
@@ -96,6 +100,7 @@ func Copy() -> GameMessage:
 	c.Scene = Scene
 	c.Still = Still
 	c.Sound = Sound
+	c.Icon = Icon
 	return c
 
 
