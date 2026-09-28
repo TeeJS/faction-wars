@@ -131,19 +131,24 @@ const ReconnaissanceCategories := [
 ]
 
 
-static func Capture(viewer: Faction, planet: Planet, day: int, categories: Array) -> void:
+## `seen`, when given, is what the viewer saw in `planet`'s place - a stand-in
+## world never placed in the galaxy (an imported game's copy of it,
+## OriginalImport._intel) - and `people` the characters seen on it. The
+## sighting is taken from it by the same code, and filed under `planet`.
+static func Capture(viewer: Faction, planet: Planet, day: int, categories: Array, seen: Planet = null, people: Variant = null) -> void:
 	if viewer == null or planet == null or categories == null:
 		return
+	var from: Planet = seen if seen != null else planet
 	for section in AllSections:
 		if not categories.has(CategoryOf(section)):
 			continue
 		var snap := IntelSnapshot.new()
 		snap.Day = day
-		for l in Render(planet, section, viewer):
+		for l in Render(from, section, viewer, people):
 			snap.Lines.append(l)
-		for g in RenderGroups(planet, section):
+		for g in RenderGroups(from, section):
 			snap.Groups.append(g)
-		snap.Data = Collect(planet, section)
+		snap.Data = Collect(from, section, people)
 		_known[_key(viewer, planet, section)] = snap
 	# Anything at all charts the system.
 	planet.SetExplored(viewer, true)
@@ -203,8 +208,9 @@ static func Facts(viewer: Faction, planet: Planet) -> IntelFacts:
 
 ## One category of one system as data. Mirrors Render() line for line: the same
 ## lists, the same filters (so a fleet still in hyperspace TO this world is listed,
-## exactly as the text lists it).
-static func Collect(p: Planet, section: int) -> Dictionary:
+## exactly as the text lists it). `people`, when given, are the characters seen
+## there (Capture's `seen`), listed as seen: the live filters are for the roster.
+static func Collect(p: Planet, section: int, people: Variant = null) -> Dictionary:
 	match section:
 		Enums.IntelSection.SystemStatus:
 			var support: Dictionary = {}
@@ -282,12 +288,13 @@ static func Collect(p: Planet, section: int) -> Dictionary:
 			# standing on a world we hold (issue #2a, tests/onmission_fog.gd) - and a
 			# planner that saw them could abduct a spy it has not detected. The built-in
 			# AI does exactly that; a brain reading these facts cannot.
-			var people: Array = []
-			for c in GameState.ActiveRoster:
-				if c.IsOffMap() or c.Attached != p or c.Status == Enums.Status.Dead or c.Status == Enums.Status.OnMission:
+			var here: Array = []
+			var roster: Array = GameState.ActiveRoster if people == null else people
+			for c in roster:
+				if people == null and (c.IsOffMap() or c.Attached != p or c.Status == Enums.Status.Dead or c.Status == Enums.Status.OnMission):
 					continue
-				people.append({ "name": c.Name, "rank": c.Rank })
-			return { "people": people }
+				here.append({ "name": c.Name, "rank": c.Rank })
+			return { "people": here }
 	return {}
 
 
@@ -367,8 +374,9 @@ static func RenderGroups(p: Planet, section: int) -> Array:
 ## special forces: where they are is never a question, and a stale sighting
 ## put them in two places at once - the world seen and the world they had
 ## since gone to (TeeJ, 2026-09-24: Labansat at Uvena "last seen day 10" and
-## on Coruscant). The windows draw ours live, wherever they stand.
-static func Render(p: Planet, section: int, viewer: Faction = null) -> Array:
+## on Coruscant). The windows draw ours live, wherever they stand. `people`,
+## when given, are the characters seen there (Collect).
+static func Render(p: Planet, section: int, viewer: Faction = null, people: Variant = null) -> Array:
 	var lines: Array = []
 	match section:
 		Enums.IntelSection.SystemStatus:
@@ -403,8 +411,9 @@ static func Render(p: Planet, section: int, viewer: Faction = null) -> Array:
 					continue
 				lines.append(u.Name)
 		Enums.IntelSection.Characters:
-			for c in GameState.ActiveRoster:
-				if c.IsOffMap() or c.Attached != p or c.Status == Enums.Status.Dead:
+			var roster: Array = GameState.ActiveRoster if people == null else people
+			for c in roster:
+				if people == null and (c.IsOffMap() or c.Attached != p or c.Status == Enums.Status.Dead):
 					continue
 				if viewer != null and c.Faction == viewer:
 					continue

@@ -98,8 +98,11 @@ func _one(path: String) -> void:
 	_check(GameSignature.ReplayHash(GameState.ActiveGalaxy) == h1, "%s: the same file builds the same game" % f)
 	for line in OriginalImport.LastReport:
 		print("    | %s" % line)
+	_sightings(g, f)
 	if str(g["name"]) == "1" and day == 116:
 		_spot_checks(engine)
+	if str(g["name"]) == "start" and day == 5:
+		_spot_checks_start()
 
 	# It plays on: sixty days of this engine's rules on the imported state.
 	var start: int = StrategicTickManager.Today
@@ -219,6 +222,79 @@ func _dump_game() -> Array:
 			c.LeadershipRating, c.SpecialPowerLevel if c.IsKnownSpecialPowerUser or c.SpecialPowerLevel == 0 or not _latent(c) else 0, c.Injury])
 	lines.sort()
 	return lines
+
+
+## Each side is shown its own copy of every world it does not hold, as the
+## original shows it: who was seen there, how many regiments, how many
+## facilities - counted off the save, not the importer.
+func _sightings(g: Dictionary, f: String) -> void:
+	var pack := FactionRegistry.Pack
+	var world := {}
+	for pd in pack.Map.Planets:
+		for p: Planet in GameState.AllPlanets():
+			if p.PackId == pd.Id:
+				world[pd.SourceId] = p
+	var person := {}
+	for cd in pack.Characters:
+		person[cd.SourceId] = cd.DisplayName
+	var worlds := 0
+	var wrong: Array = []
+	for side in [[1, "alliance"], [2, "empire"]]:
+		var viewer := FactionRegistry.ById(side[1])
+		for e: Dictionary in OriginalSave.Walk(g["views"][side[0]]):
+			var s: Dictionary = e["o"]
+			var p: Planet = world.get(int(s["template"])) if int(s["class"]) in [0x90, 0x92] else null
+			if p == null or p.ControllingFaction == viewer or not p.ExploredBy(viewer):
+				continue
+			worlds += 1
+			var names: Array = []
+			var regiments := 0
+			var facilities := 0
+			for k: Dictionary in s["children"]:
+				var c: int = int(k["class"])
+				if c >= 0x30 and c <= 0x38 and OriginalSave.Owner(int(k["control_kind"])) != side[1]:
+					names.append(person.get(int(k["template"]), "?"))
+				elif c == 0x10:
+					regiments += 1
+				elif c >= 0x20 and c <= 0x2d:
+					facilities += 1
+			names.sort()
+			var seen: Array = IntelManager.SeenData(viewer, p, Enums.IntelSection.Characters).get("people", []).map(func(x): return str(x["name"]))
+			seen.sort()
+			var got_regiments: int = IntelManager.SeenData(viewer, p, Enums.IntelSection.Troopers).get("regiments", []).size()
+			var got_facilities: int = IntelManager.View(viewer, p, Enums.IntelSection.ProductionFacilities).Lines.size() \
+				+ IntelManager.View(viewer, p, Enums.IntelSection.DefensiveFacilities).Lines.size()
+			if seen != names or got_regiments != regiments or got_facilities != facilities:
+				wrong.append("%s's %s: people %s / %s, regiments %d / %d, facilities %d / %d" % [side[1], p.Name, str(seen), str(names), got_regiments, regiments, got_facilities, facilities])
+	_check(worlds > 0 and wrong.is_empty(), "%s: each side is shown its own copy of the %d worlds it does not hold (%s)" % [f, worlds, "; ".join(wrong)])
+
+
+## TeeJ's day-5 Empire save, against his screenshots of the original
+## (2026-09-28): what the Empire is shown of three Alliance worlds.
+func _spot_checks_start() -> void:
+	var empire := FactionRegistry.ById("empire")
+	var at := func(id: String) -> Planet:
+		return Lq.first_or_null(GameState.AllPlanets(), func(p): return p.PackId == id)
+	var named := func(ids: Array) -> Array:
+		var out: Array = ids.map(func(id): return FactionRegistry.Pack.Characters.filter(func(cd): return cd.Id == id)[0].DisplayName)
+		out.sort()
+		return out
+	var yavin: Planet = at.call("yavin")
+	var people: Array = IntelManager.SeenData(empire, yavin, Enums.IntelSection.Characters).get("people", []).map(func(x): return str(x["name"]))
+	people.sort()
+	_check(people == named.call(["leia_organa", "luke_skywalker", "han_solo", "wedge_antilles", "chewbacca", "jan_dodonna"])
+		and IntelManager.View(empire, yavin, Enums.IntelSection.SpecForces).Lines == ["Bothan Spies"],
+		"Yavin: the Empire is shown Leia, Luke, Han, Wedge, Chewbacca, Dodonna and the Bothan Spies (%s)" % str(people))
+	var umgul: Planet = at.call("umgul")
+	var troops := IntelManager.View(empire, umgul, Enums.IntelSection.Troopers)
+	_check(int(IntelManager.SeenData(empire, umgul, Enums.IntelSection.DefensiveFacilities).get("shields", 0)) == 2
+		and troops.Known and troops.Lines.is_empty() and not umgul.Troopers().is_empty(),
+		"Umgul: the Empire is shown two shields and no troops (the regiment there now unseen)")
+	var chandrila: Planet = at.call("chandrila")
+	var counts: Dictionary = IntelManager.SeenData(empire, chandrila, Enums.IntelSection.ProductionFacilities).get("counts", {})
+	_check(IntelManager.View(empire, chandrila, Enums.IntelSection.Troopers).Lines.is_empty() and not chandrila.Troopers().is_empty()
+		and int(counts.get("mine", 0)) == 2 and int(counts.get("refinery", 0)) == 5,
+		"Chandrila: the Empire is shown 2 mines, 5 refineries and no troops (%s)" % str(counts))
 
 
 ## A latent user the original had not measured (the importer rolled its level).

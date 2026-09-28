@@ -956,15 +956,123 @@ func _economy() -> void:
 			_note("%s's orders under way are carried as paid for; the original would still draw %d refined for them as they build (it had %d on hand)." % [f.DisplayName, owed, Economy.For(f).RefinedMaterials])
 
 
-## What each side knows of the worlds it does not hold: this engine's own
-## opening sighting, dated the import day (the original's older sightings are
-## its sides' copies of the galaxy, which it does not keep as dated reports).
+## What a side is shown of a world it does not hold, from its copy: all but the
+## build queues - the copies' build managers of such worlds are empty in both
+## saves.
+const SEEN_CATEGORIES := [
+	Enums.IntelCategory.SystemStatus, Enums.IntelCategory.MilitaryUnits,
+	Enums.IntelCategory.DefensiveFacilities, Enums.IntelCategory.ProductionFacilities,
+	Enums.IntelCategory.SpecForces, Enums.IntelCategory.Characters,
+]
+
+
+## WHAT EACH SIDE KNOWS OF THE WORLDS IT DOES NOT HOLD: its own copy of the
+## galaxy, kept in the save (SAVEGAME-FORMAT.md) - what it last saw, however
+## stale, which is what the original shows it, the same on every restore
+## (TeeJ, 2026-09-28: the Empire's Yavin lists Leia and five more who have
+## since left, its Umgul two shields since gone). Each world's copy is built
+## as a stand-in world, never placed in the galaxy, and taken as a sighting by
+## the same code that takes one of a live world (IntelManager.Capture). The
+## serials and ship numbers the stand-ins draw are handed back: the game's own
+## numbering is as if they had never been made.
 func _intel() -> void:
-	for f in [_alliance, _empire]:
-		for p: Planet in GameState.AllPlanets():
-			if p.ExploredBy(f) and p.ControllingFaction != f:
-				IntelManager.Capture(f, p, _day + 1, IntelManager.ReconnaissanceCategories)
-	_leave(0, "when each side last saw each enemy world (sightings are dated the import day)", "")
+	var units := Unit.Numbering()
+	var facilities := Facility.Numbering()
+	for side in [[1, _alliance], [2, _empire]]:
+		var f: Faction = side[1]
+		for key in _planets:
+			var p: Planet = _planets[key]
+			var copy: Dictionary = _views[side[0]].get(key, {})
+			if copy.is_empty() or not p.ExploredBy(f) or p.ControllingFaction == f:
+				continue
+			var people: Array = []
+			IntelManager.Capture(f, p, _day + 1, SEEN_CATEGORIES, _seen_world(copy, p, f, people), people)
+			_carried["sightings of worlds a side does not hold"] = int(_carried.get("sightings of worlds a side does not hold", 0)) + 1
+	Unit.RestoreNumbering(units)
+	Facility.RestoreNumbering(facilities)
+	_leave(0, "when each side last saw each world it does not hold (the original does not date it; sightings are dated the import day)", "")
+
+
+## One world as a side's copy has it: a stand-in, never placed in the galaxy.
+## `people` gets the other sides' characters seen there.
+func _seen_world(copy: Dictionary, p: Planet, viewer: Faction, people: Array) -> Planet:
+	var w := Planet.new()
+	w.Name = p.Name
+	w.PackId = p.PackId
+	var owner := _owner(copy)
+	w.ControllingFaction = owner if owner != null else FactionRegistry.Neutral
+	var flags: int = int(copy["system_flags"])
+	w.IsInhabited = OriginalSave.Has(flags, OriginalSave.SYSTEM_FLAGS, "populated")
+	w.IsInUprising = OriginalSave.Has(flags, OriginalSave.SYSTEM_FLAGS, "uprising")
+	w.SetSupportFor(_alliance, int(copy["loyalty"]))
+	w.BaseEnergy = int(copy["energy"])
+	w.BaseRawMaterials = int(copy["raw_material"])
+	for o: Dictionary in copy["children"]:
+		var c: int = int(o["class"])
+		if c in FACILITY_CLASSES:
+			var def := _facility_def(c, int(o["template"]))
+			if def != null and _status(o, "completed") and not _status(o, "destroyed"):
+				var fac := Planet.NewFacility(def.Family, def.Tier)
+				fac.Attached = w
+				fac.IsDamaged = _status(o, "damaged")
+				w.Facilities.append(fac)
+		elif c == 0x08:
+			var fleet := _seen_fleet(o, w)
+			if fleet != null:
+				w.OrbitingFleets.append(fleet)
+		elif c in UNIT_CLASSES:
+			var u := _seen_unit(o, w)
+			if u == null:
+				continue
+			if u.Type == Enums.UnitType.Fighter:
+				w.FighterSquadrons.append(u)
+			else:
+				w.Garrison.append(u)
+		elif c in CHARACTER_CLASSES and _owner(o) != viewer:
+			for cd in _pack.Characters:
+				if cd.SourceId == int(o["template"]) and _roster.has(cd.Id):
+					people.append(_roster[cd.Id])
+	return w
+
+
+## A fleet as a copy has it; null for the original's empty fleet containers.
+func _seen_fleet(o: Dictionary, at: Planet) -> Fleet:
+	var ships: Array = []
+	for k: Dictionary in o["children"]:
+		if int(k["class"]) in [0x14, 0x18]:
+			var s := _seen_unit(k, at)
+			if s != null:
+				ships.append(s)
+	if ships.is_empty():
+		return null
+	var f := Fleet.new()
+	f.Faction = _owner(o)
+	f.Name = str(o.get("name", ""))
+	f.Attached = at
+	for s in ships:
+		f.AddShip(s)
+	return f
+
+
+## A unit as a copy has it, with what it carries (on the world, as the import
+## places carried units); null when it is not one.
+func _seen_unit(o: Dictionary, at: Planet) -> Unit:
+	var c: int = int(o["class"])
+	if not (c in UNIT_CLASSES) or not _status(o, "completed"):
+		return null
+	var def: PackDefs.UnitDef = MilitaryCatalog.BySource(Vector2i(c, int(o["template"])))
+	if def == null:
+		def = _unit_def(_pack, c, int(o["template"]))
+	if def == null:
+		return null
+	var u := MilitaryCatalog.Create(def, _owner(o), at)
+	if o.has("name"):
+		u.Name = str(o["name"])
+	for k: Dictionary in o["children"]:
+		var aboard := _seen_unit(k, at)
+		if aboard != null:
+			u.Hangar.append(aboard)
+	return u
 
 
 ## THE ORIGINAL'S MESSAGES: the player's message windows, kept in the human
