@@ -1,7 +1,7 @@
 extends SceneTree
 ## The Diplomacy Mission Report's picture as the original draws it (TeeJ,
 ## 2026-09-28: "make it work like the original does"): its scene - STRATEGY
-## 1044, windows/report.diplomacy - with the reporting agent's Encyclopedia
+## 1044, windows/message.1044 (an exporter 2.6.4 set: report.diplomacy) - with the reporting agent's Encyclopedia
 ## picture laid over it, the side's crest and gradient left out (pack.json
 ## `report_backdrop`, filled from the picture's edges). With stand-in art:
 ##   - where the backdrop reaches from the edge, the scene shows;
@@ -44,7 +44,7 @@ func _init() -> void:
 	var target: Planet = Lq.first_or_null(GameState.AllPlanets(), func(p: Planet) -> bool: return FactionRegistry.OrderOf(p.ControllingFaction) < 0 and p.IsInhabited)
 
 	# Without the scene: the character's picture as before (none here), no composite.
-	_check(MessageWindow.ReportPicture("diplomacy", agent) == null, "no scene imported: no composite")
+	_check(MessageWindow.ReportPicture("message.1044", agent) == null, "no scene imported: no composite")
 
 	# Stand-ins: a red scene; the agent's picture a backdrop colour all round a
 	# white figure that encloses a square of the same backdrop colour.
@@ -63,7 +63,7 @@ func _init() -> void:
 	Art.Reset()
 	MessageWindow._reportPictures.clear()
 
-	var pic: Texture2D = MessageWindow.ReportPicture("diplomacy", agent)
+	var pic: Texture2D = MessageWindow.ReportPicture("message.1044", agent)
 	_check(pic != null, "with the scene and the picture: a composite")
 	if pic != null:
 		var img: Image = pic.get_image()
@@ -85,7 +85,7 @@ func _init() -> void:
 		var before := EventBus.MessageLog.size()
 		MissionManager.Resolve(mission, AlwaysMaxPrng.new(), 1)
 		var msg: GameMessage = EventBus.MessageLog[EventBus.MessageLog.size() - 1] if EventBus.MessageLog.size() > before else null
-		_check(msg != null and msg.Scene == "diplomacy", "the Diplomacy report carries its scene (%s)" % (msg.Scene if msg != null else "none"))
+		_check(msg != null and msg.Scene == "message.1044", "the Diplomacy report carries its scene (STRATEGY 1044) (%s)" % (msg.Scene if msg != null else "none"))
 		_check(msg != null and MessageWindow.MessagePicture(msg) == pic, "the message window shows the composite for it")
 
 	# With the character's report figure (exporter 2.6.5): the figure, cut out by
@@ -96,7 +96,7 @@ func _init() -> void:
 	figure.save_png("%s/characters/%s.report.png" % [set_dir, agent.PackId])
 	Art.Reset()
 	MessageWindow._reportPictures.clear()
-	var cut: Texture2D = MessageWindow.ReportPicture("diplomacy", agent)
+	var cut: Texture2D = MessageWindow.ReportPicture("message.1044", agent)
 	_check(cut != null, "with the report figure: a composite")
 	if cut != null:
 		var img: Image = cut.get_image()

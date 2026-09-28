@@ -346,6 +346,10 @@ static func MessagePicture(message: GameMessage) -> Texture2D:
 		var composed: Texture2D = ReportPicture(message.Scene, message.AssociatedCharacter)
 		if composed != null:
 			return composed
+	if not message.Still.is_empty():
+		var still: Texture2D = Art.WindowPicture(message.Still)
+		if still != null:
+			return still
 	if not message.Picture.is_empty():
 		var own: Texture2D = Art.PackImage(message.Picture)
 		if own != null:
@@ -366,8 +370,10 @@ static func MessagePicture(message: GameMessage) -> Texture2D:
 static var _reportPictures: Dictionary = {}
 
 
-## A REPORT AS THE ORIGINAL DRAWS IT: the report's scene (windows/report.<mission>,
-## STRATEGY 1044 for Diplomacy) with the reporting character's REPORT FIGURE laid
+## A REPORT AS THE ORIGINAL DRAWS IT: the report's scene - the original's message
+## picture, windows/message.<id> (MissionManager.ReportScene: STRATEGY 1044 for
+## Diplomacy; an art set from exporter 2.6.4 has only that one, as
+## windows/report.diplomacy) - with the reporting character's REPORT FIGURE laid
 ## over it - the Encyclopedia picture cut out by hand (characters/<id>.report,
 ## STRATEGY at the Encyclopedia id, exporter 2.6.5; REBEXE 0x46a320). An art set
 ## from an older exporter has no figure: the Encyclopedia picture then, its crest
@@ -379,7 +385,9 @@ static func ReportPicture(scene: String, character: Character) -> Texture2D:
 	var key := "%s|%s" % [scene, character.PackId]
 	if _reportPictures.has(key):
 		return _reportPictures[key]
-	var back: Texture2D = Art.WindowPicture("report.%s" % scene)
+	var back: Texture2D = Art.WindowPicture(scene)
+	if back == null and scene == "message.1044":
+		back = Art.WindowPicture("report.diplomacy")
 	var figure: Texture2D = Art.Picture("characters", character.PackId + ".report")
 	var front: Texture2D = Art.Picture("characters", character.PackId)
 	var out: Texture2D = null

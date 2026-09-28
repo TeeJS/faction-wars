@@ -60,6 +60,8 @@ namespace FactionWarsExporter;
 ///   original/alerts/&lt;faction&gt;.&lt;category&gt;.png (+ .lit.png)   the Message Alert bar
 ///   original/planet_sprites/&lt;artwork_id&gt;.png              the map's planets
 ///   original/windows/&lt;name&gt;.png                            window pictures
+///   original/windows/message.&lt;id&gt;.png   the original's message pictures, STRATEGY
+///     1000-1075, drawn whole (a mission report's scene, "Chewbacca Escaped" ...)
 ///   original/windows/droid_&lt;agent|messenger&gt;.&lt;faction&gt;.png   the droids' idle runs, frames side by side
 ///   anim/&lt;dll&gt;/&lt;anchor&gt;.fwa   every droid and briefing run (ExportAnimations)
 ///   sound/&lt;dll&gt;/&lt;id&gt;.ogg     every voice and sound effect (Sound.cs)
@@ -76,6 +78,8 @@ namespace FactionWarsExporter;
 public sealed class Importer
 {
     public const int TextOffset = 4096;
+    public const int MessagePictureFirst = 1000;
+    public const int MessagePictureLast = 1075;
     public const int PlanetPictureBase = 11100;
     public const int PlanetSpriteBase = 10212;
     public const int PlanetSpriteCount = 26;
@@ -922,6 +926,14 @@ public sealed class Importer
             if (SaveSprite(strategy, id, P("windows", $"{name}.png"))) { windows++; pictureCount++; }
             else missing.Add($"windows/{name}: no bitmap {id} in STRATEGY.DLL");
         }
+        // THE MESSAGE PICTURES: STRATEGY 1000-1075, the 400x200 scene each of the
+        // original's messages shows (REBEXE's message builders set it by number:
+        // a mission report's scene, "Chewbacca Escaped" 1029, a system joining
+        // 1005, ...). Drawn whole - no colour is see-through.
+        int scenes = 0;
+        for (int id = MessagePictureFirst; id <= MessagePictureLast; id++)
+            if (strategy.Bitmaps.ContainsKey(id) && SaveSprite(strategy, id, P("windows", $"message.{id}.png"), keepBlue: true)) { scenes++; pictureCount++; }
+        Say($"message pictures: {scenes} (STRATEGY.DLL {MessagePictureFirst}-{MessagePictureLast}).");
         int tabs = 0;
         foreach (var (name, faction, normal, current, grey) in TabIcons)
         {
