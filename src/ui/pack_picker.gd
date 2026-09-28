@@ -92,7 +92,7 @@ const EXPORTER_URL := "https://github.com/TeeJS/faction-wars/releases/latest/dow
 ## movies...) and what the movies are (the exporter's README: 15 movies, about
 ## 350 MB, 10-15 minutes).
 const ART_SOURCES := {"swr-original": {"game": "Star Wars: Rebellion", "file": "swr-original.art.zip",
-	"movies": "swr-original.movies.zip", "movies_note": "the 15 movies. Optional: about 350 MB, 10-15 minutes."}}
+	"movies": "swr-original.movies.zip", "movies_note": "the 15 movies. Optional: about 350 MB, 10-15 minutes.", "short": "Rebellion"}}
 
 ## pack id -> the Play button, for the test and the keyboard.
 var _play: Dictionary = {}
@@ -523,8 +523,7 @@ func _card(id: String, pack: PackLoader.LoadedPack, errors: Array[String]) -> Bu
 	if pack != null and not pack.Manifest.ArtSets.is_empty():
 		var manage := _link("ManageFiles", "Manage files")
 		manage.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		manage.tooltip_text = "Import or remove %s's artwork and movies - your own files, kept in this %s." \
-			% [pack.Manifest.DisplayName, "browser" if OS.has_feature("web") else "computer"]
+		manage.tooltip_text = "Import or remove %s's artwork and movies - your own files." % pack.Manifest.DisplayName
 		manage.pressed.connect(func() -> void: _open_art_window(id, "", true, true))
 		links.add_child(manage)
 	# A pack the player imported can go again; the ones that ship cannot.
@@ -535,8 +534,7 @@ func _card(id: String, pack: PackLoader.LoadedPack, errors: Array[String]) -> Bu
 		var title: String = pack.Manifest.DisplayName if pack != null else id
 		var what: String = title if versions == 1 else "%s and every version of it kept here (%d)" % [title, versions]
 		remove.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		remove.tooltip_text = "Remove %s from this %s. Import its .zip again to get it back." \
-			% [what, "browser" if OS.has_feature("web") else "computer"]
+		remove.tooltip_text = "Remove %s. Import its .zip again to get it back." % what
 		remove.pressed.connect(func() -> void:
 			_confirm("Remove pack", "Remove %s? Import its file again to get it back." % what, "Remove", func() -> void:
 				PackImport.Remove(PackImport.KIND_FACTION_PACK, id)
@@ -554,8 +552,7 @@ func _add_card() -> Control:
 	var card := AddCard.new()
 	card.name = "AddPack"
 	card.custom_minimum_size = Vector2(CardWidth, 0)
-	card.tooltip_text = "Import a faction pack (.zip file).\nKeep the file: " \
-		+ ("if this browser forgets the pack, import it again." if OS.has_feature("web") else "if the pack is ever removed, import it again.")
+	card.tooltip_text = "Import a faction pack (.zip file).\nKeep the file: you can import it again at any time."
 	var empty := StyleBoxEmpty.new()
 	for st in ["normal", "hover", "pressed", "focus", "disabled"]:
 		card.add_theme_stylebox_override(st, empty)
@@ -1311,7 +1308,6 @@ func _open_art_window(pack_id: String, message: String = "", ok: bool = true, ma
 	var box: VBoxContainer = m[1]
 	box.add_theme_constant_override("separation", 12)
 	(m[2] as Button).pressed.connect(_close_art_window)
-	var here := "browser" if OS.has_feature("web") else "computer"
 
 	if short:
 		var e: Dictionary = outdated[0]
@@ -1329,7 +1325,11 @@ func _open_art_window(pack_id: String, message: String = "", ok: bool = true, ma
 		return
 
 	if manage:
-		box.add_child(_para("The files %s uses from your own copy of %s. Import a file to add it or bring it up to date; remove one to play without it." % [pack.Manifest.DisplayName, source.game], text_w))
+		# TeeJ's words (2026-09-28; mine were "incomprehensible gibberish").
+		var intro := _para("Owners of the game \"%s\" can extract artwork and movies from their legally owned copy of the game to emulate the look and feel of %s in Faction Wars. The artwork stays resident on your computer and is not uploaded to our servers or the internet. Use our extraction tool to create a file with the artwork or movies. Import a file to add or update it; remove one to play without it." \
+			% [source.game, source.get("short", source.game)], text_w)
+		intro.name = "Intro"
+		box.add_child(intro)
 	else:
 		box.add_child(_para("%s can look, sound and play like %s itself: its windows, pictures, sounds, music and movies. Faction Wars does not include them - they come from your own copy of the game (GOG, Steam or the CD), exported once on your computer." \
 			% [pack.Manifest.DisplayName, source.game], text_w))
@@ -1346,14 +1346,24 @@ func _open_art_window(pack_id: String, message: String = "", ok: bool = true, ma
 	var movies := _file_state(set_id, PackImport.KIND_MOVIES)
 	rows.add_child(_file_row("Art", "Artwork", source.file, "The original's windows, pictures, sounds and music.", art, set_id, PackImport.KIND_ART_SET, manage, text_w - 56))
 	rows.add_child(_file_row("Movies", "Movies", source.movies, "The original's movies, each where the original played it. Optional.", movies, set_id, PackImport.KIND_MOVIES, manage, text_w - 56))
-	var drop := _label("Or drag a file onto this window. Keep both files: %s" % ("if this browser forgets them (cleared site data, another browser or device), import them again." \
-		if OS.has_feature("web") else "they put everything back if it is ever cleared."), 13, CMuted)
+	# One wording on the desktop and in the browser (TeeJ, 2026-09-28: "users
+	# should not see a difference between file management on desktop or web").
+	var drop := _label("Or drag a file onto this window. Keep both files: you can import them again at any time.", 13, CMuted)
 	drop.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	drop.custom_minimum_size = Vector2(text_w - 56, 0)
 	rows.add_child(drop)
 	box.add_child(_step(3, "Import them here", rows, text_w))
 	_result(box, message, ok, text_w)
 	if manage:
+		# TeeJ's words (2026-09-28), at the page's foot: the pack and the build
+		# are what a head-to-head game checks (MultiplayerOptions._seat_mismatch;
+		# the pack's hash is its JSON alone, FactionRegistry.ContentHash), and
+		# nothing the simulation reads comes from the artwork.
+		var mp := _label("Users can play multi-player games with or without the artwork, the gameplay will be the same, just the look and feel will differ", 14, CMuted)
+		mp.name = "Multiplayer"
+		mp.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		mp.custom_minimum_size = Vector2(text_w, 0)
+		box.add_child(mp)
 		var done := _button("CloseFiles", "Close")
 		done.custom_minimum_size = Vector2(130, 42)
 		done.pressed.connect(_close_art_window)
@@ -1417,8 +1427,7 @@ static func _bullet(button: String, what: String, width: int) -> Control:
 	return l
 
 
-## Where to get the exporter: in the browser a link that opens it in a new tab;
-## on the desktop the address to copy (the game starts no other program).
+## Where to get the exporter: its address, and Copy.
 static func _exporter_link() -> Control:
 	var col := VBoxContainer.new()
 	col.add_theme_constant_override("separation", 6)
@@ -1426,34 +1435,30 @@ static func _exporter_link() -> Control:
 	var get_it := HBoxContainer.new()
 	get_it.name = "ExporterLink"
 	get_it.add_theme_constant_override("separation", 10)
-	if OS.has_feature("web"):
-		var link := LinkButton.new()
-		link.text = "FactionWarsExporter.exe"
-		link.tooltip_text = EXPORTER_URL
-		link.add_theme_color_override("font_color", CGlow)
-		link.add_theme_color_override("font_hover_color", Color.WHITE)
-		link.add_theme_font_size_override("font_size", 16)
-		link.pressed.connect(func() -> void: JavaScriptBridge.eval("window.open('%s', '_blank')" % EXPORTER_URL, true))
-		get_it.add_child(link)
-	else:
-		var address := LineEdit.new()
-		address.text = EXPORTER_URL
-		address.editable = false
-		address.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		address.add_theme_font_size_override("font_size", 12)
-		var well := _box(Color(0, 0, 0, 0.35), CEdge, ButtonRadius)
-		well.content_margin_left = 10
-		well.content_margin_right = 10
-		for st in ["normal", "read_only", "focus"]:
-			address.add_theme_stylebox_override(st, well)
-		address.add_theme_color_override("font_uneditable_color", CText.darkened(0.1))
-		get_it.add_child(address)
-		var copy := _button("CopyAddress", "Copy")
-		copy.custom_minimum_size = Vector2(90, 0)
-		copy.pressed.connect(func() -> void:
-			DisplayServer.clipboard_set(EXPORTER_URL)
-			copy.text = "COPIED")
-		get_it.add_child(copy)
+	# The same on the desktop and in the browser (TeeJ, 2026-09-28: "users
+	# should not see a difference between file management on desktop or web"):
+	# the address and Copy - the desktop game opens no other program, so the
+	# browser's link that opened a tab went with it.
+	var address := LineEdit.new()
+	address.text = EXPORTER_URL
+	address.editable = false
+	address.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	address.add_theme_font_size_override("font_size", 12)
+	var well := _box(Color(0, 0, 0, 0.35), CEdge, ButtonRadius)
+	well.content_margin_left = 10
+	well.content_margin_right = 10
+	for st in ["normal", "read_only", "focus"]:
+		address.add_theme_stylebox_override(st, well)
+	address.add_theme_color_override("font_uneditable_color", CText.darkened(0.1))
+	get_it.add_child(address)
+	var copy := _button("CopyAddress", "Copy")
+	copy.custom_minimum_size = Vector2(90, 0)
+	copy.pressed.connect(func() -> void:
+		DisplayServer.clipboard_set(EXPORTER_URL)
+		if OS.has_feature("web"):
+			JavaScriptBridge.eval("navigator.clipboard && navigator.clipboard.writeText(%s)" % JSON.stringify(EXPORTER_URL), true)
+		copy.text = "COPIED")
+	get_it.add_child(copy)
 	col.add_child(get_it)
 	return col
 
@@ -1512,8 +1517,8 @@ func _file_row(node: String, heading: String, file: String, what: String, state:
 		rm.custom_minimum_size = Vector2(110, 42)
 		rm.pressed.connect(func() -> void:
 			var pack_id := _art_for
-			_confirm("Remove the %s" % heading.to_lower(), "Remove the imported %s from this %s? You can import %s again at any time." \
-				% [heading.to_lower(), "browser" if OS.has_feature("web") else "computer", file], "Remove", func() -> void:
+			_confirm("Remove the %s" % heading.to_lower(), "Remove the imported %s? You can import %s again at any time." \
+				% [heading.to_lower(), file], "Remove", func() -> void:
 					PackImport.Remove(kind, set_id)
 					_rebuild()
 					_open_art_window(pack_id, "", true, true)))
@@ -1675,7 +1680,7 @@ func _on_progress(phase: String, done: int, total: int) -> void:
 		"write": "Writing the files - %d of %d" % [done, total],
 		"place": "Putting it in place...",
 		"verify": "Checking the movies - %d of %d" % [done, total],
-		"store": "Keeping the movies in this browser...",
+		"store": "Storing the movies...",
 	}
 	(box.find_child("Phase", true, false) as Label).text = str(words.get(phase, "Importing..."))
 	var bar: ProgressBar = box.find_child("Bar", true, false)

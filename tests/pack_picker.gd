@@ -165,6 +165,16 @@ func _init() -> void:
 			"Manage files opens the files window: Remove and Import per file, Close, no way on")
 		_check(files != null and ((files.find_child("FileRow_Art", true, false) as Node).find_child("StateText", true, false) as Label).text == "IMPORTED",
 			"the artwork's row: imported")
+		# TeeJ's words (2026-09-28), multiplayer at the foot, one wording for both builds.
+		var intro: Label = files.find_child("Intro", true, false) if files != null else null
+		var mp: Label = files.find_child("Multiplayer", true, false) if files != null else null
+		_check(intro != null and intro.text.begins_with("Owners of the game \"Star Wars: Rebellion\" can extract artwork and movies from their legally owned copy")
+			and intro.text.contains("not uploaded to our servers or the internet") and intro.text.ends_with("remove one to play without it."),
+			"Manage files: TeeJ's words")
+		_check(mp != null and mp.text == "Users can play multi-player games with or without the artwork, the gameplay will be the same, just the look and feel will differ",
+			"... and multiplayer at its foot")
+		var words := " ".join(_labels(files)) if files != null else ""
+		_check(not words.contains("this browser") and not words.contains("this computer"), "one wording on the desktop and in the browser")
 		if rm != null:
 			rm.pressed.emit()
 			await process_frame
