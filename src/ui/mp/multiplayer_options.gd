@@ -19,10 +19,12 @@ extends MpScreen
 ##
 ## In the original's look when its screen is imported (original_mp.gd): page 1
 ## is the original's Multiplayer Options screen (COMMON.DLL 10103) as it is.
-## Page 2 is the same screen with its second row the first row's band (two
-## choices), and the chat moved up into the Standard Game / HQ Victory row's
-## place, its message list twice as long (Page2Plate). The game code and Copy
-## sit at the right end of the Chat> bar (TeeJ's pick of three).
+## Page 2 is the same screen with two choices on its second row, a third row -
+## the first row's band - in the Standard Game / HQ Victory row's place for the
+## game code and Copy, and the chat where page 1 has it, the same size
+## (Page2Plate; TeeJ, 2026-09-28: Copy "should be more of a button", off page
+## 1, the code and Copy "on their own separate row so the chat boxes are the
+## same size on both").
 
 const OriginalMp := preload("res://src/ui/mp/original_mp.gd")
 const Art := preload("res://src/ui/artwork.gd")
@@ -52,8 +54,8 @@ const LoadAt := Vector2(502, 199)
 const ChatTop := 266
 const ChatX := 181
 const EntryX := 222
-const EntryW := 182
-const CodeX := 410
+## The space to the right of Chat>, to the bar's end (the log's right edge).
+const EntryW := 308
 const LogX := 150
 const LogTop := 297
 const LogW := 386
@@ -72,18 +74,25 @@ const BriefingPx := 12.0
 const SpeedAt := [Vector2(389, 133), Vector2(440, 133)]
 const SpeedWords := [[["Slowest", 11], ["wins", 22]], [["Average", 16]]]
 const SpeedPx := 9.0
-## Page 2's plate, from the original's (rows [first, after last, where to],
-## across x 133-575): the chat's top (its border, the Chat> bar, the rule
-## under it) up 70 into the lamp row's place; its message grid twice, down to
-## the original's bottom border. The second row keeps its own red and green
-## wires and grid (TeeJ, 2026-09-28: "make the wires match the colors on the
-## previous page"); only its third slot goes, under the first row's plain
-## panel beside it (Page2Cover: that panel, above the wires, and where to).
+## Page 2's plate, from the original's. The second row keeps its own red and
+## green wires and grid (TeeJ, 2026-09-28: "make the wires match the colors on
+## the previous page"); only its third slot goes, under the first row's plain
+## panel beside it. The third row is the first row's band (Page2Plate: rows
+## [first, after last, where to], across x 133-575) in the lamp row's place,
+## its second slot under that panel too, and the foot of the Load Game frame
+## left below it under the panel's plain rows beside (Page2Covers: [from, to]).
 const PlateX := Vector2i(133, 575)
-const Page2Plate := [[256, 294, 186], [294, 365, 224], [294, 364, 295]]
-const Page2Cover := [Rect2i(483, 62, 55, 55), Vector2i(483, 124)]
-const Up := 70
-const Page2LogLines := 8
+const Page2Plate := [[62, 124, 186]]
+const Page2Covers := [
+	[Rect2i(483, 62, 55, 55), Vector2i(483, 124)],
+	[Rect2i(483, 62, 55, 55), Vector2i(434, 186)],
+	[Rect2i(400, 248, 76, 3), Vector2i(490, 248)],
+]
+## The third row's parts, in the first row's places 124 down: the code in its
+## field (capitals at 206), Copy in its slot, "Copy" as page 2's words are.
+const CodeTop := 206
+const CopyAt := Vector2(389, 195)
+const CopyWordTop := 13
 
 const SizeNames: Array[String] = ["Standard", "Large", "Huge"]
 ## The win-condition tooltips are the PACK's words (pack.json victory_tips,
@@ -139,11 +148,9 @@ var _page: int = 1
 var _briefing_group: ButtonGroup
 var _briefing_buttons: Array = []
 var _oBriefs: Array = []
-## The original's parts of each page; the chat's parts and their rect on
-## each page; the two pages' pictures.
+## The original's parts of each page; the two pages' pictures.
 var _oPage1: Array = []
 var _oPage2: Array = []
-var _oChat: Array = []
 var _plates: Array = []
 
 
@@ -449,12 +456,13 @@ static func _page_plates() -> Array:
 	return [tex, ImageTexture.create_from_image(Page2Picture(src))]
 
 
-## Page 2's picture made from the original's screen `src` (Page2Plate, Page2Cover).
+## Page 2's picture made from the original's screen `src` (Page2Plate, Page2Covers).
 static func Page2Picture(src: Image) -> Image:
 	var out: Image = src.duplicate()
-	out.blit_rect(src, Page2Cover[0], Page2Cover[1])
 	for p in Page2Plate:
 		out.blit_rect(src, Rect2i(PlateX.x, p[0], PlateX.y - PlateX.x, p[1] - p[0]), Vector2i(PlateX.x, p[2]))
+	for c in Page2Covers:
+		out.blit_rect(src, c[0], c[1])
 	return out
 
 
@@ -535,30 +543,31 @@ func _dress() -> void:
 	for i in 2:
 		_oBriefs.append(_choice("Briefing", i, BriefingAt[i], _briefing_buttons[i], "briefing", BriefingWords[i], BriefingPx, marks))
 		_oSpeeds.append(_choice("Speed", i, SpeedAt[i], _speed_buttons[i], "speed_rule", SpeedWords[i], SpeedPx, marks))
-	# The chat, on both pages: Chat> and the space to its right, the game code
-	# and Copy at the bar's end, the message list.
-	var chat: Array = []
-	chat.append(_look.Text("Chat>", ChatX, ChatTop, 40, 13.0, OriginalMp.Green, HORIZONTAL_ALIGNMENT_LEFT, "ChatLabel"))
+	# Page 2's third row: the game code in the row's field, Copy in its slot - a
+	# button like the page's others, its brackets shown while it is held.
+	var code_text := "Code: %s" % (_lobby.code if not _lobby.code.is_empty() else "------")
+	_oPage2.append(_look.Text(code_text, QuestionCentre - 150, CodeTop, 300, QuestionPx, OriginalMp.Green, HORIZONTAL_ALIGNMENT_CENTER, "Code"))
+	var copy := TextureButton.new()
+	copy.name = "Copy"
+	copy.ignore_texture_size = true
+	copy.stretch_mode = TextureButton.STRETCH_SCALE
+	copy.tooltip_text = "Copy the game code, to give to your opponent."
+	copy.pressed.connect(_copy_code)
+	_look.Add(copy, Rect2(CopyAt, Slot))
+	var word: Label = _look.Text("Copy", CopyAt.x, CopyAt.y + CopyWordTop, Slot.x, BriefingPx, OriginalMp.Green, HORIZONTAL_ALIGNMENT_CENTER, "CopyWord")
+	word.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var held := _look.Place(marks, CopyAt.x, CopyAt.y, "CopyMark")
+	held.visible = false
+	copy.button_down.connect(func() -> void: held.visible = true)
+	copy.button_up.connect(func() -> void: held.visible = false)
+	_oPage2.append_array([copy, word])
+	# The chat, on both pages where page 1 has it: Chat> and the space to its
+	# right, the message list.
+	_look.Text("Chat>", ChatX, ChatTop, 40, 13.0, OriginalMp.Green, HORIZONTAL_ALIGNMENT_LEFT, "ChatLabel")
 	var entry: LineEdit = get_node("%ChatEntry")
 	entry.placeholder_text = ""
-	chat.append(_look.Field(entry, EntryX, ChatTop, EntryW, 13.0, OriginalMp.Green))
-	var code_text := "Code: %s" % (_lobby.code if not _lobby.code.is_empty() else "------")
-	var code_w: float = OUI.Face(false).get_string_size(code_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 12).x
-	chat.append(_look.Text(code_text, CodeX, ChatTop, code_w + 2, 12.0, OriginalMp.Green, HORIZONTAL_ALIGNMENT_LEFT, "Code"))
-	var copy: Label = _look.Text("Copy", CodeX + code_w + 8, ChatTop, 30, 12.0, OriginalMp.Red, HORIZONTAL_ALIGNMENT_LEFT, "Copy")
-	copy.mouse_filter = Control.MOUSE_FILTER_STOP
-	copy.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	copy.tooltip_text = "Copy the game code, to give to your opponent."
-	copy.gui_input.connect(func(e: InputEvent) -> void:
-		if e is InputEventMouseButton and e.pressed and e.button_index == MOUSE_BUTTON_LEFT:
-			_copy_code())
-	chat.append(copy)
-	for c in chat:
-		var r: Rect2 = _look.RectOf(c)
-		_oChat.append([c, r, Rect2(r.position - Vector2(0, Up), r.size)])
+	_look.Field(entry, EntryX, ChatTop, EntryW, 13.0, OriginalMp.Green)
 	_look.Log(_log, LogX, LogTop, LogW, LogLines, 12.0, 16.0, OriginalMp.Green)
-	var lr: Rect2 = _look.RectOf(_log)
-	_oChat.append([_log, lr, Rect2(lr.position - Vector2(0, Up), Vector2(lr.size.x, 16.0 * Page2LogLines))])
 
 
 ## One of page 2's choices: a slot, its words, and the red brackets shown when
@@ -595,8 +604,6 @@ func _show_page(page: int) -> void:
 		var plate: TextureRect = _look.Plate()
 		if plate != null and _plates.size() == 2 and plate.texture != _plates[0 if one else 1]:
 			_look.Repicture(plate, _plates[0 if one else 1])
-		for it in _oChat:
-			_look.Move(it[0], it[1] if one else it[2])
 	bar().set_proceed("Next" if one else "Start Game")
 	_refresh_start()
 
