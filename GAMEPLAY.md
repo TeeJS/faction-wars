@@ -3166,9 +3166,10 @@ of its own — so its days are `Planet.DeploymentDaysTo`. On arrival the origina
 says so: *"Headquarters Arrives"* / *"The Alliance Headquarters has arrived at
 <system>."* A destination lost on the way **reroutes** it: *"Headquarters
 Rerouted"* / *"The Alliance Headquarters was unable to deploy at <system>. It
-has been rerouted to <system>."* (TEXTSTRA RCDATA 28860-28861). **Not
-established:** where to - the code sends it on to the nearest world its side
-holds, as personnel go (§7), by the same law from the lost world.
+has been rerouted to <system>."* (TEXTSTRA RCDATA 28860-28861). Where to is
+not in the sources: it goes on to the nearest world its side holds, as personnel
+go (§7), by the same law from the lost world - **TeeJ's call, 2026-09-28:
+"nearest world is fine".**
 
 > TIP: **Bring along some of the troops, fighters, and personnel** that were
 > helping defend the original HQ location to help defend the new site.
