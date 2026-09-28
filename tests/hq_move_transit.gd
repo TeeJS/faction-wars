@@ -10,7 +10,8 @@ extends SceneTree
 ##   - on its way: at neither world, a second move refused, and the days are the
 ##     travel law's; it stands at its new seat on the day it arrives;
 ##   - plain Move: no window, it goes;
-##   - its destination lost on the way: it goes to the nearest world its side holds.
+##   - its destination lost on the way: "Headquarters Rerouted" (the original's
+##     words) to the nearest world its side holds, and on it travels.
 ##
 ##   .\tools\run-gd.ps1 tests/hq_move_transit.gd
 
@@ -103,12 +104,14 @@ func _init() -> void:
 	var again: Result = OrderManager.MoveHeadquarters(us, ours[1] if ours[1] != dest else ours[0])
 	_check(not again.ok and again.error.contains("on its way"), "a second move while it travels: '%s'" % again.error)
 
-	for _d in law - 1:
-		engine.AdvanceDay()
+	# The days are checked where they are set; the trip is then cut to two,
+	# so the AI's war over the coming months cannot take the destination.
+	bound["days"] = 2
+	engine.AdvanceDay()
 	_check(not dest.HasHeadquarters() and not OrderManager.HeadquartersEnRoute(us).is_empty(), "a day short: still travelling")
 	engine.AdvanceDay()
 	_check(dest.HasHeadquarters() and OrderManager.HeadquartersEnRoute(us).is_empty() and dest.ExploredBy(us),
-		"day %d: it stands at %s" % [law, dest.Name])
+		"on its last day it stands at %s" % dest.Name)
 	var told: GameMessage = Lq.first_or_null(EventBus.MessageLog, func(m: GameMessage) -> bool: return m.Title == "Headquarters Arrives" and m.For == us)
 	_check(told != null and told.Body == "The %s Headquarters has arrived at %s." % [us.ShortName, dest.Name],
 		"the original's message: 'Headquarters Arrives' - '%s'" % (told.Body if told != null else "none"))
@@ -117,22 +120,33 @@ func _init() -> void:
 	ui.OnPlanetClicked(dest)
 	await process_frame
 	var pw2: Node = ui._openWindows.get(dest.Name)
-	var next: Planet = seat if seat.ControllingFaction == us else Lq.first_or_null(ours, func(p: Planet) -> bool: return p != dest)
+	var next: Planet = Lq.first_or_null(GameState.AllPlanets(), func(p: Planet) -> bool: return p.ControllingFaction == us and p != dest)
 	if pw2 != null:
 		pw2._OnHqMenuAction(0, dest)
 		ui.ResolveTarget(next)
 	await process_frame
-	_check(_confirm(ui) == null and not OrderManager.HeadquartersEnRoute(us).is_empty() and not dest.HasHeadquarters(),
-		"plain Move: no window, it goes")
+	var going: Dictionary = OrderManager.HeadquartersEnRoute(us)
+	_check(_confirm(ui) == null and going.get("to") == next and not dest.HasHeadquarters(),
+		"plain Move: no window, it goes to %s" % next.Name)
 
-	# Its destination lost on the way: the nearest world its side holds.
+	# Its destination lost on the way: rerouted, in the original's words, to
+	# the nearest world its side holds - and on it travels.
 	var enemy: Faction = FactionRegistry.ById("empire")
 	next.ControllingFaction = enemy
 	var refuge: Planet = MilitaryCatalog.NearestHeldBy(us, next)
-	for _d in int(OrderManager.HeadquartersEnRoute(us).get("days", 0)):
-		engine.AdvanceDay()
-	_check(not next.HasHeadquarters() and refuge != null and refuge.HasHeadquarters(),
-		"%s lost on the way: it stands at %s instead" % [next.Name, refuge.Name if refuge != null else "?"])
+	going["days"] = 1
+	engine.AdvanceDay()
+	var onward: Dictionary = OrderManager.HeadquartersEnRoute(us)
+	_check(not next.HasHeadquarters() and refuge != null and onward.get("to") == refuge and int(onward.get("days", 0)) == next.DeploymentDaysTo(refuge),
+		"%s lost on the way: rerouted to %s, %d days on" % [next.Name, refuge.Name if refuge != null else "?", int(onward.get("days", -1))])
+	var rerouted: GameMessage = Lq.first_or_null(EventBus.MessageLog, func(m: GameMessage) -> bool: return m.Title == "Headquarters Rerouted" and m.For == us)
+	_check(rerouted != null and refuge != null and rerouted.Body == "The %s Headquarters was unable to deploy at %s.  It has been rerouted to %s." % [us.ShortName, next.Name, refuge.Name],
+		"the original's message: '%s'" % (rerouted.Body if rerouted != null else "none"))
+	if not onward.is_empty():
+		onward["days"] = 1
+	engine.AdvanceDay()
+	_check(refuge != null and refuge.HasHeadquarters() and OrderManager.HeadquartersEnRoute(us).is_empty(),
+		"and it stands at %s" % (refuge.Name if refuge != null else "?"))
 	_finish(main)
 
 
