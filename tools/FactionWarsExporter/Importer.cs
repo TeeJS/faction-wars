@@ -45,6 +45,8 @@ namespace FactionWarsExporter;
 /// its root, written through an ArtSink (a .zip, a folder, or hashes only).
 /// (Each path below is shown under original/, the art set's old home.)
 ///   original/characters/&lt;id&gt;.png   original/units/&lt;id&gt;.png
+///   original/characters/&lt;id&gt;.report.png   the figure a mission report lays
+///     over its scene (STRATEGY.DLL at the Encyclopedia id, blue = transparent)
 ///   original/facilities/&lt;id&gt;.png   original/planets/&lt;id&gt;.png
 ///   original/missions/&lt;id&gt;.&lt;faction&gt;.png (alliance / empire), and
 ///     .small.png: the 130x65 Create Mission picture (GOKRES.DLL)
@@ -835,6 +837,20 @@ public sealed class Importer
         // The strategic layer's sprites: the sector window's corner icons in each
         // side's own shaded colours, and the planets themselves.
         var strategy = new PeResources(Path.Combine(_gameDir, "STRATEGY.DLL"));
+        // A character's REPORT FIGURE: the Encyclopedia picture cut out by hand
+        // on pure blue, at the Encyclopedia id in STRATEGY.DLL (6208 Mon Mothma
+        // .. 6811; 61 of them). The original's mission reports lay it over their
+        // scene: REBEXE 0x46a280 asks STRATEGY for the picture id first and
+        // EDATA only without one, 0x46a320 draws it keyed on its blue.
+        int figures = 0;
+        foreach (var row in ReadRows("characters.json", "characters"))
+        {
+            string cid = row["id"]!.GetValue<string>();
+            int? sid = row["string_id"]?.GetValue<int>();
+            if (sid is int s && SaveSprite(strategy, s - TextOffset, P("characters", cid + ".report.png"))) { figures++; pictureCount++; }
+            else missing.Add($"characters/{cid}.report: no bitmap {(sid ?? TextOffset) - TextOffset} in STRATEGY.DLL");
+        }
+        Say($"report figures: {figures} (STRATEGY.DLL).");
         int icons = 0;
         foreach (var (glyph, faction, normal, hover) in CornerIcons)
         {
