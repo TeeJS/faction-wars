@@ -44,7 +44,7 @@ func _init() -> void:
 	for path: String in files:
 		var bytes := FileAccess.get_file_as_bytes(path)
 		var t0 := Time.get_ticks_msec()
-		var g: Dictionary = OriginalSave.Read(bytes)
+		var g: Dictionary = OriginalSave.Read(bytes, true)
 		var ms := Time.get_ticks_msec() - t0
 		var f: String = path.get_file()
 		_check(g["ok"], "%s reads (%s)" % [f, g["error"]])
@@ -63,5 +63,11 @@ func _init() -> void:
 			if int(e["o"]["class"]) in [0x90, 0x92]:
 				systems += 1
 		_check(systems > 0, "%s: %d systems in the master copy" % [f, systems])
+		# The players after the game: the human's block, proven by the file's closing words.
+		var human: Dictionary = g.get("human", {})
+		_check(not human.is_empty(), "%s: the human player's block reads to the file's end (%s)" % [f, g.get("tail_error", "")])
+		for w: Dictionary in human.get("windows", []):
+			print("[original_save_read]   message 0x%x \"%s\": %s" % [int(w["type"]), str(w.get("title", "")), str(w.get("text", "")).replace("
+", " / ")])
 	print("[original_save_read] %d checks, %d failed" % [_checks, _fails])
 	quit(1 if _fails > 0 else 0)

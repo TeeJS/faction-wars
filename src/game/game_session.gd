@@ -126,7 +126,7 @@ static func start_from_original(bytes: PackedByteArray, seed: int) -> StrategicT
 	if not FactionRegistry.EnsureLoaded():
 		push_error("[GameSession] no game: the pack did not load.")
 		return null
-	var g: Dictionary = OriginalSave.Read(bytes)
+	var g: Dictionary = OriginalSave.Read(bytes, true)
 	var plan: Dictionary = OriginalImport.Plan(g)
 	if not plan["ok"]:
 		push_error("[GameSession] cannot import: %s" % plan["error"])

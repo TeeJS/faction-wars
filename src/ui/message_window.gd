@@ -548,6 +548,8 @@ func ShowDetail(message: GameMessage, clickedButton: Button, markRead: bool = tr
 	var wasUnread: bool = markRead and not message.IsRead
 	if markRead:
 		message.IsRead = true
+	if wasUnread:
+		_RecordRead(message)
 
 	# Reading clears the unread count, so the alert bar has to repaint now
 	# rather than at the next day tick.
@@ -575,6 +577,12 @@ func ShowDetail(message: GameMessage, clickedButton: Button, markRead: bool = tr
 		_deleteBtn.visible = true
 
 
+## Reading a message is an order (read_messages), so the save keeps it read.
+## The window marks it at once; the order is what a load replays.
+func _RecordRead(m: GameMessage) -> void:
+	CommandBus.issue("read_messages", { "messages": [m.Serial] })
+
+
 ## A Conflict message opens the battle's or assault's own window, not the
 ## message summary (TeeJ, 2026-09-26: "it opens the actual assault/battle
 ## screen"; manual p123). Marks it read. False for any other message.
@@ -583,6 +591,8 @@ func _OpenReport(m: GameMessage) -> bool:
 		return false
 	var wasUnread: bool = not m.IsRead
 	m.IsRead = true
+	if wasUnread:
+		_RecordRead(m)
 	_uiManager.ShowReport(m.Report)
 	if wasUnread:
 		EventBus.BroadcastChanged()
@@ -1126,6 +1136,8 @@ func _o_show_summary(m: GameMessage) -> void:
 	_o_leave_compose()
 	var wasUnread: bool = not m.IsRead
 	m.IsRead = true
+	if wasUnread:
+		_RecordRead(m)
 	if wasUnread:
 		EventBus.BroadcastChanged()
 	_o_side_summary(true)

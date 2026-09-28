@@ -176,6 +176,10 @@ func _ready() -> void:
 			var upto: int = 1
 			for d: Variant in (saved[2] as Dictionary).keys():
 				upto = maxi(upto, int(d))
+			# A game saved before its first tick (a new or an imported game) has
+			# no day hash yet: its orders say what day it is.
+			for c: Command in saved[1]:
+				upto = maxi(upto, c.Day)
 			# A HEAD-TO-HEAD SAVE played on alone (issue #301): the day the host
 			# saved on, its orders up to the save, then the AI plays the opponent.
 			var h2h: Dictionary = (saved[0] as Dictionary).get("h2h", {}) if (saved[0] as Dictionary).get("h2h") is Dictionary else {}
@@ -191,6 +195,12 @@ func _ready() -> void:
 				if not want.is_empty() and want != got:
 					push_warning("[GameManager] the head-to-head save's state does not match the saved one (saved %s, loaded %s)" % [want.substr(0, 12), got.substr(0, 12)])
 				print("[GameManager] head-to-head save loaded alone on day %d as %s: state %s" % [upto, GameSettings.PlayerFaction.Id, "as saved" if want == got else "DIFFERS from the save"])
+			elif _strategicEngine != null:
+				# THE ORDERS GIVEN ON THE SAVED DAY. The replay stops at the tick
+				# into that day, and the orders given after it - a message read,
+				# a build queued, then Save - came after that tick. Applied now,
+				# as they were then; without this they were lost on every load.
+				CommandBus.apply_day(upto, (saved[1] as Array).filter(func(c: Command) -> bool: return c.Day == upto))
 			# The replay queues by day (Immediate off) and leaves it off. Single
 			# player applies an order on the frame it is issued - nothing here
 			# ever drains CommandBus.Pending - so turn it back on.

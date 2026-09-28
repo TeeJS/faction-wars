@@ -12,7 +12,7 @@ const Kinds := [
 	"unload", "unload_units", "disembark", "run_blockade",
 	"queue_facility", "queue_units", "cancel_build", "scrap_facility", "scrap_unit",
 	"retire", "take_command", "launch_mission", "abort_mission",
-	"bombard", "assault", "battle_answer", "droid", "delete_messages",
+	"bombard", "assault", "battle_answer", "droid", "delete_messages", "read_messages",
 	"chat", "set_speed", "pause", "resume",
 ]
 
@@ -152,6 +152,12 @@ static func apply(c: Command) -> Result:
 		"delete_messages":
 			for m in EntityIndex.messages(a.get("messages", [])):
 				EventBus.DeleteMessage(m)
+			return Result.success()
+		"read_messages":
+			# Reading is an order like deleting, so a saved game comes back
+			# with what was read still read (the log replays it).
+			for m in EntityIndex.messages(a.get("messages", [])):
+				m.IsRead = true
 			return Result.success()
 		"chat":
 			# "processed through SD-7 or R2-D2's messaging system" (manual p162):
