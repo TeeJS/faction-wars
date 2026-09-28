@@ -109,6 +109,9 @@ func _init() -> void:
 	engine.AdvanceDay()
 	_check(dest.HasHeadquarters() and OrderManager.HeadquartersEnRoute(us).is_empty() and dest.ExploredBy(us),
 		"day %d: it stands at %s" % [law, dest.Name])
+	var told: GameMessage = Lq.first_or_null(EventBus.MessageLog, func(m: GameMessage) -> bool: return m.Title == "Headquarters Arrives" and m.For == us)
+	_check(told != null and told.Body == "The %s Headquarters has arrived at %s." % [us.ShortName, dest.Name],
+		"the original's message: 'Headquarters Arrives' - '%s'" % (told.Body if told != null else "none"))
 
 	# Plain Move: no window, it goes.
 	ui.OnPlanetClicked(dest)

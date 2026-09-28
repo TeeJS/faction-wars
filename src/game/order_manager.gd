@@ -251,6 +251,14 @@ static func AdvanceHeadquarters() -> void:
 		for other in FactionRegistry.Playable:
 			to.SetExplored(other, other == faction or not faction.HasHiddenHq())
 		print("[HQ] %s headquarters arrives at %s." % [faction.DisplayName, to.Name])
+		# The original's own message (TEXTSTRA, among the arrivals): "Headquarters
+		# Arrives" / "The Alliance Headquarters has arrived at <system>." Filed
+		# with deliveries - the category is OURS.
+		var msg := GameMessage.new("Headquarters Arrives",
+			"The %s Headquarters has arrived at %s." % [faction.ShortName, to.Name],
+			Enums.MessageCategory.Manufacturing, StrategicTickManager.Today, to)
+		msg.Type = Enums.MessageType.UnitArrival
+		EventBus.Tell(faction, msg)
 		EventBus.BroadcastChanged()
 
 
