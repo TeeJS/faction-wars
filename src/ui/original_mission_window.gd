@@ -316,8 +316,11 @@ func _target_name(m: Mission) -> String:
 	return _planet.Name if _planet.IsExplored else "Target Unknown"
 
 
-## A member: the miniature on its plate - hyperspace streaks while the team
-## is in transit (Fig 3.51) - and the name under it, centred.
+## A member: the miniature on its plate - while the team is in transit
+## (Fig 3.51) a character on the ship's windows, p096's "In transit between
+## systems" icon (TeeJ's screenshot of the original, 2026-09-27), a SpecForce
+## on the hyperspace streaks of a unit en route (p084) - and the name under
+## it, centred.
 func _member(u: Unit, transit: bool) -> Control:
 	var c := Control.new()
 	c.name = "Member_%s" % u.Name.validate_node_name()
@@ -325,7 +328,7 @@ func _member(u: Unit, transit: bool) -> Control:
 	c.mouse_filter = Control.MOUSE_FILTER_PASS
 	c.tooltip_text = u.Name
 	var x: float = MemberX - PanelRect.position.x
-	var plate: Texture2D = OUI.Pic("card_enroute" if transit else "card_plate")
+	var plate: Texture2D = OUI.Pic(("card_transit" if u is Character else "card_enroute") if transit else "card_plate")
 	if plate != null:
 		OUI.Place(c, plate, x, MemberTop, "Plate")
 	var mini: Texture2D = OUI.Mini("characters" if u is Character else "units", u.PackId)
