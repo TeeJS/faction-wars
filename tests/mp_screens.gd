@@ -39,6 +39,7 @@ func _init() -> void:
 	await _host_original()
 	await _options_original(true)
 	await _options_original(false)
+	_page2_pictures()
 	_remove(ArtRoot)
 	Art.Reset()
 	# Strangers plan PR 5: what a joining client does first, and the Get-pack
@@ -456,6 +457,9 @@ func _options_original(host: bool) -> void:
 		_check(str(s._settings.get("briefing", "")) == "skip" and str(s._settings.get("speed_rule", "")) == "average"
 			and (c.get_node("BriefingMark0") as Control).visible and (c.get_node("SpeedMark1") as Control).visible,
 			"host: Yes skips the briefing, Average chosen, their brackets shown")
+		_check((c.get_node("BriefingWords0_0") as Label).get_theme_color("font_color") == preload("res://src/ui/mp/original_mp.gd").Green
+			and (c.get_node("BriefingWords1_0") as Label).get_theme_color("font_color") == preload("res://src/ui/mp/original_mp.gd").Green,
+			"host: the words green, chosen or not (TeeJ: the red is hard to read)")
 		_check(log.get_parsed_text().contains("The opening briefing will be skipped.") and log.get_parsed_text().contains("Average speed rule selected."),
 			"host: both in the chat")
 		(c.get_node("Back") as TextureButton).pressed.emit()
@@ -471,6 +475,42 @@ func _options_original(host: bool) -> void:
 		_check(str(s._settings.get("briefing", "")) == "skip", "guest: a click changes nothing")
 	await _close(s)
 	MpSetup.reset()
+
+
+## Page 2's pictures (TeeJ, 2026-09-28): the second row keeps its own wires,
+## only its third slot covered; the brackets' corners out at the slot's edges.
+func _page2_pictures() -> void:
+	const MO := preload("res://src/ui/mp/multiplayer_options.gd")
+	# A screen whose every pixel says where it came from.
+	var src := Image.create(640, 480, false, Image.FORMAT_RGBA8)
+	for y in 480:
+		for x in 640:
+			src.set_pixel(x, y, Color8(x % 256, y % 256, (x / 256) * 64 + (y / 256)))
+	var out: Image = MO.Page2Picture(src)
+	_check(out.get_pixel(300, 124 + 56) == src.get_pixel(300, 124 + 56) and out.get_pixel(560, 150) == src.get_pixel(560, 150),
+		"page 2's picture: the second row's own wires and connector (TeeJ: 'match the colors on the previous page')")
+	_check(out.get_pixel(500, 150) == src.get_pixel(500, 150 - 62) and out.get_pixel(537, 124 + 54) == src.get_pixel(537, 62 + 54)
+		and out.get_pixel(538, 150) == src.get_pixel(538, 150),
+		"page 2's picture: the third slot under the first row's plain panel, above the wires")
+	_check(out.get_pixel(300, 200) == src.get_pixel(300, 270), "page 2's picture: the chat moved up 70")
+	# The original's brackets (COMMON 10127 minus 10126): corners 5-7 px in.
+	var mask := Image.create(36, 36, false, Image.FORMAT_RGBA8)
+	mask.fill_rect(Rect2i(5, 7, 9, 2), Color.RED)
+	mask.fill_rect(Rect2i(5, 7, 2, 8), Color.RED)
+	mask.fill_rect(Rect2i(23, 7, 10, 2), Color.RED)
+	mask.fill_rect(Rect2i(31, 7, 2, 8), Color.RED)
+	mask.fill_rect(Rect2i(5, 29, 9, 2), Color.RED)
+	mask.fill_rect(Rect2i(5, 22, 2, 9), Color.RED)
+	mask.fill_rect(Rect2i(23, 29, 10, 2), Color.RED)
+	mask.fill_rect(Rect2i(31, 22, 2, 9), Color.RED)
+	var wide: Image = MO.Outward(mask)
+	var clear := true
+	for y in range(8, 27):
+		for x in 36:
+			clear = clear and wide.get_pixel(x, y).a == 0.0
+	_check(wide.get_used_rect() == Rect2i(0, 0, 36, 36) and wide.get_pixel(0, 0) == Color.RED and wide.get_pixel(35, 35) == Color.RED
+		and wide.get_pixel(8, 0) == Color.RED and wide.get_pixel(0, 7) == Color.RED and clear,
+		"the brackets out at the slot's edges, arms as long, rows 8-26 clear for the words")
 
 
 static func _png(path: String, w: int, h: int, color: Color) -> void:

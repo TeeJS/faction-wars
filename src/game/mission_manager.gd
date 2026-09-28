@@ -901,10 +901,18 @@ static func Launch(type: int, team: Array, from: Planet, target: Planet, decoys:
 	# "CHARACTERS STRONG IN THE FORCE CAN ALSO FERRET OUT TRAITORS IN A PARTY" (p094).
 	for exposed in LoyaltyManager.FerretOutTraitors(mission.Team):
 		print("[Loyalty] %s exposed as a traitor." % exposed.Name)
+		if not GameSettings.IsHuman(mission.Faction):
+			continue
+		# The original's words, in the discoverer's voice (TEXTSTRA 29160 / 29161,
+		# REBEXE 0x48c9b0): "<name> Discovers Traitor" / "Through the use of the
+		# Force, I have discovered that <traitor> has betrayed us to the <side>."
+		var seer: Character = Lq.first_or_null(Lq.of_type_character(mission.Team), func(c: Character) -> bool:
+			return c != exposed and c.IsKnownSpecialPowerUser)
+		var enemy: Faction = Lq.first_or_null(FactionRegistry.Playable, func(f: Faction) -> bool: return f != mission.Faction)
 		EventBus.Tell(mission.Faction, GameMessage.new(
-			"%s is a traitor" % exposed.Name,
-			"My Force-sensitive companions have seen through %s, who has turned against us. They are still with the team bound for %s.\n\nThey can be retired from their right-click menu. Or leave them be - if our fortunes improve, so will theirs." % [exposed.Name, target.Name],
-			Enums.MessageCategory.Missions, StrategicTickManager.Today, from, exposed))
+			"%s Discovers Traitor" % (seer.Name if seer != null else mission.Faction.ShortName),
+			"Through the use of the Force, I have discovered that %s has betrayed us to the %s." % [exposed.Name, enemy.ShortName if enemy != null else "enemy"],
+			Enums.MessageCategory.Missions, StrategicTickManager.Today, from, seer if seer != null else exposed).With("", "traitor_discovered"))
 
 	EventBus.BroadcastChanged()
 	print("[Mission] %s launched at %s by %s - %dd transit." % [JsonUtil.enum_name(Enums.MissionType, type), target.Name, Lq.join(Lq.select(team, func(t): return t.Name)), mission.DaysToTarget])
@@ -947,17 +955,14 @@ static func ProcessDay(rng: Prng, day: int) -> void:
 			if not m.Arrived():
 				continue   # still in hyperspace
 			# THE DAY THEY LAND IS THE FIRST DAY ON STATION.
+			# No message (TeeJ, 2026-09-28: the original has none - remove ours).
 			m.Announced = true
 			m.DaysOnStation = m.RollWorkDays(rng)
-			Report(m, day, "%s team has arrived" % m.DisplayName(),
-				"My %s team has reached %s and is beginning work." % [m.DisplayName().to_lower(), m.Target.Name])
 
 		# A TEAM ALREADY STANDING ON THE TARGET DOES NOT "ARRIVE".
 		if not m.Announced:
 			m.Announced = true
 			m.DaysOnStation = m.RollWorkDays(rng)
-			Report(m, day, "%s mission begun" % m.DisplayName(),
-				"My %s team is already at %s and has begun work." % [m.DisplayName().to_lower(), m.Target.Name])
 
 		# ON STATION AND WORKING.
 		if m.DaysOnStation > 0:
@@ -1169,9 +1174,8 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 				break
 		if betrayer != null:
 			betrayer.TraitorRevealed = true
+			# No message (TeeJ, 2026-09-28: the original has none - remove ours).
 			print("[Mission] %s at %s BETRAYED by %s." % [JsonUtil.enum_name(Enums.MissionType, m.Type), m.Target.Name, betrayer.Name])
-			Report(m, day, "%s mission betrayed" % m.DisplayName(),
-				"%s betrayed our %s mission at %s. Nothing was achieved.\n\nTheir loyalty has been in question for some time. They can be retired from their right-click menu, or left to come round if our fortunes improve." % [betrayer.Name, m.DisplayName().to_lower(), m.Target.Name], false, "mission_failure")
 			m.Finished = true
 			EventBus.BroadcastChanged()
 			return
