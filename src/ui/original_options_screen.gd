@@ -112,18 +112,21 @@ static func BarWiring() -> Array:
 	return [BarTop, int(BarSize.y), clamps, BarLoops]
 
 
-## Wires led out of the clamps through the empty bands above and below the
-## row, after TeeJ's sketch (2026-09-28: blue over all three, green over Import
-## Game, yellow round Export Game and See all games, red under the first two):
-## [colour, from clamp, its side (-1 left, 1 right), to clamp, its side, the
-## run's top row]. Above the row: the band from row 5's sockets (y 273) to the
-## boxes (293); under it: the boxes' foot (326) to the panel's bevel (334).
+## Wires led out of the clamps' openings through the empty bands above and
+## below the row, after TeeJ's sketch (2026-09-28): [colour, from clamp, the
+## gap it leaves by (-1 left of the clamp, 1 right), to clamp, the gap it comes
+## in by, the run's top row]. The top wires go up and the bottom ones down, so
+## that none crosses another leaving the same gap: the yellow over all three,
+## the red over Import Game and over the other two; the green under Import and
+## Export Game, the blue under See all games. Above the row: the band from
+## row 5's sockets (y 273) to the boxes (293); under it: the boxes' foot (326)
+## to the panel's bevel (334).
 const BarLoops := [
-	["blue", 0, -1, 3, 1, 276],
-	["green", 0, 1, 1, -1, 283],
-	["yellow", 1, 1, 3, -1, 283],
-	["red", 0, 1, 2, -1, 328],
-	["green", 2, 1, 3, -1, 328],
+	["yellow", 0, -1, 3, 1, 276],
+	["red", 0, 1, 1, -1, 283],
+	["red", 1, 1, 3, -1, 283],
+	["green", 0, -1, 2, -1, 328],
+	["blue", 2, 1, 3, -1, 328],
 ]
 const Red := Color(1, 0, 0)
 ## The alert box with one socket (REBDLOG): the check at (176, 134), the words
