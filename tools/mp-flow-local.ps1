@@ -1,9 +1,9 @@
 # The M4 gate: two headless clients drive the real head-to-head screens through
 # a local relay into a lockstep game, play N days at Fast, and their day hashes
 # are diffed. -Load then runs a second pair that picks the saved game from the
-# Load Game list (M5) and resumes it. -Save (issue #301): the host saves in
-# slot 3 on day 6; both computers' slot 3 is checked, a second pair loads the
-# slot from the Load Game list and must resume at the saved day and state, and
+# Load Game list (M5) and resumes it. -Save (issue #301): the host saves "The
+# Battle of Hoth" on day 6; both computers' copy is checked, a second pair loads
+# it from the Load Game list and must resume at the saved day and state, and
 # each computer's copy is then loaded alone against the AI (tests/h2h_solo.gd).
 # Each client keeps its saves in its own user:// folder (--save-dir). Usage:
 #   .\tools\mp-flow-local.ps1 [-Days 30] [-Load] [-Save] [-PlainWindows] [-RelayPort 8790]
@@ -99,7 +99,7 @@ if ($Save) { $first += @('--save', '--compact-every=40') }   # the history compa
 $g1 = Run-Pair "" $first $guestExtra
 Write-Host ("M4 (screens -> lockstep) GATE: {0}  (box: {1})" -f $g1, $box)
 if ($Save) {
-    # Both computers' slot 3: written, the same game (orders and phase ends).
+    # Both computers' saved game: written, the same game (orders and phase ends).
     $slots = @{}
     foreach ($role in @('host', 'guest')) {
         $line = Select-String -Path "$box\$role.stdout.txt" -Pattern '\[mp_flow\] \w+ SLOT' | Select-Object -Last 1
@@ -108,7 +108,7 @@ if ($Save) {
     $said = (Select-String -Path "$box\host.stdout.txt" -Pattern 'host SAVE says: (.*)' | Select-Object -Last 1)
     $digest = { param($l) if ($l -match 'digest=(\w+)') { $Matches[1] } else { '' } }
     $same = ($slots['host'] -match 'used=true side=h2h') -and ($slots['guest'] -match 'used=true side=h2h') -and ((& $digest $slots['host']) -eq (& $digest $slots['guest'])) -and (& $digest $slots['host'])
-    Write-Host ("SAVE GATE: {0} - host says: {1}" -f $(if ($same) { 'PASS, slot 3 written on both computers, same game' } else { 'FAIL' }), $(if ($said) { $said.Matches[0].Groups[1].Value } else { '(nothing)' }))
+    Write-Host ("SAVE GATE: {0} - host says: {1}" -f $(if ($same) { 'PASS, written on both computers, the same game' } else { 'FAIL' }), $(if ($said) { $said.Matches[0].Groups[1].Value } else { '(nothing)' }))
     Remove-Item "$box\room.code" -Force
     $g3 = Run-Pair ".slot" @('--load-slot')
     Write-Host ("LOAD-SLOT GATE: {0}" -f $g3)

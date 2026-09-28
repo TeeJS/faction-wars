@@ -9,12 +9,13 @@ extends SceneTree
 ##
 ##   Godot_console.exe --headless --path . -s tests/h2h_solo.gd -- --save-dir=user://mpflow-x-guest --box=D:/tmp/box
 ##
-## Run by tools/mp-flow-local.ps1 -Save, once the two clients have saved slot 3
-## (<box>/save.json holds the day and state hash the save was made at).
+## Run by tools/mp-flow-local.ps1 -Save, once the two clients have saved "The
+## Battle of Hoth" (<box>/save.json holds the day and state hash the save was
+## made at).
 
 const Art := preload("res://src/ui/artwork.gd")
-const Slot := 2      # slot 3, where mp_flow --save saves
-const Resave := 5    # slot 6
+const SaveName := "The Battle of Hoth"   # what mp_flow --save saves
+const Resave := "Alone"
 
 var _fails := 0
 var _checks := 0
@@ -42,12 +43,12 @@ func _init() -> void:
 	SaveManager.Dir = dir
 	var saved: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("%s/save.json" % box))
 	var saved_day := int(saved.get("day", -1))
-	var slot: Dictionary = SaveManager.Slots()[Slot]
-	_check(slot["used"] and slot["side"] == "h2h", "slot 3 holds a head-to-head save")
+	var slot: Dictionary = _game(SaveManager.Find(SaveName))
+	_check(not slot.is_empty() and slot["side"] == "h2h", "\"%s\" is a head-to-head save" % SaveName)
 	var local := str(slot.get("local", ""))
 
 	# --- Load it as the Load Game screens do. ---
-	GameSettings.PendingLoadPath = SaveManager.SlotPath(Slot)
+	GameSettings.PendingLoadPath = SaveManager.GamePath(SaveManager.Find(SaveName))
 	var main: Node = load("res://Main.tscn").instantiate()
 	root.add_child(main)
 	await process_frame
@@ -73,30 +74,39 @@ func _init() -> void:
 	var hash_after := GameSignature.ReplayHash(GameState.ActiveGalaxy)
 
 	# --- Saved as a single-player game, and loaded again. ---
-	_check(SaveManager.Save(Resave, "Alone"), "saves it in slot 6")
-	var header: Dictionary = CommandLog.Read(SaveManager.SlotPath(Resave))[0]
+	var resaved: String = SaveManager.Save(Resave)
+	_check(not resaved.is_empty(), "saves it as \"%s\"" % Resave)
+	var header: Dictionary = CommandLog.Read(SaveManager.GamePath(resaved))[0]
 	_check(int(header.get("ai_takeover_day", 0)) == saved_day and (header.get("humans", []) as Array).size() == 2,
 		"the save says both sides were human until the AI took over on day %d" % saved_day)
-	_check(SaveManager.Slots()[Resave]["side"] == local, "its slot icon is this side, not head-to-head")
+	_check(str(_game(resaved).get("side", "")) == local, "its side icon is this side, not head-to-head")
 	main.queue_free()
 	await process_frame
 	await process_frame
 	CommandLog.Reset()
-	GameSettings.PendingLoadPath = SaveManager.SlotPath(Resave)
+	GameSettings.PendingLoadPath = SaveManager.GamePath(resaved)
 	var again: Node = load("res://Main.tscn").instantiate()
 	root.add_child(again)
 	await process_frame
 	(again as GameManager).SetSpeed(0)
 	for _i in 5:
 		await process_frame
-	_check(StrategicTickManager.Today == day_after, "slot 6 loads at day %d (got %d)" % [day_after, StrategicTickManager.Today])
-	_check(GameSignature.ReplayHash(GameState.ActiveGalaxy) == hash_after, "slot 6 loads the same state")
+	_check(StrategicTickManager.Today == day_after, "\"Alone\" loads at day %d (got %d)" % [day_after, StrategicTickManager.Today])
+	_check(GameSignature.ReplayHash(GameState.ActiveGalaxy) == hash_after, "\"Alone\" loads the same state")
 	_check(GameSettings.HumanFactions.size() == 1 and GameSettings.PlayerFaction.Id == local and not GameSettings.IsHuman(them), "and the AI still plays the other side")
 
 	again.queue_free()
 	await process_frame
 	print("[h2h_solo] %d checks, %d failed" % [_checks, _fails])
 	quit(1 if _fails > 0 else 0)
+
+
+## The saved game `id` as SaveManager.Games() lists it ({} if none).
+func _game(id: String) -> Dictionary:
+	for g: Dictionary in SaveManager.Games():
+		if g["id"] == id:
+			return g
+	return {}
 
 
 func _arg(prefix: String, default: String) -> String:

@@ -1,6 +1,6 @@
 extends SceneTree
-## Issue #6 PR B: the start-menu Load screen lists the six slots (used ones
-## loadable), and choosing one sets GameSettings.PendingLoadPath. Scratch save dir.
+## Issue #6 PR B: the start-menu Load screen lists every saved game, newest
+## first, and choosing one sets GameSettings.PendingLoadPath. Scratch save dir.
 ##
 ##   Godot_console.exe --headless --path . -s tests/load_game_window.gd
 
@@ -22,13 +22,15 @@ func _init() -> void:
 	SaveManager.Dir = "user://test-lgw-saves"
 	_clean()
 
-	# Create one saved game in slot 1.
+	# Two saved games.
 	var engine: StrategicTickManager = GameSession.new_game("alliance", Enums.Difficulty.Medium, Enums.GalaxySize.Standard, 4243)
 	CommandLog.Open("user://test-lgw-gen.jsonl", CommandLog.Header())
 	for _i in 3:
 		engine.AdvanceDay()
 		CommandBus.day_done()
-	_check(SaveManager.Save(1, "My Save"), "a game is saved to slot 1")
+	var older: String = SaveManager.Save("Older Save")
+	var mine: String = SaveManager.Save("My Save")
+	_check(not older.is_empty() and not mine.is_empty(), "two games are saved")
 	CommandLog.Close()
 
 	GameSettings.PendingLoadPath = ""
@@ -36,14 +38,13 @@ func _init() -> void:
 	root.add_child(w)
 	await process_frame
 
-	_check(w._rows.size() == 6, "six slot rows are listed")
-	_check(not (w._rows[1]["load"] as Button).disabled, "the used slot's Load button is enabled")
-	_check((w._rows[0]["load"] as Button).disabled, "an empty slot's Load button is disabled")
+	_check(w._rows.size() == 2, "both games are listed")
+	_check(w._rows[0]["id"] == mine and w._rows[1]["id"] == older, "newest first")
 
-	# Choosing the used slot sets the pending-load path (the scene change is
+	# Choosing a game sets the pending-load path (the scene change is
 	# deferred; we quit before it processes).
-	w._load(1)
-	_check(GameSettings.PendingLoadPath == SaveManager.SlotPath(1), "Load sets PendingLoadPath to the chosen slot")
+	w._load(mine)
+	_check(GameSettings.PendingLoadPath == SaveManager.GamePath(mine), "Load sets PendingLoadPath to the chosen game")
 
 	GameSettings.PendingLoadPath = ""
 	_clean()
@@ -51,13 +52,19 @@ func _init() -> void:
 
 
 func _clean() -> void:
-	for i in SaveManager.SLOT_COUNT:
-		if FileAccess.file_exists(SaveManager.SlotPath(i)):
-			DirAccess.remove_absolute(SaveManager.SlotPath(i))
-	if FileAccess.file_exists("user://test-lgw-saves/slots.json"):
-		DirAccess.remove_absolute("user://test-lgw-saves/slots.json")
+	_remove(SaveManager.Dir)
 
 
 func _finish() -> void:
 	print("[load_game_window] %d checks, %d failed" % [_checks, _fails])
 	quit(1 if _fails > 0 else 0)
+
+
+static func _remove(path: String) -> void:
+	if not DirAccess.dir_exists_absolute(path):
+		return
+	for sub in DirAccess.get_directories_at(path):
+		_remove("%s/%s" % [path, sub])
+	for file in DirAccess.get_files_at(path):
+		DirAccess.remove_absolute("%s/%s" % [path, file])
+	DirAccess.remove_absolute(path)

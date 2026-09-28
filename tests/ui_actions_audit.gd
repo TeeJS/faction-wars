@@ -59,7 +59,7 @@ func _init() -> void:
 
 	# 2-3 in the original's look: the Menu button opens its Game Options
 	# screen directly (it replaced the Game Menu and the Save Game window),
-	# and a slot's Save Game button writes the slot.
+	# and a row's Save Game button saves the game under the typed name.
 	if OptionsScreen.CanBuild():
 		ui.OnMenuButtonClicked()
 		await process_frame
@@ -69,8 +69,8 @@ func _init() -> void:
 			(screen._names[0] as LineEdit).text = "Audit"
 			(screen._saveBtns[0] as BaseButton).pressed.emit()
 			await process_frame
-			_check(SaveManager.Slots()[0]["used"], "pressing Save Game writes slot 1")
-			_check(SaveManager.Slots()[0]["name"] == "Audit", "the typed name is saved")
+			_check(SaveManager.Games().size() == 1, "pressing Save Game saves the game")
+			_check(SaveManager.Games().size() == 1 and SaveManager.Games()[0]["name"] == "Audit", "under the typed name")
 		_clean()
 		_finish()
 		return
@@ -83,9 +83,9 @@ func _init() -> void:
 	if optBtn != null:
 		optBtn.pressed.emit()
 		await process_frame
-		_check(ui.get_node_or_null("GameOptionsWindow") != null, "pressing Game Options opens the six-slot screen")
+		_check(ui.get_node_or_null("GameOptionsWindow") != null, "pressing Game Options opens the save screen")
 
-	# 3. Pressing a slot's Save button actually writes the slot.
+	# 3. Pressing a row's Save button actually saves the game.
 	var gow: Node = ui.get_node_or_null("GameOptionsWindow")
 	if gow != null:
 		gow._rows[0]["name"].text = "Audit"
@@ -94,21 +94,27 @@ func _init() -> void:
 		if saveBtn != null:
 			saveBtn.pressed.emit()
 			await process_frame
-			_check(SaveManager.Slots()[0]["used"], "pressing Save writes slot 1")
-			_check(SaveManager.Slots()[0]["name"] == "Audit", "the typed name is saved")
+			_check(SaveManager.Games().size() == 1, "pressing Save saves the game")
+			_check(SaveManager.Games().size() == 1 and SaveManager.Games()[0]["name"] == "Audit", "under the typed name")
 
 	_clean()
 	_finish()
 
 
 func _clean() -> void:
-	for i in SaveManager.SLOT_COUNT:
-		if FileAccess.file_exists(SaveManager.SlotPath(i)):
-			DirAccess.remove_absolute(SaveManager.SlotPath(i))
-	if FileAccess.file_exists("user://test-audit-saves/slots.json"):
-		DirAccess.remove_absolute("user://test-audit-saves/slots.json")
+	_remove(SaveManager.Dir)
 
 
 func _finish() -> void:
 	print("[ui_actions_audit] %d checks, %d failed" % [_checks, _fails])
 	quit(1 if _fails > 0 else 0)
+
+
+static func _remove(path: String) -> void:
+	if not DirAccess.dir_exists_absolute(path):
+		return
+	for sub in DirAccess.get_directories_at(path):
+		_remove("%s/%s" % [path, sub])
+	for file in DirAccess.get_files_at(path):
+		DirAccess.remove_absolute("%s/%s" % [path, file])
+	DirAccess.remove_absolute(path)

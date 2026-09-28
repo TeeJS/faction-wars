@@ -3,7 +3,7 @@ extends RefCounted
 ## THE HOST'S SAVE IN A HEAD-TO-HEAD GAME, as a Game Options screen shows it
 ## (manual p163: "only the host player can save the game. Star Wars Rebellion
 ## will create a saved game on both computers in the same saved game slots").
-## This computer writes the slot at once (LockstepSession.save_game); the
+## This computer writes the game at once (LockstepSession.save_game); the
 ## guest's writes it when the save line reaches it and answers. The message
 ## says what actually happened (issue #301: the old one said "saved on both
 ## computers" and nothing was written anywhere).
@@ -24,14 +24,14 @@ var _since_ms: int = 0
 var _said: String = ""
 
 
-func begin(session: LockstepSession, slot: int, name: String) -> void:
+func begin(session: LockstepSession, name: String) -> void:
 	_session = session
 	_name = name
 	_day = StrategicTickManager.Today
-	_id = session.save_game(slot, name)
+	_id = session.save_game(name)
 	_since_ms = Time.get_ticks_msec()
 	if _id.is_empty():
-		_said = "Not saved: this computer could not write slot %d." % (slot + 1)
+		_said = "Not saved: this computer could not write \"%s\"." % name
 		_session = null
 
 

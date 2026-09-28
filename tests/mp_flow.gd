@@ -6,11 +6,12 @@ extends SceneTree
 ## the relay's saved game from the Load Game list (M5) and both resume it.
 ##
 ## THE HEAD-TO-HEAD SAVE (issue #301). --save: on day 6, with the Game Options
-## screen up, the host saves in slot 3 through the screen; both then check
-## their own slot 3 (--save-dir keeps the two computers' saves apart, as they
-## share one user:// here), and the host writes the save's day and state hash
-## to <box>/save.json. --load-slot: the host picks that slot from the Load
-## Game list; both check they resumed at the saved day and state.
+## screen up, the host saves "The Battle of Hoth" on its third row through the
+## screen; both then check their own saved game of that name (--save-dir keeps
+## the two computers' saves apart, as they share one user:// here), and the
+## host writes the save's day and state hash to <box>/save.json. --load-slot:
+## the host picks that saved game from the Load Game list; both check they
+## resumed at the saved day and state.
 ##
 ##   Godot_console.exe --headless --path . -s tests/mp_flow.gd -- \
 ##       --role=host|guest --relay=ws://127.0.0.1:8787/ws --box=D:/tmp/box --days=30 --replay-log=h.log
@@ -30,7 +31,7 @@ var _rejoin_code: bool = false
 var _save: bool = false
 var _load_slot: bool = false
 var _log: FileAccess
-const SaveSlot := 2   # slot 3
+const SaveSlot := 2   # the third row of the Game Options screen
 const SaveName := "The Battle of Hoth"
 
 
@@ -148,15 +149,15 @@ func _host() -> void:
 		for c in dlg.get_children():
 			if c is ItemList:
 				list = c
-		# A slot's save (--load-slot) or the relay's game (--load): the list
-		# holds both, the slots first ("Slot 3: ...").
+		# A game saved here (--load-slot) or the relay's game (--load): the
+		# list holds both, this computer's first ("Saved game: ...").
 		var pick := -1
 		for i in list.item_count:
-			if list.get_item_text(i).begins_with("Slot ") == _load_slot:
+			if list.get_item_text(i).begins_with("Saved game: ") == _load_slot:
 				pick = i
 				break
 		if pick < 0:
-			await _fail("no %s in the Load Game list" % ("saved slot" if _load_slot else "relay game"))
+			await _fail("no %s in the Load Game list" % ("saved game" if _load_slot else "relay game"))
 			return
 		print("[mp_flow] host loads: %s" % list.get_item_text(pick))
 		list.select(pick)
@@ -358,7 +359,7 @@ func _play() -> void:
 
 ## --save, the host: on the Game Options screen that is up - the original's
 ## (art imported) or the plain one through the Game Menu's Game Options - type
-## the name into slot 3 and press its Save. Writes <box>/save.json: the day
+## the name into the third row and press its Save. Writes <box>/save.json: the day
 ## and the state hash the save holds.
 func _save_through_screen(ui: UIManager) -> void:
 	# Not on the day's first phase: phases run on while the screen is up (the
@@ -372,7 +373,7 @@ func _save_through_screen(ui: UIManager) -> void:
 	if screen != null:
 		((screen.get("_names") as Array)[SaveSlot] as LineEdit).text = SaveName
 		screen.call("_save", SaveSlot)
-		print("[mp_flow] host saves in slot %d on the original's Game Options screen" % (SaveSlot + 1))
+		print("[mp_flow] host saves \"%s\" on the original's Game Options screen" % SaveName)
 	else:
 		for b in root.find_children("*", "Button", true, false):
 			if (b as Button).text == "Game Options" and (b as Button).is_visible_in_tree():
@@ -385,8 +386,8 @@ func _save_through_screen(ui: UIManager) -> void:
 			return
 		(((gow.get("_rows") as Array)[SaveSlot] as Dictionary)["name"] as LineEdit).text = SaveName
 		gow.call("_on_save", SaveSlot)
-		print("[mp_flow] host saves in slot %d on the Game Options window" % (SaveSlot + 1))
-	var read: Array = SaveManager.ReadH2H(SaveSlot)
+		print("[mp_flow] host saves \"%s\" on the Game Options window" % SaveName)
+	var read: Array = SaveManager.ReadH2H(SaveManager.Find(SaveName))
 	var h2h: Dictionary = (read[0] as Dictionary).get("h2h", {})
 	print("[mp_flow] host save holds day %d, state %s (%s the state when Save was pressed)" % [int(h2h.get("day", -1)), str(h2h.get("state_hash", "")).substr(0, 12),
 		"=" if str(h2h.get("state_hash", "")) == hash_now else "DIFFERENT from"])
@@ -401,18 +402,23 @@ func _wait_ms(ms: int) -> void:
 		await process_frame
 
 
-## --save, both: what this computer's slot 3 holds. The runner compares the two
-## computers' lines.
+## --save, both: what this computer's "The Battle of Hoth" holds. The runner
+## compares the two computers' lines.
 func _report_slot() -> void:
-	var s: Dictionary = SaveManager.Slots()[SaveSlot]
-	var read: Array = SaveManager.ReadH2H(SaveSlot)
+	var id: String = SaveManager.Find(SaveName)
+	var s: Dictionary = {"used": false, "side": "", "name": "", "day": 0}
+	for g: Dictionary in SaveManager.Games():
+		if g["id"] == id:
+			s = g.duplicate()
+			s["used"] = true
+	var read: Array = SaveManager.ReadH2H(id)
 	var h2h: Dictionary = (read[0] as Dictionary).get("h2h", {})
 	var orders: Array = []
 	for m: Dictionary in read[1]:
 		if str(m.get("t", "")) in ["cmd", "end"]:
 			orders.append(JSON.stringify(m, "", true))
 	orders.sort()
-	print("[mp_flow] %s SLOT %d: used=%s side=%s name=\"%s\" day=%d id=%s lines=%d orders+ends=%d digest=%s" % [_role, SaveSlot + 1, str(s["used"]), s["side"], s["name"], int(s["day"]),
+	print("[mp_flow] %s SLOT \"%s\": used=%s side=%s name=\"%s\" day=%d id=%s lines=%d orders+ends=%d digest=%s" % [_role, SaveName, str(s["used"]), s["side"], s["name"], int(s["day"]),
 		str(h2h.get("id", "")), (read[1] as Array).size(), orders.size(), "\n".join(PackedStringArray(orders)).sha256_text().substr(0, 16)])
 
 

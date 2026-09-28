@@ -205,9 +205,10 @@ func _handle(msg: Dictionary) -> void:
 		"guest", "host":
 			opponent_gone = false
 		"save":
-			# The host saved: the same slot, the same name, on this computer too.
+			# The host saved: the game of the same name on this computer too (a
+			# game's name is its identity - SaveManager).
 			if not hosting:
-				var ok := _write_save(int(msg.get("slot", -1)), str(msg.get("name", "")), int(msg.get("phase", 0)), int(msg.get("day", 0)), msg)
+				var ok := _write_save(str(msg.get("name", "")), int(msg.get("phase", 0)), int(msg.get("day", 0)), msg)
 				transport.send({ "t": "saved", "side": local.Id, "id": str(msg.get("id", "")), "ok": ok })
 		"saved":
 			if hosting:
@@ -240,31 +241,32 @@ static func hello_differences(mine: Dictionary, theirs: Dictionary) -> String:
 
 ## THE HOST SAVES (manual p163: "only the host player can save the game. Star
 ## Wars Rebellion will create a saved game on both computers in the same saved
-## game slots"). The save point is the phases applied here - every one before
-## the open phase - and the guest writes the same point: every line of those
-## phases reached it before this `save` line, which follows them on the wire.
+## game slots" - here, the game of the same name). The save point is the phases
+## applied here - every one before the open phase - and the guest writes the
+## same point: every line of those phases reached it before this `save` line,
+## which follows them on the wire.
 ## Returns the save's id ("" when this computer could not write it); the guest's
 ## answer lands in saves_answered under that id.
-func save_game(slot: int, name: String) -> String:
+func save_game(name: String) -> String:
 	if not hosting:
 		return ""
 	var id := "%s-%d-%d" % [MpSetup.lobby.code if MpSetup.lobby != null else "local", phase, Time.get_ticks_msec()]
 	var msg := {
-		"t": "save", "side": local.Id, "id": id, "slot": slot, "name": name, "phase": phase, "day": day(),
+		"t": "save", "side": local.Id, "id": id, "name": name, "phase": phase, "day": day(),
 		"host": MpSetup.lobby.host_name if MpSetup.lobby != null else "",
 		"guest": MpSetup.lobby.guest_name if MpSetup.lobby != null else "",
 		"settings": MpSetup.lobby.settings if MpSetup.lobby != null else {},
 		"state_hash": GameSignature.ReplayHash(GameState.ActiveGalaxy),
 	}
-	if not _write_save(slot, name, phase, day(), msg):
+	if not _write_save(name, phase, day(), msg):
 		return ""
 	transport.send(msg)
 	return id
 
 
-func _write_save(slot: int, name: String, at_phase: int, at_day: int, msg: Dictionary) -> bool:
-	var ok := SaveManager.SaveH2H(slot, name, history, at_phase, at_day, msg)
-	print("[Lockstep] %s the game in slot %d as \"%s\" (day %d, phase %d)" % ["saved" if ok else "could NOT save", slot + 1, name, at_day, at_phase])
+func _write_save(name: String, at_phase: int, at_day: int, msg: Dictionary) -> bool:
+	var ok := not SaveManager.SaveH2H(name, history, at_phase, at_day, msg).is_empty()
+	print("[Lockstep] %s the game as \"%s\" (day %d, phase %d)" % ["saved" if ok else "could NOT save", name, at_day, at_phase])
 	return ok
 
 
