@@ -138,13 +138,10 @@ windows/chat.<faction>.png  since 2.6.3: Compose Chat Message's picture (STRATEG
 windows/report.diplomacy.png  since 2.6.4: the Diplomacy Mission Report's scene (STRATEGY 1044)
 windows/card_building.<side>.png  since 2.6.4: keyed by black as well - the grid is drawn over
                       the picture of a card being built (the game keys older sets itself)
-<<<<<<< HEAD
 windows/message.<id>.png  since 2.6.5: the original's message pictures, STRATEGY 1000-1075, drawn
                       whole - the scene each message shows (mission reports, escapes, ...)
-=======
 fonts/arial.ttf, arialbd.ttf  since 2.6.5: the original's font - Windows' own Arial, the one
                       face REBEXE draws in (it ships none); the player's copy, so the web build has it
->>>>>>> origin/main
 characters/<id>.report.png  since 2.6.5: the figure a mission report lays over its scene -
                       the character cut out by hand, STRATEGY at the Encyclopedia id (6208-6811)
 music/<nnn>.ogg       the score, MDATA.300-315 as Ogg Vorbis (11 kHz mono, about 4 MB)
