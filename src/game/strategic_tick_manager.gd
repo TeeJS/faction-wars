@@ -35,12 +35,41 @@ static func RestingSomewhereFriendly(c: Character) -> bool:
 	return false
 
 
+## PERSONNEL WHO LAND TOGETHER ARE ONE ARRIVAL (TeeJ, 2026-09-28, from a
+## head-to-head game: a team back from one mission "arrive at different times" -
+## ours sent one message a person). The original's own words (TEXTSTRA RCDATA
+## 28864-28869): one, "<name> Arrives at <system>" / "I have arrived at
+## <system>."; several, "Personnel Arrive at <system>" / "The following
+## personnel have arrived at <system>." and their names, one a line.
+static func TellArrivals(arrivals: Dictionary, day: int) -> void:
+	for key in arrivals:
+		var g: Dictionary = arrivals[key]
+		var people: Array = g["people"]
+		var at: Location = g["at"]
+		var title: String
+		var body: String
+		if people.size() == 1:
+			title = "%s Arrives at %s" % [people[0].Name, at.Name]
+			body = "I have arrived at %s." % at.Name
+		else:
+			title = "Personnel Arrive at %s" % at.Name
+			body = "The following personnel have arrived at %s.\n" % at.Name
+			for c in people:
+				body += "\n" + c.Name
+		var msg := GameMessage.new(title, body, Enums.MessageCategory.Missions, day, at, people[0])
+		msg.Type = Enums.MessageType.PersonnelArrive
+		msg.Advisor = "personnel_report"
+		msg.Voice = "personnel_arrived"
+		EventBus.Tell(g["faction"], msg)   # own-side only, not broadcast
+
+
 func AdvanceDay() -> void:
 	CurrentDay += 1
 	Today = CurrentDay
 	var rng := Prng.Session
 
 	# --- PROCESS CHARACTER MOVEMENT ---
+	var arrivals: Dictionary = {}   # "<side>|<where>" -> who landed there today
 	for character in GameState.ActiveRoster:
 		# "HEALING REQUIRES RESTING ON A SYSTEM OR FLEET YOU CONTROL. CAPTURED
 		# CHARACTERS DO NOT HEAL." (manual p096). A tick is treated as a day.
@@ -89,13 +118,11 @@ func AdvanceDay() -> void:
 				character.Destination = null
 				character.Status = Enums.Status.AwaitingOrders
 				print("%s has arrived at %s!" % [character.Name, character.Attached.Name])
-				var msg := GameMessage.new("%s Arrives" % character.Name,
-					"%s has successfully completed transit and safely arrived at %s. They are currently awaiting new orders." % [character.Name, destination.Name],
-					Enums.MessageCategory.Missions, CurrentDay, destination, character)
-				msg.Type = Enums.MessageType.PersonnelArrive
-				msg.Advisor = "personnel_report"
-				msg.Voice = "personnel_arrived"
-				EventBus.Tell(character.Faction, msg)   # own-side only, not broadcast
+				var key := "%s|%d" % [character.Faction.Id if character.Faction != null else "", destination.get_instance_id()]
+				if not arrivals.has(key):
+					arrivals[key] = { "faction": character.Faction, "at": destination, "people": [] }
+				(arrivals[key]["people"] as Array).append(character)
+	TellArrivals(arrivals, CurrentDay)
 
 	# --- PROCESS UNIT MOVEMENT --- collected first and moved after.
 	var arriving: Array[Unit] = []
