@@ -72,6 +72,11 @@ const CText := Color("#f2efec")
 const CMuted := Color("#a39a98")
 const PictureH := 176
 const PlayW := 180
+## A card's foot: its bottom margin, and the gap between Play and the row
+## under it - one, so a link in that row is centred between them.
+const CardFootMargin := 16
+## The card's inset inside its edge (_dress_card).
+const CardInset := 6
 const CardPad := 18
 ## Slightly rounded, like the logo's letters (TeeJ, 2026-09-24).
 const CardRadius := 8
@@ -424,7 +429,8 @@ func _card(id: String, pack: PackLoader.LoadedPack, errors: Array[String]) -> Bu
 	for side in ["left", "right"]:
 		body.add_theme_constant_override("margin_" + side, CardPad)
 	body.add_theme_constant_override("margin_top", 6)
-	body.add_theme_constant_override("margin_bottom", 16)
+	# Less the card's own inset (_dress_card), so the gap to its edge is CardFootMargin.
+	body.add_theme_constant_override("margin_bottom", CardFootMargin - CardInset)
 	body.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	outer.add_child(body)
 	var box := VBoxContainer.new()
@@ -477,7 +483,11 @@ func _card(id: String, pack: PackLoader.LoadedPack, errors: Array[String]) -> Bu
 	box.add_child(push)
 	var foot := VBoxContainer.new()
 	foot.name = "Foot"
-	foot.add_theme_constant_override("separation", 6)
+	# Play, then the row of the card's other actions, a link centred in it as
+	# far from Play as from the card's foot (TeeJ, 2026-09-28: "should be equal
+	# from each"): the gap above it the body's bottom margin, its row's slack
+	# shared above and below it.
+	foot.add_theme_constant_override("separation", CardFootMargin)
 	box.add_child(foot)
 	var play := Button.new()
 	play.name = "Play"
@@ -498,9 +508,12 @@ func _card(id: String, pack: PackLoader.LoadedPack, errors: Array[String]) -> Bu
 	links.add_theme_constant_override("separation", 10)
 	foot.add_child(links)
 
-	# The imported artwork (and movies), clearable - only when there is some.
+	# The imported artwork (and movies): Manage files (TeeJ, 2026-09-28: "The
+	# clear artwork pack button needs to be renamed Manage files") - only when
+	# there is some.
 	if pack != null and not _imported_sets(pack).is_empty():
-		var clear := _link("ClearArtwork", "Clear artwork pack")
+		var clear := _link("ManageFiles", "Manage files")
+		clear.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		clear.tooltip_text = "Remove the imported artwork and movies from this %s. %s then plays without the original's pictures until you import your artwork file again." \
 			% ["browser" if OS.has_feature("web") else "computer", pack.Manifest.DisplayName]
 		clear.pressed.connect(func() -> void:
@@ -519,6 +532,7 @@ func _card(id: String, pack: PackLoader.LoadedPack, errors: Array[String]) -> Bu
 		var remove := _link("RemovePack", "Remove pack" if versions == 1 else "Remove pack (all %d versions)" % versions)
 		var title: String = pack.Manifest.DisplayName if pack != null else id
 		var what: String = title if versions == 1 else "%s and every version of it kept here (%d)" % [title, versions]
+		remove.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		remove.tooltip_text = "Remove %s from this %s. Import its .zip again to get it back." \
 			% [what, "browser" if OS.has_feature("web") else "computer"]
 		remove.pressed.connect(func() -> void:
@@ -765,7 +779,7 @@ static func _dress_card(panel: PanelContainer) -> void:
 	rest.shadow_color = Color(0, 0, 0, 0.5)
 	rest.shadow_size = 16
 	rest.shadow_offset = Vector2(0, 6)
-	rest.set_content_margin_all(6)   # the picture inset, clear of the rounded corners
+	rest.set_content_margin_all(CardInset)   # the picture inset, clear of the rounded corners
 	var lit: StyleBoxFlat = rest.duplicate()
 	lit.border_color = CGlow.darkened(0.25)
 	panel.add_theme_stylebox_override("panel", rest)
