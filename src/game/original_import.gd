@@ -93,6 +93,7 @@ var _fleets: Dictionary = {}       # fleet key -> Fleet
 var _units: Dictionary = {}        # unit or character key -> Unit
 var _facilities: Dictionary = {}   # facility key -> Facility
 var _roster: Dictionary = {}       # character pack id -> Character
+var _owed: Dictionary = {}         # faction id -> refined the imported orders would still draw
 
 
 # ---- entry points ------------------------------------------------------------------
@@ -740,6 +741,10 @@ func _manager(key: int, o: Dictionary) -> void:
 		t.Destination = to
 		t.TransportDays = at.DeploymentDaysTo(to)
 		queue.append(t)
+		var f: Faction = at.ControllingFaction
+		if f != null:
+			var left: int = t.RefinedCost - (int(o["completed_points"]) if i == 0 else 0)
+			_owed[f.Id] = int(_owed.get(f.Id, 0)) + maxi(0, left)
 	_carry(key, "orders being built")
 	# The objects the original made for the items on order.
 	for ref: Array in o["state"]["refs"]:
@@ -898,6 +903,15 @@ func _side(key: int, o: Dictionary) -> void:
 				Unit.NoteClassName(f, def.Id, def.DisplayName, "%s %d" % [def.DisplayName, count])
 	if int(o["victory_conditions"]) != 0:
 		_leave(0, "victory conditions this reader cannot name", "%s %d" % [f.DisplayName, int(o["victory_conditions"])])
+	# Material on hand: the side's raw and refined words (REBEXE: mines add to
+	# the one, refineries to the other; original_save.gd). One unit is one
+	# unit of this engine's: an item's points are its refined cost.
+	var e := Economy.For(f)
+	e.RawMaterials = int(o["raw_material"])
+	e.RefinedMaterials = int(o["refined_material"])
+	if int(o["raw_waiting"]) + int(o["refined_waiting"]) > 0:
+		_leave(0, "facilities queued for material (this engine feeds them each day by its own rule)",
+			"%s: %d refineries waiting for raw, %d factories for refined" % [f.DisplayName, int(o["raw_waiting"]), int(o["refined_waiting"])])
 	_carry(key, "sides")
 
 
@@ -928,15 +942,17 @@ func _timers() -> void:
 			_leave(0, "queued game events waiting to run", "%s %d" % [q, (_g[q] as Array).size()])
 
 
-## Raw and refined material on hand: not located in the save (none of the
-## named fields holds them), so both sides start with none, as a new game does
-## (manual p030: "you may not begin the game with any refined materials").
+## Orders under way. The original draws an order's refined material a unit
+## per point as it builds (manual p047: short of it, "construction will take
+## longer"); this engine charges the whole cost when the order is placed. The
+## imported orders were placed in the original, so they come across paid for,
+## the material on hand is the original's, and what they would still have
+## drawn is said.
 func _economy() -> void:
 	for f in [_alliance, _empire]:
-		var e := Economy.For(f)
-		e.RawMaterials = 0
-		e.RefinedMaterials = 0
-	_leave(0, "raw and refined material on hand (not found in the save; both start at 0)", "")
+		var owed: int = int(_owed.get(f.Id, 0))
+		if owed > 0:
+			_note("%s's orders under way are carried as paid for; the original would still draw %d refined for them as they build (it had %d on hand)." % [f.DisplayName, owed, Economy.For(f).RefinedMaterials])
 
 
 ## What each side knows of the worlds it does not hold: this engine's own

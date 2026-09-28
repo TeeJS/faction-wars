@@ -182,8 +182,10 @@ def galaxy(r, o, m):                                            # 0x518ef0
 @cls([0xf3], st_base)
 def side(r, o, m):                                              # 0x531020
     o['maint_state'] = [r.n(2) for _ in range(3)]               # (capacity, allocated)
-    r.fields(o, 'maint_required f74 f78 f7c f80 f84')
-    o['l88'] = f3_list(r); o['l8c'] = f3_list(r)
+    # material ON HAND: mines add 1 raw (0x530670), refineries 1 refined (0x5307e0);
+    # the waiting counts are the lengths of the two queues after them
+    r.fields(o, 'maint_required f74 raw_material refined_material raw_waiting refined_waiting')
+    o['raw_waiters'] = f3_list(r); o['refined_waiters'] = f3_list(r)
     r.fields(o, 'f90 f94 f98 shipyard_rd_order training_facil_rd_order construction_yard_rd_order fa8 '
                 'shipyard_rd_done training_facil_rd_done construction_yard_rd_done recruitment_done '
                 'victory_conditions fc0 fc4')
