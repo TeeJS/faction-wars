@@ -151,7 +151,7 @@ def character(r, o, m):                                         # 0x4ef940
     r.fields(o, 'enhanced_diplomacy:16 enhanced_espionage:16 enhanced_shipyard_rd:16 '
                 'enhanced_training_facil_rd:16 enhanced_construction_yard_rd:16 enhanced_combat:16 '
                 'enhanced_leadership:16 enhanced_loyalty:16 force:16 force_experience:16 '
-                'force_training:16 leadership_adjustment:16 injury:16 command_kind:16 state:16 '
+                'force_training:16 leadership_adjustment:16 injury:16 command_kind:16 character_state:16 '
                 'mission_hyperdrive_modifier:16 encounter traitor_discovered force_user_discovered '
                 'commanding character_flags')
 @cls([0x31, 0x32, 0x33], st_character)

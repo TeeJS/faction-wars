@@ -182,10 +182,33 @@ parameters; e.g. the base record at +0x10 is the arrival timer.
 Rim systems carry Populated in the original's saves (27 of 70 on day 5, 29 on
 day 116), while the pack marks every rim system uninhabited. Not investigated.
 
+## What the importer established (2026-09-27)
+
+Found while building the import (branch `original-save-import`), both saves.
+
+| Finding | Evidence | Confidence |
+|---|---|---|
+| **The rules column is the galaxy root's word `x[2]`** (object `+0x64`): 0 Development, 1–3 Alliance Easy/Medium/Hard, 4–6 Empire Easy/Medium/Hard, 7 Multiplayer | `0x518DC0` → `0x513F70` → `0x53E0A0` stores `[galaxy+0x64]` in `0x6B904C`; `0x53E390` → `0x585840` reads column `c` (0..7) of a GNPRTB entry. Column order: the community editor's `GNPRTB.cs`. `.001` = 1 (Alliance Easy), `.002` = 4 (Empire Easy), each matching its header side | Confirmed (code + the side agreeing in both saves) |
+| **ETA (`+0x44`) is an absolute day** | Remaining days reproduce the travel formula (`sub_55C090`): Yavin → Chandrila 96 days by formula, 95 left a day after leaving; four more pairs agree | Confirmed |
+| **A moving object is filed under its destination**; `DestinationLocationAtDeparture` names where its target was when it left (a unit joining a carrier that has since moved names the carrier's old system) | every `Enroute` object in both saves | Confirmed (data) |
+| **Building items are real objects** without `Completed`; a finished item still being shipped is `Completed` + `Enroute` without `Deployed`, and its `Builder` is its build manager | manager `ProductKey` / reference list name exactly those objects | Confirmed (data) |
+| **Build managers**: `0xA0` facilities, `0xA2` ships and fighters, `0xA4` troops and Special Forces. `SeedKey` is the product's type (`class << 24 \| .DAT id`); the reference list holds one object per item still to build; `RequiredPointCount` is the item's refined cost | every manager with work in both saves; costs match `units.json` / `facilities.json` | Confirmed (data + pack) |
+| **Unique `0xF2` is limbo**: minor characters not yet recruited (ratings all zero, status 0) and destroyed facilities | its children in both saves | Single-source (data) |
+| **Missions `0x41`–`0x44` move people** (the pack's scripted `unnamed_01..04`): team of one, target = destination, the person carries its own ETA | every one in both saves | Single-source (data) |
+| **Mission phases**: 4 travelling, 8 at work, 11 finished | open-rebellion `timer-scheduler.md` (timer `0x38B` acts at phase 8, `0x38C` at 11) + the saves | Confirmed |
+| **Command kind**: 2 Admiral, 3 General | the names the save stores: "Admiral Screed" 2 (commanding a fleet), "General Drayson" / "General Griff" / "General Ozzel" / "General Needa" 3 (commanding a system) | Confirmed (two fields agree) |
+| **Side `lc8` list**: per-type counts `(?, count, class << 24 \| .DAT id)` — the numbering of fleets and ship classes ("Fleet 9", "Imperial Star Destroyer 2") | counts match the highest numbers in the names | Confirmed (data) |
+| **Side `f90`/`f94`/`f98`** are recomputed totals, not research | open-rebellion: timer `0x381` sums three per-system lists into side `+0x90/+0x94/+0x98` | Single-source |
+| **Each side's chart is its own copy of the galaxy**: the master copy marks every system Explored; the Alliance's copy 32, the Empire's 31 | serials are identical across the three copies | Confirmed (structure) |
+| **The live timer** for an object is the queue entry whose record copy equals one of the object's state records (both words) | open-rebellion `timer-scheduler.md` (`FUN_005862A0`); e.g. Rieekan's diplomacy: entries rec 5 and 7 on day 121, the mission's `rec20` is 7 | Confirmed |
+| A character's own `State` field shares a name with the state block: `rebsave.py` read the field over the block. Renamed `character_state` | — | fixed |
+
 ## Not yet known
 
 | | What would settle it |
 |---|---|
+| Raw and refined material on hand | None of the named fields holds them; the side's words `f74`–`f84` and `fc0`/`fc4`, or the galaxy root's `x`, are candidates. Their setters or readers |
+| What `ShipyardRdOrder` and its two siblings count exactly (the importer reads them as the research order reached: `.001` Alliance ships 1, all else 0) | A save with research done, or their readers |
 | Unnamed words (`fNN`, `sNN`, the galaxy root, several side and state words) | Their setters carry no name string: reading the code that uses them |
 | The UI tail: open windows and the message log | More disassembly (`0x486440`, `0x484F60`, `0x485990` and their typed lists) |
 | Lists empty in both samples: game lists `0x536F70`, `0x568980`, `0x568C80`; global list | A save where they are non-empty |
