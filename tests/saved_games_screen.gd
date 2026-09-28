@@ -91,6 +91,11 @@ func _init() -> void:
 	var mid: int = Screen.BarTop + int(Screen.BarSize.y) / 2
 	for c in Screen.BarWiring()[2]:
 		_check(not plate.get_pixel(int(c), mid).is_equal_approx(band), "a clamp at x %.1f" % c)
+	# The empty bands above and below the row filled with wires (TeeJ,
+	# 2026-09-28: "I want the dang empty space filled").
+	_check(not plate.get_pixel(180, 277).is_equal_approx(band) and not plate.get_pixel(180, 284).is_equal_approx(band)
+		and not plate.get_pixel(180, 329).is_equal_approx(band) and plate.get_pixel(180, 274).is_equal_approx(band),
+		"wires looped over the boxes and under them, the band above them left clear")
 
 	# Save three games, then import an exported one: on top, " (2)", a note.
 	for nm in ["Alpha", "Bravo", "Charlie"]:

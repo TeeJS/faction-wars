@@ -122,8 +122,8 @@ static func OptionsPlate(wired: Array = []) -> Texture2D:
 	var band: Image = img.get_region(Band)
 	for y in RowSixCover.size.y:
 		img.blit_rect(band, Rect2i(0, y % Band.size.y, Band.size.x, 1), Vector2i(RowSixCover.position.x, RowSixCover.position.y + y))
-	if wired.size() == 3:
-		Wire(img, PanelInside.x, PanelInside.y, int(wired[0]) + int(wired[1]) / 2, wired[2])
+	if wired.size() >= 3:
+		Wire(img, PanelInside.x, PanelInside.y, int(wired[0]) + int(wired[1]) / 2, wired[2], wired[3] if wired.size() > 3 else [])
 	var tex := ImageTexture.create_from_image(img)
 	_cache[key] = tex
 	return tex
@@ -136,9 +136,10 @@ const WideInside := Vector2i(26, 613)
 
 
 ## The multiplayer screens' wires across `img` from x `from` to `to`, centred
-## on row `mid`, and a clamp centred on each of `clamps` (x). Without that
-## screen's picture, nothing.
-static func Wire(img: Image, from: int, to: int, mid: int, clamps: Array) -> void:
+## on row `mid`, and a clamp centred on each of `clamps` (x); `loops`, wires
+## led out of the clamps through the empty bands above and below the row
+## (Loop). Without that screen's picture, nothing.
+static func Wire(img: Image, from: int, to: int, mid: int, clamps: Array, loops: Array = []) -> void:
 	var tex: Texture2D = Art.Screen("mp_connection")
 	if tex == null:
 		return
@@ -150,10 +151,63 @@ static func Wire(img: Image, from: int, to: int, mid: int, clamps: Array) -> voi
 		var w: int = mini(WireSource.size.x, to - x)
 		img.blit_rect(wires, Rect2i(0, 0, w, WireSource.size.y), Vector2i(x, top))
 		x += w
+	var clamp_top: int = mid - ClampSource.size.y / 2
+	for l in loops:
+		var xa: int = roundi(float(clamps[l[1]])) + (LoopSlotLeft if l[2] < 0 else LoopSlotRight)
+		var xb: int = roundi(float(clamps[l[3]])) + (LoopSlotLeft if l[4] < 0 else LoopSlotRight)
+		var above: bool = int(l[5]) < clamp_top
+		Loop(img, strip, str(l[0]), xa, xb, int(l[5]), clamp_top if above else clamp_top + ClampSource.size.y)
 	var clamp: Image = strip.get_region(ClampSource)
 	for cx in clamps:
 		img.blit_rect(clamp, Rect2i(Vector2i.ZERO, ClampSource.size),
-			Vector2i(roundi(float(cx) - ClampSource.size.x / 2.0), mid - ClampSource.size.y / 2))
+			Vector2i(roundi(float(cx) - ClampSource.size.x / 2.0), clamp_top))
+
+
+## Each wire's rows in the strip where it runs straight (mp_connection, x 110):
+## lit to dark - the yellow, the red, the blue, the green - and the dark row
+## that shades them.
+const WireProfileX := 110
+const WireProfile := {"yellow": [447, 448, 449], "red": [451, 452, 453], "blue": [455, 456, 457], "green": [459, 460]}
+const WireShadeRow := 450
+## Where a loop leaves or enters a clamp: its left half or its right half.
+const LoopSlotLeft := -4
+const LoopSlotRight := 1
+
+
+## One wire led out of the row (TeeJ, 2026-09-28: "the wires can go anywhere we
+## want them to, they are just decorative - I want the dang empty space
+## filled"): out of a clamp's end at x `xa`, along the band with its top at row
+## `level`, and back into another's at `xb` (xa < xb) - the strip's own
+## colours, across the run and down the uprights, each with the strip's shade
+## under or beside it. `edge` is the clamps' end it leaves from (their top for
+## a loop above the row, their bottom for one below); the uprights run into the
+## clamps, which are drawn over them.
+static func Loop(img: Image, strip: Image, colour: String, xa: int, xb: int, level: int, edge: int) -> void:
+	var rows: Array = WireProfile.get(colour, [])
+	if rows.is_empty() or xb <= xa:
+		return
+	var cols: Array = []
+	for r in rows:
+		cols.append(strip.get_pixel(WireProfileX, r))
+	var shade: Color = strip.get_pixel(WireProfileX, WireShadeRow)
+	var w: int = cols.size()
+	var size := Vector2i(img.get_width(), img.get_height())
+	var put := func(x: int, y: int, c: Color) -> void:
+		if x >= 0 and y >= 0 and x < size.x and y < size.y:
+			img.set_pixel(x, y, c)
+	var above: bool = level < edge
+	# The uprights first, so the run lies over their corners.
+	var y0: int = level + w if above else edge - 4
+	var y1: int = edge + 4 if above else level
+	for x in [xa, xb]:
+		for y in range(y0, y1):
+			for k in w:
+				put.call(x + k, y, cols[k])
+			put.call(x + w, y, shade)
+	for x in range(xa, xb + w + 1):
+		for k in w:
+			put.call(x, level + k, cols[k])
+		put.call(x, level + w, shade)
 
 
 ## See all games: the Game Options picture's frame, with the Saved Games panel
