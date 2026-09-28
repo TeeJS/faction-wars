@@ -396,7 +396,8 @@ static func LoseCrews(r: BattleReport) -> void:
 			continue
 		var losses: Casualties = pair[1]
 		for c in GameState.ActiveRoster:
-			if c.Attached == f and c.Status != Enums.Status.Dead:
+			# Not those still on their way to it (OrderManager.BoardFleet).
+			if c.Attached == f and c.Status != Enums.Status.Dead and not (c.Status == Enums.Status.Enroute and c.Destination == f):
 				losses.Kill(c.PackId)
 				r.Destroyed.append(c.Name)
 				MissionManager.Kill(c)

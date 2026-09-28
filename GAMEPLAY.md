@@ -2553,8 +2553,11 @@ ships; onto a fleet at another system it travels as a fleet named for it
 (`Fleet.JoinFleet`), listed in the fleet it joins in hyperspace, and folds into it
 on arrival - or stays a fleet of its own if that fleet has gone; a ship's Move to a
 system and Create Fleet are orders now (`OrderManager.MoveShipsToFleet`,
-`MoveShips`, `CreateFleet`). **Not implemented:** a character sent to a fleet at
-another system (p046) - BACKLOG #58.
+`MoveShips`, `CreateFleet`). **Characters (BACKLOG #58):** one sent to a fleet at
+another system travels to it (p046; the Millennium Falcon effect with it) and is
+aboard on arrival; a battle that wipes the fleet out first does not take them; a
+fleet gone by then, they go to its world if their side holds it, else the nearest
+it does (`OrderManager.BoardFleet`).
 
 ---
 
