@@ -171,11 +171,39 @@ static func ExportText(id: String) -> String:
 ## A file name for exporting `id`: its name with the characters a file name
 ## cannot hold left out.
 static func ExportFileName(id: String) -> String:
-	var nm: String = str(_index()["games"].get(id, {}).get("name", DEFAULT_NAME))
+	return FileNameFor(str(_index()["games"].get(id, {}).get("name", DEFAULT_NAME)))
+
+
+## `name` as a .fwsave file name: the characters a file name cannot hold become "_".
+static func FileNameFor(name: String) -> String:
 	var safe := ""
-	for ch in nm:
+	for ch in name:
 		safe += "_" if "\\/:*?\"<>|".contains(ch) else ch
 	return (safe.strip_edges() if not safe.strip_edges().is_empty() else DEFAULT_NAME) + ".fwsave"
+
+
+## The game being played, as a .fwsave file's text (Export Game): its details,
+## then its command log as it stands. "" if no game is running.
+static func ExportCurrentText(name: String) -> String:
+	var content: String = CommandLog.Snapshot()
+	if content.is_empty():
+		return ""
+	var meta := {
+		FWSAVE_KEY: FWSAVE_VERSION,
+		"name": name,
+		"saved_at": Time.get_datetime_string_from_system(),
+		"day": StrategicTickManager.Today,
+		"side": GameSettings.PlayerFaction.Id if GameSettings.PlayerFaction != null else "",
+	}
+	return JSON.stringify(meta) + "\n" + content
+
+
+## A name for the game being played when it is exported: the side and the day
+## ("Alliance - Day 12").
+static func CurrentName() -> String:
+	var f: Faction = GameSettings.PlayerFaction
+	var side: String = f.ShortName if f != null and not f.ShortName.is_empty() else (f.DisplayName if f != null else "Game")
+	return "%s - Day %d" % [side, StrategicTickManager.Shown(StrategicTickManager.Today)]
 
 
 ## Which kind of file `bytes` holds: "fwsave" (ours, exported), "log" (ours, a

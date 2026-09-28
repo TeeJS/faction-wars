@@ -8,6 +8,9 @@ extends PanelContainer
 
 signal Cancelled
 
+const SaveFiles := preload("res://src/ui/save_files.gd")
+const AllGamesPlain := preload("res://src/ui/all_games_window.gd")
+
 var _rows: Array = []   # per saved game: { "id": String, "load": Button }
 
 
@@ -60,6 +63,22 @@ func _ready() -> void:
 		none.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
 		box.add_child(none)
 
+	# Import Game and See all games (PROJECT.md); no game is running here, so
+	# nothing to export.
+	var tools := HBoxContainer.new()
+	tools.add_theme_constant_override("separation", 8)
+	var imp := Button.new()
+	imp.text = "Import Game"
+	imp.pressed.connect(func() -> void: SaveFiles.Pick(ImportBytes))
+	tools.add_child(imp)
+	var all := Button.new()
+	all.text = "See all games"
+	all.pressed.connect(func() -> void:
+		var w: Control = AllGamesPlain.new()
+		get_parent().add_child(w))
+	tools.add_child(all)
+	box.add_child(tools)
+
 	box.add_child(HSeparator.new())
 	var cancelBtn := Button.new()
 	cancelBtn.text = "Cancel"
@@ -67,6 +86,23 @@ func _ready() -> void:
 		Cancelled.emit()
 		queue_free())
 	box.add_child(cancelBtn)
+
+
+## Import a picked file; the list is rebuilt with it on top. Public so a test
+## can hand it a file without the dialog.
+func ImportBytes(bytes: PackedByteArray, file_name: String) -> Dictionary:
+	var r: Dictionary = SaveManager.Import(bytes, file_name)
+	var box := AcceptDialog.new()
+	box.title = "Import Game"
+	box.dialog_text = ("\"%s\" is in your saved games." % r["name"]) if r["ok"] else str(r["message"])
+	get_parent().add_child(box)
+	box.popup_centered()
+	box.confirmed.connect(box.queue_free)
+	if r["ok"]:
+		var again: Control = get_script().new()
+		get_parent().add_child(again)
+		queue_free()
+	return r
 
 
 ## Public so a test can pick a game without a real button press. Sets the

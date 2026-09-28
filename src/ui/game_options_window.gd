@@ -12,6 +12,8 @@ signal Closed
 
 ## As many rows as the real screen.
 const Rows := preload("res://src/ui/original_options_screen.gd").Rows
+const SaveFiles := preload("res://src/ui/save_files.gd")
+const AllGamesPlain := preload("res://src/ui/all_games_window.gd")
 
 var _rows: Array = []   # per row: { "name": LineEdit, "state": Label, "id": String }
 
@@ -61,6 +63,16 @@ func _ready() -> void:
 		box.add_child(row)
 		_rows.append({ "name": nameEdit, "state": state, "id": "" })
 
+	# Import Game, Export Game, See all games (PROJECT.md), as on the real screen.
+	var tools := HBoxContainer.new()
+	tools.add_theme_constant_override("separation", 8)
+	for t in [["Import Game", _import], ["Export Game", _export], ["See all games", _see_all]]:
+		var b := Button.new()
+		b.text = t[0]
+		b.pressed.connect(t[1])
+		tools.add_child(b)
+	box.add_child(tools)
+
 	box.add_child(HSeparator.new())
 	var closeBtn := Button.new()
 	closeBtn.text = "Close"
@@ -84,6 +96,44 @@ func _refresh() -> void:
 		state.text = ("%s (Day %d)" % [g["name"], StrategicTickManager.Shown(int(g["day"]))]) if used else "(empty)"
 		state.tooltip_text = SaveManager.SavedLabel(g) if used else ""
 		nameEdit.text = str(g["name"]) if used else ""
+
+
+func _import() -> void:
+	SaveFiles.Pick(ImportBytes)
+
+
+## Public so a test can hand it a file without the dialog.
+func ImportBytes(bytes: PackedByteArray, file_name: String) -> Dictionary:
+	var r: Dictionary = SaveManager.Import(bytes, file_name)
+	_refresh()
+	_tell(("\"%s\" is in your saved games." % r["name"]) if r["ok"] else str(r["message"]))
+	return r
+
+
+func _export() -> void:
+	var nm: String = SaveManager.CurrentName()
+	var text: String = SaveManager.ExportCurrentText(nm)
+	if text.is_empty():
+		_tell("There is no game to export.")
+		return
+	SaveFiles.Save(text, SaveManager.FileNameFor(nm), func(ok: bool, where: String) -> void:
+		_tell(("Saved to %s." % where.get_file()) if ok else "The game could not be exported."))
+
+
+func _see_all() -> void:
+	var all: Control = AllGamesPlain.new()
+	all.InGame = true
+	get_parent().add_child(all)
+	all.Closed.connect(_refresh)
+
+
+func _tell(text: String) -> void:
+	var box := AcceptDialog.new()
+	box.title = "Saved Games"
+	box.dialog_text = text
+	add_child(box)
+	box.popup_centered()
+	box.confirmed.connect(box.queue_free)
 
 
 ## Public so a test can drive a save without a real button press. The name is
