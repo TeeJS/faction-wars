@@ -281,10 +281,30 @@ Opponent message, until you return to the game."
 the host player can save the game ... a saved game on both computers in the
 same saved game slots."
 
-| Fact | Where |
+**Rebuilt 2026-09-27 (issue #301, "the game says it is saving, but the save
+does not land on either computer").** The first design below wrote nothing: it
+showed "Saved on both computers" and relied on the relay's copy, because the
+port had no save slots then. It has them now (the six-slot Game Options
+screen), so the save does what p163 says:
+
+| Element | Design |
 |---|---|
-| The single-player Game Options screen in the port has **Resume, Exit to Menu, Exit to Desktop** only (`src/ui/in_game_menu_window.gd:10-18`); single-player **Save/Load is not implemented** in the port. | code |
-| Every line of a head-to-head game is already on the relay and in each client's `user://` log; the game IS saved as it is played (BACKPORT-LOG #11). | code |
+| Where | The **same six-slot Game Options screen** as single player ("follow the same procedure"), the original's or the plain one, from the Menu button, the Game Menu's Game Options, or F1. The opponent sees Waiting for Opponent while it is up (section 11). |
+| Who | The host's Save buttons work; the guest's are off, tooltip "Only the host can save." |
+| What is written | The host's computer writes the slot at once; a `save` line goes through the relay and the guest's computer writes **the same slot, the same name**, with the head-to-head icon (`LockstepSession.save_game`, `SaveManager.SaveH2H`). The save point is the phases the host has applied; every line of them reached the guest before the `save` line, so both computers write the same game. A slot holds the game's relay lines (orders, phase ends, day hashes), so it loads without the relay's copy. |
+| The message | Only what happened (`H2hSave`): "Saved on both computers: "<name>", Day N." once the guest's computer answers that it wrote it; "Saved on this computer only ..." when it could not or did not answer in 10 s; "Not saved ..." when the host's own write failed. |
+| Load, together | Multiplayer Options' **Load Game** lists the host's head-to-head slots saved with the current opponent (both names in the save, whoever hosted), "Slot N: <name> - Day N - saved <date>", then the relay's games with the two of you (decision D below). A slot resumes **at the day it was saved**: the host sends its lines to the room before Start, and both clients rebuild from the room's log as a rejoin does. The side that hosted when it was saved stays the side the galaxy was seeded from (`seeded_by`), and each player keeps their own side. |
+| Load, alone | TeeJ, 2026-09-27: "if you open a saved multi-player game in single player mode you should be able to play it against the ai". The single-player Load screens load a head-to-head slot like any other: the saved day and state, this computer's side, **the AI plays the other side from then on** (`GameSettings.HandToAi`). Saved again, the log says both sides were human until that day (`ai_takeover_day`), so its replay hands over on the same day. |
+| Difficulty | A head-to-head game keeps the Multiplayer column when played alone (the AI's Medium tier, `ai_tiers.gd`). |
+
+Weakest part: as p163 says, the host's save overwrites that slot on the
+guest's computer too, whatever the guest had there.
+
+Tested by `tools/mp-flow-local.ps1 -Save` (the save through the screen, both
+slots compared, the slot loaded together, each copy loaded alone:
+`tests/h2h_solo.gd`).
+
+<details><summary>The first design (2026-09-03), replaced</summary>
 
 Design: a **Save Game** button on the Game Options screen, **host only** (the
 guest's is disabled, tooltip "Only the host can save."). It does not write
@@ -293,9 +313,7 @@ the relay has acknowledged every line (the client's `received` counter against
 the relay's `lines`). That keeps the manual's gesture and its promise without
 inventing a slot system the port does not have.
 
-**Open question E:** whether TeeJ wants single-player Save/Load built now (it
-is a manual feature the port lacks, and the M1 log makes it cheap: the log is
-the save). It is not part of the multiplayer plan; flagging it, not building it.
+</details>
 
 ---
 
@@ -309,13 +327,13 @@ the save). It is not part of the multiplayer plan; flagging it, not building it.
 | 5.6 ✓ | title "Locate Session"; instruction text; one box; OK; Cancel. **Deviation (TeeJ, room #197 item 4 / #68):** the code is required (OK waits for six characters) and OK looks it up and joins straight into Multiplayer Options; Fig 5.8's player-name box moved here; "blank = search" went with the list |
 | 5.8 ✓ | **Back, merged into Locate Session (strangers plan PR 6):** "select a game to connect to from the following list" - the relay's open games under the code box, re-polled every 2 s; a row picked is its code and OK. Additions: the host's name, the pack and version, have it / get it / no link. (Removed in room #197 item 4 / #68, when a code was the only way in.) |
 | 5.9 ✓ | side caption + two symbols (red/green); size caption + three; Standard Game / HQ Only Victory; Load; Chat> + entry, Enter sends; chat + settings view; checkmark Start (host); Previous; Cancel |
-| Load ✓ | list of shared saves ("Day N"); settings restored and greyed; Cancel |
+| Load ✓ | list of shared saves ("Day N"): the host's slots saved with this opponent first, then the relay's games; settings restored and greyed; Cancel |
 | exits ✓ | `MpSetup.reset()` on every Cancel, Previous-from-Options, Leave Game, Exit to Menu/Desktop, game end |
 | 5.10 ✓ | tab "Chat Messages"; incoming row wording; double-click opens; Compose button bottom right; Delete selected; Select all |
 | 5.11 ✓ | title; "Type your message here"; Send message; Cancel; Close button; Return to Display Message Index |
 | p163 speed ✓ | five settings; slowest governs; readout shows the governing side |
 | p163 pause ✓ | Game Options open ⇒ opponent's Waiting for Opponent; Pause on the menu ⇒ same; checkbox/Resume resumes |
-| p163 save ✓ | host-only Save Game on the Game Options screen; confirmation names the game and day |
+| p163 save ✓ | host-only Save on the six-slot Game Options screen; the same slot written on both computers; the message says whether the guest's computer wrote it (issue #301) |
 
 ## 14. Open questions (for Doof, then TeeJ)
 
@@ -325,5 +343,5 @@ the save). It is not part of the multiplayer plan; flagging it, not building it.
 | B | What "day" the Load list shows | **Settled:** the last day both sides hashed - the day the game resumes at - shown as "Day 42", like the in-game date. |
 | C | Sender's own copy of a chat message in their Chat Messages tab | **Settled:** no - "incoming" is the manual's word. |
 | D | A way out of Waiting for Opponent when the opponent never returns | **Settled:** Leave Game after 60 s, behind a one-sentence confirmation; the game remains a loadable save. |
-| E | Single-player Save/Load (not in the port; not in the MP plan) | flag to TeeJ; not built here. |
+| E | Single-player Save/Load (not in the port; not in the MP plan) | **Built since** (the six-slot Game Options screen); head-to-head saves use the same slots (section 12, issue #301). |
 | F | Build order | 5.2 → 5.3 → 5.6/5.8 → 5.9 → hook GameManager to the session (this is the first playable head-to-head) → 5.10/5.11 → speed/pause/waiting → Save/Load. |

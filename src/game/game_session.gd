@@ -86,6 +86,8 @@ static func new_game(player_faction_id: String, difficulty: int, size: int, seed
 	if GameSettings.HumanFactions.is_empty():
 		GameSettings.HumanFactions = [GameSettings.PlayerFaction]
 	GameSettings.HostFaction = FactionRegistry.ById(host_id) if not host_id.is_empty() else null
+	GameSettings.AiTakeoverDay = 0
+	GameSettings.TakeoverHumans = []
 	GameSettings.SelectedDifficulty = difficulty
 	GameSettings.SelectedSize = size
 	_seed(seed)

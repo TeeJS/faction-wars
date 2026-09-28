@@ -30,6 +30,7 @@ const OUI := preload("res://src/ui/original_ui.gd")
 const MusicLib := preload("res://src/ui/music.gd")
 const SoundLib := preload("res://src/ui/sound.gd")
 const Picker := preload("res://src/ui/pack_picker.gd")
+const H2hSaveLib := preload("res://src/ui/h2h_save.gd")
 
 const W := 640
 const H := 480
@@ -290,16 +291,28 @@ static func _side_icon(side: String) -> Texture2D:
 func _save(slot: int) -> void:
 	if FromCockpit:
 		return
-	if MpSetup.session != null:
-		if MpSetup.hosting:
-			_tell("Save Game", "Saved on both computers: \"%s\", Day %d." % [MpSetup.lobby.name if MpSetup.lobby != null else "this game", StrategicTickManager.Shown(StrategicTickManager.Today)])
-		return
 	var nm: String = (_names[slot] as LineEdit).text.strip_edges()
 	if nm.is_empty():
 		nm = "Saved game"
 		(_names[slot] as LineEdit).text = nm
+	if MpSetup.session != null:
+		# Head-to-head (manual p163): the host's save, on both computers.
+		if MpSetup.hosting:
+			_h2h.begin(MpSetup.session, slot, nm)
+		return
 	SaveManager.Save(slot, nm)
 	_refresh_slots()
+
+
+## A head-to-head save waits for the guest's computer to say it wrote it too.
+var _h2h: H2hSaveLib = H2hSaveLib.new()
+
+
+func _process(_delta: float) -> void:
+	var said: String = _h2h.poll()
+	if not said.is_empty():
+		_refresh_slots()
+		_tell("Save Game", said)
 
 
 func _load(slot: int) -> void:
