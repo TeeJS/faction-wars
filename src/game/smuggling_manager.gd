@@ -68,6 +68,7 @@ static func _Tell(holder: Faction, p: Planet, day: int, begun: bool) -> void:
 		Enums.MessageCategory.Missions, day, p)
 	msg.Type = Enums.MessageType.Smuggling
 	msg.Still = "message.1004"
+	msg.Sound = "strategy/1103"
 	EventBus.Tell(holder, msg)
 
 

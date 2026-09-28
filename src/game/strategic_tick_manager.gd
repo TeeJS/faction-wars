@@ -35,17 +35,12 @@ static func RestingSomewhereFriendly(c: Character) -> bool:
 	return false
 
 
-## PERSONNEL WHO LAND TOGETHER ARE ONE ARRIVAL (TeeJ, 2026-09-28, from a
-## head-to-head game: a team back from one mission "arrive at different times" -
-## ours sent one message a person). The original's own words (TEXTSTRA RCDATA
-## 28864-28869): one, "<name> Arrives at <system>" / "I have arrived at
-## <system>."; several, "Personnel Arrive at <system>" / "The following
-## personnel have arrived at <system>." and their names, one a line.
-## SHIPS OR UNITS THAT LAND TOGETHER, in the original's words and pictures
-## (TEXTSTRA 28790/28791 ships, 28794/28795 units, then 28798 a line each:
-## "<title>" / "The following ... have arrived at <system>:\n" and "<name>\n";
-## STRATEGY `stills` [Alliance, Empire] - REBEXE 0x4981b0).
-static func TellLanded(side: Faction, at: Location, things: Array, title: String, opening: String, stills: Array, category: int) -> void:
+## SHIPS OR UNITS THAT LAND TOGETHER, in the original's words, pictures and
+## sounds (TEXTSTRA 28790/28791 ships, 28794/28795 units, then 28798 a line
+## each: "<title>" / "The following ... have arrived at <system>:\n" and
+## "<name>\n"; STRATEGY `stills` [Alliance, Empire] and `sound` - REBEXE
+## 0x4981b0: 1114 for ships, 1117 for units).
+static func TellLanded(side: Faction, at: Location, things: Array, title: String, opening: String, stills: Array, category: int, sound: String) -> void:
 	if side == null or at == null or things.is_empty() or not GameSettings.IsHuman(side):
 		return
 	var body := opening % at.Name
@@ -54,7 +49,16 @@ static func TellLanded(side: Faction, at: Location, things: Array, title: String
 	var msg := GameMessage.new(title % at.Name, body, category, Today, at if at is Planet else null)
 	msg.Type = Enums.MessageType.UnitArrival
 	msg.Still = stills[0] if Faction.SkinOf(side.Id) == "alliance" else stills[1]
+	msg.Sound = sound
 	EventBus.Tell(side, msg)
+
+
+## PERSONNEL WHO LAND TOGETHER ARE ONE ARRIVAL (TeeJ, 2026-09-28, from a
+## head-to-head game: a team back from one mission "arrive at different times" -
+## ours sent one message a person). The original's own words (TEXTSTRA RCDATA
+## 28864-28869): one, "<name> Arrives at <system>" / "I have arrived at
+## <system>."; several, "Personnel Arrive at <system>" / "The following
+## personnel have arrived at <system>." and their names, one a line.
 
 
 static func TellArrivals(arrivals: Dictionary, day: int) -> void:
@@ -106,6 +110,7 @@ func AdvanceDay() -> void:
 					Enums.MessageCategory.Missions, CurrentDay,
 					character.Attached if character.Attached is Planet else null, character)
 				msg.Type = Enums.MessageType.CharacterHealth
+				msg.Sound = "strategy/1140"
 				msg.Voice = "recovered"
 				EventBus.Tell(character.Faction, msg)   # own-side only, not broadcast
 		elif not character.IsInjured():
@@ -173,7 +178,7 @@ func AdvanceDay() -> void:
 		landed[key][2].append(u)
 	for key in landed:
 		var g: Array = landed[key]
-		TellLanded(g[0], g[1], g[2], "Units Arrive at %s", "The following units have arrived at %s:\n", ["message.1020", "message.1021"], Enums.MessageCategory.Defense)
+		TellLanded(g[0], g[1], g[2], "Units Arrive at %s", "The following units have arrived at %s:\n", ["message.1020", "message.1021"], Enums.MessageCategory.Defense, "strategy/1117")
 
 	# --- A RELOCATING HEADQUARTERS (manual p135; OrderManager.MoveHeadquarters).
 	OrderManager.AdvanceHeadquarters()
@@ -217,7 +222,7 @@ func AdvanceDay() -> void:
 					fleet.ArrivedDay = Today
 					print("%s has arrived at %s." % [fleet.Name, landing.Name])
 					if fleet.IsTransit():
-						TellLanded(fleet.Faction, landing, fleet.Ships, "Ships arrive at %s", "The following ships have arrived at %s:\n", ["message.1018", "message.1019"], Enums.MessageCategory.Fleets)
+						TellLanded(fleet.Faction, landing, fleet.Ships, "Ships arrive at %s", "The following ships have arrived at %s:\n", ["message.1018", "message.1019"], Enums.MessageCategory.Fleets, "strategy/1114")
 					elif fleet.Faction != null and GameSettings.IsHuman(fleet.Faction):
 						# The original's words and picture (TEXTSTRA 28792 / 28793, STRATEGY
 						# 1018 Alliance / 1019 Empire - REBEXE 0x4981b0).
@@ -225,6 +230,7 @@ func AdvanceDay() -> void:
 							Enums.MessageCategory.Fleets, CurrentDay, landing)
 						came.Type = Enums.MessageType.UnitArrival
 						came.Still = "message.1018" if Faction.SkinOf(fleet.Faction.Id) == "alliance" else "message.1019"
+						came.Sound = "strategy/1114"
 						EventBus.Tell(fleet.Faction, came)
 					# "A FLEET CAN EXPLORE AN UNEXPLORED SYSTEM ... WHEN THE FLEET ARRIVES YOU
 					# LEARN THE SAME INFORMATION ABOUT THE SYSTEM THAT YOU DO FROM A RECON

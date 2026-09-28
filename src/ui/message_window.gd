@@ -12,6 +12,9 @@ var _gotoButton: Button
 var _selectedMessage: GameMessage
 
 const PortraitPath := "MainVBox/ContentArea/SplitView/DetailView/PortraitRect"
+const MessageSounds := preload("res://src/ui/sound.gd")
+## The shown message's own sound while it plays.
+var _messageSound: AudioStreamPlayer = null
 
 # Built in code rather than in the scene, so the .tscn needs no editing:
 # continue / abort for a mission report, and delete for any message.
@@ -1136,6 +1139,7 @@ func _o_show_summary(m: GameMessage) -> void:
 	_oSumTitle.text = m.Title
 	var pic: Texture2D = MessagePicture(m)
 	_oSumPicture.texture = Art.Scaled(pic, OUI.K) if pic != null else null
+	PlayMessageSound(m)
 	var asks: bool = m.AwaitsDecision()
 	_oOk.visible = asks
 	_oCancel.visible = asks
@@ -1145,6 +1149,32 @@ func _o_show_summary(m: GameMessage) -> void:
 	# Both arrows stay lit, as on the original's (it showed them on the
 	# tab's first message); a step past either end does nothing.
 	_o_update_buttons()
+
+
+## THE MESSAGE'S OWN SOUND, as the original plays it when a message is shown
+## (REBEXE 0x46a14b: the one playing stops, this one starts) - the STRATEGY WAVE
+## its builder set (GameMessage.Sound), from the art set's sound/strategy/.
+## The player, or null.
+func PlayMessageSound(m: GameMessage) -> AudioStreamPlayer:
+	if _messageSound != null and is_instance_valid(_messageSound):
+		_messageSound.stop()
+		_messageSound.queue_free()
+	_messageSound = null
+	var file := MessageSoundFile(m)
+	if not file.is_empty():
+		_messageSound = MessageSounds.PlayFile(get_tree(), file)
+	return _messageSound
+
+
+## The file a message's sound plays from - the art set's sound/<Sound>.ogg - or "".
+static func MessageSoundFile(m: GameMessage) -> String:
+	if m == null or m.Sound.is_empty() or FactionRegistry.Pack == null:
+		return ""
+	for s in FactionRegistry.Pack.Manifest.ArtSets:
+		var file: String = MessageSounds.FileOf("%s:sound/%s.ogg" % [s, m.Sound])
+		if not file.is_empty():
+			return file
+	return ""
 
 
 ## COMPOSE CHAT MESSAGE in this window (Fig 5.11): false when it is not the

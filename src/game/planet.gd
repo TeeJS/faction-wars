@@ -544,6 +544,7 @@ func UpdateGarrisonState() -> void:
 				Enums.MessageCategory.Loyalty, StrategicTickManager.Today, self)
 			gone.Type = Enums.MessageType.SystemControl
 			gone.Still = "message.1005"
+			gone.Sound = "strategy/1105"
 			EventBus.Tell(ousted, gone)
 		return
 
@@ -593,6 +594,7 @@ func ConsiderUprising(need: int, have: int) -> void:
 	msg.Type = Enums.MessageType.Uprising
 	msg.Advisor = "support_lost"
 	msg.Still = "message.1010"
+	msg.Sound = "strategy/1108"
 	EventBus.Tell(ControllingFaction, msg)
 
 
@@ -606,6 +608,7 @@ func _TellUprisingEnds() -> void:
 		Enums.MessageCategory.Defense, StrategicTickManager.Today, self)
 	msg.Type = Enums.MessageType.Uprising
 	msg.Still = "message.1011" if Faction.SkinOf(ControllingFaction.Id) == "alliance" else "message.1012"
+	msg.Sound = "strategy/1109"
 	EventBus.Tell(ControllingFaction, msg)
 
 
@@ -627,7 +630,9 @@ func WarnGarrison(need: int, have: int) -> void:
 		Enums.MessageCategory.Defense, StrategicTickManager.Today, self)
 	msg.Type = Enums.MessageType.GarrisonWarning
 	msg.Advisor = "support_lost"
-	msg.Still = "message.1008" if Faction.SkinOf(ControllingFaction.Id) == "alliance" else "message.1009"
+	var alliance: bool = Faction.SkinOf(ControllingFaction.Id) == "alliance"
+	msg.Still = "message.1008" if alliance else "message.1009"
+	msg.Sound = "strategy/1106" if alliance else "strategy/1107"
 	EventBus.Tell(ControllingFaction, msg)
 
 

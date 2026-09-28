@@ -110,4 +110,5 @@ static func Announce(u: Unit, fleet: Fleet, where: Planet, day: int) -> void:
 		Enums.MessageCategory.Missions, day, where)
 	msg.Type = Enums.MessageType.Repair
 	msg.Advisor = "squadron_repaired" if squadron else "ship_repaired"
+	msg.Sound = "strategy/1118"   # the original's (REBEXE 0x499de0)
 	EventBus.Tell(u.Faction, msg)

@@ -66,6 +66,7 @@ static func TryEscape(prisoner: Character, galaxy: Array, day: int, rng: Prng) -
 		"%s has escaped from imprisonment at %s." % [prisoner.Name, held.Name if held != null else captor.ShortName if captor != null else "the enemy"],
 		Enums.MessageCategory.Missions, day, home if home is Planet else null, prisoner).With("released", "released")
 	msg.Still = "message.1029"
+	msg.Sound = "strategy/1100"
 	EventBus.Tell(prisoner.Faction, msg)
 
 

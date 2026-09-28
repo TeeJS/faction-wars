@@ -120,6 +120,7 @@ static func ProcessDagobah(day: int) -> void:
 		"%s has been sent to Dagobah to be trained by Yoda." % FirstName(luke),
 		Enums.MessageCategory.Missions, day, _return_to if _return_to is Planet else null, luke)
 	gone.Still = "message.1057"
+	gone.Sound = "strategy/1132"
 	EventBus.Tell(luke.Faction, gone)
 
 

@@ -99,6 +99,7 @@ static func Award(f: Faction, track: int, points: int, day: int, quiet: bool) ->
 		msg.Type = Enums.MessageType.ResearchReport
 		msg.Advisor = "research"
 		msg.Still = "message.1017"
+		msg.Sound = "strategy/1113"
 		EventBus.Tell(f, msg)
 	return reached
 

@@ -66,6 +66,11 @@ var Scene: String = ""
 ## "message.<id>", windows/message.<id>.png (STRATEGY 1000-1075: "Chewbacca
 ## Escaped" is 1029) - or "". Presentation only.
 var Still: String = ""
+## The original's sound for it, played when the message is shown - STRATEGY's
+## WAVE, "strategy/<id>" (1100-1152; the art set's sound/strategy/<id>.ogg),
+## as REBEXE's builder for it sets one beside its picture - or "".
+## Presentation only.
+var Sound: String = ""
 
 
 func _init(title: String = "", body: String = "", category: int = Enums.MessageCategory.All,
@@ -90,6 +95,7 @@ func Copy() -> GameMessage:
 	c.Picture = Picture
 	c.Scene = Scene
 	c.Still = Still
+	c.Sound = Sound
 	return c
 
 
@@ -97,6 +103,12 @@ func Copy() -> GameMessage:
 func With(advisor: String, voice: String = "") -> GameMessage:
 	Advisor = advisor
 	Voice = voice
+	return self
+
+
+## The same message, with the original's sound for it (Sound).
+func Sounding(sound: String) -> GameMessage:
+	Sound = sound
 	return self
 
 

@@ -273,6 +273,7 @@ static func AdvanceHeadquarters() -> void:
 		msg.Type = Enums.MessageType.UnitArrival
 		if Faction.SkinOf(faction.Id) == "alliance":
 			msg.Still = "message.1022"   # the original's picture of it (REBEXE 0x4981b0)
+		msg.Sound = "strategy/1114"
 		EventBus.Tell(faction, msg)
 		EventBus.BroadcastChanged()
 
@@ -727,6 +728,11 @@ static func RunBlockade(units: Array, from: Planet, rng: Prng) -> Array:
 			"The following units were lost running an enemy blockade of %s.\n\n%s" % [from.Name, "\n".join(lost)],
 			Enums.MessageCategory.Manufacturing, StrategicTickManager.Today, from)   # items destroyed (TeeJ, 2026-09-27)
 		msg.Type = Enums.MessageType.EvacuationLosses
+		# The original's picture and sound for the side (REBEXE 0x495e40): the
+		# Alliance STRATEGY 1031 and 1120, the Empire 1030 and 1119.
+		var ours: bool = units[0].Faction != null and Faction.SkinOf(units[0].Faction.Id) == "alliance"
+		msg.Still = "message.1031" if ours else "message.1030"
+		msg.Sound = "strategy/1120" if ours else "strategy/1119"
 		EventBus.Tell(units[0].Faction, msg)   # own-side only, not broadcast
 	return survivors
 
