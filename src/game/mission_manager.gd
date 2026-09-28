@@ -378,14 +378,37 @@ static func Report(m: Mission, day: int, title: String, body: String, asks_to_co
 	EventBus.Tell(m.Faction, msg)
 
 
-## THE ORIGINAL'S DIPLOMACY MISSION REPORT (TEXTSTRA RCDATA 28884-28891; TeeJ's
-## screenshot of the original, 2026-09-27): "Diplomacy Mission Report" / "The
+## THE ORIGINAL'S DIPLOMACY MISSION REPORT (TEXTSTRA RCDATA 28880-28891; TeeJ's
+## screenshots of the original, 2026-09-27/28): "Diplomacy Mission Report" / "The
 ## diplomacy mission to <system> has increased popular support on that system."
-## or "... had no effect on our popular support on that system.", then which side
-## the population supports (28888-28890 - NOT YET: the original reads a system
-## field, REBEXE 0x493179, whose rule is not found), then "Do you wish the mission
-## to continue?". `ours`: our own line - the support figure - meanwhile.
+## or "... had no effect on our popular support on that system."; a major
+## character reports in the first person, "<name> Mission Report" / "My diplomacy
+## mission to <system> ..." ("... had no effect on popular support in that
+## system."). Then which side the population supports, then "Do you wish the
+## mission to continue?". `ours`: a line of our own after them, or "".
 const DiplomacyReportTitle := "Diplomacy Mission Report"
+
+
+## Who reports in the first person: a major character leading the mission.
+static func ReportsFirstPerson(m: Mission) -> bool:
+	var leader := Leader(m)
+	return leader is Character and (leader as Character).IsMajor
+
+
+static func DiplomacyTitle(m: Mission) -> String:
+	return "%s Mission Report" % Leader(m).Name if ReportsFirstPerson(m) else DiplomacyReportTitle
+
+
+## WHICH SIDE THE POPULATION SUPPORTS (TEXTSTRA 28888-28890): a side at or over
+## entry 207, the Uprising Threshold (60). Measured on TeeJ's eight screenshots
+## of the original's report beside the system's loyalty bar (Empire 43-57%:
+## "neither"; 59.5-78%: "supports the Empire"); manual p090 words it the same
+## ("does not strongly support your side" - the garrison requirement).
+static func PopulationSupport(p: Planet) -> String:
+	for f in FactionRegistry.Playable:
+		if p.SupportFor(f) >= RuleManager.Get(RuleId.GarrisonUprisingThresh, f):
+			return "The population supports the %s." % f.ShortName
+	return "The population does not strongly support either side."
 
 
 ## The scene a mission's report is drawn over: its pack id.
@@ -394,8 +417,11 @@ static func ReportScene(m: Mission) -> String:
 	return d.Id if d != null else ""
 
 
-static func DiplomacyReport(m: Mission, outcome: String, asks: bool = true, ours: String = "") -> String:
-	var body := "The diplomacy mission to %s %s" % [m.Target.Name, outcome]
+static func DiplomacyReport(m: Mission, increased: bool, asks: bool = true, ours: String = "") -> String:
+	var mine := ReportsFirstPerson(m)
+	var outcome := "has increased popular support on that system." if increased \
+		else ("had no effect on popular support in that system." if mine else "had no effect on our popular support on that system.")
+	var body := "%s diplomacy mission to %s %s  %s" % ["My" if mine else "The", m.Target.Name, outcome, PopulationSupport(m.Target)]
 	if not ours.is_empty():
 		body += "  " + ours
 	return body + ("\nDo you wish the mission to continue?" if asks else "")
@@ -970,7 +996,7 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 		print("[Mission] %s at %s failed (attempt %d, %d%%)." % [JsonUtil.enum_name(Enums.MissionType, m.Type), m.Target.Name, m.Attempts, chance])
 		var persistent := m.IsPersistent()
 		if m.Type == Enums.MissionType.Diplomacy:
-			Report(m, day, DiplomacyReportTitle, DiplomacyReport(m, "had no effect on our popular support on that system.", persistent), persistent, "mission_failure", false, ReportScene(m))
+			Report(m, day, DiplomacyTitle(m), DiplomacyReport(m, false, persistent), persistent, "mission_failure", false, ReportScene(m))
 			if not persistent:
 				m.Finished = true
 			return
@@ -1011,9 +1037,8 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 				joined.Type = Enums.MessageType.SystemControl
 				joined.Advisor = "support_gained"
 				EventBus.Tell(m.Faction, joined)
-			Report(m, day, DiplomacyReportTitle, DiplomacyReport(m, "has increased popular support on that system.", now < 100,
-					"Support for the %s is now %d%%." % [m.Faction.DisplayName, now]
-					+ (" The system is now wholly with us and the mission is complete." if now >= 100 else "")),
+			Report(m, day, DiplomacyTitle(m), DiplomacyReport(m, true, now < 100,
+					"The system is now wholly with us and the mission is complete." if now >= 100 else ""),
 				now < 100, "mission_success", false, ReportScene(m))
 			if now >= 100:
 				m.Finished = true

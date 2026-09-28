@@ -619,6 +619,18 @@ The in-game report shows the granularity: *"My diplomacy mission to Tralus has
 increased popular support on that system. The population does not strongly
 support either side. Do you wish the mission to continue?"*
 
+**Which side the population supports** (the report's second sentence, TEXTSTRA
+28888-28890): a side at or over **60%**, rules entry 207 (Garrison Requirement:
+Uprising Threshold); below it on both sides, "does not strongly support either
+side". **Confirmed** - measured on eight of TeeJ's screenshots of the original's
+report against the system's loyalty bar (Empire 43-57%: neither; 59.5-78%: "The
+population supports the Empire."), and manual p090 uses the same words for the
+garrison requirement ("does not strongly support your side"). Support sums to
+100 over the two sides, so the opponent is named at 40% or less for yours.
+A **major** character reports in the first person ("My diplomacy mission to ...",
+title "<name> Mission Report", 28880-28883); others as "The diplomacy mission to
+..." under "Diplomacy Mission Report" (28884-28887).
+
 **Auto-continue:** *"If you don't respond … she will automatically continue the
 mission until the system is **100 percent loyal to your side**."* So a repeating
 mission's terminal condition is full loyalty.
