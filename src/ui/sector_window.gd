@@ -1176,7 +1176,14 @@ static func AttachMissionMenu(icon: Button, planet: Planet, uiManager: UIManager
 		popup.popup()
 		popup.id_pressed.connect(func(id: int) -> void:
 			if id == 0:
-				uiManager.OnMissionClicked(planet)
+				# The Mission Status window, as the Mission window's own menu
+				# gives it; with several missions here, the Mission window,
+				# which lists them each with that menu (INFERRED: which one the
+				# original's icon reports then is not on any screenshot).
+				if mine.size() == 1:
+					uiManager.OpenMissionStatusWindow(mine[0])
+				else:
+					uiManager.OnMissionClicked(planet)
 			elif id == 1:   # Encyclopedia - the running mission's entry (manual p109)
 				var d: PackDefs.MissionDefPack = MissionCatalog.DefFor(mine[0].Type) if not mine.is_empty() else null
 				if d != null:
