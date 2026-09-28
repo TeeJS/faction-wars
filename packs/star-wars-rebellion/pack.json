@@ -1096,6 +1096,11 @@
     "control_panel": "swr-original:sound/strategy/608.ogg",
     "control_panel_gid": "swr-original:sound/strategy/600.ogg"
   },
+  "report_backdrop": {
+    "_comment": "The crest and gradient behind every character's Encyclopedia picture, per side: the colours at least 80% of that side's 30 pictures share, pixel for pixel. Filled out from a picture's edges, the rest is the character, laid over a report's scene (STRATEGY 1044 for Diplomacy) as the original's Diplomacy Mission Report draws it - 98% of pixels matched on TeeJ's screenshot, 2026-09-27.",
+    "alliance": ["000000", "000020", "00003b", "000057", "000072", "000080", "00008d", "0000a8", "0000c4", "0000df", "090b20", "093489", "0b1963", "111633", "130b2e", "13144b", "161213", "18149f", "182968", "1b1343", "1c1405", "1c1cd2", "1e182f", "1e1d18", "232423", "242547", "272f7c", "292739", "2f2920", "363532", "383e57", "3b3b3b", "454344"],
+    "empire": ["000000", "000020", "00003b", "000057", "000072", "000080", "00008d", "0000a8", "0000c4", "0000df", "0000ff", "090b20", "093489", "0b1963", "0f2421", "111633", "130b2e", "13144b", "161213", "18149f", "182968", "1b1343", "1e182f", "1e1d18", "232423", "242547", "272f7c", "27373a", "292739", "2f2920", "363843"]
+  },
   "briefing": {
     "_comment": "The opening briefing (manual p022), from the original's own tables: the agent's action script (GData C3POACT.SPT script 41 / IMP22ACT.SPT script 74; the skip, scripts 40 / 73) through the briefing DLL's records to each line's recording and animation. A `focus` step is the original's step between lines where the agent points out what the next line is about; `release` is the step that lets the game's clock go (action 11 clears the main loop's hold, REBEXE FUN_0041dbe0 -> FUN_0041e320; action 13, the end, unloads the briefing and gives the opening advice): after the last line, or at once on a skip, before its line; `views` says what the display shows for each (its caption, and the systems lit), read off two recordings of the original's briefing (TEXTSTRA 5652-5674 hold the captions): the Empire's 5 and 6 by their captions' length, the rest seen.",
     "alliance": {

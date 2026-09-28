@@ -58,6 +58,10 @@ var Voice: String = ""
 ## or "" - the character's or the world's, as before. An agent advice
 ## message's is the agent's own (the pack's `advice`). Presentation only.
 var Picture: String = ""
+## A report's scene - a mission id - with the reporting character laid over it
+## (the original's Diplomacy Mission Report: STRATEGY 1044, the agent in front),
+## or "". Presentation only.
+var Scene: String = ""
 
 
 func _init(title: String = "", body: String = "", category: int = Enums.MessageCategory.All,

@@ -359,7 +359,7 @@ static func DisplayNameOf(u: Unit) -> Variant:
 ## "mission_success", "mission_failure", "mission_abort"), or "". `named`: the
 ## title leads with who reports; the original's own titles ("Diplomacy Mission
 ## Report") stand alone.
-static func Report(m: Mission, day: int, title: String, body: String, asks_to_continue: bool = false, voice: String = "", named: bool = true) -> void:
+static func Report(m: Mission, day: int, title: String, body: String, asks_to_continue: bool = false, voice: String = "", named: bool = true, scene: String = "") -> void:
 	if not GameSettings.IsHuman(m.Faction):
 		return
 	var leader := Leader(m)
@@ -371,6 +371,7 @@ static func Report(m: Mission, day: int, title: String, body: String, asks_to_co
 	var msg := GameMessage.new(title if (who == null or not named) else "%s: %s" % [who, title], body,
 		Enums.MessageCategory.Missions, day, m.Target, character)
 	msg.PendingMission = m if asks_to_continue else null
+	msg.Scene = scene
 	msg.Type = Enums.MessageType.MissionReport   # ALWAYS MissionReport, NEVER MissionFailed (see source)
 	msg.Advisor = "personnel_report"
 	msg.Voice = voice
@@ -385,6 +386,12 @@ static func Report(m: Mission, day: int, title: String, body: String, asks_to_co
 ## field, REBEXE 0x493179, whose rule is not found), then "Do you wish the mission
 ## to continue?". `ours`: our own line - the support figure - meanwhile.
 const DiplomacyReportTitle := "Diplomacy Mission Report"
+
+
+## The scene a mission's report is drawn over: its pack id.
+static func ReportScene(m: Mission) -> String:
+	var d: PackDefs.MissionDefPack = MissionCatalog.DefFor(m.Type)
+	return d.Id if d != null else ""
 
 
 static func DiplomacyReport(m: Mission, outcome: String, asks: bool = true, ours: String = "") -> String:
@@ -963,7 +970,7 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 		print("[Mission] %s at %s failed (attempt %d, %d%%)." % [JsonUtil.enum_name(Enums.MissionType, m.Type), m.Target.Name, m.Attempts, chance])
 		var persistent := m.IsPersistent()
 		if m.Type == Enums.MissionType.Diplomacy:
-			Report(m, day, DiplomacyReportTitle, DiplomacyReport(m, "had no effect on our popular support on that system.", persistent), persistent, "mission_failure", false)
+			Report(m, day, DiplomacyReportTitle, DiplomacyReport(m, "had no effect on our popular support on that system.", persistent), persistent, "mission_failure", false, ReportScene(m))
 			if not persistent:
 				m.Finished = true
 			return
@@ -1007,7 +1014,7 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 			Report(m, day, DiplomacyReportTitle, DiplomacyReport(m, "has increased popular support on that system.", now < 100,
 					"Support for the %s is now %d%%." % [m.Faction.DisplayName, now]
 					+ (" The system is now wholly with us and the mission is complete." if now >= 100 else "")),
-				now < 100, "mission_success", false)
+				now < 100, "mission_success", false, ReportScene(m))
 			if now >= 100:
 				m.Finished = true
 

@@ -251,6 +251,10 @@ public sealed class Importer
         // (1041) - the side's own is shown (which one the manual's grey
         // figure is, is not known).
         ("chat.empire", 1040), ("chat.alliance", 1041),
+        // The Diplomacy Mission Report's scene (a diplomatic chamber), the
+        // agent's picture laid over it - matched exactly on TeeJ's screenshot of
+        // the original's report, 2026-09-27.
+        ("report.diplomacy", 1044),
         // A character's status icons (manual p096, "Character Status
         // Icons": Ready, In transit, Captured, Injured): the ship's windows
         // behind one in transit between systems, the green trace over one
@@ -607,7 +611,7 @@ public sealed class Importer
         // Build Selection's plate is opaque; so are the Scrap pictures.
         10800, 1032, 1033,
         // The advice and chat pictures are photographs.
-        1071, 1072, 1040, 1041,
+        1071, 1072, 1040, 1041, 1044,
         // The cockpit, the galaxy map and the Game Options screen are whole screens.
         CockpitBitmap, GalaxyBitmap, GalaxyOffBitmap, OptionsBitmap };
 

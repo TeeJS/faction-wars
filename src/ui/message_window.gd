@@ -342,6 +342,10 @@ var _composeBtn: Button
 static func MessagePicture(message: GameMessage) -> Texture2D:
 	if message == null:
 		return null
+	if not message.Scene.is_empty() and message.AssociatedCharacter != null:
+		var composed: Texture2D = ReportPicture(message.Scene, message.AssociatedCharacter)
+		if composed != null:
+			return composed
 	if not message.Picture.is_empty():
 		var own: Texture2D = Art.PackImage(message.Picture)
 		if own != null:
@@ -357,6 +361,82 @@ static func MessagePicture(message: GameMessage) -> Texture2D:
 	if message.AssociatedLocation is Planet:
 		return Art.Picture("planets", (message.AssociatedLocation as Planet).PackId)
 	return null
+
+
+static var _reportPictures: Dictionary = {}
+
+
+## A REPORT AS THE ORIGINAL DRAWS IT: the report's scene (windows/report.<mission>,
+## STRATEGY 1044 for Diplomacy) with the reporting character's Encyclopedia
+## picture laid over it, its crest and gradient left out - the colours the pack
+## names for the character's side (`report_backdrop`), filled from the picture's
+## edges so the same colours inside the figure stay. Matched on TeeJ's screenshot
+## of the original's Diplomacy Mission Report (98% of pixels). Null without the
+## scene or the picture: the message shows the character's picture as before.
+static func ReportPicture(scene: String, character: Character) -> Texture2D:
+	var key := "%s|%s" % [scene, character.PackId]
+	if _reportPictures.has(key):
+		return _reportPictures[key]
+	var back: Texture2D = Art.WindowPicture("report.%s" % scene)
+	var front: Texture2D = Art.Picture("characters", character.PackId)
+	var out: Texture2D = null
+	if back != null and front != null:
+		var side: String = Faction.SkinOf(character.Faction.Id) if character.Faction != null else ""
+		var colours: Dictionary = {}
+		var manifest = FactionRegistry.Pack.Manifest if FactionRegistry.Pack != null else null
+		for h in (manifest.ReportBackdrop.get(side, []) if manifest != null else []):
+			colours[str(h).to_lower()] = true
+		out = _LayOver(back.get_image(), front.get_image(), colours)
+	_reportPictures[key] = out
+	return out
+
+
+## `front` over `back`, less the region of `front` reached from its edges
+## through pixels of the `colours` ("rrggbb" -> true).
+static func _LayOver(back: Image, front: Image, colours: Dictionary) -> Texture2D:
+	if back == null or front == null:
+		return null
+	var img: Image = back.duplicate()
+	var fr: Image = front.duplicate()
+	for i in [img, fr]:
+		if i.is_compressed():
+			i.decompress()
+		i.convert(Image.FORMAT_RGBA8)
+	var w: int = mini(img.get_width(), fr.get_width())
+	var h: int = mini(img.get_height(), fr.get_height())
+	var out_of := PackedByteArray()
+	out_of.resize(w * h)
+	var queue: Array[int] = []
+	var hex := func(x: int, y: int) -> String: return fr.get_pixel(x, y).to_html(false)
+	for x in w:
+		for y in [0, h - 1]:
+			if out_of[y * w + x] == 0 and colours.has(hex.call(x, y)):
+				out_of[y * w + x] = 1
+				queue.append(y * w + x)
+	for y in h:
+		for x in [0, w - 1]:
+			if out_of[y * w + x] == 0 and colours.has(hex.call(x, y)):
+				out_of[y * w + x] = 1
+				queue.append(y * w + x)
+	var head := 0
+	while head < queue.size():
+		var at: int = queue[head]
+		head += 1
+		var x: int = at % w
+		var y: int = at / w
+		for n in [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]]:
+			var nx: int = n[0]
+			var ny: int = n[1]
+			if nx < 0 or ny < 0 or nx >= w or ny >= h or out_of[ny * w + nx] != 0:
+				continue
+			if colours.has(hex.call(nx, ny)):
+				out_of[ny * w + nx] = 1
+				queue.append(ny * w + nx)
+	for y in h:
+		for x in w:
+			if out_of[y * w + x] == 0:
+				img.set_pixel(x, y, fr.get_pixel(x, y))
+	return ImageTexture.create_from_image(img)
 
 
 func BuildComposeButton() -> void:
