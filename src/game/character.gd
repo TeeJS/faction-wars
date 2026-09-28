@@ -204,15 +204,8 @@ func set_Attached(value: Location) -> void:
 	var post := Commanding
 	Rank = Enums.Rank.None
 	Commanding = null
+	# No message: the original has none for it (TeeJ, 2026-09-28: remove ours).
 	print("[Command] %s is no longer %s of %s - left the post." % [Name, JsonUtil.enum_name(Enums.Rank, relieved), post.Name])
-	# Day zero moves people into place before anyone holds a rank; and the
-	# opponent's chain of command is not the player's business.
-	if not GameSettings.IsHuman(Faction) or StrategicTickManager.Today <= 0:
-		return
-	EventBus.Tell(Faction, GameMessage.new(
-		"%s relieved of command" % Name,
-		"%s has left %s and is no longer its %s. Assign the rank again if %s is to command where they are now." % [Name, post.Name, JsonUtil.enum_name(Enums.Rank, relieved), Name],
-		Enums.MessageCategory.Defense, StrategicTickManager.Today, OrderManager.SystemOf(value), self))
 
 
 static func _enum_fields() -> Dictionary:
