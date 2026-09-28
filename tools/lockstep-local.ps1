@@ -28,7 +28,10 @@ function Start-Relay([string]$tag) {
 function Start-Client([string]$side, [string[]]$extra, [string]$tag) {
     $args = @('--headless', '--path', $repo, '-s', 'tests/lockstep_client.gd', '--',
         "--side=$side", "--mailbox=$box", "--days=$Days", "--seed=$Seed", "--replay-log=$box\$side.hashes.log") + $extra
-    return Start-Process -FilePath $Godot -ArgumentList $args -RedirectStandardOutput "$box\$side$tag.stdout.txt" -RedirectStandardError "$box\$side$tag.stderr.txt" -PassThru -NoNewWindow
+    $p = Start-Process -FilePath $Godot -ArgumentList $args -RedirectStandardOutput "$box\$side$tag.stdout.txt" -RedirectStandardError "$box\$side$tag.stderr.txt" -PassThru -NoNewWindow
+    # Windows PowerShell 5.1 leaves ExitCode empty unless the handle is opened now.
+    $null = $p.Handle
+    return $p
 }
 if ($Relay -and $RelayUrl -eq '') { $relayProc = Start-Relay "" }
 $relayArg = @($(if ($RelayUrl -ne '') { "--relay=$RelayUrl" } else { "--relay=ws://127.0.0.1:$RelayPort/ws" }))
