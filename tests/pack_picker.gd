@@ -55,7 +55,7 @@ func _init() -> void:
 
 	# THE LAUNCH SCREEN (TeeJ, 2026-09-24): nothing under the cards; a pack
 	# whose art set is not imported opens the artwork window on Play; with the
-	# art in, Clear artwork pack; an imported pack has Remove pack. A test art
+	# art in, Manage files; an imported pack has Remove pack. A test art
 	# root and a test packs root, never the player's own.
 	const ArtScript := preload("res://src/ui/artwork.gd")
 	const Importer := preload("res://src/ui/pack_import.gd")
@@ -68,8 +68,8 @@ func _init() -> void:
 	var sw_card: Node = picker._panels["star-wars-rebellion"]
 	var pic: TextureRect = sw_card.find_child("Picture", true, false)
 	_check(pic != null and pic.texture != null, "without its art set the Star Wars card shows its own picture (card_image)")
-	_check(sw_card.find_child("ClearArtwork", true, false) == null and sw_card.find_child("RemovePack", true, false) == null,
-		"no Clear artwork pack without artwork, and a shipped pack has no Remove")
+	_check(sw_card.find_child("ManageFiles", true, false) == null and sw_card.find_child("RemovePack", true, false) == null,
+		"no Manage files without artwork, and a shipped pack has no Remove")
 	# No "Credits and licences" on the card until a better credits page is
 	# made (TeeJ, 2026-09-27).
 	_check(sw_card.find_child("Credits", true, false) == null, "the card has no 'Credits and licences' link")
@@ -134,20 +134,28 @@ func _init() -> void:
 	_check(PackPicker.ArtState(sw_pack) == "", "a current art set: Play goes straight on")
 	picker._rebuild()
 	sw_card = picker._panels["star-wars-rebellion"]
-	var clear: Button = sw_card.find_child("ClearArtwork", true, false)
+	var clear: Button = sw_card.find_child("ManageFiles", true, false)
 	await process_frame
 	_check(clear != null and clear.global_position.y > (picker.PlayButtons()["star-wars-rebellion"] as Control).global_position.y,
-		"with the art in, Clear artwork pack is under Play")
+		"with the art in, Manage files is under Play")
 	_check(clear != null and clear.tooltip_text.begins_with("Remove the imported artwork"), "... and says what it does")
+	# As far from Play as from the card's foot (TeeJ, 2026-09-28).
+	if clear != null:
+		var play_r: Rect2 = (picker.PlayButtons()["star-wars-rebellion"] as Control).get_global_rect()
+		var card_r: Rect2 = (sw_card as Control).get_global_rect()
+		var clear_r: Rect2 = clear.get_global_rect()
+		var above: float = clear_r.position.y - play_r.end.y
+		var below: float = card_r.end.y - clear_r.end.y
+		_check(absf(above - below) <= 2.0, "Manage files centred between Play and the card's foot (%.0f above, %.0f below)" % [above, below])
 	if clear != null:
 		clear.pressed.emit()
 		await process_frame
 		var ask: ConfirmationDialog = picker.get_node_or_null("Confirm")
-		_check(ask != null, "Clear artwork pack asks first")
+		_check(ask != null, "Manage files asks first")
 		if ask != null:
 			ask.confirmed.emit()
 			await process_frame
-		_check(not ArtScript.HasArtSet("swr-original") and picker.find_child("ClearArtwork", true, false) == null,
+		_check(not ArtScript.HasArtSet("swr-original") and picker.find_child("ManageFiles", true, false) == null,
 			"... and removes the artwork, and the button with it")
 
 	# A pack the player imported: its own card, with Remove pack.
