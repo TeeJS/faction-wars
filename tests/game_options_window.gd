@@ -1,7 +1,7 @@
 extends SceneTree
-## Issue #6 PR A: the Game Options screen builds six save-slot rows and its Save
-## action writes the current game to that slot via SaveManager. Runs against a
-## scratch save directory.
+## Issue #6 PR A: the plain Game Options window builds its rows (as many as
+## the real screen) and its Save action writes the current game under the typed
+## name; the rows then show the newest games. Runs against a scratch save directory.
 ##
 ##   Godot_console.exe --headless --path . -s tests/game_options_window.gd
 
@@ -30,17 +30,17 @@ func _init() -> void:
 	root.add_child(w)
 	await process_frame   # let _ready build the rows
 
-	_check(w._rows.size() == 6, "six slot rows are built")
+	_check(w._rows.size() == GameOptionsWindow.Rows, "as many rows as the real screen")
 
-	# Save into slot 2 via the window's own Save action, with a typed name.
+	# Save from row 2 via the window's own Save action, with a typed name.
 	(w._rows[2]["name"] as LineEdit).text = "From The Screen"
 	w._on_save(2)
 
-	var slots: Array = SaveManager.Slots()
-	_check(slots[2]["used"], "slot 2 is saved via the window")
-	_check(slots[2]["name"] == "From The Screen", "the typed name is used")
-	_check((w._rows[2]["state"] as Label).text.contains("From The Screen"), "row 2 state shows the saved name")
-	_check(not slots[0]["used"], "an untouched slot stays empty")
+	var games: Array = SaveManager.Games()
+	_check(games.size() == 1 and games[0]["name"] == "From The Screen", "the game is saved under the typed name")
+	_check((w._rows[0]["state"] as Label).text.contains("From The Screen"), "it shows on the top row, the newest")
+	_check((w._rows[0]["state"] as Label).tooltip_text == SaveManager.SavedLabel(games[0]), "hovering it shows Saved and the day")
+	_check((w._rows[1]["state"] as Label).text == "(empty)", "the next row is empty")
 
 	w.free()
 	_clean()
@@ -48,13 +48,19 @@ func _init() -> void:
 
 
 func _clean() -> void:
-	for i in SaveManager.SLOT_COUNT:
-		if FileAccess.file_exists(SaveManager.SlotPath(i)):
-			DirAccess.remove_absolute(SaveManager.SlotPath(i))
-	if FileAccess.file_exists("user://test-saves-win/slots.json"):
-		DirAccess.remove_absolute("user://test-saves-win/slots.json")
+	_remove(SaveManager.Dir)
 
 
 func _finish() -> void:
 	print("[game_options_window] %d checks, %d failed" % [_checks, _fails])
 	quit(1 if _fails > 0 else 0)
+
+
+static func _remove(path: String) -> void:
+	if not DirAccess.dir_exists_absolute(path):
+		return
+	for sub in DirAccess.get_directories_at(path):
+		_remove("%s/%s" % [path, sub])
+	for file in DirAccess.get_files_at(path):
+		DirAccess.remove_absolute("%s/%s" % [path, file])
+	DirAccess.remove_absolute(path)

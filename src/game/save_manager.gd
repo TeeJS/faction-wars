@@ -2,106 +2,331 @@ class_name SaveManager
 extends RefCounted
 ## Single-player save/load, built on the command log (docs/m1-plan.md). The game
 ## is command-sourced and deterministic, so a SAVE is just the current command
-## log copied to a slot, and a LOAD replays that slot through Replayer. Six named
-## slots, matching the original's Game Options screen (manual p073-077).
+## log copied to a file, and a LOAD replays that file through Replayer.
 ##
-## Slot files:   user://saves/slot<N>.jsonl   - a copy of the command log
-## Slot index:   user://saves/slots.json       - { "<N>": {name, day, saved_at, side} }
+## Saved games are a list, newest first (PROJECT.md, signed off by TeeJ
+## 2026-09-27). The Saved Games screen shows the newest; See all games shows
+## every one. A game's NAME is its identity: saving under a name that is taken
+## overwrites that game, a new name makes a new game.
 ##
-## `side` is what the Game Options screen's slot icon shows (manual p075: "an
-## icon ... shows whether you were playing the Empire, the Alliance, or a
-## head-to-head game"): the player's faction id, or "h2h". Older saves have none.
+## Game files:   <Dir>/games/<id>.jsonl   - a copy of the command log
+## Game index:   <Dir>/games.json         - { "next": n, "games": { id: {name, day, saved_at, side, seq} } }
+##
+## `seq` orders the list (a save counter: two saves in one second keep their
+## order); `saved_at` is shown. `side` is what the Saved Games screen's icon
+## shows (manual p075: "an icon ... shows whether you were playing the Empire,
+## the Alliance, or a head-to-head game"): the player's faction id, or "h2h".
+##
+## The six fixed slots this replaced (<Dir>/slot<N>.jsonl + slots.json) are
+## copied into the list the first time it is read, and left untouched.
+##
+## Export / import: a .fwsave file is JSON lines - one line of the game's
+## name, saved date, day and side, then the save itself, byte for byte.
 
-const SLOT_COUNT := 6
 ## The save directory. A static var (not a const) so a headless test can point it
 ## at a scratch directory and never touch a player's real saves.
 static var Dir := "user://saves"
+## The default name for a game saved without one.
+const DEFAULT_NAME := "Saved game"
+## The first line of an exported file carries this key (and the format version).
+const FWSAVE_KEY := "fwsave"
+const FWSAVE_VERSION := 1
+const OLD_SLOTS := 6
 
 
-static func SlotPath(slot: int) -> String:
-	return "%s/slot%d.jsonl" % [Dir, slot]
+static func GamePath(id: String) -> String:
+	return "%s/games/%s.jsonl" % [Dir, id]
 
 
 static func _index_path() -> String:
-	return "%s/slots.json" % Dir
+	return "%s/games.json" % Dir
 
 
-static func _ensure_dir() -> void:
-	DirAccess.make_dir_recursive_absolute(Dir)
+# ---- the list ------------------------------------------------------------------
+
+## Every saved game as [{id, name, day, saved_at, side}], newest first.
+static func Games() -> Array:
+	var idx: Dictionary = _index()
+	var out: Array = []
+	for id: String in idx["games"]:
+		var g: Dictionary = idx["games"][id]
+		if not FileAccess.file_exists(GamePath(id)):
+			continue
+		out.append({
+			"id": id,
+			"name": str(g.get("name", "")),
+			"day": int(g.get("day", 0)),
+			"saved_at": str(g.get("saved_at", "")),
+			"side": str(g.get("side", "")),
+			"seq": int(g.get("seq", 0)),
+		})
+	out.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a["seq"] > b["seq"])
+	return out
 
 
-## Write the current game's command log to `slot` under a display `name`.
-## Overwriting a used slot is allowed (the manual treats overwriting your own
-## slot as normal). Returns false if the slot index is out of range or there is
-## no open log to save.
-static func Save(slot: int, name: String) -> bool:
-	if slot < 0 or slot >= SLOT_COUNT:
-		push_error("[SaveManager] slot %d out of range" % slot)
-		return false
+## The newest `count` games, newest first.
+static func Recent(count: int) -> Array:
+	return Games().slice(0, count)
+
+
+## The id of the game called `name`, or "".
+static func Find(name: String) -> String:
+	for g: Dictionary in Games():
+		if g["name"] == name.strip_edges():
+			return g["id"]
+	return ""
+
+
+## The name of game `id` ("" if there is none).
+static func NameOf(id: String) -> String:
+	return str(_index()["games"].get(id, {}).get("name", "")) if Exists(id) else ""
+
+
+static func Exists(id: String) -> bool:
+	return not id.is_empty() and FileAccess.file_exists(GamePath(id)) and _index()["games"].has(id)
+
+
+## A name no game has: `base`, else "base (2)", "base (3)" ...
+static func FreeName(base: String = DEFAULT_NAME) -> String:
+	base = base.strip_edges()
+	if base.is_empty():
+		base = DEFAULT_NAME
+	if Find(base).is_empty():
+		return base
+	var n := 2
+	while not Find("%s (%d)" % [base, n]).is_empty():
+		n += 1
+	return "%s (%d)" % [base, n]
+
+
+## What hovering a game shows: "Saved MM/DD/YYYY - Day N" (TeeJ, 2026-09-27),
+## the day as the player sees it (StrategicTickManager.Shown, manual p033).
+static func SavedLabel(g: Dictionary) -> String:
+	return "Saved %s - Day %d" % [SavedDate(g), StrategicTickManager.Shown(int(g.get("day", 0)))]
+
+
+## The saved date as MM/DD/YYYY ("" if unknown).
+static func SavedDate(g: Dictionary) -> String:
+	var d: PackedStringArray = str(g.get("saved_at", "")).get_slice("T", 0).split("-")
+	if d.size() != 3:
+		return ""
+	return "%s/%s/%s" % [d[1], d[2], d[0]]
+
+
+# ---- saving, loading, deleting ------------------------------------------------
+
+## Save the current game under `name`: the game of that name is overwritten,
+## or a new one is made. Either way it becomes the newest. Returns its id, or ""
+## if there is no open log to save.
+static func Save(name: String) -> String:
 	# Snapshot flushes the open log and returns its full text. Empty means no
 	# game/log is running - nothing to save.
 	var content: String = CommandLog.Snapshot()
 	if content.is_empty():
 		push_error("[SaveManager] no open command log to save")
+		return ""
+	name = name.strip_edges()
+	if name.is_empty():
+		name = FreeName()
+	var id: String = Find(name)
+	var side: String = "h2h" if MpSetup.session != null else (GameSettings.PlayerFaction.Id if GameSettings.PlayerFaction != null else "")
+	return _store(id, content, name, StrategicTickManager.Today, side)
+
+
+static func Read(id: String) -> Array:
+	if not Exists(id):
+		return [{}, [], {}]
+	return CommandLog.Read(GamePath(id))
+
+
+## Remove a saved game (See all games' Delete). Returns false if there is none.
+static func Delete(id: String) -> bool:
+	if not Exists(id):
 		return false
-	_ensure_dir()
-	var f: FileAccess = FileAccess.open(SlotPath(slot), FileAccess.WRITE)
-	if f == null:
-		push_error("[SaveManager] cannot write %s" % SlotPath(slot))
-		return false
-	f.store_string(content)
-	f.close()
-	var idx: Dictionary = _read_index()
-	idx[str(slot)] = {
-		"name": name,
-		"day": StrategicTickManager.Today,
-		"saved_at": Time.get_datetime_string_from_system(),
-		"side": "h2h" if MpSetup.session != null else (GameSettings.PlayerFaction.Id if GameSettings.PlayerFaction != null else ""),
-	}
+	var idx: Dictionary = _index()
+	(idx["games"] as Dictionary).erase(id)
 	_write_index(idx)
+	DirAccess.remove_absolute(GamePath(id))
 	return true
 
 
-## The six slots as [{slot, used, name, day, saved_at, side}], for the Game Options UI.
-static func Slots() -> Array:
-	var idx: Dictionary = _read_index()
-	var out: Array = []
-	for i in SLOT_COUNT:
-		var meta: Dictionary = idx.get(str(i), {})
-		var used: bool = FileAccess.file_exists(SlotPath(i)) and not meta.is_empty()
-		out.append({
-			"slot": i,
-			"used": used,
-			"name": str(meta.get("name", "")),
-			"day": int(meta.get("day", 0)),
-			"saved_at": str(meta.get("saved_at", "")),
-			"side": str(meta.get("side", "")),
-		})
-	return out
+# ---- export and import ----------------------------------------------------------
+
+## The game as a .fwsave file's text: its details on the first line, then the
+## save itself. "" if there is no such game.
+static func ExportText(id: String) -> String:
+	if not Exists(id):
+		return ""
+	var g: Dictionary = _index()["games"][id]
+	var meta := {
+		FWSAVE_KEY: FWSAVE_VERSION,
+		"name": str(g.get("name", "")),
+		"saved_at": str(g.get("saved_at", "")),
+		"day": int(g.get("day", 0)),
+		"side": str(g.get("side", "")),
+	}
+	return JSON.stringify(meta) + "\n" + FileAccess.get_file_as_string(GamePath(id))
 
 
-## Read a slot's log back as [header, commands, hashes] - the input to Replayer.
-## Returns [{}, [], {}] if the slot is empty.
-static func ReadSlot(slot: int) -> Array:
-	if slot < 0 or slot >= SLOT_COUNT or not FileAccess.file_exists(SlotPath(slot)):
-		return [{}, [], {}]
-	return CommandLog.Read(SlotPath(slot))
+## A file name for exporting `id`: its name with the characters a file name
+## cannot hold left out.
+static func ExportFileName(id: String) -> String:
+	var nm: String = str(_index()["games"].get(id, {}).get("name", DEFAULT_NAME))
+	var safe := ""
+	for ch in nm:
+		safe += "_" if "\\/:*?\"<>|".contains(ch) else ch
+	return (safe.strip_edges() if not safe.strip_edges().is_empty() else DEFAULT_NAME) + ".fwsave"
 
 
-static func IsUsed(slot: int) -> bool:
-	return FileAccess.file_exists(SlotPath(slot)) and _read_index().has(str(slot))
+## Which kind of file `bytes` holds: "fwsave" (ours, exported), "log" (ours, a
+## bare command log), "original" (a Star Wars: Rebellion SAVEGAME.nnn) or "".
+## The original's file starts with its name (u16 length + bytes) and six u32,
+## then a u32 holding its own offset (SAVEGAME-FORMAT.md).
+static func Detect(bytes: PackedByteArray) -> String:
+	if bytes.is_empty():
+		return ""
+	# Ours is JSON text; only a file that starts like it is read as text.
+	var first: Variant = JSON.parse_string(bytes.slice(0, _line_end(bytes)).get_string_from_utf8()) if bytes[0] == 0x7B else null
+	if first is Dictionary:
+		if (first as Dictionary).has(FWSAVE_KEY):
+			return "fwsave"
+		if (first as Dictionary).has("pack"):
+			return "log"
+	if bytes.size() >= 2:
+		var n: int = bytes.decode_u16(0)
+		var at: int = 2 + n + 24
+		if n > 0 and n < 256 and bytes.size() >= at + 4 and bytes.decode_u32(at) == at:
+			return "original"
+	return ""
 
 
-static func _read_index() -> Dictionary:
-	if not FileAccess.file_exists(_index_path()):
-		return {}
-	var d: Variant = JSON.parse_string(FileAccess.get_file_as_string(_index_path()))
-	return d if d is Dictionary else {}
+## Import a saved game file. Its Saved date is now, and it never overwrites:
+## a name already taken gets " (2)". Returns {ok, id, name, message}.
+static func Import(bytes: PackedByteArray, file_name: String = "") -> Dictionary:
+	var kind: String = Detect(bytes)
+	if kind == "original":
+		return {"ok": false, "id": "", "name": "", "message": "Star Wars: Rebellion saves can not be imported yet."}
+	if kind.is_empty():
+		return {"ok": false, "id": "", "name": "", "message": "That is not a saved game."}
+	var text: String = bytes.get_string_from_utf8()
+	var meta: Dictionary = {}
+	if kind == "fwsave":
+		var cut: int = text.find("\n")
+		var first: Variant = JSON.parse_string(text.substr(0, cut))
+		meta = first if first is Dictionary else {}
+		text = text.substr(cut + 1) if cut >= 0 else ""
+	var lines: PackedStringArray = text.split("\n", false)
+	var header: Variant = JSON.parse_string(lines[0]) if lines.size() > 0 else null
+	if not (header is Dictionary) or not (header as Dictionary).has("pack"):
+		return {"ok": false, "id": "", "name": "", "message": "That saved game is damaged: it has no header."}
+	var day: int = int(meta.get("day", 0))
+	if day <= 0:
+		for line in lines:
+			var d: Variant = JSON.parse_string(line)
+			if d is Dictionary and (d as Dictionary).has("hash"):
+				day = maxi(day, int(d["day"]))
+	var base: String = str(meta.get("name", file_name.get_file().get_basename()))
+	var name: String = FreeName(base)
+	var side: String = str(meta.get("side", (header as Dictionary).get("local", "")))
+	var id: String = _store("", text, name, day, side)
+	if id.is_empty():
+		return {"ok": false, "id": "", "name": "", "message": "The saved game could not be written."}
+	return {"ok": true, "id": id, "name": name, "message": ""}
+
+
+# ---- the store ---------------------------------------------------------------------
+
+## Write `content` as game `id` (a new id if empty) and make it the newest.
+static func _store(id: String, content: String, name: String, day: int, side: String) -> String:
+	var idx: Dictionary = _index()
+	if id.is_empty():
+		id = "g%d" % int(idx["next"])
+		idx["next"] = int(idx["next"]) + 1
+	DirAccess.make_dir_recursive_absolute("%s/games" % Dir)
+	var f: FileAccess = FileAccess.open(GamePath(id), FileAccess.WRITE)
+	if f == null:
+		push_error("[SaveManager] cannot write %s" % GamePath(id))
+		return ""
+	f.store_string(content)
+	f.close()
+	idx["seq"] = int(idx.get("seq", 0)) + 1
+	idx["games"][id] = {
+		"name": name,
+		"day": day,
+		"saved_at": Time.get_datetime_string_from_system(),
+		"side": side,
+		"seq": int(idx["seq"]),
+	}
+	_write_index(idx)
+	return id
+
+
+static func _index() -> Dictionary:
+	_migrate_slots()
+	var d: Variant = null
+	if FileAccess.file_exists(_index_path()):
+		d = JSON.parse_string(FileAccess.get_file_as_string(_index_path()))
+	var idx: Dictionary = d if d is Dictionary else {}
+	if not (idx.get("games") is Dictionary):
+		idx["games"] = {}
+	idx["next"] = int(idx.get("next", 1))
+	idx["seq"] = int(idx.get("seq", 0))
+	return idx
 
 
 static func _write_index(idx: Dictionary) -> void:
-	_ensure_dir()
+	DirAccess.make_dir_recursive_absolute(Dir)
 	var f: FileAccess = FileAccess.open(_index_path(), FileAccess.WRITE)
 	if f != null:
 		f.store_string(JSON.stringify(idx))
 		f.close()
+
+
+## Copy the six fixed slots this list replaced into it, once: oldest first, so
+## the list keeps their order; a repeated name gets " (2)". The slot files and
+## their index are only read, never changed or removed.
+static func _migrate_slots() -> void:
+	var old_index: String = "%s/slots.json" % Dir
+	if FileAccess.file_exists(_index_path()) or not FileAccess.file_exists(old_index):
+		return
+	var d: Variant = JSON.parse_string(FileAccess.get_file_as_string(old_index))
+	var old: Dictionary = d if d is Dictionary else {}
+	var slots: Array = []
+	for i in OLD_SLOTS:
+		var path: String = "%s/slot%d.jsonl" % [Dir, i]
+		if old.has(str(i)) and FileAccess.file_exists(path):
+			slots.append({"path": path, "meta": old[str(i)]})
+	slots.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return str(a["meta"].get("saved_at", "")) < str(b["meta"].get("saved_at", "")))
+	var idx := {"next": 1, "seq": 0, "games": {}}
+	DirAccess.make_dir_recursive_absolute("%s/games" % Dir)
+	var taken: Dictionary = {}
+	for s: Dictionary in slots:
+		var meta: Dictionary = s["meta"]
+		var base: String = str(meta.get("name", "")).strip_edges()
+		if base.is_empty():
+			base = DEFAULT_NAME
+		var name: String = base
+		var n := 2
+		while taken.has(name):
+			name = "%s (%d)" % [base, n]
+			n += 1
+		taken[name] = true
+		var id: String = "g%d" % int(idx["next"])
+		idx["next"] = int(idx["next"]) + 1
+		if DirAccess.copy_absolute(s["path"], GamePath(id)) != OK:
+			push_error("[SaveManager] could not copy %s into the list" % s["path"])
+			continue
+		idx["seq"] = int(idx["seq"]) + 1
+		idx["games"][id] = {
+			"name": name,
+			"day": int(meta.get("day", 0)),
+			"saved_at": str(meta.get("saved_at", "")),
+			"side": str(meta.get("side", "")),
+			"seq": int(idx["seq"]),
+		}
+	_write_index(idx)
+
+
+static func _line_end(bytes: PackedByteArray) -> int:
+	var i: int = bytes.find(10)
+	return i if i >= 0 else bytes.size()

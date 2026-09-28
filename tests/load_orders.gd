@@ -30,11 +30,12 @@ func _init() -> void:
 	for _i in 3:
 		engine.AdvanceDay()
 		CommandBus.day_done()
-	_check(SaveManager.Save(0, "Orders"), "Save(0) writes the current game to a slot")
+	var saved: String = SaveManager.Save("Orders")
+	_check(not saved.is_empty(), "Save writes the current game")
 	CommandLog.Close()
 
-	# --- Load slot 0 through the GameManager load path. ---
-	GameSettings.PendingLoadPath = SaveManager.SlotPath(0)
+	# --- Load it through the GameManager load path. ---
+	GameSettings.PendingLoadPath = SaveManager.GamePath(saved)
 	var main: Node = load("res://Main.tscn").instantiate()
 	root.add_child(main)
 	for _i in 10:
@@ -55,13 +56,19 @@ func _init() -> void:
 
 
 func _clean() -> void:
-	for i in SaveManager.SLOT_COUNT:
-		if FileAccess.file_exists(SaveManager.SlotPath(i)):
-			DirAccess.remove_absolute(SaveManager.SlotPath(i))
-	if FileAccess.file_exists("user://test-load-orders-saves/slots.json"):
-		DirAccess.remove_absolute("user://test-load-orders-saves/slots.json")
+	_remove(SaveManager.Dir)
 
 
 func _finish() -> void:
 	print("[load_orders] %d checks, %d failed" % [_checks, _fails])
 	quit(1 if _fails > 0 else 0)
+
+
+static func _remove(path: String) -> void:
+	if not DirAccess.dir_exists_absolute(path):
+		return
+	for sub in DirAccess.get_directories_at(path):
+		_remove("%s/%s" % [path, sub])
+	for file in DirAccess.get_files_at(path):
+		DirAccess.remove_absolute("%s/%s" % [path, file])
+	DirAccess.remove_absolute(path)

@@ -37,13 +37,13 @@ func _init() -> void:
 	SaveManager.Dir = "user://test-menuload-saves"
 	_clean()
 
-	# A saved game in slot 0.
+	# A saved game.
 	var engine: StrategicTickManager = GameSession.new_game("alliance", Enums.Difficulty.Medium, Enums.GalaxySize.Standard, 4243)
 	CommandLog.Open("user://test-menuload-gen.jsonl", CommandLog.Header())
 	for _i in 3:
 		engine.AdvanceDay()
 		CommandBus.day_done()
-	SaveManager.Save(0, "Menu Save")
+	var saved: String = SaveManager.Save("Menu Save")
 	CommandLog.Close()
 	GameSettings.PendingLoadPath = ""
 
@@ -64,23 +64,23 @@ func _init() -> void:
 			_check(screen != null, "pressing Load Game opens the Game Options screen")
 			if screen != null:
 				var loadBtn: BaseButton = screen._loadBtns[0]
-				_check(not loadBtn.disabled, "the used slot has an enabled Load Game button")
+				_check(not loadBtn.disabled, "the top row (the saved game) has an enabled Load Game button")
 				if not loadBtn.disabled:
 					loadBtn.pressed.emit()   # sets PendingLoadPath, then changes scene
-					_check(GameSettings.PendingLoadPath == SaveManager.SlotPath(0), "pressing Load Game sets PendingLoadPath to the slot")
+					_check(GameSettings.PendingLoadPath == SaveManager.GamePath(saved), "pressing Load Game sets PendingLoadPath to the game")
 			GameSettings.PendingLoadPath = ""
 			_clean()
 			_finish()
 			return
 		var lgw: Node = menu.get_node_or_null("LoadGameWindow")
-		_check(lgw != null, "pressing Load Game opens the slot picker")
+		_check(lgw != null, "pressing Load Game opens the game picker")
 		if lgw != null:
-			# The first "Load" button belongs to slot 0 (used), so it is enabled.
+			# The first "Load" button belongs to the saved game.
 			var loadBtn: Button = _find_button(lgw, "Load")
-			_check(loadBtn != null and not loadBtn.disabled, "the used slot has an enabled Load button")
+			_check(loadBtn != null and not loadBtn.disabled, "the saved game has an enabled Load button")
 			if loadBtn != null and not loadBtn.disabled:
 				loadBtn.pressed.emit()   # sets PendingLoadPath, then defers a scene change
-				_check(GameSettings.PendingLoadPath == SaveManager.SlotPath(0), "pressing Load sets PendingLoadPath to the slot")
+				_check(GameSettings.PendingLoadPath == SaveManager.GamePath(saved), "pressing Load sets PendingLoadPath to the game")
 
 	GameSettings.PendingLoadPath = ""
 	_clean()
@@ -88,13 +88,19 @@ func _init() -> void:
 
 
 func _clean() -> void:
-	for i in SaveManager.SLOT_COUNT:
-		if FileAccess.file_exists(SaveManager.SlotPath(i)):
-			DirAccess.remove_absolute(SaveManager.SlotPath(i))
-	if FileAccess.file_exists("user://test-menuload-saves/slots.json"):
-		DirAccess.remove_absolute("user://test-menuload-saves/slots.json")
+	_remove(SaveManager.Dir)
 
 
 func _finish() -> void:
 	print("[menu_load_audit] %d checks, %d failed" % [_checks, _fails])
 	quit(1 if _fails > 0 else 0)
+
+
+static func _remove(path: String) -> void:
+	if not DirAccess.dir_exists_absolute(path):
+		return
+	for sub in DirAccess.get_directories_at(path):
+		_remove("%s/%s" % [path, sub])
+	for file in DirAccess.get_files_at(path):
+		DirAccess.remove_absolute("%s/%s" % [path, file])
+	DirAccess.remove_absolute(path)

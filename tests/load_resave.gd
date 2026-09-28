@@ -33,13 +33,14 @@ func _init() -> void:
 		CommandBus.day_done()
 	var saved_day: int = StrategicTickManager.Today
 	var saved_hash: String = GameSignature.ReplayHash(GameState.ActiveGalaxy)
-	_check(SaveManager.Save(0, "First"), "Save(0)")
+	var first: String = SaveManager.Save("First")
+	_check(not first.is_empty(), "Save \"First\"")
 	# A fresh process holds nothing when it loads - do not let this one's memory
 	# stand in for what the load must restore.
 	CommandLog.Reset()
 
 	# --- Load it through GameManager, then save again WITHOUT playing on. ---
-	GameSettings.PendingLoadPath = SaveManager.SlotPath(0)
+	GameSettings.PendingLoadPath = SaveManager.GamePath(first)
 	var main: Node = load("res://Main.tscn").instantiate()
 	root.add_child(main)
 	for _i in 10:
@@ -48,9 +49,10 @@ func _init() -> void:
 	_check(StrategicTickManager.Today == saved_day, "restored to day %d (got %d)" % [saved_day, StrategicTickManager.Today])
 	_check(GameSignature.ReplayHash(GameState.ActiveGalaxy) == saved_hash, "restored to the saved state hash")
 	_check(AgentDroid.ManagingProduction(us), "the order from before the save was replayed")
-	_check(SaveManager.Save(1, "Second"), "Save(1) straight after the load")
+	var second: String = SaveManager.Save("Second")
+	_check(not second.is_empty(), "Save \"Second\" straight after the load")
 
-	var again: Array = CommandLog.Read(SaveManager.SlotPath(1))
+	var again: Array = CommandLog.Read(SaveManager.GamePath(second))
 	_check((again[1] as Array).size() == 1, "the re-save kept the earlier order (got %d)" % (again[1] as Array).size())
 	_check((again[2] as Dictionary).size() == 5, "the re-save kept the 5 day hashes (got %d)" % (again[2] as Dictionary).size())
 
@@ -58,8 +60,9 @@ func _init() -> void:
 	_check(CommandBus.issue("droid", {"manage": "garrisons", "on": true}).ok, "an order after the load")
 	var last: Command = CommandLog.Entries[CommandLog.Entries.size() - 1]
 	_check(last.Seq == 2, "the order after the load is Seq 2, not a reused 1 (got %d)" % last.Seq)
-	_check(SaveManager.Save(2, "Third"), "Save(2) after a new order")
-	var third: Array = CommandLog.Read(SaveManager.SlotPath(2))
+	var third_id: String = SaveManager.Save("Third")
+	_check(not third_id.is_empty(), "Save \"Third\" after a new order")
+	var third: Array = CommandLog.Read(SaveManager.GamePath(third_id))
 	_check((third[1] as Array).size() == 2, "the third save holds both orders (got %d)" % (third[1] as Array).size())
 
 	# --- And the third save restores to the same day and state, both orders in. ---
@@ -79,8 +82,14 @@ func _init() -> void:
 
 
 func _clean() -> void:
-	for i in SaveManager.SLOT_COUNT:
-		if FileAccess.file_exists(SaveManager.SlotPath(i)):
-			DirAccess.remove_absolute(SaveManager.SlotPath(i))
-	if FileAccess.file_exists("user://test-resave-saves/slots.json"):
-		DirAccess.remove_absolute("user://test-resave-saves/slots.json")
+	_remove(SaveManager.Dir)
+
+
+static func _remove(path: String) -> void:
+	if not DirAccess.dir_exists_absolute(path):
+		return
+	for sub in DirAccess.get_directories_at(path):
+		_remove("%s/%s" % [path, sub])
+	for file in DirAccess.get_files_at(path):
+		DirAccess.remove_absolute("%s/%s" % [path, file])
+	DirAccess.remove_absolute(path)

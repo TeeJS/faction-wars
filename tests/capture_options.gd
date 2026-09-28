@@ -1,6 +1,6 @@
 extends SceneTree
 ## Renders the original's Game Options screen (manual p076 Fig. 3.16) in play,
-## with two slots saved (one as each side), to a PNG cropped to the screen's
+## with two games saved (one as each side), to a PNG cropped to the screen's
 ## picture. Needs a window (NOT --headless) and the art:
 ##
 ##   Godot_console.exe --path . --resolution 1440x850 -s tests/capture_options.gd -- --out=C:/tmp/options.png
@@ -30,6 +30,7 @@ func _init() -> void:
 	screen._save(0)
 	var was: Faction = GameSettings.PlayerFaction
 	GameSettings.PlayerFaction = FactionRegistry.ById("empire" if was.Id == "alliance" else "alliance")
+	# The first save is now the top row; type the second name on the next row.
 	(screen._names[1] as LineEdit).text = "start"
 	screen._save(1)
 	GameSettings.PlayerFaction = was
@@ -39,9 +40,7 @@ func _init() -> void:
 	var r := Rect2i(Vector2i(screen._canvas.global_position), Vector2i(Vector2(640, 480) * screen._s))
 	print("[capture_options] screen at %s, scale %.3f" % [str(r), screen._s])
 	var err := img.get_region(r).save_png(out)
-	for i in SaveManager.SLOT_COUNT:
-		DirAccess.remove_absolute(SaveManager.SlotPath(i))
-	DirAccess.remove_absolute("%s/slots.json" % SaveManager.Dir)
+	_remove(SaveManager.Dir)
 	quit(0 if err == OK else 1)
 
 
@@ -50,3 +49,13 @@ func _arg(prefix: String, default: String) -> String:
 		if a.begins_with(prefix):
 			return a.substr(prefix.length())
 	return default
+
+
+static func _remove(path: String) -> void:
+	if not DirAccess.dir_exists_absolute(path):
+		return
+	for sub in DirAccess.get_directories_at(path):
+		_remove("%s/%s" % [path, sub])
+	for file in DirAccess.get_files_at(path):
+		DirAccess.remove_absolute("%s/%s" % [path, file])
+	DirAccess.remove_absolute(path)

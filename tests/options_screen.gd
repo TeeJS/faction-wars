@@ -2,8 +2,9 @@ extends SceneTree
 ## The original's Game Options screen (manual p075-p076, Fig. 3.16;
 ## src/ui/original_options_screen.gd): with its art imported, the Menu button
 ## and F1 open it in place of the Game Menu and the Save Game window; the
-## clock stops while it is up; Save Game writes the slot and its side icon;
-## Load Game is live only on a used slot; Restart and Exit ask first; Return
+## clock stops while it is up; Save Game saves the game under the typed name,
+## the newest on the top row, with its side icon and hover date; Load Game is
+## live only on a saved game; Restart and Exit ask first; Return
 ## goes back to the game; from the Cockpit there is nothing to save and no
 ## Command Center to return to; Play Music and the music volume work (the
 ## music plan, phase 2); the sound effects and tactical options are greyed.
@@ -77,16 +78,18 @@ func _init() -> void:
 		_finish()
 		return
 	_check(gm._menuOpen, "the clock stops while it is up")
-	_check(screen._saveBtns.size() == 6 and screen._loadBtns.size() == 6 and screen._names.size() == 6, "six slots, each Save Game, a name, Load Game")
+	_check(screen._saveBtns.size() == Screen.Rows and screen._loadBtns.size() == Screen.Rows and screen._names.size() == Screen.Rows, "%d rows, each Save Game, a name, Load Game" % Screen.Rows)
 	_check(Lq.all(screen._loadBtns, func(b: TextureButton) -> bool: return b.disabled), "no saves yet: every Load Game is greyed")
 
 	(screen._names[2] as LineEdit).text = "Alliance High Maintenance"
 	screen._save(2)
-	var s: Dictionary = SaveManager.Slots()[2]
-	_check(s["used"] and s["name"] == "Alliance High Maintenance", "Save Game writes slot 3 under its name")
-	_check(s["side"] == GameSettings.PlayerFaction.Id, "the slot records the side (%s)" % s["side"])
-	_check((screen._sideIcons[2] as TextureRect).texture != null, "the slot shows the side's icon")
-	_check(not (screen._loadBtns[2] as TextureButton).disabled, "its Load Game is live")
+	var s: Dictionary = SaveManager.Games()[0] if not SaveManager.Games().is_empty() else {}
+	_check(s.get("name", "") == "Alliance High Maintenance", "Save Game saves the game under its name")
+	_check(s.get("side", "") == GameSettings.PlayerFaction.Id, "it records the side (%s)" % s.get("side", ""))
+	_check((screen._names[0] as LineEdit).text == "Alliance High Maintenance" and (screen._names[2] as LineEdit).text.is_empty(), "the newest game goes to the top row")
+	_check((screen._sideIcons[0] as TextureRect).texture != null, "the row shows the side's icon")
+	_check(not (screen._loadBtns[0] as TextureButton).disabled, "its Load Game is live")
+	_check((screen._names[0] as LineEdit).tooltip_text == SaveManager.SavedLabel(s) and SaveManager.SavedLabel(s).begins_with("Saved "), "hovering the row shows \"%s\"" % SaveManager.SavedLabel(s))
 
 	var music: Label = screen._canvas.get_node_or_null("MusicLabel")
 	var toggle: Label = screen._canvas.get_node_or_null("Toggle0")
@@ -168,7 +171,7 @@ func _init() -> void:
 	var ret: TextureButton = Lq.first_or_null(cockpit._canvas.get_children(), func(n: Node) -> bool: return n.name.begins_with("options_return"))
 	_check(ret != null and ret.disabled, "from the Cockpit, Return to the Command Center is greyed")
 	_check(Lq.all(cockpit._saveBtns, func(b: TextureButton) -> bool: return b.disabled), "and Save Game with it")
-	_check(not (cockpit._loadBtns[2] as TextureButton).disabled, "Load Game is live on the used slot")
+	_check(not (cockpit._loadBtns[0] as TextureButton).disabled, "Load Game is live on the saved game")
 	cockpit.queue_free()
 	_finish()
 

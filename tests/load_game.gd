@@ -1,7 +1,7 @@
 extends SceneTree
 ## Issue #6 PR B: loading a saved game end to end. Play a few days recording to a
-## log, Save it to a slot (SaveManager), then set GameSettings.PendingLoadPath to
-## that slot and bring up Main.tscn - GameManager._ready must replay the slot and
+## log, Save it (SaveManager), then set GameSettings.PendingLoadPath to
+## that game and bring up Main.tscn - GameManager._ready must replay it and
 ## restore the saved day instead of starting fresh.
 ##
 ##   Godot_console.exe --headless --path . -s tests/load_game.gd
@@ -32,11 +32,12 @@ func _init() -> void:
 		CommandBus.day_done()   # record the day hash to the log
 	var saved_day: int = StrategicTickManager.Today
 	_check(saved_day > 1, "generated a multi-day game to save (day %d)" % saved_day)
-	_check(SaveManager.Save(0, "Mid-game"), "Save(0) writes the current game to a slot")
+	var saved: String = SaveManager.Save("Mid-game")
+	_check(not saved.is_empty(), "Save writes the current game")
 	CommandLog.Close()
 
-	# --- Load slot 0 through the GameManager load path. ---
-	GameSettings.PendingLoadPath = SaveManager.SlotPath(0)
+	# --- Load it through the GameManager load path. ---
+	GameSettings.PendingLoadPath = SaveManager.GamePath(saved)
 	var main: Node = load("res://Main.tscn").instantiate()
 	root.add_child(main)
 	for _i in 10:
@@ -50,13 +51,19 @@ func _init() -> void:
 
 
 func _clean() -> void:
-	for i in SaveManager.SLOT_COUNT:
-		if FileAccess.file_exists(SaveManager.SlotPath(i)):
-			DirAccess.remove_absolute(SaveManager.SlotPath(i))
-	if FileAccess.file_exists("user://test-load-saves/slots.json"):
-		DirAccess.remove_absolute("user://test-load-saves/slots.json")
+	_remove(SaveManager.Dir)
 
 
 func _finish() -> void:
 	print("[load_game] %d checks, %d failed (restored day %d)" % [_checks, _fails, StrategicTickManager.Today])
 	quit(1 if _fails > 0 else 0)
+
+
+static func _remove(path: String) -> void:
+	if not DirAccess.dir_exists_absolute(path):
+		return
+	for sub in DirAccess.get_directories_at(path):
+		_remove("%s/%s" % [path, sub])
+	for file in DirAccess.get_files_at(path):
+		DirAccess.remove_absolute("%s/%s" % [path, file])
+	DirAccess.remove_absolute(path)

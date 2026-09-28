@@ -1,15 +1,19 @@
 class_name GameOptionsWindow
 extends PanelContainer
-## The Game Options screen (manual p073-077): six named save slots. This is where
-## the original saves and loads a single-player game. PR A wires SAVE (write the
-## current command log to a slot); LOAD from here / the start menu is PR B.
+## The Game Options screen (manual p073-077) as a plain window, used when the
+## original's art is not imported (original_options_screen.gd is the real one).
+## The rows are the newest saved games (PROJECT.md): a name is a game - Save
+## with the name unchanged overwrites it, a new name makes a new game.
 ##
 ## Built in code (repo convention), shown as a centered modal overlay. Opened from
 ## the in-game menu's "Game Options" button.
 
 signal Closed
 
-var _rows: Array = []   # per slot: { "name": LineEdit, "state": Label }
+## As many rows as the real screen.
+const Rows := preload("res://src/ui/original_options_screen.gd").Rows
+
+var _rows: Array = []   # per row: { "name": LineEdit, "state": Label, "id": String }
 
 
 func _ready() -> void:
@@ -33,13 +37,14 @@ func _ready() -> void:
 	box.add_child(title)
 	box.add_child(HSeparator.new())
 
-	for i in SaveManager.SLOT_COUNT:
+	for i in Rows:
 		var row := HBoxContainer.new()
 		row.add_theme_constant_override("separation", 8)
 
 		var state := Label.new()
 		state.custom_minimum_size = Vector2(150, 0)
 		state.add_theme_font_size_override("font_size", 12)
+		state.mouse_filter = Control.MOUSE_FILTER_PASS   # its hover shows the saved date
 		row.add_child(state)
 
 		var nameEdit := LineEdit.new()
@@ -54,7 +59,7 @@ func _ready() -> void:
 		row.add_child(saveBtn)
 
 		box.add_child(row)
-		_rows.append({ "name": nameEdit, "state": state })
+		_rows.append({ "name": nameEdit, "state": state, "id": "" })
 
 	box.add_child(HSeparator.new())
 	var closeBtn := Button.new()
@@ -67,28 +72,27 @@ func _ready() -> void:
 	_refresh()
 
 
+## Fill the rows with the newest saved games, newest at the top.
 func _refresh() -> void:
-	var slots: Array = SaveManager.Slots()
-	for i in slots.size():
-		if i >= _rows.size():
-			break
-		var s: Dictionary = slots[i]
+	var games: Array = SaveManager.Recent(_rows.size())
+	for i in _rows.size():
+		var used: bool = i < games.size()
+		var g: Dictionary = games[i] if used else {}
 		var state: Label = _rows[i]["state"]
 		var nameEdit: LineEdit = _rows[i]["name"]
-		if s["used"]:
-			state.text = "Slot %d: %s (Day %d)" % [i + 1, s["name"], StrategicTickManager.Shown(int(s["day"]))]
-			if nameEdit.text.is_empty():
-				nameEdit.text = str(s["name"])
-		else:
-			state.text = "Slot %d: (empty)" % (i + 1)
+		_rows[i]["id"] = str(g["id"]) if used else ""
+		state.text = ("%s (Day %d)" % [g["name"], StrategicTickManager.Shown(int(g["day"]))]) if used else "(empty)"
+		state.tooltip_text = SaveManager.SavedLabel(g) if used else ""
+		nameEdit.text = str(g["name"]) if used else ""
 
 
-## Public so a test can drive a save without a real button press.
-func _on_save(slot: int) -> void:
-	if slot < 0 or slot >= _rows.size():
+## Public so a test can drive a save without a real button press. The name is
+## the game: unchanged overwrites the row's game, a new name makes a new one.
+func _on_save(row: int) -> void:
+	if row < 0 or row >= _rows.size():
 		return
-	var nm: String = (_rows[slot]["name"] as LineEdit).text.strip_edges()
+	var nm: String = (_rows[row]["name"] as LineEdit).text.strip_edges()
 	if nm.is_empty():
-		nm = "Saved game"
-	SaveManager.Save(slot, nm)
+		nm = SaveManager.NameOf(_rows[row]["id"])
+	SaveManager.Save(nm)   # an empty name takes the next free "Saved game"
 	_refresh()

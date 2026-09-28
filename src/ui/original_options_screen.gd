@@ -4,11 +4,15 @@ extends Control
 ## measured by template matching on TeeJ's screenshot of the original's
 ## (2026-09-23). It replaces the Game Menu and the Save Game window, which
 ## were two plain windows (TeeJ: "should be combined and match the original"):
-##   Save Game / Load Game - six slots, each "a Save Game button, a name
+##   Save Game / Load Game - rows, each "a Save Game button, a name
 ##     field, and a Load Game button", and "an icon between the name field and
 ##     the Save Game button [showing] whether you were playing the Empire, the
 ##     Alliance, or a head-to-head game". Loading over a running game asks
-##     first ("the computer asks you to confirm");
+##     first ("the computer asks you to confirm"). The rows are the NEWEST
+##     saved games (PROJECT.md, TeeJ 2026-09-27, departing from p075's six
+##     fixed slots): a name is a game - Save with the name unchanged overwrites
+##     it, a new name makes a new game - and hovering a row shows
+##     "Saved MM/DD/YYYY - Day N";
 ##   Sound options - Play Music and the music volume (the original's score,
 ##     docs/music-plan.md), and the sound effects volume (the droids' voices
 ##     and the controls' sounds, docs/advisor-plan.md). The Tactical Display
@@ -38,6 +42,9 @@ const H := 480
 ## Load Game button at 287; the first row at y 81, a row every 42.
 const SlotTop := 81
 const SlotPitch := 42
+## The rows: the six the picture draws. The sixth becomes Import Game, Export
+## Game and See all games when those are built (PROJECT.md phase 3), leaving five.
+const Rows := 6
 const SaveX := 34
 const SideX := 85
 const NameRect := Rect2(116, 0, 165, 20)
@@ -81,6 +88,8 @@ var _names: Array = []
 var _saveBtns: Array = []
 var _loadBtns: Array = []
 var _sideIcons: Array = []
+## Each row's saved game id ("" for an empty row), newest first.
+var _rowIds: Array = []
 
 
 ## True when the player imported the art this screen is made of.
@@ -158,13 +167,15 @@ func _build() -> void:
 	_sideIcons.clear()
 	var playing: bool = not FromCockpit
 	var session: Variant = MpSetup.session
-	for k in SaveManager.SLOT_COUNT:
+	for k in Rows:
 		var y: float = SlotTop + k * SlotPitch
-		var save := _button("options_save", SaveX, y, "Save the game in this slot")
+		var save := _button("options_save", SaveX, y, "Save the game under this name")
 		var slot := k
 		save.pressed.connect(func() -> void: _save(slot))
 		_saveBtns.append(save)
-		_sideIcons.append(_place(null, SideX, y + 2, "Side%d" % k))
+		var side := _place(null, SideX, y + 2, "Side%d" % k)
+		side.mouse_filter = Control.MOUSE_FILTER_PASS   # its hover shows the saved date
+		_sideIcons.append(side)
 		var field := LineEdit.new()
 		field.name = "Name%d" % k
 		field.position = (Vector2(NameRect.position.x, y + NameRect.position.y)) * _s
@@ -182,7 +193,7 @@ func _build() -> void:
 		field.tooltip_text = "Click here and type a name, then Save"
 		_canvas.add_child(field)
 		_names.append(field)
-		var load := _button("options_load", LoadX, y, "Load the game in this slot")
+		var load := _button("options_load", LoadX, y, "Load this game")
 		load.pressed.connect(func() -> void: _load(slot))
 		_loadBtns.append(load)
 	_refresh_slots()
@@ -255,21 +266,24 @@ func _drag_knob(knob: Control, e: InputEvent, effects: bool = false) -> void:
 	knob.accept_event()
 
 
+## Fill the rows with the newest saved games, newest at the top.
 func _refresh_slots() -> void:
-	var slots: Array = SaveManager.Slots()
-	for k in slots.size():
-		if k >= _names.size():
-			break
-		var s: Dictionary = slots[k]
+	var games: Array = SaveManager.Recent(_names.size())
+	_rowIds.clear()
+	for k in _names.size():
+		var used: bool = k < games.size()
+		var g: Dictionary = games[k] if used else {}
+		_rowIds.append(str(g["id"]) if used else "")
 		var field: LineEdit = _names[k]
-		if s["used"] and field.text.is_empty():
-			field.text = str(s["name"])
-		field.tooltip_text = ("%s - Day %d" % [s["name"], StrategicTickManager.Shown(int(s["day"]))]) if s["used"] else "Click here and type a name, then Save"
-		(_loadBtns[k] as TextureButton).disabled = not s["used"] or (MpSetup.session != null)
-		var icon: Texture2D = _side_icon(str(s.get("side", ""))) if s["used"] else null
+		field.text = str(g["name"]) if used else ""
+		var tip: String = SaveManager.SavedLabel(g) if used else "Click here and type a name, then Save"
+		field.tooltip_text = tip
+		(_loadBtns[k] as TextureButton).disabled = not used or (MpSetup.session != null)
+		var icon: Texture2D = _side_icon(str(g.get("side", ""))) if used else null
 		var rect: TextureRect = _sideIcons[k]
 		rect.texture = icon
 		rect.size = icon.get_size() * _s if icon != null else Vector2.ZERO
+		rect.tooltip_text = tip if used else ""
 
 
 ## The slot's side: the Empire's, the Alliance's (a faction's art skin), or
@@ -294,20 +308,23 @@ func _save(slot: int) -> void:
 		if MpSetup.hosting:
 			_tell("Save Game", "Saved on both computers: \"%s\", Day %d." % [MpSetup.lobby.name if MpSetup.lobby != null else "this game", StrategicTickManager.Shown(StrategicTickManager.Today)])
 		return
+	# The name is the game: unchanged, the row's game is overwritten; a new
+	# name makes a new game. A cleared name means the row's own (or, on an
+	# empty row, the next free "Saved game").
 	var nm: String = (_names[slot] as LineEdit).text.strip_edges()
 	if nm.is_empty():
-		nm = "Saved game"
-		(_names[slot] as LineEdit).text = nm
-	SaveManager.Save(slot, nm)
+		nm = SaveManager.NameOf(_rowIds[slot])
+	SaveManager.Save(nm)   # an empty name takes the next free "Saved game"
 	_refresh_slots()
 
 
 func _load(slot: int) -> void:
-	if not SaveManager.IsUsed(slot):
+	var id: String = _rowIds[slot] if slot < _rowIds.size() else ""
+	if not SaveManager.Exists(id):
 		return
 	var go := func() -> void:
 		MpSetup.reset()
-		GameSettings.PendingLoadPath = SaveManager.SlotPath(slot)
+		GameSettings.PendingLoadPath = SaveManager.GamePath(id)
 		get_tree().change_scene_to_file("res://Main.tscn")
 	if FromCockpit:
 		go.call()
