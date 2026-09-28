@@ -84,14 +84,20 @@ func _init() -> void:
 	# Star Wars: every world where the original draws it on its galaxy picture
 	# (measured on TeeJ's screenshots, 2026-09-25): its 1024-unit space laid
 	# onto the 607x437 picture, the star's centre 7 px in - on the picture,
-	# (x * 607/1024 + 7, y * 437/1024 + 7). The picture stays at screen
-	# (150,99), where Main.tscn baked it.
+	# (x * 607/1024 + 7, y * 437/1024 + 7). The picture is at screen (150,99),
+	# where Main.tscn baked it - or, with the Command Center frame built from the
+	# art set, behind the frame where the original draws it (CommandFrame.Place).
 	if pack.Manifest.Id == "star-wars-rebellion":
 		var onPicture: Vector2 = map.MapPos(planet.MapX, planet.MapY) / fit
 		var original := Vector2(planet.MapX * 607.0 / 1024.0 + 7.0, planet.MapY * 437.0 / 1024.0 + 7.0)
 		_check(onPicture.distance_to(original) < 0.01,
 			"Star Wars: %s on the picture where the original draws it (%s, want %s)" % [planet.Name, str(onPicture), str(original)])
-		_check((map.position + backdrop.position).is_equal_approx(Vector2(150, 99)), "Star Wars: the picture at screen (150,99) as Main.tscn baked it")
+		var frame: CommandFrame = (main.get_node("UIManager") as UIManager).CommandFrameRef
+		if frame == null:
+			_check((map.position + backdrop.position).is_equal_approx(Vector2(150, 99)), "Star Wars: the picture at screen (150,99) as Main.tscn baked it")
+		else:
+			var at: Vector2 = frame.Origin + (CommandFrame.Layout[frame.Side]["picture"] as Vector2) * frame.S
+			_check((map.position + backdrop.position * map.scale).is_equal_approx(at), "Star Wars: the picture behind the Command Center frame where the original draws it (%s, want %s)" % [str(map.position), str(at)])
 
 	print("[map_backdrop] %d checks, %d failed" % [_checks, _fails])
 	quit(1 if _fails > 0 else 0)

@@ -45,6 +45,7 @@ func _init() -> void:
 	# original's art imported the Status windows are the original's instead
 	# (OUI.StatusPlate, tests/original_windows.gd).
 	Art.IgnoreProjectFolder = true
+	Art.UserArtRoot = "user://test-terms-windows-none"   # nor the player's imported set
 	GameSession.new_game("alliance", Enums.Difficulty.Medium, Enums.GalaxySize.Large, 12345)
 	_ui = UIManager.new()
 	_ui.name = "UIManager"

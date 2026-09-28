@@ -25,6 +25,7 @@ func _check(cond: bool, what: String) -> void:
 func _init() -> void:
 	await process_frame
 	Art.IgnoreProjectFolder = true   # the engine's own glyphs, whatever the developer imported
+	Art.UserArtRoot = "user://test-corner-icons-art"   # never the player's own (empty: the plain look)
 	FactionRegistry.EnsureLoaded()
 	MpSetup.reset()
 	GameSettings.SelectedDifficulty = Enums.Difficulty.Medium

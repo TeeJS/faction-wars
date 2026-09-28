@@ -27,6 +27,7 @@ func _check(cond: bool, what: String) -> void:
 func _init() -> void:
 	await process_frame
 	Art.IgnoreProjectFolder = true   # the button form, whatever art this checkout has
+	Art.UserArtRoot = "user://test-pack-credits-none"   # ...or the player has imported
 	for id in ["ww2", "star-wars-rebellion"]:
 		FactionRegistry.Unload()
 		FactionRegistry.EnsureLoaded(id)

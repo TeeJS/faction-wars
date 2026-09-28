@@ -51,7 +51,7 @@ func _init() -> void:
 	var gm: GameManager = main
 	_check(gm._oSpeed != null and gm._oDay != null and gm._oBars != null, "the time display is the original's box")
 	gm.RefreshStatusBar()
-	_check(gm._oDay.text == str(StrategicTickManager.Today), "the day in its window, the number alone ('%s')" % gm._oDay.text)
+	_check(gm._oDay.text == str(StrategicTickManager.Shown(StrategicTickManager.Today)), "the day in its window, the number alone - days passed, manual p033 ('%s')" % gm._oDay.text)
 	EventBus.Tell(GameSettings.PlayerFaction, GameMessage.new("A", "a", Enums.MessageCategory.Defense, StrategicTickManager.Today, null, null))
 	gm.RefreshStatusBar()
 	_check(not gm._dayLabel.text.contains("unread") and not gm._oDay.text.contains("unread"), "no unread count on the day box")
