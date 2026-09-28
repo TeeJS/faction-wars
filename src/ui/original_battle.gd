@@ -144,6 +144,7 @@ static func SetCurrent(buttons: Array, index: int) -> void:
 ## A button with (normal, pressed, disabled) pictures at frame position.
 static func Button3(parent: Control, name: String, x: float, y: float, tip: String) -> TextureButton:
 	var b := OUI.PictureButton(parent, name, x, y, tip)
+	OUI.ClickSound(b)
 	b.texture_disabled = OUI.Btn(name, "disabled")
 	var w: float = (b.texture_normal.get_width() / K) if b.texture_normal != null else 44.0
 	if w < 44.0 and x >= ColumnX:

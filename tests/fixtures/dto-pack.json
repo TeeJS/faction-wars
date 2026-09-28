@@ -11921,14 +11921,20 @@
       "cockpit_control": "swr-original:sound/common/8004.ogg",
       "cockpit_exit": "swr-original:sound/common/8002.ogg",
       "cockpit_galaxy_size": "swr-original:sound/common/8000.ogg",
-      "cockpit_load": "swr-original:sound/common/8001.ogg"
+      "cockpit_load": "swr-original:sound/common/8001.ogg",
+      "control_panel": "swr-original:sound/strategy/608.ogg",
+      "control_panel_gid": "swr-original:sound/strategy/600.ogg",
+      "window_button": "swr-original:sound/strategy/608.ogg"
     },
     "SoundsGiven": true,
     "SoundsRaw": {
       "cockpit_control": "swr-original:sound/common/8004.ogg",
       "cockpit_exit": "swr-original:sound/common/8002.ogg",
       "cockpit_galaxy_size": "swr-original:sound/common/8000.ogg",
-      "cockpit_load": "swr-original:sound/common/8001.ogg"
+      "cockpit_load": "swr-original:sound/common/8001.ogg",
+      "control_panel": "swr-original:sound/strategy/608.ogg",
+      "control_panel_gid": "swr-original:sound/strategy/600.ogg",
+      "window_button": "swr-original:sound/strategy/608.ogg"
     },
     "Summary": "The Galactic Civil War: the Rebel Alliance's hidden headquarters against the Empire's Coruscant, across a galaxy of 200 systems, with the original game's units, characters, missions and rules.",
     "UnexploredColor": "#cccccc",

@@ -357,6 +357,7 @@ func _frame_button(parent: Control, name: String, row: int, tip: String, action:
 	# No greyed picture: the original shows the current view's button lit,
 	# the other one normal (Fig 3.11), and nothing greyed.
 	b.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	OUI.ClickSound(b)
 	b.position = Vector2(SideButtonsX[side], SideButtonsY[side][row]) * OUI.K
 	b.size = normal.get_size()
 	b.tooltip_text = tip
