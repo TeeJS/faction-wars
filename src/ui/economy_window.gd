@@ -646,9 +646,22 @@ func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, fa
 				ui.ResolveObjectTarget(rowFac)
 				return
 
-			# Plain click replaces the selection; shift or ctrl adds to it.
-			var additive: bool = Input.is_key_pressed(KEY_SHIFT) or Input.is_key_pressed(KEY_CTRL)
-			if not additive:
+			# Plain click replaces the selection; CTRL adds or removes one;
+			# SHIFT takes every one from the last picked to this one, as the
+			# Message Index's does ("Select all the messages between two
+			# messages by selecting one, holding down the SHIFT key, and
+			# selecting the other", manual p079; TeeJ, 2026-09-27: the same for
+			# every list).
+			var kin: Array = Lq.where(planet.Facilities, func(f: Facility) -> bool: return f.Family() == rowFac.Family())
+			if Input.is_key_pressed(KEY_SHIFT) and _anchor != null and kin.has(_anchor) and _anchor != rowFac:
+				var a: int = kin.find(_anchor)
+				var b: int = kin.find(rowFac)
+				for f in kin.slice(mini(a, b), maxi(a, b) + 1):
+					if not _selected.has(f):
+						_selected.append(f)
+				Populate(planet)
+				return
+			if not Input.is_key_pressed(KEY_CTRL):
 				for f in _selected.duplicate():
 					if f.Family() == rowFac.Family():
 						_selected.erase(f)
@@ -657,6 +670,7 @@ func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, fa
 					_selected.append(rowFac)
 			else:
 				_selected.erase(rowFac)
+			_anchor = rowFac
 			Populate(planet))
 
 		var row := HBoxContainer.new()
@@ -1141,6 +1155,8 @@ func TargetSystem() -> Planet:
 # about four times a second, so a selection living in the controls would be
 # wiped before the player finished choosing.
 var _selected: Array = []
+## The facility last picked without SHIFT: a SHIFT-click's range starts there.
+var _anchor: Facility = null
 
 
 # The original confirms before scrapping: "Are you sure you want to scrap

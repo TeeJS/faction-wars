@@ -390,6 +390,7 @@ func PopulateUnitTab(tab: MarginContainer, units: Array, emptyText: String, sele
 		unitBtn.ParentWindow = self
 		unitBtn.SelectionGroup = selectionList
 		unitBtn.toggle_mode = true
+		unitBtn.set_meta("select_entity", unit)
 
 		if selectionList.has(unit):
 			unitBtn.button_pressed = true
@@ -409,7 +410,8 @@ func PopulateUnitTab(tab: MarginContainer, units: Array, emptyText: String, sele
 			if isPressed and not selectionList.has(unit):
 				selectionList.append(unit)
 			elif not isPressed:
-				selectionList.erase(unit))
+				selectionList.erase(unit)
+			ShiftRange(unitBtn, unit, selectionList, isPressed))
 
 		_AttachUnitMenu(unitBtn, unit, selectionList)
 
