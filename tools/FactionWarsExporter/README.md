@@ -135,6 +135,8 @@ advice.json           since 2.6.2: the agent's advice messages, per side (TEXTST
                       { "alliance": [ { n, group, key, title, text } ], "empire": [...] },
                       31 a side; windows/advice.<faction>.png their picture (STRATEGY 1071/1072)
 windows/chat.<faction>.png  since 2.6.3: Compose Chat Message's picture (STRATEGY 1040/1041)
+windows/card_building.<side>.png  since 2.6.4: keyed by black as well - the grid is drawn over
+                      the picture of a card being built (the game keys older sets itself)
 music/<nnn>.ogg       the score, MDATA.300-315 as Ogg Vorbis (11 kHz mono, about 4 MB)
 sound/<dll>/<id>.ogg  since 2.6.0: every voice and sound effect, by the original's own id -
                       the droids and characters (alsprite, emsprite), the briefing
