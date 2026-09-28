@@ -35,7 +35,29 @@ func _init() -> void:
 		var img := Image.create(61, 25, false, Image.FORMAT_RGBA8)
 		img.fill(Color(0.4, 0.4, 0.45))
 		img.save_png("%s/%s.png" % [dir, w])
+	# The side's grid over a card being built: green lines on black, as the
+	# exporter wrote it before 2.6.4.
+	for side in ["alliance", "empire"]:
+		var grid := Image.create(61, 25, false, Image.FORMAT_RGBA8)
+		grid.fill(Color.BLACK)
+		for x in range(0, 61, 4):
+			for y in 25:
+				grid.set_pixel(x, y, Color.GREEN)
+		grid.save_png("%s/card_building.%s.png" % [dir, side])
 	Art.Reset()
+
+	# BEING BUILT: the picture UNDER the grid, the grid's black see-through
+	# (TeeJ, 2026-09-27: the original's TIE under its grid; ours the grid alone).
+	var pic := ImageTexture.create_from_image(Image.create(61, 25, false, Image.FORMAT_RGBA8))
+	GameSettings.PlayerFaction = FactionRegistry.ById("empire")
+	var building := Button.new()
+	OUI.Card(building, "TIE Fighter", pic, Color.WHITE, Color.RED, "building", null, false)
+	var gridRect: TextureRect = building.get_node_or_null("Building")
+	var pictureRect: TextureRect = building.get_node_or_null("Picture")
+	var gi: Image = gridRect.texture.get_image() if gridRect != null else null
+	_check(pictureRect != null and gridRect != null and pictureRect.get_index() < gridRect.get_index(), "being built: the picture, the grid over it")
+	_check(gi != null and gi.get_pixel(1 * OUI.K, 0).a == 0.0 and gi.get_pixel(0, 0).a > 0.9, "the grid's black is see-through, its lines are not")
+	building.free()
 
 	var plated := Button.new()
 	OUI.Card(plated, "Luke Skywalker", null, Color.WHITE, Color.RED)

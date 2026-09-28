@@ -672,6 +672,34 @@ static func Captions(page: Control, captions: Array, width: int) -> void:
 		l.mouse_filter = Control.MOUSE_FILTER_PASS
 
 
+static var _keyedBlack: Dictionary = {}
+
+
+## The picture with its black made see-through, as the original draws the
+## pictures it keys by black. Kept per picture.
+static func KeyBlack(tex: Texture2D) -> Texture2D:
+	if tex == null:
+		return null
+	var id := tex.get_instance_id()
+	if _keyedBlack.has(id):
+		return _keyedBlack[id]
+	var img: Image = tex.get_image()
+	if img == null:
+		return tex
+	img = img.duplicate()
+	if img.is_compressed():
+		img.decompress()
+	img.convert(Image.FORMAT_RGBA8)
+	for y in img.get_height():
+		for x in img.get_width():
+			var c := img.get_pixel(x, y)
+			if c.r8 == 0 and c.g8 == 0 and c.b8 == 0:
+				img.set_pixel(x, y, Color(0, 0, 0, 0))
+	var out := ImageTexture.create_from_image(img)
+	_keyedBlack[id] = out
+	return out
+
+
 ## The card's picture stack: the plate for its state (manual p084: "the
 ## image for these units shows whether the unit is completed, being built,
 ## or en route" - the grey plate, hyperspace streaks; p096's character
@@ -697,7 +725,11 @@ static func _picture_stack(parent: Control, mini: Texture2D, state: String, over
 	if mini != null:
 		Place(parent, mini, 0, 0, "Picture")
 	if state == "building":
-		var grid: Texture2D = Pic("card_building.%s" % Side(GameSettings.PlayerFaction))
+		# The grid OVER the picture, its black see-through - the original's
+		# (TeeJ, 2026-09-27, its Svivren Fighter Squadrons beside ours: the TIE
+		# under the grid; ours showed the grid alone, STRATEGY 11570 / 11572
+		# exported with the black between its lines opaque).
+		var grid: Texture2D = KeyBlack(Pic("card_building.%s" % Side(GameSettings.PlayerFaction)))
 		if grid != null:
 			Place(parent, grid, 0, 0, "Building")
 	if state == "injured":

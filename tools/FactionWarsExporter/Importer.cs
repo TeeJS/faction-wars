@@ -257,7 +257,6 @@ public sealed class Importer
         // injured. The bars over a captured one are the character's own
         // (GOKRES, below).
         ("card_transit", 11501), ("card_injured", 11502),
-        ("card_building.alliance", 11570), ("card_building.empire", 11572),
         // Create Mission (p042 Fig 2.34, p103 Fig 3.47, p104 Fig 3.48): the
         // 259x355 plate of the Select Mission tab (the mission box, the Target
         // brackets) and of the Decoy tab (the agent and decoy columns), the
@@ -392,6 +391,10 @@ public sealed class Importer
         ("msgicon.manufacturing.alliance", 10908), ("msgicon.manufacturing.empire", 10909),
         ("msgicon.resources", 10966), ("msgicon.chat", 10916),
         ("msgicon.conflict", 10967), ("msgicon.defense", 10963),
+        // The side's grid over a card being built (manual p084): drawn OVER
+        // the picture, its black see-through (TeeJ's screenshot of the
+        // original's Fighter Squadrons, 2026-09-27: the TIE under the grid).
+        ("card_building.alliance", 11570), ("card_building.empire", 11572),
     };
 
     // GOKRES.DLL: the picture of a manufacturing queue in its Status window
