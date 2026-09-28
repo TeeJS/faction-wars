@@ -122,6 +122,7 @@ func _ready() -> void:
 	# A pack file dropped on the game imports from here on, on every screen.
 	PackImport.ListenForDrops(get_tree())
 	PackImport.OnImported = _on_imported
+	PackImport.OnProgress = _on_progress
 	var ids := FactionRegistry.ListPackIds()
 	if _returning:
 		_returning = false
@@ -1604,6 +1605,8 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	if top == null:
 		return
 	get_viewport().set_input_as_handled()
+	if top.name == "ImportProgress":
+		return   # an import is not stopped half way
 	if top == _art_window:
 		_close_art_window()
 	elif top is Window:
@@ -1629,6 +1632,58 @@ static func _button(node_name: String, text: String) -> Button:
 	b.custom_minimum_size = Vector2(0, 42)
 	_outline(b)
 	return b
+
+
+## HOW AN IMPORT IS GOING (TeeJ, 2026-09-28: "is there any way to show an import
+## progress bar" - "absolutely, yes"): a box over everything while it runs - what
+## it is doing, how many files of how many, the bar - from PackImport's steps
+## (every file checked, then written) and, in the browser, its own reading of
+## the file and its checking and keeping of a movies file. Gone when the import
+## is done; its result is then said as before. Each counted phase's share of the
+## bar: checking the first half, writing the rest.
+const ProgressParts := {"check": [0.0, 0.5], "write": [0.5, 0.97], "verify": [0.0, 0.95]}
+
+
+func _on_progress(phase: String, done: int, total: int) -> void:
+	if not is_inside_tree():
+		return
+	var box: Node = get_node_or_null("ImportProgress")
+	if phase.is_empty():
+		if box != null:
+			box.queue_free()
+		return
+	if box == null or box.is_queued_for_deletion():
+		var m := _modal("ImportProgress", "Importing", 620)
+		box = m[0]
+		(m[2] as Button).visible = false   # an import is not stopped half way
+		var said := _label("", 15, CText)
+		said.name = "Phase"
+		(m[1] as Control).add_child(said)
+		var bar := ProgressBar.new()
+		bar.name = "Bar"
+		bar.custom_minimum_size = Vector2(560, 16)
+		bar.show_percentage = false
+		bar.max_value = 1.0
+		bar.step = 0.0
+		bar.add_theme_stylebox_override("background", _box(Color(0, 0, 0, 0.45), CEdge, 8))
+		bar.add_theme_stylebox_override("fill", _box(CAccent, CGlow.darkened(0.2), 8))
+		(m[1] as Control).add_child(bar)
+		(m[1] as Control).add_child(_label("Keep this window open until it is done.", 13, CMuted))
+	var words := {
+		"reading": "Reading the file...",
+		"check": "Checking the files - %d of %d" % [done, total],
+		"write": "Writing the files - %d of %d" % [done, total],
+		"place": "Putting it in place...",
+		"verify": "Checking the movies - %d of %d" % [done, total],
+		"store": "Keeping the movies in this browser...",
+	}
+	(box.find_child("Phase", true, false) as Label).text = str(words.get(phase, "Importing..."))
+	var bar: ProgressBar = box.find_child("Bar", true, false)
+	var part: Array = ProgressParts.get(phase, [])
+	bar.indeterminate = part.is_empty()
+	if not part.is_empty():
+		var f: float = float(done) / float(total) if total > 0 else 0.0
+		bar.value = lerpf(float(part[0]), float(part[1]), clampf(f, 0.0, 1.0))
 
 
 ## An import finished (the files window's buttons, or a file dropped on the

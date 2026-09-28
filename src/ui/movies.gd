@@ -232,7 +232,7 @@ window.fwMovies = window.fwMovies || (function () {
   }
   function hex(buf) { return Array.prototype.map.call(new Uint8Array(buf), function (b) { return ('0' + b.toString(16)).slice(-2); }).join(''); }
   return {
-    take: function (blob) {
+    take: function (blob, progress) {
       return entries(blob).then(function (es) {
         if (!es['manifest.json']) return null;
         return bytesOf(blob, es['manifest.json']).then(function (mb) {
@@ -244,17 +244,20 @@ window.fwMovies = window.fwMovies || (function () {
           var names = Object.keys(m.files || {});
           if (!names.length) return fail('Its manifest lists no files.');
           var chain = Promise.resolve(null);
-          names.forEach(function (name) {
+          if (progress) progress('verify', 0, names.length);
+          names.forEach(function (name, n) {
             chain = chain.then(function (bad) {
               if (bad) return bad;
               if (!es[name]) return fail('It is incomplete: ' + name + ' is listed but missing.');
               return bytesOf(blob, es[name]).then(function (b) { return crypto.subtle.digest('SHA-256', b); }).then(function (d) {
+                if (progress) progress('verify', n + 1, names.length);
                 return hex(d) === String(m.files[name]).toLowerCase() ? null : fail('It is damaged: ' + name + ' does not match its checksum.');
               });
             });
           });
           return chain.then(function (bad) {
             if (bad) return bad;
+            if (progress) progress('store', 0, 0);
             return req('readwrite', function (s) { return s.put({ manifest: m, blob: blob, entries: es }, m.id); }).then(function () {
               if (navigator.storage && navigator.storage.persist) navigator.storage.persist();
               return JSON.stringify({ ok: true, kind: 'movies', id: m.id, files: names.length,
