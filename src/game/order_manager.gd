@@ -168,16 +168,44 @@ static func MoveCharacters(characters: Array, destination: Planet) -> Result:
 
 
 ## HQ RELOCATION — the Alliance may move its headquarters to another world it holds
-## (manual p090 / GAMEPLAY.md:2996-2998, Fig 3.82; guide Ch2/4/9/11/10). A blockade on
+## (manual p135 / GAMEPLAY.md §16, Fig 3.82; guide Ch2/4/9/11/10). A blockade on
 ## the current seat PINS it — the Imperial kill chain's whole point (GAMEPLAY.md:3078-3087).
 ## It costs a small loyalty drop on the world it leaves (manual p090): the system loses
 ## the HQ's support magnitude (entry 174). Only a faction whose HqDef is Movable (the
 ## Alliance's hidden HQ) may relocate; the Empire's fixed Coruscant seat cannot.
+##
+## THE MOVE TAKES DAYS: "you can see how much transit time it will take for the move
+## before you decide for sure by selecting Confirmed Move" (manual p135). REBEXE moves
+## the HQ as it moves any object - FUN_00514a60 re-parents it and FUN_00556430 starts
+## its transit - and a facility has no hyperdrive of its own: its rating is the
+## default virtual (vtable +0x34, 0x4f63f0), entry 1 for an existing object
+## (DAT_006b9050, loaded from parameter 1). So its days are a facility's deployment
+## days (Planet.DeploymentDaysTo). While it travels the side has no seat.
+static var _hq_en_route: Dictionary = {}   # faction id -> {"to": Planet, "days": int}
+
+
+static func ResetHeadquartersTransit() -> void:
+	_hq_en_route.clear()
+
+
+## Where the headquarters is bound and the days left, or {} when it is standing.
+static func HeadquartersEnRoute(faction: Faction) -> Dictionary:
+	return _hq_en_route.get(faction.Id, {}) if faction != null else {}
+
+
+## The days a relocation from `seat` to `destination` would take (Confirmed Move).
+static func HeadquartersTravelDays(seat: Planet, destination: Planet) -> int:
+	return seat.DeploymentDaysTo(destination) if seat != null else 0
+
+
 static func MoveHeadquarters(faction: Faction, destination: Planet) -> Result:
 	if faction == null or faction.Hq == null or not faction.Hq.Movable:
 		return Result.fail("This headquarters cannot be relocated.")
 	if destination == null:
 		return Result.fail("No destination.")
+	var bound: Dictionary = HeadquartersEnRoute(faction)
+	if not bound.is_empty():
+		return Result.fail("The headquarters is already on its way to %s." % (bound["to"] as Planet).Name)
 	var seat: Planet = Lq.first_or_null(GameState.AllPlanets(), func(p): return p.HasHeadquarters() and p.ControllingFaction == faction)
 	if seat == null:
 		return Result.fail("There is no headquarters to move.")
@@ -191,15 +219,39 @@ static func MoveHeadquarters(faction: Faction, destination: Planet) -> Result:
 	for i in range(seat.Facilities.size() - 1, -1, -1):
 		if seat.Facilities[i].HasRole("headquarters"):
 			seat.Facilities.remove_at(i)
-	destination.AddFacility("headquarters")
-	# The new seat is concealed from other sides for a hidden HQ; a side always knows its own.
-	for other in FactionRegistry.Playable:
-		destination.SetExplored(other, other == faction or not faction.HasHiddenHq())
+	var days := HeadquartersTravelDays(seat, destination)
+	_hq_en_route[faction.Id] = { "to": destination, "days": days }
 	# A small loyalty drop on the world it left (manual p090).
 	seat.ShiftSupport(faction, -RuleManager.Get(RuleId.HiddenHqSupportShift, faction))
-	print("[HQ] %s relocated its headquarters from %s to %s." % [faction.DisplayName, seat.Name, destination.Name])
+	print("[HQ] %s headquarters leaves %s for %s - %d days." % [faction.DisplayName, seat.Name, destination.Name, days])
 	EventBus.BroadcastChanged()
-	return Result.success()
+	return Result.success(days)
+
+
+## A day of every relocating headquarters' transit; on arrival it stands at its new seat.
+static func AdvanceHeadquarters() -> void:
+	for id in _hq_en_route.keys():
+		var faction: Faction = FactionRegistry.ById(id)
+		var bound: Dictionary = _hq_en_route[id]
+		bound["days"] = int(bound["days"]) - 1
+		if int(bound["days"]) > 0 or faction == null:
+			continue
+		var to: Planet = bound["to"]
+		# ⚠ NOT FROM THE SOURCES: a destination lost while the HQ travels. It goes
+		# where personnel go when their world is lost - the nearest world the side
+		# holds (GAMEPLAY.md §7, measured) - and waits a day when there is none.
+		if to.ControllingFaction != faction:
+			to = MilitaryCatalog.NearestHeldBy(faction, to)
+			if to == null:
+				bound["days"] = 1
+				continue
+		_hq_en_route.erase(id)
+		to.AddFacility("headquarters")
+		# The new seat is concealed from other sides for a hidden HQ; a side always knows its own.
+		for other in FactionRegistry.Playable:
+			to.SetExplored(other, other == faction or not faction.HasHiddenHq())
+		print("[HQ] %s headquarters arrives at %s." % [faction.DisplayName, to.Name])
+		EventBus.BroadcastChanged()
 
 
 ## BOARDING A FLEET. "A CHARACTER ON A SHIP HAS THAT SHIP AS THEIR BASE" (p115).

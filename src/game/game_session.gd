@@ -45,6 +45,7 @@ static func reset_game_state() -> void:
 	InformantManager.Reset()
 	SmugglingManager.Reset()
 	VictoryManager.Reset()
+	OrderManager.ResetHeadquartersTransit()
 	FleetBattleManager.Reset()
 	GameState.Reset()
 	CommandBus.Reset()
