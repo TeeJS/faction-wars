@@ -282,6 +282,14 @@ func OnDayAdvanced(_day: int) -> void:
 	RefreshVisuals()
 
 
+## Off the bus when the map goes. The bus is static, so a second Main.tscn in
+## one process (Load Game from the Game Options, or a test) otherwise called the
+## freed map on every day tick: "Attempt to call function 'null::OnDayAdvanced
+## (Callable)' on a null instance" (issue #301).
+func _exit_tree() -> void:
+	EventBus.OnDayAdvanced.erase(OnDayAdvanced)
+
+
 ## Show a briefing view: `caption` over the display, the systems in `lit`
 ## (Planet -> the side whose star it wears: alliance, empire, neutral) lit,
 ## the rest grey; `off` shows the display off instead.
