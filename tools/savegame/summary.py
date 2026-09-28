@@ -9,7 +9,7 @@ def walk(o, c):
     c[o['class']] += 1
     for k in o['children']: walk(k, c)
 r, g = rebsave.parse(open(sys.argv[1], 'rb').read())
-print(f"{g['name']!r}: header {g['header']}  day {g['settings'][3]}  events {len(g['events'])}")
+print(f"{g['name']!r}: header {g['header']}  day {g['game']['day']}  timers {len(g['queue_a8'])}")
 cs = []
 for v in g['views']:
     c = collections.Counter(); walk(v, c); cs.append(c)
