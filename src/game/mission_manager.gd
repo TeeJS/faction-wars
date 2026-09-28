@@ -979,6 +979,19 @@ static func ProcessDay(rng: Prng, day: int) -> void:
 			m.DaysOnStation = m.RollWorkDays(rng)
 
 
+## THE WATCH - units (ours: p103 with entry 70's scale by analogy): the Detection
+## of the units DEFENDING the target - "Any unit defending a system - fighters,
+## troops, and capital ships - has a chance at detecting a mission team"
+## (manual p103). Not the team's own side's: its Special Forces stand in the
+## target's garrison while on the mission, and a fleet of theirs over it
+## defends nothing (they counted towards catching themselves until 2026-09-28).
+static func Watch(m: Mission) -> int:
+	var defends := func(x) -> bool: return x.Faction != m.Faction
+	return Lq.sum(Lq.where(m.Target.Garrison, defends), func(u): return u.Detection) \
+		+ Lq.sum(Lq.where(m.Target.FighterSquadrons, defends), func(u): return u.Detection) \
+		+ Lq.sum(Lq.where(m.Target.OrbitingFleets, defends), func(f): return Lq.sum(f.Ships, func(s): return s.Detection))
+
+
 ## "Before a mission can have a chance at success, team members must sneak past
 ## enemy defenses" (manual p103). Scored as the original does (DISASSEMBLY-NOTES.md)
 ## and rolled against FOILTB.DAT.
@@ -986,10 +999,7 @@ static func Foiled(m: Mission, rng: Prng) -> bool:
 	if m.Target.ControllingFaction == m.Faction:
 		return false
 
-	# THE WATCH - units (ours: p103 with entry 70's scale by analogy).
-	var watch := Lq.sum(m.Target.Garrison, func(u): return u.Detection) \
-		+ Lq.sum(m.Target.FighterSquadrons, func(u): return u.Detection) \
-		+ Lq.sum(m.Target.OrbitingFleets, func(f): return Lq.sum(f.Ships, func(s): return s.Detection))
+	var watch := Watch(m)
 
 	# THE BASE IS THE TEAM'S MEAN, NOT ITS BEST (0x5887A0); ESPIONAGE IS THE STAT;
 	# NON-DECOYS ONLY.
