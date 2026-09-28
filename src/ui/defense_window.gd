@@ -400,7 +400,7 @@ func _GreyEmptyTabs(newSubject: bool) -> void:
 				break
 		tabs.current_tab = first
 	for i in counts.size():
-		tabs.set_tab_disabled(i, counts[i] == 0 and i != tabs.current_tab)
+		OUI.SetEmpty(tabs, i, counts[i] == 0)
 	OUI.RefreshStrip(tabs)
 
 

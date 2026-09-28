@@ -616,13 +616,37 @@ static func TabStrip(parent: Control, tabs: TabContainer, names: Array, side: St
 		b.set_meta("title", tabs.get_tab_title(i))
 		var idx := i
 		b.pressed.connect(func() -> void:
+			var empty: bool = tabs.is_tab_disabled(idx)
 			tabs.set_tab_disabled(idx, false)   # an empty page opens too
-			tabs.current_tab = idx)
+			tabs.current_tab = idx   # tab_changed greys an empty page being left
+			if empty:
+				tabs.set_meta("open_empty", idx))
 		parent.add_child(b)
 		buttons.append(b)
 	tabs.set_meta("tab_strip", buttons)
-	tabs.tab_changed.connect(func(_i: int) -> void: RefreshStrip(tabs))
+	# An empty page left for another greys again (TeeJ, 2026-09-28, with the
+	# original's Corsin: its empty Trooper Regiments tab coloured while open,
+	# grey once Fighter Squadrons was picked; ours stayed coloured).
+	tabs.tab_changed.connect(func(now: int) -> void:
+		var was: int = int(tabs.get_meta("open_empty", -1))
+		if was >= 0 and was != now:
+			tabs.remove_meta("open_empty")
+			if was < tabs.get_tab_count():
+				tabs.set_tab_disabled(was, true)
+		RefreshStrip(tabs))
 	RefreshStrip(tabs)
+
+
+## Marks page `i` empty or not, as a window counts its pages: an empty page's
+## tab is greyed, except while it is the page open - it greys when another is
+## opened (the strip's tab_changed).
+static func SetEmpty(tabs: TabContainer, i: int, empty: bool) -> void:
+	var open: bool = i == tabs.current_tab
+	tabs.set_tab_disabled(i, empty and not open)
+	if empty and open:
+		tabs.set_meta("open_empty", i)
+	elif int(tabs.get_meta("open_empty", -1)) == i:
+		tabs.remove_meta("open_empty")
 
 
 static func RefreshStrip(tabs: TabContainer) -> void:
