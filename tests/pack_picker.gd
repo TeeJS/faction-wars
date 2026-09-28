@@ -96,7 +96,7 @@ func _init() -> void:
 	if win != null:
 		for part in ["ImportArtwork", "ContinueWithout", "CancelArtwork", "ExporterLink"]:
 			_check(win.find_child(part, true, false) != null, "the artwork window has %s" % part)
-		_check((win.find_child("ContinueWithout", true, false) as Button).text == "Continue without artwork", "with no art yet, 'Continue without artwork'")
+		_check((win.find_child("ContinueWithout", true, false) as Button).text.to_lower() == "continue without artwork", "with no art yet, 'Continue without artwork'")
 		var said := " ".join(_labels(win))
 		_check(said.contains("own copy") and said.contains("1.") and said.contains("4.") and said.contains("swr-original.art.zip"),
 			"it says why, and the four steps")
@@ -124,7 +124,7 @@ func _init() -> void:
 		"an art set older than the game needs opens the window, saying export again")
 	# The old artwork stays in use if the player goes on (TeeJ, 2026-09-25).
 	var goOn: Button = win.find_child("ContinueWithout", true, false) if win != null else null
-	_check(goOn != null and goOn.text == "Continue without updating", "out of date, the way on reads 'Continue without updating'")
+	_check(goOn != null and goOn.text.to_lower() == "continue without updating", "out of date, the way on reads 'Continue without updating'")
 	picker._close_art_window()
 	var sw_pack: PackLoader.LoadedPack = picker._packs["star-wars-rebellion"]
 	m = FileAccess.open(ArtScript.UserArtRoot + "/swr-original/manifest.json", FileAccess.WRITE)
@@ -150,10 +150,11 @@ func _init() -> void:
 	if clear != null:
 		clear.pressed.emit()
 		await process_frame
-		var ask: ConfirmationDialog = picker.get_node_or_null("Confirm")
-		_check(ask != null, "Manage files asks first")
+		var ask: Node = picker.get_node_or_null("Confirm")
+		_check(ask != null and ask.has_meta("modal") and ask.find_child("Yes", true, false) != null and ask.find_child("Close", true, false) != null,
+			"Manage files asks first, on the screen's own box (TeeJ, 2026-09-28: no grey windows)")
 		if ask != null:
-			ask.confirmed.emit()
+			(ask.find_child("Yes", true, false) as Button).pressed.emit()
 			await process_frame
 		_check(not ArtScript.HasArtSet("swr-original") and picker.find_child("ManageFiles", true, false) == null,
 			"... and removes the artwork, and the button with it")
@@ -173,10 +174,10 @@ func _init() -> void:
 	if remove != null:
 		remove.pressed.emit()
 		await process_frame
-		var ask2: ConfirmationDialog = picker.get_node_or_null("Confirm")
+		var ask2: Node = picker.get_node_or_null("Confirm")
 		_check(ask2 != null, "Remove pack asks first")
 		if ask2 != null:
-			ask2.confirmed.emit()
+			(ask2.find_child("Yes", true, false) as Button).pressed.emit()
 			await process_frame
 		_check(not picker.PlayButtons().has("test-picker-pack"), "... and the pack and its card are gone")
 
@@ -251,8 +252,8 @@ func _init() -> void:
 	# The + card: the file picker (none headless - the refusal says so).
 	(picker._panels[PackPicker.ADD_CARD] as Button).pressed.emit()
 	await process_frame
-	var told: AcceptDialog = picker.get_node_or_null("ImportResult")
-	_check(told != null, "the + card imports a file (headless: '%s')" % (told.dialog_text if told != null else "nothing"))
+	var told: Node = picker.get_node_or_null("ImportResult")
+	_check(told != null and told.has_meta("modal"), "the + card imports a file, said on the screen's own box (headless: '%s')" % ((told.find_child("Message", true, false) as Label).text if told != null else "nothing"))
 	if told != null:
 		told.queue_free()
 		await process_frame   # closed before the next question opens
@@ -260,7 +261,7 @@ func _init() -> void:
 	var rm: Button = (picker._panels["test-carousel-2"] as Node).find_child("RemovePack", true, false)
 	rm.pressed.emit()
 	await process_frame
-	(picker.get_node("Confirm") as ConfirmationDialog).confirmed.emit()
+	(picker.get_node("Confirm").find_child("Yes", true, false) as Button).pressed.emit()
 	await process_frame
 	_check(not PackPicker.Favorites().has("test-carousel-2") and not picker._order.has("test-carousel-2"), "removing a starred pack unstars it")
 	for id in PackPicker.Favorites():

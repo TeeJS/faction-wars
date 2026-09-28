@@ -70,6 +70,9 @@ const CAccent := Color("#c8240e")
 const CGlow := Color("#fbc8a6")
 const CText := Color("#f2efec")
 const CMuted := Color("#a39a98")
+## An import's result on a box: done, or refused.
+const COk := Color("#9fe0a4")
+const CFail := Color("#ff8a70")
 const PictureH := 176
 const PlayW := 180
 ## A card's foot: its bottom margin, and the gap between Play and the row
@@ -357,9 +360,9 @@ func _build(ids: Array[String]) -> void:
 	if not OS.has_feature("web"):
 		var quit := Button.new()
 		quit.name = "ExitGame"
-		quit.text = "Exit Game"
-		quit.custom_minimum_size = Vector2(140, 36)
-		_quiet(quit)
+		quit.text = "EXIT GAME"
+		quit.custom_minimum_size = Vector2(150, 38)
+		_outline(quit)
 		quit.pressed.connect(func() -> void: get_tree().quit())
 		var foot := CenterContainer.new()
 		foot.add_child(quit)
@@ -717,10 +720,18 @@ func _input(event: InputEvent) -> void:
 
 
 func _dialog_up() -> bool:
-	for c in get_children():
-		if c is Window and (c as Window).visible:
-			return true
-	return false
+	return _top_modal() != null
+
+
+## The box on top, if one is up (a Window, or one of this screen's own boxes).
+func _top_modal() -> Node:
+	for i in range(get_child_count() - 1, -1, -1):
+		var c: Node = get_child(i)
+		if c.is_queued_for_deletion():
+			continue
+		if (c is Window and (c as Window).visible) or c.has_meta("modal"):
+			return c
+	return null
 
 
 # ---- the look: styles and the drawn parts ---------------------------------------------
@@ -805,22 +816,63 @@ static func _primary(b: Button) -> void:
 	b.add_theme_font_size_override("font_size", 15)
 
 
-## A secondary button: an outline that warms under the pointer.
-static func _quiet(b: Button) -> void:
-	var rest := _box(Color(0, 0, 0, 0.25), CEdge, ButtonRadius)
-	var hover := _box(Color(0, 0, 0, 0.35), CMuted, ButtonRadius)
-	for sb in [rest, hover]:
-		sb.content_margin_left = 16
-		sb.content_margin_right = 16
-		sb.content_margin_top = 6
-		sb.content_margin_bottom = 6
-	for st in ["normal", "focus", "disabled"]:
+## A button that is not the main one, in the "+" card's voice (its CHOOSE A
+## .ZIP FILE): a peach outline over a faint peach wash, spaced capitals,
+## filling warmer under the pointer.
+static func _outline(b: Button) -> void:
+	var rest := _box(Color(CGlow, 0.05), CGlow.darkened(0.3), ButtonRadius, 1)
+	var hot := _box(Color(CGlow, 0.16), CGlow, ButtonRadius, 1)
+	var off := _box(Color(0, 0, 0, 0.2), CEdge, ButtonRadius, 1)
+	for sb in [rest, hot, off]:
+		sb.content_margin_left = 20
+		sb.content_margin_right = 20
+		sb.content_margin_top = 8
+		sb.content_margin_bottom = 8
+	for st in ["normal", "focus"]:
 		b.add_theme_stylebox_override(st, rest)
-	b.add_theme_stylebox_override("hover", hover)
-	b.add_theme_stylebox_override("pressed", hover)
-	b.add_theme_color_override("font_color", CMuted)
-	b.add_theme_color_override("font_hover_color", CText)
-	b.add_theme_font_size_override("font_size", 14)
+	b.add_theme_stylebox_override("hover", hot)
+	b.add_theme_stylebox_override("pressed", hot)
+	b.add_theme_stylebox_override("disabled", off)
+	b.add_theme_color_override("font_color", CGlow)
+	b.add_theme_color_override("font_focus_color", CGlow)
+	b.add_theme_color_override("font_hover_color", Color.WHITE)
+	b.add_theme_color_override("font_pressed_color", Color.WHITE)
+	b.add_theme_color_override("font_disabled_color", CMuted.darkened(0.2))
+	b.add_theme_font_override("font", _face(2, 0.5))
+	b.add_theme_font_size_override("font_size", 13)
+
+
+## The rule under a box's title: the logo's underline, warmed - the planet's red
+## burning into the glow's peach and out to nothing.
+static var _rule: GradientTexture2D = null
+static func _rule_texture() -> GradientTexture2D:
+	if _rule != null:
+		return _rule
+	var g := Gradient.new()
+	g.offsets = PackedFloat32Array([0.0, 0.45, 1.0])
+	g.colors = PackedColorArray([CAccent, Color(CGlow, 0.55), Color(CGlow, 0.0)])
+	_rule = GradientTexture2D.new()
+	_rule.gradient = g
+	_rule.width = 256
+	_rule.height = 1
+	return _rule
+
+
+## Behind a box's title: the planet's red, faint at the top, gone by its foot.
+static var _glow: GradientTexture2D = null
+static func _glow_texture() -> GradientTexture2D:
+	if _glow != null:
+		return _glow
+	var g := Gradient.new()
+	g.offsets = PackedFloat32Array([0.0, 1.0])
+	g.colors = PackedColorArray([Color(CAccent, 0.16), Color(CAccent, 0.0)])
+	_glow = GradientTexture2D.new()
+	_glow.gradient = g
+	_glow.width = 4
+	_glow.height = 64
+	_glow.fill_from = Vector2(0, 0)
+	_glow.fill_to = Vector2(0, 1)
+	return _glow
 
 
 ## A card's other action (TeeJ, 2026-09-24: "too subtle or ambiguous"): a
@@ -1054,34 +1106,156 @@ class AddCard extends Button:
 		draw_line(c - Vector2(0, arm), c + Vector2(0, arm), col, 3.5, true)
 
 
+# ---- the boxes over the screen ------------------------------------------------------
+#
+# EVERY BOX ON THIS SCREEN IN ITS OWN LOOK (TeeJ, 2026-09-28: "any boxes/UI on
+# this main menu need to match the look and feel of the site ... You should be
+# fired for this bland/boring UI"): not Godot's grey windows, but the cards'
+# charcoal plate over the dimmed page - the warm edge and deep shadow, the title
+# in the glow's peach in spaced capitals over the logo's underline warmed, a
+# close cross; Play's red for the one thing to do, the "+" card's peach outline
+# for the rest.
+
+## A box over the screen: the page dimmed behind it, the plate `width` wide,
+## its title and its close cross. Returns [the shade - named `node_name`, freed
+## to close it - the body to fill, the close cross]. Esc closes the top one.
+func _modal(node_name: String, title: String, width: int) -> Array:
+	var shade := ColorRect.new()
+	shade.name = node_name
+	shade.color = Color(0.02, 0.012, 0.014, 0.8)
+	shade.mouse_filter = Control.MOUSE_FILTER_STOP
+	shade.set_anchors_preset(Control.PRESET_FULL_RECT)
+	shade.set_meta("modal", true)
+	add_child(shade)
+	var centre := CenterContainer.new()
+	centre.set_anchors_preset(Control.PRESET_FULL_RECT)
+	centre.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	shade.add_child(centre)
+	var panel := PanelContainer.new()
+	panel.name = "Plate"
+	panel.custom_minimum_size = Vector2(width, 0)
+	var plate := _box(Color(0.075, 0.066, 0.07, 0.985), CEdge.lightened(0.1), CardRadius)   # the cards must not show through
+	plate.shadow_color = Color(0, 0, 0, 0.65)
+	plate.shadow_size = 32
+	plate.shadow_offset = Vector2(0, 12)
+	panel.add_theme_stylebox_override("panel", plate)
+	centre.add_child(panel)
+	var outer := VBoxContainer.new()
+	outer.add_theme_constant_override("separation", 0)
+	panel.add_child(outer)
+	# The title's band, lit from above in the planet's red, as the page is.
+	var lit := PanelContainer.new()
+	lit.name = "Head"
+	var glow := StyleBoxTexture.new()
+	glow.texture = _glow_texture()
+	lit.add_theme_stylebox_override("panel", glow)
+	outer.add_child(lit)
+	var head := MarginContainer.new()
+	head.add_theme_constant_override("margin_left", 30)
+	head.add_theme_constant_override("margin_right", 16)
+	head.add_theme_constant_override("margin_top", 20)
+	head.add_theme_constant_override("margin_bottom", 14)
+	lit.add_child(head)
+	var bar := HBoxContainer.new()
+	head.add_child(bar)
+	var t := _label(title.to_upper(), 19, CGlow, _face(5, 0.6))
+	t.name = "Title"
+	t.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	t.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	bar.add_child(t)
+	var close := Button.new()
+	close.name = "Close"
+	close.text = "✕"
+	close.tooltip_text = "Close"
+	close.focus_mode = Control.FOCUS_NONE
+	close.custom_minimum_size = Vector2(34, 34)
+	for st in ["normal", "focus"]:
+		close.add_theme_stylebox_override(st, StyleBoxEmpty.new())
+	var ring := _box(Color(CGlow, 0.1), Color(CGlow, 0.5), 17, 1)
+	close.add_theme_stylebox_override("hover", ring)
+	close.add_theme_stylebox_override("pressed", ring)
+	close.add_theme_color_override("font_color", CMuted)
+	close.add_theme_color_override("font_hover_color", CGlow)
+	close.add_theme_font_size_override("font_size", 16)
+	bar.add_child(close)
+	var rule := TextureRect.new()
+	rule.name = "Rule"
+	rule.texture = _rule_texture()
+	rule.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	rule.stretch_mode = TextureRect.STRETCH_SCALE
+	rule.custom_minimum_size = Vector2(0, 2)
+	rule.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	outer.add_child(rule)
+	var bm := MarginContainer.new()
+	for side in ["left", "right"]:
+		bm.add_theme_constant_override("margin_" + side, 30)
+	bm.add_theme_constant_override("margin_top", 22)
+	bm.add_theme_constant_override("margin_bottom", 26)
+	outer.add_child(bm)
+	var body := VBoxContainer.new()
+	body.name = "Body"
+	body.add_theme_constant_override("separation", 16)
+	bm.add_child(body)
+	return [shade, body, close]
+
+
+## A row of a box's buttons, at its foot, to the right.
+static func _actions(body: Control, buttons: Array) -> HBoxContainer:
+	var gap := Control.new()
+	gap.custom_minimum_size = Vector2(0, 4)
+	body.add_child(gap)
+	var row := HBoxContainer.new()
+	row.name = "Actions"
+	row.alignment = BoxContainer.ALIGNMENT_END
+	row.add_theme_constant_override("separation", 12)
+	for b in buttons:
+		row.add_child(b)
+	body.add_child(row)
+	return row
+
+
 ## Asks before something that cannot be undone from here.
 func _confirm(title: String, text: String, yes_text: String, yes: Callable) -> void:
-	var box := ConfirmationDialog.new()
-	box.name = "Confirm"
-	box.title = title
-	box.dialog_text = text
-	box.dialog_autowrap = true
-	box.ok_button_text = yes_text
-	add_child(box)
-	box.confirmed.connect(func() -> void:
-		box.queue_free()
+	var m := _modal("Confirm", title, 540)
+	var shade: Control = m[0]
+	var said := _para(text)
+	said.custom_minimum_size = Vector2(480, 0)
+	(m[1] as Control).add_child(said)
+	var no := _button("No", "CANCEL")
+	var ok := Button.new()
+	ok.name = "Yes"
+	ok.text = yes_text.to_upper()
+	ok.custom_minimum_size = Vector2(150, 42)
+	_primary(ok)
+	_actions(m[1], [no, ok])
+	for b in [no, m[2]]:
+		(b as Button).pressed.connect(shade.queue_free)
+	ok.pressed.connect(func() -> void:
+		shade.queue_free()
 		yes.call())
-	box.canceled.connect(box.queue_free)
-	box.popup_centered(Vector2i(460, 0))
+	ok.grab_focus()
 
 
 ## A result with nowhere else to go (a file dropped on the cards, the "+"
-## card's import, a fourth star).
+## card's import, a fourth star): said on the box, green done or red not.
 func _tell(result: Dictionary, title: String = "Import") -> void:
-	var box := AcceptDialog.new()
-	box.name = "ImportResult" if title == "Import" else title
-	box.title = title
-	box.dialog_text = str(result.get("message", ""))
-	box.dialog_autowrap = true
-	add_child(box)
-	box.confirmed.connect(box.queue_free)
-	box.canceled.connect(box.queue_free)
-	box.popup_centered(Vector2i(520, 0))
+	var m := _modal("ImportResult" if title == "Import" else title, title, 580)
+	var shade: Control = m[0]
+	var said := _para(str(result.get("message", "")))
+	said.name = "Message"
+	said.custom_minimum_size = Vector2(520, 0)
+	if result.has("ok"):
+		said.add_theme_color_override("font_color", COk if bool(result["ok"]) else CFail)
+	(m[1] as Control).add_child(said)
+	var ok := Button.new()
+	ok.name = "Ok"
+	ok.text = "OK"
+	ok.custom_minimum_size = Vector2(120, 42)
+	_primary(ok)
+	_actions(m[1], [ok])
+	for b in [ok, m[2]]:
+		(b as Button).pressed.connect(shade.queue_free)
+	ok.grab_focus()
 
 
 # ---- the artwork window ------------------------------------------------------------
@@ -1099,34 +1273,11 @@ func _open_art_window(pack_id: String, message: String = "", ok: bool = true) ->
 	var source: Dictionary = ART_SOURCES.get(set_id, {"game": pack.Manifest.DisplayName, "file": "%s.art.zip" % set_id})
 	var outdated := _outdated_sets(pack)
 
-	var shade := ColorRect.new()
-	shade.name = "ArtworkWindow"
-	shade.color = Color(0, 0, 0, 0.7)
-	shade.mouse_filter = Control.MOUSE_FILTER_STOP
-	shade.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(shade)
+	var m := _modal("ArtworkWindow", "Your artwork is out of date" if not outdated.is_empty() else "The original artwork", 720)
+	var shade: Control = m[0]
 	_art_window = shade
-	var centre := CenterContainer.new()
-	centre.set_anchors_preset(Control.PRESET_FULL_RECT)
-	shade.add_child(centre)
-	var panel := PanelContainer.new()
-	panel.custom_minimum_size = Vector2(680, 0)
-	var solid := _box(Color(0.086, 0.078, 0.082, 0.98), CEdge, CardRadius)   # the cards must not show through
-	solid.shadow_color = Color(0, 0, 0, 0.6)
-	solid.shadow_size = 24
-	panel.add_theme_stylebox_override("panel", solid)
-	centre.add_child(panel)
-	var margin := MarginContainer.new()
-	for side in ["left", "top", "right", "bottom"]:
-		margin.add_theme_constant_override("margin_" + side, 24)
-	panel.add_child(margin)
-	var box := VBoxContainer.new()
-	box.add_theme_constant_override("separation", 14)
-	margin.add_child(box)
-
-	var title := _label(("YOUR ARTWORK IS OUT OF DATE" if not outdated.is_empty() else "THE ORIGINAL ARTWORK"), 20, CGlow, _face(4, 0.6))
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	box.add_child(title)
+	var box: VBoxContainer = m[1]
+	(m[2] as Button).pressed.connect(_close_art_window)
 	if outdated.is_empty():
 		box.add_child(_para("Faction Wars does not include the artwork of %s. It comes from your own copy of the game (GOG, Steam or the CD), exported once on your computer." % source.game))
 	else:
@@ -1146,6 +1297,9 @@ func _open_art_window(pack_id: String, message: String = "", ok: bool = true) ->
 		var link := LinkButton.new()
 		link.text = "FactionWarsExporter.exe"
 		link.tooltip_text = EXPORTER_URL
+		link.add_theme_color_override("font_color", CGlow)
+		link.add_theme_color_override("font_hover_color", Color.WHITE)
+		link.add_theme_font_size_override("font_size", 16)
 		link.pressed.connect(func() -> void: JavaScriptBridge.eval("window.open('%s', '_blank')" % EXPORTER_URL, true))
 		get_it.add_child(link)
 	else:
@@ -1154,12 +1308,18 @@ func _open_art_window(pack_id: String, message: String = "", ok: bool = true) ->
 		address.editable = false
 		address.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		address.add_theme_font_size_override("font_size", 12)
+		var well := _box(Color(0, 0, 0, 0.35), CEdge, ButtonRadius)
+		well.content_margin_left = 10
+		well.content_margin_right = 10
+		for st in ["normal", "read_only", "focus"]:
+			address.add_theme_stylebox_override(st, well)
+		address.add_theme_color_override("font_uneditable_color", CText.darkened(0.1))
 		get_it.add_child(address)
-		var copy := _button("CopyAddress", "Copy")
-		copy.custom_minimum_size = Vector2(70, 0)
+		var copy := _button("CopyAddress", "COPY")
+		copy.custom_minimum_size = Vector2(90, 0)
 		copy.pressed.connect(func() -> void:
 			DisplayServer.clipboard_set(EXPORTER_URL)
-			copy.text = "Copied")
+			copy.text = "COPIED")
 		get_it.add_child(copy)
 	step1.add_child(get_it)
 	box.add_child(step1)
@@ -1174,25 +1334,21 @@ func _open_art_window(pack_id: String, message: String = "", ok: bool = true) ->
 		said.add_theme_color_override("font_color", Color(0.6, 0.9, 0.6) if ok else Color(1.0, 0.5, 0.42))
 		box.add_child(said)
 
-	var row := HBoxContainer.new()
-	row.alignment = BoxContainer.ALIGNMENT_CENTER
-	row.add_theme_constant_override("separation", 12)
-	var pick := _button("ImportArtwork", "IMPORT ARTWORK FILE")
+	var pick := Button.new()
+	pick.name = "ImportArtwork"
+	pick.text = "IMPORT ARTWORK FILE"
 	_primary(pick)
-	pick.custom_minimum_size = Vector2(230, 42)
+	pick.custom_minimum_size = Vector2(250, 42)
 	pick.pressed.connect(func() -> void: PackImport.PickFile(_on_imported))
-	row.add_child(pick)
 	# Out of date, the old artwork stays in use: say so (TeeJ, 2026-09-25:
 	# "Make it 'Continue without updating'").
 	var go := _button("ContinueWithout", "Continue without updating" if not outdated.is_empty() else "Continue without artwork")
 	go.pressed.connect(func() -> void:
 		_close_art_window()
 		Choose(pack_id))
-	row.add_child(go)
 	var cancel := _button("CancelArtwork", "Cancel")
 	cancel.pressed.connect(_close_art_window)
-	row.add_child(cancel)
-	box.add_child(row)
+	_actions(box, [cancel, go, pick])
 	pick.grab_focus()
 
 
@@ -1203,10 +1359,20 @@ func _close_art_window() -> void:
 	_art_for = ""
 
 
+## Esc closes the box on top.
 func _unhandled_key_input(event: InputEvent) -> void:
-	if ArtworkWindow() != null and event.is_pressed() and not event.is_echo() and (event as InputEventKey).keycode == KEY_ESCAPE:
-		get_viewport().set_input_as_handled()
+	if not event.is_pressed() or event.is_echo() or (event as InputEventKey).keycode != KEY_ESCAPE:
+		return
+	var top: Node = _top_modal()
+	if top == null:
+		return
+	get_viewport().set_input_as_handled()
+	if top == _art_window:
 		_close_art_window()
+	elif top is Window:
+		(top as Window).hide()
+	else:
+		top.queue_free()
 
 
 static func _para(text: String) -> Label:
@@ -1217,13 +1383,14 @@ static func _para(text: String) -> Label:
 	return l
 
 
-## A secondary button in the artwork window (the quiet outline).
+## A box's button that is not the main one (the "+" card's peach outline), in
+## capitals.
 static func _button(node_name: String, text: String) -> Button:
 	var b := Button.new()
 	b.name = node_name
-	b.text = text
+	b.text = text.to_upper()
 	b.custom_minimum_size = Vector2(0, 42)
-	_quiet(b)
+	_outline(b)
 	return b
 
 
