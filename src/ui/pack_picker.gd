@@ -87,9 +87,12 @@ const ButtonRadius := 6
 ## The Faction Wars Exporter's download: always the newest release's exe (one
 ## file, from exporter 2.2.0 on).
 const EXPORTER_URL := "https://github.com/TeeJS/faction-wars/releases/latest/download/FactionWarsExporter.exe"
-## What the artwork window names for each art set the engine knows: the game
-## it comes from and the file the exporter writes.
-const ART_SOURCES := {"swr-original": {"game": "Star Wars: Rebellion", "file": "swr-original.art.zip"}}
+## What the files window names for each art set the engine knows: the game it
+## comes from, the files the exporter writes (its Export and its Export
+## movies...) and what the movies are (the exporter's README: 15 movies, about
+## 350 MB, 10-15 minutes).
+const ART_SOURCES := {"swr-original": {"game": "Star Wars: Rebellion", "file": "swr-original.art.zip",
+	"movies": "swr-original.movies.zip", "movies_note": "the 15 movies. Optional: about 350 MB, 10-15 minutes."}}
 
 ## pack id -> the Play button, for the test and the keyboard.
 var _play: Dictionary = {}
@@ -511,23 +514,18 @@ func _card(id: String, pack: PackLoader.LoadedPack, errors: Array[String]) -> Bu
 	links.add_theme_constant_override("separation", 10)
 	foot.add_child(links)
 
-	# The imported artwork (and movies): Manage files (TeeJ, 2026-09-28: "The
-	# clear artwork pack button needs to be renamed Manage files") - only when
-	# there is some.
-	if pack != null and not _imported_sets(pack).is_empty():
-		var clear := _link("ManageFiles", "Manage files")
-		clear.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		clear.tooltip_text = "Remove the imported artwork and movies from this %s. %s then plays without the original's pictures until you import your artwork file again." \
-			% ["browser" if OS.has_feature("web") else "computer", pack.Manifest.DisplayName]
-		clear.pressed.connect(func() -> void:
-			_confirm("Clear artwork pack",
-				"Remove the imported artwork and movies? %s plays without them until you import your files again." % pack.Manifest.DisplayName,
-				"Remove", func() -> void:
-					for e in PackImport.Installed():
-						if e.kind in [PackImport.KIND_ART_SET, PackImport.KIND_MOVIES] and pack.Manifest.ArtSets.has(e.id):
-							PackImport.Remove(e.kind, e.id)
-					_rebuild()))
-		links.add_child(clear)
+	# The player's own files for it - the artwork and the movies: Manage files
+	# (TeeJ, 2026-09-28: "The clear artwork pack button needs to be renamed
+	# Manage files"), the files window with each file's Import and Remove. On
+	# every pack that uses an art set, so a player who went on without the
+	# artwork can bring it in later.
+	if pack != null and not pack.Manifest.ArtSets.is_empty():
+		var manage := _link("ManageFiles", "Manage files")
+		manage.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		manage.tooltip_text = "Import or remove %s's artwork and movies - your own files, kept in this %s." \
+			% [pack.Manifest.DisplayName, "browser" if OS.has_feature("web") else "computer"]
+		manage.pressed.connect(func() -> void: _open_art_window(id, "", true, true))
+		links.add_child(manage)
 	# A pack the player imported can go again; the ones that ship cannot.
 	if _is_imported(id):
 		# Every version kept of it goes too (PackImport.Remove), and says so.
@@ -1153,8 +1151,8 @@ func _modal(node_name: String, title: String, width: int) -> Array:
 	var head := MarginContainer.new()
 	head.add_theme_constant_override("margin_left", 30)
 	head.add_theme_constant_override("margin_right", 16)
-	head.add_theme_constant_override("margin_top", 20)
-	head.add_theme_constant_override("margin_bottom", 14)
+	head.add_theme_constant_override("margin_top", 16)
+	head.add_theme_constant_override("margin_bottom", 12)
 	lit.add_child(head)
 	var bar := HBoxContainer.new()
 	head.add_child(bar)
@@ -1189,8 +1187,8 @@ func _modal(node_name: String, title: String, width: int) -> Array:
 	var bm := MarginContainer.new()
 	for side in ["left", "right"]:
 		bm.add_theme_constant_override("margin_" + side, 30)
-	bm.add_theme_constant_override("margin_top", 22)
-	bm.add_theme_constant_override("margin_bottom", 26)
+	bm.add_theme_constant_override("margin_top", 18)
+	bm.add_theme_constant_override("margin_bottom", 22)
 	outer.add_child(bm)
 	var body := VBoxContainer.new()
 	body.name = "Body"
@@ -1258,41 +1256,175 @@ func _tell(result: Dictionary, title: String = "Import") -> void:
 	ok.grab_focus()
 
 
-# ---- the artwork window ------------------------------------------------------------
+# ---- the files window --------------------------------------------------------------
+#
+# THE PLAYER'S OWN FILES FOR A PACK (TeeJ, 2026-09-28: "this window needs to be
+# bigger and have instructions for the movie files as well - IT NEEDS A
+# SEPARATE IMPORT MOVIE FILE BUTTON. asking users to use the pack upload for
+# everything is confusing, the back-end process can stay the same, but the UI
+# for the user needs to be more clear and direct. Continue without artwork
+# needs to be in its own row, and users need to know what continuing without
+# artwork means - we can have a simpler version of this page once they have
+# uploaded artwork that is out of date"). One window, three faces:
+#   FIRST IMPORT (Play, no artwork): why the files come from the player's own
+#     copy; the exporter; its two exports; a row for each file - what it is,
+#     its name, whether it is in, its own Import button; then, on a row of its
+#     own, Continue without artwork and what that means - Play, once the
+#     artwork is in.
+#   OUT OF DATE (Play, the artwork too old): the short version - export again,
+#     Import artwork file; Continue without updating on its own row.
+#   MANAGE FILES (the card's button): both rows, each with Import and Remove.
+# The files import as they always did (PackImport.PickFile, a file dropped on
+# the window): the buttons only say which file is wanted.
 
-## Why a pack's original look needs the player's own art, and how to get it
-## there (TeeJ, 2026-09-24): clear, short steps; Continue without artwork;
-## the import's result, when there is one, at the foot.
-func _open_art_window(pack_id: String, message: String = "", ok: bool = true) -> void:
+## The window's widths: the whole window, the short one, and its text.
+const FilesW := 900
+const ShortW := 740
+const FilesTextW := 840
+const ShortTextW := 680
+## The file rows' pills.
+const CIn := Color("#7fd18a")
+const COld := Color("#ff9b6b")
+## Manage files, not Play: the window is up to look after the files.
+var _art_manage: bool = false
+
+
+## Opens the files window for `pack_id`: Play's (`manage` false) or the card's
+## Manage files. `message` is an import's result, said in the window.
+func _open_art_window(pack_id: String, message: String = "", ok: bool = true, manage: bool = false) -> void:
 	_close_art_window()
 	var pack: PackLoader.LoadedPack = _packs.get(pack_id)
 	if pack == null:
 		return
 	_art_for = pack_id
+	_art_manage = manage
 	var set_id: String = pack.Manifest.ArtSets[0] if not pack.Manifest.ArtSets.is_empty() else ""
-	var source: Dictionary = ART_SOURCES.get(set_id, {"game": pack.Manifest.DisplayName, "file": "%s.art.zip" % set_id})
+	var source: Dictionary = ART_SOURCES.get(set_id, {"game": pack.Manifest.DisplayName, "file": "%s.art.zip" % set_id, "movies": "%s.movies.zip" % set_id})
 	var outdated := _outdated_sets(pack)
-
-	var m := _modal("ArtworkWindow", "Your artwork is out of date" if not outdated.is_empty() else "The original artwork", 720)
-	var shade: Control = m[0]
-	_art_window = shade
+	var short := not manage and not outdated.is_empty()
+	var title := ("Manage files" if manage else ("Your artwork is out of date" if short else "The original's artwork and movies"))
+	var width := ShortW if short else FilesW
+	var text_w := ShortTextW if short else FilesTextW
+	var m := _modal("ArtworkWindow", title, width)
+	_art_window = m[0]
 	var box: VBoxContainer = m[1]
+	box.add_theme_constant_override("separation", 12)
 	(m[2] as Button).pressed.connect(_close_art_window)
-	if outdated.is_empty():
-		box.add_child(_para("Faction Wars does not include the artwork of %s. It comes from your own copy of the game (GOG, Steam or the CD), exported once on your computer." % source.game))
-	else:
-		var e: Dictionary = outdated[0]
-		box.add_child(_para("Your artwork file was made by exporter %s. This version of Faction Wars needs %s or later. Export it again:" \
-			% [str(e.exporter) if not str(e.exporter).is_empty() else "(unknown)", PackImport.MIN_EXPORTER.get(e.id, "")]))
+	var here := "browser" if OS.has_feature("web") else "computer"
 
-	# 1. Where to get the exporter. In the browser a link that opens it in a
-	# new tab; on the desktop the address to copy (the game starts no other
-	# program).
-	var step1 := VBoxContainer.new()
-	step1.add_child(_para("1.  Download the Faction Wars Exporter (Windows):"))
+	if short:
+		var e: Dictionary = outdated[0]
+		box.add_child(_para("Your artwork file was made by exporter %s. This version of Faction Wars needs %s or later, so some of %s's windows and pictures are missing until you export it again." \
+			% [str(e.exporter) if not str(e.exporter).is_empty() else "(unknown)", PackImport.MIN_EXPORTER.get(e.id, ""), pack.Manifest.DisplayName], text_w))
+		box.add_child(_step(1, "Get the newest exporter", _exporter_link(), text_w))
+		box.add_child(_step(2, "Export again", _para("Run it and click Export. It saves Documents\\Faction Wars\\%s over the old one." % source.file, text_w - 56), text_w))
+		var pick := _import_button("ImportArtwork", "Import artwork file", true)
+		pick.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+		box.add_child(_step(3, "Import it", pick, text_w))
+		_result(box, message, ok, text_w)
+		box.add_child(_way_on(pack_id, "ContinueWithout", "Continue without updating",
+			"Play with the artwork you have. The windows and pictures added since it was made stay missing until you update it.", false, text_w))
+		pick.grab_focus()
+		return
+
+	if manage:
+		box.add_child(_para("The files %s uses from your own copy of %s. Import a file to add it or bring it up to date; remove one to play without it." % [pack.Manifest.DisplayName, source.game], text_w))
+	else:
+		box.add_child(_para("%s can look, sound and play like %s itself: its windows, pictures, sounds, music and movies. Faction Wars does not include them - they come from your own copy of the game (GOG, Steam or the CD), exported once on your computer." \
+			% [pack.Manifest.DisplayName, source.game], text_w))
+	box.add_child(_step(1, "Get the exporter", _exporter_link(), text_w))
+	var exports := VBoxContainer.new()
+	exports.add_theme_constant_override("separation", 6)
+	exports.add_child(_para("Run it. It finds your game by itself, and makes each file in Documents\\Faction Wars:", text_w - 56))
+	exports.add_child(_bullet("Export", "%s - the artwork, sounds and music." % source.file, text_w - 56))
+	exports.add_child(_bullet("Export movies...", "%s - %s" % [source.movies, source.get("movies_note", "the movies. Optional.")], text_w - 56))
+	box.add_child(_step(2, "Export your files", exports, text_w))
+	var rows := VBoxContainer.new()
+	rows.add_theme_constant_override("separation", 10)
+	var art := _file_state(set_id, PackImport.KIND_ART_SET)
+	var movies := _file_state(set_id, PackImport.KIND_MOVIES)
+	rows.add_child(_file_row("Art", "Artwork", source.file, "The original's windows, pictures, sounds and music.", art, set_id, PackImport.KIND_ART_SET, manage, text_w - 56))
+	rows.add_child(_file_row("Movies", "Movies", source.movies, "The original's movies, each where the original played it. Optional.", movies, set_id, PackImport.KIND_MOVIES, manage, text_w - 56))
+	var drop := _label("Or drag a file onto this window. Keep both files: %s" % ("if this browser forgets them (cleared site data, another browser or device), import them again." \
+		if OS.has_feature("web") else "they put everything back if it is ever cleared."), 13, CMuted)
+	drop.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	drop.custom_minimum_size = Vector2(text_w - 56, 0)
+	rows.add_child(drop)
+	box.add_child(_step(3, "Import them here", rows, text_w))
+	_result(box, message, ok, text_w)
+	if manage:
+		var done := _button("CloseFiles", "Close")
+		done.custom_minimum_size = Vector2(130, 42)
+		done.pressed.connect(_close_art_window)
+		_actions(box, [done])
+		return
+	# The way on, on a row of its own: Play once the artwork is in, else
+	# Continue without artwork, and what that means.
+	if bool(art["in"]):
+		box.add_child(_way_on(pack_id, "PlayNow", "Play %s" % pack.Manifest.DisplayName,
+			"Your artwork is in. Import the movies too if you like, or play now.", true, text_w))
+	else:
+		box.add_child(_way_on(pack_id, "ContinueWithout", "Continue without artwork",
+			"Play the same game - every rule, unit and mission - in Faction Wars' own plain windows, without the original's pictures, sounds, music or movies. You can import your files at any time from Manage files on this card.", false, text_w))
+	(box.find_child("ImportArtwork", true, false) as Control).grab_focus()
+
+
+## Whether a file of `kind` for art set `set_id` is in: {in, exporter, outdated}.
+static func _file_state(set_id: String, kind: String) -> Dictionary:
+	for e in PackImport.Installed():
+		if e.kind == kind and e.id == set_id:
+			return {"in": true, "exporter": str(e.exporter), "outdated": bool(e.outdated)}
+	return {"in": false, "exporter": "", "outdated": false}
+
+
+## A numbered step: the number in a peach ring, its heading in spaced
+## capitals, and under the heading what to do.
+static func _step(n: int, heading: String, what: Control, width: int) -> Control:
+	var row := HBoxContainer.new()
+	row.name = "Step%d" % n
+	row.add_theme_constant_override("separation", 18)
+	var num := PanelContainer.new()
+	num.custom_minimum_size = Vector2(38, 38)
+	num.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	num.add_theme_stylebox_override("panel", _box(Color(CGlow, 0.1), CGlow.darkened(0.15), 19, 2))
+	var digit := _label(str(n), 17, CGlow, _face(0, 0.6))
+	digit.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	digit.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	num.add_child(digit)
+	row.add_child(num)
+	var col := VBoxContainer.new()
+	col.add_theme_constant_override("separation", 6)
+	col.custom_minimum_size = Vector2(width - 56, 0)
+	col.add_child(_label(heading.to_upper(), 14, CText, _face(3, 0.6)))
+	col.add_child(what)
+	row.add_child(col)
+	return row
+
+
+## "Export" - what it makes.
+static func _bullet(button: String, what: String, width: int) -> Control:
+	var l := RichTextLabel.new()
+	l.bbcode_enabled = true
+	l.fit_content = true
+	l.scroll_active = false
+	l.custom_minimum_size = Vector2(width, 0)
+	l.add_theme_font_size_override("normal_font_size", 15)
+	l.add_theme_font_size_override("bold_font_size", 15)
+	l.add_theme_color_override("default_color", CText)
+	l.add_theme_constant_override("line_separation", 3)
+	l.text = "[color=#%s]•[/color]  [b]%s[/b]  %s" % [CGlow.to_html(false), button, what]
+	return l
+
+
+## Where to get the exporter: in the browser a link that opens it in a new tab;
+## on the desktop the address to copy (the game starts no other program).
+static func _exporter_link() -> Control:
+	var col := VBoxContainer.new()
+	col.add_theme_constant_override("separation", 6)
+	col.add_child(_label("Download the Faction Wars Exporter (Windows):", 15, CText))
 	var get_it := HBoxContainer.new()
 	get_it.name = "ExporterLink"
-	get_it.alignment = BoxContainer.ALIGNMENT_CENTER
+	get_it.add_theme_constant_override("separation", 10)
 	if OS.has_feature("web"):
 		var link := LinkButton.new()
 		link.text = "FactionWarsExporter.exe"
@@ -1315,41 +1447,145 @@ func _open_art_window(pack_id: String, message: String = "", ok: bool = true) ->
 			address.add_theme_stylebox_override(st, well)
 		address.add_theme_color_override("font_uneditable_color", CText.darkened(0.1))
 		get_it.add_child(address)
-		var copy := _button("CopyAddress", "COPY")
+		var copy := _button("CopyAddress", "Copy")
 		copy.custom_minimum_size = Vector2(90, 0)
 		copy.pressed.connect(func() -> void:
 			DisplayServer.clipboard_set(EXPORTER_URL)
 			copy.text = "COPIED")
 		get_it.add_child(copy)
-	step1.add_child(get_it)
-	box.add_child(step1)
-	box.add_child(_para("2.  Run it. It finds your game by itself. Click Export: it saves Documents\\Faction Wars\\%s." % source.file))
-	box.add_child(_para("3.  Click Import artwork file below and choose that file, or drag the file onto this window."))
-	box.add_child(_para("4.  Keep the file. If this browser forgets the artwork (cleared site data, another browser or device), import it again." \
-		if OS.has_feature("web") else "4.  Keep the file: it puts the artwork back if it is ever cleared."))
+	col.add_child(get_it)
+	return col
 
-	if not message.is_empty():
-		var said := _para(message)
-		said.name = "ArtworkResult"
-		said.add_theme_color_override("font_color", Color(0.6, 0.9, 0.6) if ok else Color(1.0, 0.5, 0.42))
-		box.add_child(said)
 
-	var pick := Button.new()
-	pick.name = "ImportArtwork"
-	pick.text = "IMPORT ARTWORK FILE"
-	_primary(pick)
-	pick.custom_minimum_size = Vector2(250, 42)
-	pick.pressed.connect(func() -> void: PackImport.PickFile(_on_imported))
-	# Out of date, the old artwork stays in use: say so (TeeJ, 2026-09-25:
-	# "Make it 'Continue without updating'").
-	var go := _button("ContinueWithout", "Continue without updating" if not outdated.is_empty() else "Continue without artwork")
+## One file: its name and what it holds, whether it is in (and new enough),
+## and its own Import button - in Manage files, Remove too.
+func _file_row(node: String, heading: String, file: String, what: String, state: Dictionary, set_id: String, kind: String, manage: bool, width: int) -> Control:
+	var panel := PanelContainer.new()
+	panel.name = "FileRow_" + node
+	panel.custom_minimum_size = Vector2(width, 0)
+	var sb := _box(Color(0, 0, 0, 0.28), CEdge, ButtonRadius)
+	sb.content_margin_left = 18
+	sb.content_margin_right = 14
+	sb.content_margin_top = 10
+	sb.content_margin_bottom = 10
+	panel.add_theme_stylebox_override("panel", sb)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 14)
+	panel.add_child(row)
+	var col := VBoxContainer.new()
+	col.add_theme_constant_override("separation", 4)
+	col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(col)
+	var top := HBoxContainer.new()
+	top.add_theme_constant_override("separation", 12)
+	top.add_child(_label(heading.to_upper(), 15, CText, _face(3, 0.7)))
+	var old := bool(state["outdated"])
+	var pill_text := ("OUT OF DATE" if old else "IMPORTED") if bool(state["in"]) else "NOT IMPORTED"
+	var pill_colour: Color = (COld if old else CIn) if bool(state["in"]) else CMuted
+	var pill := PanelContainer.new()
+	pill.name = "State"
+	pill.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	var ps := _box(Color(pill_colour, 0.12), Color(pill_colour, 0.7), 10, 1)
+	ps.content_margin_left = 9
+	ps.content_margin_right = 9
+	ps.content_margin_top = 1
+	ps.content_margin_bottom = 1
+	pill.add_theme_stylebox_override("panel", ps)
+	var pl := _label(pill_text, 11, pill_colour, _face(2, 0.6))
+	pl.name = "StateText"
+	pill.add_child(pl)
+	top.add_child(pill)
+	col.add_child(top)
+	var name_l := _label(file, 13, CGlow.darkened(0.1))
+	name_l.name = "FileName"
+	col.add_child(name_l)
+	var what_l := _label(what if not (bool(state["in"]) and not str(state["exporter"]).is_empty()) else "%s  Made by exporter %s." % [what, state["exporter"]], 14, CMuted)
+	what_l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	col.add_child(what_l)
+	var buttons := HBoxContainer.new()
+	buttons.add_theme_constant_override("separation", 10)
+	buttons.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	row.add_child(buttons)
+	if manage and bool(state["in"]):
+		var rm := _button("Remove" + node, "Remove")
+		rm.custom_minimum_size = Vector2(110, 42)
+		rm.pressed.connect(func() -> void:
+			var pack_id := _art_for
+			_confirm("Remove the %s" % heading.to_lower(), "Remove the imported %s from this %s? You can import %s again at any time." \
+				% [heading.to_lower(), "browser" if OS.has_feature("web") else "computer", file], "Remove", func() -> void:
+					PackImport.Remove(kind, set_id)
+					_rebuild()
+					_open_art_window(pack_id, "", true, true)))
+		buttons.add_child(rm)
+	var main := kind == PackImport.KIND_ART_SET and not (bool(state["in"]) and not old)
+	var label := ("Update" if old else ("Import again" if bool(state["in"]) else "Import")) + (" artwork file" if kind == PackImport.KIND_ART_SET else " movie file")
+	buttons.add_child(_import_button("ImportArtwork" if kind == PackImport.KIND_ART_SET else "ImportMovies", label, main))
+	return panel
+
+
+## A file's Import button: the file picker, as every import has been; the
+## artwork's the red one while the artwork is what is missing.
+func _import_button(node: String, text: String, main: bool) -> Button:
+	var b: Button
+	if main:
+		b = Button.new()
+		b.name = node
+		b.text = text.to_upper()
+		b.custom_minimum_size = Vector2(240, 42)
+		_primary(b)
+	else:
+		b = _button(node, text)
+		b.custom_minimum_size = Vector2(240, 42)
+	b.pressed.connect(func() -> void: PackImport.PickFile(_on_imported))
+	return b
+
+
+## An import's result, when there is one, green done or red not.
+static func _result(box: Control, message: String, ok: bool, width: int) -> void:
+	if message.is_empty():
+		return
+	var said := _para(message, width)
+	said.name = "ArtworkResult"
+	said.add_theme_color_override("font_color", COk if ok else CFail)
+	box.add_child(said)
+
+
+## The way on, on a row of its own at the window's foot: its button and what
+## it means.
+func _way_on(pack_id: String, node: String, text: String, meaning: String, main: bool, width: int) -> Control:
+	var panel := PanelContainer.new()
+	panel.name = "WayOn"
+	var sb := _box(Color(CAccent, 0.07) if main else Color(1, 1, 1, 0.03), CEdge, ButtonRadius)
+	sb.content_margin_left = 18
+	sb.content_margin_right = 14
+	sb.content_margin_top = 10
+	sb.content_margin_bottom = 10
+	panel.add_theme_stylebox_override("panel", sb)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 18)
+	panel.add_child(row)
+	var said := _label(meaning, 14, CText.darkened(0.08))
+	said.name = "Meaning"
+	said.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	said.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	said.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	said.custom_minimum_size = Vector2(width - 330, 0)
+	row.add_child(said)
+	var go: Button
+	if main:
+		go = Button.new()
+		go.name = node
+		go.text = text.to_upper()
+		_primary(go)
+	else:
+		go = _button(node, text)
+	go.custom_minimum_size = Vector2(280, 42)
+	go.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	go.pressed.connect(func() -> void:
 		_close_art_window()
 		Choose(pack_id))
-	var cancel := _button("CancelArtwork", "Cancel")
-	cancel.pressed.connect(_close_art_window)
-	_actions(box, [cancel, go, pick])
-	pick.grab_focus()
+	row.add_child(go)
+	return panel
 
 
 func _close_art_window() -> void:
@@ -1357,6 +1593,7 @@ func _close_art_window() -> void:
 		_art_window.queue_free()
 	_art_window = null
 	_art_for = ""
+	_art_manage = false
 
 
 ## Esc closes the box on top.
@@ -1375,10 +1612,10 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		top.queue_free()
 
 
-static func _para(text: String) -> Label:
+static func _para(text: String, width: int = 620) -> Label:
 	var l := _label(text, 15, CText)
 	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	l.custom_minimum_size = Vector2(620, 0)
+	l.custom_minimum_size = Vector2(width, 0)
 	l.add_theme_constant_override("line_spacing", 3)
 	return l
 
@@ -1394,14 +1631,15 @@ static func _button(node_name: String, text: String) -> Button:
 	return b
 
 
-## An import finished (the artwork window's button, or a file dropped on the
-## game): the cards show it at once. For the pack the artwork window is up
-## for, artwork now in goes straight on to the game; anything else - a
-## refusal and its reasons, or another kind of file - is said in the window.
+## An import finished (the files window's buttons, or a file dropped on the
+## game): the cards show it at once, and the files window it came from opens
+## again saying so - with its Play once the artwork is in, so the movies can
+## come in too before the game starts (the artwork alone once went straight on).
 func _on_imported(result: Dictionary) -> void:
 	if not is_inside_tree() or _cards == null:
 		return
 	var waiting := _art_for
+	var manage := _art_manage
 	_rebuild()
 	var message := str(result.get("message", ""))
 	var ok := bool(result.get("ok", false))
@@ -1412,11 +1650,7 @@ func _on_imported(result: Dictionary) -> void:
 		if not message.is_empty():
 			_tell(result)
 		return
-	var pack: PackLoader.LoadedPack = _packs.get(waiting)
-	if ok and pack != null and ArtState(pack).is_empty():
-		Choose(waiting)
-		return
-	_open_art_window(waiting, message, ok)
+	_open_art_window(waiting, message, ok, manage)
 
 
 func _rebuild() -> void:
