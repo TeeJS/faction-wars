@@ -582,8 +582,10 @@ func ConsiderUprising(need: int, have: int) -> void:
 	EventBus.Tell(ControllingFaction, msg)
 
 
-## THE ORIGINAL'S OWN MESSAGE, word for word (TEXTSTRA 0x00f3f6). Raised once per
-## episode, not once per day.
+## THE ORIGINAL'S OWN MESSAGE, word for word (TEXTSTRA 0x00f3f6): its title is
+## "<system> Near Uprising" - the string is "|" + field 1 + " Near Uprising", the
+## system named first as in "<system> Joins" (TeeJ, 2026-09-27: "missing the
+## planet name"). Raised once per episode, not once per day.
 func WarnGarrison(need: int, have: int) -> void:
 	if IsNearUprising:
 		return
@@ -591,7 +593,7 @@ func WarnGarrison(need: int, have: int) -> void:
 	print("[%s] NEAR UPRISING - %d of %d regiments. First unrest check on day %d." % [Name, have, need, _next_uprising_incident])
 	if not GameSettings.IsHuman(ControllingFaction):
 		return
-	var msg := GameMessage.new("Near Uprising",
+	var msg := GameMessage.new("%s Near Uprising" % Name,
 		"Unrest has pushed %s close to uprising.\n\nIt holds %d %s against a garrison requirement of %d. Move troops there, or train more, before the populace rises." % [Name, have, Terms.lower("trooper_regiments"), need],
 		Enums.MessageCategory.Defense, StrategicTickManager.Today, self)
 	msg.Type = Enums.MessageType.GarrisonWarning
