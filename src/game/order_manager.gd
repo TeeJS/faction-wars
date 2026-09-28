@@ -240,10 +240,10 @@ static func AdvanceHeadquarters() -> void:
 		# A destination lost while the HQ travels: the original REROUTES it and says
 		# so (TEXTSTRA RCDATA 28860-28861): "Headquarters Rerouted" / "The Alliance
 		# Headquarters was unable to deploy at <system>. It has been rerouted to
-		# <system>." ⚠ WHERE to is not in the sources: the nearest world the side
+		# <system>." Where to is not in the sources: the nearest world the side
 		# holds, where personnel go when their world is lost (GAMEPLAY.md §7,
-		# measured); it travels on from the lost world by the same law. With none
-		# held it waits a day.
+		# measured) - TeeJ's call, 2026-09-28: "nearest world is fine". It travels
+		# on from the lost world by the same law. With none held it waits a day.
 		if to.ControllingFaction != faction:
 			var refuge: Planet = MilitaryCatalog.NearestHeldBy(faction, to)
 			if refuge == null:
