@@ -151,16 +151,14 @@ static func Wire(img: Image, from: int, to: int, mid: int, clamps: Array, loops:
 		var w: int = mini(WireSource.size.x, to - x)
 		img.blit_rect(wires, Rect2i(0, 0, w, WireSource.size.y), Vector2i(x, top))
 		x += w
-	var clamp_top: int = mid - ClampSource.size.y / 2
 	for l in loops:
-		var xa: int = roundi(float(clamps[l[1]])) + (LoopSlotLeft if l[2] < 0 else LoopSlotRight)
-		var xb: int = roundi(float(clamps[l[3]])) + (LoopSlotLeft if l[4] < 0 else LoopSlotRight)
-		var above: bool = int(l[5]) < clamp_top
-		Loop(img, strip, str(l[0]), xa, xb, int(l[5]), clamp_top if above else clamp_top + ClampSource.size.y)
+		var xa: int = _gap(float(clamps[l[1]]), int(l[2]))
+		var xb: int = _gap(float(clamps[l[3]]), int(l[4]))
+		Loop(img, strip, str(l[0]), xa, xb, int(l[5]), top)
 	var clamp: Image = strip.get_region(ClampSource)
 	for cx in clamps:
 		img.blit_rect(clamp, Rect2i(Vector2i.ZERO, ClampSource.size),
-			Vector2i(roundi(float(cx) - ClampSource.size.x / 2.0), clamp_top))
+			Vector2i(roundi(float(cx) - ClampSource.size.x / 2.0), mid - ClampSource.size.y / 2))
 
 
 ## Each wire's rows in the strip where it runs straight (mp_connection, x 110):
@@ -169,20 +167,28 @@ static func Wire(img: Image, from: int, to: int, mid: int, clamps: Array, loops:
 const WireProfileX := 110
 const WireProfile := {"yellow": [447, 448, 449], "red": [451, 452, 453], "blue": [455, 456, 457], "green": [459, 460]}
 const WireShadeRow := 450
-## Where a loop leaves or enters a clamp: its left half or its right half.
-const LoopSlotLeft := -4
-const LoopSlotRight := 1
+## A loop's upright: two columns, the wire's lit and dark rows turned on end -
+## the room in a gap beside a clamp.
+const LoopUpright := 2
+
+
+## The first column of the 2-px gap beside the clamp centred on `cx`: its left
+## (`side` < 0) or its right, between the clamp and the box.
+static func _gap(cx: float, side: int) -> int:
+	var left: int = roundi(cx - ClampSource.size.x / 2.0)
+	return left - LoopUpright if side < 0 else left + ClampSource.size.x
 
 
 ## One wire led out of the row (TeeJ, 2026-09-28: "the wires can go anywhere we
 ## want them to, they are just decorative - I want the dang empty space
-## filled"): out of a clamp's end at x `xa`, along the band with its top at row
-## `level`, and back into another's at `xb` (xa < xb) - the strip's own
-## colours, across the run and down the uprights, each with the strip's shade
-## under or beside it. `edge` is the clamps' end it leaves from (their top for
-## a loop above the row, their bottom for one below); the uprights run into the
-## clamps, which are drawn over them.
-static func Loop(img: Image, strip: Image, colour: String, xa: int, xb: int, level: int, edge: int) -> void:
+## filled"), out of a clamp's opening - where the wires pass through its band,
+## "not under the mounting legs" (TeeJ, the same day): from its own row where
+## it leaves the clamp, up (or down) the gap beside it at x `xa`, along the
+## band with its top at row `level`, and down (or up) the gap at `xb` into
+## another clamp's opening (xa < xb). `band_top` is the straight wires' top
+## row. The strip's own colours: the run lit to dark with the strip's shade
+## under it, the uprights its lit and dark rows.
+static func Loop(img: Image, strip: Image, colour: String, xa: int, xb: int, level: int, band_top: int) -> void:
 	var rows: Array = WireProfile.get(colour, [])
 	if rows.is_empty() or xb <= xa:
 		return
@@ -195,16 +201,18 @@ static func Loop(img: Image, strip: Image, colour: String, xa: int, xb: int, lev
 	var put := func(x: int, y: int, c: Color) -> void:
 		if x >= 0 and y >= 0 and x < size.x and y < size.y:
 			img.set_pixel(x, y, c)
-	var above: bool = level < edge
-	# The uprights first, so the run lies over their corners.
-	var y0: int = level + w if above else edge - 4
-	var y1: int = edge + 4 if above else level
+	# Where this wire passes the clamps: its own rows in the band.
+	var own_first: int = band_top + int(rows[0]) - WireSource.position.y
+	var own_last: int = own_first + w - 1
+	var above: bool = level < band_top
+	var y0: int = level + w if above else own_first
+	var y1: int = own_last + 1 if above else level
+	var upright: Array = [cols[0], cols[w - 1]]
 	for x in [xa, xb]:
 		for y in range(y0, y1):
-			for k in w:
-				put.call(x + k, y, cols[k])
-			put.call(x + w, y, shade)
-	for x in range(xa, xb + w + 1):
+			for k in LoopUpright:
+				put.call(x + k, y, upright[k])
+	for x in range(xa, xb + LoopUpright):
 		for k in w:
 			put.call(x, level + k, cols[k])
 		put.call(x, level + w, shade)
