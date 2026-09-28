@@ -96,17 +96,12 @@ static func ProcessDay(galaxy: Array, day: int) -> void:
 		return
 
 
-## `f` has won: the messages, and each side's movie - the winner's victory,
-## everyone else's defeat (the original's 105-108, whose crawls say which).
+## `f` has won: each side's movie - the winner's victory, everyone else's
+## defeat (the original's 105-108, whose crawls say which). No message: the
+## original has none (TeeJ, 2026-09-28: remove ours).
 static func Declare(f: Faction, galaxy: Array, day: int) -> void:
 	Winner = f
-	print("[Victory] %s has met every victory condition on day %d." % [f.DisplayName, day])
-	for h in GameSettings.HumanFactions:
-		var ours: bool = f == h
-		EventBus.Tell(h, GameMessage.new("Victory" if ours else "Defeat",
-			("Every victory condition has been met. The %s has won.\n\n%s" % [f.DisplayName, Summary(f, galaxy)]) if ours
-			else ("The %s has met every victory condition. We have lost.\n\n%s" % [f.DisplayName, Summary(f, galaxy)]),
-			Enums.MessageCategory.Missions, day))
+	print("[Victory] %s has met every victory condition on day %d: %s" % [f.DisplayName, day, Summary(f, galaxy).replace("\n", ";")])
 	for side in FactionRegistry.Playable:
 		EventBus.Cue(("victory.%s" if side == f else "defeat.%s") % side.Id, [side])
 	EventBus.BroadcastChanged()
