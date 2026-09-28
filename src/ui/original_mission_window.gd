@@ -235,11 +235,12 @@ func _on_order(id: int, m: Mission) -> void:
 	match id:
 		0:
 			var d: PackDefs.MissionDefPack = MissionCatalog.DefFor(m.Type)
-			if _uiManager != null:
+			var ui: UIManager = _ui()
+			if ui != null:
 				if d != null:
-					_uiManager.OpenEncyclopedia("missions", d.Id)
+					ui.OpenEncyclopedia("missions", d.Id)
 				else:
-					_uiManager.OpenEncyclopedia()
+					ui.OpenEncyclopedia()
 		1:
 			_status(m)
 		2:
@@ -247,17 +248,19 @@ func _on_order(id: int, m: Mission) -> void:
 			Populate(_planet)
 
 
-## "Status": how the mission stands - its team, where it is, its attempts
-## (and a Diplomacy mission's support). OURS: no screenshot shows the
-## original's answer.
+## "Status": the original's Mission Status window (TeeJ, 2026-09-28: "mission
+## status windows need to match" - ours was a plain box saying "arriving").
 func _status(m: Mission) -> void:
-	var box := AcceptDialog.new()
-	box.title = m.DisplayName()
-	box.dialog_text = MissionWindow.Describe(m)
-	add_child(box)
-	box.popup_centered()
-	box.confirmed.connect(box.queue_free)
-	box.canceled.connect(box.queue_free)
+	var ui: UIManager = _ui()
+	if ui != null:
+		ui.OpenMissionStatusWindow(m)
+
+
+## The UI manager: this window is opened by it (OnMissionClicked) and is its
+## child, and Populate is given no reference - so the Encyclopedia order,
+## looking for one it was never given, did nothing.
+func _ui() -> UIManager:
+	return _uiManager if _uiManager != null else get_parent() as UIManager
 
 
 # ---- the right side -----------------------------------------------------------

@@ -175,6 +175,27 @@ static func LabelText(m: Mission) -> String:
 		else "%s (%s)" % [m.DisplayName(), ", ".join(Lq.select(m.Team, func(c: Unit) -> String: return c.Name))]
 
 
+## THE ORIGINAL'S MISSION STATUS WINDOW (TeeJ's screenshot of the original,
+## 2026-09-28: the Emperor recruiting on Coruscant), on the Status plate: its
+## words TEXTSTRA 34422-34425 - "Mission Status", "Target:", "Team Size:",
+## "Decoys:" - the mission's 130x65 picture (the Create Mission window's) and
+## its name, the Encyclopedia button for the mission's entry. Team Size counts
+## the whole team, decoys among them (INFERRED: the screenshot's team is one
+## agent and no decoys).
+static func StatusData(m: Mission) -> Dictionary:
+	var d: PackDefs.MissionDefPack = MissionCatalog.DefFor(m.Type)
+	var side: String = OUI.Side(m.Faction)
+	return {
+		"title": "Mission Status",
+		"fields": [["Target:", m.Target.Name if m.Target != null else ""],
+			["Team Size:", str(m.Team.size())],
+			["Decoys:", str(m.Decoys.size())]],
+		"picture": Art.Scaled(Art.MissionCard(d.Id, side), OUI.K) if d != null else null,
+		"name": m.DisplayName(),
+		"encyclopedia": ["missions", d.Id] if d != null else [],
+	}
+
+
 static func Describe(m: Mission) -> String:
 	# "Any time you send a character from one system to another, there is a
 	# period of time when the character is in hyperspace ... you cannot give

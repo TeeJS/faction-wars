@@ -2233,6 +2233,14 @@ func OpenDefenseFacilityStatusWindow(facility: Facility) -> void:
 		targetPos)
 
 
+## A mission's Status (its right-click menu, manual p109): the original's
+## Mission Status window (MissionWindow.StatusData), one per mission.
+func OpenMissionStatusWindow(m: Mission) -> void:
+	if m == null:
+		return
+	OpenStatusPlate("MissionStatus_%d" % m.Serial, func() -> Dictionary: return MissionWindow.StatusData(m))
+
+
 ## A manufacturing queue's Status window (manual p086, Fig 3.29): the queue's
 ## right-click menu -> Status. The original's look with the imported art, the
 ## same fields in a plain window without it.

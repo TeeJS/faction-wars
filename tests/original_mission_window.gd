@@ -134,6 +134,33 @@ func _init() -> void:
 		_check(popup.get_item_text(2).begins_with("Abort") and popup.is_item_disabled(2), "Abort is greyed while the team is in hyperspace")
 		popup.hide()
 
+	# Status: the original's Mission Status window (TeeJ's screenshot of the
+	# original, 2026-09-28; TEXTSTRA 34422-34425), not a plain box.
+	w._on_order(1, m)
+	for _i in 2:
+		await process_frame
+	var status: Control = ui._openWindows.get("MissionStatus_%d" % m.Serial)
+	var data: Dictionary = MissionWindow.StatusData(m)
+	_check(status != null and is_instance_valid(status) and not Lq.any(w.get_children(), func(c: Node) -> bool: return c is AcceptDialog),
+		"Status opens the Mission Status window")
+	_check(data["title"] == "Mission Status" and data["fields"] == [["Target:", far.Name], ["Team Size:", "2"], ["Decoys:", "1"]]
+		and data["name"] == m.DisplayName() and (data["encyclopedia"] as Array).size() == 2,
+		"its words: Mission Status, Target / Team Size / Decoys, the mission's name (%s)" % str(data["fields"]))
+	if status != null and is_instance_valid(status):
+		status.call("CloseWindow")
+		for _i in 2:
+			await process_frame
+	# Encyclopedia: the mission's entry (it did nothing: the window had no UI manager).
+	w._on_order(0, m)
+	for _i in 2:
+		await process_frame
+	var ency: Control = ui._openWindows.get("Encyclopedia")
+	_check(ency != null and is_instance_valid(ency), "Encyclopedia opens the Encyclopedia")
+	if ency != null and is_instance_valid(ency):
+		ency.call("CloseWindow")
+		for _i in 2:
+			await process_frame
+
 	# Arrived: Abort is live and calls the mission off.
 	m.DaysToTarget = 0
 	w._orders(m, Vector2(300, 300))
