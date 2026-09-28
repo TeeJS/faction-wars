@@ -505,7 +505,7 @@ static func GreyEmptyTab(tabs: TabContainer, tabName: String, count: int) -> voi
 		return
 	var idx: int = page.get_index()
 	if idx >= 0 and idx < tabs.get_tab_count():
-		tabs.set_tab_disabled(idx, count == 0)
+		tabs.set_tab_disabled(idx, count == 0 and idx != tabs.current_tab)   # the open page is never greyed
 
 
 func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, family: String, emptyMsg: String) -> void:

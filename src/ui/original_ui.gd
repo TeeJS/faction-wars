@@ -556,9 +556,13 @@ static func Flatten(window: Control) -> MarginContainer:
 
 ## THE ORIGINAL'S TAB STRIP: its pictures at their measured positions over
 ## the plate's dark band. The current page shows its "current" picture; a
-## page with nothing on it shows the greyed picture and cannot be picked
-## ("grayed-out tabs indicate no facilities of that type are on the
-## system", p084). Pressing one turns the TabContainer's page.
+## page with nothing on it shows the greyed picture ("grayed-out tabs
+## indicate no facilities of that type are on the system", p084) - and still
+## opens, empty: "the button is greyed out to show it's empty, but the page
+## is available" (TeeJ, 2026-09-27, with the original's Chandrila: its
+## greyed Trooper Regiments tab open on "Garrison Requirement: 0"). The
+## TabContainer's disabled flag marks the empty ones. Pressing one turns
+## the TabContainer's page.
 static func TabStrip(parent: Control, tabs: TabContainer, names: Array, side: String, xs: Array, y: int) -> void:
 	var buttons: Array = []
 	for i in mini(names.size(), tabs.get_tab_count()):
@@ -576,8 +580,8 @@ static func TabStrip(parent: Control, tabs: TabContainer, names: Array, side: St
 		b.set_meta("title", tabs.get_tab_title(i))
 		var idx := i
 		b.pressed.connect(func() -> void:
-			if not tabs.is_tab_disabled(idx):
-				tabs.current_tab = idx)
+			tabs.set_tab_disabled(idx, false)   # an empty page opens too
+			tabs.current_tab = idx)
 		parent.add_child(b)
 		buttons.append(b)
 	tabs.set_meta("tab_strip", buttons)
@@ -592,8 +596,10 @@ static func RefreshStrip(tabs: TabContainer) -> void:
 	for i in buttons.size():
 		var b: TextureButton = buttons[i]
 		var current: bool = i == tabs.current_tab
-		b.disabled = tabs.is_tab_disabled(i) and not current
-		b.texture_normal = b.get_meta("current") if current else b.get_meta("normal")
+		var empty: bool = tabs.is_tab_disabled(i) and not current
+		b.disabled = false
+		b.set_meta("empty", empty)
+		b.texture_normal = b.get_meta("current") if current 			else (b.texture_disabled if empty and b.texture_disabled != null else b.get_meta("normal"))
 
 
 # ---- a page: captions over a grid of cards -------------------------------------
