@@ -1,5 +1,5 @@
 extends SceneTree
-## A SECTOR-WINDOW CORNER ICON TAKES THE MOUSE ONLY ON ITS DRAWN PIXELS
+## A SECTOR-WINDOW CORNER ICON TAKES THE MOUSE ON ITS GLYPH - the box round its drawn pixels
 ## (SectorWindow.CornerButton).
 ##
 ## The original's corner icons are quadrant cells laid with their inner corner
@@ -85,7 +85,11 @@ func _init() -> void:
 	_check(bare != null, "there is a point on %s's picture, inside an icon's cell, where no glyph pixel is drawn (%s)" \
 		% [home.Name, ("%s, in the %s icon's cell" % [str(bare["at"]), bare["cell"]]) if bare != null else "none"])
 	var glyphs: Dictionary = {}   # icon -> a map point in the middle of its drawn pixels
+	var gaps: Dictionary = {}     # icon -> a map point between its glyph's lines
 	for name in corners:
+		var gap: Variant = _gap_point(corners[name])
+		if gap != null:
+			gaps[name] = gap
 		var g: Variant = _glyph_point(corners[name])
 		_check(g != null, "the %s icon has drawn pixels to click (%s)" % [name, str(g)])
 		if g != null:
@@ -105,6 +109,15 @@ func _init() -> void:
 		var over: String = await _click(w, glyphs[name])
 		var title: String = home.Name + WindowFor.get(name, "?")
 		_check(_opened(ui, home) == [title], "a click on the %s glyph opens '%s' (under the pointer: %s; opened %s)" % [name, title, over, str(_opened(ui, home))])
+
+	# A click BETWEEN a glyph's lines, inside the box round its drawn pixels,
+	# is the icon's too (TeeJ, 2026-09-27: the icons "feel harder to click
+	# than on the original" - only the lines themselves answered).
+	for name in gaps:
+		w = await _open_sector(ui, home)
+		var over: String = await _click(w, gaps[name])
+		var title: String = home.Name + WindowFor.get(name, "?")
+		_check(_opened(ui, home) == [title], "a click between the %s glyph's lines opens '%s' (under the pointer: %s; opened %s)" % [name, title, over, str(_opened(ui, home))])
 
 	# --- 2. The hover follows the drawn pixels. ---
 	# (The window's controls are read after the pointer settles, in the same
@@ -381,6 +394,28 @@ static func _bare_point(pic: Button, corners: Dictionary) -> Variant:
 ## A sector-map point in the middle of an icon's drawn pixels: the drawn
 ## pixel with drawn pixels all round it nearest their centroid (any drawn
 ## pixel, if none has). Null when nothing is drawn.
+## A map point inside the box round an icon's drawn pixels where nothing is
+## drawn - between the glyph's lines - or null when the box is solid.
+static func _gap_point(btn: Button) -> Variant:
+	var img: Image = _image(btn.icon)
+	if img == null:
+		return null
+	var drawn: Vector2 = btn.icon.get_size()
+	var origin: Vector2 = btn.position + ((btn.size - drawn) / 2.0).floor()
+	var lo := Vector2i(img.get_width(), img.get_height())
+	var hi := Vector2i(-1, -1)
+	for y in img.get_height():
+		for x in img.get_width():
+			if img.get_pixel(x, y).a >= 0.5:
+				lo = Vector2i(mini(lo.x, x), mini(lo.y, y))
+				hi = Vector2i(maxi(hi.x, x), maxi(hi.y, y))
+	for y in range(lo.y + 1, hi.y):
+		for x in range(lo.x + 1, hi.x):
+			if img.get_pixel(x, y).a < 0.1:
+				return origin + (Vector2(x, y) + Vector2(0.5, 0.5)) * drawn / Vector2(img.get_size())
+	return null
+
+
 static func _glyph_point(btn: Button) -> Variant:
 	var img: Image = _image(btn.icon)
 	if img == null:
