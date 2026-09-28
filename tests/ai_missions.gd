@@ -59,12 +59,15 @@ func _init() -> void:
 	_check(after.size() > before, "the AI launched an Abduction (had %d, now %d)" % [before, after.size()])
 
 	# The Launch call carried a real victim and a non-empty team (not the old 4-of-7).
+	# The major placed here, or another it knows of: the Empire starts the game
+	# knowing Yavin's six (day_zero_generator, the original's copies).
 	var hit: Mission = null
 	for m in after:
-		if m.TargetCharacter == victim:
+		var t: Character = m.TargetCharacter
+		if t != null and t.Faction == alliance and t.IsMajor and IntelManager.Knows(empire, m.Target, Enums.IntelSection.Characters):
 			hit = m
 			break
-	_check(hit != null, "an Abduction targets the Rebel major by name")
+	_check(hit != null, "an Abduction targets a Rebel major it knows of, by name (%s)" % (hit.TargetCharacter.Name if hit != null else "none"))
 	if hit != null:
 		_check(hit.TargetCharacter != null, "Launch received a victim argument")
 		_check(hit.Team.size() >= 1 and hit.Team[0].Faction == empire, "Launch received an Imperial team")

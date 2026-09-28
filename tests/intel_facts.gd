@@ -58,10 +58,11 @@ func _facts(alliance: Faction, empire: Faction) -> void:
 			and blank.ships_day == -1 and blank.production_day == -1 and blank.fighters_day == -1, "an uncharted world has no dated group")
 		_check(blank.regiments.is_empty() and blank.owner_id == "" and not blank.ours and not blank.explored, "an uncharted world carries no data")
 
-	# 3b. The opening snapshot is a Reconnaissance (day_zero_generator): it dates
-	# troops, defences and status, and says nothing about who is standing there.
+	# 3b. The opening snapshot is the world's facilities (day_zero_generator,
+	# IntelManager.OpeningCategories - the original's day-5 save): it dates
+	# defences and status, not troops, and says nothing about who is there.
 	var first_look := IntelManager.Facts(alliance, them)
-	_check(first_look.troops_day == opening and first_look.defences_day == opening and first_look.status_day == opening, "the opening Reconnaissance dates troops, defences and status")
+	_check(first_look.troops_day == -1 and first_look.defences_day == opening and first_look.status_day == opening, "the opening snapshot dates defences and status, not troops")
 	_check(first_look.people_day == -1 and first_look.people.is_empty(), "and says nothing about people")
 
 	# Put a named person there, so Characters has something to freeze.

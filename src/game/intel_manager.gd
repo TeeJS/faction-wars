@@ -130,6 +130,19 @@ const ReconnaissanceCategories := [
 	Enums.IntelCategory.DefensiveFacilities, Enums.IntelCategory.ProductionFacilities,
 ]
 
+## What a side knows of a charted world it does not hold when the game begins:
+## its facilities, not its forces. The original's day-5 save (SAVEGAME.002):
+## the Alliance's copy of every Imperial world holds its defences, factories,
+## mines and refineries and none of its fleets, regiments, squadrons or
+## characters; the neutral worlds' facilities are in both copies; and
+## TheArchitect2018's seed.js writes facilities to both sides' copies and a
+## garrison to its owner's alone. (A starting world charted for everyone -
+## Yavin - is the exception: day_zero_generator.gd.)
+const OpeningCategories := [
+	Enums.IntelCategory.SystemStatus,
+	Enums.IntelCategory.DefensiveFacilities, Enums.IntelCategory.ProductionFacilities,
+]
+
 
 ## `seen`, when given, is what the viewer saw in `planet`'s place - a stand-in
 ## world never placed in the galaxy (an imported game's copy of it,
