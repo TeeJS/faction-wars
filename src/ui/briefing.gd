@@ -20,9 +20,9 @@ extends Control
 ## nothing else can be done: no window, console, pause or shortcut until it
 ## ends (it takes every key too). ★ BY TEEJ'S RULING (2026-09-27), not the
 ## manual's Esc or left click: in single player the one way out is its STOP
-## BRIEFING button, beside the agent (command_frame.gd Layout's
-## stop_briefing) - "the only function that works during the briefing - even
-## ESC will do nothing now". In head-to-head the players choose before the
+## BRIEFING button, at the foot of the right-hand column just above Feedback
+## (UIManager.StopBriefingRect) - "the only function that works during the
+## briefing - even ESC will do nothing now". In head-to-head the players choose before the
 ## game whether it plays, and it has no button.
 ## Whoever starts it holds the clock and the droids' news until `Finished`.
 ## Nothing plays without the art set's recordings (exporter 2.6.0).
@@ -42,8 +42,9 @@ var Finished := Callable()
 ## step (the original's action 11, REBEXE FUN_0041dbe0 - after the last line,
 ## or at once on a skip, before the skip's line), or at the end if it has none.
 var Released := Callable()
-## The Command Center's frame (command_frame.gd), for the button's place.
-var Frame: Node = null
+## The Stop Briefing button's place on screen, asked each frame so it follows
+## the column's layout (UIManager.StopBriefingRect); no button without it.
+var StopPlace := Callable()
 ## Single player: the Stop Briefing button. Head-to-head: none.
 var Stoppable: bool = true
 
@@ -89,31 +90,39 @@ func _ready() -> void:
 	_next()
 
 
-## The Stop Briefing button: green on black like the original's own buttons,
-## at the frame's place for it.
+## The Stop Briefing button: one of the right-hand column's own buttons, as
+## the sector buttons there are (TeeJ, 2026-09-28: "match the existing
+## buttons there"), at StopPlace.
 func _add_stop() -> void:
-	if Frame == null or not is_instance_valid(Frame) or not Frame.has_method("StopBriefingRect"):
+	if not StopPlace.is_valid():
 		return
-	var r: Rect2 = Frame.StopBriefingRect()
-	var scale: float = r.size.y / 19.0
 	var b := Button.new()
 	b.name = "StopBriefing"
 	b.text = "Stop Briefing"
 	b.focus_mode = Control.FOCUS_NONE
-	b.position = r.position
-	b.size = r.size
+	b.clip_text = true
+	b.add_theme_font_size_override("font_size", 14)
 	b.tooltip_text = "Stop the briefing."
-	for state in ["normal", "hover", "pressed"]:
-		var box := StyleBoxFlat.new()
-		box.bg_color = Color(0.02, 0.08, 0.02) if state == "normal" else Color(0.05, 0.18, 0.05)
-		box.border_color = Color(0, 0.78, 0)
-		box.set_border_width_all(maxi(1, roundi(scale)))
-		b.add_theme_stylebox_override(state, box)
-	b.add_theme_font_size_override("font_size", roundi(11.0 * scale))
-	for c in ["font_color", "font_hover_color", "font_pressed_color"]:
-		b.add_theme_color_override(c, Color(0, 1, 0))
 	b.pressed.connect(Skip)
 	add_child(b)
+	_stop = b
+	_place_stop()
+
+
+var _stop: Button = null
+
+
+func _process(_delta: float) -> void:
+	_place_stop()
+
+
+func _place_stop() -> void:
+	if _stop == null or not StopPlace.is_valid():
+		return
+	var r: Rect2 = StopPlace.call()
+	if _stop.position != r.position or _stop.size != r.size:
+		_stop.position = r.position
+		_stop.size = r.size
 
 
 ## The next step, or the end.
