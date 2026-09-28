@@ -824,6 +824,14 @@ func CancelCurrentBuild(producer_role: String) -> void:
 
 
 func AddFacility(family: String, tier: int = 1) -> void:
+	var new_fac := NewFacility(family, tier)
+	new_fac.Attached = self
+	Facilities.append(new_fac)
+	print("[%s] Added Facility: %s (Tier %d)" % [Name, Facility.NameOf(family, tier), tier])
+
+
+## A facility as the pack makes it, not yet on any world.
+static func NewFacility(family: String, tier: int = 1) -> Facility:
 	var new_fac := Facility.Make(family, tier)
 	# A defensive structure carries its combat stats from the pack's
 	# facilities.json; asked by ROLE, so a pack that adds one gets them without
@@ -834,9 +842,7 @@ func AddFacility(family: String, tier: int = 1) -> void:
 		new_fac.WeaponRating = new_fac.Def.stat("weapon_rating")
 		new_fac.ShieldStrength = new_fac.Def.stat("shield_strength")
 	new_fac.BombardmentDefense = new_fac.Def.stat("bombardment_defense") if new_fac.Def != null else 0
-	new_fac.Attached = self
-	Facilities.append(new_fac)
-	print("[%s] Added Facility: %s (Tier %d)" % [Name, Facility.NameOf(family, tier), tier])
+	return new_fac
 
 
 func FinishConstruction(completed_job: ConstructionTask) -> void:

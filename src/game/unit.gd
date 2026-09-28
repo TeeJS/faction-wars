@@ -47,6 +47,18 @@ static func NextSerial() -> int:
 	return _next_serial
 
 
+## The numbering as it stands - serials and each class's ship numbers - and
+## back to it: units made only to be looked at (an imported game's sightings,
+## OriginalImport._intel) hand back what they drew.
+static func Numbering() -> Array:
+	return [_next_serial, _class_numbers.duplicate()]
+
+
+static func RestoreNumbering(n: Array) -> void:
+	_next_serial = n[0]
+	_class_numbers = n[1]
+
+
 func _init() -> void:
 	Serial = NextSerial()
 

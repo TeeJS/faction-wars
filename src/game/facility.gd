@@ -20,6 +20,17 @@ static func NextSerial() -> int:
 	return _next_serial
 
 
+## The numbering as it stands, and back to it: facilities made only to be
+## looked at (an imported game's sightings, OriginalImport._intel) hand back
+## the serials they drew.
+static func Numbering() -> int:
+	return _next_serial
+
+
+static func RestoreNumbering(n: int) -> void:
+	_next_serial = n
+
+
 func _init() -> void:
 	Serial = NextSerial()
 
