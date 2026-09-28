@@ -261,11 +261,25 @@ static func InitializeGalaxyState(galaxy: Array, human_faction: Faction, difficu
 	var explored_count := Lq.count(all_planets, func(p): return p.ExploredBy(human_faction))
 
 	# THE OPENING SNAPSHOT: Reconnaissance's categories for every charted world
-	# a side does not hold.
+	# a side does not hold - and EVERYTHING on a starting world the pack charts
+	# for everyone (`explored`). The original writes all it seeds on Yavin
+	# into the Empire's copy of the galaxy as well: its six characters, its
+	# Special Force, its ships, regiments and fighters - a snapshot, stale as
+	# they leave (TeeJ, 2026-09-28: "in the original, you always start the
+	# game knowing some rebel personnel are at Yavin"; the Empire's copy of
+	# Yavin in the original's SAVEGAME.002 and .001 - all six still there when
+	# five had gone; TheArchitect2018's seed.js, seed_yavin_personnel into
+	# both copies). The other side's HQ is not one: the original gives the
+	# Alliance Coruscant's facilities, not its people.
+	var open_to_all: Array = []
+	for f in FactionRegistry.Playable:
+		for start in f.StartingPlanets:
+			if start.Explored:
+				open_to_all.append(start.Planet)
 	for f in FactionRegistry.Playable:
 		for p in all_planets:
 			if p.ExploredBy(f) and p.ControllingFaction != f:
-				IntelManager.Capture(f, p, 1, IntelManager.ReconnaissanceCategories)
+				IntelManager.Capture(f, p, 1, IntelManager.EspionageCategories if open_to_all.has(p.PackId) else IntelManager.ReconnaissanceCategories)
 
 	print("[INTEL] Playing as: %s" % str(GameSettings.PlayerFaction))
 	for f in FactionRegistry.Playable:
