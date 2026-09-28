@@ -53,6 +53,10 @@ static var ProvideFeedback: bool = true
 
 ## The session's PRNG seed - see Prng. Printed at start; --seed=N replays.
 static var Seed: int = 0
+## A game imported from Star Wars: Rebellion: the original's file
+## (OriginalImport.OriginOf), which the command log's header carries so a load
+## rebuilds that game. Empty for a game started here.
+static var Origin: Dictionary = {}
 
 ## Set by the start-menu "Load Game" flow to a save slot's log path. GameManager
 ## reads it in _ready: if set (single-player), it replays that log instead of

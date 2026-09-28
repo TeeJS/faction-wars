@@ -1,5 +1,8 @@
 class_name GameSession
 extends RefCounted
+
+const OriginalSave := preload("res://src/data/original_save.gd")
+const OriginalImport := preload("res://src/game/original_import.gd")
 ## The composition root the autoload policy calls for (HANDOFF §6): one place
 ## that loads the catalogs in the source's order (GameManager._Ready), resets
 ## every per-game static, and starts a game - from a fresh day zero, or from a
@@ -88,6 +91,7 @@ static func new_game(player_faction_id: String, difficulty: int, size: int, seed
 	GameSettings.HostFaction = FactionRegistry.ById(host_id) if not host_id.is_empty() else null
 	GameSettings.SelectedDifficulty = difficulty
 	GameSettings.SelectedSize = size
+	GameSettings.Origin = {}
 	_seed(seed)
 	load_catalogs()
 	print("Initializing Galaxy with -> Faction: %s | Difficulty: %s | Size: %s" % [str(GameSettings.PlayerFaction), JsonUtil.enum_name(Enums.Difficulty, difficulty), JsonUtil.enum_name(Enums.GalaxySize, size)])
@@ -103,8 +107,35 @@ static func new_game(player_faction_id: String, difficulty: int, size: int, seed
 ## A game from a day-zero snapshot, seeded. Returns the tick manager.
 static func start_from_snapshot(path: String, seed: int) -> StrategicTickManager:
 	reset_game_state()
+	GameSettings.Origin = {}
 	load_catalogs()
 	if not SnapshotLoader.Load(path):
 		return null
 	_seed(seed)
 	return StrategicTickManager.new(GameState.ActiveGalaxy)
+
+
+## A game imported from a Star Wars: Rebellion saved game (OriginalImport),
+## built from the original's own file. The side, difficulty and galaxy size are
+## the original's. Returns the tick manager on the imported day, or null.
+static func start_from_original(bytes: PackedByteArray, seed: int) -> StrategicTickManager:
+	reset_game_state()
+	if not FactionRegistry.EnsureLoaded():
+		push_error("[GameSession] no game: the pack did not load.")
+		return null
+	var g: Dictionary = OriginalSave.Read(bytes)
+	var plan: Dictionary = OriginalImport.Plan(g)
+	if not plan["ok"]:
+		push_error("[GameSession] cannot import: %s" % plan["error"])
+		return null
+	GameSettings.PlayerFaction = FactionRegistry.ById(plan["side"])
+	GameSettings.HumanFactions = []
+	GameSettings.HumanFactions.append(GameSettings.PlayerFaction)
+	GameSettings.HostFaction = null
+	GameSettings.SelectedDifficulty = plan["difficulty"]
+	GameSettings.SelectedSize = plan["size"]
+	GameSettings.HQOnlyVictory = false
+	GameSettings.Origin = OriginalImport.OriginOf(bytes)
+	_seed(seed)
+	load_catalogs()
+	return OriginalImport.Build(g)

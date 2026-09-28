@@ -81,7 +81,7 @@ static func Header() -> Dictionary:
 	var humans: Array = []
 	for f in GameSettings.HumanFactions:
 		humans.append(f.Id)
-	return {
+	var h := {
 		# The game build: two builds may simulate differently, so the hello
 		# compares it (LockstepSession, BuildInfo.same_build).
 		"build": BuildInfo.version(),
@@ -95,6 +95,10 @@ static func Header() -> Dictionary:
 		"size": GameSettings.SelectedSize,
 		"hq_only": GameSettings.HQOnlyVictory,
 	}
+	# An imported game is rebuilt from the original's file (OriginalImport).
+	if not GameSettings.Origin.is_empty():
+		h["origin"] = GameSettings.Origin
+	return h
 
 
 static func Append(c: Command) -> void:

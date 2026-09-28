@@ -4169,6 +4169,7 @@
         "headquarters"
       ],
       "SourceFamilyId": 32,
+      "SourceId": 1,
       "Stats": {
         "bombardment_defense": 9.0,
         "processing_rate": 0.0
@@ -4192,6 +4193,7 @@
         "produces_unit"
       ],
       "SourceFamilyId": 40,
+      "SourceId": 1,
       "Stats": {
         "bombardment_defense": 2.0,
         "processing_rate": 4.0
@@ -4215,6 +4217,7 @@
         "produces_troop"
       ],
       "SourceFamilyId": 41,
+      "SourceId": 2,
       "Stats": {
         "bombardment_defense": 3.0,
         "processing_rate": 4.0
@@ -4238,6 +4241,7 @@
         "produces_facility"
       ],
       "SourceFamilyId": 42,
+      "SourceId": 3,
       "Stats": {
         "bombardment_defense": 3.0,
         "processing_rate": 4.0
@@ -4261,6 +4265,7 @@
         "produces_unit"
       ],
       "SourceFamilyId": 40,
+      "SourceId": 4,
       "Stats": {
         "bombardment_defense": 2.0,
         "processing_rate": 2.0
@@ -4284,6 +4289,7 @@
         "produces_troop"
       ],
       "SourceFamilyId": 41,
+      "SourceId": 5,
       "Stats": {
         "bombardment_defense": 4.0,
         "processing_rate": 2.0
@@ -4307,6 +4313,7 @@
         "produces_facility"
       ],
       "SourceFamilyId": 42,
+      "SourceId": 6,
       "Stats": {
         "bombardment_defense": 4.0,
         "processing_rate": 2.0
@@ -4330,6 +4337,7 @@
         "extracts_raw"
       ],
       "SourceFamilyId": 44,
+      "SourceId": 1,
       "Stats": {
         "bombardment_defense": 5.0,
         "processing_rate": 5.0
@@ -4353,6 +4361,7 @@
         "refines"
       ],
       "SourceFamilyId": 45,
+      "SourceId": 2,
       "Stats": {
         "bombardment_defense": 2.0,
         "processing_rate": 5.0
@@ -4377,6 +4386,7 @@
         "disable"
       ],
       "SourceFamilyId": 34,
+      "SourceId": 1,
       "Stats": {
         "bombardment_defense": 5.0,
         "shield_strength": 0.0,
@@ -4402,6 +4412,7 @@
         "anti_ship"
       ],
       "SourceFamilyId": 35,
+      "SourceId": 2,
       "Stats": {
         "bombardment_defense": 4.0,
         "shield_strength": 0.0,
@@ -4427,6 +4438,7 @@
         "shield"
       ],
       "SourceFamilyId": 36,
+      "SourceId": 3,
       "Stats": {
         "bombardment_defense": 2.0,
         "shield_strength": 40.0,
@@ -4451,6 +4463,7 @@
         "superweapon_shield"
       ],
       "SourceFamilyId": 37,
+      "SourceId": 4,
       "Stats": {
         "bombardment_defense": 1.0,
         "shield_strength": 0.0,
@@ -4476,6 +4489,7 @@
         "anti_ship"
       ],
       "SourceFamilyId": 35,
+      "SourceId": 5,
       "Stats": {
         "bombardment_defense": 3.0,
         "shield_strength": 0.0,
@@ -4501,6 +4515,7 @@
         "shield"
       ],
       "SourceFamilyId": 36,
+      "SourceId": 6,
       "Stats": {
         "bombardment_defense": 3.0,
         "shield_strength": 80.0,
