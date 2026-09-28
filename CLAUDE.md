@@ -266,6 +266,38 @@ Check first:
 Tables over prose. Lead with the answer. Long explanations are where rules and
 code state get conflated and where guesses hide.
 
+## 9. Progress banners - ALWAYS, and keep working
+
+**What they are for** (TeeJ, 2026-09-28): *"so I can scroll through your work
+and see what got done quickly."* They are **scroll markers inside the running
+work**, not stopping points.
+
+1. The moment an item is finished (its PR opened or merged), print this in the
+   stream - the full form, never a plain line:
+
+   ```
+   ---
+   ## 💥💥 **ITEM N DONE — in PR #xxx** 💥💥
+   ---
+   ```
+
+2. **Then keep working.** Go straight on to the next item on the list. Never end
+   the turn to show a banner, and never wait to be told "go" or "continue" while
+   items remain.
+3. When the list is done - or you genuinely must stop - the final message
+   repeats every banner from the run.
+4. Every question to TeeJ goes under its own banner:
+
+   ```
+   ---
+   ## ⚠️❓ **QUESTIONS FOR YOU** ❓⚠️
+   ---
+   ```
+
+**How this rule was earned** (2026-09-27/28): banners printed as plain lines,
+then buried in one long turn so none were seen, then the over-correction of
+ending the turn after every item - each time TeeJ had to intervene by hand.
+
 ---
 
 ## Repo facts
