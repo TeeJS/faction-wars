@@ -41,7 +41,10 @@ func _init() -> void:
 		await process_frame
 	var w: DraggableWindow = ui._openWindows.get("Communications")
 	_check(w != null and w.visible, "the Comms Center opens")
-	_check(w.position == UIManager.CommsRect.position, "it is docked at the map frame's top-left (%s)" % str(w.position))
+	# Docked where UIManager.OnMessageIndexClicked puts it: the Command Center
+	# frame's map window when the frame is built (PR #208), else CommsRect.
+	var dock: Vector2 = UIManager.MapFrame.position if ui.CommandFrameRef != null else UIManager.CommsRect.position
+	_check(w.position == dock, "it is docked at the map frame's top-left (%s)" % str(w.position))
 	var tabs: TabContainer = w._tabContainer
 	if w._original:
 		# With the imported art it is the original's Message Index (manual p078
@@ -71,7 +74,7 @@ func _init() -> void:
 	ui.OnMessageIndexClicked("Advice")
 	for _i in 3:
 		await process_frame
-	_check(w.visible and w.position == UIManager.CommsRect.position, "reopened from the column it re-docks")
+	_check(w.visible and w.position == dock, "reopened from the column it re-docks")
 	_check(tabs.get_child(tabs.current_tab).name == "Advice", "and shows the category pressed")
 
 	# The day box: a count, never a list of names.
