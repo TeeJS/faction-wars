@@ -153,10 +153,25 @@ func _init() -> void:
 	var cap: Label = plist.get_parent().get_parent().get_node_or_null("Caption1")
 	_check(cap != null and cap.text == "Personnel", "the page's caption")
 	var greyed: int = 0
+	var emptyTab: int = -1
 	for i in dtabs.get_tab_count():
 		if dtabs.is_tab_disabled(i):
 			greyed += 1
-			_check(strip[i].disabled, "an empty tab's picture is greyed and unpickable (%s)" % strip[i].tooltip_text)
+			emptyTab = i
+			_check(not strip[i].disabled and strip[i].texture_normal == strip[i].texture_disabled,
+				"an empty tab's picture is greyed, and still pickable (%s)" % strip[i].tooltip_text)
+	# "The button is greyed out to show it's empty, but the page is available"
+	# (TeeJ, 2026-09-27, the original's Chandrila).
+	if emptyTab >= 0:
+		strip[emptyTab].pressed.emit()
+		for _i in 2:
+			await process_frame
+		_check(dtabs.current_tab == emptyTab and strip[emptyTab].texture_normal == strip[emptyTab].get_meta("current"),
+			"pressing the greyed %s opens its empty page, shown as the current tab" % strip[emptyTab].tooltip_text)
+		dw.Populate(home, ui)
+		for _i in 2:
+			await process_frame
+		_check(dtabs.current_tab == emptyTab, "and it stays open through a repaint")
 	dtabs.current_tab = 1
 	for _i in 2:
 		await process_frame
@@ -283,7 +298,11 @@ func _init() -> void:
 			return c.size == Vector2(70, 70) * K and int(c.position.x) % (70 * K) == 0 and int(c.position.y) % (70 * K) == 0)
 		_check(onGrid, "%d facility cards on the 70-pixel grid, the short row too, none stretched" % shortRow.size())
 	var shipyards: int = Lq.count(home.Facilities, func(f: Facility) -> bool: return f.HasRole("produces_unit"))
-	_check(etabs.is_tab_disabled(1) == (shipyards == 0) and estrip[1].disabled == (shipyards == 0), "the Shipyards picture greyed exactly when there are none")
+	etabs.current_tab = 0
+	ew.Populate(home)
+	await process_frame
+	_check(etabs.is_tab_disabled(1) == (shipyards == 0) and estrip[1].get_meta("empty", false) == (shipyards == 0) and not estrip[1].disabled,
+		"the Shipyards picture greyed exactly when there are none - and pickable")
 	ew.CloseWindow()
 
 	# ---- the Galactic Encyclopedia ----
