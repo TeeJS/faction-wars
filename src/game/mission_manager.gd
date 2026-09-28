@@ -229,8 +229,12 @@ static func LeakExtraSystems(m: Mission, rng: Prng) -> String:
 		found.append(world.Name)
 		i += 1
 	print("[Mission] Espionage at %s also leaked %d system(s)%s: %s" % [m.Target.Name, found.size(), " - a capital, so more of them" if capital else "", Lq.join(found)])
-	return "\n\nThey came back with more than they went for%s. These systems are now charted: %s." % [
-		" - a seat of government is where a war's traffic passes through" if capital else "", Lq.join(found)]
+	# The original's words for them (TEXTSTRA 28942, 28943): "In addition,
+	# information was provided on the following systems:", one to a line.
+	var said := "In addition, information was provided on the following systems:"
+	for world in found:
+		said += "\n     %s" % world
+	return said
 
 
 ## THE THIRD SCORE TERM, "a3": the number of STORMTROOPER REGIMENTS on the target
@@ -307,14 +311,7 @@ static func AwardForceForSuccess(m: Mission, day: int) -> void:
 		if c.SpecialPowerRankOf() == before:
 			continue
 		print("[Force] %s has advanced to %s (level %d)." % [c.Name, Character.RankLabel(c.SpecialPowerRankOf()), c.SpecialPowerLevel])
-		if not GameSettings.IsHuman(m.Faction):
-			continue
-		var grown := GameMessage.new(
-			"%s is now a %s" % [c.Name, Pretty(c.SpecialPowerRankOf())],
-			"%s's command of the Force has deepened through service. They stand at %s." % [c.Name, Pretty(c.SpecialPowerRankOf())],
-			Enums.MessageCategory.Missions, day, m.Target, c)
-		grown.Voice = "force_growth"
-		EventBus.Tell(m.Faction, grown)
+		TellForceGrowth(c, day, m.Target)
 
 
 ## Characters improve the skill their mission exercised, on success (guide p094-095;
@@ -411,10 +408,137 @@ static func PopulationSupport(p: Planet) -> String:
 	return "The population does not strongly support either side."
 
 
-## The scene a mission's report is drawn over: its pack id.
+## THE SCENE A MISSION'S REPORT IS DRAWN OVER - the original's message picture
+## (STRATEGY, windows/message.<id>), which REBEXE's report builder (0x4927c0)
+## picks by the mission's family: Diplomacy's chamber 1044, Espionage's
+## surveillance room 1045, Research's R&D 1017, Incite Uprising's crowd 1005,
+## Subdue Uprising's burning city 1010; every other mission the side's own
+## ship - the Falcon's hold 1042 for the Alliance, an Imperial ship's 1043.
+const ReportScenes := {
+	Enums.MissionType.Diplomacy: 1044, Enums.MissionType.Espionage: 1045,
+	Enums.MissionType.ShipDesignResearch: 1017, Enums.MissionType.TroopTrainingResearch: 1017,
+	Enums.MissionType.FacilityDesignResearch: 1017,
+	Enums.MissionType.InciteUprising: 1005, Enums.MissionType.SubdueUprising: 1010,
+}
+
+
 static func ReportScene(m: Mission) -> String:
-	var d: PackDefs.MissionDefPack = MissionCatalog.DefFor(m.Type)
-	return d.Id if d != null else ""
+	var ours: int = 1042 if m.Faction != null and Faction.SkinOf(m.Faction.Id) == "alliance" else 1043
+	return "message.%d" % int(ReportScenes.get(m.Type, ours))
+
+
+## THE ORIGINAL'S MISSION REPORTS (TEXTSTRA 28880-29125, built by REBEXE
+## 0x4927c0; TeeJ, 2026-09-28: "make all of the messages text match"): a major
+## character reports in the first person under "<name> Mission Report", anyone
+## else in the third under "<Mission> Mission Report" (Reconnaissance's is
+## "Recon Mission Report"). `mine` / `theirs`: the two wordings, each exactly
+## as the original writes it, its own line breaks included. `returning`:
+## Sabotage, Recon, Abduction, Assassination and Rescue then say where the team
+## is bound (28902 / 28903). `asks`: the mission goes on - "Do you wish the
+## mission to continue?" (28891). `titles`: [the major's, anyone else's] in
+## place of the two Mission Report titles.
+static func MissionReport(m: Mission, day: int, voice: String, mine: String, theirs: String,
+		asks: bool = false, returning: bool = false, titles: Array = []) -> void:
+	var first := ReportsFirstPerson(m)
+	var body := mine if first else theirs
+	if returning:
+		body += Returning(m)
+	if asks:
+		body += "Do you wish the mission to continue?"
+	var heading: String
+	if titles.size() == 2:
+		heading = str(titles[0] if first else titles[1])
+	else:
+		heading = "%s Mission Report" % Leader(m).Name if first else ReportTitle(m)
+	Report(m, day, heading, body, asks, voice, false, ReportScene(m))
+
+
+## A MISSION THAT FAILED, in the original's words for each (TEXTSTRA 28898-29125;
+## REBEXE 0x4927c0) - word for word, spacing and line breaks too. Missions whose
+## name the original writes in capitals (Incite Uprising, Subdue Uprising, Jedi
+## Training, the research missions) take the pack's own name.
+static func FailureReport(m: Mission, day: int, persistent: bool) -> void:
+	var at := m.Target.Name
+	var who: String = str(m.TargetObjectName()) if m.TargetObjectName() != null else ""
+	var name := m.DisplayName()
+	var mine := ""
+	var theirs := ""
+	var home := false
+	match m.Type:
+		Enums.MissionType.Sabotage, Enums.MissionType.SuperweaponSabotage:
+			var thing := who if not who.is_empty() else name.trim_suffix(" Sabotage")
+			mine = "My sabotage mission to %s targeting the %s is complete.    The target was not destroyed." % [at, thing]
+			theirs = "The sabotage mission to %s targeting the %s is complete.    The target was not destroyed." % [at, thing]
+			home = true
+		Enums.MissionType.Reconnaissance:
+			mine = "The reconnaissance mission to %s failed.\n" % at
+			theirs = mine
+			home = true
+		Enums.MissionType.Abduction:
+			mine = "My mission to abduct %s from %s failed." % [who, at]
+			theirs = "The mission to abduct %s from %s failed.\n" % [who, at]
+			home = true
+		Enums.MissionType.Assassination:
+			mine = "My assassination mission to %s is complete.  %s has not been eliminated.\n" % [at, who]
+			theirs = "The assassination mission to %s is complete.  %s has not been eliminated.\n" % [at, who]
+			home = true
+		Enums.MissionType.InciteUprising:
+			# Both the original's wordings say "My" (28930, 28933).
+			mine = "My %s mission to %s has not produced results.\n" % [name, at]
+			theirs = mine
+		Enums.MissionType.Espionage:
+			mine = "My espionage mission to %s was not successful." % at
+			theirs = "The espionage mission to %s was not successful." % at
+		Enums.MissionType.SubdueUprising:
+			mine = "My %s mission to %s has not met with success.  The world is still in a state of uprising.\n" % [name, at]
+			theirs = "The %s mission to %s failed.  The populace is still in a state of uprising.\n" % [name, at]
+		Enums.MissionType.Recruitment:
+			mine = "My recruitment mission to %s is complete.  I have failed to recruit anyone." % at
+			theirs = mine
+		Enums.MissionType.ShipDesignResearch, Enums.MissionType.TroopTrainingResearch, Enums.MissionType.FacilityDesignResearch:
+			mine = "My %s Research mission at %s has not produced new information.  " % [name.trim_suffix(" Research"), at]
+			theirs = "The %s Mission at %s has not produced new information.  " % [name, at]
+		Enums.MissionType.Rescue:
+			mine = "My mission to rescue %s from %s failed." % [who, at]
+			theirs = "The mission to rescue %s from %s failed.\n" % [who, at]
+			home = true
+		Enums.MissionType.SpecialPowerTraining:
+			mine = "My %s mission on %s has not met with success." % [name, at]
+			theirs = "The %s mission on  %s has failed." % [name, at]   # the original's two spaces
+		_:
+			mine = "My %s mission to %s has failed." % [name, at]   # ours: no mission the original reports
+			theirs = "The %s mission to %s has failed." % [name, at]
+			home = true
+	MissionReport(m, day, "mission_failure", mine, theirs, persistent, home and not persistent)
+
+
+## The target gone before the team could reach it (TEXTSTRA 28984-28987):
+## "<name> Mission Failed" / "My <Mission> Mission to <system> has failed because
+## the target was not found at that location." - or "<Mission> Mission Failed" /
+## "The <Mission> Mission to ..." - then the way home.
+static func NotFoundReport(m: Mission, day: int) -> void:
+	var name := m.DisplayName()
+	MissionReport(m, day, "mission_abort",
+		"My %s Mission to %s has failed because the target was not found at that location.  " % [name, m.Target.Name],
+		"The %s Mission to %s has failed because the target was not found at that location.  " % [name, m.Target.Name],
+		false, true, ["%s Mission Failed" % Leader(m).Name, "%s Mission Failed" % name])
+
+
+## "<Mission> Mission Report" - the original's own for each (TEXTSTRA).
+static func ReportTitle(m: Mission) -> String:
+	return "Recon Mission Report" if m.Type == Enums.MissionType.Reconnaissance else "%s Mission Report" % m.DisplayName()
+
+
+## Where the team is bound (TEXTSTRA 28902 / 28903): "Personnel are returning to
+## <system>." - the system Conclude sends them to - or, with none of them free,
+## "All personnel assigned to the mission have failed to return."
+static func Returning(m: Mission) -> String:
+	var free := Lq.where(m.Team, func(u: Unit) -> bool:
+		return not (u is Character and ((u as Character).IsCaptured() or u.Status == Enums.Status.Dead)))
+	if free.is_empty():
+		return "\nAll personnel assigned to the mission have failed to return."
+	var landing: Planet = m.HomeBase if (not m.Arrived() or m.Target.ControllingFaction != m.Faction) else m.Target
+	return "\nPersonnel are returning to %s." % (landing.Name if landing != null else m.Target.Name)
 
 
 static func DiplomacyReport(m: Mission, increased: bool, asks: bool = true, ours: String = "") -> String:
@@ -543,21 +667,31 @@ static func Injure(c: Character, rng: Prng, base_id: int = RuleId.FallbackInjury
 ## Tell the owner one of their characters was wounded - the notification that pairs
 ## with the recovery message (strategic_tick_manager). Addressed to the owning
 ## faction, never broadcast (personnel status is that side's business).
+## The original's words (TEXTSTRA 29024 / 29025): "<name> Injured" / "<name> has
+## been injured."
 static func _notify_injured(c: Character) -> void:
 	if c == null or c.Faction == null:
 		return
-	var msg := GameMessage.new("%s has been injured" % c.Name,
-		"%s has been wounded and cannot take missions or command until they recover." % c.Name,
+	var msg := GameMessage.new("%s Injured" % c.Name, "%s has been injured." % c.Name,
 		Enums.MessageCategory.Missions, StrategicTickManager.Today,
 		c.Attached if c.Attached is Planet else null, c)
 	msg.Type = Enums.MessageType.CharacterHealth
 	EventBus.Tell(c.Faction, msg)
 
 
-## Dead (manual p096). They keep their roster slot and leave the map.
-static func Kill(c: Character) -> void:
+## Dead (manual p096). They keep their roster slot and leave the map. Their side
+## is told in the original's words (TEXTSTRA 29028 / 29541): "<name> Killed" /
+## "<name> has been killed." - or `how`, the original's own line for the cause
+## ("... was killed by Imperial Assassins at <system>.", 29193).
+static func Kill(c: Character, how: String = "") -> void:
 	if c == null:
 		return
+	if c.Faction != null and c.Status != Enums.Status.Dead and GameSettings.IsHuman(c.Faction):
+		var msg := GameMessage.new("%s Killed" % c.Name, how if not how.is_empty() else "%s has been killed." % c.Name,
+			Enums.MessageCategory.Missions, StrategicTickManager.Today,
+			c.Attached if c.Attached is Planet else null, c)
+		msg.Type = Enums.MessageType.CharacterHealth
+		EventBus.Tell(c.Faction, msg)
 	c.Status = Enums.Status.Dead
 	c.Injury = 0
 	c.CapturedBy = null
@@ -761,9 +895,17 @@ static func ProcessDay(rng: Prng, day: int) -> void:
 		# ✅ THE TRAINING ABORT, FROM THE ENCYCLOPEDIA: "OR CONTROL PASSES OVER TO
 		# THE ENEMY, the training mission is considered FOILED."
 		if m.Type == Enums.MissionType.SpecialPowerTraining and m.Arrived() and m.Target.ControllingFaction != m.Faction:
-			var lost := SeizeFoiledTeam(m, rng)
-			Report(m, day, "Jedi Training foiled at %s" % m.Target.Name,
-				"%s is no longer ours. The training was broken off.\n\n%s" % [m.Target.Name, lost], false, "mission_failure")
+			# The original's words (TEXTSTRA 28992-28997): "<name> Mission Aborted" /
+			# "My <mission> mission to <system> has been aborted because the system
+			# has joined the <side>." (or "has declared neutrality."), then the way home.
+			var name := m.DisplayName()
+			var holder := m.Target.ControllingFaction
+			var why := ("the system has joined the %s.  " % holder.ShortName) if FactionRegistry.OrderOf(holder) >= 0 else "the system has declared neutrality."
+			var titles := ["%s Mission Aborted" % Leader(m).Name, "%s Mission Aborted." % name]   # the original's full stop
+			SeizeFoiledTeam(m, rng)
+			MissionReport(m, day, "mission_failure",
+				"My %s mission to %s has been aborted because %s" % [name, m.Target.Name, why],
+				"The %s mission to %s has been aborted because %s" % [name, m.Target.Name, why], false, true, titles)
 			Conclude(m)
 			_active.remove_at(i)
 			EventBus.BroadcastChanged()
@@ -888,27 +1030,24 @@ static func DecoyScreens(m: Mission, member: Unit, defender_espionage: int, spen
 
 
 ## THE PRICE OF BEING CAUGHT, per member (manual p103, p096): the evasion roll
-## against RLEVADTB.DAT, then capture or death.
-static func SeizeFoiledTeam(m: Mission, rng: Prng) -> String:
+## against RLEVADTB.DAT, then capture or death. Each one's side hears it in the
+## original's words, one message a person: "<name> Captured" / "<name> was
+## captured by the <side> at <system>." (TEXTSTRA 29016 / 29017); the wounded
+## and the dead as Injure and Kill tell them. Returns who was taken.
+static func SeizeFoiledTeam(m: Mission, rng: Prng) -> Array:
 	var commander_combat := 0
 	for c in GameState.ActiveRoster:
 		if c.Commanding == m.Target and c.Faction != m.Faction and c.Rank != Enums.Rank.None:
 			commander_combat = max(commander_combat, c.CombatRating)
 
 	var captured := []
-	var killed := []
-	var hurt := []
 
 	for member in m.Team.duplicate():
 		var evade_score: int = member.CombatRating - commander_combat
 		var evade := MissionTableManager.Lookup(MissionTableManager.Evasion, evade_score)
 		if evade < 0 or rng.NextRange(1, 101) <= evade:
 			if member is Character and rng.NextRange(1, 101) <= FoiledEscapeInjuryPercent:
-				var runner := member as Character
-				if Injure(runner, rng):
-					killed.append(runner.Name)
-				else:
-					hurt.append(runner.Name)
+				Injure(member as Character, rng)
 			continue
 
 		var dies := rng.NextRange(1, 101) <= FoiledSeizeKilledPercent
@@ -916,14 +1055,14 @@ static func SeizeFoiledTeam(m: Mission, rng: Prng) -> String:
 			var person := member as Character
 			if dies and not person.IsMajor:
 				Kill(person)
-				killed.append(person.Name)
 			else:
 				person.CapturedBy = m.Target.ControllingFaction
 				person.Status = Enums.Status.Kidnapped
 				person.Commanding = null
 				person.Destination = null
 				person.DaysToDestination = 0
-				captured.append(person.Name)
+				captured.append(person)
+				TellCaptured(person, m.Target)
 		else:
 			# SpecForce - lost outright.
 			if member.Attached is Planet:
@@ -931,31 +1070,68 @@ static func SeizeFoiledTeam(m: Mission, rng: Prng) -> String:
 				where.Garrison.erase(member)
 				where.FighterSquadrons.erase(member)
 			m.Team.erase(member)
-			killed.append(member.Name)
 
-	var parts := []
-	if not captured.is_empty():
-		parts.append("Captured: %s." % Lq.join(captured))
-	if not killed.is_empty():
-		parts.append("Lost: %s." % Lq.join(killed))
-	if not hurt.is_empty():
-		parts.append("Wounded escaping: %s." % Lq.join(hurt))
-	if parts.is_empty():
-		parts.append("The whole team broke contact and is returning to base.")
-	else:
-		parts.append("Any survivors are returning to base.")
 	EventBus.BroadcastChanged()
-	return " ".join(parts)
+	return captured
+
+
+## "<name> Escaped" / "<name> escaped from the <side> at <system>." (TEXTSTRA
+## 29020 / 29021) over the original's picture of it (STRATEGY 1029), to the
+## freed one's own side - as the original tells a rescue (TeeJ's screenshots,
+## 2026-09-28: "Chewbacca escaped from the Empire at Balmorra.").
+static func TellEscaped(c: Character, captor: Faction, at: Planet, day: int) -> void:
+	if c == null or c.Faction == null or at == null or not GameSettings.IsHuman(c.Faction):
+		return
+	var msg := GameMessage.new("%s Escaped" % c.Name,
+		"%s escaped from the %s at %s." % [c.Name, captor.ShortName if captor != null else "enemy", at.Name],
+		Enums.MessageCategory.Missions, day, at, c)
+	msg.Type = Enums.MessageType.CharacterHealth
+	msg.Still = "message.1029"
+	EventBus.Tell(c.Faction, msg.With("released", "released"))
+
+
+## "<name> Force Growth" / "My recent experience has given me new insights and I
+## have grown in my skills in the Force.  My ranking is <rank>." (TEXTSTRA 29056 /
+## 29057), in the character's own voice.
+static func TellForceGrowth(c: Character, day: int, at: Variant = null) -> void:
+	if c == null or c.Faction == null or not GameSettings.IsHuman(c.Faction):
+		return
+	var msg := GameMessage.new("%s Force Growth" % c.Name,
+		"My recent experience has given me new insights and I have grown in my skills in the Force.  My ranking is %s." % Pretty(c.SpecialPowerRankOf()),
+		Enums.MessageCategory.Missions, day, at if at is Planet else (c.Attached if c.Attached is Planet else null), c)
+	msg.Voice = "force_growth"
+	EventBus.Tell(c.Faction, msg)
+
+
+## "<name> Captured" / "<name> was captured by the <side> at <system>." (TEXTSTRA
+## 29016 / 29017), to the prisoner's own side.
+static func TellCaptured(c: Character, at: Planet) -> void:
+	if c == null or c.Faction == null or at == null or not GameSettings.IsHuman(c.Faction):
+		return
+	var captor: Faction = c.CapturedBy
+	var msg := GameMessage.new("%s Captured" % c.Name,
+		"%s was captured by the %s at %s." % [c.Name, captor.ShortName if captor != null else "enemy", at.Name],
+		Enums.MessageCategory.Missions, StrategicTickManager.Today, at, c)
+	msg.Type = Enums.MessageType.CharacterHealth
+	EventBus.Tell(c.Faction, msg)
 
 
 static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 	# Detection happens before anything else, and only on the first approach.
 	if m.Attempts == 0 and Foiled(m, rng):
-		var fate := SeizeFoiledTeam(m, rng)
-		Report(m, day, "%s mission foiled" % m.DisplayName(),
-			"%s was detected by defenders at %s. The mission was foiled.\n\n%s" % [m.FoiledBy.Name if m.FoiledBy != null else "My team", m.Target.Name, fate], false, "mission_failure")
+		# The original's words (TEXTSTRA 29000-29003, 28990/28991): "<name> Mission
+		# Foiled" / "My <mission> mission to <system> has been foiled by opposing
+		# forces." - or "<Mission> Mission Foiled" / "The <mission> ..." - then
+		# where the team is bound; each one taken, hurt or killed in their own.
+		var what := m.DisplayName()
+		var titles := ["%s Mission Foiled" % Leader(m).Name, "%s Mission Foiled" % what]
+		SeizeFoiledTeam(m, rng)
+		MissionReport(m, day, "mission_failure",
+			"My %s mission to %s has been foiled by opposing forces.  " % [what, m.Target.Name],
+			"The %s mission to %s has been foiled by opposing forces.  " % [what, m.Target.Name],
+			false, true, titles)
 		_tell_defender(m.Target, day, "Enemy Mission Foiled",
-			"Our forces foiled an enemy mission at %s." % m.Target.Name)
+			"An enemy %s mission to %s has been foiled by our forces." % [what, m.Target.Name])
 		m.Finished = true
 		return
 
@@ -1002,10 +1178,7 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 			if not persistent:
 				m.Finished = true
 			return
-		Report(m, day, "%s attempt %d failed" % [m.DisplayName(), m.Attempts],
-			("My team made no progress at %s on attempt %d.\n\nDo you wish the mission to continue?" % [m.Target.Name, m.Attempts]) if persistent
-			else ("The %s mission at %s failed. The team is returning to base." % [m.DisplayName().to_lower(), m.Target.Name]),
-			persistent, "mission_failure")
+		FailureReport(m, day, persistent)
 		if not persistent:
 			m.Finished = true
 		return
@@ -1030,14 +1203,15 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 				# The system joining is a Loyalty event the game reports (manual: C-3PO
 				# "Good news, a system has joined"). Addressed to the new owner; it is
 				# also the fog-legal SystemControl signal the AI infers a diplomat from.
-				# The system joining is a Loyalty event the game reports (manual: C-3PO
-				# "Good news, a system has joined"). Addressed to the new owner; it is
-				# also the fog-legal SystemControl signal the AI infers a diplomat from.
-				var joined := GameMessage.new("%s has joined the %s" % [m.Target.Name, m.Faction.DisplayName],
-					"%s is now loyal to us and under our control." % m.Target.Name,
+				# In the original's words and picture (TEXTSTRA 28728 / 28731, STRATEGY
+				# 1005): "<system> Joins" / "Popular support on <system> has caused that
+				# world to join the <side>."
+				var joined := GameMessage.new("%s Joins" % m.Target.Name,
+					"Popular support on %s has caused that world to join the %s." % [m.Target.Name, m.Faction.ShortName],
 					Enums.MessageCategory.Loyalty, day, m.Target, null)
 				joined.Type = Enums.MessageType.SystemControl
 				joined.Advisor = "support_gained"
+				joined.Still = "message.1005"
 				EventBus.Tell(m.Faction, joined)
 			Report(m, day, DiplomacyTitle(m), DiplomacyReport(m, true, now < 100,
 					"The system is now wholly with us and the mission is complete." if now >= 100 else ""),
@@ -1049,20 +1223,34 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 			IntelManager.Capture(m.Faction, m.Target, day, IntelManager.EspionageCategories)
 			print("[Mission] Espionage at %s succeeded - full snapshot taken." % m.Target.Name)
 			var leaked := LeakExtraSystems(m, rng)
-			Report(m, day, "Espionage successful at %s" % m.Target.Name,
-				"My agents have returned detailed intelligence on %s.\n\nEverything the System Defenses and Manufacturing windows show for it is accurate as of today. It will not update itself.%s" % [m.Target.Name, leaked], false, "mission_success")
+			# TEXTSTRA 28937 / 28940, then 28942-28943 for what else came back.
+			MissionReport(m, day, "mission_success",
+				"My espionage mission to %s was successful.  %s" % [m.Target.Name, leaked],
+				"The espionage mission to %s was successful.  %s" % [m.Target.Name, leaked])
 			m.Finished = true
 
 		Enums.MissionType.InciteUprising:
 			var holder := m.Target.ControllingFaction
+			var was_rioting := m.Target.IsInUprising
 			m.Target.ShiftSupport(holder, -UprisingSupportSwing)
 			var rioting := m.Target.IsInUprising
-			Report(m, day, "Unrest spreading on %s" % m.Target.Name,
-				"Support for the %s on %s has fallen to %d%%.%s%s" % [holder.DisplayName if holder != null else "occupier", m.Target.Name, m.Target.SupportFor(holder),
-					" The system is in open revolt." if rioting else "",
-					" The system has thrown them out." if m.Target.ControllingFaction != holder else "\n\nDo you wish the mission to continue?"],
-				m.Target.ControllingFaction == holder, "mission_success")
-			if m.Target.ControllingFaction != holder:
+			var name := m.DisplayName()
+			var at := m.Target.Name
+			var goes_on := m.Target.ControllingFaction == holder
+			# TEXTSTRA 28929-28935: risen (or thrown out), inflamed, or nothing.
+			if m.Target.ControllingFaction != holder or (rioting and not was_rioting):
+				MissionReport(m, day, "mission_success",
+					"My %s mission to %s was successful.  The system has gone into uprising." % [name, at],
+					"The %s mission to %s was successful.  " % [name, at], goes_on)
+			elif rioting:
+				MissionReport(m, day, "mission_success",
+					"My %s mission to %s has not yet overthrown the government, but the system is in uprising.\n" % [name, at],
+					"My %s mission to %s has inflamed the uprising there, but the enemy is still in control.\n" % [name, at], goes_on)
+			else:
+				MissionReport(m, day, "mission_success",
+					"My %s mission to %s has not produced results.\n" % [name, at],
+					"My %s mission to %s has not produced results.\n" % [name, at], goes_on)
+			if not goes_on:
 				m.Finished = true
 
 		Enums.MissionType.SubdueUprising:
@@ -1070,30 +1258,23 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 			var swing := RuleManager.Roll(RuleId.SubdueNeutralShiftBase, RuleId.SubdueNeutralShiftSpread, rng, m.Faction) if neutral_target \
 				else RuleManager.Roll(RuleId.SubdueMatchingShiftBase, RuleId.SubdueMatchingShiftSpread, rng, m.Faction)
 			m.Target.ShiftSupport(m.Faction, swing)
-			var restored := m.Target.SupportFor(m.Faction)
 			var still_rioting := m.Target.IsInUprising
-			Report(m, day, "Order returning to %s" % m.Target.Name,
-				"Support on %s has risen to %d%%.%s" % [m.Target.Name, restored,
-					"\n\nDo you wish the mission to continue?" if still_rioting else " The uprising has ended."],
-				still_rioting, "mission_success")
-			if not still_rioting:
+			# TEXTSTRA 28945 / 28948: order restored; else the uprising goes on -
+			# 28946 / 28949 and the question, as the original asks it.
+			if still_rioting:
+				FailureReport(m, day, true)
+			else:
+				MissionReport(m, day, "mission_success",
+					"My mission to subdue the uprising on %s was successful.  Order has been restored." % m.Target.Name,
+					"The %s mission to %s was successful.  Order has been restored." % [m.DisplayName(), m.Target.Name])
 				m.Finished = true
 
 		Enums.MissionType.Reconnaissance:
 			IntelManager.Capture(m.Faction, m.Target, day, IntelManager.ReconnaissanceCategories)
-			var owner := m.Target.ControllingFaction.DisplayName if m.Target.ControllingFaction != null else "no one"
-			var lines := [
-				"Controller: %s" % owner,
-				"Popular support for us: %d%%" % m.Target.SupportFor(m.Faction),
-				"Resources: %d %s slots, %d %s slots" % [m.Target.BaseRawMaterials, Terms.lower("raw_materials"), m.Target.BaseEnergy, Terms.lower("energy")],
-				"Facilities: %d" % m.Target.Facilities.size(),
-				"%s: %d" % [Terms.label("trooper_regiments"), m.Target.Garrison.size()],
-				"%s: %d" % [Terms.label("fighter_squadrons"), m.Target.FighterSquadrons.size()],
-				"Fleets in orbit: %d" % m.Target.OrbitingFleets.size(),
-			]
 			print("[Mission] Reconnaissance of %s complete - system charted." % m.Target.Name)
-			Report(m, day, "Reconnaissance report: %s" % m.Target.Name,
-				"\n".join(lines) + "\n\nOur probe detected no information on personnel or special forces.", false, "mission_success")
+			# TEXTSTRA 28905: what it found shows in the system's windows, not here.
+			var seen := "The reconnaissance mission to %s was successful.\n" % m.Target.Name
+			MissionReport(m, day, "mission_success", seen, seen, false, true)
 			m.Finished = true
 			EventBus.BroadcastChanged()
 
@@ -1101,7 +1282,7 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 			var recruit := Recruitable(m.Faction, rng)
 			if recruit == null:
 				print("[Mission] Recruitment at %s succeeded but no one remains to recruit." % m.Target.Name)
-				Report(m, day, "Recruitment at %s" % m.Target.Name, "My agents found no new officers to recruit.", false, "mission_failure")
+				FailureReport(m, day, false)
 				m.Finished = true
 			else:
 				recruit.Attached = m.Target
@@ -1109,7 +1290,11 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 				recruit.DaysToDestination = 0
 				recruit.Status = Enums.Status.AwaitingOrders
 				print("[Mission] Recruitment at %s succeeded - %s joins." % [m.Target.Name, recruit.Name])
-				Report(m, day, "Recruitment successful at %s" % m.Target.Name, "%s has joined our cause at %s." % [recruit.Name, m.Target.Name], false, "mission_success")
+				# TEXTSTRA 28955 / 28953: "<name> Recruits <recruit>" / "My recruitment
+				# mission to <system> was successful. <recruit> is at your command."
+				var joins := "My recruitment mission to %s was successful. %s is at your command." % [m.Target.Name, recruit.Name]
+				var headline := "%s Recruits %s" % [Leader(m).Name, recruit.Name]
+				MissionReport(m, day, "mission_success", joins, joins, false, false, [headline, headline])
 				m.Finished = true
 				EventBus.BroadcastChanged()
 
@@ -1124,8 +1309,11 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 				victim.Destination = null
 				victim.DaysToDestination = 0
 				print("[Mission] %s abducted at %s by %s." % [victim.Name, m.Target.Name, m.Faction.DisplayName])
-				Report(m, day, "%s captured" % victim.Name,
-					"My team has taken %s prisoner at %s. They will be held there until rescued or the system is retaken." % [victim.Name, m.Target.Name], false, "mission_success")
+				# TEXTSTRA 28913 / 28916; the victim's side hears 29016 / 29017.
+				MissionReport(m, day, "mission_success",
+					"My mission to abduct %s from %s was a success.\n" % [victim.Name, m.Target.Name],
+					"The mission to abduct %s from %s succeeded.\n" % [victim.Name, m.Target.Name], false, true)
+				TellCaptured(victim, m.Target)
 				m.Finished = true
 				EventBus.BroadcastChanged()
 
@@ -1135,30 +1323,41 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 				m.Finished = true
 			else:
 				var can_die := not victim.IsMajor and rng.NextRange(1, 101) <= AssassinationKillPercent
+				var at := m.Target.Name
+				# TEXTSTRA 28921 / 28924 eliminated, 28922 / 28926 not; the victim's
+				# side hears 29192 / 29193 ("... was killed by Imperial Assassins at").
+				var slain := "%s was killed by %s Assassins at %s." % [victim.Name, m.Faction.Adjective, at]
+				var died := can_die
 				if can_die:
-					Kill(victim)
-					print("[Mission] %s assassinated at %s." % [victim.Name, m.Target.Name])
-					Report(m, day, "%s is dead" % victim.Name, "My team reached %s at %s. The target did not survive." % [victim.Name, m.Target.Name], false, "mission_success")
+					Kill(victim, slain)
+					print("[Mission] %s assassinated at %s." % [victim.Name, at])
 				else:
-					var died := Injure(victim, rng, RuleId.AssassinInjuryBase, RuleId.AssassinInjurySpread)
-					print("[Mission] %s %s at %s." % [victim.Name, "died of wounds" if died else "injured", m.Target.Name])
-					Report(m, day, ("%s is dead" % victim.Name) if died else ("%s injured" % victim.Name),
-						("My team struck %s at %s. The wounds proved fatal." % [victim.Name, m.Target.Name]) if died
-						else ("My team reached %s at %s. They are badly hurt - %sand will not recover until they rest on a system their own side controls." % [
-							victim.Name, m.Target.Name,
-							"too well protected to kill outright, but far easier to capture now, " if victim.IsMajor else "unable to take a mission or hold a command, "]), false, "mission_success")
+					Injure(victim, rng, RuleId.AssassinInjuryBase, RuleId.AssassinInjurySpread)
+					died = victim.Status == Enums.Status.Dead
+					print("[Mission] %s %s at %s." % [victim.Name, "died of wounds" if died else "injured", at])
+				if died:
+					MissionReport(m, day, "mission_success",
+						"My assassination mission is complete. %s has been eliminated.\n" % victim.Name,
+						"The assassination mission to %s is complete.  %s has been eliminated.\n" % [at, victim.Name], false, true)
+				else:
+					MissionReport(m, day, "mission_success",
+						"My assassination mission to %s is complete.  %s has not been eliminated.\n" % [at, victim.Name],
+						"The assassination mission to %s is complete.  %s has been injured.\n" % [at, victim.Name], false, true)
 				m.Finished = true
 				EventBus.BroadcastChanged()
 
 		Enums.MissionType.Sabotage:
-			var what: String = m.TargetObjectName() if m.TargetObjectName() != null else "the target"
+			var what: String = m.TargetObjectName() if m.TargetObjectName() != null else "target"
 			var gone := m.Target.DestroyFacility(m.TargetFacility) if m.TargetFacility != null else m.Target.DestroyUnit(m.TargetUnit)
 			if not gone:
-				Report(m, day, "%s is already gone" % what, "My team reached %s to find %s no longer there." % [m.Target.Name, what], false, "mission_abort")
+				NotFoundReport(m, day)
 				m.Finished = true
 			else:
 				print("[Mission] Sabotage at %s destroyed %s." % [m.Target.Name, what])
-				Report(m, day, "%s destroyed" % what, "My team has destroyed %s at %s." % [what, m.Target.Name], false, "mission_success")
+				# TEXTSTRA 28899 / 28898 + 28900, then the way home.
+				MissionReport(m, day, "mission_success",
+					"My sabotage mission to %s targeting the %s is complete.  The target was destroyed." % [m.Target.Name, what],
+					"The sabotage mission to %s targeting the %s is complete.  The target was destroyed." % [m.Target.Name, what], false, true)
 				# The original's own words (TEXTSTRA): "Saboteurs Strike at <system>" /
 				# "The following units were destroyed by saboteurs at <system>:".
 				_tell_defender(m.Target, day, "Saboteurs Strike at %s" % m.Target.Name,
@@ -1169,7 +1368,7 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 		Enums.MissionType.SuperweaponSabotage:
 			var station := DeathStarAt(m.Target)
 			if station == null:
-				Report(m, day, "The Death Star has gone", "My team reached %s to find the Death Star no longer there." % m.Target.Name, false, "mission_abort")
+				NotFoundReport(m, day)
 				m.Finished = true
 			else:
 				for f in m.Target.OrbitingFleets.duplicate():
@@ -1183,7 +1382,9 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 				for agent in Lq.of_type_character(m.Team):
 					agent.EspionageRating += RuleManager.Get(RuleId.SuperweaponSabotageEspionageGain, m.Faction)
 					agent.CombatRating += RuleManager.Get(RuleId.SuperweaponSabotageCombatGain, m.Faction)
-				Report(m, day, "Death Star Sabotaged", "The %s has sabotaged the Death Star at %s.\n\nIt is destroyed." % [m.Faction.DisplayName, m.Target.Name], false, "mission_success")
+				# The original's own (TEXTSTRA 29117 / 29118): "Death Star Sabotaged" /
+				# "The Rebel Alliance has sabotaged the Death Star at <system>."
+				Report(m, day, "Death Star Sabotaged", "The %s has sabotaged the Death Star at %s." % [m.Faction.DisplayName, m.Target.Name], false, "mission_success", false)
 				m.Finished = true
 				# The original's movie 104 (manual p106), for both sides.
 				EventBus.Cue("superweapon_sabotaged", [m.Faction, station.Faction])
@@ -1203,29 +1404,42 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 					s.IsKnownSpecialPowerUser = true
 					s.SpecialPowerLevel += gain
 					if s.SpecialPowerRankOf() != was:
-						risen.append("%s is now a %s" % [s.Name, Pretty(s.SpecialPowerRankOf())])
+						risen.append(s)
 				print("[Mission] Jedi Training at %s: +%d to %s" % [m.Target.Name, gain, Lq.join(Lq.select(students, func(s): return s.Name))])
-				Report(m, day, "Jedi Training at %s" % m.Target.Name,
-					(".\n".join(risen) + ".\n\n" if not risen.is_empty() else "") + "%s has completed a course of training." % teacher.Name, false, "mission_success")
+				# TEXTSTRA 29121 / 29124; each student who rose says so (29056 / 29057).
+				MissionReport(m, day, "mission_success",
+					"My %s mission on %s was a success." % [m.DisplayName(), m.Target.Name],
+					"The %s mission on %s has been a success." % [m.DisplayName(), m.Target.Name])
+				for s in risen:
+					TellForceGrowth(s, day, m.Target)
 				m.Finished = true
 
 		Enums.MissionType.ShipDesignResearch, Enums.MissionType.TroopTrainingResearch, Enums.MissionType.FacilityDesignResearch:
-			ResearchManager.MissionProgress(m.Faction, m.ResearchTrack(), day, rng)
+			var reached := ResearchManager.MissionProgress(m.Faction, m.ResearchTrack(), day, rng)
 			print("[Mission] %s at %s advanced our research." % [JsonUtil.enum_name(Enums.MissionType, m.Type), m.Target.Name])
-			Report(m, day, "%s progress at %s" % [m.DisplayName(), m.Target.Name],
-				"My researchers have made progress.\n\nDo you wish the mission to continue?", true, "mission_success")
+			# TEXTSTRA 28961 / 28965 making progress, 28962 / 28966 valuable
+			# results (a design reached), then the question (28891).
+			var how := "has produced valuable results.  " if reached > 0 else "is making progress.  "
+			MissionReport(m, day, "mission_success",
+				"My %s Research mission at %s %s" % [m.DisplayName().trim_suffix(" Research"), m.Target.Name, how],
+				"The %s Mission at %s %s" % [m.DisplayName(), m.Target.Name, how], true)
 
 		Enums.MissionType.Rescue:
 			var prisoner := m.TargetCharacter
 			if prisoner == null or not prisoner.IsCaptured():
 				m.Finished = true
 			else:
+				var captor: Faction = prisoner.CapturedBy
 				prisoner.CapturedBy = null
 				prisoner.Status = Enums.Status.AwaitingOrders
 				print("[Mission] %s rescued at %s." % [prisoner.Name, m.Target.Name])
-				Report(m, day, "%s rescued" % prisoner.Name,
-					"%s is free, at %s.%s" % [prisoner.Name, m.Target.Name,
-						" They remain injured and will need to rest on one of our systems." if prisoner.IsInjured() else ""], false, "mission_success")
+				# TEXTSTRA 28977 / 28980, then the way home; and the prisoner's own
+				# "<name> Escaped" (29020 / 29021, STRATEGY 1029) - TeeJ's screenshots
+				# of the original, 2026-09-28.
+				MissionReport(m, day, "mission_success",
+					"My mission to rescue %s from %s was a success.\n" % [prisoner.Name, m.Target.Name],
+					"The mission to rescue %s from %s succeeded.\n" % [prisoner.Name, m.Target.Name], false, true)
+				TellEscaped(prisoner, captor, m.Target, day)
 				m.Finished = true
 				EventBus.BroadcastChanged()
 

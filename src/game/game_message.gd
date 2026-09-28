@@ -58,10 +58,14 @@ var Voice: String = ""
 ## or "" - the character's or the world's, as before. An agent advice
 ## message's is the agent's own (the pack's `advice`). Presentation only.
 var Picture: String = ""
-## A report's scene - a mission id - with the reporting character laid over it
-## (the original's Diplomacy Mission Report: STRATEGY 1044, the agent in front),
-## or "". Presentation only.
+## A report's scene - the original's message picture, "message.<id>" - with the
+## reporting character laid over it (the original's mission reports: STRATEGY
+## 1044 for Diplomacy, the agent in front), or "". Presentation only.
 var Scene: String = ""
+## The original's message picture shown as it is, nobody laid over it -
+## "message.<id>", windows/message.<id>.png (STRATEGY 1000-1075: "Chewbacca
+## Escaped" is 1029) - or "". Presentation only.
+var Still: String = ""
 
 
 func _init(title: String = "", body: String = "", category: int = Enums.MessageCategory.All,
@@ -84,6 +88,8 @@ func Copy() -> GameMessage:
 	c.Advisor = Advisor
 	c.Voice = Voice
 	c.Picture = Picture
+	c.Scene = Scene
+	c.Still = Still
 	return c
 
 

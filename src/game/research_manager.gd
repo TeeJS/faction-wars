@@ -69,30 +69,38 @@ static func ProcessDay(galaxy: Array, day: int) -> void:
 		Award(f, Enums.ResearchTrackKind.TroopTraining, training * PassivePerFacilityPerDay, day, true)
 
 
-## An R&D mission attempt: entries 126 and 127, 1 + rand(0..6).
-static func MissionProgress(f: Faction, track: int, day: int, rng: Prng) -> void:
-	Award(f, track, RuleManager.Roll(RuleId.ResearchPointsBase, RuleId.ResearchPointsSpread, rng, f), day, false)
+## An R&D mission attempt: entries 126 and 127, 1 + rand(0..6). How many new
+## designs it brought in.
+static func MissionProgress(f: Faction, track: int, day: int, rng: Prng) -> int:
+	return Award(f, track, RuleManager.Roll(RuleId.ResearchPointsBase, RuleId.ResearchPointsSpread, rng, f), day, false)
 
 
-## Bank the points and announce anything the sequence has now reached.
-static func Award(f: Faction, track: int, points: int, day: int, quiet: bool) -> void:
+## Bank the points and announce anything the sequence has now reached, in the
+## original's words and picture (TEXTSTRA 28744 / 28745, STRATEGY 1017): "<name>
+## Research Complete" / "R&D Reports that the <name> is now available for
+## manufacture." How many were reached.
+static func Award(f: Faction, track: int, points: int, day: int, quiet: bool) -> int:
 	if f == null or points <= 0:
-		return
+		return 0
 	var before := Discovered(f, track)
 	Bank(f)[track] += points
 	var after := Discovered(f, track)
+	var reached := 0
 	for found in after:
 		if before.has(found):
 			continue
+		reached += 1
 		print("[R&D] %s has developed %s." % [f.DisplayName, found])
 		if not GameSettings.IsHuman(f):
 			continue
-		var msg := GameMessage.new("New technology: %s" % found,
-			"Our researchers have completed work on the %s. It is available to build immediately." % found,
+		var msg := GameMessage.new("%s Research Complete" % found,
+			"R&D Reports that the %s is now available for manufacture." % found,
 			Enums.MessageCategory.Manufacturing, day)
 		msg.Type = Enums.MessageType.ResearchReport
 		msg.Advisor = "research"
+		msg.Still = "message.1017"
 		EventBus.Tell(f, msg)
+	return reached
 
 
 ## Everything this side has reached on a track, by name.

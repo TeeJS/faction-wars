@@ -68,7 +68,7 @@ func _init() -> void:
 				if m in MissionManager.Active():
 					m.DaysOnStation = 0   # skip the work-days wait so it resolves now
 				MissionManager.ProcessDay(Prng.Session, StrategicTickManager.Today)
-				joined_msg = _find(Enums.MessageType.SystemControl, null, "joined")
+				joined_msg = _find(Enums.MessageType.SystemControl, null, "joins")   # "<system> Joins" (TEXTSTRA 28728)
 				if joined_msg != null:
 					break
 			_check(neutral.ControllingFaction == alliance, "the neutral world joined the Alliance")
