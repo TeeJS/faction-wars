@@ -149,14 +149,24 @@ func _init() -> void:
 	await _click(Vector2(20, 20))
 	_check(not b.Skipped() and _playing(al_lines[2]["sound"]) and ui.Briefing() == b, "Esc and a left click do nothing: the line plays on")
 
-	# Stop Briefing: beside C-3PO; the line stops, the skip's plays.
+	# Stop Briefing: at the foot of the right-hand column, just above Feedback,
+	# one of the column's own buttons (TeeJ, 2026-09-28); the line stops, the
+	# skip's plays.
 	var stop: Button = b.get_node_or_null("StopBriefing")
 	var at: Rect2 = stop.get_global_rect() if stop != null else Rect2()
-	var droid: Rect2 = (agent as Control).get_global_rect()
 	var screen: Rect2 = Rect2(Vector2.ZERO, root.get_visible_rect().size)
-	_check(stop != null and stop.text == "Stop Briefing" and stop.visible and screen.encloses(at)
-		and at.end.x <= droid.position.x + 1.0 and at.end.y > droid.position.y + droid.size.y * 0.5,
-		"Stop Briefing, on screen at the left of C-3PO's feet (%s, C-3PO %s)" % [str(at), str(droid)])
+	var feedback: Control = ui.get_node_or_null("FeedbackPanel")
+	var fb: Rect2 = feedback.get_global_rect() if feedback != null else Rect2()
+	var pins: Array = ui.PinnedSectors().values()
+	var pin: Rect2 = (pins[0] as Button).get_global_rect() if not pins.is_empty() else Rect2()
+	_check(stop != null and stop.text == "Stop Briefing" and stop.visible and screen.encloses(at),
+		"Stop Briefing, on screen (%s)" % str(at))
+	_check(feedback != null and at.end.y <= fb.position.y and fb.position.y - at.end.y <= 12.0
+		and absf(at.position.x - pin.position.x) < 1.0 and absf(at.size.x - pin.size.x) < 1.0 and absf(at.size.y - pin.size.y) < 1.0,
+		"... just above Feedback (%s), a sector button's place and size (%s)" % [str(fb), str(pin)])
+	_check(stop != null and not pins.is_empty() and not stop.has_theme_stylebox_override("normal")
+		and stop.get_theme_font_size("font_size") == (pins[0] as Button).get_theme_font_size("font_size"),
+		"... in the sector buttons' own look")
 	await _click(at.get_center())
 	_check(b.Skipped() and not _playing(al_lines[2]["sound"]) and _playing(al["skip"][1]["sound"]),
 		"Stop Briefing: the line stops and the skip's plays (\"I do hope you know what you're doing\")")

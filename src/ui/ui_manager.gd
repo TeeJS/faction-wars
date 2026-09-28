@@ -1604,6 +1604,26 @@ func OpenGidControlMenu() -> void:
 ## whole screen on a layer above every other (BriefingLayer), so no window,
 ## console or control below takes a click, and it takes every key; in single
 ## player its Stop Briefing button is the one way out (briefing.gd).
+## THE STOP BRIEFING BUTTON'S PLACE (TeeJ, 2026-09-28: "the bottom of the right
+## hand column just above feedback, and match the existing buttons there"): a
+## sector button's width and height, a sector button's gap above whatever takes
+## the column's foot (Feedback, or the map key's button without the left-hand
+## menu) - at the foot itself when nothing does.
+func StopBriefingRect() -> Rect2:
+	var vp: Vector2 = get_viewport().get_visible_rect().size
+	var like: Rect2 = Rect2(vp.x - 140.0, 0.0, 130.0, KeyButtonHeight)
+	for name in _pinnedSectors:
+		var pin: Button = _pinnedSectors[name]
+		if is_instance_valid(pin) and pin.size.x > 0.0:
+			like = pin.get_global_rect()
+			break
+	var gap: float = float(_taskbarList.get_theme_constant("separation")) if _taskbarList != null else KeyButtonGap
+	var bottom: float = vp.y - ColumnFoot
+	if _gidMenu == null or get_node_or_null("FeedbackPanel") != null:
+		bottom -= KeyButtonHeight + gap
+	return Rect2(like.position.x, bottom - like.size.y, like.size.x, like.size.y)
+
+
 func StartBriefing(hold: Callable = Callable()) -> Control:
 	var advisor: Node = get_node_or_null("Advisor")
 	if advisor == null or advisor.Agent == null or not BriefingScript.CanPlay():
@@ -1611,7 +1631,7 @@ func StartBriefing(hold: Callable = Callable()) -> Control:
 	var b: Control = BriefingScript.new()
 	b.Agent = advisor.Agent
 	b.Map = ActiveGalaxyMap
-	b.Frame = CommandFrameRef
+	b.StopPlace = StopBriefingRect
 	b.Stoppable = MpSetup.session == null
 	advisor.Held = true
 	if hold.is_valid():

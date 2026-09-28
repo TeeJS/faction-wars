@@ -53,6 +53,13 @@ const BackAt := Vector2(40, 414)
 const NextAt := Vector2(232, 414)
 const PageCentre := 180.5
 const CloseAt := Vector2(510, 414)
+## ...on the multiplayer screens' wires, as their boxes sit there (TeeJ,
+## 2026-09-28: "this screen is missing the greeblies as well"): the wires
+## through the boxes' middle across the panel, a clamp at each end and each
+## side of the stretch between Next and X (3 pixels off the boxes, as the
+## original's), and the page line in a name socket 78 wide on the wires.
+const FootClamps := [33.0, 328.0, 503.0, 606.0]
+const PageSocket := [141, 78, 418]
 const Green := Color(0, 1, 0)
 const Red := Color(1, 0, 0)
 const Greyed := Color(0.42, 0.42, 0.42)
@@ -147,7 +154,7 @@ func _build() -> void:
 	_canvas.position = ((view - Vector2(W, H) * _s) / 2.0).floor()
 	_games = SaveManager.Games()
 	_page = clampi(_page, 0, Pages() - 1)
-	_place(SavedArt.AllGamesPlate(Rows, RowTop, RowPitch, Columns), 0, 0, "Plate")
+	_place(SavedArt.AllGamesPlate(Rows, RowTop, RowPitch, Columns, [int(BackAt.y) + 13, FootClamps, PageSocket]), 0, 0, "Plate")
 	_text(Title[0], Title[1] - 150, HeadTop, 300, HeadPx, Green, HORIZONTAL_ALIGNMENT_CENTER, true, "Title")
 	for h in ColumnHeads:
 		_text(h[0], h[1] - 50, HeadTop, 100, HeadPx, Green, HORIZONTAL_ALIGNMENT_CENTER, true, "Head_" + str(h[0]))

@@ -7,7 +7,9 @@ extends SceneTree
 ##   - where the backdrop reaches from the edge, the scene shows;
 ##   - the figure shows, and a backdrop colour enclosed by it stays;
 ##   - a Diplomacy report carries its scene, and the message window draws it;
-##   - without the scene, the character's picture as before.
+##   - without the scene, the character's picture as before;
+##   - with the character's report figure (the original's own cut-out): the
+##     figure over the scene, and nothing of the Encyclopedia picture.
 ##
 ##   .\tools\run-gd.ps1 tests/report_picture.gd
 
@@ -85,6 +87,21 @@ func _init() -> void:
 		var msg: GameMessage = EventBus.MessageLog[EventBus.MessageLog.size() - 1] if EventBus.MessageLog.size() > before else null
 		_check(msg != null and msg.Scene == "diplomacy", "the Diplomacy report carries its scene (%s)" % (msg.Scene if msg != null else "none"))
 		_check(msg != null and MessageWindow.MessagePicture(msg) == pic, "the message window shows the composite for it")
+
+	# With the character's report figure (exporter 2.6.5): the figure, cut out by
+	# hand, over the scene - not the Encyclopedia picture filled from its edges.
+	var figure := Image.create(400, 200, false, Image.FORMAT_RGBA8)
+	figure.fill(Color(0, 0, 0, 0))
+	figure.fill_rect(Rect2i(20, 20, 40, 40), Color(0, 0, 0))   # black, as dark as a backdrop
+	figure.save_png("%s/characters/%s.report.png" % [set_dir, agent.PackId])
+	Art.Reset()
+	MessageWindow._reportPictures.clear()
+	var cut: Texture2D = MessageWindow.ReportPicture("diplomacy", agent)
+	_check(cut != null, "with the report figure: a composite")
+	if cut != null:
+		var img: Image = cut.get_image()
+		_check(img.get_pixel(30, 30).is_equal_approx(Color(0, 0, 0)), "the figure shows, even in the backdrop's own colour")
+		_check(img.get_pixel(260, 60).is_equal_approx(Color(1, 0, 0)), "where the figure is cut away the scene shows, not the Encyclopedia picture")
 
 	_remove(ArtRoot)
 	Art.IgnoreProjectFolder = false

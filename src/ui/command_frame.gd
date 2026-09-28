@@ -50,10 +50,7 @@ const FrameSize := Vector2(640, 481)
 ## options_picture: the Game Options monitor's pair likewise, a little larger
 ## than the monitor the frame's glass takes clicks on. gid_menu: the GID
 ## control's menu (gid_control_menu.gd) where the original opens it - matched
-## on TeeJ's screenshots of it open, both sides. stop_briefing: ours, the
-## single-player briefing's Stop Briefing button (TeeJ, 2026-09-27: "to the
-## left of C3PO/IMP") - on the floor left of C-3PO; IMP-22 stands against the
-## frame's left edge, so his is beside him on the right, under the map.
+## on TeeJ's screenshots of it open, both sides.
 const Layout := {
 	"alliance": {
 		"window": Rect2(54, 35, 488, 358),
@@ -63,7 +60,6 @@ const Layout := {
 		"picture": Vector2(21, 25),
 		"agent": Rect2(541, 337, 67, 116),
 		"messenger": Rect2(316, 411, 47, 69),
-		"stop_briefing": Rect2(451, 461, 84, 19),
 		"consoles": {
 			"system_finder": Rect2(105, 407, 29, 18), "fleet_finder": Rect2(156, 406, 29, 17),
 			"troop_finder": Rect2(208, 405, 29, 17), "personnel_finder": Rect2(257, 404, 29, 17),
@@ -80,7 +76,6 @@ const Layout := {
 		"picture": Vector2(84, 27),
 		"agent": Rect2(0, 347, 106, 133),
 		"messenger": Rect2(302, 401, 101, 79),
-		"stop_briefing": Rect2(110, 401, 84, 19),
 		"consoles": {
 			"system_finder": Rect2(143, 434, 37, 24), "fleet_finder": Rect2(199, 434, 34, 22),
 			"troop_finder": Rect2(253, 433, 34, 22), "personnel_finder": Rect2(412, 433, 34, 22),
@@ -413,12 +408,6 @@ func Shelf() -> Rect2:
 ## The whole frame on screen.
 func ScreenRect() -> Rect2:
 	return Rect2(Origin, FrameSize * S)
-
-
-## The Stop Briefing button's place on screen (Layout's stop_briefing).
-func StopBriefingRect() -> Rect2:
-	var r: Rect2 = Layout[Side]["stop_briefing"]
-	return Rect2(Origin + r.position * S, r.size * S)
 
 
 ## The map's window on screen.

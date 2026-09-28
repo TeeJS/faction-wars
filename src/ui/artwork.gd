@@ -305,6 +305,36 @@ static func _pack_dir() -> String:
 	return FactionRegistry.PackDir(FactionRegistry.LoadedId()) if FactionRegistry.Pack != null else ""
 
 
+## THE ORIGINAL'S FONT (TeeJ, 2026-09-28: "you should be using the same font
+## as the original"): the Arial it draws every word in - REBEXE names the one
+## face "Arial" (0x6ac7b8) for GDI's CreateFontIndirectA and ships no font of
+## its own, so it is Windows' own. The exporter (2.6.5) brings the player's copy
+## into the art set, fonts/arial.ttf and fonts/arialbd.ttf, as it does the
+## original's pictures: the web build has no other way to reach it. Null
+## without it.
+static func OriginalFont(bold: bool = false) -> Font:
+	_check_pack()
+	var rel := "fonts/%s" % ("arialbd.ttf" if bold else "arial.ttf")
+	var key := "font|" + rel
+	if _cache.has(key):
+		return _cache[key]
+	var found: Font = null
+	for s in _sets():
+		for root in _set_roots(s):
+			var path := "%s/%s" % [root, rel]
+			if not FileAccess.file_exists(path):
+				continue
+			var f := FontFile.new()
+			f.data = FileAccess.get_file_as_bytes(path)
+			if not f.data.is_empty():
+				found = f
+				break
+		if found != null:
+			break
+	_cache[key] = found
+	return found
+
+
 ## Where art set `set_id` may be, in order (see the header).
 static func _set_roots(set_id: String) -> Array[String]:
 	var roots: Array[String] = []

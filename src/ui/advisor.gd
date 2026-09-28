@@ -142,12 +142,18 @@ func _say(entry: Dictionary) -> void:
 
 
 ## The agent answers at once ("answer_<code>" for this side), stopping the
-## news playing; the same answer already playing is not begun again.
-func Answer(code: String) -> void:
+## news playing; the same answer already playing is not begun again. True
+## when he answers (or is answering): the droid is there with the line.
+func Answer(code: String) -> bool:
 	var event := "answer_" + code
 	var events := Events()
-	if code.is_empty() or not events.has(event) or _answering == event or FactionRegistry.Pack == null:
-		return
+	if code.is_empty() or not events.has(event) or FactionRegistry.Pack == null or Agent == null:
+		return false
+	var part: Variant = (events[event] as Dictionary).get("agent")
+	if not part is Dictionary or SoundLib.FileOf(str(part.get("sound", ""))).is_empty():
+		return false
+	if _answering == event:
+		return true
 	_interrupt()
 	_busy = true
 	_answering = event
@@ -155,6 +161,7 @@ func Answer(code: String) -> void:
 	_part(Agent, (events[event] as Dictionary).get("agent"), mine, func() -> void:
 		_answering = ""
 		_busy = false)
+	return true
 
 
 ## What is playing stops, its callbacks void.
@@ -172,13 +179,15 @@ func _interrupt() -> void:
 	_busy = false
 
 
-## The advisor on `tree`'s Command Center answers `code` (see Answer).
-static func AnswerOn(tree: SceneTree, code: String) -> void:
+## The advisor on `tree`'s Command Center answers `code` (see Answer); true
+## when he does.
+static func AnswerOn(tree: SceneTree, code: String) -> bool:
 	if tree == null or code.is_empty():
-		return
+		return false
 	var a: Node = tree.root.find_child("Advisor", true, false)
 	if a != null and a.has_method("Answer"):
-		a.Answer(code)
+		return bool(a.Answer(code))
+	return false
 
 
 ## A droid's animation and sound together; `done` once both have ended, if

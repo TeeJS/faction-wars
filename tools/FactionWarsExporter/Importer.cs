@@ -45,6 +45,8 @@ namespace FactionWarsExporter;
 /// its root, written through an ArtSink (a .zip, a folder, or hashes only).
 /// (Each path below is shown under original/, the art set's old home.)
 ///   original/characters/&lt;id&gt;.png   original/units/&lt;id&gt;.png
+///   original/characters/&lt;id&gt;.report.png   the figure a mission report lays
+///     over its scene (STRATEGY.DLL at the Encyclopedia id, blue = transparent)
 ///   original/facilities/&lt;id&gt;.png   original/planets/&lt;id&gt;.png
 ///   original/missions/&lt;id&gt;.&lt;faction&gt;.png (alliance / empire), and
 ///     .small.png: the 130x65 Create Mission picture (GOKRES.DLL)
@@ -66,6 +68,8 @@ namespace FactionWarsExporter;
 ///   original/tabs/&lt;name&gt;[.&lt;faction&gt;].png (+ .pressed / .grey)   window tab icons
 ///   original/buttons/&lt;name&gt;.png (+ .pressed / .disabled)       window buttons
 ///   original/cursors/pointer.png, crosshair.png, hotspots.json   the mouse pointers (REBEXE.EXE)
+///   original/fonts/arial.ttf, arialbd.ttf   the original's font: Windows' own Arial, the
+///     face REBEXE draws in (it ships none) - the player's copy, for the web build
 ///   original/screens/cockpit.png   the Shuttle Cockpit (COMMON.DLL 20001), the menu picture
 ///   original/screens/galaxy.png    the galaxy map (STRATEGY.DLL 903), the map's backdrop
 ///   original/screens/galaxy_off.png  the display off (902): the bright galaxy, no systems
@@ -835,6 +839,20 @@ public sealed class Importer
         // The strategic layer's sprites: the sector window's corner icons in each
         // side's own shaded colours, and the planets themselves.
         var strategy = new PeResources(Path.Combine(_gameDir, "STRATEGY.DLL"));
+        // A character's REPORT FIGURE: the Encyclopedia picture cut out by hand
+        // on pure blue, at the Encyclopedia id in STRATEGY.DLL (6208 Mon Mothma
+        // .. 6811; 61 of them). The original's mission reports lay it over their
+        // scene: REBEXE 0x46a280 asks STRATEGY for the picture id first and
+        // EDATA only without one, 0x46a320 draws it keyed on its blue.
+        int figures = 0;
+        foreach (var row in ReadRows("characters.json", "characters"))
+        {
+            string cid = row["id"]!.GetValue<string>();
+            int? sid = row["string_id"]?.GetValue<int>();
+            if (sid is int s && SaveSprite(strategy, s - TextOffset, P("characters", cid + ".report.png"))) { figures++; pictureCount++; }
+            else missing.Add($"characters/{cid}.report: no bitmap {(sid ?? TextOffset) - TextOffset} in STRATEGY.DLL");
+        }
+        Say($"report figures: {figures} (STRATEGY.DLL).");
         int icons = 0;
         foreach (var (glyph, faction, normal, hover) in CornerIcons)
         {
@@ -1000,6 +1018,21 @@ public sealed class Importer
         }
         else
             missing.Add("REBEXE.EXE not found - no mouse pointers");
+
+        // THE ORIGINAL'S FONT: REBEXE draws every word in Arial (the one face it
+        // names, for GDI's CreateFontIndirectA) and ships no font: it is
+        // Windows' own. The web build cannot reach a system font (Godot's
+        // SystemFont falls back to its own there), so the player's copy goes
+        // into the art set with the original's pictures.
+        var fontsDir = Environment.GetFolderPath(Environment.SpecialFolder.Fonts);
+        int fonts = 0;
+        foreach (var file in new[] { "arial.ttf", "arialbd.ttf" })
+        {
+            var from = Path.Combine(fontsDir, file);
+            if (File.Exists(from)) { _sink.Write(P("fonts", file), File.ReadAllBytes(from)); fonts++; }
+            else missing.Add($"fonts/{file}: not in {fontsDir}");
+        }
+        Say($"the original's font: {fonts} of 2 (Windows' Arial).");
 
         foreach (var (name, id) in QueuePictures)
         {
