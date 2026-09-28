@@ -735,6 +735,10 @@ class FacilityDef:
 	## production/defensive column split (processing_rate vs weapon_rating).
 	var Stats: Dictionary = {}
 	var SourceFamilyId: int
+	## The row's .DAT id within its family: the advanced tiers share the family
+	## id, so this is what tells them apart (an original saved game names a
+	## facility by the pair - OriginalImport).
+	var SourceId: int
 
 	static func from_dict(d: Dictionary) -> FacilityDef:
 		var o := FacilityDef.new()
@@ -754,6 +758,7 @@ class FacilityDef:
 			for k in JsonUtil.data_keys(st):
 				o.Stats[str(k)] = st[k]
 		o.SourceFamilyId = JsonUtil.int_or(d, "source_family_id")
+		o.SourceId = JsonUtil.int_or(d, "source_id")
 		return o
 
 	func HasRole(role: String) -> bool:

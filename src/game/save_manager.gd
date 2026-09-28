@@ -366,7 +366,7 @@ static func Detect(bytes: PackedByteArray) -> String:
 static func Import(bytes: PackedByteArray, file_name: String = "") -> Dictionary:
 	var kind: String = Detect(bytes)
 	if kind == "original":
-		return {"ok": false, "id": "", "name": "", "message": "Star Wars: Rebellion saves can not be imported yet."}
+		return _import_original(bytes, file_name)
 	if kind.is_empty():
 		return {"ok": false, "id": "", "name": "", "message": "That is not a saved game."}
 	var text: String = bytes.get_string_from_utf8()
@@ -390,6 +390,37 @@ static func Import(bytes: PackedByteArray, file_name: String = "") -> Dictionary
 	var name: String = FreeName(base)
 	var side: String = str(meta.get("side", (header as Dictionary).get("local", "")))
 	var id: String = _store("", text, name, day, side)
+	if id.is_empty():
+		return {"ok": false, "id": "", "name": "", "message": "The saved game could not be written."}
+	return {"ok": true, "id": id, "name": name, "message": ""}
+
+
+## A Star Wars: Rebellion saved game: checked against the pack (nothing about
+## the game being played is touched), then kept as a save whose header carries
+## the original's file, so loading it builds that game (OriginalImport). Its
+## name is the one it was saved under in the original.
+static func _import_original(bytes: PackedByteArray, file_name: String) -> Dictionary:
+	var plan: Dictionary = GameSession.OriginalImport.Plan(GameSession.OriginalSave.Read(bytes))
+	if not plan["ok"]:
+		return {"ok": false, "id": "", "name": "", "message": plan["error"]}
+	var header := {
+		"build": BuildInfo.version(),
+		"pack": FactionRegistry.LoadedId(),
+		"pack_hash": FactionRegistry.PackHash,
+		"seed": GameSession.OriginalImport.SeedOf(bytes),
+		"local": plan["side"],
+		"humans": [plan["side"]],
+		"host": "",
+		"difficulty": plan["difficulty"],
+		"size": plan["size"],
+		"hq_only": false,
+		"origin": GameSession.OriginalImport.OriginOf(bytes),
+	}
+	var base: String = str(plan["name"]).strip_edges()
+	if base.is_empty():
+		base = file_name.get_file().get_basename()
+	var name: String = FreeName(base)
+	var id: String = _store("", JSON.stringify(header) + "\n", name, int(plan["day"]), str(plan["side"]))
 	if id.is_empty():
 		return {"ok": false, "id": "", "name": "", "message": "The saved game could not be written."}
 	return {"ok": true, "id": id, "name": name, "message": ""}

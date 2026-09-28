@@ -101,6 +101,9 @@ static func Header() -> Dictionary:
 	}
 	if GameSettings.AiTakeoverDay > 0:
 		header["ai_takeover_day"] = GameSettings.AiTakeoverDay
+	# An imported game is rebuilt from the original's file (OriginalImport).
+	if not GameSettings.Origin.is_empty():
+		header["origin"] = GameSettings.Origin
 	return header
 
 

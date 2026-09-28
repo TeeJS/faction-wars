@@ -27,8 +27,16 @@ static func replay_entries(header: Dictionary, commands: Array, upto_day: int = 
 	if not FactionRegistry.EnsureLoaded(str(header.get("pack", ""))):
 		return null
 	var default_side: String = FactionRegistry.Playable[0].Id if FactionRegistry.Playable.size() > 0 else ""
-	var engine := GameSession.new_game(str(header.get("local", default_side)), int(header.get("difficulty", 2)),
-		int(header.get("size", 1)), int(header.get("seed", 0)), header.get("humans", []), str(header.get("host", "")))
+	var engine: StrategicTickManager
+	var origin: Variant = header.get("origin")
+	if origin is Dictionary:
+		# Imported from Star Wars: Rebellion: rebuilt from the original's file.
+		engine = GameSession.start_from_original(GameSession.OriginalImport.BytesOf(origin), int(header.get("seed", 0)))
+	else:
+		engine = GameSession.new_game(str(header.get("local", default_side)), int(header.get("difficulty", 2)),
+			int(header.get("size", 1)), int(header.get("seed", 0)), header.get("humans", []), str(header.get("host", "")))
+	if engine == null:
+		return null
 	GameSettings.HQOnlyVictory = bool(header.get("hq_only", false))
 	CommandBus.Immediate = false
 	CommandBus.Session = null   # the replay applies directly; the session is put back below
