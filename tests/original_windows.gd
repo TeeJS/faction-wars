@@ -172,6 +172,18 @@ func _init() -> void:
 		for _i in 2:
 			await process_frame
 		_check(dtabs.current_tab == emptyTab, "and it stays open through a repaint")
+		# Left for another page, it greys again (TeeJ, 2026-09-28, the
+		# original's Corsin; ours stayed coloured).
+		var other: int = Lq.first_or_null(range(dtabs.get_tab_count()), func(i: int) -> bool: return i != emptyTab)
+		strip[other].pressed.emit()
+		for _i in 2:
+			await process_frame
+		_check(dtabs.current_tab == other and dtabs.is_tab_disabled(emptyTab) and strip[emptyTab].texture_normal == strip[emptyTab].texture_disabled,
+			"another tab picked: the empty %s greyed again" % strip[emptyTab].tooltip_text)
+		strip[emptyTab].pressed.emit()
+		for _i in 2:
+			await process_frame
+		_check(dtabs.current_tab == emptyTab and strip[emptyTab].texture_normal == strip[emptyTab].get_meta("current"), "and opens again, coloured")
 	dtabs.current_tab = 1
 	for _i in 2:
 		await process_frame

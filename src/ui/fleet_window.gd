@@ -1051,7 +1051,7 @@ func _ShowTabs(fleetShown: bool) -> void:
 				break
 	tabs.current_tab = current
 	for i in counts.size():
-		tabs.set_tab_disabled(i, counts[i] == 0 and i != current)
+		OUI.SetEmpty(tabs, i, counts[i] == 0)
 	OUI.RefreshStrip(tabs)
 
 
