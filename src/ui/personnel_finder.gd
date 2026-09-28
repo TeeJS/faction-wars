@@ -361,7 +361,8 @@ static func SpecForceRows(side: Faction) -> Array:
 		here.Where = p
 		if side == viewer or IntelManager.IsLive(viewer, p):
 			for u in p.SpecForces():
-				if u.Faction == side:
+				# Theirs on a mission here are hiding, as their characters are.
+				if u.Faction == side and (side == viewer or u.Status != Enums.Status.OnMission):
 					here.Counts[u.PackId] = int(here.Counts.get(u.PackId, 0)) + 1
 		else:
 			var view: IntelManager.IntelView = IntelManager.View(viewer, p, Enums.IntelSection.SpecForces)

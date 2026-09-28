@@ -279,9 +279,15 @@ func Populate(planet: Planet, uiManager: UIManager) -> void:
 			# Bothan Spy or a probe droid appeared nowhere on it - they were
 			# being drawn on the Troops tab instead, which the same figure
 			# reserves for trooper regiments.
-			# OURS ARE ALREADY DRAWN, as the characters above are.
+			# OURS ARE ALREADY DRAWN, as the characters above are. And theirs
+			# are left out on the same terms as their characters: a unit on a
+			# mission here is hiding, one on its way is not here yet (TeeJ,
+			# 2026-09-28: "HOW DO I KNOW THERE ARE BOTHAN SPIES ON MY PLANET IF I
+			# DIDN'T FOIL THEIR MISSION? EITHER THEY SHOULD SHOW UP, OR THEY
+			# SHOULD BE INVISIBLE"; manual p047: a unit on a mission leaves the
+			# Personnel display).
 			var specForcesOnPlanet: Array = Lq.where(planet.SpecForces(),
-				func(u: Unit) -> bool: return u.Faction != GameSettings.PlayerFaction)
+				func(u: Unit) -> bool: return u.Faction != GameSettings.PlayerFaction and u.Status != Enums.Status.Enroute and u.Status != Enums.Status.OnMission)
 			var specForcesPending: Array[String] = PendingFor(planet, Enums.UnitType.SpecForce)
 
 			# ourPersonnel COUNTS TOO. Without it this tested only what the

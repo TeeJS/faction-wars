@@ -72,6 +72,21 @@ func _init() -> void:
 		enemy2.Status = Enums.Status.AwaitingOrders
 		enemy2.DaysToDestination = 0
 
+	# THEIR SPECIAL FORCES the same (TeeJ, 2026-09-28: "HOW DO I KNOW THERE ARE
+	# BOTHAN SPIES ON MY PLANET IF I DIDN'T FOIL THEIR MISSION?"): one on a
+	# mission here is hidden; one idle here (synthetic, as enemy2) is drawn.
+	var sf_defs: Array = Lq.where(MilitaryCatalog.All(), func(d): return d.Kind == "spec_force")
+	var spy: Unit = null
+	var idle_sf: Unit = null
+	if sf_defs.size() >= 2:
+		spy = MilitaryCatalog.Create(sf_defs[0], empire, null)
+		MilitaryCatalog.Relocate(spy, ours)
+		spy.Status = Enums.Status.OnMission
+		idle_sf = MilitaryCatalog.Create(sf_defs[1], empire, null)
+		MilitaryCatalog.Relocate(idle_sf, ours)
+		idle_sf.Status = Enums.Status.AwaitingOrders
+	_check(spy != null and ours.SpecForces().has(spy), "an enemy Special Force on a mission stands on our world")
+
 	var ui := UIManager.new()
 	ui.name = "UIManager"
 	root.add_child(ui)
@@ -83,6 +98,15 @@ func _init() -> void:
 
 	var texts := _all_text(w.get_node("%PersonnelList"))
 	_check(not _mentions(texts, enemy.Name), "the enemy character ON MISSION is NOT shown on our Personnel tab")
+	if spy != null:
+		var tips := _all_tips(w.get_node("%PersonnelList"))
+		_check(not _mentions(texts, spy.Name) and not _mentions(tips, spy.Name), "the enemy Special Force ON MISSION is NOT shown (%s)" % spy.Name)
+		_check(_mentions(texts, idle_sf.Name) or _mentions(tips, idle_sf.Name), "PRECISION (synthetic): an idle enemy Special Force IS drawn (%s)" % idle_sf.Name)
+		var seen: int = int(IntelManager.SeenData(alliance, ours, Enums.IntelSection.SpecForces).get("units", -1))
+		_check(seen == Lq.count(ours.SpecForces(), func(u: Unit) -> bool: return u.Status != Enums.Status.OnMission), "the facts count leaves it out too (%d)" % seen)
+		var rows: Array = load("res://src/ui/personnel_finder.gd").SpecForceRows(empire)
+		var row = Lq.first_or_null(rows, func(r) -> bool: return r.Where == ours)
+		_check(row == null or not (row.Counts as Dictionary).has(spy.PackId), "and the Personnel Finder does not count it")
 	if oursChar != null:
 		_check(_mentions(texts, oursChar.Name), "our own character present on the world IS still shown (unconditional path)")
 	if enemy2 != null:
@@ -114,6 +138,14 @@ func _all_text(node: Node, out: Array = []) -> Array:
 		out.append((node as Label).text)
 	for c in node.get_children():
 		_all_text(c, out)
+	return out
+
+
+func _all_tips(node: Node, out: Array = []) -> Array:
+	if node is Control and not (node as Control).tooltip_text.is_empty():
+		out.append((node as Control).tooltip_text)
+	for c in node.get_children():
+		_all_tips(c, out)
 	return out
 
 
