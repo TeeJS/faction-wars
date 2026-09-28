@@ -709,7 +709,7 @@ static func RunBlockade(units: Array, from: Planet, rng: Prng) -> Array:
 	if not lost.is_empty():
 		var msg := GameMessage.new("Evacuation Losses",
 			"The following units were lost running an enemy blockade of %s:\n\n  %s" % [from.Name, "\n  ".join(lost)],
-			Enums.MessageCategory.Missions, StrategicTickManager.Today, from)
+			Enums.MessageCategory.Manufacturing, StrategicTickManager.Today, from)   # items destroyed (TeeJ, 2026-09-27)
 		msg.Type = Enums.MessageType.EvacuationLosses
 		EventBus.Tell(units[0].Faction, msg)   # own-side only, not broadcast
 	return survivors
