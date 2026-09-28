@@ -101,7 +101,27 @@ static func Award(f: Faction, track: int, points: int, day: int, quiet: bool) ->
 		msg.Still = "message.1017"
 		msg.Sound = "strategy/1113"
 		EventBus.Tell(f, msg)
+	# THE LAST OF A TRACK (TEXTSTRA 29208-29211, REBEXE 0x48abb0, STRATEGY 1017 /
+	# 1113): "Research Exhausted" / "There are no further advances expected in
+	# ship construction." - troop training, facility construction.
+	if reached > 0 and GameSettings.IsHuman(f) and after.size() >= Researchable(f, track):
+		var done := GameMessage.new("Research Exhausted", "There are no further advances expected in %s." % (
+			"facility construction" if track == Enums.ResearchTrackKind.FacilityDesign
+			else ("troop training" if track == Enums.ResearchTrackKind.TroopTraining else "ship construction")),
+			Enums.MessageCategory.Manufacturing, day)
+		done.Type = Enums.MessageType.ResearchReport
+		done.Still = "message.1017"
+		done.Sound = "strategy/1113"
+		EventBus.Tell(f, done)
 	return reached
+
+
+## How many designs this side can reach on a track at all.
+static func Researchable(f: Faction, track: int) -> int:
+	if track == Enums.ResearchTrackKind.FacilityDesign:
+		return Lq.count(FacilityCatalog.All(), func(r) -> bool: return r.ResearchOrder > 0 and r.CanBeBuiltBy(f))
+	return Lq.count(MilitaryCatalog.All(), func(r) -> bool:
+		return r.ResearchOrder > 0 and MilitaryCatalog.CanBeBuiltBy(r, f) and TrackFor(r) == track)
 
 
 ## Everything this side has reached on a track, by name.

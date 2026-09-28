@@ -1308,7 +1308,10 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 			var recruit := Recruitable(m.Faction, rng)
 			if recruit == null:
 				print("[Mission] Recruitment at %s succeeded but no one remains to recruit." % m.Target.Name)
-				FailureReport(m, day, false)
+				# Nobody left at all: the original's own (TEXTSTRA 29200 / 29201,
+				# REBEXE 0x48ae30) - "Recruitment Done" / "We regret to report that
+				# there are no more candidates to be recruited."
+				Report(m, day, "Recruitment Done", "We regret to report that there are no more candidates to be recruited.", false, "mission_failure", false)
 				m.Finished = true
 			else:
 				recruit.Attached = m.Target

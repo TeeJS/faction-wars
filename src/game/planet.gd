@@ -214,6 +214,35 @@ func ProcessQueueItem(queue: Array, daily_progress: int, _category: String) -> v
 		_completed_this_tick += 1
 		# EVERY completed order is delivered, not only facilities.
 		FinishConstruction(active_job)
+		if queue.is_empty():
+			_TellIdle(queue)
+
+
+## A QUEUE RUN DRY, in the original's words and sound (TEXTSTRA 29176-29181,
+## REBEXE 0x48be60, STRATEGY 1101): "Shipyard Idle on <system>" / "The Shipyards
+## at <system> are available for new construction orders."; "Training Facility
+## Idle on" / "The Training Facilities at <system> are no longer in use.";
+## "Construction Yard Idle on" / "The Construction Yards at <system> have
+## completed their assigned tasks."
+func _TellIdle(queue: Array) -> void:
+	if ControllingFaction == null or not GameSettings.IsHuman(ControllingFaction):
+		return
+	var title: String
+	var body: String
+	if is_same(queue, ShipyardQueue):   # the same array, not an equal one
+		title = "Shipyard Idle on %s" % Name
+		body = "The Shipyards at %s are available for new construction orders." % Name
+	elif is_same(queue, TrainingQueue):
+		title = "Training Facility Idle on %s" % Name
+		body = "The Training Facilities at %s are no longer in use." % Name
+	elif is_same(queue, BuildingQueue):
+		title = "Construction Yard Idle on %s" % Name
+		body = "The Construction Yards at %s have completed their assigned tasks." % Name
+	else:
+		return
+	var msg := GameMessage.new(title, body, Enums.MessageCategory.Manufacturing, StrategicTickManager.Today, self)
+	msg.Sound = "strategy/1101"
+	EventBus.Tell(ControllingFaction, msg)
 
 
 # --- PLACING A BUILD ORDER --- (manual p054, p084, p086, p131)
