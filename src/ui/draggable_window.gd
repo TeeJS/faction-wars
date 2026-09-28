@@ -355,8 +355,12 @@ func OpenCreateMission(team: Array, origin: Planet, target: Planet, picked: Vari
 			why = MissionManager.CanTarget(elsewhere[0], actor, target).error
 			if why.is_empty():
 				why = "%s is not a valid target for this team." % target.Name
-		# "C-3PO or IMP-22 indicates the error" (manual p102).
-		preload("res://src/ui/advisor.gd").AnswerOn(get_tree(), "no_mission")
+		# "C-3PO or IMP-22 indicates the error" (manual p102) - and that is all
+		# the original does (TeeJ, 2026-09-28: "this message should not appear -
+		# C3PO's message is enough - the original has no such message"). The box
+		# only where there is no droid to say it (no original art).
+		if preload("res://src/ui/advisor.gd").AnswerOn(get_tree(), "no_mission"):
+			return
 		var refuse := AcceptDialog.new()
 		refuse.title = "No Mission Available"
 		refuse.dialog_text = why
