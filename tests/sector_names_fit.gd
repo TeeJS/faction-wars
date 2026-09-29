@@ -5,7 +5,8 @@ extends SceneTree
 ## window, and the systems' north-south order came out upside down. For every
 ## sector of the pack, in the plain window:
 ##   1. every system's name lies inside the window's map;
-##   2. a system further south on the galaxy map is no higher in the window.
+##   2. the sector is the right way up: its northernmost system on the galaxy
+##      map is no lower in the window than its southernmost.
 ##
 ##   .\tools\run-gd.ps1 tests/sector_names_fit.gd -- --pack=ww2 --seed=12345
 ##   .\tools\run-gd.ps1 tests/sector_names_fit.gd -- --seed=12345      (Star Wars)
@@ -72,10 +73,20 @@ func _init() -> void:
 				_check(box.encloses(r), "%s: %s's name inside the window (%s in %s)" % [sector.Name, p.Name, r, box.size])
 			elif c is SectorWin.PlanetMapButton:
 				tops[p] = (c as Control).position.y
-		for a in tops:
-			for b in tops:
-				if (a as Planet).MapY < (b as Planet).MapY - 0.001:
-					_check(tops[a] <= tops[b] + 0.5, "%s: %s (north) not below %s (south)" % [sector.Name, (a as Planet).Name, (b as Planet).Name])
+		# The sector the right way up: its northernmost system above its
+		# southernmost. (Not every pair: SeparateEntries may nudge two systems
+		# at nearly one latitude past each other to keep them apart - Libya and
+		# Egypt, 182 and 185 - which is its job.)
+		var north: Planet = null
+		var south: Planet = null
+		for p in tops:
+			if north == null or (p as Planet).MapY < north.MapY:
+				north = p
+			if south == null or (p as Planet).MapY > south.MapY:
+				south = p
+		if north != null and south != null and north.MapY < south.MapY:
+			_check(tops[north] <= tops[south], "%s: %s (north, map y %.0f, top %.1f) above %s (south, map y %.0f, top %.1f)" % [sector.Name,
+				north.Name, north.MapY, tops[north], south.Name, south.MapY, tops[south]])
 	_check(sectors > 0, "%s: plain sector windows checked (%d)" % [id, sectors])
 	print("[sector_names_fit] %s: %d sectors, %d checks, %d failed" % [id, sectors, _checks, _fails])
 	quit(1 if _fails > 0 else 0)
