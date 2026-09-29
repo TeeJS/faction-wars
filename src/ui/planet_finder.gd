@@ -43,6 +43,15 @@ func _ready() -> void:
 
 	_searchBar = get_node("%SearchBar")
 	_searchBar.text_changed.connect(PopulateLists)
+	# The pack's words, not the scene's Star Wars ones (TeeJ, 2026-09-29): the
+	# two sides' tabs by their short names, in pack order as TabOf files them,
+	# and the search field's hint from the pack's terms.
+	_searchBar.placeholder_text = Terms.label("search_systems")
+	var tabs: TabContainer = get_node_or_null("%FactionTabs")
+	if tabs != null:
+		for order in 2:
+			if FactionRegistry.Playable.size() > order and tabs.get_tab_count() > order + 1:
+				tabs.set_tab_title(order + 1, (FactionRegistry.Playable[order] as Faction).ShortName)
 	if Look.Active():
 		LookWindow.Dress(self)
 		var field: Label = get_node_or_null("MainVBox/ContentArea/Padding/VBox/SearchHBox/SearchLabel")
