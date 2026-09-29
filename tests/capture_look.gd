@@ -8,7 +8,8 @@ extends SceneTree
 ##       --out=C:/tmp/look/ww2_1440 --pack=ww2 --record=user://capture-look.jsonl [--faction=allies]
 ##
 ## writes <out>_cockpit.png, _credits.png, _map.png, _message.png, _dialog.png,
-## _finder.png and _menu.png. --record= is REQUIRED: without it the game's session log
+## _finder.png, _menu.png, and last _message_urgent.png (the Conflict tab) and
+## _message_empty.png (the Chat tab, empty in a game against the computer). --record= is REQUIRED: without it the game's session log
 ## would overwrite the player's user://last-session.jsonl.
 ##
 ## No art set is read (Artwork.UserArtRoot / IgnoreProjectFolder, as the
@@ -122,6 +123,22 @@ func _init() -> void:
 	for _i in 5:
 		await process_frame
 	ok = _shot(out, "menu") and ok
+
+	# A CONFLICT DISPATCH, AND A CATEGORY WITH NOTHING IN IT (phase 4). Last, so
+	# every shot above is taken exactly as before.
+	ui.CloseAllWindows()
+	for _i in 3:
+		await process_frame
+	ui.OnMessageIndexClicked("Conflict")
+	for _i in 5:
+		await process_frame
+	ok = _shot(out, "message_urgent") and ok
+	var comms: Node = ui._openWindows.get("Communications")
+	if comms != null:
+		comms.OpenToCategory("Chat")
+	for _i in 3:
+		await process_frame
+	ok = _shot(out, "message_empty") and ok
 
 	quit(0 if ok else 1)
 

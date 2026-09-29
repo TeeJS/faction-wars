@@ -254,6 +254,12 @@ func _init() -> void:
 	_look_case("a texture the pack does not ship", look, {"texture": ["paper", "look/missing.png"]}, "'look/missing.png' is not in")
 	_look_case("a dossier map plate that is not [x, y, w, h]", look, {"dossier": ["map_rect", [10, 10, 0]]}, "dossier.map_rect: must be [x, y, w, h]")
 	_look_case("a dossier field the engine does not know", look, {"dossier": ["banner", "x"]}, "dossier: 'banner' is not known")
+	_look_case("a messages field the engine does not know", look, {"messages": ["footer", "x"]}, "messages: 'footer' is not known")
+	_look_case("a dispatch header that is not text", look, {"messages": ["header", 3]}, "messages.header: must be text")
+	_look_case("a stamp for no message category", look, {"stamp": ["Weather", "Met"]}, "messages.stamps: 'Weather' is not a message category")
+	_look_case("a stamp with no word", look, {"stamp": ["Fleets", " "]}, "messages.stamps.Fleets: must be a word")
+	_look_case("urgent that is not a list", look, {"messages": ["urgent", "Conflict"]}, "messages.urgent: must be a list")
+	_look_case("an urgent category that is not one", look, {"messages": ["urgent", ["Battles"]]}, "messages.urgent: 'Battles' is not a message category")
 	var credit := {"title": "Map", "author": "Someone", "licence": "CC0", "files": ["world_1941.jpg"]}
 	_credits_case("a credit with no author", [credit.merged({"author": ""}, true)], "`author` is missing")
 	_credits_case("a credit with no licence", [credit.merged({"licence": ""}, true)], "`licence` is missing")
@@ -602,6 +608,10 @@ func _look_case(what: String, look: Dictionary, change: Dictionary, expect: Stri
 		l["textures"][change["texture"][0]] = change["texture"][1]
 	if change.has("dossier"):
 		l["dossier"][change["dossier"][0]] = change["dossier"][1]
+	if change.has("messages"):
+		l["messages"][change["messages"][0]] = change["messages"][1]
+	if change.has("stamp"):
+		l["messages"]["stamps"][change["stamp"][0]] = change["stamp"][1]
 	var p := _ww2()
 	p.Look = l
 	_expect(what, func(errors: Array[String]) -> void: PackLoader._validate_look(p, WW2_DIR, errors), expect)

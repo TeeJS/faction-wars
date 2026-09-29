@@ -55,6 +55,9 @@ const CONTRAST_PAIRS := [
 	["brass", "chassis", 3.0], ["brass", "chassis_deep", 3.0], ["brass", "chassis_raised", 3.0],
 	["brass", "chassis_hover", 3.0],
 	["brass_dim", "chassis", 3.0], ["ink", "khaki", 4.5],
+	# The dispatches (phase 4): a ledger row under the pointer, a stamp's
+	# word, an urgent stamp in red ink on the parchment.
+	["text_muted", "chassis_hover", 4.5], ["heading", "chassis_hover", 4.5], ["signal", "paper", 4.5],
 ]
 
 ## When no size is given - the Godot default's, so a look that names none
