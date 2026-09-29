@@ -55,7 +55,7 @@ func _init() -> void:
 		_png("%s/buttons/%s.disabled.png" % [dir, b], 42, 20, Color(0.2, 0.2, 0.2))
 	for w in ["options_side.empire", "options_side.alliance", "options_side.h2h", "options_music.lit", "options_music.off", "options_light.off", "options_knob"]:
 		_png("%s/windows/%s.png" % [dir, w], 26, 19, Color(0.9, 0.1, 0.1))
-	# The multiplayer screens' choice box: Import Game, Export Game, See all games.
+	# The multiplayer screens' choice box: Import Game, Manage Games.
 	_png("%s/windows/mp_choice.png" % dir, 152, 33, Color(0.25, 0.25, 0.25))
 	_png("%s/windows/mp_choice.chosen.png" % dir, 152, 33, Color(0.5, 0.1, 0.1))
 	# The original's alert box (REBDLOG): the two-socket plate, check and X.

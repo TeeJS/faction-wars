@@ -85,10 +85,10 @@ func _ready() -> void:
 		box.add_child(row)
 		_rows.append({ "name": nameEdit, "state": state, "id": "" })
 
-	# Import Game, Export Game, See all games (PROJECT.md), as on the real screen.
+	# Import Game and Manage Games, as on the real screen (TeeJ, 2026-09-28).
 	var tools := HBoxContainer.new()
 	tools.add_theme_constant_override("separation", 8)
-	for t in [["Import Game", _import], ["Export Game", _export], ["See all games", _see_all]]:
+	for t in [["Import Game", _import], ["Manage Games", _see_all]]:
 		var b := Button.new()
 		b.text = t[0]
 		b.pressed.connect(t[1])
@@ -130,16 +130,6 @@ func ImportBytes(bytes: PackedByteArray, file_name: String) -> Dictionary:
 	_refresh()
 	_tell(("\"%s\" is in your saved games." % r["name"]) if r["ok"] else str(r["message"]))
 	return r
-
-
-func _export() -> void:
-	var nm: String = SaveManager.CurrentName()
-	var text: String = SaveManager.ExportCurrentText(nm)
-	if text.is_empty():
-		_tell("There is no game to export.")
-		return
-	SaveFiles.Save(text, SaveManager.FileNameFor(nm), func(ok: bool, where: String) -> void:
-		_tell(("Saved to %s." % where.get_file()) if ok else "The game could not be exported."))
 
 
 func _see_all() -> void:

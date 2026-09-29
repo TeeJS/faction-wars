@@ -1,12 +1,12 @@
 extends SceneTree
 ## The Saved Games screen's additions (PROJECT.md, TeeJ 2026-09-27): five rows,
-## the sixth painted over by the panel's own band; Import Game, Export Game and
-## See all games as the multiplayer screens' choice boxes; an import lands on
-## top, never overwriting, and says so in the original's one-socket alert box;
-## Export Game is greyed where there is no game; See all games lists every
-## saved game, eight to a page, with its dates, Save, Load, Export and Delete
-## (which asks first), and closes back to the rows. The plain windows (no art)
-## carry the same three. Writes and removes its own test art and saves.
+## the sixth painted over by the panel's own band; Import Game and Manage Games
+## (TeeJ, 2026-09-28: two buttons, wide enough for room round the words) as
+## the multiplayer screens' choice boxes; an import lands on top, never
+## overwriting, and says so in the original's one-socket alert box; Manage
+## Games lists every saved game, eight to a page, with its dates, Save, Load,
+## Export and Delete (which asks first), and closes back to the rows. The plain
+## windows (no art) carry the same two. Writes and removes its own test art and saves.
 ##
 ##   .\tools\run-gd.ps1 tests/saved_games_screen.gd
 
@@ -67,14 +67,19 @@ func _init() -> void:
 	var band: Color = plate.get_pixel(150, SavedArt.Band.position.y + 2)
 	_check(plate.get_pixel(150, 300).is_equal_approx(band), "the sixth row's place is the panel's own band")
 
-	# The three boxes, their words green.
+	# The two boxes, their words green.
 	var names: Array = screen._bars.map(func(b: Node) -> String: return b.name)
-	_check(names == ["Bar_ImportGame", "Bar_ExportGame", "Bar_Seeallgames"], "Import Game, Export Game, See all games (%s)" % str(names))
+	_check(names == ["Bar_ImportGame", "Bar_ManageGames"], "Import Game, Manage Games (%s)" % str(names))
 	var words: Array = screen._barWords.map(func(l: Label) -> String: return l.text)
-	_check(words == ["Import Game", "Export Game", "See all games"], "their words")
+	_check(words == ["Import Game", "Manage Games"], "their words")
 	_check(Lq.all(screen._barWords, func(l: Label) -> bool: return l.get_theme_color("font_color") == Screen.Green), "in green")
 	_check((screen._bars[0] as TextureButton).texture_pressed != (screen._bars[0] as TextureButton).texture_normal, "pressed, the box shows the chosen (red-ended) box")
-	_check(not (screen._bars[1] as TextureButton).disabled, "Export Game is live in a game")
+	# 308 inside the panel - 3 gaps x 12 = 272: two boxes of 136, the words well inside.
+	_check(is_equal_approx(Screen.BarSize.x, 136.0), "each box 136 wide (was 86.7)")
+	for l: Label in screen._barWords:
+		var w: float = l.get_theme_font("font").get_string_size(l.text, HORIZONTAL_ALIGNMENT_LEFT, -1, l.get_theme_font_size("font_size")).x
+		var room: float = (Screen.BarSize.x * screen._s - w) / 2.0 / screen._s
+		_check(room >= 25.0, "'%s' has room to the box's edges (%.1f each side)" % [l.text, room])
 	# The panel's sides and the boxes all one gap apart (TeeJ, 2026-09-28), a
 	# clamp on the multiplayer screens' wires in every gap.
 	var s: float = screen._s
@@ -93,8 +98,8 @@ func _init() -> void:
 		_check(not plate.get_pixel(int(c), mid).is_equal_approx(band), "a clamp at x %.1f" % c)
 	# The empty bands above and below the row filled with wires (TeeJ,
 	# 2026-09-28: "I want the dang empty space filled").
-	_check(not plate.get_pixel(180, 277).is_equal_approx(band) and not plate.get_pixel(180, 284).is_equal_approx(band)
-		and not plate.get_pixel(180, 329).is_equal_approx(band) and plate.get_pixel(180, 274).is_equal_approx(band),
+	_check(not plate.get_pixel(100, 277).is_equal_approx(band) and not plate.get_pixel(100, 284).is_equal_approx(band)
+		and not plate.get_pixel(100, 329).is_equal_approx(band) and plate.get_pixel(100, 274).is_equal_approx(band),
 		"wires looped over the boxes and under them, the band above them left clear")
 
 	# Save three games, then import an exported one: on top, " (2)", a note.
@@ -116,13 +121,13 @@ func _init() -> void:
 		n2.queue_free()
 	await process_frame
 
-	# See all games: ten games, eight to a page.
+	# Manage Games: ten games, eight to a page.
 	for i in 6:
 		screen.SaveNamed("Game %d" % i)
 	screen._see_all()
 	await process_frame
 	var all: Control = screen.get_node_or_null("AllGames")
-	_check(all != null, "See all games opens")
+	_check(all != null, "Manage Games opens")
 	if all != null:
 		_check(all._rows.size() == 8 and all.Pages() == 2, "eight rows a page, two pages for ten games")
 		var top: Dictionary = SaveManager.Games()[0]
@@ -150,7 +155,7 @@ func _init() -> void:
 				ask.queue_free()
 		await process_frame
 		_check(not SaveManager.Exists(gone) and SaveManager.Games().size() == 9, "and the game is gone")
-		# Save from a See all games row under a new name: a new game, on top.
+		# Save from a Manage Games row under a new name: a new game, on top.
 		all.Turn(-1)
 		(all._rows[3]["name"] as LineEdit).text = "From the list"
 		all._save(3)
@@ -159,13 +164,12 @@ func _init() -> void:
 		await process_frame
 		_check(screen.get_node_or_null("AllGames") == null and (screen._names[0] as LineEdit).text == "From the list", "closing goes back to the rows, brought up to date")
 
-	# From the Cockpit: no game to export.
+	# From the Cockpit: both live.
 	var cockpit: Control = Screen.new()
 	cockpit.FromCockpit = true
 	root.add_child(cockpit)
 	await process_frame
-	_check((cockpit._bars[1] as TextureButton).disabled and (cockpit._barWords[1] as Label).get_theme_color("font_color") == Screen.Greyed, "from the Cockpit, Export Game is greyed")
-	_check(not (cockpit._bars[0] as TextureButton).disabled and not (cockpit._bars[2] as TextureButton).disabled, "Import Game and See all games are live")
+	_check(cockpit._bars.size() == 2 and not (cockpit._bars[0] as TextureButton).disabled and not (cockpit._bars[1] as TextureButton).disabled, "from the Cockpit, Import Game and Manage Games are live")
 	cockpit.queue_free()
 
 	# The plain windows carry the same.
@@ -175,14 +179,14 @@ func _init() -> void:
 	var plain_words: Array = []
 	for b in gow.find_children("*", "Button", true, false):
 		plain_words.append((b as Button).text)
-	_check(plain_words.has("Import Game") and plain_words.has("Export Game") and plain_words.has("See all games"), "the plain Game Options window has the three")
+	_check(plain_words.has("Import Game") and plain_words.has("Manage Games") and not plain_words.has("Export Game") and not plain_words.has("See all games"), "the plain Game Options window has the same two")
 	var r2: Dictionary = gow.ImportBytes(text.to_utf8_buffer(), "Bravo.fwsave")
 	_check(r2["ok"] and r2["name"] == "Bravo (3)", "and imports")
 	gow.queue_free()
 	var plain_all: Control = AllPlain.new()
 	root.add_child(plain_all)
 	await process_frame
-	_check(plain_all._rows.size() == SaveManager.Games().size(), "the plain See all games lists every game")
+	_check(plain_all._rows.size() == SaveManager.Games().size(), "the plain Manage Games lists every game")
 	plain_all.queue_free()
 	_finish()
 
