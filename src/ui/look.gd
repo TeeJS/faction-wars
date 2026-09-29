@@ -117,6 +117,23 @@ static func Dossier() -> Dictionary:
 	return _def().get("dossier", {})
 
 
+## The message window's dispatch words (look.json `messages`): the word over
+## each dispatch ("" for none).
+static func DispatchHeader() -> String:
+	return str(_def().get("messages", {}).get("header", ""))
+
+
+## The small stamp for a message category (its enum name: "Fleets",
+## "Missions", ...), or "" for none.
+static func Stamp(category: String) -> String:
+	return str(_def().get("messages", {}).get("stamps", {}).get(category, ""))
+
+
+## Whether a message category carries the signal-red band.
+static func Urgent(category: String) -> bool:
+	return (_def().get("messages", {}).get("urgent", []) as Array).has(category)
+
+
 ## Hold still: the player's Reduce motion box, or the browser's own
 ## prefers-reduced-motion. Nothing in a look may move when this is true.
 static func ReducedMotion() -> bool:

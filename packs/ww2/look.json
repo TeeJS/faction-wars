@@ -53,6 +53,22 @@
     "pad": 8
   },
   "overlay_alpha": 0.55,
+  "messages": {
+    "_comment": "The message window as dispatches (docs/ww2-look-plan.md, phase 4): the word over each, the small stamp per category, and the categories that carry the signal-red band.",
+    "header": "Dispatch",
+    "stamps": {
+      "Loyalty": "Intelligence",
+      "Fleets": "Signal",
+      "Missions": "Orders",
+      "Resources": "Ledger",
+      "Manufacturing": "Ledger",
+      "Defense": "Operations",
+      "Conflict": "Urgent",
+      "Chat": "Cable",
+      "Advice": "Advisory"
+    },
+    "urgent": ["Conflict"]
+  },
   "dossier": {
     "_comment": "The Cockpit's campaign dossier: the line under the title, and the fragment of map_image it shows, in the picture's own pixels [x, y, w, h] (1750 x 1050) - the North Atlantic, Europe and North Africa.",
     "subtitle": "Global war  ·  1939 – 1945",
