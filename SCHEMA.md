@@ -1161,7 +1161,7 @@ An excerpt of `packs/ww2/look.json`:
 ```json
 {
   "colors": {"chassis": "#1b1b19", "paper": "#e9dfc6", "ink": "#2a2620", "brass": "#a88a4e", "...": "..."},
-  "sides": {"allies": "#4a6a8f", "axis": "#8e3a2e"},
+  "sides": {"allies": "#6f8fb5", "axis": "#d06a55"},
   "fonts": {
     "display": {"file": "look/fonts/Oswald-Variable.ttf", "weight": 500},
     "body": {"file": "look/fonts/SourceSans3VF-Upright.ttf", "weight": 400, "tabular": true}
@@ -1176,7 +1176,7 @@ An excerpt of `packs/ww2/look.json`:
 | Field | Meaning |
 |---|---|
 | `colors` | **All required** (validation rule 31): `chassis`, `chassis_deep`, `chassis_raised`, `chassis_hover` (the frame and its controls), `edge` (a panel's quiet border), `brass`, `brass_dim` (trim, dividers, the selected edge, the focus ring), `text`, `text_muted`, `text_disabled`, `heading` (on the chassis), `paper`, `paper_edge`, `ink`, `ink_muted` (documents), `khaki`, `olive`, `olive_deep` (status, structure, the selected fill), `signal`, `signal_text` (urgent, losses, blocked), `note`, `note_ink` (tooltips), `overlay` (the dim behind a dialog). `Look.CONTRAST_PAIRS` names the pairs that must stay readable; `tests/look_system.gd` fails a look below WCAG 4.5:1 for text or 3:1 for edges and disabled text. |
-| `sides` | Optional, faction id -> colour: a side's colour **in the chrome**. The map keeps `factions.json`'s colours. |
+| `sides` | Optional, faction id -> colour: a side's colour **in the chrome** (the launch plates' bands, the map mode's name - text, so `tests/look_system.gd` wants 4.5:1 on `chassis`). The map keeps `factions.json`'s colours. |
 | `fonts` | Optional, role -> `{file, weight, tabular}`. Roles: `display`, `display_bold` (labels, headings, title bars), `body`, `body_bold` (text, figures), `typed`, `typed_bold` (typed dispatch headings). `weight` sets a variable face's `wght`; `tabular` turns on tabular figures. A missing role falls back to `body`, then the engine's face. |
 | `sizes` | Optional, px: `body` (the default size - keep it at 16 unless every screen is re-checked for clipping), `small`, `label`, `title`, `heading`, `display`. |
 | `metrics` | Optional, px: `radius` (corners), `border`, `focus` (the ring's width), `pad` (a box's content margin). |

@@ -78,19 +78,15 @@ func _other_version(expected: PackedStringArray) -> int:
 	_remove(FactionRegistry.PACK_VERSIONS_ROOT)
 	var staging := "user://test-pack-switch-staging/ww2"
 	_remove(staging.get_base_dir())
-	DirAccess.make_dir_recursive_absolute(staging)
-	for f in DirAccess.get_files_at("res://packs/ww2"):
-		if f.ends_with(".import"):
-			continue
-		var bytes := FileAccess.get_file_as_bytes("res://packs/ww2/" + f)
-		if f == "pack.json":
-			var d: Dictionary = JSON.parse_string(bytes.get_string_from_utf8())
-			d["summary"] = "Another version of the WWII pack."
-			d["version"] = "1.1"
-			bytes = (JSON.stringify(d, "  ") + "\n").to_utf8_buffer()
-		var w := FileAccess.open("%s/%s" % [staging, f], FileAccess.WRITE)
-		w.store_buffer(bytes)
-		w.close()
+	# The whole pack, subfolders too - as an import writes every file its zip
+	# lists (its look's faces and textures live under look/).
+	_copy_tree("res://packs/ww2", staging)
+	var d: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(staging + "/pack.json"))
+	d["summary"] = "Another version of the WWII pack."
+	d["version"] = "1.1"
+	var w := FileAccess.open(staging + "/pack.json", FileAccess.WRITE)
+	w.store_string(JSON.stringify(d, "  ") + "\n")
+	w.close()
 	var hash := FactionRegistry.ContentHash(staging)
 	var dir := "%s/%s/ww2" % [FactionRegistry.PACK_VERSIONS_ROOT, hash.substr(0, 16).to_lower()]
 	DirAccess.make_dir_recursive_absolute(dir.get_base_dir())
@@ -123,6 +119,20 @@ func _other_version(expected: PackedStringArray) -> int:
 static func _ok(cond: bool, what: String) -> int:
 	print("[pack_switch] %s %s" % ["ok  " if cond else "FAIL", what])
 	return 0 if cond else 1
+
+
+## A folder and everything under it, less Godot's .import sidecars (a copy
+## outside res:// is plain files, as an import writes them).
+static func _copy_tree(from: String, to: String) -> void:
+	DirAccess.make_dir_recursive_absolute(to)
+	for f in DirAccess.get_files_at(from):
+		if f.ends_with(".import"):
+			continue
+		var w := FileAccess.open("%s/%s" % [to, f], FileAccess.WRITE)
+		w.store_buffer(FileAccess.get_file_as_bytes("%s/%s" % [from, f]))
+		w.close()
+	for sub in DirAccess.get_directories_at(from):
+		_copy_tree("%s/%s" % [from, sub], "%s/%s" % [to, sub])
 
 
 static func _remove(path: String) -> void:

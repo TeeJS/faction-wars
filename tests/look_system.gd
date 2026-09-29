@@ -54,6 +54,10 @@ func _with_look(id: String) -> void:
 	for pair in Look.CONTRAST_PAIRS:
 		var ratio := Look.Contrast(Look.C(pair[0]), Look.C(pair[1]))
 		_check(ratio >= float(pair[2]), "contrast %s on %s is %.2f (needs %.1f)" % [pair[0], pair[1], ratio, pair[2]])
+	# A side's chrome colour is text too (the map mode's name).
+	for f in FactionRegistry.Playable:
+		var ratio := Look.Contrast(Look.SideColor(f), Look.C("chassis"))
+		_check(ratio >= 4.5, "contrast %s's side colour on chassis is %.2f (needs 4.5)" % [f.Id, ratio])
 
 	# Install puts it on the tree; Adopt strips a tagged node, spares the rest.
 	Look.Install(self)

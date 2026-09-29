@@ -66,6 +66,9 @@ const TitleZIndex := 3
 static var _titleFont: FontVariation = null
 
 static func TitleFont() -> Font:
+	# A pack's look names its theatres in its display face (a plotting tag).
+	if Look.Active():
+		return Look.F("display_bold")
 	if _titleFont == null:
 		_titleFont = FontVariation.new()
 		_titleFont.base_font = ThemeDB.fallback_font
@@ -171,7 +174,7 @@ func InitializeMap(galaxyData: Array, uiManager: UIManager) -> void:
 			sectorButton.text = sectorName
 			sectorButton.add_theme_font_size_override("font_size", TitleFontSize)
 			sectorButton.add_theme_font_override("font", TitleFont())
-			sectorButton.add_theme_color_override("font_outline_color", TitleOutline)
+			sectorButton.add_theme_color_override("font_outline_color", Look.C("paper") if Look.Active() else TitleOutline)
 			_title_visible(sectorButton, false)
 			_titles[sector] = sectorButton
 
@@ -339,6 +342,7 @@ func SetMode(mode: Gid.GidMode) -> void:
 	if _bar != null:
 		_bar.SetActiveLabel(mode.LabelText)
 		_bar.ShowKeyFor(mode)
+		_bar.MarkActive(mode)
 	RefreshVisuals()
 	# Open sector windows mirror this mode, so they have to repaint too.
 	EventBus.BroadcastChanged()
@@ -482,7 +486,8 @@ static func _side_color(side: String) -> Color:
 ## Show or hide a theatre's name: text and outline together, so nothing of it
 ## is drawn while the mouse is elsewhere.
 static func _title_visible(b: Button, on: bool) -> void:
-	var c := TitleColor if on else Color(TitleColor, 0.0)
+	var ink: Color = Look.C("ink") if Look.Active() else TitleColor
+	var c := ink if on else Color(ink, 0.0)
 	b.add_theme_color_override("font_color", c)
 	b.add_theme_color_override("font_hover_color", c)
 	b.add_theme_color_override("font_pressed_color", c.darkened(0.3) if on else c)
@@ -621,21 +626,38 @@ func _load_backdrop() -> void:
 ## The Alliance HQ highlight: a thin white 8-point burst centered exactly on
 ## the planet's point, painted before any child Label.
 func _draw() -> void:
+	var look: bool = Look.Active() and _backdrop != null
+	if look:
+		_draw_bezel()
 	if _hqPlanet == null:
 		return
 	var c := MapPos(_hqPlanet.MapX, _hqPlanet.MapY)
 	var half: float = Gid.HaloSpan / 2.0
 	var t: float = Gid.HaloThickness
 	var d: float = half * Gid.HaloDiagonal
-
-	# Straight rays.
-	draw_line(Vector2(c.x - half, c.y), Vector2(c.x + half, c.y), Gid.CHighlight, t)
-	draw_line(Vector2(c.x, c.y - half), Vector2(c.x, c.y + half), Gid.CHighlight, t)
-
-	# Diagonal rays, shorter - together these read as the original's burst.
 	var dg: float = d * 0.7071
-	draw_line(Vector2(c.x - dg, c.y - dg), Vector2(c.x + dg, c.y + dg), Gid.CHighlight, t)
-	draw_line(Vector2(c.x - dg, c.y + dg), Vector2(c.x + dg, c.y - dg), Gid.CHighlight, t)
+	var rays := [
+		[Vector2(c.x - half, c.y), Vector2(c.x + half, c.y)],   # straight
+		[Vector2(c.x, c.y - half), Vector2(c.x, c.y + half)],
+		[Vector2(c.x - dg, c.y - dg), Vector2(c.x + dg, c.y + dg)],   # diagonal, shorter -
+		[Vector2(c.x - dg, c.y + dg), Vector2(c.x + dg, c.y - dg)],   # the original's burst
+	]
+	# On a paper map (a pack's look) a white burst is lost: an ink stroke under it.
+	if look:
+		for r in rays:
+			draw_line(r[0], r[1], Look.C("ink"), t + 2.0)
+	for r in rays:
+		draw_line(r[0], r[1], Gid.CHighlight, t)
+
+
+## THE MAP TABLE'S BEZEL (a pack's look): lines drawn OUTSIDE the picture - a
+## hairline of ink on its neat line, a dark band, a brass edge - so not one
+## pixel of the map is given up to it.
+func _draw_bezel() -> void:
+	var pic := Rect2(Vector2.ZERO, _backdrop.texture.get_size() * _backdrop.scale)
+	draw_rect(pic.grow(2.0), Look.C("chassis_deep"), false, 2.0)
+	draw_rect(pic.grow(3.5), Look.C("brass_dim"), false, 1.0)
+	draw_rect(pic.grow(0.5), Color(Look.C("ink"), 0.7), false, 1.0)
 
 
 ## Center a glyph precisely on the planet's point. An empty glyph hides the label.
@@ -649,6 +671,11 @@ func Place(lbl: Label, glyph: String, size_: int, color: Color, planet: Planet) 
 	lbl.add_theme_font_size_override("font_size", size_)
 	color.a = 1.0
 	lbl.add_theme_color_override("font_color", color)
+	# A plotting mark on a paper map (a pack's look): an ink rim, so the
+	# faction's colour holds on any part of the picture at any size.
+	if Look.Active():
+		lbl.add_theme_color_override("font_outline_color", Color(Look.C("ink"), 0.85))
+		lbl.add_theme_constant_override("outline_size", maxi(3, size_ / 5))
 	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	lbl.size = Vector2(size_ * 2, size_ * 2)

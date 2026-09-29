@@ -27,8 +27,8 @@
   },
   "sides": {
     "_comment": "Faction differentiation in the chrome only; the map keeps factions.json's own colours.",
-    "allies": "#4a6a8f",
-    "axis": "#8e3a2e"
+    "allies": "#6f8fb5",
+    "axis": "#d06a55"
   },
   "fonts": {
     "display": {"file": "look/fonts/Oswald-Variable.ttf", "weight": 500},

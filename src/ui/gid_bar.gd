@@ -95,12 +95,51 @@ func Setup(map: GalaxyMap) -> void:
 		var localBtn: Button = btn
 		var localPop: PopupMenu = pop
 		btn.pressed.connect(func() -> void: PopupAbove(localBtn, localPop))
+		btn.set_meta("category", cat)
 		bar.add_child(btn)
 
 	var off := Button.new()
 	off.text = "Display Off"
 	off.pressed.connect(func() -> void: _map.SetMode(Gid.DisplayOff))
+	off.set_meta("display_off", true)
 	bar.add_child(off)
+
+
+## A pack with a look (docs/ww2-look-plan.md, phase 3): the mode's name in the
+## display face and the side's chrome colour; the selector as the console's
+## upper row of keys, the key of the mode on show held down.
+func ApplyLook() -> void:
+	if not Look.Active() or _panel == null:
+		return
+	_activeLabel.add_theme_font_override("font", Look.F("display"))
+	_activeLabel.add_theme_color_override("font_color", Look.SideColor(GameSettings.PlayerFaction))
+	_activeLabel.uppercase = true
+	_panel.theme = Look.GetTheme()
+	_panel.add_theme_stylebox_override("panel", Look.Edged("chassis", "brass_dim", SIDE_TOP, 1, 6))
+	for b in _row.get_children():
+		if b is Button:
+			(b as Button).theme_type_variation = Look.COMMAND
+	MarkActive(Gid.ActiveMode())
+
+
+## Hold down the key of the category whose mode is on show (or Display Off).
+func MarkActive(mode: Gid.GidMode) -> void:
+	if not Look.Active() or _row == null:
+		return
+	for b in _row.get_children():
+		if not b is Button:
+			continue
+		var on := false
+		if b.has_meta("category"):
+			on = (b.get_meta("category") as Gid.GidCategory).Modes.has(mode)
+		elif b.has_meta("display_off"):
+			on = mode == Gid.DisplayOff
+		if on:
+			b.add_theme_stylebox_override("normal", b.get_theme_stylebox("pressed"))
+			b.add_theme_stylebox_override("hover", b.get_theme_stylebox("hover_pressed"))
+		else:
+			b.remove_theme_stylebox_override("normal")
+			b.remove_theme_stylebox_override("hover")
 
 
 ## Open a category's menu ABOVE its button (cascading up), so it never falls off

@@ -393,6 +393,14 @@ static func _build() -> Theme:
 
 	t.set_stylebox("separator", "HSeparator", Rule())
 	t.set_constant("separation", "HSeparator", 6)
+	var upright := StyleBoxLine.new()
+	upright.vertical = true
+	upright.color = C("brass_dim")
+	upright.thickness = 1
+	upright.grow_begin = -6
+	upright.grow_end = -6
+	t.set_stylebox("separator", "VSeparator", upright)
+	t.set_constant("separation", "VSeparator", 12)
 
 	t.set_stylebox("background", "ProgressBar", Box("chassis_deep", "edge", -1, -1, 0))
 	t.set_stylebox("fill", "ProgressBar", Box("khaki", "", 0, -1, 0))
@@ -460,7 +468,9 @@ static func _build() -> Theme:
 	t.set_font_size("font_size", RAIL, Size("label"))
 
 	_variation(t, ROW, "Button")
-	var row := Box("", "", 0, 0, 4)
+	# A list row: a hairline under it, as a ruled ledger.
+	var row := Edged("", "edge", SIDE_BOTTOM, 1, 4)
+	row.set_corner_radius_all(0)
 	t.set_stylebox("normal", ROW, row)
 	t.set_stylebox("hover", ROW, Box("chassis_hover", "", 0, 0, 4))
 	t.set_stylebox("pressed", ROW, Edged("olive_deep", "brass", SIDE_LEFT, 3, 4))

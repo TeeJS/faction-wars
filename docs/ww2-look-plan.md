@@ -60,7 +60,7 @@ picture and font of documented origin, attribution linked from the Cockpit.
 | text / text_muted | `#e6dcc3` / `#a59d88` | text on charcoal |
 | khaki / olive / olive_deep | `#b5a67a` / `#6b6f45` / `#4a4d31` | status, structure, selected fill |
 | brass / brass_dim | `#a88a4e` / `#7d6a3f` | trim, dividers, selected edge, focus ring |
-| allied_blue | `#4a6a8f` | faction differentiation in chrome only |
+| allied_blue | `#4a6a8f` → **`#6f8fb5`** | faction differentiation in chrome only. *(Phase 3: the side colours are text too - the map mode's name - so both were lightened to 4.5:1 on the chassis: Allies `#6f8fb5`, Axis `#d06a55`; `look.json` `sides`.)* |
 | signal_red | `#a8322a` | urgent, losses, blocked; used as a band or fill, not as small text on charcoal |
 
 On the map, **faction markers keep `factions.json`'s colours** (`#d22a2a` / `#2a62d2`) so they hold contrast on the paper map. Chrome uses the muted tokens. `factions.json` is not touched.

@@ -55,6 +55,8 @@ const OUI := preload("res://src/ui/original_ui.gd")
 const Art := preload("res://src/ui/artwork.gd")
 const AdviceLib := preload("res://src/ui/advice.gd")
 const OriginalMp := preload("res://src/ui/mp/original_mp.gd")
+## The shell in a pack's look (docs/ww2-look-plan.md, phase 3).
+const LookHud := preload("res://src/ui/look_hud.gd")
 const HudScale := 1.5
 ## The scale the HUD is drawn at now: HudScale, or the Command Center frame's
 ## own (the screen's height over the frame's) when the frame is the screen, so
@@ -294,6 +296,12 @@ func _ready() -> void:
 	# "Day: 0" until the first tick and then jump to 2 (TeeJ, 2026-09-22).
 	_lastDay = StrategicTickManager.Today
 	RefreshStatusBar()
+
+	# A pack with a look (docs/ww2-look-plan.md): the shell as its command
+	# table - not under the Command Center frame, which is the original's.
+	if Look.Active() and _uiManager.CommandFrameRef == null:
+		LookHud.Apply(self, _uiManager, _galaxyMap)
+		LookHud.SpeedState(_timeControls, _appliedEffective == 0)
 
 	# THE AGENT'S ADVICE (advice.gd): single player, Agent Advice on in Easy.
 	# THE OPENING BRIEFING (manual p022): a new game, not a loaded one. In
@@ -678,6 +686,8 @@ func _ApplyClock() -> void:
 			_speedReadout.text = "%s (set by opponent)" % SpeedNames[effective]
 	else:
 		_speedReadout.text = SpeedNames[_speed]
+	if Look.Active() and _oSpeed == null:
+		LookHud.SpeedState(_timeControls, effective == 0)
 
 	if _oBars != null:
 		# Blank while the opening briefing holds the clock (RefreshStatusBar).

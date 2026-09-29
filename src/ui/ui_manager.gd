@@ -66,6 +66,8 @@ const AdvisorScript := preload("res://src/ui/advisor.gd")
 const BriefingScript := preload("res://src/ui/briefing.gd")
 const SoundLib := preload("res://src/ui/sound.gd")
 const AdviceLib := preload("res://src/ui/advice.gd")
+## The shell in a pack's look (docs/ww2-look-plan.md, phase 3).
+const LookHud := preload("res://src/ui/look_hud.gd")
 
 
 func _ready() -> void:
@@ -581,6 +583,10 @@ func RefreshCommsHighlights() -> void:
 		else:
 			btn.remove_theme_stylebox_override("normal")
 			btn.remove_theme_stylebox_override("hover")
+		if Look.Active() and CommandFrameRef == null:
+			# The dispatch rail: unread mail is a brass count, never a glow.
+			LookHud.Unread(btn, unread)
+			continue
 		if unread > 0:
 			btn.add_theme_color_override("font_color", Color.YELLOW)
 			btn.modulate = Color(1.5, 1.5, 0.5)
@@ -646,6 +652,10 @@ func ShowHudNotification(msg: GameMessage) -> void:
 	# Highlight the category button in the CommsList; the category enum name
 	# matches the node name (e.g., "Fleets").
 	var commsList: VBoxContainer = get_node_or_null("CommsPanel/Margin/CommsList")
+	if commsList != null and Look.Active() and CommandFrameRef == null:
+		# The rail's counts are read off the unread totals (LookHud.Unread).
+		RefreshCommsHighlights()
+		commsList = null
 	if commsList != null:
 		var categoryName: String = JsonUtil.enum_name(Enums.MessageCategory, msg.Category)
 		var categoryBtn: Button = commsList.get_node_or_null(categoryName)
@@ -1037,6 +1047,8 @@ func _pin_button(sector: Sector) -> Button:
 	btn.gui_input.connect(func(ev: InputEvent) -> void:
 		if ev is InputEventMouseButton and ev.button_index == MOUSE_BUTTON_RIGHT and ev.pressed:
 			ShowPinMenu(local))
+	if Look.Active():
+		LookHud.PinLook(btn)
 	_taskbarList.add_child(btn)
 	_pinnedSectors[local.Name] = btn
 	return btn
@@ -1299,6 +1311,14 @@ func PollOpenWindows() -> void:
 		var window: DraggableWindow = _openWindows[windowName]
 		if is_instance_valid(window) and window.visible:
 			window.RefreshIfChanged()
+	# The theatre directory (a pack's look): a theatre whose window is up
+	# reads as selected.
+	if Look.Active() and CommandFrameRef == null:
+		for name in _pinnedSectors:
+			var pin: Button = _pinnedSectors[name]
+			var w: Variant = _openWindows.get(name)
+			if is_instance_valid(pin):
+				LookHud.MarkPin(pin, w != null and is_instance_valid(w) and (w as Control).visible)
 
 
 func RefreshActiveWindows(_currentDay: int) -> void:
