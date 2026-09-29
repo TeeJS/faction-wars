@@ -80,6 +80,7 @@
     "paper_frame": {"file": "look/paper_frame.png", "margin": 20},
     "desk": "look/desk.png",
     "grain": "look/grain.png",
-    "rule": "look/rule.png"
+    "rule": "look/rule.png",
+    "map_detail": "look/world_1941_detail.jpg"
   }
 }

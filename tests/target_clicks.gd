@@ -350,14 +350,17 @@ static func _surrounded(img: Image, px: Vector2i) -> bool:
 	return true
 
 
-## A point of the sector map that nothing is drawn on, or null.
+## A point of the sector map that nothing taking the mouse is drawn on, or
+## null. (A pack's look lays its plate under the whole map; it takes no clicks,
+## so a click there lands on the map - which the click below proves.)
 func _blank_spot(w: SectorWindow) -> Variant:
 	var map: Control = w.get_node("%SectorMap")
 	var s: Vector2 = map.size
 	for p in [Vector2(3, 3), Vector2(s.x - 4, 3), Vector2(3, s.y - 4), Vector2(s.x - 4, s.y - 4)]:
 		var free := true
 		for c in map.get_children():
-			if c is Control and not c.is_queued_for_deletion() and Rect2(c.position, c.size).has_point(p):
+			if c is Control and not c.is_queued_for_deletion() and (c as Control).mouse_filter != Control.MOUSE_FILTER_IGNORE \
+					and Rect2(c.position, c.size).has_point(p):
 				free = false
 				break
 		if free:

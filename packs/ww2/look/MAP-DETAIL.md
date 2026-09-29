@@ -1,0 +1,66 @@
+# world_1941_detail.jpg: provenance
+
+The sector windows' theatre plates (src/ui/look_sector.gd; look.json
+`textures.map_detail`). It is the strategic map's own picture again with
+more pixels, so a theatre stays sharp at the window's scale. It covers
+the same area as `world_1941.jpg`, so `pack.json`'s `map_image_rect`
+applies to both.
+
+## The work
+
+| | |
+|---|---|
+| Title | Политическая карта мира (Political Map of the World) |
+| In | Географический атлас для 5-го и 6-го классов средней школы (Geographic Atlas for the 5th and 6th Grades of Secondary School), 1941, pages 42-43 |
+| Author | Главное Управление Геодезии и Картографии при СНК СССР (Main Administration of Geodesy and Cartography under the Council of People's Commissars of the USSR). Developed by its Central Research Institute of Geodesy, Aerial Survey and Cartography, with Moscow school teachers. Approved for printing 9 January to 3 June 1941. |
+
+## The file it was made from
+
+| | |
+|---|---|
+| Page | https://commons.wikimedia.org/wiki/File:42-43_%D0%9F%D0%BE%D0%BB%D0%B8%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B0%D1%8F_%D0%BA%D0%B0%D1%80%D1%82%D0%B0_%D0%BC%D0%B8%D1%80%D0%B0.jpg |
+| Original | https://upload.wikimedia.org/wikipedia/commons/9/90/42-43_%D0%9F%D0%BE%D0%BB%D0%B8%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B0%D1%8F_%D0%BA%D0%B0%D1%80%D1%82%D0%B0_%D0%BC%D0%B8%D1%80%D0%B0.jpg |
+| Uploaded | 6 October 2012, by Bestalex |
+| Downloaded | 29 September 2026 |
+| Size | 5,498 x 3,393 px, 4,593,635 bytes |
+| SHA-1 | f5e820090a1f6bb418d43a331cd21a2fea0a9377 (matches the SHA-1 Commons publishes for the file) |
+| SHA-256 | 843c341b780597a6d75f73f2fe54a2d5dfca8a32fc6d1762efc202ec8bc595d0 |
+
+## Licence
+
+Wikimedia Commons marks it **public domain** (Public Domain Mark 1.0):
+"This work is in the public domain in its country of origin and other
+countries and areas where the copyright term is the author's life plus 70
+years or fewer."
+
+⚠ The Commons page also says a United States public domain tag must be added
+to show why it is public domain in the United States, and that tag is not on
+the page. The same applies to `world_1941.jpg`, which is the same atlas scan
+(see below). Its credit is CC0 from its contributor on publicdomainpictures.net.
+
+## What was done to it
+
+It is the same scan as `world_1941.jpg`: 4,375 of 4,455 matched SIFT features
+fit one similarity transform, with 0.001 degree rotation, scale 2.864 and a
+median residual of 0.55 scan pixels. The scan was resampled through that
+transform onto `world_1941.jpg`'s own frame (bicubic at 3x, then area down to
+4096 x 2458) and saved once as JPEG quality 88. The script rebuilds it byte
+for byte.
+
+Brought back down to 1750 x 1050, the result correlates 0.979 with
+`world_1941.jpg`.
+
+4096 wide keeps it within the texture size nearly all hardware supports in
+a browser (WebGL's own minimum is lower). The scan itself has 2.86 times our
+map's pixels over the same area.
+
+Rebuild it with:
+
+```
+python tools/look/make_ww2_map_detail.py <the downloaded original> packs/ww2/look/world_1941_detail.jpg
+```
+
+| | |
+|---|---|
+| Result | 4096 x 2458 px, 2,251,754 bytes |
+| SHA-256 | a32c36acacfb1ea3c3cbe74f3f77b8262847232af002466201d1b71e3bb651d8 |

@@ -11,7 +11,8 @@ are at the end.
 |---|---|---|
 | 0-3 | Baseline captures; the system; the Cockpit and the credits sheet; the map screen's shell | #375 |
 | 4-6 | Messages as dispatches; menus, dialogs, tooltips; every other window; the look on the whole tree | #393 |
-| 7 | This write-up and the before/after sheets | this PR |
+| 7 | This write-up and the before/after sheets | #397 |
+| 8 | The sector window as a theatre plate, and the detail map it needs | this PR |
 
 Related, not look work: the finders' side names (#394) and the sector window's
 names kept inside it (#395, #396).
@@ -100,6 +101,14 @@ from seeded noise by
 1941). They are original work and reproducible. The grain is kept faint: it was
 halved in phase 1 after the first captures.
 
+**The detail map** (`map_detail`, phase 8) is the strategic map's own 1941 atlas
+scan again, 4096 x 2458 against the strategic map's 1750 x 1050, lined up
+with `world_1941.jpg` to half a pixel. The sector windows' plates are cut from it.
+Its source, hashes and every step are in
+[packs/ww2/look/MAP-DETAIL.md](../packs/ww2/look/MAP-DETAIL.md), and
+[tools/look/make_ww2_map_detail.py](../tools/look/make_ww2_map_detail.py)
+rebuilds it byte for byte.
+
 ## How each screen gets the look
 
 | Surface | Where | Treatment |
@@ -108,6 +117,7 @@ halved in phase 1 after the first captures.
 | The credits sheet | [credits_window.gd](../src/ui/credits_window.gd) | A document: the pack's lines, then every picture and font with its author, licence and source. Links open a tab on the web; on the desktop they show the address and a Copy button. |
 | The map screen's shell | [look_hud.gd](../src/ui/look_hud.gd), [galaxy_map.gd](../src/ui/galaxy_map.gd), [gid_bar.gd](../src/ui/gid_bar.gd) | The operations strip (readouts between brass rules), the dispatch rail (unread mail as a brass count, not a glow), the theatre directory (an open theatre reads as selected), the console of grouped keys (the mode on show held down), and the bezel. Markers get an ink rim so they hold on the paper map. |
 | Messages | [look_dispatch.gd](../src/ui/look_dispatch.gd) | See below. |
+| The sector window | [look_sector.gd](../src/ui/look_sector.gd) | See below. |
 | Menus, dialogs, tooltips | `Look.InstallPopups` | See below. |
 | Every other window | [look_window.gd](../src/ui/look_window.gd) `Install` | See below. |
 | Everything else | `Look.Install` | The theme on the whole tree, once every window is dressed. |
@@ -123,6 +133,32 @@ halved in phase 1 after the first captures.
 - The parchment is **drawn under** the detail column, not wrapped round it.
   `message_window.gd` finds the picture by a fixed node path, and that path
   must keep resolving.
+
+**The sector window as a theatre plate (phase 8; TeeJ: "the sector view still
+looks like SWR").** The window keeps every element the manual gives it
+(manual p025-p026, Figs 2.8 and 2.9), where it was, answering as it did.
+One pass at the end of each repaint (`LookSector.Dress`) changes only how each
+is drawn:
+
+| Element | Drawn as |
+|---|---|
+| The ground | the theatre cut from the detail map under a parchment wash, each system over its own place; or a plain plotting sheet (below) |
+| A system | its holder's map colour with an ink rim; an unheld one an ink ring; the HQ ring brass |
+| Its name | Source Sans 3 semibold, in its holder's colour darkened to 4.5:1 on parchment (ink when unheld), with a paper halo |
+| The corner icons | the same glyphs in ink on paper tabs; an uprising's in signal red |
+| Energy, raw materials | ink and olive squares, open when free, all ink-edged |
+| Loyalty bar, GID star | the sides' map colours with an ink edge; the map's cross with an ink rim |
+
+**The map or the sheet.** The window spreads a theatre's systems to fill it,
+so the map must be magnified to match. That works where it stays sharp. The
+four small European theatres need 5.1-7.0 times the detail map's pixels, and
+at that zoom the map is too soft to read, so they get a plain plotting sheet
+(parchment, a faint grid). The other six need at most 2.8 times and stay
+maps. The cut-off (`SHARP_ZOOM`, 4) sits in the middle of that gap.
+
+Two forms were tried and rejected (TeeJ, 2026-09-29):
+- a sharp map wider than the layout, which put systems on the wrong places;
+- the lined-up map from the strategic map's own picture, which was a blur.
 
 **Menus, dialogs, tooltips (phase 5).** The game makes these in some forty
 places. So `Look.InstallPopups` dresses them from one `node_added` hook on the
@@ -198,6 +234,7 @@ pack's look on. The pack_switch pair checks this.
 | Asset | Origin |
 |---|---|
 | 1941 world map | CC0; Sam Kal via publicdomainpictures.net (image 510694); cropped to the map |
+| Its detail copy (phase 8) | the same 1941 Soviet school-atlas page (GUGK, *Политическая карта мира*, pp. 42-43) from Wikimedia Commons, marked Public Domain there; lined up and reduced by `tools/look/make_ww2_map_detail.py`. Source, hashes and the licence text: [MAP-DETAIL.md](../packs/ww2/look/MAP-DETAIL.md). ⚠ Commons gives no separate US public-domain tag for it, and the same holds for the 1941 map above. |
 | Oswald, Source Sans 3, Courier Prime | SIL OFL 1.1, from the projects' own GitHub repositories. Commits, sizes and SHA-256 are in [packs/ww2/look/fonts/README.md](../packs/ww2/look/fonts/README.md), with each licence alongside. |
 | Paper, desk, grain, rule | original, generated by `tools/look/make_ww2_textures.py` |
 | The brand art | commissioned for Faction Wars from a local artist; attribution not required |
@@ -216,6 +253,9 @@ typographically.
 | Menus, dialogs and windows are dressed from hooks on the tree, not per call site. | phases 5-6 |
 | The multiplayer screens are dressed too (TeeJ, 2026-09-29). | phase 6 |
 | The opening briefing is not dressed: it cannot play in a WWII game. It needs the pack's briefing recordings and the original frame's agent droid, and the pack has neither. | phase 6 |
+| The sector window becomes a theatre plate, keeping every element and position (TeeJ chose option A, 2026-09-29). | phase 8 |
+| A sharper copy of the same atlas scan was found and lined up, and its origin recorded (TeeJ, 2026-09-29). | phase 8 |
+| Where even that would blur (above 4 times), the plain plotting sheet is used, automatically (TeeJ chose (b), 2026-09-29). | phase 8 |
 
 ## Checking it
 
@@ -227,9 +267,11 @@ typographically.
 | `tests/look_messages.gd` | the dispatches: rows, stamps, band, reading order, the empty words, the picture's path |
 | `tests/look_popups.gd` | menus (including one made before the hook), the order sheet, the dim, tooltips, the System Finder, the Game Menu |
 | `tests/look_windows.gd` | twelve windows and two head-to-head screens: each wears the look, and **none of the plain palette is left**, even after a repaint. On Star Wars it finds the plain palette in the undressed windows, which shows the search works. |
+| `tests/look_sector.gd` | every theatre's sector window: the map or the sheet by its zoom, the layers under every entry taking no clicks, the plate cut from the detail map, every system's mark and name, each icon and bar in the look, no Star Wars colour left |
 | `tests/asset_credits.gd` | every shipped picture and font is credited |
-| `tests/pack_validation.gd` | rule 31's cases, `messages` included |
+| `tests/pack_validation.gd` | rule 31's cases, `messages` and `map_detail` included |
 | `tests/capture_look.gd` | the captures, below |
+| `tests/capture_look_sectors.gd` | a shot of every theatre's sector window; `--sheet` puts all on the plain sheet; `--pair=Name@x:y,...` opens several at once where they are dragged |
 
 Every test that starts a game runs once per pack: `--pack=ww2` and
 `--pack=star-wars-rebellion`, with `--seed=12345`.
@@ -269,3 +311,8 @@ right, at 1440 x 850, playing the Allies.
 ![The windows, 2 of 2](ww2-look/windows-2.jpg)
 ![The head-to-head screens](ww2-look/multiplayer.jpg)
 ![Other window sizes, after](ww2-look/sizes.jpg)
+
+Phase 8, every theatre's sector window, before (left) and after (right):
+
+![The sector windows, 1 of 2](ww2-look/sectors-1.jpg)
+![The sector windows, 2 of 2](ww2-look/sectors-2.jpg)

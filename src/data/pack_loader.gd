@@ -132,7 +132,7 @@ const KNOWN_LOOK_COLORS := ["chassis", "chassis_deep", "chassis_raised", "chassi
 const KNOWN_LOOK_FONTS := ["display", "display_bold", "body", "body_bold", "typed", "typed_bold"]
 const KNOWN_LOOK_SIZES := ["body", "small", "label", "title", "heading", "display"]
 const KNOWN_LOOK_METRICS := ["radius", "border", "focus", "pad"]
-const KNOWN_LOOK_TEXTURES := ["paper", "paper_frame", "desk", "grain", "rule"]
+const KNOWN_LOOK_TEXTURES := ["paper", "paper_frame", "desk", "grain", "rule", "map_detail"]
 
 
 class LoadedPack:
@@ -438,8 +438,10 @@ static func _validate_look(pack: LoadedPack, pack_dir: String, errors: Array[Str
 				continue
 			var t: Variant = textures[key]
 			var file := str(t.get("file", "")) if t is Dictionary else str(t)
-			if not file.to_lower().ends_with(".png"):
-				errors.append("%s: '%s' is not a .png." % [where, file])
+			# The map's detail copy is a scan, so a .jpg; the drawn textures are .png.
+			var kinds: Array = [".png", ".jpg"] if key == "map_detail" else [".png"]
+			if not kinds.any(func(k: String) -> bool: return file.to_lower().ends_with(k)):
+				errors.append("%s: '%s' is not a %s." % [where, file, " or ".join(kinds)])
 			elif not _pack_has(pack_dir, file):
 				errors.append("%s: '%s' is not in %s." % [where, file, pack_dir])
 			if t is Dictionary and t.has("margin"):

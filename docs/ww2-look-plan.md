@@ -95,6 +95,7 @@ They go in `packs/ww2/look/fonts/` with their licences, each hashed and recorded
 | Right list | `TaskbarPanel` pins | Theatre directory. The current theatre is marked by a tab and contrast |
 | Command row | bottom `HBoxContainer` | Grouped console keys, visible focus, touch-size targets |
 | Map | `galaxy_map.gd` | Bezel drawn in the existing gutters. The map area is unchanged. Markers, tier flares, theatre boxes, HQ burst and hover titles as ink plotting marks with a halo for contrast. The Sector window's selection ring likewise |
+| Sector window | `sector_window.gd` (phase 8) | A theatre plate: the theatre's own map under a parchment wash, or a plotting sheet where the map would blur; ink-rimmed marks in the holder's colour, names on a paper halo, paper icon tabs, ink and olive bars |
 | Messages | `MessageWindow` | Dispatch paper. Scan order: subject, theatre (when the message names a system), day, then body and actions. A small device per category (intelligence stamp, ledger rule, orders band, signal tag). Conflict and battle alerts carry a signal-red band. No flashing |
 | Menus, dialogs, tooltips | PopupMenus, `AcceptDialog`/`ConfirmationDialog`, tooltips | Instrument-panel menus, an order sheet over a dimmed map, field-note tooltips |
 | Utility windows | finders, Encyclopedia, Economy, Defense, Fleet, Personnel | Same primitives; density drives each layout |
@@ -118,6 +119,7 @@ They go in `packs/ww2/look/fonts/` with their licences, each hashed and recorded
 | 5 | Menus, dialogs, tooltips | plus one finder as the representative |
 | 6 | Remaining windows | Encyclopedia, Economy, Defense, Fleet, Personnel, the other finders, empty and loading states |
 | 7 | Write-up | primitives and rationale (`docs/ww2-look.md`); the before/after sheet |
+| 8 | The sector window | *(Added 2026-09-29, TeeJ: "the sector view still looks like SWR"; chose option A.)* Every element and position kept (manual p025-p026). The ground: the theatre cut from a **sharper copy of the same 1941 atlas scan** (`map_detail`, origin in `packs/ww2/look/MAP-DETAIL.md`), lined up so each system sits on its own place. **Where that map would be magnified more than 4 times** (the four small European theatres), a plain plotting sheet instead, automatically (TeeJ chose (b)). Marks, names, corner icons and bars in ink, paper and the side colours. |
 
 ## Verification
 - **Captures:** before/after for the Cockpit, map, a message and a dialog or finder, at 1440×850, 1920×1080 and a compact 1024×608 window. No text clipped anywhere.
