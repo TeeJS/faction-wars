@@ -70,3 +70,18 @@ and names; these are its pictures. The GID stars also draw the galaxy map.
 | Uprising icon | `icons/uprising.png`, `icons/uprising.hover.png` | 20 x 20 | 2 | A system in uprising. | Normal and hover. | Our flame glyph, orange |
 | Title boxes | `buttons/title_close.png`, `title_minimize.png`, `title_system.png`, `sector_switch[.pressed].png` | 14 x 14 | 5 | Close, minimise, the system box, and the sector window's switch-to-the-other-side box. | Switch has a pressed state. | Our close, bar, planet and arrows glyphs |
 | GID stars | `gid/<side>.<tier>.png` | 15 x 15 | 16 (already listed in phase 1) | A system's star on the galaxy map and under its picture in the sector window: alliance, empire, neutral, unexplored at big / mid / low / none. | One state. | A plus in the side's colour, reach 7 / 5 / 3 / 1 |
+
+## Phase 4: the Status windows
+
+One window for a character, a unit, a facility, a fleet, a mission or a
+build queue (manual p064; Figs 3.28, 3.29, 3.61): modal, the game's fields in
+a list, a picture, the name, Encyclopedia and the close diamond.
+
+| Asset | File | Size (frame px) | Count | What it is | States / notes | Plain stand-in now |
+|---|---|---|---|---|---|---|
+| Status plate | `windows/status_plate.<side>.png` | 379 x 272 | 2 | The whole Status window. | Field list panel at (3,12) 228 x 247 (the title centred over it at y 18, lines from y 47, a scroll bar at x 214), picture panel (242,15) 130 x 98, name panel (242,131) 130 x 55; the buttons below at (258,218) and (324,218). | Grey plate with three black wells |
+| Encyclopedia button | `buttons/status_encyclopedia[.pressed / .disabled].png` | 32 x 31 | 3 | Opens the Encyclopedia on the subject. | Plain, pressed, disabled. (The close diamond is `ency_close.alliance`, phase 2.) | Our book glyph |
+| Fleet picture | `windows/status_fleet.<side>.png` | 122 x 50 | 2 | A fleet's picture in the picture panel. | One state. | Our fleet glyph in the side's colour |
+| Damaged fleet picture | `windows/status_fleet_damage[.<side>].png` | 122 x 50 | 3 | A fleet with a damaged ship. | One state. | Our fleet glyph in orange |
+| Regiment spotlight | `windows/status_backdrop.troops.png` | 122 x 50 | 1 | The grey pool of light a trooper regiment's picture stands in. | One state. | A soft grey ellipse |
+| Subjects' pictures | `characters/<id>.png`, `units/<id>.png`, `facilities/<id>.png` (the Encyclopedia's) | up to 130 x 98 in this panel | one per character / unit / facility | The subject shown in the picture panel. | Listed fully with the Encyclopedia (phase 6). | None |

@@ -148,6 +148,21 @@ static func Table() -> Dictionary:
 	for side in ["alliance", "empire", "neutral", "unexplored"]:
 		for tier in ["big", "mid", "low", "none"]:
 			t["gid/%s.%s.png" % [side, tier]] = {"kind": "star", "size": Vector2i(15, 15), "side": side, "tier": tier}
+	# ---- Phase 4: the Status window (original_ui.gd StatusPlate; manual p064) ----
+	# The plate per side: the field list (3,12) 228 x 247, the picture panel
+	# (242,15) 130 x 98 and the name panel (242,131) 130 x 55 (measured); the
+	# Encyclopedia button beside the close diamond.
+	for side in Sides:
+		t["windows/status_plate.%s.png" % side] = {"kind": "plate", "size": Vector2i(379, 272),
+			"wells": [Rect2i(3, 12, 228, 247), Rect2i(242, 15, 130, 98), Rect2i(242, 131, 130, 55)]}
+	t["buttons/status_encyclopedia.png"] = {"kind": "button", "size": Vector2i(32, 31), "glyph": "encyclopedia"}
+	# The picture panel's own pictures (122 x 50): a fleet's, a damaged fleet's,
+	# and the grey spotlight a regiment stands in.
+	for side in Sides:
+		t["windows/status_fleet.%s.png" % side] = {"kind": "icon", "size": Vector2i(122, 50), "glyph": "fleets", "side": side}
+		t["windows/status_fleet_damage.%s.png" % side] = {"kind": "icon", "size": Vector2i(122, 50), "glyph": "fleets", "side": "uprising"}
+	t["windows/status_fleet_damage.png"] = {"kind": "icon", "size": Vector2i(122, 50), "glyph": "fleets", "side": "uprising"}
+	t["windows/status_backdrop.troops.png"] = {"kind": "spot", "size": Vector2i(122, 50)}
 	_spec = t
 	return _spec
 
@@ -173,6 +188,8 @@ static func _draw(spec: Dictionary, state: String) -> Image:
 			_planet(img, int(spec["n"]))
 		"star":
 			_star(img, str(spec["tier"]), _side_colour(str(spec["side"])))
+		"spot":
+			_spot(img)
 		"bar":
 			img.fill(lit)
 		"icon":
@@ -277,3 +294,13 @@ static func _star(img: Image, tier: String, c: Color) -> void:
 	var half: int = arm / 2
 	img.fill_rect(Rect2i(mid - reach, mid - half, reach * 2 + 1, arm), c)
 	img.fill_rect(Rect2i(mid - half, mid - reach, arm, reach * 2 + 1), c)
+
+
+## A soft grey pool of light, for a picture to stand in.
+static func _spot(img: Image) -> void:
+	var c := Vector2(img.get_width(), img.get_height()) / 2.0
+	for y in img.get_height():
+		for x in img.get_width():
+			var d: float = ((Vector2(x + 0.5, y + 0.5) - c) / c).length()
+			if d < 1.0:
+				img.set_pixel(x, y, Color(0.35, 0.35, 0.35, (1.0 - d) * 0.8))
