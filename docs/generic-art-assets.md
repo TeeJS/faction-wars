@@ -133,3 +133,23 @@ phase 2) with its close button and scroll bar.
 | Encyclopedia buttons | `buttons/ency_view_topic.<side>`, `ency_view_index.<side>` `[.pressed / .disabled].png` | Alliance 32 x 31, Empire 44 x 41 | 12 | View Topic, View Index. | Plain, pressed, disabled. | Our page and list glyphs |
 | Encyclopedia arrows | `buttons/ency_prev[...]`, `buttons/ency_next[...]` | 21 x 17 | 6 | Step to the previous / next topic. | Plain, pressed, disabled. | Our left and right glyphs |
 | Encyclopedia pictures | `characters/<id>.png`, `units/<id>.png`, `facilities/<id>.png`, `planets/<id>.png`, `missions/...` (`Art.Picture`) with portraits (`Art.Portrait`) and miniatures (`Art.Miniature`, 61 x 25) | the Topic picture area; miniatures 61 x 25 | one per entry | Every topic's picture: each character, ship, fighter, troop, facility, system and mission. | One state (characters also `.report`, units `.damage` / `.moving`). | None |
+
+## Phase 7: the Game Options screen and the alert boxes
+
+The Game Options screen (manual p075-p076 Fig 3.16): Saved Games (six rows:
+Save, the side's mark, the name, Load; the Import Game and Manage Games row),
+the tray under it (Restart, Return, Exit), Sound Options and Tactical Display
+Options. The alert boxes (REBDLOG) ask and tell with one button or two.
+
+| Asset | File | Size (frame px) | Count | What it is | States / notes | Plain stand-in now |
+|---|---|---|---|---|---|---|
+| Options screen | `screens/options.png` | 640 x 480 | 1 | The whole screen's face: the Saved Games panel with its six rows of sockets, the tray, Sound Options (the music switch's field, the two volume tracks with their music and effects marks), Tactical Display Options (five lamps and fields). | One state. Sockets measured: Save (33,80) 44 x 22, side mark (84,80) 28 x 21, name (116,81) 165 x 20, Load (286,80) 43 x 22, rows 42 apart; tray sockets (76,381), (162,382), (248,381) 42 x 42. | Grey plate, black sockets, note and speaker glyphs |
+| Multiplayer strip | `screens/mp_connection.png` | 640 x 480 | 1 | The multiplayer screens' picture; the Saved Games row's wires and clamps are cut from its foot. | Wires at rows 447-449 yellow, 451-453 red, 455-457 blue, 459-460 green; a clamp at (98,439) 8 x 33. | Grey plate; four coloured wires and a clamp at those rows |
+| Options buttons | `buttons/options_<save / load / restart / return / exit>[.pressed / .disabled].png` | save 42 x 20, load 41 x 20; restart, return, exit 42 x 42 | 15 | Save a game, load one, restart, return to the Command Center, exit. | Plain, pressed, disabled (Load on an empty row). | Our disk, download, restart, return and power glyphs |
+| Side marks | `windows/options_side.<alliance / empire / h2h>.png` | 26 x 19 | 3 | Which side a saved game was played as; head-to-head. | One state. | Our flag in the side's colour; two figures for head-to-head |
+| Music switch | `windows/options_music[.lit / .off].png` | 19 x 35 | 2 | Play Music on or off. | `.lit` on, `.off` off. | A lever up (green light) or down |
+| Tactical lamps | `windows/options_light.off.png` | 35 x 22 | 1 | Each Tactical Display option's lamp. | Off (the tactical display is not in this game). | A dark green lamp |
+| Volume knob | `windows/options_knob.png` | 11 x 47 | 1 | The slider on each volume track. | One state. | Grey slab |
+| Choice box | `windows/mp_choice[.chosen].png` | 152 x 33 | 2 | The box the Import Game and Manage Games buttons are cut from. | Plain; `.chosen` (red ends). | Grey box, black middle |
+| Alert boxes | `windows/dialog_plate1.png`, `windows/dialog_plate2.png` | 412 x 176 | 2 | An alert's face: the words' well, and the socket for one button (OK) or two (OK, Cancel). | Words (26,36) 360 x 68; sockets (172,130) or (122,130) and (225,131), 65 x 36. | Grey plate, black well, dark sockets |
+| Alert buttons | `buttons/dialog_ok[.pressed].png`, `buttons/dialog_cancel[.pressed].png` | 57 x 28 | 4 | OK / Yes and Cancel / No. | Plain and pressed. | Our tick and cross glyphs |

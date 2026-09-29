@@ -23,7 +23,7 @@ const PlainIcons := preload("res://src/ui/plain_icons.gd")
 const LookLib := preload("res://src/ui/look.gd")
 
 ## The file-name states a picture comes in; the stand-in draws each.
-const States := ["pressed", "disabled", "grey", "lit", "picked", "hover", "chosen"]
+const States := ["pressed", "disabled", "grey", "lit", "picked", "hover", "chosen", "off"]
 const Sides := {"alliance": Color(1, 0, 0), "empire": Color(0, 1, 0)}
 ## The original's planet pictures: 26 of them, 37 x 37 (planet_sprites/<n>).
 const PlanetSprites := 26
@@ -246,6 +246,49 @@ static func Table() -> Dictionary:
 			t["buttons/%s.%s.png" % [b, side]] = {"kind": "button", "size": Vector2i(44, 41) if big else Vector2i(32, 31), "glyph": b.trim_prefix("finder_").trim_prefix("ency_")}
 	t["buttons/ency_prev.png"] = {"kind": "button", "size": Vector2i(21, 17), "glyph": "prev"}
 	t["buttons/ency_next.png"] = {"kind": "button", "size": Vector2i(21, 17), "glyph": "next"}
+	# ---- Phase 7: the Game Options screen (original_options_screen.gd; manual
+	# p075-p076 Fig 3.16) and the alert boxes (REBDLOG) it and the game ask in ----
+	# The screen: the Saved Games panel (its heading bar, six rows of sockets -
+	# Save, the side's box, the name, Load), the tray under it (Restart, Return,
+	# Exit), Sound Options (heading, the music switch and its field, the two
+	# volume tracks) over Tactical Display (heading, five lights and fields) -
+	# the fields and sockets measured.
+	var blacks: Array = [Rect2i(56, 37, 245, 21), Rect2i(360, 37, 245, 21), Rect2i(360, 274, 246, 20),
+		Rect2i(352, 77, 19, 34), Rect2i(376, 77, 237, 34), Rect2i(352, 134, 22, 47), Rect2i(376, 134, 237, 47),
+		Rect2i(352, 194, 22, 47), Rect2i(376, 194, 237, 47), Rect2i(64, 372, 236, 58)]
+	for i in 6:
+		var y: int = 81 + 42 * i
+		blacks.append_array([Rect2i(33, y - 1, 44, 22), Rect2i(84, y - 1, 28, 21), Rect2i(116, y, 165, 20), Rect2i(286, y - 1, 43, 22)])
+	for i in 5:
+		blacks.append_array([Rect2i(356, 311 + 27 * i, 37, 22), Rect2i(394, 312 + 27 * i, 213, 19)])
+	t["screens/options.png"] = {"kind": "plate", "size": Vector2i(640, 480),
+		"wells": [Rect2i(22, 34, 315, 306), Rect2i(22, 350, 315, 105), Rect2i(343, 33, 274, 230), Rect2i(343, 266, 274, 187)],
+		"blacks": blacks, "late_bands": [Rect2i(76, 381, 42, 42), Rect2i(162, 382, 42, 42), Rect2i(248, 381, 42, 42)],
+		# The two volume tracks' marks: music, then sound effects.
+		"glyphs": [["music", Rect2i(352, 146, 22, 22)], ["sound", Rect2i(352, 206, 22, 22)]]}
+	# The multiplayer screens' bottom strip, where the Saved Games row's wires and
+	# clamps are cut from (saved_games_art.gd): four wires - yellow, red, blue,
+	# green - in their rows, a clamp at x 98.
+	t["screens/mp_connection.png"] = {"kind": "wirestrip", "size": Vector2i(640, 480)}
+	for b in [["options_save", Vector2i(42, 20), "save"], ["options_load", Vector2i(41, 20), "load"],
+			["options_restart", Vector2i(42, 42), "restart"], ["options_return", Vector2i(42, 42), "return"],
+			["options_exit", Vector2i(42, 42), "exit"]]:
+		t["buttons/%s.png" % b[0]] = {"kind": "button", "size": b[1], "glyph": b[2]}
+	t["windows/options_side.alliance.png"] = {"kind": "icon", "size": Vector2i(26, 19), "glyph": "loyalty", "side": "alliance"}
+	t["windows/options_side.empire.png"] = {"kind": "icon", "size": Vector2i(26, 19), "glyph": "loyalty", "side": "empire"}
+	t["windows/options_side.h2h.png"] = {"kind": "icon", "size": Vector2i(26, 19), "glyph": "h2h", "side": "grey"}
+	t["windows/options_music.png"] = {"kind": "lever", "size": Vector2i(19, 35)}
+	t["windows/options_light.png"] = {"kind": "lamp", "size": Vector2i(35, 22)}
+	t["windows/options_knob.png"] = {"kind": "plate", "size": Vector2i(11, 47)}
+	t["windows/mp_choice.png"] = {"kind": "choice", "size": Vector2i(152, 33)}
+	# The alert boxes: the words' well, and the one socket (the check) or the
+	# two (the check and the cross) their buttons sit in.
+	t["windows/dialog_plate1.png"] = {"kind": "plate", "size": Vector2i(412, 176),
+		"blacks": [Rect2i(26, 36, 360, 68)], "bands": [Rect2i(172, 130, 65, 36)]}
+	t["windows/dialog_plate2.png"] = {"kind": "plate", "size": Vector2i(412, 176),
+		"blacks": [Rect2i(26, 36, 360, 68)], "bands": [Rect2i(122, 130, 65, 36), Rect2i(225, 131, 65, 36)]}
+	t["buttons/dialog_ok.png"] = {"kind": "button", "size": Vector2i(57, 28), "glyph": "ok"}
+	t["buttons/dialog_cancel.png"] = {"kind": "button", "size": Vector2i(57, 28), "glyph": "cancel"}
 	_spec = t
 	return _spec
 
@@ -269,6 +312,8 @@ static func _draw(spec: Dictionary, state: String) -> Image:
 				_sunk(img, w, PlainIcons.Well)
 			for w in spec.get("blacks", []):
 				_sunk(img, w, Color.BLACK)
+			for b in spec.get("late_bands", []):
+				_sunk(img, b, PlainIcons.Band)
 			for o in spec.get("outlines", []):
 				_outline(img, o, _side_colour(str(spec.get("side", ""))) if spec.has("side") else PlainIcons.BevelLight)
 			for g in spec.get("glyphs", []):
@@ -283,6 +328,29 @@ static func _draw(spec: Dictionary, state: String) -> Image:
 			_planet(img, int(spec["n"]))
 		"star":
 			_star(img, str(spec["tier"]), _side_colour(str(spec["side"])))
+		"wirestrip":
+			_raised(img, Rect2i(Vector2i.ZERO, sz))
+			_wirestrip(img)
+		"lever":
+			var on: bool = state == "lit"
+			_sunk(img, Rect2i(Vector2i.ZERO, sz), Color.BLACK)
+			var knob := Rect2i(3, 3 if on else sz.y - 15, sz.x - 6, 12)
+			_raised(img, knob)
+			if state == "grey":
+				img.fill_rect(knob.grow(-2), PlainIcons.Dimmed)
+			elif on:
+				img.fill_rect(Rect2i(knob.position.x + 3, knob.position.y + 4, knob.size.x - 6, 4), Color(0, 1, 0))
+		"lamp":
+			_sunk(img, Rect2i(Vector2i.ZERO, sz), Color.BLACK)
+			var lamp_on: bool = state == "lit" or state == "on"
+			var lc: Color = Color(0, 1, 0) if state == "lit" else (Color(0, 0.75, 0) if lamp_on else Color(0, 0.25, 0))
+			img.fill_rect(Rect2i(6, 5, sz.x - 12, sz.y - 10), lc)
+		"choice":
+			_raised(img, Rect2i(Vector2i.ZERO, sz))
+			var ends: Color = Color(1, 0, 0) if state == "chosen" else PlainIcons.BevelLight
+			img.fill_rect(Rect2i(2, 3, 3, sz.y - 6), ends)
+			img.fill_rect(Rect2i(sz.x - 5, 3, 3, sz.y - 6), ends)
+			_sunk(img, Rect2i(12, 5, sz.x - 24, sz.y - 10), Color("#222222"))
 		"spot":
 			_spot(img, spec.get("tint", Color(0.35, 0.35, 0.35)))
 		"bar":
@@ -426,3 +494,17 @@ static func _outline(img: Image, r: Rect2i, c: Color) -> void:
 	img.fill_rect(Rect2i(r.position, Vector2i(1, r.size.y)), c)
 	img.fill_rect(Rect2i(Vector2i(r.position.x, r.end.y - 1), Vector2i(r.size.x, 1)), c)
 	img.fill_rect(Rect2i(Vector2i(r.end.x - 1, r.position.y), Vector2i(1, r.size.y)), c)
+
+## The multiplayer screens' bottom strip as the Saved Games wires sample it
+## (saved_games_art.gd WireSource, WireProfile, ClampSource): across the
+## screen's foot, four wires lit to dark - yellow rows 447-449, red 451-453,
+## blue 455-457, green 459-460 - a shade row between, and a clamp at x 98.
+static func _wirestrip(img: Image) -> void:
+	_sunk(img, Rect2i(0, 437, img.get_width(), 43), PlainIcons.Band)
+	var rows := {447: Color("#d8d840"), 448: Color("#f0f070"), 449: Color("#707028"), 450: PlainIcons.Well,
+		451: Color("#d04040"), 452: Color("#b03030"), 453: Color("#702020"), 454: PlainIcons.Well,
+		455: Color("#4a64d8"), 456: Color("#3048b8"), 457: Color("#203070"), 458: PlainIcons.Well,
+		459: Color("#50c050"), 460: Color("#308a30")}
+	for y in rows:
+		img.fill_rect(Rect2i(0, y, img.get_width(), 1), rows[y])
+	_raised(img, Rect2i(98, 439, 8, 33))
