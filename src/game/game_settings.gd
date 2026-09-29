@@ -71,6 +71,10 @@ static var MpBriefing: bool = true
 ## in any game this client starts. Remembered in user:// (MpSetup prefs).
 ## Ticked until the player unticks it (TeeJ, 2026-09-23).
 static var ProvideFeedback: bool = true
+## "Reduce motion" on a Cockpit with a look (docs/ww2-look-plan.md): hold its
+## lighting still. The browser's own reduced-motion setting does the same
+## (Look.ReducedMotion). Remembered beside Provide feedback. Presentation only.
+static var ReduceMotion: bool = false
 
 ## The session's PRNG seed - see Prng. Printed at start; --seed=N replays.
 static var Seed: int = 0

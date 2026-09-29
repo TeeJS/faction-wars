@@ -36,7 +36,9 @@ func _init() -> void:
 		var menu: Node = load("res://Menu.tscn").instantiate()
 		root.add_child(menu)
 		await process_frame
-		var btn: Button = menu.get_node_or_null("BtnCredits")
+		# Anywhere on the Cockpit: a pack with a look lays the same button out
+		# along the dossier's edge (cockpit_dossier.gd).
+		var btn: Button = menu.find_child("BtnCredits", true, false)
 		_check(btn != null, "%s: the button Cockpit has View Credits" % id)
 		if btn != null:
 			btn.pressed.emit()

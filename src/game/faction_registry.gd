@@ -31,7 +31,9 @@ static var PACK_VERSIONS_ROOT := "user://pack-versions"
 static var _hash_cache: Dictionary = {}
 ## The files a pack is made of - what PackLoader.Load reads and what the
 ## content hash covers, so two clients on the same pack id but different
-## content are told so instead of desyncing (BACKLOG #13).
+## content are told so instead of desyncing (BACKLOG #13). The optional
+## look.json and credits.json are left out ON PURPOSE (SCHEMA.md sections
+## 15-16): they are presentation, and a new look must not refuse a game.
 const PACK_FILES := ["pack.json", "factions.json", "map.json", "characters.json",
 	"facilities.json", "units.json", "weapons.json", "missions.json",
 	"mission_tables.json", "rules.json", "setup.json", "display.json"]

@@ -39,6 +39,10 @@ func Setup() -> void:
 	sb.set_border_width_all(1)
 	sb.set_content_margin_all(10)
 	add_theme_stylebox_override("panel", sb)
+	# A pack's look (docs/ww2-look-plan.md): the key is a card on the map table.
+	if Look.Active():
+		theme = Look.GetTheme()
+		add_theme_stylebox_override("panel", Look.Box("chassis", "brass_dim", 1, -1, 10))
 
 	var root := VBoxContainer.new()
 	root.add_theme_constant_override("separation", 2)
@@ -53,7 +57,9 @@ func Setup() -> void:
 	_title = Label.new()
 	_title.text = ""
 	_title.add_theme_font_size_override("font_size", 20)
-	_title.add_theme_color_override("font_color", Color(0.95, 0.97, 1.0))
+	_title.add_theme_color_override("font_color", Look.C("heading") if Look.Active() else Color(0.95, 0.97, 1.0))
+	if Look.Active():
+		_title.add_theme_font_override("font", Look.F("display"))
 	_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(_title)
@@ -130,7 +136,7 @@ static func Row(glyph: String, glyphSize: int, color: Color, text: String) -> HB
 	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	lbl.add_theme_font_size_override("font_size", 16)
-	lbl.add_theme_color_override("font_color", Color(0.92, 0.94, 1.0))
+	lbl.add_theme_color_override("font_color", Look.C("text") if Look.Active() else Color(0.92, 0.94, 1.0))
 	row.add_child(lbl)
 
 	return row

@@ -8,7 +8,9 @@ extends Control
 ##   - a pack that declares `menu` in pack.json (SCHEMA.md section 2) gets ITS
 ##     PICTURE, with one clickable region per function laid over it exactly
 ##     where the pack says - the cockpit the manual labels;
-##   - a pack without one gets the labelled buttons in Menu.tscn.
+##   - a pack without one gets the labelled buttons in Menu.tscn - laid out as
+##     a campaign dossier (cockpit_dossier.gd) when the pack ships a look
+##     (SCHEMA.md section 15), the same buttons either way.
 ## Both drive the same StartGame; the picture form keeps its choices in
 ## _difficultyId / _sizeId / _hqOnly, the button form in the toggle groups.
 
@@ -27,6 +29,8 @@ const MoviesLib := preload("res://src/ui/movies.gd")
 const MusicLib := preload("res://src/ui/music.gd")
 ## The cockpit's controls' sounds (docs/advisor-plan.md): pack.json `sounds`.
 const SoundLib := preload("res://src/ui/sound.gd")
+## The button form as a campaign dossier, for a pack with a look.
+const Dossier := preload("res://src/ui/cockpit_dossier.gd")
 
 var _difficultyGroup: ButtonGroup
 var _sizeGroup: ButtonGroup
@@ -103,11 +107,16 @@ func _ready() -> void:
 	var has_picture: bool = FactionRegistry.Pack != null and FactionRegistry.Pack.Manifest.Menu != null \
 		and Art.PackImage(FactionRegistry.Pack.Manifest.Menu.ImageFile) != null
 
+	# The size choice in the pack's own words (display.json `terms`).
+	(get_node("CenterContainer/MenuVBox/SizeLabel") as Label).text = Terms.label("galaxy_size")
+
 	# "Load Game" - restore a saved single-player game (issue #6, manual
 	# p073-077). Added in code (bottom-left of the Cockpit); opens a slot picker.
 	# The picture form has the manual's own region for it instead.
+	var btnLoad: Button = null
 	if not has_picture:
-		var btnLoad := Button.new()
+		btnLoad = Button.new()
+		btnLoad.name = "BtnLoad"
 		btnLoad.text = "Load Game"
 		btnLoad.pressed.connect(OpenLoadGame)
 		add_child(btnLoad)
@@ -164,6 +173,10 @@ func _ready() -> void:
 
 	if has_picture:
 		_build_cockpit(FactionRegistry.Pack.Manifest.Menu)
+	elif Look.Active():
+		# A pack with a look (docs/ww2-look-plan.md): the same buttons, laid out
+		# as the campaign's dossier on the officer's desk.
+		Dossier.Build(self, first, second, btnLoad)
 
 	# "To skip the introductory graphics, click the mouse" (manual p022): the
 	# pack's launch movies, once a run, when the player imported them.

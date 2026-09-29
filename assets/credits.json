@@ -1,0 +1,32 @@
+{
+  "_comment": "Where every picture and font the engine itself ships comes from (SCHEMA.md section 16); paths are relative to this folder. tests/asset_credits.gd fails if a shipped picture or font is missing here or in a pack's credits.json.",
+  "assets": [
+    {
+      "title": "Liberation Sans 2.1.5",
+      "what": "The game's text wherever a pack or art set gives no face",
+      "author": "Google Corporation (digitized data, 2010) and Red Hat, Inc. (2012); see fonts/AUTHORS",
+      "source": "https://github.com/liberationfonts/liberation-fonts/releases",
+      "licence": "SIL Open Font License 1.1",
+      "licence_url": "https://openfontlicense.org/",
+      "changes": "None.",
+      "files": ["fonts/LiberationSans-Regular.ttf", "fonts/LiberationSans-Bold.ttf", "fonts/LICENSE", "fonts/AUTHORS"]
+    },
+    {
+      "title": "Faction Wars logo, its background and the splash picture",
+      "what": "The launch screen and the loading splash",
+      "author": "Commissioned for Faction Wars from a local artist",
+      "licence": "Commissioned work; attribution not required",
+      "changes": "",
+      "files": ["brand/logo.png", "brand/background.jpg", "faction_wars_splash.png"]
+    },
+    {
+      "title": "Sector corner icons",
+      "what": "The corner glyphs of the Sector window",
+      "author": "Faction Wars, drawn by tools/draw_corner_icons.py",
+      "source": "https://github.com/TeeJS/faction-wars",
+      "licence": "Original work of the Faction Wars project",
+      "changes": "",
+      "files": ["icons/defenses.png", "icons/fleet.png", "icons/manufacturing.png", "icons/mission.png", "icons/uprising.png"]
+    }
+  ]
+}

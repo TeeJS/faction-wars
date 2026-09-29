@@ -1,0 +1,15 @@
+{
+  "_comment": "Where every picture this pack ships comes from (SCHEMA.md section 16); tests/asset_credits.gd fails if a shipped picture is missing here. The original game's pictures are never shipped - they come from the player's own art set (section 14). Presentation only - not one of the pack's hashed files.",
+  "assets": [
+    {
+      "title": "Artist's impression of the Milky Way",
+      "what": "The pack's card on the launch screen",
+      "author": "NASA/JPL-Caltech/ESO/R. Hurt",
+      "source": "https://commons.wikimedia.org/wiki/File:Artist%E2%80%99s_impression_of_the_Milky_Way.jpg",
+      "licence": "CC BY 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+      "changes": "Resized from 5600 x 5600 to 500 x 500.",
+      "files": ["milky_way.jpg"]
+    }
+  ]
+}

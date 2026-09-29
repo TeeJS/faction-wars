@@ -51,6 +51,8 @@ const KNOWN_TERMS := [
 	"shield_active", "weapon_armed",
 	# the word under a sector's name on the map
 	"sector",
+	# the Cockpit's size choice
+	"galaxy_size",
 ]
 ## SCHEMA.md section 2, `menu`. Every function of the Shuttle Cockpit (manual
 ## p021, Fig. 2.2); a picture menu must offer each one, so no function is lost
@@ -115,6 +117,18 @@ const KNOWN_UNIT_ROLES := ["superweapon", "garrison_troop"]
 const KNOWN_ART_SETS := {"swr-original": ["alliance", "empire"]}
 ## The row kinds an `art` reference may name.
 const ART_KINDS := ["characters", "units", "facilities", "missions", "planets"]
+## SCHEMA.md section 15, `look.json`: the tokens a pack's look declares
+## (src/ui/look.gd builds the theme from them). Every colour is required - a
+## look that forgot one would draw that piece in some other token's colour -
+## and an unknown name is an error, so a typo cannot silently style nothing.
+const KNOWN_LOOK_COLORS := ["chassis", "chassis_deep", "chassis_raised", "chassis_hover",
+	"edge", "brass", "brass_dim", "text", "text_muted", "text_disabled", "heading",
+	"paper", "paper_edge", "ink", "ink_muted", "khaki", "olive", "olive_deep",
+	"signal", "signal_text", "note", "note_ink", "overlay"]
+const KNOWN_LOOK_FONTS := ["display", "display_bold", "body", "body_bold", "typed", "typed_bold"]
+const KNOWN_LOOK_SIZES := ["body", "small", "label", "title", "heading", "display"]
+const KNOWN_LOOK_METRICS := ["radius", "border", "focus", "pad"]
+const KNOWN_LOOK_TEXTURES := ["paper", "paper_frame", "desk", "grain", "rule"]
 
 
 class LoadedPack:
@@ -131,6 +145,12 @@ class LoadedPack:
 	var Rules: Array = []
 	var Setup: PackDefs.SetupFile
 	var Display: PackDefs.DisplayDef
+	## Optional, presentation only (SCHEMA.md sections 15-16): not in
+	## FactionRegistry.PACK_FILES, so neither touches the content hash. Raw -
+	## src/ui/look.gd and the Credits sheet read them.
+	var Look: Dictionary = {}          # look.json, {} when the pack has none
+	var AssetCredits: Array = []       # credits.json `assets`, [] when none
+	var HasCreditsFile: bool = false
 
 
 ## Returns the pack, or null with `errors` populated. Never throws on bad pack
@@ -164,6 +184,20 @@ static func Load(pack_dir: String, errors: Array[String]) -> LoadedPack:
 	pack.Rules = rules_d if rules_d is Array else []
 	pack.Setup = PackDefs.SetupFile.from_dict(setup_d)
 	pack.Display = PackDefs.DisplayDef.from_dict(display_d)
+	# The two optional files: absent is fine, present must be an object.
+	var look_d: Variant = _read_optional_json("%s/look.json" % pack_dir, errors)
+	if look_d != null:
+		if look_d is Dictionary:
+			pack.Look = look_d
+		else:
+			errors.append("look.json: must be an object.")
+	var credits_d: Variant = _read_optional_json("%s/credits.json" % pack_dir, errors)
+	if credits_d != null:
+		pack.HasCreditsFile = true
+		if credits_d is Dictionary and credits_d.get("assets") is Array:
+			pack.AssetCredits = credits_d["assets"]
+		else:
+			errors.append("credits.json: must be an object with an `assets` list.")
 	_validate(pack, pack_dir, errors)
 	return pack if errors.is_empty() else null
 
@@ -172,6 +206,18 @@ static func _read_json(path: String, errors: Array[String]) -> Variant:
 	var text := JsonUtil.read_text(path)
 	if text.strip_edges().is_empty():
 		errors.append("%s: missing or empty." % path)
+		return null
+	var json := JSON.new()
+	if json.parse(text) != OK:
+		errors.append("%s: malformed JSON - %s" % [path, json.get_error_message()])
+		return null
+	return json.data
+
+
+## A file a pack MAY ship: null when absent, an error when present but not JSON.
+static func _read_optional_json(path: String, errors: Array[String]) -> Variant:
+	var text := JsonUtil.read_text(path)
+	if text.strip_edges().is_empty():
 		return null
 	var json := JSON.new()
 	if json.parse(text) != OK:
@@ -254,6 +300,156 @@ static func _validate(pack: LoadedPack, pack_dir: String, errors: Array[String])
 	_validate_briefing(pack, pack_dir, errors)
 	_validate_advice(pack, pack_dir, errors)
 	_validate_report_backdrop(pack, errors)
+	_validate_look(pack, pack_dir, errors)
+	_validate_credits(pack, pack_dir, errors)
+
+
+## Rule 31: `look.json` (SCHEMA.md section 15), when the pack ships one - every
+## known colour as #rrggbb and nothing unknown; `sides` names factions; each
+## face a .ttf/.otf the pack ships with a weight in 100-900; sizes positive
+## whole numbers; metrics non-negative; `overlay_alpha` in 0-1; each texture a
+## .png the pack ships, a nine-slice margin non-negative.
+static func _validate_look(pack: LoadedPack, pack_dir: String, errors: Array[String]) -> void:
+	var look: Dictionary = pack.Look
+	if look.is_empty():
+		return
+	var colors: Variant = look.get("colors")
+	if not colors is Dictionary:
+		errors.append("look.json: `colors` must be an object of the look's colours.")
+	else:
+		for key in KNOWN_LOOK_COLORS:
+			if not (colors as Dictionary).has(key):
+				errors.append("look.json colors: '%s' is missing." % key)
+		for key in JsonUtil.data_keys(colors):
+			if not KNOWN_LOOK_COLORS.has(key):
+				errors.append("look.json colors: '%s' is not a known colour. Known: %s." % [key, ", ".join(KNOWN_LOOK_COLORS)])
+			else:
+				_require_color(str(colors[key]), "look.json colors.%s" % key, errors)
+	var sides: Variant = look.get("sides", {})
+	if not sides is Dictionary:
+		errors.append("look.json: `sides` must be an object of faction id -> colour.")
+	else:
+		var ids: Array = pack.Factions.map(func(f: PackDefs.FactionDef) -> String: return f.Id)
+		for key in JsonUtil.data_keys(sides):
+			if not ids.has(key):
+				errors.append("look.json sides: '%s' is not a faction in factions.json." % key)
+			else:
+				_require_color(str(sides[key]), "look.json sides.%s" % key, errors)
+	var fonts: Variant = look.get("fonts", {})
+	if not fonts is Dictionary:
+		errors.append("look.json: `fonts` must be an object of role -> face.")
+	else:
+		for key in JsonUtil.data_keys(fonts):
+			var where := "look.json fonts.%s" % key
+			if not KNOWN_LOOK_FONTS.has(key):
+				errors.append("%s: not a known role. Known: %s." % [where, ", ".join(KNOWN_LOOK_FONTS)])
+				continue
+			var face: Variant = fonts[key]
+			if not face is Dictionary:
+				errors.append("%s: must be an object with a `file`." % where)
+				continue
+			var file := str(face.get("file", ""))
+			if not (file.to_lower().ends_with(".ttf") or file.to_lower().ends_with(".otf")):
+				errors.append("%s: file '%s' is not a .ttf or .otf." % [where, file])
+			elif not _pack_has(pack_dir, file):
+				errors.append("%s: '%s' is not in %s." % [where, file, pack_dir])
+			if face.has("weight"):
+				var w: Variant = face["weight"]
+				if not (w is float or w is int) or float(w) < 100 or float(w) > 900:
+					errors.append("%s: weight must be a number from 100 to 900." % where)
+			if face.has("tabular") and not face["tabular"] is bool:
+				errors.append("%s: tabular must be true or false." % where)
+	for block in [["sizes", KNOWN_LOOK_SIZES, true], ["metrics", KNOWN_LOOK_METRICS, false]]:
+		var d: Variant = look.get(block[0], {})
+		if not d is Dictionary:
+			errors.append("look.json: `%s` must be an object." % block[0])
+			continue
+		for key in JsonUtil.data_keys(d):
+			if not (block[1] as Array).has(key):
+				errors.append("look.json %s: '%s' is not known. Known: %s." % [block[0], key, ", ".join(block[1])])
+				continue
+			var v: Variant = d[key]
+			var number: bool = v is float or v is int
+			if block[2] and (not number or float(v) <= 0 or float(v) != floorf(float(v))):
+				errors.append("look.json %s.%s: must be a positive whole number." % [block[0], key])
+			elif not block[2] and (not number or float(v) < 0):
+				errors.append("look.json %s.%s: must be a number, 0 or more." % [block[0], key])
+	if look.has("overlay_alpha"):
+		var a: Variant = look["overlay_alpha"]
+		if not (a is float or a is int) or float(a) < 0 or float(a) > 1:
+			errors.append("look.json overlay_alpha: must be a number from 0 to 1.")
+	var dossier: Variant = look.get("dossier", {})
+	if not dossier is Dictionary:
+		errors.append("look.json: `dossier` must be an object.")
+	else:
+		for key in JsonUtil.data_keys(dossier):
+			if not ["subtitle", "map_rect", "map_caption"].has(key):
+				errors.append("look.json dossier: '%s' is not known. Known: subtitle, map_rect, map_caption." % key)
+		for key in ["subtitle", "map_caption"]:
+			if dossier.has(key) and not dossier[key] is String:
+				errors.append("look.json dossier.%s: must be text." % key)
+		if dossier.has("map_rect"):
+			var r: Variant = dossier["map_rect"]
+			var ok: bool = r is Array and (r as Array).size() == 4
+			if ok:
+				for n in r:
+					ok = ok and (n is float or n is int) and float(n) >= 0
+				ok = ok and float(r[2]) > 0 and float(r[3]) > 0
+			if not ok:
+				errors.append("look.json dossier.map_rect: must be [x, y, w, h] in map_image's pixels, w and h above 0.")
+	var textures: Variant = look.get("textures", {})
+	if not textures is Dictionary:
+		errors.append("look.json: `textures` must be an object of name -> picture.")
+	else:
+		for key in JsonUtil.data_keys(textures):
+			var where := "look.json textures.%s" % key
+			if not KNOWN_LOOK_TEXTURES.has(key):
+				errors.append("%s: not a known texture. Known: %s." % [where, ", ".join(KNOWN_LOOK_TEXTURES)])
+				continue
+			var t: Variant = textures[key]
+			var file := str(t.get("file", "")) if t is Dictionary else str(t)
+			if not file.to_lower().ends_with(".png"):
+				errors.append("%s: '%s' is not a .png." % [where, file])
+			elif not _pack_has(pack_dir, file):
+				errors.append("%s: '%s' is not in %s." % [where, file, pack_dir])
+			if t is Dictionary and t.has("margin"):
+				var mg: Variant = t["margin"]
+				if not (mg is float or mg is int) or float(mg) < 0:
+					errors.append("%s: margin must be a number, 0 or more." % where)
+
+
+## Rule 32: `credits.json` (SCHEMA.md section 16), when the pack ships one -
+## each asset names a title, an author and a licence, and one or more files the
+## pack ships; its links, when given, are https addresses.
+static func _validate_credits(pack: LoadedPack, pack_dir: String, errors: Array[String]) -> void:
+	for i in pack.AssetCredits.size():
+		var a: Variant = pack.AssetCredits[i]
+		var where := "credits.json assets[%d]" % i
+		if not a is Dictionary:
+			errors.append("%s: must be an object." % where)
+			continue
+		for key in ["title", "author", "licence"]:
+			if str(a.get(key, "")).strip_edges().is_empty():
+				errors.append("%s: `%s` is missing." % [where, key])
+		for key in ["source", "licence_url"]:
+			if a.has(key) and not str(a[key]).begins_with("https://"):
+				errors.append("%s: `%s` must be an https:// address." % [where, key])
+		var files: Variant = a.get("files")
+		if not files is Array or (files as Array).is_empty():
+			errors.append("%s: `files` must list the pack files it credits." % where)
+			continue
+		for f in files:
+			if not _pack_has(pack_dir, str(f)):
+				errors.append("%s: '%s' is not in %s." % [where, str(f), pack_dir])
+
+
+## A file the pack ships: an imported resource (res://, which an export keeps
+## only as its import) or a plain file.
+static func _pack_has(pack_dir: String, rel: String) -> bool:
+	if rel.strip_edges().is_empty() or rel.contains(".."):
+		return false
+	var path := "%s/%s" % [pack_dir, rel]
+	return ResourceLoader.exists(path) or FileAccess.file_exists(path)
 
 
 ## One reference (rules 24-29): a file the pack ships, or "<art set>:<path>"

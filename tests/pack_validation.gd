@@ -9,6 +9,8 @@ extends SceneTree
 ##   .\tools\run-gd.ps1 tests/pack_validation.gd
 
 const PACK_DIR := "res://packs/star-wars-rebellion"
+## Rules 31-32 run against this pack: it ships a look and a credits file.
+const WW2_DIR := "res://packs/ww2"
 
 var _failed := 0
 ## Every case increments _ran on entry and _ok or _failed on exit. A runtime
@@ -231,6 +233,33 @@ func _init() -> void:
 		_pack({}, {}, {"char_art": "characters/luke_skywalker"}), "'characters/luke_skywalker' needs pack.json art_sets")
 	_case("a map_image in an art set the pack does not declare",
 		_pack({}, {}, {"map_image": "swr-original:screens/galaxy.png"}), "names art set 'swr-original', which art_sets does not declare")
+
+	# Rules 31-32 - look.json and credits.json (SCHEMA.md sections 15-16), against
+	# the WWII pack, which ships both.
+	_look_passes()
+	var look: Dictionary = JsonUtil.parse(WW2_DIR + "/look.json")
+	_look_case("a look missing a colour", look, {"drop_color": "brass"}, "colors: 'brass' is missing")
+	_look_case("a look colour that is not #rrggbb", look, {"color": ["ink", "black"]}, "colors.ink: 'black' is not a #rrggbb color")
+	_look_case("a colour the engine does not know", look, {"color": ["mauve", "#aa00aa"]}, "'mauve' is not a known colour")
+	_look_case("a side colour for a faction the pack lacks", look, {"side": ["empire", "#00ff00"]}, "sides: 'empire' is not a faction")
+	_look_case("a face in a role the engine does not know", look, {"font": ["headline", {"file": "look/fonts/Oswald-Variable.ttf"}]}, "fonts.headline: not a known role")
+	_look_case("a face the pack does not ship", look, {"font": ["display", {"file": "look/fonts/Missing.ttf"}]}, "'look/fonts/Missing.ttf' is not in")
+	_look_case("a face that is not a font file", look, {"font": ["display", {"file": "look/paper.png"}]}, "is not a .ttf or .otf")
+	_look_case("a face at an impossible weight", look, {"font": ["display", {"file": "look/fonts/Oswald-Variable.ttf", "weight": 1200}]}, "weight must be a number from 100 to 900")
+	_look_case("a size that is not a whole number", look, {"size": ["body", 15.5]}, "sizes.body: must be a positive whole number")
+	_look_case("a size the engine does not know", look, {"size": ["huge", 40]}, "sizes: 'huge' is not known")
+	_look_case("a negative metric", look, {"metric": ["radius", -1]}, "metrics.radius: must be a number, 0 or more")
+	_look_case("an overlay alpha above 1", look, {"alpha": 1.5}, "overlay_alpha: must be a number from 0 to 1")
+	_look_case("a texture the engine does not know", look, {"texture": ["wallpaper", "look/paper.png"]}, "textures.wallpaper: not a known texture")
+	_look_case("a texture the pack does not ship", look, {"texture": ["paper", "look/missing.png"]}, "'look/missing.png' is not in")
+	_look_case("a dossier map plate that is not [x, y, w, h]", look, {"dossier": ["map_rect", [10, 10, 0]]}, "dossier.map_rect: must be [x, y, w, h]")
+	_look_case("a dossier field the engine does not know", look, {"dossier": ["banner", "x"]}, "dossier: 'banner' is not known")
+	var credit := {"title": "Map", "author": "Someone", "licence": "CC0", "files": ["world_1941.jpg"]}
+	_credits_case("a credit with no author", [credit.merged({"author": ""}, true)], "`author` is missing")
+	_credits_case("a credit with no licence", [credit.merged({"licence": ""}, true)], "`licence` is missing")
+	_credits_case("a credit naming no files", [credit.merged({"files": []}, true)], "`files` must list")
+	_credits_case("a credit naming a file the pack lacks", [credit.merged({"files": ["nope.png"]}, true)], "'nope.png' is not in")
+	_credits_case("a credit link that is not https", [credit.merged({"source": "http://example.com"}, true)], "`source` must be an https:// address")
 
 	_mission_join_resolves()
 	_rank_labels_resolve()
@@ -537,6 +566,72 @@ func _clean(what: String, pack: PackLoader.LoadedPack) -> void:
 	else:
 		_failed += 1
 		print("[pack_validation] FAIL %s - expected no error, got: %s" % [what, ", ".join(errors)])
+
+
+## The WWII pack's own look and credits pass rules 31-32 unchanged.
+func _look_passes() -> void:
+	_ran += 1
+	var errors: Array[String] = []
+	var pack := PackLoader.Load(WW2_DIR, errors)
+	if pack == null or pack.Look.is_empty() or pack.AssetCredits.is_empty():
+		_failed += 1
+		print("[pack_validation] FAIL the WWII pack's look/credits: %s" % (", ".join(errors) if not errors.is_empty() else "not loaded"))
+		return
+	_ok += 1
+	print("[pack_validation] ok   the WWII pack's look.json and credits.json validate (%d assets credited)" % pack.AssetCredits.size())
+
+
+## Rule 31: the WWII look with one thing broken must be refused for it.
+func _look_case(what: String, look: Dictionary, change: Dictionary, expect: String) -> void:
+	var l: Dictionary = look.duplicate(true)
+	if change.has("drop_color"):
+		(l["colors"] as Dictionary).erase(change["drop_color"])
+	if change.has("color"):
+		l["colors"][change["color"][0]] = change["color"][1]
+	if change.has("side"):
+		l["sides"][change["side"][0]] = change["side"][1]
+	if change.has("font"):
+		l["fonts"][change["font"][0]] = change["font"][1]
+	if change.has("size"):
+		l["sizes"][change["size"][0]] = change["size"][1]
+	if change.has("metric"):
+		l["metrics"][change["metric"][0]] = change["metric"][1]
+	if change.has("alpha"):
+		l["overlay_alpha"] = change["alpha"]
+	if change.has("texture"):
+		l["textures"][change["texture"][0]] = change["texture"][1]
+	if change.has("dossier"):
+		l["dossier"][change["dossier"][0]] = change["dossier"][1]
+	var p := _ww2()
+	p.Look = l
+	_expect(what, func(errors: Array[String]) -> void: PackLoader._validate_look(p, WW2_DIR, errors), expect)
+
+
+## Rule 32: a broken credits entry must be refused for it.
+func _credits_case(what: String, assets: Array, expect: String) -> void:
+	var p := _ww2()
+	p.AssetCredits = assets
+	_expect(what, func(errors: Array[String]) -> void: PackLoader._validate_credits(p, WW2_DIR, errors), expect)
+
+
+func _ww2() -> PackLoader.LoadedPack:
+	var errors: Array[String] = []
+	return PackLoader.Load(WW2_DIR, errors)
+
+
+func _expect(what: String, run: Callable, expect: String) -> void:
+	_ran += 1
+	var errors: Array[String] = []
+	run.call(errors)
+	for e in errors:
+		if e.contains(expect):
+			_ok += 1
+			print("[pack_validation] ok   %s" % what)
+			return
+	_failed += 1
+	print("[pack_validation] FAIL %s" % what)
+	print("    expected an error containing: %s" % expect)
+	print("    got %d error(s): %s" % [errors.size(), ", ".join(errors)])
 
 
 func _case(what: String, pack: PackLoader.LoadedPack, expect: String) -> void:
