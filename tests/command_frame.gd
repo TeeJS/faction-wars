@@ -50,13 +50,12 @@ func _init() -> void:
 	for t in ["big", "mid", "low", "none"]:
 		_png("%s/gid/unexplored.%s.png" % [dir, t], 15, 15, Color(0.9, 0.9, 0.9))
 
-	# Without the frame: the plain screen.
+	# Without the frame's picture: the same frame, drawn by us in the same places
+	# (the plain build parity plan, phase 1; TeeJ, 2026-09-28).
 	var main: Node = await _start("alliance")
 	var ui: UIManager = main.get_node("UIManager")
-	_check(ui.CommandFrameRef == null and (ui.get_node("CommsPanel") as Control).visible
-		and UIManager.MapFrame == UIManager.DefaultMapFrame, "without the frame in the art set, the plain screen stays")
-	var plainMap: Node2D = main.get_node("GalaxyMap")
-	var plainAt: Vector2 = plainMap.position
+	_check(ui.CommandFrameRef != null and ui.CommandFrameRef.Plain and not (ui.get_node("CommsPanel") as Control).visible
+		and UIManager.MapFrame == ui.CommandFrameRef.MapWindow(), "without the frame's picture in the art set, the frame drawn by us, the same places")
 	await _stop(main)
 
 	for side in ["alliance", "empire"]:
@@ -112,7 +111,7 @@ func _init() -> void:
 			and backdrop != null and bg.z_index < backdrop.z_index, "%s: black either side, under the galaxy picture" % side)
 		var map: Node2D = main.get_node("GalaxyMap")
 		var picAt: Vector2 = CommandFrame.Layout[side]["picture"]
-		_check(map.position.is_equal_approx(origin + picAt * s) and is_equal_approx(map.scale.x, 640 * s / GalaxyMap.Frame.x) and map.position != plainAt,
+		_check(map.position.is_equal_approx(origin + picAt * s) and is_equal_approx(map.scale.x, 640 * s / GalaxyMap.Frame.x),
 			"%s: the galaxy picture behind the frame where the original draws it, at its scale (%s x%.3f)" % [side, str(map.position), map.scale.x])
 		_check(backdrop.region_enabled and backdrop.region_rect.size.is_equal_approx((Vector2(640, 481) - picAt).min(Vector2(640, 480))),
 			"%s: the picture cut off at the frame's edge (%s)" % [side, str(backdrop.region_rect)])

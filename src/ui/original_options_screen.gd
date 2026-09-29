@@ -13,8 +13,8 @@ extends Control
 ##     fixed slots): a name is a game - Save with the name unchanged overwrites
 ##     it, a new name makes a new game - and hovering a row shows
 ##     "Saved MM/DD/YYYY - Day N". Five rows; in the sixth's place Import
-##     Game, Export Game and See all games - the multiplayer screens' choice
-##     boxes, words in green (saved_games_art.gd; See all games is
+##     Game and Manage Games - the multiplayer screens' choice
+##     boxes, words in green (saved_games_art.gd; Manage Games is
 ##     original_all_games_screen.gd);
 ##   Sound options - Play Music and the music volume (the original's score,
 ##     docs/music-plan.md), and the sound effects volume (the droids' voices
@@ -81,20 +81,22 @@ const TogglePitch := 27
 const LightX := 357
 const ToggleLabelX := 395
 const ToggleStateRight := 596.0
-## Import Game, Export Game, See all games: the choice box, three across the
-## Saved Games panel where the sixth row was, the space between the panel's
-## sides and between the boxes all one (TeeJ, 2026-09-28: "the spacing between
-## the frame and between the buttons should be equal") - the panel's 308
-## pixels inside its bevels (x 26..333) = 4 gaps x 12 + 3 boxes x 86.67 - with
-## the multiplayer screens' wires behind them and a clamp in every gap (the
-## original's greeblies, saved_games_art.gd). The words centred, capitals 11
-## below the box's top (as the multiplayer screens place theirs), Arial 10.5:
-## "See all games" is 66.5 wide, the box's brackets 66.7 apart (the
-## original's 12.5 would not fit).
-const Bars := ["Import Game", "Export Game", "See all games"]
+## Import Game and Manage Games (TeeJ, 2026-09-28: "reduce this to two buttons
+## ... make each button wider so there is room between the edge and the
+## text"): the choice box, two across the Saved Games panel where the sixth
+## row was, the space between the panel's sides and between the boxes all one
+## (TeeJ, 2026-09-28: "the spacing between the frame and between the buttons
+## should be equal") - the panel's 308 pixels inside its bevels (x 26..333) =
+## 3 gaps x 12 + 2 boxes x 136 - with the multiplayer screens' wires behind
+## them and a clamp in every gap (the original's greeblies, saved_games_art.gd).
+## Manage Games opens every saved game, each with Load, Export and Delete, so
+## the game being played is exported by saving it first. The words centred,
+## capitals 11 below the box's top (as the multiplayer screens place theirs),
+## Arial 10.5.
+const Bars := ["Import Game", "Manage Games"]
 const BarTop := 293
 const BarGap := 12.0
-const BarSize := Vector2((308.0 - 4.0 * BarGap) / 3.0, 33)
+const BarSize := Vector2((308.0 - 3.0 * BarGap) / 2.0, 33)
 const BarPx := 10.5
 
 
@@ -116,17 +118,16 @@ static func BarWiring() -> Array:
 ## below the row, after TeeJ's sketch (2026-09-28): [colour, from clamp, the
 ## gap it leaves by (-1 left of the clamp, 1 right), to clamp, the gap it comes
 ## in by, the run's top row]. The top wires go up and the bottom ones down, so
-## that none crosses another leaving the same gap: the yellow over all three,
-## the red over Import Game and over the other two; the green under Import and
-## Export Game, the blue under See all games. Above the row: the band from
-## row 5's sockets (y 273) to the boxes (293); under it: the boxes' foot (326)
-## to the panel's bevel (334).
+## that none crosses another leaving the same gap: the yellow over both boxes,
+## the red over each; the green under Import Game, the blue under Manage Games.
+## Above the row: the band from row 5's sockets (y 273) to the boxes (293);
+## under it: the boxes' foot (326) to the panel's bevel (334).
 const BarLoops := [
-	["yellow", 0, -1, 3, 1, 276],
+	["yellow", 0, -1, 2, 1, 276],
 	["red", 0, 1, 1, -1, 283],
-	["red", 1, 1, 3, -1, 283],
-	["green", 0, -1, 2, -1, 328],
-	["blue", 2, 1, 3, -1, 328],
+	["red", 1, 1, 2, -1, 283],
+	["green", 0, -1, 1, -1, 328],
+	["blue", 1, 1, 2, -1, 328],
 ]
 const Red := Color(1, 0, 0)
 ## The alert box with one socket (REBDLOG): the check at (176, 134), the words
@@ -264,14 +265,11 @@ func _build() -> void:
 			(b as TextureButton).disabled = true
 			(b as TextureButton).tooltip_text = "Only the host can save." if session != null and playing else "No game to save."
 
-	# ---- Import Game, Export Game, See all games (PROJECT.md) -------------------
+	# ---- Import Game, Manage Games (TeeJ, 2026-09-28) ---------------------------
 	_bars.clear()
 	_barWords.clear()
 	_bar(0, "Bring in a saved game: one of ours (.fwsave) or a Star Wars: Rebellion SAVEGAME file", _import)
-	_bar(1, "Save the game you are playing to a file", _export)
-	_bar(2, "Every saved game, with its dates, to load, export or delete", _see_all)
-	if not playing or session != null:
-		_disable_bar(1, "No game to export." if not playing else "A head-to-head game is saved on both computers.")
+	_bar(1, "Every saved game, with its dates, to load, export or delete", _see_all)
 
 	# ---- Sound Options: Play Music, the music volume (docs/music-plan.md) and
 	# the sound effects volume - the droids' voices and the controls' sounds
@@ -383,7 +381,7 @@ func _save(slot: int) -> void:
 
 
 ## Save the game being played under `nm` (a taken name overwrites that game);
-## the rows follow. Shared with See all games. Returns the game's id, or "".
+## the rows follow. Shared with Manage Games. Returns the game's id, or "".
 func SaveNamed(nm: String) -> String:
 	if FromCockpit:
 		return ""
@@ -413,7 +411,7 @@ func _load(slot: int) -> void:
 	LoadGame(_rowIds[slot] if slot < _rowIds.size() else "")
 
 
-## Load saved game `id`, asking first over a running game. Shared with See all games.
+## Load saved game `id`, asking first over a running game. Shared with Manage Games.
 func LoadGame(id: String) -> void:
 	if not SaveManager.Exists(id):
 		return
@@ -447,19 +445,7 @@ func ImportBytes(bytes: PackedByteArray, file_name: String) -> Dictionary:
 	return r
 
 
-## Export Game: the game being played, as a .fwsave file.
-func _export() -> void:
-	if FromCockpit or MpSetup.session != null:
-		return
-	var nm: String = SaveManager.CurrentName()
-	var text: String = SaveManager.ExportCurrentText(nm)
-	if text.is_empty():
-		_note("There is no game to export.")
-		return
-	SaveFiles.Save(text, SaveManager.FileNameFor(nm), _exported)
-
-
-## Export a saved game from See all games.
+## Export a saved game from Manage Games.
 func ExportGame(id: String) -> void:
 	var text: String = SaveManager.ExportText(id)
 	if not text.is_empty():
@@ -470,7 +456,7 @@ func _exported(ok: bool, where: String) -> void:
 	_note(("Saved to %s." % where.get_file()) if ok else "The game could not be exported.")
 
 
-## See all games: over this screen, back to it when closed.
+## Manage Games (the All Saved Games screen): over this screen, back to it when closed.
 func _see_all() -> void:
 	if get_node_or_null("AllGames") != null or get_node_or_null("AllGamesWindow") != null:
 		return
@@ -511,7 +497,7 @@ func _note(text: String) -> void:
 	OUI.PictureButton(box, "dialog_ok", 176, 134, "OK").pressed.connect(shade.queue_free)
 
 
-## One of Import Game / Export Game / See all games: the choice box, its words
+## Import Game or Manage Games: the choice box, its words
 ## green, red while it is pressed (the original's colour for a chosen box).
 func _bar(i: int, tip: String, act: Callable) -> TextureButton:
 	var b := TextureButton.new()
@@ -533,12 +519,6 @@ func _bar(i: int, tip: String, act: Callable) -> TextureButton:
 	_bars.append(b)
 	_barWords.append(words)
 	return b
-
-
-func _disable_bar(i: int, tip: String) -> void:
-	(_bars[i] as TextureButton).disabled = true
-	(_bars[i] as TextureButton).tooltip_text = tip
-	(_barWords[i] as Label).add_theme_color_override("font_color", Greyed)
 
 
 func _restart() -> void:

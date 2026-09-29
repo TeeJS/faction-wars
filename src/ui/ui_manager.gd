@@ -275,6 +275,7 @@ func _FitBottomBars(frame: CommandFrame) -> void:
 ## THE GALAXY DISPLAY MENU down the left-hand column (gid_menu.gd), in the
 ## black left of the frame.
 const GidMenuScript := preload("res://src/ui/gid_menu.gd")
+const PlainIconsLib := preload("res://src/ui/plain_icons.gd")
 const GreyTop := -34.0     # the grey bar, from the screen's bottom (Main.tscn)
 const GreyBottom := -3.0
 var _gidMenu: Control = null
@@ -347,7 +348,8 @@ func _WindowKindIcon(window: DraggableWindow) -> Texture2D:
 		return null
 	var cell: Texture2D = Art.CornerIcon(glyph, OUI.Side(GameSettings.PlayerFaction))
 	if cell == null:
-		return null
+		# Without the art: our own glyph for the kind (plain_icons.gd).
+		return PlainIconsLib.Icon(glyph, OUI.SideColor(GameSettings.PlayerFaction), 11.0)
 	var img: Image = cell.get_image()
 	if img == null:
 		return cell
@@ -698,8 +700,9 @@ func OnMessageIndexClicked(category: String = "All") -> void:
 	OpenWindow("Communications", MessageWindowTemplate,
 		func(window) -> void:
 			window.Setup(self)   # without this the window's _uiManager is null and Go To is a no-op
-			# The original's Message Index is its 470x330 frame, drawn 2x.
-			var dock: Vector2 = window.OriginalSize() if window._original else CommsRect.size
+			# The original's Message Index is its 470x330 frame, drawn 2x; the
+			# plain one fills the map's window under the frame.
+			var dock: Vector2 = window.OriginalSize() if window._original else (MapFrame.size if CommandFrameRef != null else CommsRect.size)
 			window.custom_minimum_size = dock
 			window.size = dock
 			window.position = at

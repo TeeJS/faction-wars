@@ -9,9 +9,16 @@ extends SceneTree
 ##   writes <out minus .png>_unit.png, _queue.png, _facility.png, _character.png,
 ##   _fleet.png, _capship.png, _fighter.png and _defense.png (a kind missing
 ##   from this galaxy is skipped)
+## --noart: as a player with no art set (our stand-ins, the plain build parity plan).
+
+const ArtScript := preload("res://src/ui/artwork.gd")
 
 func _init() -> void:
 	await process_frame
+	if OS.get_cmdline_user_args().has("--noart"):
+		ArtScript.IgnoreProjectFolder = true
+		ArtScript.UserArtRoot = "user://capture-noart"
+		ArtScript.Reset()
 	var out := _arg("--out=", "user://st.png").trim_suffix(".png")
 	FactionRegistry.EnsureLoaded()
 	MpSetup.reset()

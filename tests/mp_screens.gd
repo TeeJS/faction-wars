@@ -449,8 +449,8 @@ func _options_original(host: bool) -> void:
 		and entry.visible and log.visible, "%s page 2: the chat where page 1 has it, the same size (TeeJ: 'the chat boxes are the same size on both')" % who)
 	var copy: TextureButton = c.get_node("Copy")
 	_check((c.get_node("Code") as Label).text == "Code: TEST01" and (c.get_node("Code") as Control).visible and copy.visible
-		and copy.position == Vector2(389, 195) * 2.0 and (c.get_node("CopyWord") as Label).text == "Copy",
-		"%s page 2: the game code and a Copy button on their own row" % who)
+		and copy.position == Vector2(389, 195) * 2.0 and copy.size == Vector2(87, 36) * 2.0 and (c.get_node("CopyWord") as Label).text == "Copy Code",
+		"%s page 2: the game code and Copy Code on their own row, as wide as Yes and No together (389-476)" % who)
 	copy.pressed.emit()
 	_check(log.get_parsed_text().contains("Copied the game code TEST01."), "%s page 2: Copy copies the code" % who)
 	var start: TextureButton = c.get_node("Next")
@@ -499,10 +499,14 @@ func _page2_pictures() -> void:
 	_check(out.get_pixel(500, 150) == src.get_pixel(500, 150 - 62) and out.get_pixel(537, 124 + 54) == src.get_pixel(537, 62 + 54)
 		and out.get_pixel(538, 150) == src.get_pixel(538, 150),
 		"page 2's picture: the third slot under the first row's plain panel, above the wires")
-	_check(out.get_pixel(300, 200) == src.get_pixel(300, 200 - 124) and out.get_pixel(300, 300) == src.get_pixel(300, 300),
-		"page 2's picture: the first row's band as a third row, the chat where it was")
-	_check(out.get_pixel(450, 210) == src.get_pixel(483 + 16, 62 + 24) and out.get_pixel(520, 249) == src.get_pixel(430, 249),
-		"page 2's picture: the third row's second slot and the Load Game frame's foot under plain panel")
+	# TeeJ, 2026-09-28: the code row's wires red and green, Copy Code as wide as both choices.
+	_check(out.get_pixel(300, 200) == src.get_pixel(300, 200 - 62) and out.get_pixel(560, 240) == src.get_pixel(560, 240 - 62) and out.get_pixel(300, 300) == src.get_pixel(300, 300),
+		"page 2's picture: the second row's band - its red and green wires and connector - as a third row, the chat where it was")
+	_check(out.get_pixel(385, 210) == src.get_pixel(385, 210 - 62) and out.get_pixel(480, 210) == src.get_pixel(480, 210 - 62)
+		and out.get_pixel(430, 210) == src.get_pixel(405, 210 - 62) and out.get_pixel(450, 240) == src.get_pixel(405, 240 - 62),
+		"page 2's picture: the third row's first two slots made one - the outer edges kept, x 397-468 the first slot's recess")
+	_check(out.get_pixel(500, 210) == src.get_pixel(500, 210 - 124) and out.get_pixel(520, 249) == src.get_pixel(430, 249),
+		"page 2's picture: the third row's third slot and the Load Game frame's foot under plain panel")
 	# The original's brackets (COMMON 10127 minus 10126): corners 5-7 px in.
 	var mask := Image.create(36, 36, false, Image.FORMAT_RGBA8)
 	mask.fill_rect(Rect2i(5, 7, 9, 2), Color.RED)
@@ -622,7 +626,7 @@ func _options(host: bool) -> void:
 	_check(rules.size() == 2 and (rules[0] as Button).text == "Slowest wins" and (rules[1] as Button).text == "Average" and (rules[0] as Button).button_pressed == host, "speed rule (%s): Slowest wins / Average, Slowest the default for the host" % who)
 	_check((s.get_node("%BtnLoadGame") as Button).text == "Load Game" and (s.get_node("%BtnLoadGame") as Button).disabled, "Fig 5.9 (%s): Load Game, unavailable without a shared save" % who)
 	_check(_label(s, "ChatRow/ChatLabel") == "Chat>" and s.get_node("%ChatEntry") != null, "Fig 5.9 (%s): Chat> and the space to its right" % who)
-	_check((s.get_node("%CodeValue") as Label).text == "TEST01" and (s.get_node("%BtnCopyCode") as Button).text == "Copy", "addition (%s): the game code with a Copy button" % who)
+	_check((s.get_node("%CodeValue") as Label).text == "TEST01" and (s.get_node("%BtnCopyCode") as Button).text == "Copy Code", "addition (%s): the game code with a Copy Code button" % who)
 	var log: RichTextLabel = s.get_node("%ChatLog")
 	var text := log.get_parsed_text()
 	_check(text.contains("galaxy size selected.") and text.contains("victory selected.") and text.contains("Host has chosen the"), "Fig 5.9 (%s): the settings are echoed into the chat view" % who)
@@ -632,6 +636,7 @@ func _options(host: bool) -> void:
 		_check(proceed.text == "Next" and not proceed.disabled and s.get_node("CenterContainer/Console/SideRow").visible
 			and not s.get_node("CenterContainer/Console/SpeedRow").visible and not s.get_node("CenterContainer/Console/BriefingRow").visible,
 			"page 1 (host): side, size and victory; the checkmark goes on")
+		_check(not s.get_node("CenterContainer/Console/CodeRow").visible, "page 1 (plain): no game code or Copy Code, as the original's look")
 		_check(not (sides[0] as Button).disabled and (sides[0] as Button).button_pressed, "Fig 5.9 (host): the host edits; Alliance preselected")
 		_check((sizes[1] as Button).button_pressed and (s.get_node("%BtnStandardGame") as Button).button_pressed, "Fig 5.9 (host): Large and Standard Game preselected")
 		bar.proceed.emit()
@@ -640,6 +645,7 @@ func _options(host: bool) -> void:
 			and s.get_node("CenterContainer/Console/SpeedRow").visible and s.get_node("CenterContainer/Console/BriefingRow").visible
 			and briefs.size() == 2 and (briefs[0] as Button).text == "Yes" and (briefs[1] as Button).text == "No" and (briefs[1] as Button).button_pressed
 			and int(s._settings.get("page", 0)) == 2, "page 2 (host): Skip the opening briefing? (No, the default) and the speed rule; the checkmark starts, and waits")
+		_check(s.get_node("CenterContainer/Console/CodeRow").visible, "page 2 (plain): the game code and Copy Code")
 		_start_gate(s, lobby, proceed)
 	else:
 		_check(not (sides[1] as Button).disabled and (sides[1] as Button).mouse_filter == Control.MOUSE_FILTER_IGNORE and (sides[1] as Button).button_pressed, "Fig 5.9 (guest): sees the host's side pressed, cannot change it")

@@ -21,11 +21,24 @@ extends Control
 ##   - the Control Panel (AddConsoles): the consoles' monitors, each opening
 ##     its finder or the Encyclopedia, shown held down while pressed.
 ## The metal takes the mouse (only the window lets clicks through to the map),
-## so a click on the frame never opens a system under it. Without the frame in
-## the art set, nothing: the plain screen stays.
+## so a click on the frame never opens a system under it.
+##
+## WITHOUT THE ORIGINAL'S ART, THE SAME SCREEN (TeeJ, 2026-09-28: "why is the
+## artwork-free version missing the sidebars, none of that is the original's
+## IP, we built it"; the plain build parity plan, phase 1): the frame's layout
+## is ours to keep - only its pictures are the original's. So the frame is
+## built on every side it has a layout for, and where the art set lacks the
+## pictures (Plain) we draw our own in their places, in the approved palette
+## (plain_icons.gd): the plate with its bevels round the map's window, our
+## glyphs in the Message Alert slots, on the Game Options monitor and on the
+## Control Panel's monitors, the droids' names where they stand, the shelf's
+## twelve slats. A pack with a look of its own (look.gd, the WWII pack) keeps
+## its own screen.
 
 const Art := preload("res://src/ui/artwork.gd")
 const OUI := preload("res://src/ui/original_ui.gd")
+const PlainIcons := preload("res://src/ui/plain_icons.gd")
+const LookLib := preload("res://src/ui/look.gd")
 const FrameSize := Vector2(640, 481)
 
 ## In the frame's own pixels. window: the map's window (the see-through blue);
@@ -95,18 +108,29 @@ var S: float = 1.0
 var Origin: Vector2 = Vector2.ZERO
 var _frame: Texture2D
 var _image: Image
-var _alerts: Array = []   # [TextureButton, category]
+var _alerts: Array = []   # [TextureButton or PlainIcons.Slot, category]
 var _droids: Array = []   # [Droid]
+## Drawn by us, not the original's pictures (HasArt false).
+var Plain: bool = false
+## The droids' stand-ins in the plain frame (their names where they stand).
+var _standins: Array = []
 
 
 ## True when this side's frame and its alert icons are in the art set.
-static func CanBuild(side: String) -> bool:
+static func HasArt(side: String) -> bool:
 	if not Layout.has(side) or Art.WindowPicture("command.%s" % side) == null:
 		return false
 	for c in Categories:
 		if Art.AlertIcon(side, c, false) == null:
 			return false
 	return true
+
+
+## True when the Command Center is this frame: the original's pictures, or
+## ours drawn in their places - every side with a layout, unless the pack has
+## a look of its own (the WWII pack's command table, look_hud.gd).
+static func CanBuild(side: String) -> bool:
+	return Layout.has(side) and (HasArt(side) or not LookLib.Active())
 
 
 ## The frame's scale on a screen this size: the frame fills the height.
@@ -135,11 +159,14 @@ func Build(side: String, screen: Vector2, on_category: Callable, on_options: Cal
 	size = screen
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	var lay: Dictionary = Layout[side]
+	if not HasArt(side):
+		_build_plain(lay, on_category, on_options)
+		return
 	_frame = Art.WindowPicture("command.%s" % side)
 	_image = _frame.get_image()
 	if _image != null and _image.is_compressed():
 		_image.decompress()
-	var lay: Dictionary = Layout[side]
 
 	var pic := TextureRect.new()
 	pic.name = "Frame"
@@ -183,9 +210,87 @@ func Build(side: String, screen: Vector2, on_category: Callable, on_options: Cal
 	RefreshAlerts()
 
 
+## THE PLAIN FRAME: the same places as the original's, drawn by us (_draw):
+## the Message Alert slots with our glyphs, the Game Options monitor, the
+## rest after (AddDroids, AddConsoles).
+const AlertSize := Vector2(27, 22)
+
+
+func _build_plain(lay: Dictionary, on_category: Callable, on_options: Callable) -> void:
+	Plain = true
+	var lit: Color = OUI.SideColor(GameSettings.PlayerFaction)
+	var slot: Vector2 = lay["slot"]
+	for n in Categories.size():
+		var cat: String = Categories[n]
+		var r := Rect2(Origin + (slot + Vector2(0, n * SlotPitch)) * S, AlertSize * S)
+		var b := PlainIcons.MakeSlot(cat, "", lit, r, 22.0)
+		b.name = "Alert" + cat
+		b.tooltip_text = cat
+		b.pressed.connect(on_category.bind(cat))
+		add_child(b)
+		_alerts.append([b, cat])
+	var mon: Rect2 = lay["monitor"]
+	var options := PlainIcons.MakeSlot("options", "", PlainIcons.LabelColor, Rect2(Origin + mon.position * S, mon.size * S), 22.0)
+	options.name = "GameOptions"
+	options.tooltip_text = ConsoleTips["options"]
+	options.pressed.connect(on_options)
+	add_child(options)
+	RefreshAlerts()
+	queue_redraw()
+
+
+func _draw() -> void:
+	if not Plain:
+		return
+	var lay: Dictionary = Layout[Side]
+	var frame := ScreenRect()
+	var win := MapWindow()
+	# The plate round the window, its lit edge top and left, its shadow the
+	# other two; the window recessed into it.
+	var e := 2.0
+	for r in [Rect2(frame.position, Vector2(frame.size.x, win.position.y - frame.position.y)),
+			Rect2(Vector2(frame.position.x, win.end.y), Vector2(frame.size.x, frame.end.y - win.end.y)),
+			Rect2(Vector2(frame.position.x, win.position.y), Vector2(win.position.x - frame.position.x, win.size.y)),
+			Rect2(Vector2(win.end.x, win.position.y), Vector2(frame.end.x - win.end.x, win.size.y))]:
+		draw_rect(r, PlainIcons.Plate)
+	draw_rect(Rect2(frame.position, Vector2(frame.size.x, e)), PlainIcons.BevelLight)
+	draw_rect(Rect2(frame.position, Vector2(e, frame.size.y)), PlainIcons.BevelLight)
+	draw_rect(Rect2(Vector2(frame.position.x, frame.end.y - e), Vector2(frame.size.x, e)), PlainIcons.Well)
+	draw_rect(Rect2(Vector2(frame.end.x - e, frame.position.y), Vector2(e, frame.size.y)), PlainIcons.Well)
+	var w := 3.0
+	draw_rect(Rect2(win.position - Vector2(w, w), Vector2(win.size.x + 2 * w, w)), Color.BLACK)
+	draw_rect(Rect2(win.position - Vector2(w, w), Vector2(w, win.size.y + 2 * w)), Color.BLACK)
+	draw_rect(Rect2(Vector2(win.position.x - w, win.end.y), Vector2(win.size.x + 2 * w, w)), PlainIcons.BevelLight)
+	draw_rect(Rect2(Vector2(win.end.x, win.position.y - w), Vector2(w, win.size.y + 2 * w)), PlainIcons.BevelLight)
+	# The Message Alert bar's column, recessed behind its nine slots.
+	var slot: Vector2 = lay["slot"]
+	var bar := Rect2(Origin + (slot - Vector2(2, 2)) * S, (Vector2(AlertSize.x, (Categories.size() - 1) * SlotPitch + AlertSize.y) + Vector2(4, 4)) * S)
+	PlainIcons.DrawWell(self, bar, Color.BLACK)
+	# The Window Reference Bar: its twelve slats.
+	var shelf := Shelf()
+	PlainIcons.DrawWell(self, shelf.grow(2.0), Color.BLACK)
+	var pitch: float = shelf.size.y / 12.0
+	for i in 12:
+		var slat := Rect2(Vector2(shelf.position.x, shelf.position.y + i * pitch + 1.0), Vector2(shelf.size.x, pitch - 2.0))
+		draw_rect(slat, PlainIcons.Band)
+	# The Control Panel's desk under its monitors.
+	var consoles: Dictionary = lay.get("consoles", {})
+	if not consoles.is_empty():
+		var desk := Rect2()
+		var first := true
+		for key in consoles:
+			var c: Rect2 = consoles[key]
+			desk = c if first else desk.merge(c)
+			first = false
+		desk = Rect2(Origin + (desk.position - Vector2(6, 5)) * S, (desk.size + Vector2(12, 10)) * S)
+		PlainIcons.DrawWell(self, desk, PlainIcons.Band)
+
+
 ## The metal takes the mouse; the window (and the black either side, where the
 ## plain panels sit) does not.
 func _has_point(point: Vector2) -> bool:
+	if Plain:
+		return ScreenRect().has_point(point) and not MapWindow().has_point(point)
 	if _image == null:
 		return false
 	var p: Vector2 = (point - Origin) / S
@@ -199,10 +304,13 @@ func _has_point(point: Vector2) -> bool:
 ## getting numbers for messages anymore, which was a nice feature").
 func RefreshAlerts() -> void:
 	for pair in _alerts:
-		var b: TextureButton = pair[0]
+		var b: BaseButton = pair[0]
 		var cat: String = pair[1]
 		var unread: int = EventBus.UnreadCount(Enums.MessageCategory[cat]) if Enums.MessageCategory.has(cat) else 0
-		b.texture_normal = Art.AlertIcon(Side, cat, unread > 0)
+		if b is TextureButton:
+			(b as TextureButton).texture_normal = Art.AlertIcon(Side, cat, unread > 0)
+		else:
+			b.call("SetLit", unread > 0)
 		b.tooltip_text = cat if unread == 0 else "%s (%d unread)" % [cat, unread]
 		UIManager._Badge(b, unread, b.size.x)
 
@@ -222,6 +330,9 @@ func RefreshAlerts() -> void:
 
 func AddDroids(agent_name: String, messenger_name: String, on_agent: Callable, on_messages: Callable, on_messenger: Callable) -> void:
 	var lay: Dictionary = Layout.get(Side, {})
+	if Plain:
+		_plain_droids(lay, agent_name, messenger_name, on_agent, on_messages, on_messenger)
+		return
 	for role in ["agent", "messenger"]:
 		var strip: Texture2D = Art.WindowPicture("droid_%s.%s" % [role, Side])
 		if strip == null or not lay.has(role):
@@ -246,9 +357,45 @@ func AddDroids(agent_name: String, messenger_name: String, on_agent: Callable, o
 		_droids.append(d)
 
 
+## Without their pictures, the droids' names where they stand: the agent's a
+## click (either button) opens the Agent menu - the plain screen's C-3PO button
+## did on a left click - and the message droid's opens the Messages as the
+## original's does, its menu on a right click.
+func _plain_droids(lay: Dictionary, agent_name: String, messenger_name: String, on_agent: Callable, on_messages: Callable, on_messenger: Callable) -> void:
+	for role in ["agent", "messenger"]:
+		if not lay.has(role):
+			continue
+		var r: Rect2 = lay[role]
+		var agent: bool = role == "agent"
+		var d := PlainIcons.MakeSlot("", agent_name if agent else messenger_name, PlainIcons.LabelColor, Rect2(Origin + r.position * S, r.size * S), 0.0)
+		d.name = "Standin_" + role
+		d.tooltip_text = agent_name if agent else messenger_name
+		d.add_theme_font_override("font", OUI.Face(true))
+		d.add_theme_font_size_override("font_size", 14)
+		d.button_mask = MOUSE_BUTTON_MASK_LEFT | MOUSE_BUTTON_MASK_RIGHT
+		d.gui_input.connect(func(e: InputEvent) -> void:
+			var b := e as InputEventMouseButton
+			if b == null or b.pressed:
+				return
+			if agent:
+				if b.button_index == MOUSE_BUTTON_LEFT or b.button_index == MOUSE_BUTTON_RIGHT:
+					on_agent.call(b.global_position)
+			elif b.button_index == MOUSE_BUTTON_RIGHT:
+				on_messenger.call(b.global_position)
+			elif b.button_index == MOUSE_BUTTON_LEFT:
+				on_messages.call())
+		add_child(d)
+		_standins.append(d)
+
+
 ## The droids on screen (for tests): the agent first, where there is one.
+## None in the plain frame: StandIns() has their names there.
 func Droids() -> Array:
 	return _droids
+
+
+func StandIns() -> Array:
+	return _standins
 
 
 ## One droid: its strip cut to the frame it shows (the first: at rest),
@@ -353,14 +500,19 @@ func AddConsoles(actions: Dictionary) -> void:
 		if not actions.has(key):
 			continue
 		var r: Rect2 = consoles[key]
-		var b := Button.new()
+		var b: Button
+		if Plain:
+			# Our glyph on the monitor, in a well on the desk.
+			b = PlainIcons.MakeSlot(key, "", PlainIcons.LabelColor, Rect2(Origin + r.position * S, r.size * S), 22.0)
+		else:
+			b = Button.new()
+			b.flat = true
+			b.focus_mode = Control.FOCUS_NONE
+			for st in ["normal", "hover", "pressed", "focus", "hover_pressed"]:
+				b.add_theme_stylebox_override(st, StyleBoxEmpty.new())
+			b.position = Origin + r.position * S
+			b.size = r.size * S
 		b.name = "Console_" + key
-		b.flat = true
-		b.focus_mode = Control.FOCUS_NONE
-		for st in ["normal", "hover", "pressed", "focus", "hover_pressed"]:
-			b.add_theme_stylebox_override(st, StyleBoxEmpty.new())
-		b.position = Origin + r.position * S
-		b.size = r.size * S
 		b.tooltip_text = ConsoleTips.get(key, "")
 		# The original's click: 608, the GID's 600 (REBEXE 0x4286b0, OUI.ClickSound).
 		OUI.ClickSound(b, "control_panel_gid" if key == "gid" else "control_panel")

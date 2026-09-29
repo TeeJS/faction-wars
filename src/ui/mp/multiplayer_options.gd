@@ -77,21 +77,32 @@ const SpeedPx := 9.0
 ## Page 2's plate, from the original's. The second row keeps its own red and
 ## green wires and grid (TeeJ, 2026-09-28: "make the wires match the colors on
 ## the previous page"); only its third slot goes, under the first row's plain
-## panel beside it. The third row is the first row's band (Page2Plate: rows
-## [first, after last, where to], across x 133-575) in the lamp row's place,
-## its second slot under that panel too, and the foot of the Load Game frame
-## left below it under the panel's plain rows beside (Page2Covers: [from, to]).
+## panel beside it. The third row is the second row's band, its red and green
+## wires with it (TeeJ, 2026-09-28: "make the wires red and green") (Page2Plate:
+## rows [first, after last, where to], across x 133-575) in the lamp row's
+## place, its third slot under that plain panel too, and the foot of the Load
+## Game frame left below it under the panel's plain rows beside (Page2Covers:
+## [from, to]). Its first two slots are made one for Copy Code (Page2Stretch):
+## their frames run x 383-431 and 434-482, so the first's left edge and the
+## second's right edge stay and x 397-468 between is filled, row by row, with
+## a column of the first slot's recess (x 405).
 const PlateX := Vector2i(133, 575)
-const Page2Plate := [[62, 124, 186]]
+const Page2Plate := [[124, 186, 186]]
 const Page2Covers := [
 	[Rect2i(483, 62, 55, 55), Vector2i(483, 124)],
-	[Rect2i(483, 62, 55, 55), Vector2i(434, 186)],
+	[Rect2i(483, 62, 55, 55), Vector2i(483, 186)],
 	[Rect2i(400, 248, 76, 3), Vector2i(490, 248)],
 ]
-## The third row's parts, in the first row's places 124 down: the code in its
-## field (capitals at 206), Copy in its slot, "Copy" as page 2's words are.
+## [from x, to x, the column, first row, after last row].
+const Page2Stretch := [397, 468, 405, 186, 248]
+## The third row's parts, 62 below the second row's: the code in its field
+## (capitals at 206), and Copy Code across both slots' places - as wide as the
+## two choices above together (TeeJ, 2026-09-28: "as wide as both the buttons
+## above combined for balance"): Yes 389-425 and No 440-476, so 389-476, 87 -
+## its words as page 2's are.
 const CodeTop := 206
 const CopyAt := Vector2(389, 195)
+const CopySize := Vector2(87, 36)
 const CopyWordTop := 13
 
 const SizeNames: Array[String] = ["Standard", "Large", "Huge"]
@@ -456,14 +467,32 @@ static func _page_plates() -> Array:
 	return [tex, ImageTexture.create_from_image(Page2Picture(src))]
 
 
-## Page 2's picture made from the original's screen `src` (Page2Plate, Page2Covers).
+## Page 2's picture made from the original's screen `src` (Page2Plate,
+## Page2Covers, Page2Stretch).
 static func Page2Picture(src: Image) -> Image:
 	var out: Image = src.duplicate()
 	for p in Page2Plate:
 		out.blit_rect(src, Rect2i(PlateX.x, p[0], PlateX.y - PlateX.x, p[1] - p[0]), Vector2i(PlateX.x, p[2]))
 	for c in Page2Covers:
 		out.blit_rect(src, c[0], c[1])
+	var st: Array = Page2Stretch
+	var column: Image = out.get_region(Rect2i(st[2], st[3], 1, st[4] - st[3]))
+	for x in range(st[0], st[1]):
+		out.blit_rect(column, Rect2i(0, 0, 1, st[4] - st[3]), Vector2i(x, st[3]))
 	return out
+
+
+## Corner marks `marks` (a slot's) spread to `width`: the left half at the left,
+## the right half at the right.
+static func WideMarks(marks: Texture2D, width: int) -> Texture2D:
+	if marks == null:
+		return null
+	var m: Image = marks.get_image()
+	var half := m.get_width() / 2
+	var out := Image.create(width, m.get_height(), false, Image.FORMAT_RGBA8)
+	out.blit_rect(m, Rect2i(0, 0, half, m.get_height()), Vector2i.ZERO)
+	out.blit_rect(m, Rect2i(half, 0, m.get_width() - half, m.get_height()), Vector2i(width - (m.get_width() - half), 0))
+	return ImageTexture.create_from_image(out)
 
 
 ## The red corner brackets of a chosen galaxy size - the pixels that set its
@@ -543,8 +572,9 @@ func _dress() -> void:
 	for i in 2:
 		_oBriefs.append(_choice("Briefing", i, BriefingAt[i], _briefing_buttons[i], "briefing", BriefingWords[i], BriefingPx, marks))
 		_oSpeeds.append(_choice("Speed", i, SpeedAt[i], _speed_buttons[i], "speed_rule", SpeedWords[i], SpeedPx, marks))
-	# Page 2's third row: the game code in the row's field, Copy in its slot - a
-	# button like the page's others, its brackets shown while it is held.
+	# Page 2's third row: the game code in the row's field, Copy Code in the
+	# slot across both places - a button like the page's others, its brackets
+	# shown while it is held.
 	var code_text := "Code: %s" % (_lobby.code if not _lobby.code.is_empty() else "------")
 	_oPage2.append(_look.Text(code_text, QuestionCentre - 150, CodeTop, 300, QuestionPx, OriginalMp.Green, HORIZONTAL_ALIGNMENT_CENTER, "Code"))
 	var copy := TextureButton.new()
@@ -553,10 +583,10 @@ func _dress() -> void:
 	copy.stretch_mode = TextureButton.STRETCH_SCALE
 	copy.tooltip_text = "Copy the game code, to give to your opponent."
 	copy.pressed.connect(_copy_code)
-	_look.Add(copy, Rect2(CopyAt, Slot))
-	var word: Label = _look.Text("Copy", CopyAt.x, CopyAt.y + CopyWordTop, Slot.x, BriefingPx, OriginalMp.Green, HORIZONTAL_ALIGNMENT_CENTER, "CopyWord")
+	_look.Add(copy, Rect2(CopyAt, CopySize))
+	var word: Label = _look.Text("Copy Code", CopyAt.x, CopyAt.y + CopyWordTop, CopySize.x, BriefingPx, OriginalMp.Green, HORIZONTAL_ALIGNMENT_CENTER, "CopyWord")
 	word.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var held := _look.Place(marks, CopyAt.x, CopyAt.y, "CopyMark")
+	var held := _look.Place(WideMarks(marks, int(CopySize.x)), CopyAt.x, CopyAt.y, "CopyMark")
 	held.visible = false
 	copy.button_down.connect(func() -> void: held.visible = true)
 	copy.button_up.connect(func() -> void: held.visible = false)
@@ -594,7 +624,9 @@ func _show_page(page: int) -> void:
 	var one := _page == 1
 	for n in ["SideRow", "SizeRow", "VictoryRow"]:
 		(get_node("CenterContainer/Console/" + n) as Control).visible = one
-	for n in ["BriefingRow", "SpeedRow"]:
+	# The game code and Copy Code on page 2 alone, as the original's look has
+	# them (_oPage2; TeeJ, 2026-09-28: Copy off page 1).
+	for n in ["BriefingRow", "SpeedRow", "CodeRow"]:
 		(get_node("CenterContainer/Console/" + n) as Control).visible = not one
 	if _look != null:
 		for c in _oPage1:
