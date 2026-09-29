@@ -99,7 +99,10 @@ func _init() -> void:
 	GameSettings.SelectedDifficulty = Enums.Difficulty.Medium
 	GameSettings.SelectedSize = Enums.GalaxySize.Standard
 	GameSettings.PlayerFaction = FactionRegistry.ById(_arg("--faction=", FactionRegistry.Playable[0].Id))
-	if Art.WindowPicture("defense_background") == null:
+	# The art set itself, not a window picture: without it the plain build's
+	# stand-ins answer for every picture (art_standins.gd).
+	var sets: Array = FactionRegistry.Pack.Manifest.ArtSets
+	if sets.is_empty() or not Art.HasArtSet(str(sets[0])):
 		print("[original_windows] skipped: the original's art is not imported")
 		print("[original_windows] 0 checks, 0 failed")
 		quit(0)

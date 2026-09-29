@@ -214,6 +214,38 @@ static func Table() -> Dictionary:
 		t["tabs/mission_decoys_tab.%s.png" % side] = {"kind": "tab", "size": Vector2i(61, 16), "glyph": "decoys", "side": side}
 	for tab in ["planetary_shield", "planetary_battery", "shipyards", "training_facilities", "construction_yards", "refineries", "mines"]:
 		t["tabs/%s.png" % tab] = {"kind": "tab", "size": Vector2i(36, 33), "glyph": tab}
+	# ---- Phase 6: the four finders (original_finder.gd) and the Encyclopedia
+	# (encyclopedia_window.gd) - in the Message Index's frame (phase 2) ----
+	# The plates: the band above (the name field, the tabs, the caption), the
+	# list below (measured; Personnel's list from y 120, Special Forces' and
+	# Troops' from 131); the Encyclopedia's topic page one black reading area.
+	var lists := {"finder_fleets": 125, "finder_ships": 125, "finder_personnel": 120, "finder_specforces": 131, "finder_troops": 131}
+	for plate in lists:
+		for side in Sides:
+			t["windows/%s.%s.png" % [plate, side]] = {"kind": "plate", "size": Vector2i(400, 306),
+				"bands": [Rect2i(25, 33, 350, lists[plate] - 34)], "wells": [Rect2i(25, lists[plate], 349, 291 - lists[plate])]}
+	t["windows/finder_systems.png"] = {"kind": "plate", "size": Vector2i(400, 306),
+		"bands": [Rect2i(25, 33, 350, 91)], "wells": [Rect2i(25, 125, 349, 166)]}
+	t["windows/ency_index_plate.png"] = {"kind": "plate", "size": Vector2i(400, 306),
+		"bands": [Rect2i(25, 33, 350, 91)], "wells": [Rect2i(25, 125, 349, 166)]}
+	t["windows/ency_topic_plate.png"] = {"kind": "plate", "size": Vector2i(400, 306), "blacks": [Rect2i(1, 19, 398, 286)]}
+	for col in ["finder_side2", "finder_side4", "ency_side"]:
+		t["windows/%s.alliance.png" % col] = {"kind": "plate", "size": Vector2i(58, 330)}
+	# The tabs: the finders' by side (their glyph always in that side's
+	# colour), the Encyclopedia's by database.
+	for f in [["all", ""], ["rebel", "alliance"], ["imperial", "empire"], ["neutral", "neutral"], ["unexplored", "unexplored"]]:
+		t["tabs/finder_tab_%s.png" % f[0]] = {"kind": "tab", "size": Vector2i(49, 41), "glyph": "all" if f[0] == "all" else f[0], "side": f[1], "tinted": f[0] != "all"}
+	for e in ["all", "system", "defense"]:
+		t["tabs/ency_tab_%s.png" % e] = {"kind": "tab", "size": Vector2i(49, 41), "glyph": e}
+	for side in Sides:
+		var big: bool = side == "empire"
+		for e in ["facilities", "missions", "ship", "troop"]:
+			t["tabs/ency_tab_%s.%s.png" % [e, side]] = {"kind": "tab", "size": Vector2i(49, 41), "glyph": e, "side": side}
+		t["tabs/ency_tab_personnel.%s.png" % side] = {"kind": "tab", "size": Vector2i(50, 57) if big else Vector2i(49, 57), "glyph": "personnel", "side": side}
+		for b in ["finder_btn_characters", "finder_btn_fleets", "finder_btn_ships", "finder_btn_specforces", "finder_display", "ency_view_index", "ency_view_topic"]:
+			t["buttons/%s.%s.png" % [b, side]] = {"kind": "button", "size": Vector2i(44, 41) if big else Vector2i(32, 31), "glyph": b.trim_prefix("finder_").trim_prefix("ency_")}
+	t["buttons/ency_prev.png"] = {"kind": "button", "size": Vector2i(21, 17), "glyph": "prev"}
+	t["buttons/ency_next.png"] = {"kind": "button", "size": Vector2i(21, 17), "glyph": "next"}
 	_spec = t
 	return _spec
 
@@ -279,9 +311,13 @@ static func _draw(spec: Dictionary, state: String) -> Image:
 			else:
 				_raised(img, r)
 			var c: Color = PlainIcons.LabelColor
+			if spec.get("tinted", false):
+				c = _side_colour(str(spec.get("side", "")))
+				if not down:
+					c = c.darkened(0.3)
 			if state == "disabled" or state == "grey":
 				c = PlainIcons.Dimmed
-			elif down:
+			elif down and not spec.get("tinted", false):
 				c = lit if spec["kind"] == "tab" else Color.WHITE
 			var inner := r.grow(-2)
 			if down:
