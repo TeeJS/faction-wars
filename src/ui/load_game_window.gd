@@ -63,8 +63,7 @@ func _ready() -> void:
 		none.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
 		box.add_child(none)
 
-	# Import Game and See all games (PROJECT.md); no game is running here, so
-	# nothing to export.
+	# Import Game and Manage Games, as on the real screen (TeeJ, 2026-09-28).
 	var tools := HBoxContainer.new()
 	tools.add_theme_constant_override("separation", 8)
 	var imp := Button.new()
@@ -72,7 +71,7 @@ func _ready() -> void:
 	imp.pressed.connect(func() -> void: SaveFiles.Pick(ImportBytes))
 	tools.add_child(imp)
 	var all := Button.new()
-	all.text = "See all games"
+	all.text = "Manage Games"
 	all.pressed.connect(func() -> void:
 		var w: Control = AllGamesPlain.new()
 		get_parent().add_child(w))
