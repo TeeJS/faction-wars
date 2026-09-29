@@ -40,6 +40,10 @@ func _open(window_class: String, opener: Callable) -> Array:
 
 
 func _init() -> void:
+	# The plain windows' words, which a pack with its own look (WWII) still uses:
+	# without an art set the Star Wars pack now opens the original's windows from
+	# our stand-ins (tests/art_standins.gd), so switch them off here.
+	preload("res://src/ui/art_standins.gd").Enabled = false
 	await process_frame
 	# The PLAIN windows are the ones that carry the pack's words; with the
 	# original's art imported the Status windows are the original's instead

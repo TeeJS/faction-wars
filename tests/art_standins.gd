@@ -12,6 +12,7 @@ extends SceneTree
 
 const Art := preload("res://src/ui/artwork.gd")
 const StandIns := preload("res://src/ui/art_standins.gd")
+const OUI := preload("res://src/ui/original_ui.gd")
 const Root := "user://test-standins-art"
 
 var _fails := 0
@@ -92,6 +93,14 @@ func _init() -> void:
 	var sw: Control = ui._openWindows.get(sector.Name)
 	_check(sw != null and SectorWindow.OriginalLook and sw.position.is_equal_approx(SectorWindow.DockPosition(true)),
 		"the sector window opens in the original's look, docked at the map window's edge")
+	# The Status window in the original's look (phase 4): a character's, a fleet's.
+	_check(OUI.HasStatus() and OUI.Has(["status_fleet.alliance", "status_fleet.empire"]), "the Status window's plate and pictures are there")
+	var who: Character = Lq.first_or_null(GameState.ActiveRoster, func(c: Character) -> bool: return c.Faction == GameSettings.PlayerFaction)
+	if who != null:
+		ui.OpenCharacterStatusWindow(who)
+		await process_frame
+		var plate: Node = ui._openWindows.get("Status_%s" % who.Name.replace(" ", ""))
+		_check(plate != null and plate.get_script() == preload("res://src/ui/status_plate_window.gd"), "a character's Status opens as the original's plate")
 	root.remove_child(main)
 	main.free()
 
