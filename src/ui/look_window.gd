@@ -131,11 +131,12 @@ const TEXT_MAP := [
 ]
 const TOLERANCE := 0.015
 
-## The windows made outside UIManager.OpenWindow, by their classes.
+## The windows made outside UIManager.OpenWindow, by their classes; and the
+## four head-to-head screens (MpScreen), full screens of the same palette.
 static func IsWindow(n: Node) -> bool:
 	return n is DraggableWindow or n is BattleAlertWindow or n is BattleResultsWindow \
 		or n is GalaxyOverviewWindow or n is ObjectivesWindow or n is GameOptionsWindow \
-		or n is LoadGameWindow or n is AllGamesWindow
+		or n is LoadGameWindow or n is AllGamesWindow or n is MpScreen
 
 static var _hooked: bool = false
 
@@ -191,7 +192,27 @@ static func DressAny(w: Control) -> void:
 		Dress(w)
 	elif w.theme == null:
 		w.theme = Look.GetTheme()
+	if w is MpScreen:
+		DressScreen(w)
 	Remap(w)
+
+
+## A HEAD-TO-HEAD SCREEN (the Cockpit's multiplayer console, manual p156-p158):
+## its title in the display face, a dialog on it as a steel panel, and the
+## bottom bar's Previous / Proceed / Cancel as command keys. The ground and the
+## captions come from the palette (Remap).
+static func DressScreen(s: Control) -> void:
+	for t in s.find_children("Title", "Label", true, false):
+		var title := t as Label
+		title.add_theme_font_override("font", Look.F("display"))
+		title.add_theme_color_override("font_color", Look.C("text"))
+		title.uppercase = true
+	var dialog: Node = s.find_child("Dialog", true, false)
+	if dialog is PanelContainer:
+		(dialog as PanelContainer).theme_type_variation = Look.MODAL
+	var bar: Node = s.get_node_or_null("%BottomBar")
+	if bar != null:
+		Commands(bar)
 
 
 ## A node and everything under it.

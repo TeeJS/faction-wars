@@ -99,6 +99,29 @@ func _init() -> void:
 		# The control: the same search finds the plain colours where they are,
 		# so "none left" above means none.
 		_check(plain_seen >= 6, "%s: the plain colours are found in the windows as drawn (%d)" % [id, plain_seen])
+
+	# The head-to-head screens: the two that open without the relay (Locate
+	# Session asks the relay for its games at once - never from a test).
+	for path in ["res://src/ui/mp/MultiplayerConfiguration.tscn", "res://src/ui/mp/HostGame.tscn"]:
+		var screen: Control = load(path).instantiate()
+		root.add_child(screen)
+		for _i in 3:
+			await process_frame
+		var what: String = path.get_file().get_basename()
+		if not Look.Active():
+			_check(not screen.has_meta("look_dressed"), "%s: %s as it was drawn" % [id, what])
+			_check(not _plain_left(screen).is_empty(), "%s: its plain colours are there to find" % what)
+		else:
+			_check(screen.has_meta("look_dressed"), "%s: %s wears the look" % [id, what])
+			var left: Array = _plain_left(screen)
+			_check(left.is_empty(), "%s: none of the plain colours left%s" % [what, "" if left.is_empty() else " - " + ", ".join(left.slice(0, 4))])
+			var title: Label = screen.find_child("Title", true, false)
+			_check(title != null and title.get_theme_font("font") == Look.F("display"), "%s: its title in the display face" % what)
+			for b in screen.get_node("%BottomBar").get_children():
+				if b is Button:
+					_check((b as Button).theme_type_variation == Look.COMMAND, "%s: a command key: %s" % [what, (b as Button).text])
+		screen.queue_free()
+		await process_frame
 	_done()
 
 

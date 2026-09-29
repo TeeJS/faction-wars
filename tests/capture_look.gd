@@ -12,7 +12,8 @@ extends SceneTree
 ## _message_empty.png (the Chat tab, empty in a game against the computer),
 ## then _popup.png (the speed menu and a tooltip), then one each of the other
 ## windows: _ency, _economy, _defense, _fleet, _sector, _status, _personnel,
-## _options, _overview, _objectives. --record= is REQUIRED: without it the game's session log
+## _options, _overview, _objectives; last the head-to-head screens _mp_config
+## and _mp_host. --record= is REQUIRED: without it the game's session log
 ## would overwrite the player's user://last-session.jsonl.
 ##
 ## No art set is read (Artwork.UserArtRoot / IgnoreProjectFolder, as the
@@ -192,6 +193,23 @@ func _init() -> void:
 		for _i in 5:
 			await process_frame
 		ok = _shot(out, str(o[0])) and ok
+
+	# THE HEAD-TO-HEAD SCREENS (phase 6): the two that open without the relay,
+	# each over the whole screen as it is when the Cockpit changes to it.
+	ui.CloseAllWindows()
+	for c in ui.get_children():
+		if c is GameOptionsWindow or c is GalaxyOverviewWindow or c is ObjectivesWindow:
+			c.queue_free()
+	for s in [["mp_config", "res://src/ui/mp/MultiplayerConfiguration.tscn"], ["mp_host", "res://src/ui/mp/HostGame.tscn"]]:
+		var over := CanvasLayer.new()
+		over.layer = 50
+		root.add_child(over)
+		over.add_child(load(str(s[1])).instantiate())
+		for _i in 5:
+			await process_frame
+		ok = _shot(out, str(s[0])) and ok
+		over.queue_free()
+		await process_frame
 
 	quit(0 if ok else 1)
 
