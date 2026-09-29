@@ -254,6 +254,11 @@ func _init() -> void:
 	_look_case("a texture the pack does not ship", look, {"texture": ["paper", "look/missing.png"]}, "'look/missing.png' is not in")
 	_look_case("a map detail that is neither .png nor .jpg", look, {"texture": ["map_detail", "look/world_1941_detail.gif"]}, "is not a .png or .jpg")
 	_look_case("a drawn texture as a .jpg", look, {"texture": ["paper", "look/world_1941_detail.jpg"]}, "textures.paper: 'look/world_1941_detail.jpg' is not a .png")
+	_look_case("map insets that are not a list", look, {"insets": {"image": "look/europe_1941.jpg"}}, "`map_insets` must be a list")
+	_look_case("a map inset the pack does not ship", look, {"insets": [{"image": "look/missing.jpg", "at": [0, 0, 10, 10]}]}, "map_insets[0]: image 'look/missing.jpg' is not in")
+	_look_case("a map inset that is not a picture", look, {"insets": [{"image": "look/fonts/Oswald-OFL.txt", "at": [0, 0, 10, 10]}]}, "is not a .png or .jpg")
+	_look_case("a map inset with no area", look, {"insets": [{"image": "look/europe_1941.jpg", "at": [328, 120, 0, 52]}]}, "map_insets[0]: `at` must be [x, y, w, h]")
+	_look_case("a map inset field the engine does not know", look, {"insets": [{"image": "look/europe_1941.jpg", "at": [328, 120, 57, 52], "scale": 2}]}, "map_insets[0]: 'scale' is not known")
 	_look_case("a dossier map plate that is not [x, y, w, h]", look, {"dossier": ["map_rect", [10, 10, 0]]}, "dossier.map_rect: must be [x, y, w, h]")
 	_look_case("a dossier field the engine does not know", look, {"dossier": ["banner", "x"]}, "dossier: 'banner' is not known")
 	_look_case("a messages field the engine does not know", look, {"messages": ["footer", "x"]}, "messages: 'footer' is not known")
@@ -614,6 +619,8 @@ func _look_case(what: String, look: Dictionary, change: Dictionary, expect: Stri
 		l["messages"][change["messages"][0]] = change["messages"][1]
 	if change.has("stamp"):
 		l["messages"]["stamps"][change["stamp"][0]] = change["stamp"][1]
+	if change.has("insets"):
+		l["map_insets"] = change["insets"]
 	var p := _ww2()
 	p.Look = l
 	_expect(what, func(errors: Array[String]) -> void: PackLoader._validate_look(p, WW2_DIR, errors), expect)
