@@ -844,7 +844,7 @@ func OnSectorClicked(sector: Sector) -> void:
 			window.get_node("%Title").text = sector.Name
 			window.Populate(sector, self)
 			_WireSectorPinMenu(window, sector),
-		targetPos)
+		targetPos, SectorSounds)
 	# The first sector window opened is one of the agent's moments (advice.gd).
 	if fresh:
 		AdviceLib.Opened("sector", StrategicTickManager.Today)
@@ -908,7 +908,7 @@ func OnDefenseClicked(planetData: Planet) -> void:
 	var targetPos: Vector2 = get_viewport().get_mouse_position() + Vector2(20, 20)
 	OpenWindow(planetData.Name + " Defenses", DefenseWindowTemplate,
 		func(window) -> void: window.Populate(planetData, self),
-		targetPos)
+		targetPos, SystemSounds)
 
 
 func OnFleetClicked(planetData: Planet) -> void:
@@ -916,7 +916,7 @@ func OnFleetClicked(planetData: Planet) -> void:
 	var targetPos: Vector2 = get_viewport().get_mouse_position() + Vector2(20, 20)
 	OpenWindow(planetData.Name + " Fleets", FleetWindowTemplate,
 		func(window) -> void: window.Populate(planetData, self),
-		targetPos)
+		targetPos, SystemSounds)
 
 
 func OnEconomyClicked(planetData: Planet) -> void:
@@ -924,7 +924,7 @@ func OnEconomyClicked(planetData: Planet) -> void:
 	var targetPos: Vector2 = get_viewport().get_mouse_position() + Vector2(20, 20)
 	OpenWindow(planetData.Name + " Economy", EconomyWindowTemplate,
 		func(window) -> void: window.Populate(planetData),
-		targetPos)
+		targetPos, SystemSounds)
 
 
 ## The original's Mission window (p109 Fig 3.51) when the player imported its
@@ -939,7 +939,7 @@ func OnMissionClicked(planetData: Planet) -> void:
 	OpenWindow(planetData.Name + " Missions",
 		OriginalMissionScene if OriginalMissionScript.CanBuild() else MissionWindowTemplate,
 		func(window) -> void: window.Populate(planetData),
-		targetPos)
+		targetPos, SystemSounds)
 
 
 ## The original's Game Options screen (manual p075-p076, Fig. 3.16), which is
@@ -1211,6 +1211,8 @@ func _AddWindowToTaskbar(window: DraggableWindow) -> void:
 
 func RestoreWindow(window: DraggableWindow) -> void:
 	if is_instance_valid(window):
+		if not window.visible:
+			_WindowSound(window, "restore")
 		window.Refresh()
 		window.visible = true
 		window.move_to_front()
@@ -1267,8 +1269,35 @@ func GetSafeWindowPosition(window: DraggableWindow, targetPosition: Vector2) -> 
 	return Vector2(clampf(targetPosition.x, minX, maxX), clampf(targetPosition.y, minY, maxY))
 
 
+## THE ORIGINAL'S WINDOW SOUNDS (TeeJ, 2026-09-28: "we are missing the sounds
+## for opening/minimizing sectors, planetary defences/manufacturing/fleets").
+## REBEXE, single-source: a sector window opens with STRATEGY 604 (0x459e30)
+## and closes with 605; a system's Manufacturing, Defenses, Fleet and Mission
+## windows open with 606 (0x455060, 0x4a8790, 0x4a4b10, 0x49f540) and close with
+## 607 (0x422ce0, message 0x405); minimising to the Window Reference Bar plays
+## 611 for the Alliance and 610 for the Empire (0x428b40), restoring 613 / 612
+## (0x429020) - the player's side, whoever holds the system. A window already
+## on screen only comes forward, silently. The original never minimises a
+## sector window; ours can, with the same side's sounds. The pack names them
+## (pack.json `sounds`); without the art set's sounds, silence.
+const SectorSounds := "sector"
+const SystemSounds := "system"
+
+
+## `moment`: "open", "close", "minimize" or "restore".
+func _WindowSound(window: DraggableWindow, moment: String) -> void:
+	var family := str(window.get_meta("window_sounds", "")) if is_instance_valid(window) else ""
+	if family.is_empty():
+		return
+	var key := "window_%s_%s" % [moment, family]
+	if moment == "minimize" or moment == "restore":
+		key = "window_%s_%s" % [moment, OUI.Side(GameSettings.LocalFaction())]
+	OUI.PlayMoment(self, key)
+
+
 ## C#: OpenWindow<T>(windowName, template, setupAction, targetPosition) where T : DraggableWindow.
-func OpenWindow(windowName: String, template: PackedScene, setupAction: Callable, targetPosition: Vector2) -> void:
+## `sounds`: the original's sounds for it (SectorSounds, SystemSounds), or none.
+func OpenWindow(windowName: String, template: PackedScene, setupAction: Callable, targetPosition: Vector2, sounds: String = "") -> void:
 	if template == null:
 		push_error("CRITICAL ERROR: Tried to open %s, but the PackedScene template is null! Did you assign it in the Godot Inspector?" % windowName)
 		return
@@ -1293,6 +1322,12 @@ func OpenWindow(windowName: String, template: PackedScene, setupAction: Callable
 
 	# Apply bounds checking
 	window.position = GetSafeWindowPosition(window, targetPosition)
+
+	if not sounds.is_empty():
+		window.set_meta("window_sounds", sounds)
+		window.Closing.connect(func(w: DraggableWindow) -> void: _WindowSound(w, "close"))
+		window.OnMinimized.connect(func(w: DraggableWindow) -> void: _WindowSound(w, "minimize"))
+		_WindowSound(window, "open")
 
 
 func RefreshWindowIfOpen(windowName: String, refreshAction: Callable) -> void:

@@ -16,6 +16,9 @@ var SelectedCharacters: Array[Character] = []
 
 ## The UIManager listens to this. C#: event Action<DraggableWindow> OnMinimized.
 signal OnMinimized(window: DraggableWindow)
+## Closed by the player (its Close, or CloseWindow): the UIManager plays its
+## close sound. A window freed along with the game is not closed and says nothing.
+signal Closing(window: DraggableWindow)
 
 ## So the taskbar knows what to name the button.
 var WindowTitle: String = "Data Window"
@@ -36,7 +39,7 @@ func _ready() -> void:
 
 	var closeButton: Button = get_node_or_null("%CloseButton")
 	if closeButton != null:
-		closeButton.pressed.connect(queue_free)
+		closeButton.pressed.connect(CloseWindow)
 	var minimizeButton: Button = get_node_or_null("%MinimizeButton")
 	if minimizeButton != null:
 		minimizeButton.pressed.connect(MinimizeWindow)
@@ -56,6 +59,9 @@ func OnTitleBarGuiInput(event: InputEvent) -> void:
 
 
 func CloseWindow() -> void:
+	if is_queued_for_deletion():
+		return
+	Closing.emit(self)
 	queue_free()
 
 

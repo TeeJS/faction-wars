@@ -1,7 +1,7 @@
 {
   "id": "star-wars-rebellion",
-  "display_name": "Star Wars: Rebellion",
-  "summary": "The Galactic Civil War: the Rebel Alliance's hidden headquarters against the Empire's Coruscant, across a galaxy of 200 systems, with the original game's units, characters, missions and rules.",
+  "display_name": "Galactic Civil War",
+  "summary": "A tribute to Star Wars: Rebellion, the rebel alliance against the galactic empire, across a galaxy of 200 systems.",
   "schema_version": 1,
   "faction_count": 2,
   "neutral": {
@@ -1094,7 +1094,16 @@
     "_comment_controls": "REBEXE 0x602840 gives a control its click sound: STRATEGY 608 on the strategy windows' buttons and the Control Panel's monitors, 600 on the GID's (0x4286b0).",
     "window_button": "swr-original:sound/strategy/608.ogg",
     "control_panel": "swr-original:sound/strategy/608.ogg",
-    "control_panel_gid": "swr-original:sound/strategy/600.ogg"
+    "control_panel_gid": "swr-original:sound/strategy/600.ogg",
+    "_comment_windows": "REBEXE: a sector window opens with STRATEGY 604 (0x459e30) and closes with 605; a system's Manufacturing, Defenses, Fleet and Mission windows open with 606 (0x455060, 0x4a8790, 0x4a4b10, 0x49f540) and close with 607 (0x422ce0, message 0x405); minimising to the Window Reference Bar plays 611 for the Alliance, 610 for the Empire (0x428b40), restoring 613 / 612 (0x429020) - by the player's side.",
+    "window_open_sector": "swr-original:sound/strategy/604.ogg",
+    "window_close_sector": "swr-original:sound/strategy/605.ogg",
+    "window_open_system": "swr-original:sound/strategy/606.ogg",
+    "window_close_system": "swr-original:sound/strategy/607.ogg",
+    "window_minimize_alliance": "swr-original:sound/strategy/611.ogg",
+    "window_minimize_empire": "swr-original:sound/strategy/610.ogg",
+    "window_restore_alliance": "swr-original:sound/strategy/613.ogg",
+    "window_restore_empire": "swr-original:sound/strategy/612.ogg"
   },
   "report_backdrop": {
     "_comment": "The crest and gradient behind every character's Encyclopedia picture, per side: the colours at least 80% of that side's 30 pictures share, pixel for pixel. Filled out from a picture's edges, the rest is the character, laid over a report's scene (STRATEGY 1044 for Diplomacy) as the original's Diplomacy Mission Report draws it - 98% of pixels matched on TeeJ's screenshot, 2026-09-27.",

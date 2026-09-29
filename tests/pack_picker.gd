@@ -55,7 +55,7 @@ func _init() -> void:
 
 	# THE LAUNCH SCREEN (TeeJ, 2026-09-24): nothing under the cards; a pack
 	# whose art set is not imported opens the artwork window on Play; with the
-	# art in, Clear artwork pack; an imported pack has Remove pack. A test art
+	# art in, Manage files; an imported pack has Remove pack. A test art
 	# root and a test packs root, never the player's own.
 	const ArtScript := preload("res://src/ui/artwork.gd")
 	const Importer := preload("res://src/ui/pack_import.gd")
@@ -68,8 +68,8 @@ func _init() -> void:
 	var sw_card: Node = picker._panels["star-wars-rebellion"]
 	var pic: TextureRect = sw_card.find_child("Picture", true, false)
 	_check(pic != null and pic.texture != null, "without its art set the Star Wars card shows its own picture (card_image)")
-	_check(sw_card.find_child("ClearArtwork", true, false) == null and sw_card.find_child("RemovePack", true, false) == null,
-		"no Clear artwork pack without artwork, and a shipped pack has no Remove")
+	_check(sw_card.find_child("ManageFiles", true, false) != null and sw_card.find_child("RemovePack", true, false) == null,
+		"Manage files on the card even with no artwork yet (it is where files are added), and a shipped pack has no Remove")
 	# No "Credits and licences" on the card until a better credits page is
 	# made (TeeJ, 2026-09-27).
 	_check(sw_card.find_child("Credits", true, false) == null, "the card has no 'Credits and licences' link")
@@ -94,21 +94,35 @@ func _init() -> void:
 	var win: Control = picker.ArtworkWindow()
 	_check(win != null and not FactionRegistry.IsLoaded(), "Play without the art opens the artwork window and loads nothing")
 	if win != null:
-		for part in ["ImportArtwork", "ContinueWithout", "CancelArtwork", "ExporterLink"]:
-			_check(win.find_child(part, true, false) != null, "the artwork window has %s" % part)
-		_check((win.find_child("ContinueWithout", true, false) as Button).text == "Continue without artwork", "with no art yet, 'Continue without artwork'")
+		# TeeJ, 2026-09-28: the movies too, their own Import button, Continue
+		# without artwork on a row of its own saying what it means.
+		for part in ["ImportArtwork", "ImportMovies", "ContinueWithout", "ExporterLink", "FileRow_Art", "FileRow_Movies", "WayOn", "Close"]:
+			_check(win.find_child(part, true, false) != null, "the files window has %s" % part)
+		# TeeJ, 2026-09-28: the close "✕" showed as a box of its code - no such
+		# character in the page's font. Now drawn, with no text at all.
+		var x: Button = win.find_child("Close", true, false)
+		_check(x != null and x.text.is_empty() and x.find_child("Cross", true, false) != null, "its close cross is drawn, not a character")
+		_check((win.find_child("ContinueWithout", true, false) as Button).text.to_lower() == "continue without artwork"
+			and win.find_child("ContinueWithout", true, false).get_parent().get_parent() == win.find_child("WayOn", true, false),
+			"with no art yet, 'Continue without artwork', on its own row")
 		var said := " ".join(_labels(win))
-		_check(said.contains("own copy") and said.contains("1.") and said.contains("4.") and said.contains("swr-original.art.zip"),
-			"it says why, and the four steps")
+		_check(said.contains("own copy") and said.contains("swr-original.art.zip") and said.contains("swr-original.movies.zip")
+			and said.contains("IMPORT THEM HERE") and said.contains("plain windows"),
+			"it says why, the steps, both files, and what going on without them means")
+		# TeeJ, 2026-09-28: the same instructions on both builds, so no drag line.
+		_check(not said.to_lower().contains("drag") and win.find_child("KeepNote", true, false) != null,
+			"no drag instruction; the keep-both-files note stays")
+		_check(((win.find_child("FileRow_Art", true, false) as Node).find_child("StateText", true, false) as Label).text == "NOT IMPORTED",
+			"the artwork's row: not imported")
 	# A refused file: its reasons in the window.
 	picker._on_imported({"ok": false, "message": "Not imported: a test refusal."})
 	await process_frame
 	win = picker.ArtworkWindow()
 	var result: Label = win.find_child("ArtworkResult", true, false) if win != null else null
 	_check(result != null and result.text == "Not imported: a test refusal.", "an import's refusal is shown in the artwork window")
-	(win.find_child("CancelArtwork", true, false) as Button).pressed.emit()
+	(win.find_child("Close", true, false) as Button).pressed.emit()
 	await process_frame
-	_check(picker.ArtworkWindow() == null, "Cancel closes it")
+	_check(picker.ArtworkWindow() == null, "its close cross closes it")
 
 	# Art imported by too old an exporter: the window again, saying export again.
 	DirAccess.make_dir_recursive_absolute(ArtScript.UserArtRoot + "/swr-original")
@@ -124,7 +138,7 @@ func _init() -> void:
 		"an art set older than the game needs opens the window, saying export again")
 	# The old artwork stays in use if the player goes on (TeeJ, 2026-09-25).
 	var goOn: Button = win.find_child("ContinueWithout", true, false) if win != null else null
-	_check(goOn != null and goOn.text == "Continue without updating", "out of date, the way on reads 'Continue without updating'")
+	_check(goOn != null and goOn.text.to_lower() == "continue without updating", "out of date, the way on reads 'Continue without updating'")
 	picker._close_art_window()
 	var sw_pack: PackLoader.LoadedPack = picker._packs["star-wars-rebellion"]
 	m = FileAccess.open(ArtScript.UserArtRoot + "/swr-original/manifest.json", FileAccess.WRITE)
@@ -134,21 +148,52 @@ func _init() -> void:
 	_check(PackPicker.ArtState(sw_pack) == "", "a current art set: Play goes straight on")
 	picker._rebuild()
 	sw_card = picker._panels["star-wars-rebellion"]
-	var clear: Button = sw_card.find_child("ClearArtwork", true, false)
+	var clear: Button = sw_card.find_child("ManageFiles", true, false)
 	await process_frame
 	_check(clear != null and clear.global_position.y > (picker.PlayButtons()["star-wars-rebellion"] as Control).global_position.y,
-		"with the art in, Clear artwork pack is under Play")
-	_check(clear != null and clear.tooltip_text.begins_with("Remove the imported artwork"), "... and says what it does")
+		"with the art in, Manage files is under Play")
+	_check(clear != null and clear.tooltip_text.begins_with("Import or remove"), "... and says what it does")
+	# As far from Play as from the card's foot (TeeJ, 2026-09-28).
+	if clear != null:
+		var play_r: Rect2 = (picker.PlayButtons()["star-wars-rebellion"] as Control).get_global_rect()
+		var card_r: Rect2 = (sw_card as Control).get_global_rect()
+		var clear_r: Rect2 = clear.get_global_rect()
+		var above: float = clear_r.position.y - play_r.end.y
+		var below: float = card_r.end.y - clear_r.end.y
+		_check(absf(above - below) <= 2.0, "Manage files centred between Play and the card's foot (%.0f above, %.0f below)" % [above, below])
+	# Manage files: the files window, each file with Import and Remove; Remove asks.
 	if clear != null:
 		clear.pressed.emit()
 		await process_frame
-		var ask: ConfirmationDialog = picker.get_node_or_null("Confirm")
-		_check(ask != null, "Clear artwork pack asks first")
-		if ask != null:
-			ask.confirmed.emit()
+		var files: Control = picker.ArtworkWindow()
+		var rm: Button = files.find_child("RemoveArt", true, false) if files != null else null
+		_check(files != null and picker._art_manage and rm != null and files.find_child("ImportMovies", true, false) != null
+			and files.find_child("ContinueWithout", true, false) == null and files.find_child("CloseFiles", true, false) != null,
+			"Manage files opens the files window: Remove and Import per file, Close, no way on")
+		_check(files != null and ((files.find_child("FileRow_Art", true, false) as Node).find_child("StateText", true, false) as Label).text == "IMPORTED",
+			"the artwork's row: imported")
+		# TeeJ's words (2026-09-28), multiplayer at the foot, one wording for both builds.
+		var intro: Label = files.find_child("Intro", true, false) if files != null else null
+		var mp: Label = files.find_child("Multiplayer", true, false) if files != null else null
+		_check(intro != null and intro.text.begins_with("Owners of the game \"Star Wars: Rebellion\" can extract artwork and movies from their legally owned copy")
+			and intro.text.contains("not uploaded to our servers or the internet") and intro.text.ends_with("remove one to play without it."),
+			"Manage files: TeeJ's words")
+		_check(mp != null and mp.text == "Users can play multi-player games with or without the artwork, the gameplay will be the same, just the look and feel will differ",
+			"... and multiplayer at its foot")
+		var words := " ".join(_labels(files)) if files != null else ""
+		_check(not words.contains("this browser") and not words.contains("this computer"), "one wording on the desktop and in the browser")
+		if rm != null:
+			rm.pressed.emit()
 			await process_frame
-		_check(not ArtScript.HasArtSet("swr-original") and picker.find_child("ClearArtwork", true, false) == null,
-			"... and removes the artwork, and the button with it")
+			var ask: Node = picker.get_node_or_null("Confirm")
+			_check(ask != null and ask.has_meta("modal") and ask.find_child("Yes", true, false) != null and ask.find_child("Close", true, false) != null,
+				"Remove asks first, on the screen's own box (TeeJ, 2026-09-28: no grey windows)")
+			if ask != null:
+				(ask.find_child("Yes", true, false) as Button).pressed.emit()
+				await process_frame
+			_check(not ArtScript.HasArtSet("swr-original") and picker.ArtworkWindow() != null and picker._art_manage,
+				"... removes the artwork, and Manage files stays up")
+			picker._close_art_window()
 
 	# A pack the player imported: its own card, with Remove pack.
 	var real_packs: String = FactionRegistry.USER_PACKS_ROOT
@@ -165,10 +210,10 @@ func _init() -> void:
 	if remove != null:
 		remove.pressed.emit()
 		await process_frame
-		var ask2: ConfirmationDialog = picker.get_node_or_null("Confirm")
+		var ask2: Node = picker.get_node_or_null("Confirm")
 		_check(ask2 != null, "Remove pack asks first")
 		if ask2 != null:
-			ask2.confirmed.emit()
+			(ask2.find_child("Yes", true, false) as Button).pressed.emit()
 			await process_frame
 		_check(not picker.PlayButtons().has("test-picker-pack"), "... and the pack and its card are gone")
 
@@ -243,8 +288,8 @@ func _init() -> void:
 	# The + card: the file picker (none headless - the refusal says so).
 	(picker._panels[PackPicker.ADD_CARD] as Button).pressed.emit()
 	await process_frame
-	var told: AcceptDialog = picker.get_node_or_null("ImportResult")
-	_check(told != null, "the + card imports a file (headless: '%s')" % (told.dialog_text if told != null else "nothing"))
+	var told: Node = picker.get_node_or_null("ImportResult")
+	_check(told != null and told.has_meta("modal"), "the + card imports a file, said on the screen's own box (headless: '%s')" % ((told.find_child("Message", true, false) as Label).text if told != null else "nothing"))
 	if told != null:
 		told.queue_free()
 		await process_frame   # closed before the next question opens
@@ -252,7 +297,7 @@ func _init() -> void:
 	var rm: Button = (picker._panels["test-carousel-2"] as Node).find_child("RemovePack", true, false)
 	rm.pressed.emit()
 	await process_frame
-	(picker.get_node("Confirm") as ConfirmationDialog).confirmed.emit()
+	(picker.get_node("Confirm").find_child("Yes", true, false) as Button).pressed.emit()
 	await process_frame
 	_check(not PackPicker.Favorites().has("test-carousel-2") and not picker._order.has("test-carousel-2"), "removing a starred pack unstars it")
 	for id in PackPicker.Favorites():

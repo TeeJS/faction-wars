@@ -3,13 +3,38 @@ extends SceneTree
 ## (NOT --headless), like tests/capture_menu.gd:
 ##
 ##   Godot_console.exe --path . --resolution 1440x1080 -s tests/capture_picker.gd -- --out=C:/tmp/picker.png
+##
+## --box=confirm | art | manage | tell opens that box over the cards first: the
+## ask to remove, the files window as Play opens it, the files window as
+## Manage files opens it, an import's result. --noart: as a player with no
+## files imported (a scratch art root, never the player's own).
 
 func _init() -> void:
 	await process_frame
 	var out := _arg("--out=", "user://picker.png")
+	if OS.get_cmdline_user_args().has("--noart"):
+		var ArtScript = load("res://src/ui/artwork.gd")
+		ArtScript.IgnoreProjectFolder = true
+		ArtScript.UserArtRoot = "user://capture-noart"
+		load("res://src/ui/movies.gd").UserRoot = "user://capture-nomovies"
+		ArtScript.Reset()
 	var picker: Control = load("res://PackPicker.tscn").instantiate()
 	root.add_child(picker)
 	for _i in 6:
+		await process_frame
+	match _arg("--box=", ""):
+		"confirm":
+			picker.call("_confirm", "Clear artwork pack", "Remove the imported artwork and movies? Galactic Civil War plays without them until you import your files again.", "Remove", func() -> void: pass)
+		"art":
+			picker.call("_open_art_window", "star-wars-rebellion")
+		"manage":
+			picker.call("_open_art_window", "star-wars-rebellion", "", true, true)
+		"progress":
+			picker.call("_open_art_window", "star-wars-rebellion")
+			picker.call("_on_progress", "check", 812, 1960)
+		"tell":
+			picker.call("_tell", {"ok": false, "message": "That is not a Faction Wars file (it could not be opened as a .zip)."})
+	for _i in 4:
 		await process_frame
 	var img: Image = root.get_viewport().get_texture().get_image()
 	var err := img.save_png(out)

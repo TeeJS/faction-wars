@@ -179,7 +179,9 @@ static func WebRemove(id: String) -> void:
 ## window.fwMovies: the movies file in the browser's own storage. `take`
 ## checks a picked file - a movies file has every entry's SHA-256 checked
 ## against its manifest, as the game's own import does, and the file itself is
-## kept; anything else resolves null and the game imports it as before.
+## kept; anything else resolves null and the game imports it as before. `job`
+## (the pick's): once job.cancelled it checks no more, and job.abort rolls
+## back the keeping.
 ## `index` lists what is kept; `read` gives one entry's bytes (the exporter
 ## stores the movies uncompressed, so this is a slice of the file); `remove`.
 const WEB_JS := r"""
@@ -193,12 +195,15 @@ window.fwMovies = window.fwMovies || (function () {
       r.onerror = function () { fail(r.error); };
     });
   }
-  function req(mode, fn) {
+  function req(mode, fn, job) {
     return open().then(function (db) {
       return new Promise(function (ok, fail) {
+        if (job && job.cancelled) { db.close(); fail(new Error('cancelled')); return; }
         var t = db.transaction(STORE, mode), r = fn(t.objectStore(STORE));
+        if (job) job.abort = function () { try { t.abort(); } catch (e) {} };
         t.oncomplete = function () { db.close(); ok(r ? r.result : undefined); };
         t.onerror = function () { db.close(); fail(t.error); };
+        t.onabort = function () { db.close(); fail(t.error || new Error('cancelled')); };
       });
     });
   }
@@ -232,7 +237,7 @@ window.fwMovies = window.fwMovies || (function () {
   }
   function hex(buf) { return Array.prototype.map.call(new Uint8Array(buf), function (b) { return ('0' + b.toString(16)).slice(-2); }).join(''); }
   return {
-    take: function (blob) {
+    take: function (blob, progress, job) {
       return entries(blob).then(function (es) {
         if (!es['manifest.json']) return null;
         return bytesOf(blob, es['manifest.json']).then(function (mb) {
@@ -244,18 +249,22 @@ window.fwMovies = window.fwMovies || (function () {
           var names = Object.keys(m.files || {});
           if (!names.length) return fail('Its manifest lists no files.');
           var chain = Promise.resolve(null);
-          names.forEach(function (name) {
+          if (progress) progress('verify', 0, names.length);
+          names.forEach(function (name, n) {
             chain = chain.then(function (bad) {
               if (bad) return bad;
+              if (job && job.cancelled) return fail('Import cancelled.');
               if (!es[name]) return fail('It is incomplete: ' + name + ' is listed but missing.');
               return bytesOf(blob, es[name]).then(function (b) { return crypto.subtle.digest('SHA-256', b); }).then(function (d) {
+                if (progress) progress('verify', n + 1, names.length);
                 return hex(d) === String(m.files[name]).toLowerCase() ? null : fail('It is damaged: ' + name + ' does not match its checksum.');
               });
             });
           });
           return chain.then(function (bad) {
             if (bad) return bad;
-            return req('readwrite', function (s) { return s.put({ manifest: m, blob: blob, entries: es }, m.id); }).then(function () {
+            if (progress) progress('store', 0, 0);
+            return req('readwrite', function (s) { return s.put({ manifest: m, blob: blob, entries: es }, m.id); }, job).then(function () {
               if (navigator.storage && navigator.storage.persist) navigator.storage.persist();
               return JSON.stringify({ ok: true, kind: 'movies', id: m.id, files: names.length,
                 message: 'Imported the movies "' + (m.title || m.id) + '" (' + names.length + ' files).' });
