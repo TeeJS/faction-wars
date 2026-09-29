@@ -679,8 +679,8 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 			sectorMap.get_child(k).set_meta("system", planet)
 
 	# No system's name, bars or icons over another's (TeeJ, 2026-09-23).
-	var room := Rect2(Vector2(2, 22) * K, Vector2(OW - 4, OH - 24) * K) if original else Rect2(Vector2.ZERO, mapSize)
-	SeparateEntries(sectorMap, room)
+	var room := Rect2(Vector2(2, 22) * K, Vector2(OW - 4, OH - 24) * K) if original else Rect2(Vector2.ONE * EdgeGap, mapSize - Vector2.ONE * EdgeGap * 2.0)
+	SeparateEntries(sectorMap, room, not original)
 
 	# A pack with a look: the plain window as a theatre plate (look_sector.gd;
 	# docs/ww2-look-plan.md, phase 8). Colours and faces only.
@@ -696,11 +696,20 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 ## pushed apart along the shorter way out, half each, then kept inside `room`;
 ## repeated until nothing crosses or the room is used up. OURS, NOT THE
 ## ORIGINAL'S: the original lays the systems out without this.
+##
+## With `all_inside` (the plain window) every entry is first moved inside
+## `room`, crossing another or not: a system near an edge with a long row of
+## squares - Hungary, Switzerland, Russia - ran past the window's edge, since
+## only an entry pushed off a neighbour was ever kept in (TeeJ, 2026-09-29).
+## The whole-pixel moves are kept inside too. The original's window keeps its
+## own measured layout.
 const EntryGap := 2.0
+## The plain window's entries stay this far inside its edge, clear of the frame.
+const EdgeGap := 4.0
 const SeparatePasses := 60
 
 
-static func SeparateEntries(sectorMap: Control, room: Rect2) -> void:
+static func SeparateEntries(sectorMap: Control, room: Rect2, all_inside: bool = false) -> void:
 	var parts: Dictionary = {}   # Planet -> its Controls
 	var order: Array = []
 	for c in sectorMap.get_children():
@@ -711,7 +720,7 @@ static func SeparateEntries(sectorMap: Control, room: Rect2) -> void:
 			parts[p] = []
 			order.append(p)
 		parts[p].append(c)
-	if order.size() < 2:
+	if order.size() < (1 if all_inside else 2):
 		return
 	var boxes: Array = []
 	for p in order:
@@ -725,6 +734,9 @@ static func SeparateEntries(sectorMap: Control, room: Rect2) -> void:
 	var moves: Array = []
 	for i in order.size():
 		moves.append(Vector2.ZERO)
+	if all_inside:
+		for i in order.size():
+			_ShiftEntry(boxes, moves, i, Vector2.ZERO, room)
 	for _pass in SeparatePasses:
 		var moved := false
 		for i in boxes.size():
@@ -746,7 +758,19 @@ static func SeparateEntries(sectorMap: Control, room: Rect2) -> void:
 		if not moved:
 			break
 	for i in order.size():
-		var d: Vector2 = (moves[i] as Vector2).round()
+		var m: Vector2 = moves[i]
+		var d: Vector2 = m.round()
+		if all_inside:
+			# Whole pixels that still keep the entry inside: rounding a move that
+			# stops exactly at the edge could carry it a fraction over.
+			var box: Rect2 = boxes[i]
+			var start: Vector2 = box.position - m
+			var lo: Vector2 = (room.position - start).ceil()
+			var hi: Vector2 = (room.end - box.size - start).floor()
+			if lo.x <= hi.x:
+				d.x = clampf(d.x, lo.x, hi.x)
+			if lo.y <= hi.y:
+				d.y = clampf(d.y, lo.y, hi.y)
 		if d == Vector2.ZERO:
 			continue
 		for c: Control in parts[order[i]]:

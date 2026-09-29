@@ -2,9 +2,13 @@ extends SceneTree
 ## THE PLAIN SECTOR WINDOW KEEPS EVERY SYSTEM INSIDE IT (sector_window.gd
 ## Populate's safety floor). A flat sector - the WWII pack's British Isles - came
 ## out shorter than its own padding: the lowest system's name fell out under the
-## window, and the systems' north-south order came out upside down. For every
-## sector of the pack, in the plain window:
-##   1. every system's name lies inside the window's map;
+## window, and the systems' north-south order came out upside down. Then
+## (TeeJ, 2026-09-29) a system near the right edge with a long row of squares -
+## Hungary, Switzerland - had its squares run past the window's edge. For every
+## sector of the pack (the Huge galaxy, so every sector there is), in the plain
+## window:
+##   1. every part of every system's entry - its picture, star, corner icons,
+##      bars and name - lies inside the window's map;
 ##   2. the sector is the right way up: its northernmost system on the galaxy
 ##      map is no lower in the window than its southernmost.
 ##
@@ -36,7 +40,7 @@ func _init() -> void:
 	FactionRegistry.EnsureLoaded()
 	MpSetup.reset()
 	GameSettings.SelectedDifficulty = Enums.Difficulty.Medium
-	GameSettings.SelectedSize = Enums.GalaxySize.Standard
+	GameSettings.SelectedSize = Enums.GalaxySize.Huge
 	GameSettings.PlayerFaction = FactionRegistry.Playable[0]
 	var main: Node = load("res://Main.tscn").instantiate()
 	root.add_child(main)
@@ -68,10 +72,15 @@ func _init() -> void:
 			if not c.has_meta("system") or c.is_queued_for_deletion():
 				continue
 			var p: Planet = c.get_meta("system")
-			if c is Label and (c as Label).text == p.Name:
-				var r := Rect2((c as Control).position, (c as Control).size)
-				_check(box.encloses(r), "%s: %s's name inside the window (%s in %s)" % [sector.Name, p.Name, r, box.size])
-			elif c is SectorWin.PlanetMapButton:
+			if not (c is Control) or not (c as Control).visible:
+				continue
+			var r := Rect2((c as Control).position, (c as Control).size)
+			var part: String = "name" if c is Label and (c as Label).text == p.Name else \
+					("%s bar" % c.get_meta("bar_row") if c.has_meta("bar_row") else \
+					("%s icon" % c.get_meta("corner") if c.has_meta("corner") else \
+					("picture" if c is SectorWin.PlanetMapButton else str(c.name))))
+			_check(box.encloses(r), "%s: %s's %s inside the window (%s in %s)" % [sector.Name, p.Name, part, r, box.size])
+			if c is SectorWin.PlanetMapButton:
 				tops[p] = (c as Control).position.y
 		# The sector the right way up: its northernmost system above its
 		# southernmost. (Not every pair: SeparateEntries may nudge two systems

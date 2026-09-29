@@ -4,12 +4,19 @@ extends SceneTree
 ## materials squares (yellow built mine / red free site), a loyalty bar in the
 ## sides' colours; none on an unexplored system; no loyalty bar on an
 ## unpopulated one; figures are what this side KNOWS (a sighting, not live).
+## With a look (WWII) the squares are the look's: energy used ink, mines built
+## olive, free ones paper (src/ui/look_sector.gd); the counts are the same.
 ##
 ##   .\tools\run-gd.ps1 tests/sector_bars.gd -- --pack=ww2
 ##   .\tools\run-gd.ps1 tests/sector_bars.gd              (Star Wars)
 
 var _fails := 0
 var _checks := 0
+# The squares' colours: the plain window's (white/blue, yellow/red), or the look's.
+var USED: Color
+var FREE_E: Color
+var BUILT: Color
+var FREE_M: Color
 
 
 func _check(cond: bool, what: String) -> void:
@@ -42,20 +49,25 @@ func _init() -> void:
 		quit(1)
 		return
 	var rows: Dictionary = await _rows_for(ui, home)
+	# Read once the window is up: the plain colours follow its form.
+	USED = Look.C("ink") if Look.Active() else SectorWindow.EnergyUsedColor()
+	FREE_E = Look.C("paper") if Look.Active() else SectorWindow.EnergyFreeColor()
+	BUILT = Look.C("olive") if Look.Active() else SectorWindow.MineBuiltColor()
+	FREE_M = Look.C("paper") if Look.Active() else SectorWindow.MineFreeColor()
 	_check(rows.has("energy"), "an energy row is drawn under %s" % home.Name)
 	_check(rows.has("materials"), "a materials row is drawn under %s" % home.Name)
 	_check(rows.has("loyalty"), "a loyalty bar is drawn under %s" % home.Name)
 	if rows.has("energy"):
 		var r: Control = rows["energy"]
 		_check(r.get_child_count() == home.BaseEnergy, "energy: one square per slot (%d of %d)" % [r.get_child_count(), home.BaseEnergy])
-		_check(_count(r, SectorWindow.EnergyUsedColor()) == home.UsedEnergySlots(), "energy: white squares = used slots (%d of %d)" % [_count(r, SectorWindow.EnergyUsedColor()), home.UsedEnergySlots()])
-		_check(_count(r, SectorWindow.EnergyFreeColor()) == home.FreeEnergySlots(), "energy: blue squares = free slots (%d of %d)" % [_count(r, SectorWindow.EnergyFreeColor()), home.FreeEnergySlots()])
+		_check(_count(r, USED) == home.UsedEnergySlots(), "energy: used squares = used slots (%d of %d)" % [_count(r, USED), home.UsedEnergySlots()])
+		_check(_count(r, FREE_E) == home.FreeEnergySlots(), "energy: free squares = free slots (%d of %d)" % [_count(r, FREE_E), home.FreeEnergySlots()])
 		_check(r.tooltip_text == "%s %d/%d" % [Terms.label("energy"), home.UsedEnergySlots(), home.BaseEnergy], "energy hover reads '%s'" % r.tooltip_text)
 	if rows.has("materials"):
 		var r: Control = rows["materials"]
 		_check(r.get_child_count() == home.BaseRawMaterials, "materials: one square per site (%d of %d)" % [r.get_child_count(), home.BaseRawMaterials])
-		_check(_count(r, SectorWindow.MineBuiltColor()) == home.Mines(), "materials: yellow squares = built mines (%d of %d)" % [_count(r, SectorWindow.MineBuiltColor()), home.Mines()])
-		_check(_count(r, SectorWindow.MineFreeColor()) == home.FreeMineSlots(), "materials: red squares = free sites (%d of %d)" % [_count(r, SectorWindow.MineFreeColor()), home.FreeMineSlots()])
+		_check(_count(r, BUILT) == home.Mines(), "materials: built squares = built mines (%d of %d)" % [_count(r, BUILT), home.Mines()])
+		_check(_count(r, FREE_M) == home.FreeMineSlots(), "materials: free squares = free sites (%d of %d)" % [_count(r, FREE_M), home.FreeMineSlots()])
 		_check(r.tooltip_text == "%s %d/%d" % [Terms.label("raw_materials"), home.Mines(), home.BaseRawMaterials], "materials hover reads '%s' (Fig 2.12: 'Raw Materials 3/9')" % r.tooltip_text)
 	if rows.has("loyalty"):
 		var bar: Control = rows["loyalty"]
