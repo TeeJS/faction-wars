@@ -312,7 +312,8 @@ static func _validate(pack: LoadedPack, pack_dir: String, errors: Array[String])
 ## known colour as #rrggbb and nothing unknown; `sides` names factions; each
 ## face a .ttf/.otf the pack ships with a weight in 100-900; sizes positive
 ## whole numbers; metrics non-negative; `overlay_alpha` in 0-1; each texture a
-## .png the pack ships, a nine-slice margin non-negative.
+## .png the pack ships (map_detail may be a .jpg), a nine-slice margin
+## non-negative; each map inset a .png or .jpg the pack ships with its `at`.
 static func _validate_look(pack: LoadedPack, pack_dir: String, errors: Array[String]) -> void:
 	var look: Dictionary = pack.Look
 	if look.is_empty():
@@ -448,6 +449,34 @@ static func _validate_look(pack: LoadedPack, pack_dir: String, errors: Array[Str
 				var mg: Variant = t["margin"]
 				if not (mg is float or mg is int) or float(mg) < 0:
 					errors.append("%s: margin must be a number, 0 or more." % where)
+	# The sector plates' sharper insets: each a .png or .jpg the pack ships and
+	# where it lies, [x, y, w, h] in map units (map_image_rect's).
+	var insets: Variant = look.get("map_insets", [])
+	if not insets is Array:
+		errors.append("look.json: `map_insets` must be a list of {image, at}.")
+	else:
+		for i in (insets as Array).size():
+			var m: Variant = insets[i]
+			var where := "look.json map_insets[%d]" % i
+			if not m is Dictionary:
+				errors.append("%s: must be an object {image, at}." % where)
+				continue
+			for key in JsonUtil.data_keys(m):
+				if not ["image", "at"].has(key):
+					errors.append("%s: '%s' is not known. Known: image, at." % [where, key])
+			var file := str(m.get("image", ""))
+			if not [".png", ".jpg"].any(func(k: String) -> bool: return file.to_lower().ends_with(k)):
+				errors.append("%s: image '%s' is not a .png or .jpg." % [where, file])
+			elif not _pack_has(pack_dir, file):
+				errors.append("%s: image '%s' is not in %s." % [where, file, pack_dir])
+			var r: Variant = m.get("at")
+			var ok: bool = r is Array and (r as Array).size() == 4
+			if ok:
+				for n in r:
+					ok = ok and (n is float or n is int)
+				ok = ok and float(r[2]) > 0 and float(r[3]) > 0
+			if not ok:
+				errors.append("%s: `at` must be [x, y, w, h] in map units (map_image_rect's), w and h above 0." % where)
 
 
 ## Rule 32: `credits.json` (SCHEMA.md section 16), when the pack ships one -

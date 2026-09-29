@@ -70,6 +70,7 @@ static var _theme: Theme = null
 static var _sheet: Theme = null         # the look for a dialog's order sheet
 static var _fonts: Dictionary = {}      # role -> Font
 static var _textures: Dictionary = {}   # name -> Texture2D or null
+static var _insets: Variant = null      # MapInsets(), once loaded
 static var _hooked: bool = false
 
 
@@ -91,6 +92,7 @@ static func _check() -> void:
 		_sheet = null
 		_fonts.clear()
 		_textures.clear()
+		_insets = null
 
 
 ## A colour token. Magenta when the pack has no look or no such token - a
@@ -209,6 +211,25 @@ static func Tex(name: String) -> Texture2D:
 	var tex: Texture2D = Art._load("%s/%s" % [Art._pack_dir(), rel]) if not rel.is_empty() else null
 	_textures[name] = tex
 	return tex
+
+
+## The sector plates' sharper insets (look.json `map_insets`): each
+## {"texture": Texture2D, "at": Rect2 in map units} - a larger-scale map of part
+## of the world, lined up with the pack's map. An inset whose picture is
+## missing is left out. [] without any.
+static func MapInsets() -> Array:
+	_check()
+	if _insets != null:
+		return _insets
+	var out: Array = []
+	for m in _def().get("map_insets", []):
+		var r: Array = m.get("at", [])
+		var rel := str(m.get("image", ""))
+		var tex: Texture2D = Art._load("%s/%s" % [Art._pack_dir(), rel]) if not rel.is_empty() else null
+		if tex != null and r.size() == 4:
+			out.append({"texture": tex, "at": Rect2(float(r[0]), float(r[1]), float(r[2]), float(r[3]))})
+	_insets = out
+	return out
 
 
 static func TexMargin(name: String) -> int:

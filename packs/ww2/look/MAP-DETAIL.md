@@ -64,3 +64,74 @@ python tools/look/make_ww2_map_detail.py <the downloaded original> packs/ww2/loo
 |---|---|
 | Result | 4096 x 2458 px, 2,251,754 bytes |
 | SHA-256 | a32c36acacfb1ea3c3cbe74f3f77b8262847232af002466201d1b71e3bb651d8 |
+
+# europe_1941.jpg: provenance
+
+The Europe inset (look.json `map_insets`). The window spreads a theatre's
+systems to fill it, so the five small European theatres (British Isles,
+Western Europe, Central Europe, Iberia, Italian Peninsula) need the world map
+magnified 5.1 to 8.8 times, where even the detail copy is too soft. This is
+the same atlas's large-scale page of Europe, warped onto the strategic map's
+frame, so those theatres are cut from it at 1.4 to 2.5 times (TeeJ,
+2026-09-29: "we need them all to be the same").
+
+## The work
+
+| | |
+|---|---|
+| Title | Западная Европа. Политическая карта (Western Europe: Political Map), 1:25,000,000, Lambert azimuthal projection |
+| In | the same atlas as above, page 14 |
+| Author | Главное Управление Геодезии и Картографии при СНК СССР, as above |
+
+## The file it was made from
+
+| | |
+|---|---|
+| Page | https://commons.wikimedia.org/wiki/File:14_%D0%97%D0%B0%D0%BF%D0%B0%D0%B4%D0%BD%D0%B0%D1%8F_%D0%95%D0%B2%D1%80%D0%BE%D0%BF%D0%B0._%D0%9F%D0%BE%D0%BB%D0%B8%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B0%D1%8F_%D0%BA%D0%B0%D1%80%D1%82%D0%B0.jpg |
+| Original | https://upload.wikimedia.org/wikipedia/commons/c/c8/14_%D0%97%D0%B0%D0%BF%D0%B0%D0%B4%D0%BD%D0%B0%D1%8F_%D0%95%D0%B2%D1%80%D0%BE%D0%BF%D0%B0._%D0%9F%D0%BE%D0%BB%D0%B8%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B0%D1%8F_%D0%BA%D0%B0%D1%80%D1%82%D0%B0.jpg |
+| Uploaded | 6 October 2012, by Bestalex |
+| Downloaded | 29 September 2026 |
+| Size | 2,743 x 3,395 px, 2,680,364 bytes |
+| SHA-1 | 95c90b6c7c9eb9fb29de16785aceb366a648466a (matches the SHA-1 Commons publishes for the file) |
+| SHA-256 | fabbae49cddab9fca815ef38112a97fd5914e7f55734eeed3bfc5272abf03850 |
+
+## Licence
+
+The same as the world page: Commons marks it **public domain** (Public Domain
+Mark 1.0, "PD Old"), with the same ⚠ missing United States tag.
+
+## What was done to it
+
+Page 14 is a different projection from the world page, so no single
+transform lines them up. `tools/look/make_ww2_map_europe.py` fits one from
+the two pages themselves, automatically: the sea of each as a mask; a search
+for the best overlap; coastline patches matched shape against shape, then
+country fills matched inland; a thin-plate spline through the 193 anchors
+that agree. Its docstring has the steps. The page was warped through it onto
+map units 328-385 x 120-172 of the strategic map's frame (look.json `at`
+[328, 120, 57, 52]), 21 px per map unit (page 14's own density), Lanczos, and
+saved once as JPEG quality 88. The script rebuilds it byte for byte.
+
+How close it is:
+
+| | |
+|---|---|
+| Anchors, each left out in turn | median 0.9, 90% 1.6, worst 2.5 px of the detail map |
+| Anchors per theatre (within 40 px) | British Isles 20, Western Europe 42, Central Europe 35, Iberia 12, Italian Peninsula 46 |
+| City symbols read on both pages | 5 to 15 px of the detail map apart at some (Lisbon, Prague) |
+| The pack's own systems | placed on the world page by a fit of 18 px RMS on the 1750-px map (PACK.md, "Map layout"), about 40 px of the detail map |
+
+So the plate sits each of those theatres' systems in its own country, as the
+strategic map does. Gibraltar's system is on the Moroccan shore on both: that
+is where the pack puts it.
+
+Rebuild it with:
+
+```
+python tools/look/make_ww2_map_europe.py <the downloaded original> packs/ww2/look/europe_1941.jpg
+```
+
+| | |
+|---|---|
+| Result | 1197 x 1092 px, 443,126 bytes |
+| SHA-256 | b7ce77b13e46065b82d4c870e8131c4262f393f974bf822d56c7d544d99d5c89 |

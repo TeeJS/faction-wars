@@ -4,7 +4,7 @@ extends SceneTree
 ## --headless), like tests/capture_look.gd:
 ##
 ##   Godot_console.exe --path . --resolution 1440x850 -s tests/capture_look_sectors.gd -- `
-##       --out=C:/tmp/look/ww2_sectors --pack=ww2 --seed=12345 --record=user://capture-look.jsonl [--faction=allies]
+##       --out=C:/tmp/look/ww2_sectors --pack=ww2 --seed=12345 --record=user://capture-look.jsonl [--faction=allies] [--size=Huge]
 ##
 ## writes <out>_<sector id>.png. --record= is REQUIRED, so the player's session
 ## log is untouched. No art set is read, so a pack shows its own look (the
@@ -34,7 +34,8 @@ func _init() -> void:
 	FactionRegistry.EnsureLoaded()
 	MpSetup.reset()
 	GameSettings.SelectedDifficulty = Enums.Difficulty.Medium
-	GameSettings.SelectedSize = Enums.GalaxySize.Standard
+	# --size=Standard|Large|Huge (Standard by default): Huge has every theatre.
+	GameSettings.SelectedSize = Enums.GalaxySize[_arg("--size=", "Standard")]
 	GameSettings.HQOnlyVictory = false
 	GameSettings.PlayerFaction = FactionRegistry.ById(_arg("--faction=", FactionRegistry.Playable[0].Id))
 	var main: Node = load("res://Main.tscn").instantiate()

@@ -4,8 +4,10 @@ extends RefCounted
 ## the plain sector window's contents are drawn as a plotting board. Every
 ## element the manual gives the window (manual p025-p026, Figs 2.8 and 2.9)
 ## stays where it was, meaning what it meant and answering as it did:
-##   - the ground: the theatre cut from the pack's map picture, under a
-##     parchment wash so the marks read, framed in brass;
+##   - the ground: the theatre cut from the pack's map picture - or from a
+##     sharper inset of that part of the world when the look ships one that
+##     holds the whole theatre (look.json `map_insets`) - under a parchment
+##     wash so the marks read, framed in brass;
 ##   - each system: a plotting mark in its side's map colour with an ink rim
 ##     (an unheld one an ink ring); the HQ ring in brass;
 ##   - its name: the look's face, in its holder's colour darkened until it
@@ -33,9 +35,11 @@ const WASH := 0.58
 ## system over its own place, while the map needs magnifying no more than
 ## this many window pixels per picture pixel to reach the window's scale.
 ## Beyond it the map is too soft to read, so the plate is a plain plotting
-## sheet: parchment with a faint grid. With the WWII pack's detail map the
-## four small European theatres need 5.1-7.0 and go to the sheet; the rest
-## need 0.5-2.8 and stay maps. 4 sits in the middle of that gap.
+## sheet: parchment with a faint grid. With the WWII pack's detail map alone
+## the five small European theatres needed 5.1-8.8 and went to the sheet;
+## with its Europe inset they need 1.4-2.5, and every theatre is a map
+## (TeeJ, 2026-09-29: "we need them all to be the same"). The sheet stays for
+## a pack whose pictures cannot reach a theatre sharply.
 const SHARP_ZOOM := 4.0
 ## Tests and captures: the sheet for every theatre.
 static var SHEET := false
@@ -146,8 +150,11 @@ static func _plate(sector_map: Control, sector: Sector, map_size: Vector2, paddi
 ## The part of the pack's map picture under the window, where it lands and how
 ## much it is magnified: {"texture": AtlasTexture, "at": Rect2 in the window,
 ## "zoom": window px per picture px}. The window's area at the layout's own
-## scale, so each system sits over its place on the map. {} without a map
-## picture; no "texture" when the theatre is off the picture.
+## scale, so each system sits over its place on the map. The sharpest picture
+## that holds the whole theatre: an inset of the look's (`map_insets`, a
+## larger-scale map of part of the world, lined up with the map) when one
+## does, else the map. {} without a map picture; no "texture" when the theatre
+## is off the picture.
 static func PlateCut(sector: Sector, map_size: Vector2, padding: float, padding_bottom: float) -> Dictionary:
 	var manifest = FactionRegistry.Pack.Manifest if FactionRegistry.Pack != null else null
 	if manifest == null or sector == null:
@@ -173,6 +180,19 @@ static func PlateCut(sector: Sector, map_size: Vector2, padding: float, padding_
 	if sector.MaxY - sector.MinY < 1.0:
 		sy = sx
 	var cover := Rect2(Vector2(sector.MinX - padding * sx, sector.MinY - padding * sy), Vector2(map_size.x * sx, map_size.y * sy))
+	var best: Dictionary = _cut(tex, rect, cover, map_size, sx, sy)
+	for inset in Look.MapInsets():
+		var at: Rect2 = inset["at"]
+		if at.encloses(cover):
+			var c: Dictionary = _cut(inset["texture"], at, cover, map_size, sx, sy)
+			if float(c["zoom"]) < float(best["zoom"]):
+				best = c
+	return best
+
+
+## One picture's cut: `tex` covers `rect` in map units; `cover` is the window's
+## area in map units at sx, sy map units per window pixel.
+static func _cut(tex: Texture2D, rect: Rect2, cover: Rect2, map_size: Vector2, sx: float, sy: float) -> Dictionary:
 	# Map units to the picture's pixels; the magnification that makes.
 	var k := Vector2(tex.get_width() / rect.size.x, tex.get_height() / rect.size.y)
 	var zoom: float = maxf(1.0 / (sx * k.x), 1.0 / (sy * k.y))

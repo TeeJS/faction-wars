@@ -5,19 +5,26 @@ extends SceneTree
 ##   .\tools\run-gd.ps1 tests/look_sector.gd -- --pack=ww2 --seed=12345
 ##   .\tools\run-gd.ps1 tests/look_sector.gd -- --pack=star-wars-rebellion --seed=12345
 ##
-## With a look, in every sector's window: the plate (the theatre cut from the
-## map picture, the wash, the frame) lies under every entry and takes no
+## The Huge galaxy, so every theatre a pack has is checked. With a look, in
+## every sector's window: the plate (the theatre cut from the map picture, or
+## from the look's inset where one holds the theatre; the wash; the frame) lies
+## under every entry and takes no
 ## clicks; every system still has its mark and its name (manual p025); a mark
 ## is its holder's map colour ink-rimmed, or an ink ring; a name is in the
 ## look's face with a paper halo and reads at 4.5:1 on parchment; a corner
 ## glyph is ink (an uprising's signal red) on a paper tab; every bar block is
 ## ink-edged, energy used ink, mines built olive, free ones open; none of the
-## Star Wars window's own colours is left. Without a look (Star Wars, the
-## plain window): none of it.
+## Star Wars window's own colours is left. WWII: every theatre is a map (TeeJ,
+## 2026-09-29: "we need them all to be the same"), the five small European ones
+## cut from the Europe inset. Without a look (Star Wars, the plain window):
+## none of it.
 
 const Art := preload("res://src/ui/artwork.gd")
 const StandIns := preload("res://src/ui/art_standins.gd")
 const LookSector := preload("res://src/ui/look_sector.gd")
+## The WWII theatres too small for the world map (5.1-8.8 times), which the
+## Europe inset holds.
+const EUROPE := ["British Isles", "Western Europe", "Central Europe", "Iberia", "Italian Peninsula"]
 
 var _fails := 0
 var _checks := 0
@@ -40,7 +47,7 @@ func _init() -> void:
 	FactionRegistry.EnsureLoaded()
 	MpSetup.reset()
 	GameSettings.SelectedDifficulty = Enums.Difficulty.Medium
-	GameSettings.SelectedSize = Enums.GalaxySize.Standard
+	GameSettings.SelectedSize = Enums.GalaxySize.Huge
 	GameSettings.PlayerFaction = FactionRegistry.Playable[0]
 	var main: Node = load("res://Main.tscn").instantiate()
 	root.add_child(main)
@@ -82,10 +89,15 @@ func _init() -> void:
 			if layer == null or layer.get_index() != i or layer.mouse_filter != Control.MOUSE_FILTER_IGNORE:
 				ground_ok = false
 		_check(ground_ok, "%s: %s, under every entry, taking no clicks" % [s, ", ".join(layers)])
+		if id == "ww2":
+			_check(ground == "map", "%s: a map, as every theatre (zoom %.2f)" % [s, zoom])
 		var plate: TextureRect = map.get_node_or_null("LookPlate")
 		var detail: Texture2D = Look.Tex("map_detail")
 		if ground == "map" and detail != null and plate != null:
-			_check(plate.texture is AtlasTexture and (plate.texture as AtlasTexture).atlas == detail, "%s: cut from the look's detail map" % s)
+			var atlas: Texture2D = (plate.texture as AtlasTexture).atlas if plate.texture is AtlasTexture else null
+			var from_inset: bool = Look.MapInsets().any(func(m: Dictionary) -> bool: return m["texture"] == atlas)
+			var want_inset: bool = id == "ww2" and EUROPE.has(s)
+			_check(atlas != null and (from_inset if want_inset else atlas == detail), "%s: cut from the look's %s" % [s, "Europe inset" if want_inset else "detail map"])
 
 		# Every system: its mark and its name (manual p025), dressed.
 		var marks := 0

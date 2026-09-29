@@ -82,5 +82,8 @@
     "grain": "look/grain.png",
     "rule": "look/rule.png",
     "map_detail": "look/world_1941_detail.jpg"
-  }
+  },
+  "map_insets": [
+    {"image": "look/europe_1941.jpg", "at": [328, 120, 57, 52]}
+  ]
 }
