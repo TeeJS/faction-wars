@@ -163,6 +163,57 @@ static func Table() -> Dictionary:
 		t["windows/status_fleet_damage.%s.png" % side] = {"kind": "icon", "size": Vector2i(122, 50), "glyph": "fleets", "side": "uprising"}
 	t["windows/status_fleet_damage.png"] = {"kind": "icon", "size": Vector2i(122, 50), "glyph": "fleets", "side": "uprising"}
 	t["windows/status_backdrop.troops.png"] = {"kind": "spot", "size": Vector2i(122, 50)}
+	# ---- Phase 5: the system windows (defense_window.gd, economy_window.gd,
+	# fleet_window.gd) and the Mission window (original_mission_window.gd) ----
+	# The plates, their panels measured: the tabs' band and the list's well of
+	# System Defenses and Manufacturing, the producers' column and the rows'
+	# frames, the Fleet window's band, panel and tiles, the Mission window's two
+	# outlined panels.
+	t["windows/defense_background.png"] = {"kind": "plate", "size": Vector2i(235, 304),
+		"blacks": [Rect2i(2, 2, 231, 48)], "wells": [Rect2i(2, 52, 231, 250)]}
+	t["windows/mfg_background.png"] = {"kind": "plate", "size": Vector2i(226, 304),
+		"blacks": [Rect2i(0, 2, 226, 48)], "bands": [Rect2i(2, 53, 222, 71)], "wells": [Rect2i(2, 126, 222, 176)]}
+	t["windows/mfg_column.png"] = {"kind": "plate", "size": Vector2i(46, 226), "base": "clear",
+		"wells": [Rect2i(0, 0, 46, 46), Rect2i(0, 81, 46, 46), Rect2i(0, 162, 46, 46)],
+		"blacks": [Rect2i(0, 48, 46, 16), Rect2i(0, 129, 46, 16), Rect2i(0, 209, 46, 16)],
+		"glyphs": [["shipyards", Rect2i(4, 4, 38, 38)], ["training_facilities", Rect2i(4, 85, 38, 38)], ["construction_yards", Rect2i(4, 166, 38, 38)]]}
+	t["windows/mfg_row.png"] = {"kind": "plate", "size": Vector2i(166, 79),
+		"blacks": [Rect2i(1, 70, 161, 7)], "holes": [Rect2i(1, 14, 161, 55)]}
+	for side in ["alliance", "empire", "neutral"]:
+		t["windows/header.%s.png" % side] = {"kind": "bar", "size": Vector2i(162, 13), "side": side, "dim": true}
+		for tab in ["manufacturing"]:
+			t["tabs/%s.%s.png" % [tab, side]] = {"kind": "tab", "size": Vector2i(36, 33), "glyph": tab, "side": side}
+	t["windows/mine_tile.png"] = {"kind": "tile", "size": Vector2i(67, 35), "glyph": "mine"}
+	t["windows/mine_pile.png"] = {"kind": "icon", "size": Vector2i(67, 35), "glyph": "mine", "side": "uprising"}
+	t["windows/fleet_background.png"] = {"kind": "plate", "size": Vector2i(235, 304), "blacks": [Rect2i(2, 18, 231, 284)]}
+	t["windows/mission_window.png"] = {"kind": "plate", "size": Vector2i(235, 304),
+		"outlines": [Rect2i(103, 22, 126, 121), Rect2i(103, 142, 126, 153)], "wells": [Rect2i(108, 37, 114, 53)]}
+	t["windows/card_plate.png"] = {"kind": "spot", "size": Vector2i(61, 25)}
+	t["windows/card_enroute.png"] = {"kind": "spot", "size": Vector2i(61, 25), "tint": Color(0.35, 0.45, 0.7)}
+	t["windows/card_transit.png"] = {"kind": "spot", "size": Vector2i(61, 25), "tint": Color(0.55, 0.5, 0.3)}
+	t["windows/card_injured.png"] = {"kind": "icon", "size": Vector2i(61, 25), "glyph": "close", "side": "uprising"}
+	for side in Sides:
+		t["windows/card_building.%s.png" % side] = {"kind": "grid", "size": Vector2i(61, 25), "side": side}
+		for tab in ["personnel", "troops", "fighters"]:
+			t["tabs/%s.%s.png" % [tab, side]] = {"kind": "tab", "size": Vector2i(36, 33), "glyph": tab, "side": side}
+		t["windows/fleet_panel.%s.png" % side] = {"kind": "plate", "size": Vector2i(132, 266), "base": "black",
+			"side": side, "outlines": [Rect2i(3, 95, 126, 168)]}
+		t["windows/fleet_tile.%s.png" % side] = {"kind": "plate", "size": Vector2i(73, 47), "base": "clear",
+			"side": side, "outlines": [Rect2i(0, 0, 73, 47)]}
+		t["windows/mission_frame.%s.png" % side] = {"kind": "plate", "size": Vector2i(73, 48), "base": "clear",
+			"side": side, "outlines": [Rect2i(0, 0, 73, 48)]}
+		t["windows/fleet_small.%s.png" % side] = {"kind": "icon", "size": Vector2i(66, 25), "glyph": "fleets", "side": "grey"}
+		t["windows/fleet_small_damage.%s.png" % side] = {"kind": "icon", "size": Vector2i(61, 25), "glyph": "uprising", "side": "uprising"}
+		t["windows/fleet_small_glow.%s.png" % side] = {"kind": "icon", "size": Vector2i(61, 25), "glyph": "enroute", "side": side}
+		t["windows/fleet_large_glow.%s.png" % side] = {"kind": "icon", "size": Vector2i(122, 50), "glyph": "enroute", "side": side}
+		for b in ["fighter", "troop", "personnel"]:
+			t["windows/fleet_badge_%s.%s.png" % [b, side]] = {"kind": "icon", "size": Vector2i(15, 11), "glyph": b, "side": side}
+		for f in [["ship", Vector2i(30, 29)], ["fighter", Vector2i(31, 29)], ["troop", Vector2i(31, 29)], ["personnel", Vector2i(30, 29)]]:
+			t["tabs/fleet_tab_%s.%s.png" % [f[0], side]] = {"kind": "tab", "size": f[1], "glyph": f[0], "side": side}
+		t["tabs/mission_agents_tab.%s.png" % side] = {"kind": "tab", "size": Vector2i(61, 16), "glyph": "agents", "side": side}
+		t["tabs/mission_decoys_tab.%s.png" % side] = {"kind": "tab", "size": Vector2i(61, 16), "glyph": "decoys", "side": side}
+	for tab in ["planetary_shield", "planetary_battery", "shipyards", "training_facilities", "construction_yards", "refineries", "mines"]:
+		t["tabs/%s.png" % tab] = {"kind": "tab", "size": Vector2i(36, 33), "glyph": tab}
 	_spec = t
 	return _spec
 
@@ -173,11 +224,23 @@ static func _draw(spec: Dictionary, state: String) -> Image:
 	var lit: Color = Sides.get(str(spec.get("side", "")), Color.WHITE)
 	match str(spec["kind"]):
 		"plate":
-			_raised(img, Rect2i(Vector2i.ZERO, sz), str(spec.get("edges", "all")))
+			match str(spec.get("base", "raised")):
+				"black":
+					img.fill(Color.BLACK)
+				"clear":
+					pass
+				_:
+					_raised(img, Rect2i(Vector2i.ZERO, sz), str(spec.get("edges", "all")))
 			for b in spec.get("bands", []):
 				_sunk(img, b, PlainIcons.Band)
 			for w in spec.get("wells", []):
 				_sunk(img, w, PlainIcons.Well)
+			for w in spec.get("blacks", []):
+				_sunk(img, w, Color.BLACK)
+			for o in spec.get("outlines", []):
+				_outline(img, o, _side_colour(str(spec.get("side", ""))) if spec.has("side") else PlainIcons.BevelLight)
+			for g in spec.get("glyphs", []):
+				_glyph(img, str(g[0]), PlainIcons.LabelColor, g[1])
 			for h in spec.get("holes", []):
 				img.fill_rect(h, Color(0, 0, 0, 0))
 		"corner":
@@ -189,9 +252,22 @@ static func _draw(spec: Dictionary, state: String) -> Image:
 		"star":
 			_star(img, str(spec["tier"]), _side_colour(str(spec["side"])))
 		"spot":
-			_spot(img)
+			_spot(img, spec.get("tint", Color(0.35, 0.35, 0.35)))
 		"bar":
-			img.fill(lit)
+			var bc: Color = _side_colour(str(spec.get("side", "")))
+			if spec.get("dim", false) and state != "lit":
+				bc = bc.darkened(0.35)
+			img.fill(bc)
+		"tile":
+			_sunk(img, Rect2i(Vector2i.ZERO, sz), PlainIcons.Well)
+			_glyph(img, str(spec["glyph"]), PlainIcons.LabelColor, Rect2i(Vector2i.ZERO, sz).grow(-3))
+		"grid":
+			var gc: Color = _side_colour(str(spec.get("side", "")))
+			gc.a = 0.6
+			for x in range(0, sz.x, 4):
+				img.fill_rect(Rect2i(x, 0, 1, sz.y), gc)
+			for y in range(0, sz.y, 4):
+				img.fill_rect(Rect2i(0, y, sz.x, 1), gc)
 		"icon":
 			var c: Color = Color.WHITE if state == "picked" or state == "hover" else _side_colour(str(spec.get("side", "")))
 			_glyph(img, str(spec["glyph"]), c, Rect2i(Vector2i.ZERO, sz))
@@ -265,6 +341,8 @@ static func _side_colour(side: String) -> Color:
 			return FactionRegistry.Unknown.FactionColor if FactionRegistry.Unknown != null else Color(0.8, 0.8, 0.8)
 		"uprising":
 			return Color(249 / 255.0, 92 / 255.0, 15 / 255.0)
+		"grey":
+			return PlainIcons.LabelColor
 	return Color.WHITE
 
 
@@ -296,11 +374,19 @@ static func _star(img: Image, tier: String, c: Color) -> void:
 	img.fill_rect(Rect2i(mid - half, mid - reach, arm, reach * 2 + 1), c)
 
 
-## A soft grey pool of light, for a picture to stand in.
-static func _spot(img: Image) -> void:
+## A soft pool of light (grey, or 	int), for a picture to stand in.
+static func _spot(img: Image, tint: Color = Color(0.35, 0.35, 0.35)) -> void:
 	var c := Vector2(img.get_width(), img.get_height()) / 2.0
 	for y in img.get_height():
 		for x in img.get_width():
 			var d: float = ((Vector2(x + 0.5, y + 0.5) - c) / c).length()
 			if d < 1.0:
-				img.set_pixel(x, y, Color(0.35, 0.35, 0.35, (1.0 - d) * 0.8))
+				img.set_pixel(x, y, Color(tint.r, tint.g, tint.b, (1.0 - d) * 0.8))
+
+
+## A one-pixel outline round  in c.
+static func _outline(img: Image, r: Rect2i, c: Color) -> void:
+	img.fill_rect(Rect2i(r.position, Vector2i(r.size.x, 1)), c)
+	img.fill_rect(Rect2i(r.position, Vector2i(1, r.size.y)), c)
+	img.fill_rect(Rect2i(Vector2i(r.position.x, r.end.y - 1), Vector2i(r.size.x, 1)), c)
+	img.fill_rect(Rect2i(Vector2i(r.end.x - 1, r.position.y), Vector2i(1, r.size.y)), c)

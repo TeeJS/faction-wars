@@ -70,9 +70,10 @@ func _init() -> void:
 
 	_remove(SET_ROOT)
 	Art.Reset()
-	_check(Art.Portrait("facilities", "shipyard") == null and Art.TabIcon("manufacturing", "empire") == null
-		and Art.PackImage("swr-original:screens/galaxy.png") == null,
-		"without the art set: no original pictures (the engine's own art)")
+	_check(Art.Portrait("facilities", "shipyard") == null and Art.PackImage("swr-original:screens/galaxy.png") == null,
+		"without the art set: none of the original's pictures")
+	_check(Art.TabIcon("manufacturing", "empire") != null and Art.TabIcon("manufacturing", "empire") == preload("res://src/ui/art_standins.gd").Picture("tabs/manufacturing.empire.png"),
+		"... a window's parts are our stand-ins (the plain build parity plan)")
 	_check(_colour(Art.Portrait("characters", "leia_organa")) == MAGENTA, "... but the pack's own still shows")
 
 	FactionRegistry.Unload()

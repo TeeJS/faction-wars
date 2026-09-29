@@ -85,3 +85,33 @@ a list, a picture, the name, Encyclopedia and the close diamond.
 | Damaged fleet picture | `windows/status_fleet_damage[.<side>].png` | 122 x 50 | 3 | A fleet with a damaged ship. | One state. | Our fleet glyph in orange |
 | Regiment spotlight | `windows/status_backdrop.troops.png` | 122 x 50 | 1 | The grey pool of light a trooper regiment's picture stands in. | One state. | A soft grey ellipse |
 | Subjects' pictures | `characters/<id>.png`, `units/<id>.png`, `facilities/<id>.png` (the Encyclopedia's) | up to 130 x 98 in this panel | one per character / unit / facility | The subject shown in the picture panel. | Listed fully with the Encyclopedia (phase 6). | None |
+
+## Phase 5: the system windows (Manufacturing, System Defenses, Fleet) and the Mission window
+
+Manuals p045-p046 (Manufacturing), p105 (Defenses), p112-p113 (Fleet), p109
+Fig 3.51 (Mission). Each window's title bar, in the system's side colour, is
+drawn by the game with the title boxes (phase 3).
+
+| Asset | File | Size (frame px) | Count | What it is | States / notes | Plain stand-in now |
+|---|---|---|---|---|---|---|
+| System Defenses plate | `windows/defense_background.png` | 235 x 304 | 1 | The window's face: the tabs' band at the top, a scene below that the cards sit on. | Tabs' band (2,2) 231 x 48; the rest (2,52) 231 x 250. | Grey plate, black band, dark well |
+| Manufacturing plate | `windows/mfg_background.png` | 226 x 304 | 1 | The window's face: the tabs' band, a dark band, a scene below. | Tabs' band (0,2) 226 x 48; dark band (2,53) 222 x 71; the rest (2,126) 222 x 176. | Grey plate, black and dark bands, well |
+| Producers' column | `windows/mfg_column.png` | 46 x 226 | 1 | The Manufacturing page's left column: a shipyard's, a training facility's and a construction yard's picture, each over a black count bar. | Pictures at y 0 / 81 / 162 (46 x 46), bars at y 48 / 129 / 209 (46 x 16), clear between. | Three wells with our ship, helmet and crane glyphs |
+| Production row frame | `windows/mfg_row.png` | 166 x 79 | 1 | The frame of each of the Manufacturing page's three rows. | Grey band on top; see-through (1,14) 161 x 55; black bar (1,70) 161 x 7. | Grey frame with the opening cut out |
+| Row header | `windows/header.<side>[.lit].png` | 162 x 13 | 6 | The bar across the top of a production row, in the side's colour (alliance, empire, neutral). | Plain and `.lit`. The game draws the row's title on it. | The side's colour, dimmer unless lit |
+| Mine pictures | `windows/mine_tile.png`, `windows/mine_pile.png` | 67 x 35 | 2 | The Mines page: a mine's tile, and its pile of raw material. | One state each. | Our mine glyph in a well; in orange |
+| Card plate | `windows/card_plate.png` | 61 x 25 | 1 | The plate behind every miniature card (a unit, facility or character in a list). | One state. | A soft grey spotlight |
+| Card overlays | `windows/card_enroute.png`, `card_transit.png`, `card_injured.png`, `card_building.<side>.png` | 61 x 25 | 5 | A card's state: en route, in transit, injured, being built (the side's grid). | One state each. | Tinted spotlights; our cross; a grid in the side's colour |
+| Fleet window plate | `windows/fleet_background.png` | 235 x 304 | 1 | The Fleet window's face: a band on top, space below where the fleet tiles sit. | Band 0-17; the rest (2,18) 231 x 284. | Grey plate, black well |
+| Fleet panel | `windows/fleet_panel.<side>.png` | 132 x 266 | 2 | The right-hand panel: the opened fleet's picture above, its list below. | The list outlined at (3,95) 126 x 168 in the side's colour. | Black panel, side-colour outline |
+| Fleet tile frame | `windows/fleet_tile.<side>.png` | 73 x 47 | 2 | The frame round a fleet's tile in the left column. | Clear inside. | A side-colour outline |
+| Fleet miniatures | `windows/fleet_small.<side>.png` 66 x 25; `fleet_small_damage.<side>.png`, `fleet_small_glow.<side>.png` 61 x 25; `fleet_large_glow.<side>.png` 122 x 50 | as listed | 8 | A fleet's small picture on its tile; the damage flames and the engine glow laid over it (small, and over the large picture when it moves). | One state each. | Our fleet glyph; flame and trail glyphs |
+| Fleet badges | `windows/fleet_badge_<fighter / troop / personnel>.<side>.png` | 15 x 11 | 6 | The little marks on a fleet's tile for carried fighters, troops and personnel. | One state. | Our fighter, helmet and person glyphs |
+| Fleet tabs | `tabs/fleet_tab_<ship / fighter / troop / personnel>.<side>[.pressed / .grey].png` | ship and personnel 30 x 29; fighter and troop 31 x 29 | 22 | The Fleet window's four tabs. | Plain, pressed; grey (empty) except ship. | Our glyphs; open tab sunk in side colour |
+| System Defenses tabs | `tabs/personnel.<side>`, `troops.<side>`, `fighters.<side>`, `planetary_shield`, `planetary_battery` `[.pressed / .grey].png` | 36 x 33 | 24 | Personnel, Troops, Fighters, Shields, Batteries. | Plain, pressed, grey. | Our glyphs |
+| Manufacturing tabs | `tabs/manufacturing.<side / neutral>`, `shipyards`, `training_facilities`, `construction_yards`, `refineries`, `mines` `[.pressed / .grey].png` | 36 x 33 | 24 | Manufacturing, Shipyards, Training Facilities, Construction Yards, Refineries, Mines. | Plain, pressed, grey. | Our glyphs |
+| Mission window plate | `windows/mission_window.png` | 235 x 304 | 1 | The Mission window's face: the missions' tile column on the left, the target and team panels on the right. | Panels outlined at (103,22) 126 x 121 and (103,142) 126 x 153; the target's well (108,37) 114 x 53. | Grey plate, outlines and a well |
+| Mission tile frame | `windows/mission_frame.<side>.png` | 73 x 48 | 2 | The frame round a mission's tile. | Clear inside. | A side-colour outline |
+| Mission tabs | `tabs/mission_agents_tab.<side>[.pressed].png`, `mission_decoys_tab.<side>[.pressed / .grey].png` | 61 x 16 | 10 | The Agents and Decoys tabs. | Plain, pressed; decoys grey when there are none. | Our person and outlined-person glyphs |
+| Mission tiles | via `Art.MissionTile` (`missions/<id>.<side>.png`) | 73 x 48 (the frame's size) | per mission kind and side | Each mission kind's picture on its tile. | One state. | None |
+| Miniatures | `units/<id>.png`, `facilities/<id>.png`, `characters/<id>.png` miniatures (`Art.Miniature`) | 61 x 25 | one per unit / facility / character | The picture on each card. | Listed with the Encyclopedia (phase 6). | None (the card plate alone) |

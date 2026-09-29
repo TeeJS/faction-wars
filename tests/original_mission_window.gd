@@ -53,7 +53,10 @@ func _init() -> void:
 	var m: Mission = MissionManager.Launch(dip, team, from, far, [team[1]])
 	_check(m != null and not m.Arrived(), "the Diplomacy mission is launched and in hyperspace")
 
-	# Without the parts: the plain window.
+	# Without the parts: the plain window, which a pack with its own look (WWII)
+	# still uses - the Star Wars pack now gets the original's from our stand-ins
+	# (tests/art_standins.gd), so they are off here.
+	preload("res://src/ui/art_standins.gd").Enabled = false
 	Art.Reset()
 	ui.OnMissionClicked(far)
 	for _i in 3:
