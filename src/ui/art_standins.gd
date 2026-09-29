@@ -289,8 +289,98 @@ static func Table() -> Dictionary:
 		"blacks": [Rect2i(26, 36, 360, 68)], "bands": [Rect2i(122, 130, 65, 36), Rect2i(225, 131, 65, 36)]}
 	t["buttons/dialog_ok.png"] = {"kind": "button", "size": Vector2i(57, 28), "glyph": "ok"}
 	t["buttons/dialog_cancel.png"] = {"kind": "button", "size": Vector2i(57, 28), "glyph": "cancel"}
+	# ---- Phase 8: the Speed Control's menu, the battle windows, Create Mission,
+	# Build Selection and the GID key ----
+	# The speed menu (original_menu.gd SpeedMenu): each speed's bars - three,
+	# one fewer lit than the speed (Pause and Very Slow none) - as the plain
+	# Speed Control draws them (game_manager.gd PlainBars).
+	for side in Sides:
+		for i in 5:
+			t["windows/speed_bars.%s.%d.png" % [side, i]] = {"kind": "speedbars", "size": Vector2i(16, 10), "side": side, "lit": maxi(0, i - 1)}
+	# The battle windows (original_battle.gd; manual p141-p142, p152-p153): the
+	# alert's frame - the scene shows through its opening, the three buttons
+	# sit on its dark foot - the scenes and the forces pages behind it, the
+	# column's page buttons, the results' close and Goto System, the lists'
+	# scroll bar; the results' tables (a band for the filter's name, then two
+	# columns, three for personnel, battle_results_window.gd Table2 / Table3).
+	for side in Sides:
+		var big: bool = side == "empire"
+		var col := Vector2i(44, 41) if big else Vector2i(41, 41)
+		t["windows/battle_frame.%s.png" % side] = {"kind": "plate", "size": Vector2i(470, 331),
+			"blacks": [Rect2i(11, 295, 404, 29)], "holes": [Rect2i(12, 13 if big else 14, 400, 271), Rect2i(0, 330, 470, 1)]}
+		t["windows/battle_alert.%s.png" % side] = _scene("conflict")
+		t["windows/battle_result.%s.png" % side] = _scene("conflict")
+		t["windows/battle_result_burning.%s.png" % side] = _scene("uprising")
+		t["windows/assault_captured.%s.png" % side] = _scene("troop")
+		t["windows/battle_forces.%s.png" % side] = {"kind": "plate", "size": Vector2i(410, 280), "base": "black"}
+		t["tabs/battle_summary.%s.png" % side] = {"kind": "tab", "size": col, "glyph": "summary", "side": side}
+		t["tabs/battle_alliance_forces.%s.png" % side] = {"kind": "tab", "size": col, "glyph": "fleets", "side": "alliance", "tinted": true}
+		t["tabs/battle_empire_forces.%s.png" % side] = {"kind": "tab", "size": col, "glyph": "fleets", "side": "empire", "tinted": true}
+		t["tabs/battle_system.%s.png" % side] = {"kind": "tab", "size": col, "glyph": "system", "side": side}
+		t["tabs/battle_filter_fighter.%s.png" % side] = {"kind": "tab", "size": Vector2i(49, 41), "glyph": "fighter", "side": side}
+		for b in [["battle_retreat", "return"], ["battle_simulate", "summary"], ["battle_command", "conflict"]]:
+			t["buttons/%s.%s.png" % [b[0], side]] = {"kind": "button", "size": Vector2i(134, 27), "glyph": b[1]}
+		t["buttons/battle_close.%s.png" % side] = {"kind": "button", "size": Vector2i(44, 41) if big else Vector2i(32, 31), "glyph": "close"}
+		t["buttons/battle_goto.%s.png" % side] = {"kind": "button", "size": col, "glyph": "system"}
+		t["buttons/battle_scroll_up.%s.png" % side] = {"kind": "button", "size": Vector2i(13, 9), "glyph": "up"}
+		t["buttons/battle_scroll_down.%s.png" % side] = {"kind": "button", "size": Vector2i(13, 9), "glyph": "down"}
+		t["windows/battle_thumb_top.%s.png" % side] = {"kind": "plate", "size": Vector2i(13, 6), "edges": "top"}
+		t["windows/battle_thumb_mid.%s.png" % side] = {"kind": "plate", "size": Vector2i(13, 12), "edges": "sides"}
+		t["windows/battle_thumb_bottom.%s.png" % side] = {"kind": "plate", "size": Vector2i(13, 6), "edges": "bottom"}
+	t["windows/battle_result_none.png"] = _scene("conflict")
+	t["windows/assault_repulsed.png"] = _scene("defense")
+	t["windows/bombardment_result.png"] = _scene("battery")
+	t["windows/bombardment_held.png"] = _scene("defense")
+	t["windows/battle_table2.png"] = {"kind": "plate", "size": Vector2i(400, 310),
+		"bands": [Rect2i(24, 87, 337, 17)], "wells": [Rect2i(24, 105, 167, 182), Rect2i(191, 105, 170, 182)]}
+	t["windows/battle_table3.png"] = {"kind": "plate", "size": Vector2i(400, 310),
+		"bands": [Rect2i(24, 87, 337, 17)], "wells": [Rect2i(24, 105, 112, 182), Rect2i(136, 105, 111, 182), Rect2i(247, 105, 114, 182)]}
+	# Create Mission (create_mission_window.gd; manual p042 Fig 2.34): the
+	# Select Mission page - the mission's name and picture, the target's box -
+	# and the Decoy page's two columns under the two tabs; the lists' starfield.
+	t["windows/mission_plate.png"] = {"kind": "plate", "size": Vector2i(259, 355),
+		"blacks": [Rect2i(31, 61, 211, 106), Rect2i(50, 210, 167, 81)]}
+	t["windows/mission_decoy_plate.png"] = {"kind": "plate", "size": Vector2i(259, 355),
+		"blacks": [Rect2i(7, 64, 117, 251), Rect2i(135, 64, 117, 244)]}
+	t["windows/list_starfield.png"] = {"kind": "plate", "size": Vector2i(195, 61), "base": "black"}
+	for side in Sides:
+		t["tabs/mission_select.%s.png" % side] = {"kind": "tab", "size": Vector2i(116, 33), "glyph": "missions", "side": side}
+		t["tabs/mission_decoy.%s.png" % side] = {"kind": "tab", "size": Vector2i(116, 33), "glyph": "decoy", "side": side}
+		t["windows/mission_agents.%s.png" % side] = {"kind": "icon", "size": Vector2i(108, 27), "glyph": "personnel", "side": side}
+		t["windows/mission_decoys.%s.png" % side] = {"kind": "icon", "size": Vector2i(108, 27), "glyph": "decoy", "side": side}
+	for b in [["mission_ok", "ok"], ["mission_cancel", "cancel"], ["mission_encyclopedia", "encyclopedia"]]:
+		t["buttons/%s.png" % b[0]] = {"kind": "button", "size": Vector2i(64, 32), "glyph": b[1]}
+	t["buttons/mission_list_open.png"] = {"kind": "button", "size": Vector2i(65, 17), "glyph": "down"}
+	t["buttons/mission_list_opened.png"] = {"kind": "button", "size": Vector2i(65, 18), "glyph": "up"}
+	t["buttons/mission_to_decoys.png"] = {"kind": "button", "size": Vector2i(16, 16), "glyph": "right"}
+	t["buttons/mission_to_agents.png"] = {"kind": "button", "size": Vector2i(16, 16), "glyph": "left"}
+	# Build Selection (build_selection_window.gd; manual p045 Fig 3.58): the
+	# item's picture and name, its two costs, the two times, the number to
+	# build, and the buttons.
+	t["windows/build_plate.png"] = {"kind": "plate", "size": Vector2i(210, 261),
+		"blacks": [Rect2i(6, 22, 200, 67), Rect2i(6, 109, 98, 29), Rect2i(108, 109, 98, 29), Rect2i(6, 140, 200, 49), Rect2i(140, 195, 66, 22)]}
+	for b in [["build_ok", "ok"], ["build_cancel", "cancel"], ["build_encyclopedia", "encyclopedia"]]:
+		t["buttons/%s.png" % b[0]] = {"kind": "button", "size": Vector2i(66, 33), "glyph": b[1]}
+	t["buttons/build_list_open.png"] = {"kind": "button", "size": Vector2i(65, 18), "glyph": "down"}
+	t["buttons/build_up.png"] = {"kind": "button", "size": Vector2i(13, 8), "glyph": "up"}
+	t["buttons/build_down.png"] = {"kind": "button", "size": Vector2i(13, 8), "glyph": "down"}
+	# The GID key (original_gid_key.gd): its closed button - the part the
+	# original shows, (1,1) 29 x 23 - and each side's mark in the legend.
+	t["windows/gid_key_closed.png"] = {"kind": "plate", "size": Vector2i(47, 25), "base": "clear",
+		"raised": [Rect2i(1, 1, 29, 23)], "glyphs": [["gid", Rect2i(4, 2, 23, 21)]]}
+	for s in ["alliance", "empire", "neutral"]:
+		t["windows/gid_key_%s.png" % s] = {"kind": "icon", "size": Vector2i(9, 9), "glyph": "loyalty", "side": s}
+	t["windows/gid_key_unexplored.png"] = {"kind": "star", "size": Vector2i(15, 15), "tier": "low", "side": "unexplored"}
 	_spec = t
 	return _spec
+
+
+## A scene the original paints (a battle, an assault, a bombardment): black,
+## our glyph for what happened dim in its upper middle - the game's words go
+## over it, the title above and the text below.
+static func _scene(glyph: String) -> Dictionary:
+	return {"kind": "plate", "size": Vector2i(400, 310), "base": "black",
+		"glyphs": [[glyph, Rect2i(145, 45, 110, 110), PlainIcons.Plate]]}
 
 
 static func _draw(spec: Dictionary, state: String) -> Image:
@@ -306,6 +396,8 @@ static func _draw(spec: Dictionary, state: String) -> Image:
 					pass
 				_:
 					_raised(img, Rect2i(Vector2i.ZERO, sz), str(spec.get("edges", "all")))
+			for r in spec.get("raised", []):
+				_raised(img, r)
 			for b in spec.get("bands", []):
 				_sunk(img, b, PlainIcons.Band)
 			for w in spec.get("wells", []):
@@ -317,7 +409,7 @@ static func _draw(spec: Dictionary, state: String) -> Image:
 			for o in spec.get("outlines", []):
 				_outline(img, o, _side_colour(str(spec.get("side", ""))) if spec.has("side") else PlainIcons.BevelLight)
 			for g in spec.get("glyphs", []):
-				_glyph(img, str(g[0]), PlainIcons.LabelColor, g[1])
+				_glyph(img, str(g[0]), g[2] if g.size() > 2 else PlainIcons.LabelColor, g[1])
 			for h in spec.get("holes", []):
 				img.fill_rect(h, Color(0, 0, 0, 0))
 		"corner":
@@ -351,6 +443,11 @@ static func _draw(spec: Dictionary, state: String) -> Image:
 			img.fill_rect(Rect2i(2, 3, 3, sz.y - 6), ends)
 			img.fill_rect(Rect2i(sz.x - 5, 3, 3, sz.y - 6), ends)
 			_sunk(img, Rect2i(12, 5, sz.x - 24, sz.y - 10), Color("#222222"))
+		"speedbars":
+			var on: Color = _side_colour(str(spec.get("side", "")))
+			img.fill(Color.BLACK)
+			for i in 3:
+				img.fill_rect(Rect2i(i * 6, 0, 4, sz.y - 1), on if i < int(spec.get("lit", 0)) else on.darkened(0.55))
 		"spot":
 			_spot(img, spec.get("tint", Color(0.35, 0.35, 0.35)))
 		"bar":

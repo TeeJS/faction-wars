@@ -636,6 +636,7 @@ func _options(host: bool) -> void:
 		_check(proceed.text == "Next" and not proceed.disabled and s.get_node("CenterContainer/Console/SideRow").visible
 			and not s.get_node("CenterContainer/Console/SpeedRow").visible and not s.get_node("CenterContainer/Console/BriefingRow").visible,
 			"page 1 (host): side, size and victory; the checkmark goes on")
+		_check(not s.get_node("CenterContainer/Console/CodeRow").visible, "page 1 (plain): no game code or Copy Code, as the original's look")
 		_check(not (sides[0] as Button).disabled and (sides[0] as Button).button_pressed, "Fig 5.9 (host): the host edits; Alliance preselected")
 		_check((sizes[1] as Button).button_pressed and (s.get_node("%BtnStandardGame") as Button).button_pressed, "Fig 5.9 (host): Large and Standard Game preselected")
 		bar.proceed.emit()
@@ -644,6 +645,7 @@ func _options(host: bool) -> void:
 			and s.get_node("CenterContainer/Console/SpeedRow").visible and s.get_node("CenterContainer/Console/BriefingRow").visible
 			and briefs.size() == 2 and (briefs[0] as Button).text == "Yes" and (briefs[1] as Button).text == "No" and (briefs[1] as Button).button_pressed
 			and int(s._settings.get("page", 0)) == 2, "page 2 (host): Skip the opening briefing? (No, the default) and the speed rule; the checkmark starts, and waits")
+		_check(s.get_node("CenterContainer/Console/CodeRow").visible, "page 2 (plain): the game code and Copy Code")
 		_start_gate(s, lobby, proceed)
 	else:
 		_check(not (sides[1] as Button).disabled and (sides[1] as Button).mouse_filter == Control.MOUSE_FILTER_IGNORE and (sides[1] as Button).button_pressed, "Fig 5.9 (guest): sees the host's side pressed, cannot change it")

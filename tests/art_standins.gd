@@ -114,6 +114,17 @@ func _init() -> void:
 	if options != null:
 		options.queue_free()   # closed while the game is up, which restarts its clock
 		await process_frame
+	# Phase 8: the speed menu's bars, the battle windows, Create Mission, Build
+	# Selection and the GID key all build from the stand-ins.
+	var speeds: PopupPanel = preload("res://src/ui/original_menu.gd").SpeedMenu("alliance", GameManager.SpeedNames, func(_s: int) -> void: pass)
+	_check(speeds != null, "the speed menu has its bars")
+	if speeds != null:
+		speeds.free()
+	_check(preload("res://src/ui/original_battle.gd").CanBuild() and OUI.Pic("battle_result_none") != null and OUI.Pic("battle_table3") != null
+		and OUI.Pic("assault_repulsed") != null and OUI.Pic("bombardment_held") != null, "the battle windows' pictures are there: the alert's and the results'")
+	_check(preload("res://src/ui/create_mission_window.gd").CanBuild() and preload("res://src/ui/build_selection_window.gd").CanBuild(),
+		"Create Mission's and Build Selection's pictures are there")
+	_check(preload("res://src/ui/original_gid_key.gd").CanBuild("alliance") and Art.WindowPicture("gid_key_neutral") != null, "the GID key's pictures are there")
 	root.remove_child(main)
 	main.free()
 

@@ -624,7 +624,9 @@ func _show_page(page: int) -> void:
 	var one := _page == 1
 	for n in ["SideRow", "SizeRow", "VictoryRow"]:
 		(get_node("CenterContainer/Console/" + n) as Control).visible = one
-	for n in ["BriefingRow", "SpeedRow"]:
+	# The game code and Copy Code on page 2 alone, as the original's look has
+	# them (_oPage2; TeeJ, 2026-09-28: Copy off page 1).
+	for n in ["BriefingRow", "SpeedRow", "CodeRow"]:
 		(get_node("CenterContainer/Console/" + n) as Control).visible = not one
 	if _look != null:
 		for c in _oPage1:
