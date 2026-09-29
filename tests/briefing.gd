@@ -164,9 +164,20 @@ func _init() -> void:
 	_check(feedback != null and at.end.y <= fb.position.y and fb.position.y - at.end.y <= 12.0
 		and absf(at.position.x - pin.position.x) < 1.0 and absf(at.size.x - pin.size.x) < 1.0 and absf(at.size.y - pin.size.y) < 1.0,
 		"... just above Feedback (%s), a sector button's place and size (%s)" % [str(fb), str(pin)])
-	_check(stop != null and not pins.is_empty() and not stop.has_theme_stylebox_override("normal")
+	# ... bordered in the player's side colour (TeeJ, 2026-09-28: "to make it
+	# more distinct").
+	var mine: Faction = GameSettings.LocalFaction()
+	var edge: Color = preload("res://src/ui/original_ui.gd").SideColor(mine)
+	var plain: StyleBoxFlat = ThemeDB.get_default_theme().get_stylebox("normal", "Button") as StyleBoxFlat
+	var looks := true
+	for st in ["normal", "hover", "pressed"]:
+		var sb: StyleBoxFlat = stop.get_theme_stylebox(st) as StyleBoxFlat if stop != null else null
+		looks = looks and sb != null and sb.border_color == edge and sb.border_width_top == 2 and sb.border_width_left == 2
+	var sbn: StyleBoxFlat = stop.get_theme_stylebox("normal") as StyleBoxFlat if stop != null else null
+	_check(stop != null and not pins.is_empty() and looks and plain != null and sbn != null and sbn.bg_color == plain.bg_color
 		and stop.get_theme_font_size("font_size") == (pins[0] as Button).get_theme_font_size("font_size"),
-		"... in the sector buttons' own look")
+		"... in the sector buttons' own look, with a 2 px border in %s's colour %s" % [mine.Id if mine != null else "-", edge.to_html(false)])
+	_check(mine == null or mine.ArtSkin != "alliance" or edge == Color(1, 0, 0), "... red for the Alliance")
 	await _click(at.get_center())
 	_check(b.Skipped() and not _playing(al_lines[2]["sound"]) and _playing(al["skip"][1]["sound"]),
 		"Stop Briefing: the line stops and the skip's plays (\"I do hope you know what you're doing\")")

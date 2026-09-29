@@ -31,6 +31,7 @@ extends Control
 
 const SoundLib := preload("res://src/ui/sound.gd")
 const Fwa := preload("res://src/ui/fwa.gd")
+const OUI := preload("res://src/ui/original_ui.gd")
 
 ## The Command Center's agent droid (command_frame.gd Droid).
 var Agent: Node = null
@@ -105,6 +106,15 @@ func _add_stop() -> void:
 	b.tooltip_text = "Stop the briefing."
 	b.pressed.connect(Skip)
 	add_child(b)
+	# TeeJ, 2026-09-28: a border in the player's side colour to set it apart -
+	# the original's red for the Alliance, green for the Empire (OUI.SideColor).
+	var edge := OUI.SideColor(GameSettings.LocalFaction())
+	for st in ["normal", "hover", "pressed"]:
+		var sb := b.get_theme_stylebox(st).duplicate()
+		if sb is StyleBoxFlat:
+			(sb as StyleBoxFlat).set_border_width_all(2)
+			(sb as StyleBoxFlat).border_color = edge
+			b.add_theme_stylebox_override(st, sb)
 	_stop = b
 	_place_stop()
 
