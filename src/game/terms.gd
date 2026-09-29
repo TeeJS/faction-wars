@@ -58,6 +58,8 @@ const DEFAULTS := {
 	# the word under a sector's name on the map, in the original's look
 	# ("Calaron" / "Sector")
 	"sector":                 "Sector",
+	# the Cockpit's size choice (manual p021, Fig. 2.2: "galaxy size")
+	"galaxy_size":            "Galaxy Size",
 }
 
 

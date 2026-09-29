@@ -669,6 +669,7 @@
     "system_hyperdrive": "Cruising Engines",
     "shield_active": "Fortified",
     "weapon_armed": "Manned",
-    "sector": "Theatre"
+    "sector": "Theatre",
+    "galaxy_size": "Map Size"
   }
 }

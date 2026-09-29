@@ -51,6 +51,8 @@ const KNOWN_TERMS := [
 	"shield_active", "weapon_armed",
 	# the word under a sector's name on the map
 	"sector",
+	# the Cockpit's size choice
+	"galaxy_size",
 ]
 ## SCHEMA.md section 2, `menu`. Every function of the Shuttle Cockpit (manual
 ## p021, Fig. 2.2); a picture menu must offer each one, so no function is lost
@@ -374,6 +376,25 @@ static func _validate_look(pack: LoadedPack, pack_dir: String, errors: Array[Str
 		var a: Variant = look["overlay_alpha"]
 		if not (a is float or a is int) or float(a) < 0 or float(a) > 1:
 			errors.append("look.json overlay_alpha: must be a number from 0 to 1.")
+	var dossier: Variant = look.get("dossier", {})
+	if not dossier is Dictionary:
+		errors.append("look.json: `dossier` must be an object.")
+	else:
+		for key in JsonUtil.data_keys(dossier):
+			if not ["subtitle", "map_rect", "map_caption"].has(key):
+				errors.append("look.json dossier: '%s' is not known. Known: subtitle, map_rect, map_caption." % key)
+		for key in ["subtitle", "map_caption"]:
+			if dossier.has(key) and not dossier[key] is String:
+				errors.append("look.json dossier.%s: must be text." % key)
+		if dossier.has("map_rect"):
+			var r: Variant = dossier["map_rect"]
+			var ok: bool = r is Array and (r as Array).size() == 4
+			if ok:
+				for n in r:
+					ok = ok and (n is float or n is int) and float(n) >= 0
+				ok = ok and float(r[2]) > 0 and float(r[3]) > 0
+			if not ok:
+				errors.append("look.json dossier.map_rect: must be [x, y, w, h] in map_image's pixels, w and h above 0.")
 	var textures: Variant = look.get("textures", {})
 	if not textures is Dictionary:
 		errors.append("look.json: `textures` must be an object of name -> picture.")

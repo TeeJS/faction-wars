@@ -103,7 +103,7 @@ They go in `packs/ww2/look/fonts/` with their licences, each hashed and recorded
 - **Cockpit secondary actions are the existing four.** No Settings button is added, because the plain Cockpit has none today and that would be new navigation.
 - **Map routes and selection rings are not added**, because the main map does not draw them today. Only what exists is restyled.
 - **Empty-state copy goes through `display.json` `terms`**, the existing pack-wording table. WWII gets "No dispatches received"; Star Wars keeps "No transmissions.". This changes WWII's content hash only, and saves are refused by pack id, not hash.
-- **Reduced motion:** the light drift is off when the browser reports `prefers-reduced-motion`. A **Reduce motion** box goes in Game Options, because Godot cannot read the Windows setting.
+- **Reduced motion:** the light drift is off when the browser reports `prefers-reduced-motion`. A **Reduce motion** box goes in Game Options, because Godot cannot read the Windows setting. *(Phase 2: it sits in the Cockpit's own "Game Options" group, beside the lamp it stills, and is remembered with Provide feedback.)*
 - **Loading states** are restyled only where the game shows one today. None are added.
 
 ## Phases (each ends with a stop, captures and a go/no-go)

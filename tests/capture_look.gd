@@ -7,8 +7,8 @@ extends SceneTree
 ##   Godot_console.exe --path . --resolution 1440x850 -s tests/capture_look.gd -- `
 ##       --out=C:/tmp/look/ww2_1440 --pack=ww2 --record=user://capture-look.jsonl [--faction=allies]
 ##
-## writes <out>_cockpit.png, _map.png, _message.png, _dialog.png, _finder.png
-## and _menu.png. --record= is REQUIRED: without it the game's session log
+## writes <out>_cockpit.png, _credits.png, _map.png, _message.png, _dialog.png,
+## _finder.png and _menu.png. --record= is REQUIRED: without it the game's session log
 ## would overwrite the player's user://last-session.jsonl.
 ##
 ## No art set is read (Artwork.UserArtRoot / IgnoreProjectFolder, as the
@@ -43,6 +43,23 @@ func _init() -> void:
 	for _i in 6:
 		await process_frame
 	ok = _shot(out, "cockpit") and ok
+	# Keyboard focus on the first launch plate (the side buttons are in every
+	# form of the Cockpit).
+	var plate: Button = menu.find_child("BtnAlliance", true, false)
+	if plate != null and plate.is_visible_in_tree():
+		plate.grab_focus()
+		for _i in 3:
+			await process_frame
+		ok = _shot(out, "cockpit_focus") and ok
+		plate.release_focus()
+	# View Credits, from the Cockpit (the button form's; a picture Cockpit has
+	# its own region).
+	var credits: Button = menu.find_child("BtnCredits", true, false)
+	if credits != null:
+		credits.pressed.emit()
+		for _i in 4:
+			await process_frame
+		ok = _shot(out, "credits") and ok
 	menu.queue_free()
 	await process_frame
 	await process_frame

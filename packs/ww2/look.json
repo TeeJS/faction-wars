@@ -53,6 +53,12 @@
     "pad": 8
   },
   "overlay_alpha": 0.55,
+  "dossier": {
+    "_comment": "The Cockpit's campaign dossier: the line under the title, and the fragment of map_image it shows, in the picture's own pixels [x, y, w, h] (1750 x 1050) - the North Atlantic, Europe and North Africa.",
+    "subtitle": "Global war  ·  1939 – 1945",
+    "map_rect": [490, 142, 900, 375],
+    "map_caption": "Plate I  ·  Political map of the world, 1941"
+  },
   "textures": {
     "paper": "look/paper.png",
     "paper_frame": {"file": "look/paper_frame.png", "margin": 20},

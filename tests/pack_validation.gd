@@ -252,6 +252,8 @@ func _init() -> void:
 	_look_case("an overlay alpha above 1", look, {"alpha": 1.5}, "overlay_alpha: must be a number from 0 to 1")
 	_look_case("a texture the engine does not know", look, {"texture": ["wallpaper", "look/paper.png"]}, "textures.wallpaper: not a known texture")
 	_look_case("a texture the pack does not ship", look, {"texture": ["paper", "look/missing.png"]}, "'look/missing.png' is not in")
+	_look_case("a dossier map plate that is not [x, y, w, h]", look, {"dossier": ["map_rect", [10, 10, 0]]}, "dossier.map_rect: must be [x, y, w, h]")
+	_look_case("a dossier field the engine does not know", look, {"dossier": ["banner", "x"]}, "dossier: 'banner' is not known")
 	var credit := {"title": "Map", "author": "Someone", "licence": "CC0", "files": ["world_1941.jpg"]}
 	_credits_case("a credit with no author", [credit.merged({"author": ""}, true)], "`author` is missing")
 	_credits_case("a credit with no licence", [credit.merged({"licence": ""}, true)], "`licence` is missing")
@@ -598,6 +600,8 @@ func _look_case(what: String, look: Dictionary, change: Dictionary, expect: Stri
 		l["overlay_alpha"] = change["alpha"]
 	if change.has("texture"):
 		l["textures"][change["texture"][0]] = change["texture"][1]
+	if change.has("dossier"):
+		l["dossier"][change["dossier"][0]] = change["dossier"][1]
 	var p := _ww2()
 	p.Look = l
 	_expect(what, func(errors: Array[String]) -> void: PackLoader._validate_look(p, WW2_DIR, errors), expect)

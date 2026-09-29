@@ -111,6 +111,23 @@ static func Metric(name: String) -> int:
 	return int(_def().get("metrics", {}).get(name, DEFAULT_METRICS.get(name, 0)))
 
 
+## The Cockpit's dossier facts: `subtitle`, `map_rect` ([x, y, w, h] in the
+## map picture's pixels), `map_caption`. {} without them.
+static func Dossier() -> Dictionary:
+	return _def().get("dossier", {})
+
+
+## Hold still: the player's Reduce motion box, or the browser's own
+## prefers-reduced-motion. Nothing in a look may move when this is true.
+static func ReducedMotion() -> bool:
+	if GameSettings.ReduceMotion:
+		return true
+	if OS.has_feature("web"):
+		var r: Variant = JavaScriptBridge.eval("window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches", true)
+		return r == true
+	return false
+
+
 ## The dim laid over the map behind a dialog.
 static func Dim() -> Color:
 	var c := C("overlay")
@@ -301,6 +318,14 @@ static func _build() -> Theme:
 		t.set_color("font_hover_pressed_color", type, C("text"))
 		t.set_color("font_focus_color", type, C("text"))
 		t.set_color("font_disabled_color", type, C("text_disabled"))
+
+	# A check box is a Button to the theme: without its own boxes it would
+	# wear the key's frame. Its box is its icon; the row lights under the pointer.
+	for type in ["CheckBox", "CheckButton"]:
+		var bare := Box("", "", 0, 0, 4)
+		for style in ["normal", "pressed", "disabled", "hover_pressed"]:
+			t.set_stylebox(style, type, bare)
+		t.set_stylebox("hover", type, Box("chassis_hover", "", 0, -1, 4))
 
 	t.set_color("font_color", "Label", C("text"))
 	t.set_color("default_color", "RichTextLabel", C("text"))
