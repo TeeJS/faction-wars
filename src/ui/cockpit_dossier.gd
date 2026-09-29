@@ -136,7 +136,8 @@ static func Drift(menu: Control) -> void:
 	var lamp: TextureRect = menu.get_node_or_null("Desk/Lamp")
 	if lamp == null:
 		return
-	var old: Variant = menu.get_meta("drift", null)
+	# has_meta first: get_meta with a null default still errors when unset.
+	var old: Variant = menu.get_meta("drift") if menu.has_meta("drift") else null
 	if old is Tween and (old as Tween).is_valid():
 		(old as Tween).kill()
 	lamp.position = Vector2(-130, -260)

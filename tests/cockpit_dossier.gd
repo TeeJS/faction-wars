@@ -80,10 +80,11 @@ func _init() -> void:
 	# Reduced motion holds the lamp still; without it, it drifts.
 	GameSettings.ReduceMotion = false
 	Dossier.Drift(menu)
-	_check(menu.get_meta("drift", null) is Tween, "the lamp drifts")
+	_check(menu.has_meta("drift") and menu.get_meta("drift") is Tween, "the lamp drifts")
 	GameSettings.ReduceMotion = true
 	Dossier.Drift(menu)
-	_check(menu.get_meta("drift", null) == null, "Reduce motion holds it still")
+	# Held still, the drift is gone (set_meta to null removes it).
+	_check(not menu.has_meta("drift"), "Reduce motion holds it still")
 	GameSettings.ReduceMotion = keep_motion
 
 	# View Credits: the Credits sheet, the pack's lines, every asset.

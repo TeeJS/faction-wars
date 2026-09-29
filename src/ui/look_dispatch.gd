@@ -322,7 +322,7 @@ static func _set_stamp(stamp: PanelContainer, text: String, urgent: bool, on_pap
 ## The parchment under the detail column, past its edges by PaperPad; an
 ## urgent dispatch's signal band across its top.
 static func _draw_paper(detail: Control) -> void:
-	var paper: StyleBox = detail.get_meta("look_paper", null)
+	var paper: StyleBox = detail.get_meta("look_paper") if detail.has_meta("look_paper") else null
 	if paper == null:
 		return
 	var r := Rect2(Vector2(-PaperPad, -PaperPad), detail.size + Vector2(2 * PaperPad, 2 * PaperPad))
