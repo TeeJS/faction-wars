@@ -62,6 +62,8 @@ const DEFAULTS := {
 	"sector":                 "Sector",
 	# the Cockpit's size choice (manual p021, Fig. 2.2: "galaxy size")
 	"galaxy_size":            "Galaxy Size",
+	# a message category with nothing in it
+	"no_messages":            "No transmissions.",
 }
 
 

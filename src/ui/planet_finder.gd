@@ -12,6 +12,8 @@ extends DraggableWindow
 ## "planet info should be renamed System Finder and match the original").
 
 const OF := preload("res://src/ui/original_finder.gd")
+## The plain window in a pack's look (docs/ww2-look-plan.md, phase 5).
+const LookWindow := preload("res://src/ui/look_window.gd")
 ## The tabs' pictures (STRATEGY 10500-10513), in the original's order.
 const TabStems := ["finder_tab_all", "finder_tab_rebel", "finder_tab_imperial", "finder_tab_neutral", "finder_tab_unexplored"]
 
@@ -50,6 +52,13 @@ func _ready() -> void:
 		for order in 2:
 			if FactionRegistry.Playable.size() > order and tabs.get_tab_count() > order + 1:
 				tabs.set_tab_title(order + 1, (FactionRegistry.Playable[order] as Faction).ShortName)
+	if Look.Active():
+		LookWindow.Dress(self)
+		var field: Label = get_node_or_null("MainVBox/ContentArea/Padding/VBox/SearchHBox/SearchLabel")
+		if field != null:
+			field.theme_type_variation = Look.HEADING
+			field.remove_theme_font_size_override("font_size")
+			field.add_theme_font_size_override("font_size", Look.Size("label"))
 
 	PopulateLists("")
 
@@ -204,6 +213,11 @@ func PopulateLists(filterText: String) -> void:
 
 			planetBtn.add_theme_color_override("font_color", nameColor)
 			planetBtn.add_theme_font_size_override("font_size", 14)
+			if Look.Active():
+				# The look's side colours hold their contrast on its dark list;
+				# a system no side is known to hold is in the muted text.
+				var owner: Faction = IntelManager.OwnerSeen(GameSettings.LocalFaction(), planet)
+				LookWindow.ListRow(planetBtn, Look.SideColor(owner) if owner != null else Look.C("text_muted"))
 			planetBtn.pressed.connect(func() -> void: OnPlanetClicked(sector))
 
 			# Always add to the "All Systems" tab (create a duplicate button)
