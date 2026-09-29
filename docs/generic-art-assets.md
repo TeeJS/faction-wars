@@ -115,3 +115,21 @@ drawn by the game with the title boxes (phase 3).
 | Mission tabs | `tabs/mission_agents_tab.<side>[.pressed].png`, `mission_decoys_tab.<side>[.pressed / .grey].png` | 61 x 16 | 10 | The Agents and Decoys tabs. | Plain, pressed; decoys grey when there are none. | Our person and outlined-person glyphs |
 | Mission tiles | via `Art.MissionTile` (`missions/<id>.<side>.png`) | 73 x 48 (the frame's size) | per mission kind and side | Each mission kind's picture on its tile. | One state. | None |
 | Miniatures | `units/<id>.png`, `facilities/<id>.png`, `characters/<id>.png` miniatures (`Art.Miniature`) | 61 x 25 | one per unit / facility / character | The picture on each card. | Listed with the Encyclopedia (phase 6). | None (the card plate alone) |
+
+## Phase 6: the finders and the Encyclopedia
+
+The four finders (manual p075 Fig 3.12, p124-p126) and the Galactic
+Encyclopedia sit in the Message Index's frame (`windows/frame.<side>.png`,
+phase 2) with its close button and scroll bar.
+
+| Asset | File | Size (frame px) | Count | What it is | States / notes | Plain stand-in now |
+|---|---|---|---|---|---|---|
+| Finder plates | `windows/finder_fleets.<side>`, `finder_ships.<side>`, `finder_personnel.<side>`, `finder_specforces.<side>`, `finder_troops.<side>`, `finder_systems` `.png` | 400 x 306 | 11 | Each finder's face: the band above (the name field, the tabs, the caption), the list below. | Band from (25,33) 350 wide; the list (25,125) 349 x 166 - from y 120 on Personnel, 131 on Special Forces and Troops. | Grey plate, dark band, black list |
+| Encyclopedia plates | `windows/ency_index_plate.png`, `windows/ency_topic_plate.png` | 400 x 306 | 2 | The Index page (topic field, database tabs, caption, list) and the Topic page (one black reading area: picture and text). | Index as the finders; Topic black from (1,19) 398 x 286. | As the finders; a black page |
+| Side columns | `windows/finder_side2.alliance.png`, `finder_side4.alliance.png`, `ency_side.alliance.png` | 58 x 330 | 3 | The Alliance's column of side buttons (two or four buttons). | One state. | Grey plate |
+| Finder tabs | `tabs/finder_tab_<all / rebel / imperial / neutral / unexplored>[.pressed / .grey].png` | 49 x 41 | 14 | Which side's systems, fleets, troops or personnel to list. | Plain, pressed; grey (empty) except All. | Our grid glyph; a disc in each side's colour |
+| Encyclopedia tabs | `tabs/ency_tab_<all / system / defense>[.pressed].png`, `ency_tab_<facilities / missions / ship / troop / personnel>.<side>[.pressed].png` | 49 x 41; personnel 49-50 x 57 | 26 | The databases: All, System, Defense, Facilities, Mission, Ship, Troop, Personnel. | Plain and pressed. | Our glyphs |
+| Finder buttons | `buttons/finder_<display / btn_characters / btn_specforces / btn_fleets / btn_ships>.<side>[.pressed].png` | Alliance 32 x 31, Empire 44 x 41 | 20 | Display (open the selection's window), Characters / Special Forces, Fleets / Ships. | Plain and pressed. | Our window, person, helmet, ship and list glyphs |
+| Encyclopedia buttons | `buttons/ency_view_topic.<side>`, `ency_view_index.<side>` `[.pressed / .disabled].png` | Alliance 32 x 31, Empire 44 x 41 | 12 | View Topic, View Index. | Plain, pressed, disabled. | Our page and list glyphs |
+| Encyclopedia arrows | `buttons/ency_prev[...]`, `buttons/ency_next[...]` | 21 x 17 | 6 | Step to the previous / next topic. | Plain, pressed, disabled. | Our left and right glyphs |
+| Encyclopedia pictures | `characters/<id>.png`, `units/<id>.png`, `facilities/<id>.png`, `planets/<id>.png`, `missions/...` (`Art.Picture`) with portraits (`Art.Portrait`) and miniatures (`Art.Miniature`, 61 x 25) | the Topic picture area; miniatures 61 x 25 | one per entry | Every topic's picture: each character, ship, fighter, troop, facility, system and mission. | One state (characters also `.report`, units `.damage` / `.moving`). | None |

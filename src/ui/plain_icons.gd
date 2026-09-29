@@ -491,6 +491,32 @@ const Masks := {
 		".#.......#.",
 		".#########.",
 	],
+	"left": [
+		"...........",
+		"...........",
+		"....#......",
+		"...##......",
+		"..#########",
+		".##########",
+		"..#########",
+		"...##......",
+		"....#......",
+		"...........",
+		"...........",
+	],
+	"right": [
+		"...........",
+		"...........",
+		"......#....",
+		"......##...",
+		"#########..",
+		"##########.",
+		"#########..",
+		"......##...",
+		"......#....",
+		"...........",
+		"...........",
+	],
 	"gid": [
 		"###########",
 		"#.........#",
@@ -510,7 +536,7 @@ const Masks := {
 ## window's corner icons.
 const Aliases := {
 	"fleet_finder": "fleets", "personnel_finder": "personnel", "mission": "missions",
-	"fleet": "fleets", "defenses": "defense", "cancel": "close", "ship": "fleets", "troop": "troop_finder", "troops": "troop_finder", "fighters": "fighter", "shipyards": "fleets", "training_facilities": "troop_finder", "construction_yards": "construction", "refineries": "refinery", "mines": "mine", "planetary_shield": "defense", "planetary_battery": "battery", "agents": "personnel", "decoys": "decoy",
+	"fleet": "fleets", "defenses": "defense", "cancel": "close", "ship": "fleets", "troop": "troop_finder", "troops": "troop_finder", "fighters": "fighter", "shipyards": "fleets", "training_facilities": "troop_finder", "construction_yards": "construction", "refineries": "refinery", "mines": "mine", "planetary_shield": "defense", "planetary_battery": "battery", "agents": "personnel", "decoys": "decoy", "prev": "left", "next": "right", "view_topic": "summary", "view_index": "select_all", "display": "open", "btn_fleets": "fleets", "btn_ships": "select_all", "btn_characters": "personnel", "btn_specforces": "troop_finder", "facilities": "manufacturing", "rebel": "system", "imperial": "system", "neutral": "system", "unexplored": "system",
 }
 
 static var _cache: Dictionary = {}
