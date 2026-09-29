@@ -9,11 +9,18 @@ extends SceneTree
 ##
 ## --extra=N posts N read Conflict messages first (a tab long enough for the
 ## scroll bar); --pick=K picks the K-th row instead of the first; --imported
-## posts a Game imported message (the disc icon) and reads that one.
+## posts a Game imported message (the disc icon) and reads that one. --noart:
+## as a player with no art set (our stand-ins, the plain build parity plan).
+
+const ArtScript := preload("res://src/ui/artwork.gd")
 
 func _init() -> void:
 	await process_frame
 	var out := _arg("--out=", "user://mi.png").trim_suffix(".png")
+	if OS.get_cmdline_user_args().has("--noart"):
+		ArtScript.IgnoreProjectFolder = true
+		ArtScript.UserArtRoot = "user://capture-noart"
+		ArtScript.Reset()
 	FactionRegistry.EnsureLoaded()
 	MpSetup.reset()
 	GameSettings.SelectedDifficulty = Enums.Difficulty.Medium
