@@ -261,6 +261,12 @@ func RefreshCategory(categoryFilter: String) -> void:
 	_selectedMessage = null
 	if _gotoButton != null:
 		_gotoButton.disabled = true
+	# Nothing picked, nothing to continue, abort or delete: ShowDetail shows
+	# them again for the message it shows. (A tab empty from the first paint
+	# never reached ShowDetail, so they stood there acting on no message.)
+	for b in [_continueBtn, _abortBtn, _deleteBtn]:
+		if b != null:
+			(b as Button).visible = false
 	if Look.Active():
 		LookDispatch.Clear(self)
 
@@ -508,6 +514,8 @@ func BuildActionRow() -> void:
 	_continueBtn = Button.new()
 	_continueBtn.text = "Continue Mission"
 	_continueBtn.pressed.connect(func() -> void:
+		if _selectedMessage == null:
+			return
 		# Continuing is simply letting it run - the manual's default, since
 		# an unanswered report continues on its own (p110).
 		_selectedMessage.PendingMission = null
@@ -516,6 +524,8 @@ func BuildActionRow() -> void:
 	_abortBtn = Button.new()
 	_abortBtn.text = "Abort Mission"
 	_abortBtn.pressed.connect(func() -> void:
+		if _selectedMessage == null or _selectedMessage.PendingMission == null:
+			return
 		CommandBus.issue("abort_mission", { "mission": _selectedMessage.PendingMission.Serial })
 		_selectedMessage.PendingMission = null
 		RefreshCurrentTab())
