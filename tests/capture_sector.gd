@@ -6,11 +6,18 @@ extends SceneTree
 ##   Godot_console.exe --path . --resolution 1440x850 -s tests/capture_sector.gd -- --out=C:/tmp/sector.png [--pack=ww2]
 ##
 ## --sector=Corellian opens that sector instead; --crop saves the window alone
-## (to lay beside a screenshot of the original).
+## (to lay beside a screenshot of the original). --noart: as a player with no
+## art set (our stand-ins, the plain build parity plan).
+
+const ArtScript := preload("res://src/ui/artwork.gd")
 
 func _init() -> void:
 	await process_frame
 	var out := _arg("--out=", "user://sector.png")
+	if OS.get_cmdline_user_args().has("--noart"):
+		ArtScript.IgnoreProjectFolder = true
+		ArtScript.UserArtRoot = "user://capture-noart"
+		ArtScript.Reset()
 	FactionRegistry.EnsureLoaded()
 	MpSetup.reset()
 	GameSettings.SelectedDifficulty = Enums.Difficulty.Medium

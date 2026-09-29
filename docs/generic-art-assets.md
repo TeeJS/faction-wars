@@ -56,3 +56,17 @@ without the art the plain build draws each as a stand-in at the same size
 | Scroll bar | `buttons/scroll_up.png`, `scroll_down.png` 13 x 9; `scroll_thumb_top.png` 13 x 6, `scroll_thumb_mid.png` 13 x 12, `scroll_thumb_bottom.png` 13 x 6 | as listed | 5 | The list's scroll bar (and every long list's). | The thumb is its top, as many middles as it takes, and its bottom, stacked. | Arrow wells; a grey thumb |
 | Message pictures | `windows/message.<id>.png` (STRATEGY 1000-1075) | 400 x 200 (the reading view's slot; not re-measured on a current art set) | up to 76 | The picture shown above a message's text: a scene for each kind of news. | One state. | None (black) |
 | Report scenes | `windows/report.<kind>.png`, with `characters/<id>.report.png` figures | 400 x 200 slot (as above) | per mission kind / character | A mission report's scene, the character's figure laid over it. | As the message pictures. | None |
+
+## Phase 3: the sector window
+
+The window (manual p025, Fig 2.8) draws its own starfield panel, frame, bars
+and names; these are its pictures. The GID stars also draw the galaxy map.
+
+| Asset | File | Size (frame px) | Count | What it is | States / notes | Plain stand-in now |
+|---|---|---|---|---|---|---|
+| Planet pictures | `planet_sprites/<n>.png` | 37 x 37 | 26 | A system's picture in the sector window, by the pack's `artwork` number (1-26). | One state; transparent round the planet. | A shaded disc, each number its own muted colour |
+| Corner icons | `icons/<glyph>.<side>[.hover].png` | manufacturing 27 x 18, fleet 28 x 18, defenses 27 x 19, mission 28 x 19 | 20 (already listed in phase 1) | The glyphs round a system's picture: Manufacturing (top-left of its cell, glyph 11 x 8), Fleet (top-right, 17 x 9), Defenses (bottom-left, 10 x 9), Mission (bottom-right, 11 x 11). Each opens that window. | Normal and `.hover` (the glyph a pixel larger). Manufacturing and Defenses also `.neutral`. | Our glyphs in the side's colour, white when hovered |
+| En-route fleet icon | `icons/enroute.<side>.png` | 20 x 20 | 2 | A fleet on its way to a system. | One state. | Our ship-with-trail glyph |
+| Uprising icon | `icons/uprising.png`, `icons/uprising.hover.png` | 20 x 20 | 2 | A system in uprising. | Normal and hover. | Our flame glyph, orange |
+| Title boxes | `buttons/title_close.png`, `title_minimize.png`, `title_system.png`, `sector_switch[.pressed].png` | 14 x 14 | 5 | Close, minimise, the system box, and the sector window's switch-to-the-other-side box. | Switch has a pressed state. | Our close, bar, planet and arrows glyphs |
+| GID stars | `gid/<side>.<tier>.png` | 15 x 15 | 16 (already listed in phase 1) | A system's star on the galaxy map and under its picture in the sector window: alliance, empire, neutral, unexplored at big / mid / low / none. | One state. | A plus in the side's colour, reach 7 / 5 / 3 / 1 |

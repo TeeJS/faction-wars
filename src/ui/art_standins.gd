@@ -25,15 +25,22 @@ const LookLib := preload("res://src/ui/look.gd")
 ## The file-name states a picture comes in; the stand-in draws each.
 const States := ["pressed", "disabled", "grey", "lit", "picked", "hover", "chosen"]
 const Sides := {"alliance": Color(1, 0, 0), "empire": Color(0, 1, 0)}
+## The original's planet pictures: 26 of them, 37 x 37 (planet_sprites/<n>).
+const PlanetSprites := 26
+## A tier's star: the plus's reach from its middle, and its arms' width.
+const StarReach := {"big": 7, "mid": 5, "low": 3, "none": 1}
 
 static var _spec: Dictionary = {}
 static var _made: Dictionary = {}
+## Tests only: off, to see the plain windows a pack with its own look still
+## uses (the WWII pack).
+static var Enabled: bool = true
 
 
 ## Stand-ins are drawn when the pack's art sets are all absent and the pack
 ## has no look of its own (the WWII pack draws its screens its own way).
 static func Active() -> bool:
-	if FactionRegistry.Pack == null or LookLib.Active():
+	if not Enabled or FactionRegistry.Pack == null or LookLib.Active():
 		return false
 	var sets: Array = FactionRegistry.Pack.Manifest.ArtSets
 	if sets.is_empty():
@@ -117,6 +124,30 @@ static func Table() -> Dictionary:
 		t["tabs/msg_%s.png" % c[0]] = {"kind": "tab", "size": c[1], "glyph": c[0]}
 	for c in ["chat", "conflict", "defense", "resources"]:
 		t["windows/msgicon.%s.png" % c] = {"kind": "icon", "size": Vector2i(15, 15), "glyph": c}
+	# ---- Phase 3: the sector window (sector_window.gd, manual p025 Fig 2.8) ----
+	# The corner cells: each glyph in its own corner of the cell (measured:
+	# manufacturing top-left, fleet top-right, defenses bottom-left, mission
+	# bottom-right), a pixel larger when hovered.
+	var cells := {
+		"manufacturing": [Vector2i(27, 18), Rect2i(1, 1, 11, 8), "manufacturing"],
+		"fleet": [Vector2i(28, 18), Rect2i(10, 0, 17, 9), "fleets"],
+		"defenses": [Vector2i(27, 19), Rect2i(1, 9, 10, 9), "defense"],
+		"mission": [Vector2i(28, 19), Rect2i(16, 7, 11, 11), "missions"],
+	}
+	for glyph in cells:
+		var sides: Array = Sides.keys() + (["neutral"] if glyph == "manufacturing" or glyph == "defenses" else [])
+		for side in sides:
+			t["icons/%s.%s.png" % [glyph, side]] = {"kind": "corner", "size": cells[glyph][0], "box": cells[glyph][1], "glyph": cells[glyph][2], "side": side}
+	for side in Sides:
+		t["icons/enroute.%s.png" % side] = {"kind": "icon", "size": Vector2i(20, 20), "glyph": "enroute", "side": side}
+	t["icons/uprising.png"] = {"kind": "icon", "size": Vector2i(20, 20), "glyph": "uprising", "side": "uprising"}
+	for b in [["title_close", "close"], ["title_minimize", "minimize"], ["title_system", "system"], ["sector_switch", "switch"]]:
+		t["buttons/%s.png" % b[0]] = {"kind": "button", "size": Vector2i(14, 14), "glyph": b[1]}
+	for n in range(1, PlanetSprites + 1):
+		t["planet_sprites/%d.png" % n] = {"kind": "planet", "size": Vector2i(37, 37), "n": n}
+	for side in ["alliance", "empire", "neutral", "unexplored"]:
+		for tier in ["big", "mid", "low", "none"]:
+			t["gid/%s.%s.png" % [side, tier]] = {"kind": "star", "size": Vector2i(15, 15), "side": side, "tier": tier}
 	_spec = t
 	return _spec
 
@@ -134,10 +165,18 @@ static func _draw(spec: Dictionary, state: String) -> Image:
 				_sunk(img, w, PlainIcons.Well)
 			for h in spec.get("holes", []):
 				img.fill_rect(h, Color(0, 0, 0, 0))
+		"corner":
+			var hover: bool = state == "hover"
+			var box: Rect2i = spec["box"]
+			_glyph(img, str(spec["glyph"]), Color.WHITE if hover else _side_colour(str(spec["side"])), box.grow(1) if hover else box, true)
+		"planet":
+			_planet(img, int(spec["n"]))
+		"star":
+			_star(img, str(spec["tier"]), _side_colour(str(spec["side"])))
 		"bar":
 			img.fill(lit)
 		"icon":
-			var c: Color = Color.WHITE if state == "picked" else lit
+			var c: Color = Color.WHITE if state == "picked" or state == "hover" else _side_colour(str(spec.get("side", "")))
 			_glyph(img, str(spec["glyph"]), c, Rect2i(Vector2i.ZERO, sz))
 		"button", "tab":
 			var down: bool = state == "pressed" or state == "chosen" or state == "lit"
@@ -182,15 +221,59 @@ static func _sunk(img: Image, r: Rect2i, fill: Color) -> void:
 
 ## Our glyph centred in `r`, blown up by whole pixels as far as it fits (or
 ## shrunk to a triangle's worth where the room is under 11 pixels).
-static func _glyph(img: Image, kind: String, c: Color, r: Rect2i) -> void:
+static func _glyph(img: Image, kind: String, c: Color, r: Rect2i, fit: bool = false) -> void:
 	var g: Image = PlainIcons.Picture(kind, c)
 	if g == null:
 		return
 	var room: int = mini(r.size.x, r.size.y)
-	if room < g.get_width():
+	if fit:
+		g.resize(maxi(3, room), maxi(3, room), Image.INTERPOLATE_NEAREST)
+	elif room < g.get_width():
 		g.resize(maxi(3, room), maxi(3, room), Image.INTERPOLATE_NEAREST)
 	else:
 		var k: int = maxi(1, room / g.get_width())
 		g.resize(g.get_width() * k, g.get_height() * k, Image.INTERPOLATE_NEAREST)
 	var at := r.position + (r.size - g.get_size()) / 2
 	img.blend_rect(g, Rect2i(Vector2i.ZERO, g.get_size()), at)
+
+## A side's colour for its stand-ins: the original's red and green, the pack's
+## neutral and uncharted colours, an uprising's orange; white for none.
+static func _side_colour(side: String) -> Color:
+	if Sides.has(side):
+		return Sides[side]
+	match side:
+		"neutral":
+			return FactionRegistry.Neutral.FactionColor if FactionRegistry.Neutral != null else Color(0.35, 0.6, 1)
+		"unexplored":
+			return FactionRegistry.Unknown.FactionColor if FactionRegistry.Unknown != null else Color(0.8, 0.8, 0.8)
+		"uprising":
+			return Color(249 / 255.0, 92 / 255.0, 15 / 255.0)
+	return Color.WHITE
+
+
+## A planet: a disc lit from the upper left, its own muted colour (by its
+## number, so the 26 are told apart) - never the original's picture.
+static func _planet(img: Image, n: int) -> void:
+	var base := Color.from_hsv(fmod(n * 0.137, 1.0), 0.28, 0.72)
+	var c := Vector2(18.5, 18.5)
+	var r := 17.0
+	var light := Vector2(-0.6, -0.6).normalized()
+	for y in 37:
+		for x in 37:
+			var d := (Vector2(x + 0.5, y + 0.5) - c) / r
+			if d.length() > 1.0:
+				continue
+			var z: float = sqrt(maxf(0.0, 1.0 - d.length_squared()))
+			var lit: float = clampf(0.35 + 0.75 * maxf(0.0, d.x * light.x + d.y * light.y + z * 0.55), 0.2, 1.1)
+			img.set_pixel(x, y, Color(base.r * lit, base.g * lit, base.b * lit, 1.0))
+
+
+## A tier's star: a plus in the side's colour, its reach by tier (StarReach);
+## the smallest a dot.
+static func _star(img: Image, tier: String, c: Color) -> void:
+	var reach: int = StarReach.get(tier, 1)
+	var mid := 7
+	var arm: int = 1 if reach <= 3 else 3
+	var half: int = arm / 2
+	img.fill_rect(Rect2i(mid - reach, mid - half, reach * 2 + 1, arm), c)
+	img.fill_rect(Rect2i(mid - half, mid - reach, arm, reach * 2 + 1), c)
