@@ -86,6 +86,9 @@ static var _listening: bool = false
 static var _js_callback: JavaScriptObject = null
 static var _js_progress: JavaScriptObject = null
 static var _picked: Callable = Callable()
+## Cancel pressed (Cancel); an import running a slice a frame (_run).
+static var _cancelled: bool = false
+static var _running: bool = false
 
 
 ## Lets the player pick a pack file: the browser's own file picker on the web
@@ -93,6 +96,7 @@ static var _picked: Callable = Callable()
 ## import's result.
 static func PickFile(done: Callable) -> void:
 	_picked = done
+	_cancelled = false
 	if OS.has_feature("web"):
 		# A file input clicked from the button's press; its bytes come back
 		# through the callback (kept referenced until it fires). A movies file
@@ -101,18 +105,24 @@ static func PickFile(done: Callable) -> void:
 		MoviesLib.WebInstall()
 		_js_callback = JavaScriptBridge.create_callback(_on_js_file)
 		_js_progress = JavaScriptBridge.create_callback(_on_js_progress)
+		# Cancel (fwCancelImport) stops this pick: nothing more is said or handed
+		# over, and a movies file being kept is not kept.
 		JavaScriptBridge.eval("""
 			window.factionWarsPickFile = function (cb, progress) {
+				var job = { cancelled: false };
+				window.fwCancelImport = function () { job.cancelled = true; if (job.abort) job.abort(); };
+				var say = function (p, d, t) { if (progress && !job.cancelled) progress(p, d, t); };
 				var input = document.createElement('input');
 				input.type = 'file';
 				input.accept = '.zip,application/zip';
 				input.onchange = function () {
 					var f = input.files && input.files[0];
 					if (!f) return;
-					if (progress) progress('reading', 0, 0);
-					var bytes = function () { f.arrayBuffer().then(function (b) { cb(new Uint8Array(b), f.name); }); };
+					say('reading', 0, 0);
+					var give = function (r) { if (!job.cancelled) cb(r, f.name); };
+					var bytes = function () { if (!job.cancelled) f.arrayBuffer().then(function (b) { give(new Uint8Array(b)); }); };
 					if (!window.fwMovies) { bytes(); return; }
-					window.fwMovies.take(f, progress).then(function (r) { if (r) cb(r, f.name); else bytes(); }, bytes);
+					window.fwMovies.take(f, say, job).then(function (r) { if (r) give(r); else bytes(); }, bytes);
 				};
 				input.click();
 			};""", true)
@@ -131,7 +141,7 @@ static func PickFile(done: Callable) -> void:
 
 static func _on_js_file(args: Array) -> void:
 	_js_callback = null
-	if args.is_empty():
+	if args.is_empty() or _cancelled:
 		return
 	if args[0] is String:
 		# The browser kept a movies file: its result, then the new list.
@@ -149,7 +159,7 @@ static func _on_js_file(args: Array) -> void:
 ## The browser saying how far it has got: reading the file, checking and
 ## keeping a movies file (fwMovies.take).
 static func _on_js_progress(args: Array) -> void:
-	if args.size() >= 3:
+	if args.size() >= 3 and not _cancelled:
 		_progress(str(args[0]), int(args[1]), int(args[2]))
 
 
@@ -436,16 +446,46 @@ static func _run(path: String, staged: bool = false) -> void:
 			_unstage()
 		_report(_fail("That is not a Faction Wars file (it could not be opened as a .zip)."))
 		return
+	_cancelled = false
+	_running = true
 	var job := _job(zip)
 	var tree := Engine.get_main_loop() as SceneTree
-	while JobStep(job, SLICE_MS):
+	while not _cancelled and JobStep(job, SLICE_MS):
 		_progress(str(job["phase"]), int(job["done"]), int(job["total"]))
 		await tree.process_frame
+	_running = false
 	zip.close()
+	if not job.has("result"):
+		# Cancelled before the last step, so the old copy is untouched: only
+		# what this import wrote beside it goes.
+		if job.has("staging"):
+			_remove(str(job["staging"]))
+		job["result"] = _cancelled_result()
 	if staged:
 		_unstage()
 	_progress("", 0, 0)
 	_report(job["result"])
+
+
+## The Importing box's Cancel (TeeJ, 2026-09-28: "the import window should have
+## a cancel button in case it hangs"). An import running here stops on its next
+## frame (_run); the browser's own reading, checking and keeping of a file is
+## told to stop (fwCancelImport) and said to be over at once, since it may be
+## what hung. The old copy is only replaced in an import's last step.
+static func Cancel() -> void:
+	_cancelled = true
+	if OS.has_feature("web"):
+		JavaScriptBridge.eval("window.fwCancelImport && window.fwCancelImport()", true)
+	if _running:
+		return
+	_progress("", 0, 0)
+	_report(_cancelled_result())
+
+
+static func _cancelled_result() -> Dictionary:
+	var r := _fail("Import cancelled.")
+	r["cancelled"] = true
+	return r
 
 
 ## The browser's bytes staged, then imported a slice a frame.

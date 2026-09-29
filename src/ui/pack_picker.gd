@@ -1611,7 +1611,10 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		return
 	get_viewport().set_input_as_handled()
 	if top.name == "ImportProgress":
-		return   # an import is not stopped half way
+		var cancel: Button = top.find_child("CancelImport", true, false)
+		if cancel != null and not cancel.disabled:
+			cancel.pressed.emit()
+		return
 	if top == _art_window:
 		_close_art_window()
 	elif top is Window:
@@ -1643,8 +1646,8 @@ static func _button(node_name: String, text: String) -> Button:
 ## progress bar" - "absolutely, yes"): a box over everything while it runs - what
 ## it is doing, how many files of how many, the bar - from PackImport's steps
 ## (every file checked, then written) and, in the browser, its own reading of
-## the file and its checking and keeping of a movies file. Gone when the import
-## is done; its result is then said as before. Each counted phase's share of the
+## the file and its checking and keeping of a movies file, with Cancel. Gone when
+## the import is done or cancelled; its result is then said as before. Each counted phase's share of the
 ## bar: checking the first half, writing the rest.
 const ProgressParts := {"check": [0.0, 0.5], "write": [0.5, 0.97], "verify": [0.0, 0.95]}
 
@@ -1660,7 +1663,7 @@ func _on_progress(phase: String, done: int, total: int) -> void:
 	if box == null or box.is_queued_for_deletion():
 		var m := _modal("ImportProgress", "Importing", 620)
 		box = m[0]
-		(m[2] as Button).visible = false   # an import is not stopped half way
+		(m[2] as Button).visible = false   # Cancel, below, is the way out
 		var said := _label("", 15, CText)
 		said.name = "Phase"
 		(m[1] as Control).add_child(said)
@@ -1674,6 +1677,12 @@ func _on_progress(phase: String, done: int, total: int) -> void:
 		bar.add_theme_stylebox_override("fill", _box(CAccent, CGlow.darkened(0.2), 8))
 		(m[1] as Control).add_child(bar)
 		(m[1] as Control).add_child(_label("Keep this window open until it is done.", 13, CMuted))
+		# TeeJ, 2026-09-28: "a cancel button in case it hangs" (PackImport.Cancel).
+		var cancel := _button("CancelImport", "Cancel")
+		cancel.pressed.connect(func() -> void:
+			cancel.disabled = true
+			PackImport.Cancel())
+		_actions(m[1], [cancel])
 	var words := {
 		"reading": "Reading the file...",
 		"check": "Checking the files - %d of %d" % [done, total],

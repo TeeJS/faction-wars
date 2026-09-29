@@ -85,6 +85,42 @@ func _init() -> void:
 	PackImport.OnProgress = Callable()
 	PackImport.OnImported = Callable()
 
+	# Cancel (TeeJ, 2026-09-28: "in case it hangs"): a newer file, cancelled on
+	# its first word, leaves the copy already in place as it was.
+	var v2_path := ROOT + "/test2.art.zip"
+	var v2 := {}
+	for i in FILES:
+		v2["windows/pic_%02d.png" % i] = ("newer %d" % i).to_utf8_buffer()
+	_zip(v2_path, v2, "Test 2")
+	var dest := Art.UserArtRoot + "/test-progress"
+	var before := FileAccess.get_file_as_string(dest + "/windows/pic_00.png")
+	var cut: Array = []
+	PackImport.OnProgress = func(phase: String, _d: int, _t: int) -> void:
+		cut.append(phase)
+		if not phase.is_empty():
+			PackImport.Cancel()
+	got.clear()
+	PackImport.OnImported = func(r: Dictionary) -> void: got.append(r)
+	PackImport._run(v2_path)
+	for _i in 600:
+		if not got.is_empty():
+			break
+		await process_frame
+	_check(got.size() == 1 and bool(got[0].get("cancelled", false)) and not bool(got[0].get("ok", true)) and got[0].get("message", "") == "Import cancelled.",
+		"cancelled: 'Import cancelled.', once (%s)" % str(got))
+	_check(FileAccess.get_file_as_string(dest + "/windows/pic_00.png") == before and before == "picture 0"
+		and not DirAccess.dir_exists_absolute(dest + ".importing"),
+		"... the copy in place untouched, nothing of the new one left beside it")
+	_check(not cut.is_empty() and cut.back() == "", "... and the box is told it is over")
+	# Cancel with nothing running here (the browser's own work, which may be
+	# what hung): said over at once.
+	cut.clear()
+	got.clear()
+	PackImport.Cancel()
+	_check(got.size() == 1 and bool(got[0].get("cancelled", false)) and cut == [""], "Cancel with nothing running: cancelled at once, the box told")
+	PackImport.OnProgress = Callable()
+	PackImport.OnImported = Callable()
+
 	# The launch screen's box: the phase, the bar, gone when done.
 	var picker: Control = load("res://PackPicker.tscn").instantiate()
 	root.add_child(picker)
@@ -100,10 +136,20 @@ func _init() -> void:
 	_check(bar != null and is_equal_approx(bar.value, 0.97), "writing done: nearly full")
 	picker.call("_on_progress", "store", 0, 0)
 	_check(bar != null and bar.indeterminate, "the browser keeping movies: the bar runs without a count")
-	_check(box != null and not (box.find_child("Close", true, false) as Control).visible, "no close cross: an import is not stopped half way")
+	_check(box != null and not (box.find_child("Close", true, false) as Control).visible, "no close cross: Cancel is the way out")
 	picker.call("_on_progress", "", 0, 0)
 	await process_frame
 	_check(picker.get_node_or_null("ImportProgress") == null, "done: the box goes")
+	# Its Cancel: the box goes, and the files window says so.
+	picker.call("_on_progress", "check", 3, 30)
+	box = picker.get_node_or_null("ImportProgress")
+	var cancel: Button = box.find_child("CancelImport", true, false) if box != null else null
+	_check(cancel != null and cancel.text == "CANCEL", "the box has a Cancel button")
+	if cancel != null:
+		cancel.pressed.emit()
+	await process_frame
+	await process_frame
+	_check(picker.get_node_or_null("ImportProgress") == null, "Cancel: the box goes")
 	root.remove_child(picker)
 	picker.free()
 
@@ -118,7 +164,7 @@ func _check_quiet(cond: bool) -> void:
 		_check(false, "done never passes total")
 
 
-func _zip(path: String, files: Dictionary) -> void:
+func _zip(path: String, files: Dictionary, title: String = "Test") -> void:
 	var hashes := {}
 	for rel in files:
 		hashes[rel] = PackImport._sha256(files[rel])
@@ -129,6 +175,6 @@ func _zip(path: String, files: Dictionary) -> void:
 		zp.write_file(files[rel])
 		zp.close_file()
 	zp.start_file("manifest.json")
-	zp.write_file(JSON.stringify({"format": 1, "kind": "art_set", "id": "test-progress", "title": "Test", "exporter": PackImport.MIN_EXPORTER.get("swr-original", "2.6.5"), "files": hashes}).to_utf8_buffer())
+	zp.write_file(JSON.stringify({"format": 1, "kind": "art_set", "id": "test-progress", "title": title,"exporter": PackImport.MIN_EXPORTER.get("swr-original", "2.6.5"), "files": hashes}).to_utf8_buffer())
 	zp.close_file()
 	zp.close()
