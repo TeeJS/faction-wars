@@ -26,6 +26,10 @@ func _check(cond: bool, what: String) -> void:
 func _init() -> void:
 	await process_frame
 	Art.IgnoreProjectFolder = true
+	# The plain sector window and the engine's glyphs: what a pack with its own
+	# look (WWII) still uses. Without an art set the Star Wars pack now gets the
+	# original's from our stand-ins (tests/art_standins.gd), so switch them off.
+	preload("res://src/ui/art_standins.gd").Enabled = false
 	Art.UserArtRoot = ArtRoot   # never the player's own
 	FactionRegistry.EnsureLoaded()
 	MpSetup.reset()

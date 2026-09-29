@@ -82,6 +82,16 @@ func _init() -> void:
 		await process_frame
 		_check(mw._oSummary.visible and mw._oSumTitle.text == m.Title, "a message reads in the same frame")
 		_check(mw.StepBack() and mw._oIndex.visible, "and steps back to the index")
+	# The sector window in the original's look (phase 3): its boxes, and every
+	# system's picture, from the stand-ins.
+	_check(SectorWindow.CanBuildOriginal() and Art.PlanetSprite(26) != null and Art.GidStar("neutral", "big") != null,
+		"the sector window's pictures are there: its boxes, 26 planet pictures, the stars")
+	var sector: Sector = GameState.ActiveGalaxy[0]
+	ui.OnSectorClicked(sector)
+	await process_frame
+	var sw: Control = ui._openWindows.get(sector.Name)
+	_check(sw != null and SectorWindow.OriginalLook and sw.position.is_equal_approx(SectorWindow.DockPosition(true)),
+		"the sector window opens in the original's look, docked at the map window's edge")
 	root.remove_child(main)
 	main.free()
 
