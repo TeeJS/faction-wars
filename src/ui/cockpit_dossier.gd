@@ -15,6 +15,7 @@ extends RefCounted
 ## Preloaded by path (as Dossier) from menu.gd.
 
 const Art := preload("res://src/ui/artwork.gd")
+const LookWindow := preload("res://src/ui/look_window.gd")
 
 ## How long one drift of the Cockpit's light takes, seconds. Slow on purpose:
 ## a lamp, not an animation. Held still under Look.ReducedMotion().
@@ -25,8 +26,10 @@ const DRIFT_SECONDS := 26.0
 ## side buttons start; `load_btn` is the code-added Load Game button.
 static func Build(menu: Control, first: Faction, second: Faction, load_btn: Button) -> void:
 	menu.theme = Look.GetTheme()
-	# Every menu, dialog and tooltip in the look (phase 5).
+	# Every menu, dialog and tooltip (phase 5) and window (phase 6) in the look.
 	Look.InstallPopups(menu.get_tree())
+	LookWindow.Install(menu.get_tree())
+	Look.Install(menu.get_tree())
 	(menu.get_node("Background") as ColorRect).color = Look.C("chassis_deep")
 	_desk(menu)
 

@@ -171,6 +171,10 @@ func _ready() -> void:
 		MpSetup.remember_names())
 	(get_node("%BtnMultiplayer") as Button).pressed.connect(OpenMultiplayer)
 
+	# The pack's look on the whole tree, or none for a pack without one: the
+	# Cockpit is where a pack is chosen, so another pack's look is never left
+	# on (docs/ww2-look-plan.md, phase 6).
+	Look.Install(get_tree())
 	if has_picture:
 		_build_cockpit(FactionRegistry.Pack.Manifest.Menu)
 	elif Look.Active():

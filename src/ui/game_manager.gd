@@ -302,6 +302,9 @@ func _ready() -> void:
 	if Look.Active() and _uiManager.CommandFrameRef == null:
 		LookHud.Apply(self, _uiManager, _galaxyMap)
 		LookHud.SpeedState(_timeControls, _appliedEffective == 0)
+	elif not Look.Active():
+		# No look: none left on the tree from another pack's (phase 6).
+		Look.Install(get_tree())
 
 	# THE AGENT'S ADVICE (advice.gd): single player, Agent Advice on in Easy.
 	# THE OPENING BRIEFING (manual p022): a new game, not a loaded one. In

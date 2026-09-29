@@ -588,6 +588,11 @@ static func Install(tree: SceneTree) -> void:
 		AdoptTree(tree.root)
 
 
+## The meta a tagged node carries when its overrides are the look's own, so
+## Adopt keeps them.
+const OWN_COLOURS := &"look_own_colours"
+
+
 static func _on_node_added(node: Node) -> void:
 	if node is Control and String((node as Control).theme_type_variation).begins_with("Look"):
 		# After the node's own _ready, which is where scenes set their colours.
@@ -603,6 +608,9 @@ static func Adopt(node: Node) -> void:
 	var c := node as Control
 	var v := StringName(c.theme_type_variation)
 	if not String(v).begins_with("Look"):
+		return
+	# Colours the look itself gave it (a finder row's side colour): its own.
+	if c.has_meta(OWN_COLOURS):
 		return
 	for p in c.get_property_list():
 		var n: String = p.name

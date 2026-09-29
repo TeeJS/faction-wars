@@ -10,7 +10,9 @@ extends SceneTree
 ## writes <out>_cockpit.png, _credits.png, _map.png, _message.png, _dialog.png,
 ## _finder.png, _menu.png, and last _message_urgent.png (the Conflict tab) and
 ## _message_empty.png (the Chat tab, empty in a game against the computer),
-## then _popup.png (the speed menu and a tooltip). --record= is REQUIRED: without it the game's session log
+## then _popup.png (the speed menu and a tooltip), then one each of the other
+## windows: _ency, _economy, _defense, _fleet, _sector, _status, _personnel,
+## _options, _overview, _objectives. --record= is REQUIRED: without it the game's session log
 ## would overwrite the player's user://last-session.jsonl.
 ##
 ## No art set is read (Artwork.UserArtRoot / IgnoreProjectFolder, as the
@@ -161,6 +163,35 @@ func _init() -> void:
 	for _i in 4:
 		await process_frame
 	ok = _shot(out, "popup") and ok
+	if speed is PopupMenu:
+		(speed as PopupMenu).hide()
+	tip.queue_free()
+
+	# THE OTHER WINDOWS (phase 6), one at a time.
+	var sector: Sector = Lq.first_or_null(GameState.ActiveGalaxy, func(s: Sector) -> bool: return s.Planets.has(home))
+	var others := [
+		["ency", func() -> void: ui.OpenEncyclopedia()],
+		["economy", func() -> void: ui.OnEconomyClicked(home)],
+		["defense", func() -> void: ui.OnDefenseClicked(home)],
+		["fleet", func() -> void: ui.OnFleetClicked(home)],
+		["sector", func() -> void: ui.OnSectorClicked(sector)],
+		["status", func() -> void: ui.OpenCharacterStatusWindow(who)],
+		["personnel", func() -> void: ui.OpenPersonnelFinder()],
+		["options", func() -> void: ui.OpenGameOptions()],
+		["overview", func() -> void: ui.OpenGalaxyOverview()],
+		["objectives", func() -> void: ui.OpenObjectives()],
+	]
+	for o in others:
+		ui.CloseAllWindows()
+		for c in ui.get_children():
+			if c is GameOptionsWindow or c is GalaxyOverviewWindow or c is ObjectivesWindow:
+				c.queue_free()
+		for _i in 3:
+			await process_frame
+		(o[1] as Callable).call()
+		for _i in 5:
+			await process_frame
+		ok = _shot(out, str(o[0])) and ok
 
 	quit(0 if ok else 1)
 
