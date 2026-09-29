@@ -4,7 +4,8 @@ extends SceneTree
 ##   - they are on, and every picture in the table is drawn at its listed size,
 ##     in each state its file name can ask for;
 ##   - a window in the original's look builds from them - the Message Index
-##     (phase 2): its tabs, band, list, side buttons and reading view;
+##     (phase 2): its tabs, band, list, side buttons and reading view; the
+##     sector window (3), the Status plate (4), the Game Options screen (7);
 ## and they are off with an art set present, and for a pack with a look of its
 ## own.
 ##
@@ -101,6 +102,18 @@ func _init() -> void:
 		await process_frame
 		var plate: Node = ui._openWindows.get("Status_%s" % who.Name.replace(" ", ""))
 		_check(plate != null and plate.get_script() == preload("res://src/ui/status_plate_window.gd"), "a character's Status opens as the original's plate")
+	# The Game Options screen and the alert boxes (phase 7).
+	_check(preload("res://src/ui/original_options_screen.gd").CanBuild() and OUI.Pic("dialog_plate1") != null and OUI.Pic("dialog_plate2") != null
+		and Art.WindowPicture("options_music.off") != null and Art.WindowPicture("options_light.off") != null,
+		"the Game Options screen's pictures are there, and the alert boxes'")
+	ui.OnMenuButtonClicked()
+	for _i in 3:
+		await process_frame
+	var options: Node = ui.get_node_or_null("OptionsScreen")
+	_check(options != null, "the Game Options screen opens in the original's look")
+	if options != null:
+		options.queue_free()   # closed while the game is up, which restarts its clock
+		await process_frame
 	root.remove_child(main)
 	main.free()
 
