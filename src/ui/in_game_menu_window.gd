@@ -4,6 +4,9 @@ extends DraggableWindow
 ## menu, exit to desktop.
 
 
+const LookWindow := preload("res://src/ui/look_window.gd")
+
+
 # C# overrides _Ready WITHOUT calling base._Ready(), so the DraggableWindow
 # wiring (title-bar drag, minimise) is not run for this window - kept as is.
 func _ready() -> void:
@@ -45,3 +48,8 @@ func _ready() -> void:
 		get_tree().quit())
 	# A browser tab has no desktop to exit to (TeeJ, room #97).
 	btnExitToDesktop.visible = not OS.has_feature("web")
+	# In a pack's look: the steel frame, the choices as command keys
+	# (docs/ww2-look-plan.md, phase 5).
+	if Look.Active():
+		LookWindow.Dress(self)
+		LookWindow.Commands(column)

@@ -48,6 +48,13 @@ func _ready() -> void:
 	_empireList = get_node("%EmpireList")
 
 	_searchBar = get_node("%SearchBar")
+	# The sides' tabs by the pack's short names, not the scene's "Alliance" and
+	# "Empire" (TeeJ, 2026-09-29), in pack order as _AddCharacterRow files them.
+	var tabs: TabContainer = get_node_or_null("%FactionTabs")
+	if tabs != null:
+		for order in 2:
+			if FactionRegistry.Playable.size() > order and tabs.get_tab_count() > order:
+				tabs.set_tab_title(order, (FactionRegistry.Playable[order] as Faction).ShortName)
 
 	# Dynamically update the lists every time the user types a letter!
 	_searchBar.text_changed.connect(PopulateLists)

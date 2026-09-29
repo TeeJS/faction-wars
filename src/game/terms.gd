@@ -55,11 +55,15 @@ const DEFAULTS := {
 	# a standing defence's state tag in the Defenses window
 	"shield_active":          "Shielding Up",
 	"weapon_armed":           "Armed",
+	# the System Finder's search field, before anything is typed
+	"search_systems":         "Search galaxy...",
 	# the word under a sector's name on the map, in the original's look
 	# ("Calaron" / "Sector")
 	"sector":                 "Sector",
 	# the Cockpit's size choice (manual p021, Fig. 2.2: "galaxy size")
 	"galaxy_size":            "Galaxy Size",
+	# a message category with nothing in it
+	"no_messages":            "No transmissions.",
 }
 
 

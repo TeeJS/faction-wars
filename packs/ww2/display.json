@@ -645,6 +645,7 @@
     "bombardment_defense": "Bombardment Defense",
     "bombardment_modifier": "Bombardment Modifier",
     "maintenance": "Upkeep",
+    "search_systems": "Search the map...",
     "squadron_size": "Squadron Size",
     "fighter_capacity": "Aircraft Capacity",
     "troop_capacity": "Troop Capacity",
@@ -670,6 +671,7 @@
     "shield_active": "Fortified",
     "weapon_armed": "Manned",
     "sector": "Theatre",
-    "galaxy_size": "Map Size"
+    "galaxy_size": "Map Size",
+    "no_messages": "No dispatches received."
   }
 }

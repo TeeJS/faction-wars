@@ -17,6 +17,8 @@ extends RefCounted
 ##
 ## Preloaded by path (as LookHud) from game_manager.gd.
 
+const LookWindow := preload("res://src/ui/look_window.gd")
+
 ## The strip behind the top readouts, in screen pixels: from just right of the
 ## day-and-speed chip (which ends at 212 in the look) to the directory's edge,
 ## the readouts' height (Main.tscn: Resources 0-40).
@@ -27,6 +29,12 @@ const ConsoleInset := Vector2(2, 151)
 
 static func Apply(main: Node, ui: Node, map: Node) -> void:
 	var theme := Look.GetTheme()
+	# Every menu, dialog and tooltip (phase 5) and window (phase 6) in the look.
+	Look.InstallPopups(main.get_tree())
+	LookWindow.Install(main.get_tree())
+	# With every window dressed, the look goes on the whole tree: whatever
+	# else the screen shows wears its base controls (phase 6).
+	Look.Install(main.get_tree())
 	_desk(main)
 
 	# THE OPERATIONS STRIP.
