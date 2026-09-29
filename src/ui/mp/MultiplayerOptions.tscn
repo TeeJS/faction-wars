@@ -131,10 +131,10 @@ text = "------"
 
 [node name="BtnCopyCode" type="Button" parent="CenterContainer/Console/CodeRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(90, 32)
+custom_minimum_size = Vector2(120, 32)
 layout_mode = 2
 tooltip_text = "Put the game code on the clipboard to send to your opponent."
-text = "Copy"
+text = "Copy Code"
 
 [node name="ChatRow" type="HBoxContainer" parent="CenterContainer/Console"]
 layout_mode = 2
