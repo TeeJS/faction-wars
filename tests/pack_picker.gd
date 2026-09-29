@@ -98,6 +98,10 @@ func _init() -> void:
 		# without artwork on a row of its own saying what it means.
 		for part in ["ImportArtwork", "ImportMovies", "ContinueWithout", "ExporterLink", "FileRow_Art", "FileRow_Movies", "WayOn", "Close"]:
 			_check(win.find_child(part, true, false) != null, "the files window has %s" % part)
+		# TeeJ, 2026-09-28: the close "✕" showed as a box of its code - no such
+		# character in the page's font. Now drawn, with no text at all.
+		var x: Button = win.find_child("Close", true, false)
+		_check(x != null and x.text.is_empty() and x.find_child("Cross", true, false) != null, "its close cross is drawn, not a character")
 		_check((win.find_child("ContinueWithout", true, false) as Button).text.to_lower() == "continue without artwork"
 			and win.find_child("ContinueWithout", true, false).get_parent().get_parent() == win.find_child("WayOn", true, false),
 			"with no art yet, 'Continue without artwork', on its own row")

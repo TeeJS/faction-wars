@@ -1161,7 +1161,6 @@ func _modal(node_name: String, title: String, width: int) -> Array:
 	bar.add_child(t)
 	var close := Button.new()
 	close.name = "Close"
-	close.text = "✕"
 	close.tooltip_text = "Close"
 	close.focus_mode = Control.FOCUS_NONE
 	close.custom_minimum_size = Vector2(34, 34)
@@ -1170,9 +1169,15 @@ func _modal(node_name: String, title: String, width: int) -> Array:
 	var ring := _box(Color(CGlow, 0.1), Color(CGlow, 0.5), 17, 1)
 	close.add_theme_stylebox_override("hover", ring)
 	close.add_theme_stylebox_override("pressed", ring)
-	close.add_theme_color_override("font_color", CMuted)
-	close.add_theme_color_override("font_hover_color", CGlow)
-	close.add_theme_font_size_override("font_size", 16)
+	# The cross drawn, not a character: the page's font has no "✕", which came
+	# out as a box of its code (TeeJ, 2026-09-28: "what is this icon?").
+	var cross := CloseCross.new()
+	cross.name = "Cross"
+	cross.set_anchors_preset(Control.PRESET_FULL_RECT)
+	cross.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	close.add_child(cross)
+	close.mouse_entered.connect(cross.queue_redraw)
+	close.mouse_exited.connect(cross.queue_redraw)
 	bar.add_child(close)
 	var rule := TextureRect.new()
 	rule.name = "Rule"
@@ -1193,6 +1198,18 @@ func _modal(node_name: String, title: String, width: int) -> Array:
 	body.add_theme_constant_override("separation", 16)
 	bm.add_child(body)
 	return [shade, body, close]
+
+
+## A box's close cross: two strokes, muted, lit while the pointer is on it.
+class CloseCross extends Control:
+	const Half := 6.0
+
+	func _draw() -> void:
+		var b := get_parent() as BaseButton
+		var c: Color = CGlow if b != null and b.is_hovered() else CMuted
+		var m := size / 2.0
+		draw_line(m - Vector2(Half, Half), m + Vector2(Half, Half), c, 2.0, true)
+		draw_line(m + Vector2(-Half, Half), m + Vector2(Half, -Half), c, 2.0, true)
 
 
 ## A row of a box's buttons, at its foot, to the right.
