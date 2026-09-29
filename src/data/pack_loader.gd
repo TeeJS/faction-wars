@@ -53,6 +53,8 @@ const KNOWN_TERMS := [
 	"sector",
 	# the Cockpit's size choice
 	"galaxy_size",
+	# a message category with nothing in it
+	"no_messages",
 ]
 ## SCHEMA.md section 2, `menu`. Every function of the Shuttle Cockpit (manual
 ## p021, Fig. 2.2); a picture menu must offer each one, so no function is lost
@@ -378,6 +380,32 @@ static func _validate_look(pack: LoadedPack, pack_dir: String, errors: Array[Str
 		var a: Variant = look["overlay_alpha"]
 		if not (a is float or a is int) or float(a) < 0 or float(a) > 1:
 			errors.append("look.json overlay_alpha: must be a number from 0 to 1.")
+	var messages: Variant = look.get("messages", {})
+	if not messages is Dictionary:
+		errors.append("look.json: `messages` must be an object.")
+	else:
+		var cats: Array = Enums.MessageCategory.keys().filter(func(k: String) -> bool: return k != "All")
+		for key in JsonUtil.data_keys(messages):
+			if not ["header", "stamps", "urgent"].has(key):
+				errors.append("look.json messages: '%s' is not known. Known: header, stamps, urgent." % key)
+		if messages.has("header") and not messages["header"] is String:
+			errors.append("look.json messages.header: must be text.")
+		var stamps: Variant = messages.get("stamps", {})
+		if not stamps is Dictionary:
+			errors.append("look.json messages.stamps: must be an object of category -> word.")
+		else:
+			for key in JsonUtil.data_keys(stamps):
+				if not cats.has(key):
+					errors.append("look.json messages.stamps: '%s' is not a message category. Known: %s." % [key, ", ".join(cats)])
+				elif not stamps[key] is String or str(stamps[key]).strip_edges().is_empty():
+					errors.append("look.json messages.stamps.%s: must be a word." % key)
+		var urgent: Variant = messages.get("urgent", [])
+		if not urgent is Array:
+			errors.append("look.json messages.urgent: must be a list of message categories.")
+		else:
+			for c in urgent:
+				if not cats.has(str(c)):
+					errors.append("look.json messages.urgent: '%s' is not a message category." % str(c))
 	var dossier: Variant = look.get("dossier", {})
 	if not dossier is Dictionary:
 		errors.append("look.json: `dossier` must be an object.")

@@ -670,6 +670,7 @@
     "shield_active": "Fortified",
     "weapon_armed": "Manned",
     "sector": "Theatre",
-    "galaxy_size": "Map Size"
+    "galaxy_size": "Map Size",
+    "no_messages": "No dispatches received."
   }
 }

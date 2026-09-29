@@ -13,6 +13,8 @@ var _selectedMessage: GameMessage
 
 const PortraitPath := "MainVBox/ContentArea/SplitView/DetailView/PortraitRect"
 const MessageSounds := preload("res://src/ui/sound.gd")
+## The plain form in a pack's look: dispatches (docs/ww2-look-plan.md, phase 4).
+const LookDispatch := preload("res://src/ui/look_dispatch.gd")
 ## The shown message's own sound while it plays.
 var _messageSound: AudioStreamPlayer = null
 
@@ -81,6 +83,9 @@ func _ready() -> void:
 
 	# Listen for when the player manually clicks a different tab inside the window
 	_tabContainer.tab_changed.connect(OnTabManuallyChanged)
+
+	if Look.Active():
+		LookDispatch.Dress(self)
 
 
 # ★ ALL MESSAGES - A VIEW THE MANUAL DESCRIBES AND THIS WINDOW DID NOT HAVE.
@@ -256,6 +261,8 @@ func RefreshCategory(categoryFilter: String) -> void:
 	_selectedMessage = null
 	if _gotoButton != null:
 		_gotoButton.disabled = true
+	if Look.Active():
+		LookDispatch.Clear(self)
 
 	# Clear out the old buttons in this specific tab's list
 	if not _lists.has(categoryFilter):
@@ -275,10 +282,12 @@ func RefreshCategory(categoryFilter: String) -> void:
 	# 4. Handle empty tabs
 	if filteredMessages.size() == 0:
 		var empty := Label.new()
-		empty.text = "No transmissions."
+		empty.text = Terms.label("no_messages")
 		empty.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		empty.add_theme_font_size_override("font_size", 12)
 		empty.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
+		if Look.Active():
+			LookDispatch.Empty(empty)
 		activeList.add_child(empty)
 		return
 
@@ -319,6 +328,8 @@ func RefreshCategory(categoryFilter: String) -> void:
 				_OpenReport(capturedMsg)
 				msgBtn.accept_event())
 
+		if Look.Active():
+			LookDispatch.Row(msgBtn, msg)
 		activeList.add_child(msgBtn)
 
 	# Keep the player's manually-selected message in focus across a repaint; only
@@ -559,7 +570,10 @@ func ShowDetail(message: GameMessage, clickedButton: Button, markRead: bool = tr
 	if wasUnread:
 		EventBus.BroadcastChanged()
 	if clickedButton != null:
-		clickedButton.add_theme_color_override("font_color", Color.GRAY)
+		if Look.Active():
+			LookDispatch.RowRead(clickedButton)
+		else:
+			clickedButton.add_theme_color_override("font_color", Color.GRAY)
 
 	# Instantly update the right-hand panel
 	_detailSubject.text = "Day %d: %s" % [StrategicTickManager.Shown(message.DayReceived), message.Title]
@@ -578,6 +592,8 @@ func ShowDetail(message: GameMessage, clickedButton: Button, markRead: bool = tr
 		_abortBtn.visible = asks
 	if _deleteBtn != null:
 		_deleteBtn.visible = true
+	if Look.Active():
+		LookDispatch.Show(self, message)
 
 
 ## Reading a message is an order (read_messages), so the save keeps it read.

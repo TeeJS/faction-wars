@@ -55,6 +55,9 @@ const CONTRAST_PAIRS := [
 	["brass", "chassis", 3.0], ["brass", "chassis_deep", 3.0], ["brass", "chassis_raised", 3.0],
 	["brass", "chassis_hover", 3.0],
 	["brass_dim", "chassis", 3.0], ["ink", "khaki", 4.5],
+	# The dispatches (phase 4): a ledger row under the pointer, a stamp's
+	# word, an urgent stamp in red ink on the parchment.
+	["text_muted", "chassis_hover", 4.5], ["heading", "chassis_hover", 4.5], ["signal", "paper", 4.5],
 ]
 
 ## When no size is given - the Godot default's, so a look that names none
@@ -64,6 +67,7 @@ const DEFAULT_METRICS := {"radius": 0, "border": 1, "focus": 2, "pad": 8}
 
 static var _built_for: String = ""      # "<pack id>|<dir>" the caches hold
 static var _theme: Theme = null
+static var _sheet: Theme = null         # the look for a dialog's order sheet
 static var _fonts: Dictionary = {}      # role -> Font
 static var _textures: Dictionary = {}   # name -> Texture2D or null
 static var _hooked: bool = false
@@ -84,6 +88,7 @@ static func _check() -> void:
 	if key != _built_for:
 		_built_for = key
 		_theme = null
+		_sheet = null
 		_fonts.clear()
 		_textures.clear()
 
@@ -115,6 +120,23 @@ static func Metric(name: String) -> int:
 ## map picture's pixels), `map_caption`. {} without them.
 static func Dossier() -> Dictionary:
 	return _def().get("dossier", {})
+
+
+## The message window's dispatch words (look.json `messages`): the word over
+## each dispatch ("" for none).
+static func DispatchHeader() -> String:
+	return str(_def().get("messages", {}).get("header", ""))
+
+
+## The small stamp for a message category (its enum name: "Fleets",
+## "Missions", ...), or "" for none.
+static func Stamp(category: String) -> String:
+	return str(_def().get("messages", {}).get("stamps", {}).get(category, ""))
+
+
+## Whether a message category carries the signal-red band.
+static func Urgent(category: String) -> bool:
+	return (_def().get("messages", {}).get("urgent", []) as Array).has(category)
 
 
 ## Hold still: the player's Reduce motion box, or the browser's own
@@ -522,6 +544,31 @@ static func _variation(t: Theme, name: StringName, base: StringName) -> void:
 	t.set_type_variation(name, base)
 
 
+## A DIALOG AS AN ORDER SHEET (phase 5): the look, with the body parchment and
+## the words on it in ink. The frame, the title and the keys stay steel.
+static func SheetTheme() -> Theme:
+	if not Active():
+		return null
+	_check()
+	if _sheet != null:
+		return _sheet
+	var t: Theme = GetTheme().duplicate()
+	t.set_stylebox("panel", "AcceptDialog", Paper(14))
+	t.set_color("font_color", "Label", C("ink"))
+	t.set_color("default_color", "RichTextLabel", C("ink"))
+	# A check box sits bare on the sheet: its words in ink, lit under the
+	# pointer by the paper's own edge colour.
+	for type in ["CheckBox", "CheckButton"]:
+		for c in ["font_color", "font_hover_color", "font_pressed_color", "font_hover_pressed_color", "font_focus_color"]:
+			t.set_color(c, type, C("ink"))
+		t.set_color("font_disabled_color", type, C("ink_muted"))
+		t.set_stylebox("hover", type, Box("paper_edge", "", 0, -1, 4))
+	t.set_color("font_color", "LinkButton", C("ink"))
+	t.set_color("font_hover_color", "LinkButton", C("ink"))
+	_sheet = t
+	return _sheet
+
+
 # ---------------------------------------------------------------------------
 # Installing it
 # ---------------------------------------------------------------------------
@@ -541,6 +588,11 @@ static func Install(tree: SceneTree) -> void:
 		AdoptTree(tree.root)
 
 
+## The meta a tagged node carries when its overrides are the look's own, so
+## Adopt keeps them.
+const OWN_COLOURS := &"look_own_colours"
+
+
 static func _on_node_added(node: Node) -> void:
 	if node is Control and String((node as Control).theme_type_variation).begins_with("Look"):
 		# After the node's own _ready, which is where scenes set their colours.
@@ -556,6 +608,9 @@ static func Adopt(node: Node) -> void:
 	var c := node as Control
 	var v := StringName(c.theme_type_variation)
 	if not String(v).begins_with("Look"):
+		return
+	# Colours the look itself gave it (a finder row's side colour): its own.
+	if c.has_meta(OWN_COLOURS):
 		return
 	for p in c.get_property_list():
 		var n: String = p.name
@@ -574,3 +629,89 @@ static func AdoptTree(root: Node) -> void:
 	Adopt(root)
 	for child in root.get_children():
 		AdoptTree(child)
+
+
+# ---------------------------------------------------------------------------
+# Menus, dialogs and tooltips (phase 5)
+# ---------------------------------------------------------------------------
+
+## Above the briefing (ui_manager BriefingLayer 100), below every embedded
+## window (Godot draws those at 1024).
+const DIM_LAYER := 120
+
+static var _popups_hooked: bool = false
+
+
+## EVERY MENU, DIALOG AND TOOLTIP IN THE LOOK, wherever it is made: a popup
+## menu is an instrument panel, a dialog an order sheet (SheetTheme) over the
+## dimmed screen when it is modal, a tooltip a field note. One hook on the
+## tree rather than one per call site - the game makes them in forty places.
+## Only while a look is active (checked as each one appears), so the Star Wars
+## pack's popups are untouched. Idempotent.
+static func InstallPopups(tree: SceneTree) -> void:
+	if tree == null:
+		return
+	if not _popups_hooked:
+		tree.node_added.connect(_on_popup_added)
+		_popups_hooked = true
+	# The ones a screen made before it called this (the speed menu).
+	_sweep_popups(tree.root)
+
+
+static func _sweep_popups(node: Node) -> void:
+	for c in node.get_children(true):
+		_on_popup_added(c)
+		_sweep_popups(c)
+
+
+static func _on_popup_added(node: Node) -> void:
+	if not Active() or not node is Window:
+		return
+	var w := node as Window
+	if node is AcceptDialog:
+		if w.theme == null:
+			w.theme = SheetTheme()
+		var keys: Array = [(node as AcceptDialog).get_ok_button()]
+		if node is ConfirmationDialog:
+			keys.append((node as ConfirmationDialog).get_cancel_button())
+		for b in keys:
+			if b != null:
+				(b as Button).theme_type_variation = COMMAND
+		if not w.has_meta("look_dim_hooked"):
+			w.set_meta("look_dim_hooked", true)
+			w.visibility_changed.connect(_sync_dim.bind(w))
+			w.tree_exiting.connect(_drop_dim.bind(w))
+			_sync_dim(w)
+	elif node is Popup and w.theme == null:
+		w.theme = GetTheme()
+
+
+## A modal dialog's dim: shown with it, gone with it. Only drawn - it takes no
+## clicks, so nothing a dialog allowed before is blocked by it.
+static func _sync_dim(w: Window) -> void:
+	if not is_instance_valid(w) or not w.is_inside_tree():
+		return
+	var layer: CanvasLayer = w.get_meta("look_dim") if w.has_meta("look_dim") else null
+	var want: bool = w.visible and w.exclusive and Active()
+	if want and (layer == null or not is_instance_valid(layer)):
+		layer = CanvasLayer.new()
+		layer.name = "LookDim"
+		layer.layer = DIM_LAYER
+		var shade := ColorRect.new()
+		shade.name = "Shade"
+		shade.color = Dim()
+		shade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		layer.add_child(shade)
+		w.get_tree().root.add_child.call_deferred(layer)
+		w.set_meta("look_dim", layer)
+	if layer != null and is_instance_valid(layer):
+		layer.visible = want
+
+
+static func _drop_dim(w: Window) -> void:
+	if w.has_meta("look_dim"):
+		var layer: Variant = w.get_meta("look_dim")
+		if layer is Node and is_instance_valid(layer):
+			(layer as Node).queue_free()
+		w.remove_meta("look_dim")
