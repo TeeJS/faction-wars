@@ -11,6 +11,12 @@ extends SceneTree
 
 func _init() -> void:
 	await process_frame
+	# --noart: as a player with no art set (our stand-ins, the plain build parity plan).
+	if OS.get_cmdline_user_args().has("--noart"):
+		var noart: GDScript = load("res://src/ui/artwork.gd")
+		noart.IgnoreProjectFolder = true
+		noart.UserArtRoot = "user://capture-noart"
+		noart.Reset()
 	var out := _arg("--out=", "user://build.png")
 	FactionRegistry.EnsureLoaded()
 	MpSetup.reset()
