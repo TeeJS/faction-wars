@@ -452,10 +452,30 @@ func BuildSpeedMenu() -> void:
 	_BuildOriginalPause()
 
 
+## THE PLAIN FRAME'S READOUTS (the plain build parity plan, phase 1): without
+## the original's pictures, the Speed Control and the resource displays are
+## drawn by us at the pictures' own size and place in the frame (their sizes
+## measured on the art set: the Alliance's 106 x 23 and 300 x 28, the
+## Empire's 102 x 24 and 320 x 30) - our plate, black readouts, the same
+## figures in the side's colour; the speed bars ours, lit as the original's
+## five pictures light theirs (none at the first two speeds, then one, two,
+## three).
+const PlainHud := {
+	"alliance": {"speed": Vector2(106, 23), "resources": Vector2(300, 28)},
+	"empire": {"speed": Vector2(102, 24), "resources": Vector2(320, 30)},
+}
+const PlainIcons := preload("res://src/ui/plain_icons.gd")
+const PlainResourceWords := ["Raw", "Refined", "Maint."]
+var _oPlainBars: PlainBars = null
+
+
 ## The Speed Control as the original draws it, over the plain panel's place.
 func _BuildOriginalSpeed() -> void:
 	_oSide = OUI.Side(GameSettings.PlayerFaction)
 	var bezel: Texture2D = Art.WindowPicture("hud_speed.%s" % _oSide)
+	if bezel == null and _oSpeed == null and SpeedLayout.has(_oSide) and PlainHud.has(_oSide) and CommandFrame.CanBuild(_oSide):
+		_BuildPlainSpeed()
+		return
 	if bezel == null or not SpeedLayout.has(_oSide) or _oSpeed != null:
 		return
 	var lay: Dictionary = SpeedLayout[_oSide]
@@ -474,6 +494,61 @@ func _BuildOriginalSpeed() -> void:
 		OUI.SideColor(GameSettings.PlayerFaction), HORIZONTAL_ALIGNMENT_CENTER, "Day")
 	var bars: Vector2 = lay["bars"]
 	_oBars = HudPlace(_oSpeed, null, bars.x, bars.y, "Bars")
+
+
+## The plain frame's Speed Control: our plate, the day in the black window, our bars.
+func _BuildPlainSpeed() -> void:
+	var lay: Dictionary = SpeedLayout[_oSide]
+	(_timeControls.get_node("Margin") as Control).visible = false
+	_timeControls.add_theme_stylebox_override("panel", StyleBoxEmpty.new())
+	var box := PlainHudBox.new()
+	box.name = "PlainSpeed"
+	box.K = HudScaleNow
+	var lcd: Rect2 = lay["lcd"]
+	var bars: Vector2 = lay["bars"]
+	box.Wells = [lcd, Rect2(bars - Vector2(1, 1), Vector2(18, 12))]
+	box.custom_minimum_size = PlainHud[_oSide]["speed"] * HudScaleNow
+	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_oSpeed = box
+	_timeControls.add_child(_oSpeed)
+	_oDay = HudText(_oSpeed, "", lcd.position.x, lcd.position.y + (lcd.size.y - 8) / 2.0 - 2, lcd.size.x, 12, 11,
+		OUI.SideColor(GameSettings.PlayerFaction), HORIZONTAL_ALIGNMENT_CENTER, "Day")
+	_oPlainBars = PlainBars.new()
+	_oPlainBars.name = "Bars"
+	_oPlainBars.On = OUI.SideColor(GameSettings.PlayerFaction)
+	_oPlainBars.position = bars * HudScaleNow
+	_oPlainBars.size = Vector2(16, 10) * HudScaleNow
+	_oPlainBars.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_oSpeed.add_child(_oPlainBars)
+
+
+## Our plate with black readout windows in it (`Wells`, in the frame's pixels).
+class PlainHudBox extends Control:
+	var Wells: Array = []
+	var K: float = 1.0
+
+	func _draw() -> void:
+		PlainIcons.DrawPlate(self, Rect2(Vector2.ZERO, size))
+		for w in Wells:
+			var r: Rect2 = w
+			PlainIcons.DrawWell(self, Rect2(r.position * K, r.size * K), Color.BLACK)
+
+
+## Three bars, `Lit` of them in the side's colour, the rest dim.
+class PlainBars extends Control:
+	var Lit: int = 0
+	var On: Color = Color.RED
+
+	func SetLit(n: int) -> void:
+		if n != Lit:
+			Lit = n
+			queue_redraw()
+
+	func _draw() -> void:
+		var unit: float = size.x / 16.0
+		for i in 3:
+			var c: Color = On if i < Lit else On.darkened(0.55)
+			draw_rect(Rect2(Vector2(i * 6.0 * unit, 0), Vector2(4.0 * unit, size.y)), c)
 
 
 ## WHERE THE SPEED CONTROL AND THE RESOURCE DISPLAYS SIT: as the side's frame
@@ -528,6 +603,9 @@ func _BuildCommandFrame() -> void:
 func _BuildOriginalResources() -> void:
 	var side: String = OUI.Side(GameSettings.PlayerFaction)
 	var strip: Texture2D = Art.WindowPicture("hud_resources.%s" % side)
+	if strip == null and _oResources == null and ResourceLayout.has(side) and PlainHud.has(side) and CommandFrame.CanBuild(side):
+		_BuildPlainResources(side)
+		return
 	if strip == null or not ResourceLayout.has(side) or _oResources != null:
 		return
 	var row: Control = _availMines.get_parent().get_parent()   # the scene's Resources row
@@ -556,6 +634,41 @@ func _BuildOriginalResources() -> void:
 		hover.mouse_filter = Control.MOUSE_FILTER_PASS
 		_oResources.add_child(hover)
 		left = right + 4
+
+
+## The plain frame's resource displays: our plate with three black readouts,
+## each its word (ours, for the original's icon) and the same figure.
+func _BuildPlainResources(side: String) -> void:
+	var row: Control = _availMines.get_parent().get_parent()   # the scene's Resources row
+	row.visible = false
+	var lay: Dictionary = ResourceLayout[side]
+	var sz: Vector2 = PlainHud[side]["resources"]
+	var box := PlainHudBox.new()
+	box.name = "PlainResources"
+	box.K = HudScaleNow
+	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_oResources = box
+	_oResources.size = sz * HudScaleNow
+	_oResources.position = Vector2(floorf((get_viewport().get_visible_rect().size.x - _oResources.size.x) / 2.0), 0)
+	row.get_parent().add_child(_oResources)
+	_oFigures.clear()
+	var left := 0.0
+	for i in 3:
+		var right: float = lay["rights"][i]
+		box.Wells.append(Rect2(left + 3, 3, right + 4 - left - 6, sz.y - 6))
+		HudText(_oResources, PlainResourceWords[i], left + 7, float(lay["cap"]) - 2, 50, 11, 9,
+			PlainIcons.Dimmed, HORIZONTAL_ALIGNMENT_LEFT, "Word%d" % i)
+		var fig := HudText(_oResources, "", right - 60, float(lay["cap"]) - 2, 60, 11, 10,
+			OUI.SideColor(GameSettings.PlayerFaction), HORIZONTAL_ALIGNMENT_RIGHT, ["Raw", "Refined", "Maintenance"][i])
+		_oFigures.append(fig)
+		var hover := Control.new()
+		hover.name = "Hover%d" % i
+		hover.position = Vector2(left, 0) * HudScaleNow
+		hover.size = Vector2(right + 4 - left, sz.y) * HudScaleNow
+		hover.mouse_filter = Control.MOUSE_FILTER_PASS
+		_oResources.add_child(hover)
+		left = right + 4
+	box.queue_redraw()
 
 
 ## A picture of the Command Center's frame at original position (x, y),
@@ -693,6 +806,9 @@ func _ApplyClock() -> void:
 		# Blank while the opening briefing holds the clock (RefreshStatusBar).
 		_oBars.texture = null if _briefing else Art.WindowPicture("speed_bars.%s.%d" % [_oSide, clampi(effective, 0, SpeedNames.size() - 1)])
 		_oBars.size = _oBars.texture.get_size() * HudScaleNow if _oBars.texture != null else Vector2.ZERO
+		_timeControls.tooltip_text = "Game Speed Control: %s" % _speedReadout.text
+	elif _oPlainBars != null:
+		_oPlainBars.SetLit(0 if _briefing else clampi(effective - 1, 0, 3))
 		_timeControls.tooltip_text = "Game Speed Control: %s" % _speedReadout.text
 	if _speed == 0:
 		_tickTimer.stop()
