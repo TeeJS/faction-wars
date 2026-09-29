@@ -27,6 +27,8 @@ const ConsoleInset := Vector2(2, 151)
 
 static func Apply(main: Node, ui: Node, map: Node) -> void:
 	var theme := Look.GetTheme()
+	# Every menu, dialog and tooltip in the look (phase 5).
+	Look.InstallPopups(main.get_tree())
 	_desk(main)
 
 	# THE OPERATIONS STRIP.

@@ -9,7 +9,8 @@ extends SceneTree
 ##
 ## writes <out>_cockpit.png, _credits.png, _map.png, _message.png, _dialog.png,
 ## _finder.png, _menu.png, and last _message_urgent.png (the Conflict tab) and
-## _message_empty.png (the Chat tab, empty in a game against the computer). --record= is REQUIRED: without it the game's session log
+## _message_empty.png (the Chat tab, empty in a game against the computer),
+## then _popup.png (the speed menu and a tooltip). --record= is REQUIRED: without it the game's session log
 ## would overwrite the player's user://last-session.jsonl.
 ##
 ## No art set is read (Artwork.UserArtRoot / IgnoreProjectFolder, as the
@@ -139,6 +140,27 @@ func _init() -> void:
 	for _i in 3:
 		await process_frame
 	ok = _shot(out, "message_empty") and ok
+
+	# A MENU AND A TOOLTIP (phase 5): the speed menu dropped under the clock,
+	# and beside it a tooltip panel as the viewport makes one (a hover cannot be
+	# faked headlessly, so its panel and label are made the same way).
+	ui.CloseAllWindows()
+	for _i in 3:
+		await process_frame
+	var speed: Variant = main.get("_speedMenu")
+	if speed is PopupMenu:
+		(speed as PopupMenu).popup(Rect2i(Vector2i(8, 84), Vector2i.ZERO))
+	var tip := PopupPanel.new()
+	tip.theme_type_variation = &"TooltipPanel"
+	var words := Label.new()
+	words.theme_type_variation = &"TooltipLabel"
+	words.text = "Game Speed Control"
+	tip.add_child(words)
+	ui.add_child(tip)
+	tip.popup(Rect2i(Vector2i(230, 84), Vector2i.ZERO))
+	for _i in 4:
+		await process_frame
+	ok = _shot(out, "popup") and ok
 
 	quit(0 if ok else 1)
 

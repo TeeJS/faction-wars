@@ -25,6 +25,8 @@ const DRIFT_SECONDS := 26.0
 ## side buttons start; `load_btn` is the code-added Load Game button.
 static func Build(menu: Control, first: Faction, second: Faction, load_btn: Button) -> void:
 	menu.theme = Look.GetTheme()
+	# Every menu, dialog and tooltip in the look (phase 5).
+	Look.InstallPopups(menu.get_tree())
 	(menu.get_node("Background") as ColorRect).color = Look.C("chassis_deep")
 	_desk(menu)
 

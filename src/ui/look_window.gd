@@ -43,6 +43,32 @@ static func Dress(window: Control) -> void:
 			b.theme_type_variation = Look.COMMAND
 			b.remove_theme_font_size_override("font_size")
 			b.add_theme_font_size_override("font_size", Look.Size("small"))
-	var back: ColorRect = window.get_node_or_null("MainVBox/ContentArea/Background")
-	if back != null:
-		back.color = Look.C("chassis")
+	# The body's backdrop: the ColorRect straight under ContentArea, whatever
+	# the scene named it ("Background", or "ColorRect" in the Game Menu).
+	var area: Node = window.get_node_or_null("MainVBox/ContentArea")
+	if area != null:
+		for c in area.get_children():
+			if c is ColorRect:
+				(c as ColorRect).color = Look.C("chassis")
+
+
+## A list's row in a plain window: a ruled ledger line, its words in `ink`
+## (a side's colour from Look.SideColor, or the text colour) at the body size.
+## A flat button draws no row, so it is made a solid one.
+static func ListRow(btn: Button, ink: Color) -> void:
+	if not Look.Active():
+		return
+	btn.flat = false
+	btn.theme_type_variation = Look.ROW
+	btn.remove_theme_font_size_override("font_size")
+	for c in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color"]:
+		btn.add_theme_color_override(c, ink)
+
+
+## Every button in `root` a command key (the Game Menu's column).
+static func Commands(root: Node) -> void:
+	if not Look.Active():
+		return
+	for c in root.get_children():
+		if c is Button:
+			(c as Button).theme_type_variation = Look.COMMAND
