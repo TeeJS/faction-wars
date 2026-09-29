@@ -239,19 +239,24 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 		# Sector is taller than it is wide (Portrait)
 		mapSize = Vector2(maxDimension * aspectRatio, maxDimension)
 
-	# Safety floor: Prevent the window from collapsing completely if planets are in a straight line
-	mapSize.x = maxf(mapSize.x, 100.0)
-	mapSize.y = maxf(mapSize.y, 100.0)
-	if original:
-		mapSize = Vector2(OW, OH) * K
-
-	sectorMap.custom_minimum_size = mapSize
-
 	# Slightly increased padding to make room for text at the bottom edges
 	var padding: float = 60.0
 	# The three bars and the name below the lowest system need more room
 	# under it than the top row needs above it (BarsTop + the bars + the name).
 	var paddingBottom: float = 92.0
+
+	# Safety floor: never smaller than the padding round the systems plus some
+	# room to place them in. A flat sector (the WWII pack's British Isles) came
+	# out 100 high, less than the 152 of padding: the room to place systems in
+	# went below zero, so the lowest system's name fell out under the window
+	# and the systems' north-south order came out upside down.
+	mapSize.x = maxf(mapSize.x, padding * 2 + MinPlacing)
+	mapSize.y = maxf(mapSize.y, padding + paddingBottom + MinPlacing)
+	if original:
+		mapSize = Vector2(OW, OH) * K
+
+	sectorMap.custom_minimum_size = mapSize
+
 	var usableWidth: float = mapSize.x - (padding * 2)
 	var usableHeight: float = mapSize.y - padding - paddingBottom
 
@@ -937,6 +942,9 @@ static func _OriginalIcon(btn: Button, glyph: String, faction_id: String, alpha:
 # and the energy hover wording, mirrored from the sourced materials one.
 # The sides' order on the loyalty bar is the pack's `loyalty_bar` (SCHEMA §10):
 # the Star Wars pack puts the Empire on the left, as Fig 2.9 has it.
+## The plain window's least room to place systems in, each way, inside its
+## padding (Populate's safety floor).
+const MinPlacing: float = 40.0
 const BarsTop: float = 38.0        # clear of the lower corner icons (22 + 8, plus a gap; +2 for icons to come, TeeJ 2026-09-22)
 # The rows share one LEFT edge, as Fig 2.9 and the original's sector window
 # have them, so the squares line up row over row (TeeJ, 2026-09-22); the
