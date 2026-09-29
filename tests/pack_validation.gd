@@ -252,6 +252,8 @@ func _init() -> void:
 	_look_case("an overlay alpha above 1", look, {"alpha": 1.5}, "overlay_alpha: must be a number from 0 to 1")
 	_look_case("a texture the engine does not know", look, {"texture": ["wallpaper", "look/paper.png"]}, "textures.wallpaper: not a known texture")
 	_look_case("a texture the pack does not ship", look, {"texture": ["paper", "look/missing.png"]}, "'look/missing.png' is not in")
+	_look_case("a map detail that is neither .png nor .jpg", look, {"texture": ["map_detail", "look/world_1941_detail.gif"]}, "is not a .png or .jpg")
+	_look_case("a drawn texture as a .jpg", look, {"texture": ["paper", "look/world_1941_detail.jpg"]}, "textures.paper: 'look/world_1941_detail.jpg' is not a .png")
 	_look_case("a dossier map plate that is not [x, y, w, h]", look, {"dossier": ["map_rect", [10, 10, 0]]}, "dossier.map_rect: must be [x, y, w, h]")
 	_look_case("a dossier field the engine does not know", look, {"dossier": ["banner", "x"]}, "dossier: 'banner' is not known")
 	_look_case("a messages field the engine does not know", look, {"messages": ["footer", "x"]}, "messages: 'footer' is not known")

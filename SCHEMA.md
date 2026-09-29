@@ -901,7 +901,7 @@ then stopped the game on its first day (the editor handoff, 2026-09-23):
 31. ✅ `look.json` (§15), when the pack ships one: every known colour is present as `#rrggbb` and no unknown one is;
     `sides` names factions in `factions.json`; each face is a `.ttf` / `.otf` the pack ships, in a known role, its
     `weight` 100-900 and `tabular` true or false; `sizes` are positive whole numbers and `metrics` 0 or more, both by
-    known name; `overlay_alpha` is 0-1; each texture is a `.png` the pack ships, by known name, its `margin` 0 or more;
+    known name; `overlay_alpha` is 0-1; each texture is a `.png` the pack ships (`map_detail` may be a `.jpg`), by known name, its `margin` 0 or more;
     `dossier` holds only `subtitle` and `map_caption` (text) and `map_rect` (four numbers, 0 or more, width and height
     above 0); `messages` holds only `header` (text), `stamps` (message category -> text) and `urgent` (a list of
     message categories).
@@ -1184,7 +1184,7 @@ An excerpt of `packs/ww2/look.json`:
 | `overlay_alpha` | Optional, 0-1: how dark the dim behind a dialog is. |
 | `dossier` | Optional - the Cockpit's campaign dossier (`src/ui/cockpit_dossier.gd`, the button Cockpit of a pack with a look): `subtitle` (the typed line over the campaign's name, e.g. its years), `map_rect` (`[x, y, w, h]` in `map_image`'s own pixels: the plate of the map the dossier shows; the whole map without it) and `map_caption` (the line under the plate). |
 | `messages` | Optional - the Message Index as dispatches (`src/ui/look_dispatch.gd`, the plain Message Index of a pack with a look): `header` (the word typed over every dispatch, e.g. "Dispatch"), `stamps` (message category -> the small stamp its rows and dispatches carry: `Loyalty`, `Fleets`, `Missions`, `Resources`, `Manufacturing`, `Defense`, `Conflict`, `Chat`, `Advice`; a category left out has none) and `urgent` (the categories that carry the signal-red band, e.g. `["Conflict"]`). The empty category's words are `display.json`'s `no_messages` term (§10). |
-| `textures` | Optional, name -> a `.png` the pack ships, or `{file, margin}` for a nine-slice: `paper` (tiles; headers and edges only - never under long text), `paper_frame` (a document's frame, flat centre), `desk`, `grain` (the chassis and its static grain), `rule` (the brass divider). |
+| `textures` | Optional, name -> a `.png` the pack ships, or `{file, margin}` for a nine-slice: `paper` (tiles; headers and edges only - never under long text), `paper_frame` (a document's frame, flat centre), `desk`, `grain` (the chassis and its static grain), `rule` (the brass divider), `map_detail` (a sharper copy of `map_image` over the same `map_image_rect`, for the sector windows' theatre plates; a `.jpg` allowed, since it is a scan). |
 
 The WWII pack's textures are drawn by `tools/look/make_ww2_textures.py` from
 seeded noise; its faces and their licences are in `packs/ww2/look/fonts/`.

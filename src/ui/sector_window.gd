@@ -6,6 +6,8 @@ extends DraggableWindow
 ## corner icons, star, bars or name - names that system (SystemAt).
 
 var _sector: Sector
+## The plain window in a pack's look: a theatre plate (phase 8).
+const LookSector := preload("res://src/ui/look_sector.gd")
 
 ## THE ORIGINAL'S SECTOR WINDOW (manual p025 Fig 2.8), with the player's
 ## imported art, measured on TeeJ's screenshot of the original's Corellian
@@ -679,6 +681,11 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 	# No system's name, bars or icons over another's (TeeJ, 2026-09-23).
 	var room := Rect2(Vector2(2, 22) * K, Vector2(OW - 4, OH - 24) * K) if original else Rect2(Vector2.ZERO, mapSize)
 	SeparateEntries(sectorMap, room)
+
+	# A pack with a look: the plain window as a theatre plate (look_sector.gd;
+	# docs/ww2-look-plan.md, phase 8). Colours and faces only.
+	if Look.Active() and not original:
+		LookSector.Dress(sectorMap, sector, mapSize, padding, paddingBottom)
 
 
 ## NO ENTRY OVER ANOTHER (TeeJ, 2026-09-23: "there are areas where the text
