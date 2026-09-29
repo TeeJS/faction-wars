@@ -68,8 +68,15 @@ func _init() -> void:
 		% [side, "left of" if side == "alliance" else "right of"])
 	var pair: Rect2 = speed.merge(res)
 	_check(absf(pair.get_center().x - main.get_viewport().get_visible_rect().size.x / 2.0) <= 1.0, "the pair centred at the top")
-	var bottom: float = gm._oResources.position.y + gm._oResources.size.y
-	_check(bottom <= SectorWindow.DockPosition(true).y, "clear of the docked sector window (%.0f <= %.0f)" % [bottom, SectorWindow.DockPosition(true).y])
+	# Every side with a frame layout has the frame now - its picture or ours (the
+	# plain build parity plan, phase 1): the strip sits on the frame's box.
+	if ui.CommandFrameRef != null:
+		var f: CommandFrame = ui.CommandFrameRef
+		var box: Vector2 = (f.Origin + (GameManager.HudFrame[side]["resources"] as Vector2) * f.S).floor()
+		_check(gm._oResources.position.is_equal_approx(box), "on the frame's resource box (%s)" % str(box))
+	else:
+		var bottom: float = gm._oResources.position.y + gm._oResources.size.y
+		_check(bottom <= SectorWindow.DockPosition(true).y, "clear of the docked sector window (%.0f <= %.0f)" % [bottom, SectorWindow.DockPosition(true).y])
 	_finish()
 
 

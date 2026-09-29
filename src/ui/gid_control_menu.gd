@@ -28,6 +28,7 @@ extends Control
 const OriginalMenu := preload("res://src/ui/original_menu.gd")
 const OUI := preload("res://src/ui/original_ui.gd")
 const Art := preload("res://src/ui/artwork.gd")
+const PlainIcons := preload("res://src/ui/plain_icons.gd")
 
 const K := OUI.K
 const MainW := 158
@@ -112,10 +113,16 @@ func _box(sz: Vector2) -> Panel:
 
 func _icon(box: Control, picture: String, y: float) -> void:
 	var tex: Texture2D = Art.WindowPicture(picture)
-	if tex == null:
-		return
+	var scaled: Texture2D = Art.Scaled(tex, K) if tex != null else null
+	if scaled == null:
+		# Without the art: a category's glyph of ours, as the plain Command
+		# Center draws it (plain_icons.gd); a mode has none.
+		var kind: String = picture.trim_prefix("gid_menu_").get_slice(".", 0)
+		if not PlainIcons.Has(kind):
+			return
+		scaled = PlainIcons.Icon(kind, OUI.SideColor(GameSettings.PlayerFaction), 11 * K)
 	var t := TextureRect.new()
-	t.texture = Art.Scaled(tex, K)
+	t.texture = scaled
 	t.position = Vector2(IconX, y + 1) * K
 	t.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	box.add_child(t)

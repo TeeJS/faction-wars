@@ -58,19 +58,28 @@ func _init() -> void:
 		if b.text != galaxy[i].Name:
 			in_order = false
 	_check(in_order, "the pinned buttons are contiguous and in map order")
-	var key: Button = ui.AddToTaskbar("Loyalty to the Test", func() -> void: pass)
-	await process_frame
-	var column: Control = ui.get_node("%CommsPanel")
-	var key_rect := key.get_global_rect()
-	_check(key.get_parent() != list, "the docked key's button is not on the right-hand panel")
-	_check(key_rect.position.x < column.get_global_rect().end.x and key_rect.end.x <= column.get_global_rect().end.x + 1,
-		"the docked key's button is in the left column (%s)" % str(key_rect))
-	var feedback: Control = ui.get_node_or_null("FeedbackPanel")
-	if feedback != null:
-		_check(key_rect.end.y <= feedback.get_global_rect().position.y, "... just above the Feedback box (%.0f <= %.0f)" % [key_rect.end.y, feedback.get_global_rect().position.y])
-	ui.RemoveFromTaskbar(key)
-	await process_frame
+	# Under the Command Center frame - the Star Wars pack's, drawn by us without
+	# the art (the plain build parity plan, phase 1) - the key is the left-hand
+	# menu's line and minimised windows go to the shelf; without a frame (the
+	# WWII pack) the key is in the left column and they go to this panel.
+	var mini: VBoxContainer = ui._MinimisedList()
+	if ui.CommandFrameRef != null:
+		_check(ui.GidMenu() != null and ui.GidMenu().KeyRow() != null, "under the frame, the key is the left-hand menu's line")
+	else:
+		var key: Button = ui.AddToTaskbar("Loyalty to the Test", func() -> void: pass)
+		await process_frame
+		var column: Control = ui.get_node("%CommsPanel")
+		var key_rect := key.get_global_rect()
+		_check(key.get_parent() != list, "the docked key's button is not on the right-hand panel")
+		_check(key_rect.position.x < column.get_global_rect().end.x and key_rect.end.x <= column.get_global_rect().end.x + 1,
+			"the docked key's button is in the left column (%s)" % str(key_rect))
+		var feedback: Control = ui.get_node_or_null("FeedbackPanel")
+		if feedback != null:
+			_check(key_rect.end.y <= feedback.get_global_rect().position.y, "... just above the Feedback box (%.0f <= %.0f)" % [key_rect.end.y, feedback.get_global_rect().position.y])
+		ui.RemoveFromTaskbar(key)
+		await process_frame
 	var panel_before := list.get_child_count()
+	var mini_before := mini.get_child_count()
 
 	# Press one: its window opens.
 	var sector: Sector = galaxy[0]
@@ -114,7 +123,8 @@ func _init() -> void:
 		pw.MinimizeWindow()
 		for _i in 2:
 			await process_frame
-		_check(list.get_child_count() == panel_before + 1, "an ordinary window minimises to a new panel button (%d)" % list.get_child_count())
+		_check((mini.get_child_count() == mini_before + 1) if mini != list else (list.get_child_count() == panel_before + 1),
+			"an ordinary window minimises to a new button, on the shelf under the frame (%d)" % mini.get_child_count())
 
 	# --- Unpin / re-pin (TeeJ, 2026-09-22) ---
 	var second: Sector = galaxy[1]
@@ -132,6 +142,7 @@ func _init() -> void:
 	_check(not ui.IsPinned(second) and not is_instance_valid(pin2), "unpinning removes the button")
 	_check(_window_titled(ui, second.Name) == null, "unpinning closes its open window")
 	var count_after_unpin := list.get_child_count()
+	var mini_after_unpin := mini.get_child_count()
 	ui.OnSectorClicked(second)
 	for _i in 3:
 		await process_frame
@@ -143,7 +154,8 @@ func _init() -> void:
 	w2.MinimizeWindow()
 	for _i in 2:
 		await process_frame
-	_check(list.get_child_count() == count_after_unpin + 1, "an unpinned theatre minimises to a normal panel button")
+	_check((mini.get_child_count() == mini_after_unpin + 1) if mini != list else (list.get_child_count() == count_after_unpin + 1),
+		"an unpinned theatre minimises to a normal button")
 	ui.PinSector(second)
 	for _i in 2:
 		await process_frame
@@ -152,7 +164,8 @@ func _init() -> void:
 	var idx_first: int = (ui.PinnedSectors()[galaxy[0].Name] as Button).get_index()
 	_check(idx == idx_first + 1, "the re-pinned button returns to its place in map order (%d after %d)" % [idx, idx_first])
 	# The pin is back (+1) and the minimised-window button is gone (-1).
-	_check(list.get_child_count() == count_after_unpin + 1, "re-pinning removed the redundant minimised-window button (%d)" % list.get_child_count())
+	_check(list.get_child_count() == count_after_unpin + 1 and (mini == list or mini.get_child_count() == mini_after_unpin),
+		"re-pinning removed the redundant minimised-window button (%d)" % list.get_child_count())
 	(ui.PinnedSectors()[second.Name] as Button).pressed.emit()
 	for _i in 2:
 		await process_frame

@@ -29,6 +29,7 @@ extends Control
 
 const Art := preload("res://src/ui/artwork.gd")
 const OUI := preload("res://src/ui/original_ui.gd")
+const PlainIcons := preload("res://src/ui/plain_icons.gd")
 
 const HeadPx := 16
 const RowPx := 14            # the sector column's size of type
@@ -245,7 +246,9 @@ func _icon_for(cat_id: String) -> Texture2D:
 		return null
 	var cell: Texture2D = Art.CornerIcon(glyph, _side)
 	if cell == null:
-		return null
+		# Without the art: our own glyph for the category (plain_icons.gd).
+		var own: Image = PlainIcons.Picture(cat_id, OUI.SideColor(GameSettings.PlayerFaction))
+		return _fitted(own) if own != null else null
 	var img: Image = cell.get_image()
 	if img == null:
 		return null
