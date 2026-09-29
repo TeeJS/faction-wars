@@ -91,6 +91,15 @@ files are hand-edited now and are the contract).
 | `display.json` | The Galactic Information Display catalog, the Alt+1..9 order, and the special-power band labels | `src/ui/gid.gd` (was code) | ✅ |
 | *(no `uprising.json`)* | `uprising_start.json` / `uprising_end.json` were **byte-identical copies** of two tables the pack already carries in `mission_tables.json` (`uprising_start`, `uprising_end`). `UprisingTable` reads those | `mission_tables.json` | ✅ |
 
+Two more files are **optional** and **presentation only**: neither is one of
+`FactionRegistry.PACK_FILES`, so neither touches the content hash, a save or
+the simulation.
+
+| File | Purpose | Section |
+|---|---|---|
+| `look.json` | The pack's look: colours, faces, sizes and textures its screens are drawn in | §15 |
+| `credits.json` | Where every picture and font the pack ships comes from | §16 |
+
 **Not pack content:** `gnprtb_globals.json` (212 rows of
 `{global, parameter_id, entry_id, name}`) is a map from rule entries to the
 original binary's memory addresses — a reverse-engineering artifact belonging
@@ -889,6 +898,14 @@ then stopped the game on its first day (the editor handoff, 2026-09-23):
     `list` (text, needed), `opening` and `periodic` (group numbers), `picture` (a `.png`), `events` (known window kinds -> group numbers)
     and `every` (ticks, more than 0); references a pack file or in a declared art set.
 30. ✅ `pack.json` `report_backdrop`, when given, is an object of sides, each a non-empty list of `"rrggbb"` colours.
+31. ✅ `look.json` (§15), when the pack ships one: every known colour is present as `#rrggbb` and no unknown one is;
+    `sides` names factions in `factions.json`; each face is a `.ttf` / `.otf` the pack ships, in a known role, its
+    `weight` 100-900 and `tabular` true or false; `sizes` are positive whole numbers and `metrics` 0 or more, both by
+    known name; `overlay_alpha` is 0-1; each texture is a `.png` the pack ships, by known name, its `margin` 0 or more.
+32. ✅ `credits.json` (§16), when the pack ships one: an object with an `assets` list; each asset names a `title`, an
+    `author` and a `licence` and one or more `files` the pack ships; its `source` and `licence_url`, when given, are
+    `https://` addresses. (That every shipped picture and font HAS an entry is `tests/asset_credits.gd`'s check, not the
+    loader's - it walks the whole project, `assets/credits.json` included.)
 
 **Not checked by the loader** (the engine copes, but a pack author should know):
 the named mission tables of §9 (missing, their mechanic switches off); a
@@ -1121,3 +1138,78 @@ is ever committed: CI fails a build that carries any. The art set's layout is th
 
 Packs load from `res://packs/<id>/` (shipped) and `user://packs/<id>/`
 (imported; a shipped pack of the same id wins).
+
+## 15. `look.json` — the pack's look (optional)
+
+**★ 2026-09-28 (docs/ww2-look-plan.md, TeeJ signed off).** A pack may ship the
+colours, faces, sizes and textures its screens are drawn in.
+[src/ui/look.gd](src/ui/look.gd) builds **one** Godot Theme from them: the
+base controls, plus one named variation per shared piece (`LookPanel`,
+`LookTitleBar`, `LookCommand`, `LookRail`, `LookRow`, `LookDocument`, ... -
+the list is `Look.PIECES`). A scene tags a node with a piece; with a look the
+node wears it, and without one the tag does nothing.
+
+**A pack without `look.json` looks exactly as before**: no theme is put on
+the tree and every scene keeps the colours it was drawn with.
+`tests/look_system.gd` checks both halves, and `tests/capture_look.gd`
+proves the Star Wars pack pixel-identical before and after a change.
+
+An excerpt of `packs/ww2/look.json`:
+
+```json
+{
+  "colors": {"chassis": "#1b1b19", "paper": "#e9dfc6", "ink": "#2a2620", "brass": "#a88a4e", "...": "..."},
+  "sides": {"allies": "#4a6a8f", "axis": "#8e3a2e"},
+  "fonts": {
+    "display": {"file": "look/fonts/Oswald-Variable.ttf", "weight": 500},
+    "body": {"file": "look/fonts/SourceSans3VF-Upright.ttf", "weight": 400, "tabular": true}
+  },
+  "sizes": {"body": 16, "small": 13, "label": 14, "title": 15, "heading": 18, "display": 34},
+  "metrics": {"radius": 2, "border": 1, "focus": 2, "pad": 8},
+  "overlay_alpha": 0.55,
+  "textures": {"paper": "look/paper.png", "paper_frame": {"file": "look/paper_frame.png", "margin": 20}}
+}
+```
+
+| Field | Meaning |
+|---|---|
+| `colors` | **All required** (validation rule 31): `chassis`, `chassis_deep`, `chassis_raised`, `chassis_hover` (the frame and its controls), `edge` (a panel's quiet border), `brass`, `brass_dim` (trim, dividers, the selected edge, the focus ring), `text`, `text_muted`, `text_disabled`, `heading` (on the chassis), `paper`, `paper_edge`, `ink`, `ink_muted` (documents), `khaki`, `olive`, `olive_deep` (status, structure, the selected fill), `signal`, `signal_text` (urgent, losses, blocked), `note`, `note_ink` (tooltips), `overlay` (the dim behind a dialog). `Look.CONTRAST_PAIRS` names the pairs that must stay readable; `tests/look_system.gd` fails a look below WCAG 4.5:1 for text or 3:1 for edges and disabled text. |
+| `sides` | Optional, faction id -> colour: a side's colour **in the chrome**. The map keeps `factions.json`'s colours. |
+| `fonts` | Optional, role -> `{file, weight, tabular}`. Roles: `display`, `display_bold` (labels, headings, title bars), `body`, `body_bold` (text, figures), `typed`, `typed_bold` (typed dispatch headings). `weight` sets a variable face's `wght`; `tabular` turns on tabular figures. A missing role falls back to `body`, then the engine's face. |
+| `sizes` | Optional, px: `body` (the default size - keep it at 16 unless every screen is re-checked for clipping), `small`, `label`, `title`, `heading`, `display`. |
+| `metrics` | Optional, px: `radius` (corners), `border`, `focus` (the ring's width), `pad` (a box's content margin). |
+| `overlay_alpha` | Optional, 0-1: how dark the dim behind a dialog is. |
+| `textures` | Optional, name -> a `.png` the pack ships, or `{file, margin}` for a nine-slice: `paper` (tiles; headers and edges only - never under long text), `paper_frame` (a document's frame, flat centre), `desk`, `grain` (the chassis and its static grain), `rule` (the brass divider). |
+
+The WWII pack's textures are drawn by `tools/look/make_ww2_textures.py` from
+seeded noise; its faces and their licences are in `packs/ww2/look/fonts/`.
+
+## 16. `credits.json` — where the pictures and fonts come from (optional)
+
+**★ 2026-09-28.** Every picture and font that ships names its origin, and the
+Cockpit's **View Credits** shows them under *Artwork and fonts* with their
+links. A pack's `credits.json` covers its own files (paths relative to the
+pack); `assets/credits.json` covers the engine's (relative to `assets/`).
+
+```json
+{
+  "assets": [
+    {
+      "title": "1941 World map",
+      "what": "The strategic map",
+      "author": "A 1941 Russian political world map, contributed by Sam Kal",
+      "source": "https://www.publicdomainpictures.net/en/view-image.php?image=510694&picture=1941-world-map",
+      "licence": "CC0 1.0 Public Domain",
+      "licence_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "changes": "Cropped to the map's neat line, 1750 x 1050.",
+      "files": ["world_1941.jpg"]
+    }
+  ]
+}
+```
+
+`title`, `author`, `licence` and `files` are required (rule 32); `what`,
+`source`, `licence_url` and `changes` are optional, the links `https://` only.
+`tests/asset_credits.gd` walks the project and **fails on any shipped picture
+or font no credits file names** - and on an entry naming a file that is not
+there.

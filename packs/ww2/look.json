@@ -1,0 +1,63 @@
+{
+  "_comment": "The WWII pack's look (SCHEMA.md section 15; docs/ww2-look-plan.md): a 1940s map room. Presentation only - not one of the pack's hashed files. Colours are the charter's tokens; the textures are made by tools/look/make_ww2_textures.py; the faces and their licences are in look/fonts (README.md there).",
+  "colors": {
+    "chassis": "#1b1b19",
+    "chassis_deep": "#111110",
+    "chassis_raised": "#2a2923",
+    "chassis_hover": "#34322a",
+    "edge": "#3d3a30",
+    "brass": "#a88a4e",
+    "brass_dim": "#7d6a3f",
+    "text": "#e6dcc3",
+    "text_muted": "#a59d88",
+    "text_disabled": "#7a7463",
+    "heading": "#b5a67a",
+    "paper": "#e9dfc6",
+    "paper_edge": "#d8c9a3",
+    "ink": "#2a2620",
+    "ink_muted": "#5a5244",
+    "khaki": "#b5a67a",
+    "olive": "#6b6f45",
+    "olive_deep": "#4a4d31",
+    "signal": "#a8322a",
+    "signal_text": "#f1e6cf",
+    "note": "#efe6cf",
+    "note_ink": "#2a2620",
+    "overlay": "#0b0b0a"
+  },
+  "sides": {
+    "_comment": "Faction differentiation in the chrome only; the map keeps factions.json's own colours.",
+    "allies": "#4a6a8f",
+    "axis": "#8e3a2e"
+  },
+  "fonts": {
+    "display": {"file": "look/fonts/Oswald-Variable.ttf", "weight": 500},
+    "display_bold": {"file": "look/fonts/Oswald-Variable.ttf", "weight": 600},
+    "body": {"file": "look/fonts/SourceSans3VF-Upright.ttf", "weight": 400, "tabular": true},
+    "body_bold": {"file": "look/fonts/SourceSans3VF-Upright.ttf", "weight": 600, "tabular": true},
+    "typed": {"file": "look/fonts/CourierPrime-Regular.ttf"},
+    "typed_bold": {"file": "look/fonts/CourierPrime-Bold.ttf"}
+  },
+  "sizes": {
+    "body": 16,
+    "small": 13,
+    "label": 14,
+    "title": 15,
+    "heading": 18,
+    "display": 34
+  },
+  "metrics": {
+    "radius": 2,
+    "border": 1,
+    "focus": 2,
+    "pad": 8
+  },
+  "overlay_alpha": 0.55,
+  "textures": {
+    "paper": "look/paper.png",
+    "paper_frame": {"file": "look/paper_frame.png", "margin": 20},
+    "desk": "look/desk.png",
+    "grain": "look/grain.png",
+    "rule": "look/rule.png"
+  }
+}

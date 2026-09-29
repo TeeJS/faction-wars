@@ -35,7 +35,7 @@ picture and font of documented origin, attribution linked from the Cockpit.
 ### One system: `look.json` → one Godot Theme
 - **`packs/<id>/look.json`** (new and optional) holds the tokens: colours, fonts, sizes, spacing, corners, borders, focus, disabled, overlay opacity, and textures. It is **not** added to `PACK_FILES`, so the content hash and saves are untouched. It is documented in SCHEMA.md and validated like the other files.
 - **`src/ui/look.gd`** builds one Theme from the tokens, with a named type variation per primitive, and applies it at the root. The scenes' inline literals are replaced by those names.
-- **A pack without `look.json` gets defaults equal to today's literals**, so Star Wars stays as it is. Before/after captures prove it.
+- **A pack without `look.json` gets no theme at all**: every scene keeps the colours it was drawn with, so Star Wars stays as it is. Before/after captures prove it. *(Changed 2026-09-28, phase 1: was "defaults equal to today's literals". Same result, and a stronger guarantee: nothing is re-created, so nothing can drift.)*
 
 | Primitive | Used for |
 |---|---|

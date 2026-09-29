@@ -1,0 +1,54 @@
+{
+  "_comment": "Where every picture and font this pack ships comes from (SCHEMA.md section 16). The Cockpit's View Credits lists these under 'Artwork and fonts'; tests/asset_credits.gd fails if a shipped picture or font is missing here. Presentation only - not one of the pack's hashed files.",
+  "assets": [
+    {
+      "title": "1941 World map",
+      "what": "The strategic map",
+      "author": "A 1941 Russian political world map, contributed by Sam Kal",
+      "source": "https://www.publicdomainpictures.net/en/view-image.php?image=510694&picture=1941-world-map",
+      "licence": "CC0 1.0 Public Domain",
+      "licence_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "changes": "Cropped to the map's neat line, 1750 x 1050.",
+      "files": ["world_1941.jpg"]
+    },
+    {
+      "title": "Oswald",
+      "what": "Headings and labels",
+      "author": "Vernon Adams and the Oswald Project Authors",
+      "source": "https://github.com/googlefonts/OswaldFont",
+      "licence": "SIL Open Font License 1.1",
+      "licence_url": "https://openfontlicense.org/",
+      "changes": "None (file renamed from Oswald[wght].ttf).",
+      "files": ["look/fonts/Oswald-Variable.ttf", "look/fonts/Oswald-OFL.txt"]
+    },
+    {
+      "title": "Source Sans 3",
+      "what": "Text and figures",
+      "author": "Adobe; designed by Paul D. Hunt",
+      "source": "https://github.com/adobe-fonts/source-sans",
+      "licence": "SIL Open Font License 1.1",
+      "licence_url": "https://openfontlicense.org/",
+      "changes": "None (the upright variable font from release 3.052R).",
+      "files": ["look/fonts/SourceSans3VF-Upright.ttf", "look/fonts/SourceSans3-LICENSE.txt"]
+    },
+    {
+      "title": "Courier Prime",
+      "what": "Typed dispatch headings",
+      "author": "Alan Dague-Greene for Quote-Unquote Apps",
+      "source": "https://github.com/quoteunquoteapps/CourierPrime",
+      "licence": "SIL Open Font License 1.1",
+      "licence_url": "https://openfontlicense.org/",
+      "changes": "None.",
+      "files": ["look/fonts/CourierPrime-Regular.ttf", "look/fonts/CourierPrime-Bold.ttf", "look/fonts/CourierPrime-OFL.txt"]
+    },
+    {
+      "title": "Paper, desk, grain and brass-rule textures",
+      "what": "Surfaces of the command room",
+      "author": "Faction Wars, generated from seeded noise by tools/look/make_ww2_textures.py",
+      "source": "https://github.com/TeeJS/faction-wars",
+      "licence": "Original work of the Faction Wars project",
+      "changes": "",
+      "files": ["look/paper.png", "look/paper_frame.png", "look/desk.png", "look/grain.png", "look/rule.png"]
+    }
+  ]
+}
