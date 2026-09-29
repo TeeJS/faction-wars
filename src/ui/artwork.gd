@@ -24,6 +24,12 @@ extends RefCounted
 ## with load() - which is what makes the art work in a web export too, where
 ## there is no OS path to read. A file under user:// is a plain PNG and is read
 ## with Image.load_from_file.
+##
+## With no art set at all, a picture a window in the original's look needs is
+## our stand-in (art_standins.gd; the plain build parity plan), so the window
+## builds as it does with the art.
+
+const StandIns := preload("res://src/ui/art_standins.gd")
 
 static var _cache: Dictionary = {}      # lookup key -> Texture2D or null
 static var _cache_pack: String = ""
@@ -288,6 +294,7 @@ static func Reset() -> void:
 	_cache_pack = ""
 	_aliases.clear()
 	_descriptions_loaded = false
+	StandIns.Reset()
 
 
 ## A new pack forgets the last one's pictures and aliases - and so does another
@@ -402,6 +409,8 @@ static func _find(own_rel: String, set_rel: String, only_set: String = "") -> Te
 					break
 			if tex != null:
 				break
+	if tex == null and only_set.is_empty() and StandIns.Active():
+		tex = StandIns.Picture(set_rel)
 	_cache[key] = tex
 	return tex
 

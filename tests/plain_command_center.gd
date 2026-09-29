@@ -85,8 +85,11 @@ func _side(side: String) -> void:
 	(loyalty as BaseButton).pressed.emit()
 	await process_frame
 	var mw: Control = ui._openWindows.get("Communications")
-	_check(mw != null and mw.position.is_equal_approx(ui.MapFrame.position) and mw.size.is_equal_approx(ui.MapFrame.size),
-		"%s: it opens the Message Index, filling the map's window" % side)
+	# Phase 2: the Message Index in the original's look (our stand-ins), at its
+	# own size, docked at the map window's corner, as with the art.
+	_check(mw != null and mw.position.is_equal_approx(ui.MapFrame.position) and (mw as MessageWindow)._original
+		and mw.size.is_equal_approx((mw as MessageWindow).OriginalSize()),
+		"%s: it opens the Message Index, in the original's look, at the map window's corner" % side)
 	if mw != null:
 		(mw as DraggableWindow).CloseWindow()
 	await process_frame
