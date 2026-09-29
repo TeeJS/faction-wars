@@ -169,13 +169,16 @@ grid) stays for a pack whose pictures cannot reach a theatre sharply
 The marks sit where the pack puts its systems, as on the strategic map. Those
 positions came from a fit with an 18 px RMS error on the 1750-px map
 (PACK.md), and at these magnifications that shows. Every mark is inside its
-own country; Gibraltar's is on the Moroccan shore, as on the strategic map.
+own country. Gibraltar's was on the Moroccan shore, as on the strategic map;
+#403 moves it onto the Rock.
 
 Forms tried and rejected (TeeJ, 2026-09-29):
 - a sharp map wider than the layout, which put systems on the wrong places;
 - the lined-up map from the strategic map's own picture, which was a blur;
 - the plotting sheet for the small European theatres ("we need them all to
-  be the same").
+  be the same");
+- the atlas's Spain and Portugal page for Iberia: a physical map, coloured by
+  height, ending short of the strait's south shore ("stay on page 14").
 
 **Menus, dialogs, tooltips (phase 5).** The game makes these in some forty
 places. So `Look.InstallPopups` dresses them from one `node_added` hook on the

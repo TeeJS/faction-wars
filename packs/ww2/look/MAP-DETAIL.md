@@ -122,8 +122,14 @@ How close it is:
 | The pack's own systems | placed on the world page by a fit of 18 px RMS on the 1750-px map (PACK.md, "Map layout"), about 40 px of the detail map |
 
 So the plate sits each of those theatres' systems in its own country, as the
-strategic map does. Gibraltar's system is on the Moroccan shore on both: that
-is where the pack puts it.
+strategic map does. Gibraltar's system was on the Moroccan shore on both,
+where the pack had put it; #403 moves it onto the Rock.
+
+Iberia is the softest of the five (2.5 times, 2.9 once Gibraltar is on the
+Rock and its window turns landscape). The atlas's Spain and Portugal page
+(p19, 1:5,000,000) was looked at and not used (TeeJ, 2026-09-29, "stay on
+page 14"): it is a physical map, coloured by height rather than by country,
+and it ends at about 35.7 N, short of the window's southern edge.
 
 Rebuild it with:
 
