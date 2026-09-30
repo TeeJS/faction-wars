@@ -9,7 +9,13 @@ extends RefCounted
 ## Options screen, Leave Game, Exit to Menu / Desktop, game end): the static
 ## outlives the screens, and stale state is the classic session bug.
 
+## The player's remembered names and options. A run under a test or tool
+## script (a SceneTree of its own, `-s`) keeps TestNamesFile instead, so no
+## test can write the player's: the Host Game screen offered "Luke" and "The
+## End of the Empire", mp_flow's and mp_screens' names (TeeJ, 2026-09-29), and
+## a test ticking Reduce motion or Provide feedback changed the player's own.
 const NamesFile := "user://mp.cfg"
+const TestNamesFile := "user://test-mp.cfg"
 const DefaultRelay := "wss://wars.schmitzplex.com/ws"
 
 static var player_name: String = ""
@@ -84,7 +90,7 @@ static func load_names() -> void:
 	# Fills only what this session has not set: a name typed on an earlier
 	# screen (or by a test) is not overwritten by the remembered one.
 	var cfg := ConfigFile.new()
-	var remembered := cfg.load(NamesFile) == OK
+	var remembered := cfg.load(NamesPath()) == OK
 	if player_name.is_empty():
 		player_name = str(cfg.get_value("names", "player", "")) if remembered else ""
 	if player_name.is_empty():
@@ -106,7 +112,15 @@ static func remember_names() -> void:
 	cfg.set_value("names", "game", game_name)
 	cfg.set_value("options", "feedback", GameSettings.ProvideFeedback)
 	cfg.set_value("options", "reduce_motion", GameSettings.ReduceMotion)
-	cfg.save(NamesFile)
+	cfg.save(NamesPath())
+
+
+## NamesFile, or TestNamesFile when a script runs the SceneTree (a test or a
+## capture: the game itself never does). No main loop yet means a script's
+## SceneTree is still being made - the game's code never runs before it.
+static func NamesPath() -> String:
+	var loop := Engine.get_main_loop()
+	return TestNamesFile if loop == null or loop.get_script() != null else NamesFile
 
 
 ## Why this client cannot play the room described by `settings`, or "". The
