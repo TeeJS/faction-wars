@@ -1037,7 +1037,7 @@ func PopulateFighters(tabs: TabContainer, planet: Planet, uiManager: UIManager) 
 		# Enemy squadrons seen via intel are legal SABOTAGE targets (manual p108):
 		# draw them clickable and dated so the crosshair can land on one.
 		_draw_intel_units(list, planet, view, Enums.IntelSection.Fighters,
-			"No %s seen in orbit." % Terms.lower("fighter_squadrons"))
+			"No %s seen %s." % [Terms.lower("fighter_squadrons"), Terms.lower("in_orbit")])
 		return
 
 	# Ours are already drawn, so this is everybody else's.
@@ -1046,7 +1046,7 @@ func PopulateFighters(tabs: TabContainer, planet: Planet, uiManager: UIManager) 
 	var pending: Array[String] = PendingFor(planet, Enums.UnitType.Fighter)
 
 	if ourFighters == 0 and fighters.size() == 0 and pending.size() == 0:
-		AddUnitToList(list, null, "No %s in orbit." % Terms.lower("fighter_squadrons"), Color.GRAY, uiManager, SelectedFighters)
+		AddUnitToList(list, null, "No %s %s." % [Terms.lower("fighter_squadrons"), Terms.lower("in_orbit")], Color.GRAY, uiManager, SelectedFighters)
 		return
 
 	for fighter in fighters:

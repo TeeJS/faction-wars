@@ -670,6 +670,7 @@
     "trooper_regiment": "Division",
     "trooper_regiments": "Divisions",
     "in_transit": "at sea",
+    "in_orbit": "on station",
     "system_shield_recharge": "Damage Control",
     "system_weapon_recharge": "Reload Rate",
     "system_tractor": "Pursuit Gear",

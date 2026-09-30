@@ -87,7 +87,7 @@ static func MoveUnits(units: Array, destination: Planet) -> Result:
 	if carrier != null:
 		var orbit := SystemOf(carrier)
 		if orbit == null:
-			return Result.fail("%s is not in orbit anywhere." % carrier.Name, 0)
+			return Result.fail("%s is not %s anywhere." % [carrier.Name, Terms.lower("in_orbit")], 0)
 		var unloaded := UnloadUnits(units)
 		if not unloaded.ok:
 			return Result.fail(unloaded.error, 0)
@@ -288,7 +288,7 @@ static func BoardFleet(characters: Array, fleet: Fleet) -> Result:
 		return Result.fail("%s is %s." % [fleet.Name, Terms.label("in_transit")]).coded("in_transit")
 	var orbit: Planet = fleet.Attached
 	if orbit == null:
-		return Result.fail("%s is not in orbit anywhere." % fleet.Name)
+		return Result.fail("%s is not %s anywhere." % [fleet.Name, Terms.lower("in_orbit")])
 	var boarding := Lq.where(characters, func(c): return c.Status != Enums.Status.Enroute and not c.IsCaptured() and not c.IsOffMap())
 	if boarding.is_empty():
 		return Result.fail("Nobody here is free to move.")
@@ -338,7 +338,7 @@ static func LoadAboard(units: Array, fleet: Fleet) -> Result:
 	if fleet.Status == Enums.Status.Enroute:
 		return Result.fail("%s is %s." % [fleet.Name, Terms.label("in_transit")], 0).coded("in_transit")
 	if not (fleet.Attached is Planet):
-		return Result.fail("%s is not in orbit." % fleet.Name, 0)
+		return Result.fail("%s is not %s." % [fleet.Name, Terms.lower("in_orbit")], 0)
 	var orbit: Planet = fleet.Attached
 	if units == null or units.is_empty():
 		return Result.fail("Nothing selected.", 0)
@@ -578,7 +578,7 @@ static func Unload(fleet: Fleet) -> Result:
 	if fleet == null:
 		return Result.fail("No fleet.", 0)
 	if not (fleet.Attached is Planet):
-		return Result.fail("%s is not in orbit." % fleet.Name, 0)
+		return Result.fail("%s is not %s." % [fleet.Name, Terms.lower("in_orbit")], 0)
 	var orbit: Planet = fleet.Attached
 	var off := 0
 	for ship in fleet.Ships:
@@ -607,7 +607,7 @@ static func UnloadUnits(units: Array) -> Result:
 		if fleet.Status == Enums.Status.Enroute:
 			return Result.fail("%s is %s." % [fleet.Name, Terms.label("in_transit")]).coded("in_transit")
 		if not (fleet.Attached is Planet):
-			return Result.fail("%s is not in orbit anywhere." % fleet.Name)
+			return Result.fail("%s is not %s anywhere." % [fleet.Name, Terms.lower("in_orbit")])
 		var orbit: Planet = fleet.Attached
 		for ship in fleet.Ships:
 			ship.Hangar.erase(u)
@@ -631,7 +631,7 @@ static func Disembark(characters: Array) -> Result:
 		if from.Status == Enums.Status.Enroute:
 			return Result.fail("%s is %s." % [from.Name, Terms.label("in_transit")]).coded("in_transit")
 		if not (from.Attached is Planet):
-			return Result.fail("%s is not in orbit anywhere." % from.Name)
+			return Result.fail("%s is not %s anywhere." % [from.Name, Terms.lower("in_orbit")])
 		var orbit: Planet = from.Attached
 		c.Attached = orbit
 		c.Status = Enums.Status.AwaitingOrders

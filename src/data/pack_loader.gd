@@ -44,7 +44,7 @@ const KNOWN_TERMS := [
 	# unit kinds, singular and plural
 	"fighter_squadron", "fighter_squadrons", "trooper_regiment", "trooper_regiments",
 	# movement between systems
-	"in_transit",
+	"in_transit", "in_orbit",
 	# the five ship systems tactical damage tracks
 	"system_shield_recharge", "system_weapon_recharge", "system_tractor", "system_engines", "system_hyperdrive",
 	# a standing defence's state tag in the Defenses window

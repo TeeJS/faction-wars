@@ -533,7 +533,7 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 					var tint: Color = flagged.FactionColor if flagged != null else Color.GRAY
 					_TintIcon(cornerBtn, tint)
 					_OriginalIcon(cornerBtn, "fleet", flagged.Id if flagged != null else "unknown", 1.0)
-					cornerBtn.tooltip_text = CornerTip("F") + "\nIn orbit: " + ", ".join(Lq.select(fleetsHere,
+					cornerBtn.tooltip_text = CornerTip("F") + "\n%s: " % Terms.cap("in_orbit") + ", ".join(Lq.select(fleetsHere,
 						func(f: Fleet) -> String: return "%s (%s)" % [f.Name, f.Faction.DisplayName if f.Faction != null else "unknown"]))
 					# RIGHT-CLICK: the fleet command menu (TeeJ's screenshot of
 					# the original's, 2026-09-24) for the side the icon shows -
@@ -865,7 +865,7 @@ static func CornerTip(corner: String) -> String:
 		"E":
 			return "Production - click for this system's factories, yards and mines"
 		"F":
-			return "Fleets in orbit - click to open, right-click for orders"
+			return "Fleets %s - click to open, right-click for orders" % Terms.lower("in_orbit")
 		"D":
 			return "Defenses - click for who and what defends this system"
 		"M":

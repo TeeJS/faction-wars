@@ -77,7 +77,7 @@ func Populate(planet: Planet, uiManager: UIManager) -> void:
 		if view.Groups.size() == 0 and mine.size() == 0:
 			# The same voice as the live branch: the snapshot says the
 			# orbit was empty.
-			selectedFleetName.text = "" if original else "No fleets detected in orbit."
+			selectedFleetName.text = "" if original else "No fleets detected %s." % Terms.lower("in_orbit")
 			_ClearPanel()
 			return
 
@@ -110,7 +110,7 @@ func Populate(planet: Planet, uiManager: UIManager) -> void:
 		func(f: Fleet) -> bool: return (f.Status != Enums.Status.Enroute or f.Destination == planet) and not f.IsTransit())
 
 	if orbitingFleets.size() == 0:
-		selectedFleetName.text = "" if original else "No fleets detected in orbit."
+		selectedFleetName.text = "" if original else "No fleets detected %s." % Terms.lower("in_orbit")
 		ClearFleetContents()
 		_ClearPanel()
 		return
