@@ -504,6 +504,9 @@ func _page_list(container: Control, index: int, plainTitle: String, _view: Intel
 	for child in container.get_children():
 		child.queue_free()
 	var list := VBoxContainer.new()
+	# Its units and defences are cards, as the Personnel tab's people are and
+	# as every page of the original's is (Fig 3.73; IsPictureCardList).
+	list.set_meta("picture_cards", true)
 	container.add_child(list)
 	# The tab's own title over its page, in the pack's words (TabTitle).
 	AddCaption(list, TabTitle(index) if index > 0 else plainTitle)
@@ -585,7 +588,7 @@ func AddUnitToList(list: Container, unitData: Unit, text: String, color: Color, 
 		# A Special Forces unit among the Personnel cards, a card itself.
 		if unitBtn.has_meta("miniature"):
 			unitBtn.remove_meta("miniature")
-		PictureCard(unitBtn, unitData.Name, Art.Portrait("units", unitData.PackId), text)
+		PictureCard(unitBtn, unitData.Name, CardPicture("units", unitData.PackId), text)
 		list = PictureCardRow(list)
 	unitBtn.UnitData = unitData
 	unitBtn.UIManagerRef = uiManager
@@ -764,8 +767,19 @@ func _defence_row(list: Container, text: String, family: String, status: String,
 		OUI.Card(rowBtn, text.get_slice(" (Tier", 0), OUI.Mini("facilities", packId if not packId.is_empty() else family),
 			Color.RED if status == "[DAMAGED]" else Color.WHITE, OUI.SideColor(GameSettings.PlayerFaction), "", null, false)
 		rowBtn.tooltip_text = "%s %s" % [text, status]
+	var card: bool = IsCardList(list) or IsPictureCardList(list)
+	if IsPictureCardList(list):
+		# The plain list's card: the facility's portrait over its name, the
+		# tier and state in the tooltip as on the original's; damaged, its name
+		# in red.
+		rowBtn.flat = false
+		PictureCard(rowBtn, text.get_slice(" (Tier", 0),
+			CardPicture("facilities", packId if not packId.is_empty() else family) if not family.is_empty() else null,
+			("%s %s" % [text, status]).strip_edges())
+		if status == "[DAMAGED]":
+			rowBtn.add_theme_color_override("font_color", Look.Readable(Look.C("signal"), Look.C("chassis")) if Look.Active() else Color.RED)
 	if resolve.is_valid():
-		rowBtn.tooltip_text = (rowBtn.tooltip_text + "\n" if IsCardList(list) else "") \
+		rowBtn.tooltip_text = (rowBtn.tooltip_text + "\n" if card else "") \
 			+ "With the mission crosshair up, click to make this the Sabotage target."
 		rowBtn.pressed.connect(func() -> void:
 			# CROSSHAIRS UP: this click names the sabotage target (manual p040).
@@ -778,6 +792,9 @@ func _defence_row(list: Container, text: String, family: String, status: String,
 			_uiManager.ResolveObjectTarget(current))
 	if IsCardList(list):
 		list.add_child(rowBtn)
+		return
+	if IsPictureCardList(list):
+		PictureCardRow(list).add_child(rowBtn)
 		return
 	# THE PLAIN ROW, LIKE A PERSONNEL ROW (TeeJ, 2026-09-30: "I can't tell
 	# what is going on and can barely read the text"): a solid row at the
@@ -891,10 +908,10 @@ func _draw_intel_units(list: Container, planet: Planet, view: IntelManager.Intel
 		var title: String = str(line)
 		var mini: Texture2D = OUI.Mini("characters", _character_id_named(title)) \
 			if section == Enums.IntelSection.Characters else OUI.Mini("units", _unit_id_named(title))
-		# A plain list's card shows the portrait (PictureCard).
+		# A plain list's card shows the portrait, else the miniature (CardPicture).
 		if IsPictureCardList(list):
-			mini = Art.Portrait("characters", _character_id_named(title)) \
-				if section == Enums.IntelSection.Characters else Art.Portrait("units", _unit_id_named(title))
+			mini = CardPicture("characters", _character_id_named(title)) \
+				if section == Enums.IntelSection.Characters else CardPicture("units", _unit_id_named(title))
 		_intel_target_row(list, title, view.Day, func() -> Variant:
 			var here: Array = _enemy_here(world, section)
 			return here[nth] if nth < here.size() else null, mini, section != Enums.IntelSection.Fighters)
