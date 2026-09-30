@@ -11,6 +11,7 @@ extends SceneTree
 ##   .\tools\run-gd.ps1 tests/portraits.gd              (Star Wars)
 
 const Art := preload("res://src/ui/artwork.gd")
+const StandIns := preload("res://src/ui/art_standins.gd")
 
 var _fails := 0
 var _checks := 0
@@ -64,6 +65,25 @@ func _init() -> void:
 	csw.CloseWindow()
 	for _i in 2:
 		await process_frame
+
+	# The plain Unit Status window with no picture: no box, the name alone -
+	# never the C# prototype's "[ 3D Model ]" (TeeJ, 2026-09-30). Our
+	# stand-ins off, or the original's window would open instead.
+	StandIns.Enabled = false
+	Art.Reset()
+	ui.OpenUnitStatusWindow(troop)
+	for _i in 3:
+		await process_frame
+	var usw0: DraggableWindow = _window_titled_like(ui, "Status_" + troop.Name)
+	var box0: Control = usw0.get_node(UnitStatusWindow.PortraitPath) if usw0 != null else null
+	var words0: Array = usw0.find_children("*", "Label", true, false).map(func(l: Label) -> String: return l.text) if usw0 != null else []
+	_check(box0 != null and not box0.visible and not " ".join(words0).contains("3D Model"), "Unit Status with no picture: no picture box, no \"3D Model\"")
+	if usw0 != null:
+		usw0.CloseWindow()
+	for _i in 2:
+		await process_frame
+	StandIns.Enabled = true
+	Art.Reset()
 
 	# --- Write portraits and a miniature under the test art set. ---
 	var dir := "%s/%s" % [Art.UserArtRoot, FactionRegistry.Pack.Manifest.ArtSets[0]]

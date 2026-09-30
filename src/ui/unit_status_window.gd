@@ -209,9 +209,15 @@ static func _CapitalShipFields(unit: Unit) -> Array:
 
 func Populate(unit: Unit) -> void:
 	_associatedUnit = unit
-	# The unit's portrait, when the player imported the original's
-	# (original/portraits/units/<id>.png), else the placeholder.
-	Art.Fill(get_node_or_null(PortraitPath), Art.Portrait("units", unit.PackId))
+	# The unit's portrait, when the pack or an art set has one
+	# (portraits/units/<id>.png). With none, no box at all and the name stands
+	# alone: the empty box said "[ 3D Model ]", the C# prototype's
+	# placeholder, and there are no 3D models (TeeJ, 2026-09-30).
+	var picture: Texture2D = Art.Portrait("units", unit.PackId)
+	var box: Control = get_node_or_null(PortraitPath)
+	Art.Fill(box, picture)
+	if box != null:
+		box.visible = picture != null
 
 	(get_node("%TitleBarLabel") as Label).text = " " + StatusTitle(unit)
 	(get_node("%UnitNameLabel") as Label).text = unit.Name
