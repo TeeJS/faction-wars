@@ -709,8 +709,12 @@ func OnMessageIndexClicked(category: String = "All") -> void:
 			window._tabContainer.tabs_visible = false
 			window.OpenToCategory(category)
 			# Docked: after OpenWindow has placed it (it nudges new windows), so
-			# the dock position is the one that stands.
-			window.set_deferred("position", at)
+			# the dock position is the one that stands - but never under the
+			# theatre list. The original's index drawn 2x is wider than the
+			# Command Center frame's map window (drawn 1.767x); docked at its
+			# left edge the Empire's ran 13 px under the list at 1440 x 850
+			# (TeeJ, 2026-09-29).
+			window.set_deferred("position", GetSafeWindowPosition(window, at))
 			RefreshCommsHighlights(),
 		at)
 
