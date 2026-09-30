@@ -21,11 +21,18 @@ func Populate(planet: Planet, uiManager: UIManager) -> void:
 	var fleetList: VBoxContainer = get_node("%FleetList")
 	var selectedFleetName: Label = get_node("%SelectedFleetName")
 	var original: bool = _BuildOriginal()
+	# The ships' tab in the pack's word, for a fleet of ours or one seen.
+	var shipsTab: Node = tabs.get_node_or_null("Capital Ships")
+	if shipsTab != null:
+		tabs.set_tab_title(shipsTab.get_index(), Terms.label("capital_ships"))
 
 	# The original titles the window with the system's name alone, in the
 	# system's side's colour.
-	titleBarLabel.text = planet.Name if original else " %s System Fleets" % planet.Name
+	titleBarLabel.text = planet.Name if original else " %s %s" % [planet.Name, Terms.label("system_fleets")]
 	OUI.SystemTitle(self, planet)
+	var fleetsHead: Label = get_node_or_null("MainVBox/ContentArea/SplitView/LeftPanel/Label")
+	if fleetsHead != null:
+		fleetsHead.text = Terms.label("fleets_here")
 
 	# Clear existing fleet buttons on the left
 	for child in fleetList.get_children():
@@ -70,7 +77,7 @@ func Populate(planet: Planet, uiManager: UIManager) -> void:
 			AddFleetToList(fleet, fleetList, _uiManager)
 
 		if not view.Known and mine.size() == 0:
-			selectedFleetName.text = "" if original else "Sensors detect no data..."
+			selectedFleetName.text = "" if original else Terms.label("no_data").trim_suffix(".") + "..."
 			_ClearPanel()
 			return
 
@@ -252,7 +259,7 @@ func DisplayFleetContents(fleet: Fleet) -> void:
 			SelectedFighters.erase(u)
 
 	if capitalShipsTab != null:
-		PopulateUnitTab(capitalShipsTab, capShips, "No capital ships in this fleet.", SelectedCapitalShips)
+		PopulateUnitTab(capitalShipsTab, capShips, "No %s in this fleet." % Terms.lower("capital_ships"), SelectedCapitalShips)
 	if fightersTab != null:
 		PopulateUnitTab(fightersTab, fighters, "No %s in this fleet." % Terms.lower("fighter_squadrons"), SelectedFighters)
 	if troopsTab != null:
@@ -307,11 +314,11 @@ func DisplayRememberedFleet(fleet: IntelManager.IntelGroup) -> void:
 	var tabs: TabContainer = get_node("%FleetTabs")
 
 	FillTabWithText(tabs.get_node_or_null("Capital Ships"),
-					fleet.Lines, "No capital ships were seen.")
+					fleet.Lines, "No %s were seen." % Terms.lower("capital_ships"))
 
 	for other in ["Fighters", "Troops", "Personnel"]:
 		FillTabWithText(tabs.get_node_or_null(other),
-						null, "Sensors detect no data.")
+						null, Terms.label("no_data"))
 	if _original:
 		_ShowRemembered(fleet)
 
@@ -643,13 +650,13 @@ static func FleetMenu(fleets: Array, planet: Planet, uiManager: UIManager, withR
 		bombard.add_item("Target Military Facilities", 10)
 		bombard.add_item("Target Civilian Facilities", 11)
 		bombard.add_item("General Bombardment", 12)
-		bombard.add_item("Destroy System", 13)
+		bombard.add_item(Terms.label("destroy_order"), 13)
 		for i in 3:
 			bombard.set_item_disabled(i, not canBombard or inHyperspace)
 		bombard.set_item_disabled(3, not canBombard or inHyperspace
 								   or not Lq.any(bombarders, func(f: Fleet) -> bool: return BombardmentManager.CanDestroySystem(f)))
 		popup.add_child(bombard)
-		popup.add_submenu_node_item("Planetary Bombardment", bombard, 2)
+		popup.add_submenu_node_item(Terms.label("bombard_order"), bombard, 2)
 		popup.set_item_disabled(popup.get_item_index(2), not canBombard or inHyperspace)
 		bombard.id_pressed.connect(func(id: int) -> void:
 			var mode: int = BombardmentManager.BombardmentMode.General
@@ -671,7 +678,7 @@ static func FleetMenu(fleets: Array, planet: Planet, uiManager: UIManager, withR
 		# so the shield gate is exactly what greys it, and AssaultManager
 		# owns that test rather than a second copy here.
 		var assaulters: Array = Lq.where(fleets, func(f: Fleet) -> bool: return AssaultManager.CanAssault(f, planet).ok)
-		popup.add_item("Planetary Assault", 6)
+		popup.add_item(Terms.label("assault_order"), 6)
 		popup.set_item_disabled(popup.get_item_index(6), assaulters.is_empty() or inHyperspace)
 
 		if withRename:

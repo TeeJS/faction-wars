@@ -104,7 +104,7 @@ static func Announce(u: Unit, fleet: Fleet, where: Planet, day: int) -> void:
 	if not GameSettings.IsHuman(u.Faction):
 		return
 	var squadron := u.Type == Enums.UnitType.Fighter
-	var msg := GameMessage.new("Squadron at Full Strength" if squadron else "Capital Ship Repaired",
+	var msg := GameMessage.new("Squadron at Full Strength" if squadron else "%s Repaired" % Terms.label("capital_ship"),
 		("The %s Squadron attached to %s has replaced all fighters lost in combat." % [u.Name, at]) if squadron
 		else ("%s attached to %s has repaired all battle damage and is fully operational." % [u.Name, at]),
 		Enums.MessageCategory.Missions, day, where)

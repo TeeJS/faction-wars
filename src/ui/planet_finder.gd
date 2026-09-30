@@ -48,8 +48,12 @@ func _ready() -> void:
 	# and the search field's hint from the pack's terms.
 	_searchBar.placeholder_text = Terms.label("search_systems")
 	(get_node("%TitleBarLabel") as Label).text = " " + Terms.label("system_finder")
+	var nameLabel: Label = get_node_or_null("MainVBox/ContentArea/Padding/VBox/SearchHBox/SearchLabel")
+	if nameLabel != null:
+		nameLabel.text = "%s Name" % Terms.label("system")
 	var tabs: TabContainer = get_node_or_null("%FactionTabs")
 	if tabs != null:
+		tabs.set_tab_title(0, "All %s" % Terms.label("systems"))
 		for order in 2:
 			if FactionRegistry.Playable.size() > order and tabs.get_tab_count() > order + 1:
 				tabs.set_tab_title(order + 1, (FactionRegistry.Playable[order] as Faction).ShortName)
@@ -120,7 +124,7 @@ func _BuildOriginal() -> void:
 	var tabs: Array = []
 	for i in TabStems.size():
 		tabs.append([TabStems[i], Caption(i)])
-	_o = OF.Build(self, Terms.label("system_finder"), "System Name", OUI.Pic("finder_systems"), tabs,
+	_o = OF.Build(self, Terms.label("system_finder"), "%s Name" % Terms.label("system"), OUI.Pic("finder_systems"), tabs,
 		[["finder_display", "Open the Sector and Manufacturing windows for the selected system."]])
 	for i in _o["tabs"].size():
 		var tab: int = i

@@ -648,7 +648,7 @@ func ShowHudNotification(msg: GameMessage) -> void:
 		return   # the other side's message, in a head-to-head game
 	var ticker: Label = get_node_or_null("%HudTicker")
 	if ticker != null:
-		ticker.text = "INCOMING TRANSMISSION: %s" % msg.Title
+		ticker.text = "%s: %s" % [Terms.label("incoming"), msg.Title]
 		ticker.modulate = Color.YELLOW
 
 	# Highlight the category button in the CommsList; the category enum name

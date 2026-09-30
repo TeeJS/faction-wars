@@ -23,6 +23,12 @@ extends DraggableWindow
 ## sector - so no entry is ever blank.
 
 const Databases := ["All Databases", "System", "Ship", "Facilities", "Mission", "Troop", "Personnel"]
+
+
+## A database's name on screen: the places' in the pack's word (Terms
+## "system"), the rest as the original's.
+static func DatabaseName(i: int) -> String:
+	return Terms.label("system") if i == 1 else Databases[i]
 ## Entry kinds, as the overlay files are named.
 const KindSystem := "planets"
 const KindUnit := "units"
@@ -167,9 +173,9 @@ func ShowIndex(db: int = -1) -> void:
 	_viewTopicBtn.disabled = _shown.is_empty()
 	_viewIndexBtn.disabled = true
 	if _indexHeader != null:
-		_indexHeader.text = BandCaptions[_database] if _original else Databases[_database]
+		_indexHeader.text = BandCaptions[_database] if _original else DatabaseName(_database)
 	_side_states()
-	(get_node("%TitleBarLabel") as Label).text = " %s - %s" % [Terms.label("encyclopedia"), Databases[_database]]
+	(get_node("%TitleBarLabel") as Label).text = " %s - %s" % [Terms.label("encyclopedia"), DatabaseName(_database)]
 
 
 ## Topic view of one entry, by kind and id (from a right-click menu or the i
@@ -304,7 +310,7 @@ static func TextFor(e: Entry) -> String:
 					if p.Id == e.Id:
 						for s in pack.Map.Sectors:
 							if s.Id == p.Sector:
-								lines.append("%s sector" % s.DisplayName)
+								lines.append("%s %s" % [s.DisplayName, Terms.lower("sector")])
 		KindMission:
 			var d: PackDefs.MissionDefPack = MissionCatalog.ById(e.Id)
 			if d != null:
@@ -756,10 +762,10 @@ func _build() -> void:
 	tabRow.add_theme_constant_override("separation", 4)
 	for i in Databases.size():
 		var b := Button.new()
-		b.text = Databases[i]
+		b.text = DatabaseName(i)
 		b.toggle_mode = true
 		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		b.tooltip_text = "Tab to show %s%s" % [Databases[i], "" if i == 0 else " database"]
+		b.tooltip_text = "Tab to show %s%s" % [DatabaseName(i), "" if i == 0 else " database"]
 		var db := i
 		b.pressed.connect(func() -> void:
 			_current = -1

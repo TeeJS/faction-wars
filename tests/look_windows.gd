@@ -145,7 +145,7 @@ func _init() -> void:
 	# The System Finder goes by the pack's name (TeeJ, 2026-09-30:
 	# "Planetary system finder is wrong for WWII as well").
 	var finder_word: String = Terms.label("system_finder")
-	_check(finder_word == ("System Finder" if id == "ww2" else "Planetary System Finder"), "%s: the finder is called \"%s\"" % [id, finder_word])
+	_check(finder_word == ("Territory Finder" if id == "ww2" else "Planetary System Finder"), "%s: the finder is called \"%s\"" % [id, finder_word])
 	ui.OpenPlanetFinder()
 	for _i in 3:
 		await process_frame

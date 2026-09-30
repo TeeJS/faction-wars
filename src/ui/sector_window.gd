@@ -863,11 +863,11 @@ const GlyphInnerY := 9.0
 static func CornerTip(corner: String) -> String:
 	match corner:
 		"E":
-			return "Production - click for this system's factories, yards and mines"
+			return "Production - click for this %s's factories, yards and mines" % Terms.lower("system")
 		"F":
 			return "Fleets %s - click to open, right-click for orders" % Terms.lower("in_orbit")
 		"D":
-			return "Defenses - click for who and what defends this system"
+			return "Defenses - click for who and what defends this %s" % Terms.lower("system")
 		"M":
 			return "Mission in progress - click to open, right-click for orders"
 	return ""

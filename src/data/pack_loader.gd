@@ -55,6 +55,7 @@ const KNOWN_TERMS := [
 	"sector",
 	# the Cockpit's size choice
 	"galaxy_size", "galaxy_overview", "system_finder", "encyclopedia",
+	"system", "systems", "galaxy", "capital_ship", "capital_ships", "no_data", "unexplored_system", "unknown_system", "bombard_order", "assault_order", "destroy_order", "system_fleets", "fleets_here", "bombardment_event", "strike", "disabled_by", "incoming", "agent_role", "messenger",
 	# a message category with nothing in it
 	"no_messages",
 ]

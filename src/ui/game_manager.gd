@@ -144,6 +144,8 @@ func _ready() -> void:
 	_availMaintenence = get_node("%AvailMaintenence")
 	var charInfoBtn: Button = get_node("%CharInfo")
 	var planetInfoBtn: Button = get_node("UIManager/HBoxContainer/PlanetInfo")
+	# The System Finder's button, in the pack's words ("Territory Finder").
+	planetInfoBtn.text = "%s Finder" % Terms.label("system")
 
 	# Safety net when Main.tscn is run directly, bypassing the menu.
 	FactionRegistry.EnsureLoaded()
@@ -287,7 +289,7 @@ func _ready() -> void:
 	agentBtn.name = "AgentButton"
 	agentBtn.visible = not _uiManager.HasDroids()
 	agentBtn.text = AgentDroid.NameFor(chosenFaction)
-	agentBtn.tooltip_text = "Agent droid: overview, objectives, and the two management automations."
+	agentBtn.tooltip_text = "%s: overview, objectives, and the two management automations." % Terms.label("agent_role")
 	agentBtn.pressed.connect(func() -> void: _uiManager.OpenAgentMenu(agentBtn))
 	charInfoBtn.get_parent().add_child(agentBtn)
 	charInfoBtn.get_parent().move_child(agentBtn, charInfoBtn.get_index() + 1)

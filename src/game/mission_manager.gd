@@ -839,7 +839,7 @@ static func Launch(type: int, team: Array, from: Planet, target: Planet, decoys:
 	# original, 2026-09-25: Mission greyed for a character in a moving fleet).
 	var travelling: Unit = Lq.first_or_null(team, func(u): return u.Status == Enums.Status.Enroute)
 	if travelling != null:
-		return _refuse("%s is in hyperspace and cannot be given orders." % travelling.Name)
+		return _refuse("%s is %s and cannot be given orders." % [travelling.Name, Terms.lower("in_transit")])
 
 	if type == Enums.MissionType.SpecialPowerTraining:
 		var people := Lq.of_type_character(team)
@@ -1427,7 +1427,7 @@ static func Resolve(m: Mission, rng: Prng, day: int) -> void:
 					agent.CombatRating += RuleManager.Get(RuleId.SuperweaponSabotageCombatGain, m.Faction)
 				# The original's own (TEXTSTRA 29117 / 29118): "Death Star Sabotaged" /
 				# "The Rebel Alliance has sabotaged the Death Star at <system>."
-				Report(m, day, "Death Star Sabotaged", "The %s has sabotaged the Death Star at %s." % [m.Faction.DisplayName, m.Target.Name], false, "mission_success", false)
+				Report(m, day, "%s Sabotaged" % _superweapon_name(), "The %s has sabotaged the %s at %s." % [m.Faction.DisplayName, _superweapon_name(), m.Target.Name], false, "mission_success", false)
 				m.Finished = true
 				# The original's movie 104 (manual p106), for both sides.
 				EventBus.Cue("superweapon_sabotaged", [m.Faction, station.Faction])

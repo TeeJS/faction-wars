@@ -21,7 +21,7 @@ const PortraitPath := "MainVBox/ContentArea/SplitHBox/RightPanel/PortraitRect"
 static func StatusTitle(unit: Unit) -> String:
 	match unit.Type:
 		Enums.UnitType.CapitalShip:
-			return "Capital Ship Status"
+			return "%s Status" % Terms.label("capital_ship")
 		Enums.UnitType.Fighter:
 			return "%s Status" % Terms.label("fighter_squadron")
 		Enums.UnitType.SpecForce:

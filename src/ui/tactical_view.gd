@@ -203,8 +203,8 @@ func DrawHud(size_: Vector2) -> void:
 	for s in _battle.Sides:
 		var ships: int = Lq.count(s.Ships, func(u) -> bool: return u.Alive() and not u.Destroyed())
 		var sq: int = Lq.count(s.Squadrons, func(u) -> bool: return u.Alive() and not u.Destroyed())
-		var line: String = "%s   Capital Ships %d   %s %d   strength %d" % [
-			s.Faction.DisplayName if s.Faction != null else "?", ships, Terms.label("fighter_squadrons"), sq, s.Strength]
+		var line: String = "%s   %s %d   %s %d   strength %d" % [
+			s.Faction.DisplayName if s.Faction != null else "?", Terms.label("capital_ships"), ships, Terms.label("fighter_squadrons"), sq, s.Strength]
 		draw_string(font, Vector2(16, y), line, HORIZONTAL_ALIGNMENT_LEFT, -1, fs,
 			s.Faction.FactionColor if s.Faction != null else Color.GRAY)
 		y += 18

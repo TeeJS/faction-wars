@@ -78,6 +78,46 @@ const DEFAULTS := {
 	# (manual p073-p074: "Galactic Encyclopedia"); a pack sets its own (TeeJ,
 	# 2026-09-30: "Galactic encyclopedia is also wrong")
 	"encyclopedia":           "Galactic Encyclopedia",
+	# ---- THE REST OF THE ENGINE'S OWN STAR WARS WORDS (TeeJ, 2026-09-30:
+	# "please review all of the WWII game and make sure there is no more wrong
+	# terminology used!"; tests/ww2_words.gd reads every word the WWII game
+	# shows). Each default is the Star Wars text exactly.
+	# a place on the map, in running words ("this system's factories") and
+	# headings ("System Name", "All Systems", the Encyclopedia's database)
+	"system":                 "System",
+	"systems":                "Systems",
+	# the whole board, in a sentence ("What size galaxy would you like?")
+	"galaxy":                 "galaxy",
+	# a warship: the Fleets window's first tab, a ship's Status window, a
+	# repair's message, the battle windows' headings
+	"capital_ship":           "Capital Ship",
+	"capital_ships":          "Capital Ships",
+	# what a window says of a place it has no intelligence on
+	"no_data":                "Sensors detect no data.",
+	# the System window's status for a place not yet explored, and a
+	# facility's location when it has none
+	"unexplored_system":      "Unexplored Planet",
+	"unknown_system":         "Unknown Planet",
+	# the fleet's orders (manual p111) and the superweapon's
+	"bombard_order":          "Planetary Bombardment",
+	"assault_order":          "Planetary Assault",
+	"destroy_order":          "Destroy System",
+	# the Fleets window: after the place's name on its title bar, and over
+	# its list of fleets
+	"system_fleets":          "System Fleets",
+	"fleets_here":            "Fleets in System",
+	# a bombardment's message: its title ("Orbital bombardment of Kessel")
+	# and its sentence ("... have conducted an orbital strike on ...")
+	"bombardment_event":      "Orbital bombardment",
+	"strike":                 "an orbital strike",
+	# what a disabling defence does to ships under bombardment
+	"disabled_by":            "had their guns robbed of power by ion cannon fire",
+	# the ticker's word for a message arriving
+	"incoming":               "INCOMING TRANSMISSION",
+	# the agent's job, on its button's hint; the messenger, when a side names
+	# none (factions.json messenger_name)
+	"agent_role":             "Agent droid",
+	"messenger":              "Message droid",
 	# a message category with nothing in it
 	"no_messages":            "No transmissions.",
 }

@@ -166,7 +166,7 @@ static func ShowLive(list: Container, planet: Planet,
 
 	if not view.Known:
 		var none := Label.new()
-		none.text = "Sensors detect no data."
+		none.text = Terms.label("no_data")
 		none.add_theme_color_override("font_color", Color.GRAY)
 		list.add_child(none)
 		return false

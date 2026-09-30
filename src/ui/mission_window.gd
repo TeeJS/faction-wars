@@ -73,8 +73,8 @@ func Populate(planet: Planet) -> void:
 		# there, and saying "No Active Missions" would claim otherwise.
 		var blind: bool = not planet.IsExplored
 		activeLabel.text    = "Unknown" if blind else "No Active Missions"
-		operativeLabel.text = "Sensors detect no data..." if blind else "No personnel assigned."
-		decoyLabel.text     = "Sensors detect no data..." if blind else "No decoys assigned."
+		operativeLabel.text = Terms.label("no_data").trim_suffix(".") + "..." if blind else "No personnel assigned."
+		decoyLabel.text     = Terms.label("no_data").trim_suffix(".") + "..." if blind else "No decoys assigned."
 		ClearAbortRows(activeLabel)
 		return
 

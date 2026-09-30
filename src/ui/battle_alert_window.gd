@@ -183,7 +183,7 @@ func BattleSummary() -> void:
 ## "Capital Ships" / "Fighter Squadrons" - the string block's own headings,
 ## and "Operational" for what is still flying.
 func Forces(fleet: Fleet) -> void:
-	Head("Capital Ships")
+	Head(Terms.label("capital_ships"))
 	var ships: Array = Lq.where(fleet.Ships, func(s: Unit) -> bool: return s.Type == Enums.UnitType.CapitalShip)
 	if ships.is_empty():
 		Row("None", "")
@@ -230,7 +230,7 @@ func SystemSummary() -> void:
 func Section(section: int) -> void:
 	var view: IntelManager.IntelView = IntelManager.View(GameSettings.PlayerFaction, _battle.Where, section)
 	if not view.Known:
-		Row("Sensors detect no data.", "")
+		Row(Terms.label("no_data"), "")
 		return
 	if view.Lines.is_empty():
 		Row("None seen.", "")
