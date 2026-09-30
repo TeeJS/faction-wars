@@ -510,6 +510,11 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 				cornerBtn.add_theme_stylebox_override("focus", tight)
 				_TintIcon(cornerBtn, planet.GetFactionColor())
 				_OriginalIcon(cornerBtn, cornerGlyphs[i], ownerId, 1.0)
+				# EVERY ICON SAYS WHAT IT IS (TeeJ, 2026-09-30: "how would
+				# someone not familiar with the gameplay of SWR know what those
+				# are?" - the original left it to its printed manual, p070 Fig
+				# 3.7). The Production and Defenses icons had no tooltip at all.
+				cornerBtn.tooltip_text = CornerTip(cornerLabels[i])
 
 				# WHOSE fleet, not just that there is one. Fig 3.7 (manual p070)
 				# puts SEPARATE Imperial and Alliance fleet icons in this
@@ -528,7 +533,7 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 					var tint: Color = flagged.FactionColor if flagged != null else Color.GRAY
 					_TintIcon(cornerBtn, tint)
 					_OriginalIcon(cornerBtn, "fleet", flagged.Id if flagged != null else "unknown", 1.0)
-					cornerBtn.tooltip_text = "In orbit: " + ", ".join(Lq.select(fleetsHere,
+					cornerBtn.tooltip_text = CornerTip("F") + "\nIn orbit: " + ", ".join(Lq.select(fleetsHere,
 						func(f: Fleet) -> String: return "%s (%s)" % [f.Name, f.Faction.DisplayName if f.Faction != null else "unknown"]))
 					# RIGHT-CLICK: the fleet command menu (TeeJ's screenshot of
 					# the original's, 2026-09-24) for the side the icon shows -
@@ -539,7 +544,8 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 						menuFleets = inbound
 					if not inbound.is_empty():
 						cornerBtn.tooltip_text = ((cornerBtn.tooltip_text + "
-") if not fleetsHere.is_empty() else "") 							+ "En route: " + ", ".join(Lq.select(inbound, func(f: Fleet) -> String:
+") if not fleetsHere.is_empty() else CornerTip("F") + "
+") 							+ "En route: " + ", ".join(Lq.select(inbound, func(f: Fleet) -> String:
 								return "%s (arrives day %d)" % [f.Name, StrategicTickManager.Shown(StrategicTickManager.Today + f.DaysToDestination)]))
 					AttachFleetMenu(cornerBtn, menuFleets, planet, uiManager)
 					# DRAGGED TO ANOTHER SYSTEM, the icon moves our fleets here -
@@ -566,7 +572,7 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 					_TintIcon(cornerBtn, mine)
 					_OriginalIcon(cornerBtn, "mission", GameSettings.PlayerFaction.Id, 1.0)
 				if missionHere:
-					cornerBtn.tooltip_text = "Mission in progress - right-click for orders"
+					cornerBtn.tooltip_text = CornerTip("M")
 
 					# "Double-click it for the Mission window; RIGHT-CLICK IT
 					# FOR THE MENU, which offers Encyclopedia, Status, and the
@@ -851,6 +857,21 @@ const CUprising := Color(1.0, 0.55, 0.12)
 ## mouse only on its drawn pixels - see CornerButton.
 const GlyphInnerX := 15.0
 const GlyphInnerY := 9.0
+
+## What a corner icon is, and what a click on it does, in words a player who
+## never read the original's manual can follow (its tooltip's first line).
+static func CornerTip(corner: String) -> String:
+	match corner:
+		"E":
+			return "Production - click for this system's factories, yards and mines"
+		"F":
+			return "Fleets in orbit - click to open, right-click for orders"
+		"D":
+			return "Defenses - click for who and what defends this system"
+		"M":
+			return "Mission in progress - click to open, right-click for orders"
+	return ""
+
 
 ## Called after the button's styleboxes are set: a Button pads its icon by
 ## its theme's margins, so the ICON's rectangle - not the button's - is what

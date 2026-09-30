@@ -134,6 +134,14 @@ func _init() -> void:
 					bad.append("%s name" % p.Name)
 			elif c.has_meta("corner"):
 				var b := c as Button
+				# Every icon says what it is (TeeJ, 2026-09-30), and a pack
+				# that names its own icons shows them.
+				if b.tooltip_text.strip_edges().is_empty():
+					bad.append("%s %s icon has no tooltip" % [p.Name, c.get_meta("corner")])
+				var own: Dictionary = FactionRegistry.Pack.Display.Icons
+				var corner_id: String = str(c.get_meta("corner"))
+				if own.has(corner_id) and (b.icon == null or not b.icon.resource_path.ends_with(str(own[corner_id]))):
+					bad.append("%s %s icon is not the pack's" % [p.Name, corner_id])
 				var glyph: Color = b.get_theme_color("icon_normal_color")
 				var want: Color = Look.C("signal") if str(c.get_meta("corner")) == "uprising" else Look.C("ink")
 				var tab: StyleBox = b.get_theme_stylebox("normal")

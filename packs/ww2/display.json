@@ -1,4 +1,11 @@
 {
+  "icons": {
+    "manufacturing": "look/icons/manufacturing.png",
+    "fleet": "look/icons/fleet.png",
+    "defenses": "look/icons/defenses.png",
+    "mission": "look/icons/mission.png",
+    "uprising": "look/icons/uprising.png"
+  },
   "categories": [
     {
       "id": "loyalty",

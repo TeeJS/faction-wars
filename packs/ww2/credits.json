@@ -110,6 +110,16 @@
       "files": ["art/facilities/headquarters.png", "art/facilities/shipyard.png", "art/facilities/training_facility.png", "art/facilities/construction_yard.png", "art/facilities/advanced_shipyard.png", "art/facilities/advanced_training_facility.png", "art/facilities/advanced_construction_yard.png", "art/facilities/mine.png", "art/facilities/refinery.png", "art/facilities/minefield.png", "art/facilities/coastal_battery.png", "art/facilities/fortifications.png", "art/facilities/hardened_airbase.png", "art/facilities/heavy_coastal_battery.png", "art/facilities/fortress_line.png", "art/portraits/facilities/headquarters.png", "art/portraits/facilities/shipyard.png", "art/portraits/facilities/training_facility.png", "art/portraits/facilities/construction_yard.png", "art/portraits/facilities/advanced_shipyard.png", "art/portraits/facilities/advanced_training_facility.png", "art/portraits/facilities/advanced_construction_yard.png", "art/portraits/facilities/mine.png", "art/portraits/facilities/refinery.png", "art/portraits/facilities/minefield.png", "art/portraits/facilities/coastal_battery.png", "art/portraits/facilities/fortifications.png", "art/portraits/facilities/hardened_airbase.png", "art/portraits/facilities/heavy_coastal_battery.png", "art/portraits/facilities/fortress_line.png", "art/miniatures/facilities/headquarters.png", "art/miniatures/facilities/shipyard.png", "art/miniatures/facilities/training_facility.png", "art/miniatures/facilities/construction_yard.png", "art/miniatures/facilities/advanced_shipyard.png", "art/miniatures/facilities/advanced_training_facility.png", "art/miniatures/facilities/advanced_construction_yard.png", "art/miniatures/facilities/mine.png", "art/miniatures/facilities/refinery.png", "art/miniatures/facilities/minefield.png", "art/miniatures/facilities/coastal_battery.png", "art/miniatures/facilities/fortifications.png", "art/miniatures/facilities/hardened_airbase.png", "art/miniatures/facilities/heavy_coastal_battery.png", "art/miniatures/facilities/fortress_line.png"]
     },
     {
+      "title": "Sector window icons",
+      "what": "The five icons around a system: production (a factory), fleets (an anchor), defenses (a stone tower), a mission (a spy), an uprising (a flame)",
+      "author": "Icons made by Delapouite (factory, spy), Lorc (anchor, stone tower) and Carl Olsen (flame). Available on https://game-icons.net",
+      "source": "https://game-icons.net",
+      "licence": "CC BY 3.0",
+      "licence_url": "https://creativecommons.org/licenses/by/3.0/",
+      "changes": "Rendered from the SVGs in the game-icons/icons repository (commit 82d9488) at 20 x 20, white on clear, by tools/look/make_ww2_icons.py; the game draws them in ink on a paper tab.",
+      "files": ["look/icons/manufacturing.png", "look/icons/fleet.png", "look/icons/defenses.png", "look/icons/mission.png", "look/icons/uprising.png"]
+    },
+    {
       "title": "Paper, desk, grain and brass-rule textures",
       "what": "Surfaces of the command room",
       "author": "Faction Wars, generated from seeded noise by tools/look/make_ww2_textures.py",
