@@ -442,7 +442,7 @@ static func QueueStatusData(planet: Planet, producer: String) -> Dictionary:
 # A production queue entry carries the orders. "Right-click a production
 # entry" gives Build, Stop, Destination (manual p084) - the same menu the
 # original shows, minus the parts that need systems we do not have.
-func AttachQueueMenu(labelPath: String, _planet: Planet, producer: String, queue: Array) -> void:
+func AttachQueueMenu(labelPath: String, planet: Planet, producer: String, queue: Array) -> void:
 	var label: Label = get_node_or_null(labelPath)
 	if label == null:
 		return
@@ -460,15 +460,6 @@ func AttachQueueMenu(labelPath: String, _planet: Planet, producer: String, queue
 	if menu == null:
 		menu = PopupMenu.new()
 		menu.name = "QueueMenu"
-		menu.add_item("Build...", 0)
-		menu.add_item("Stop", 1)
-		menu.add_item("Destination...", 2)
-		menu.add_separator()
-		menu.add_item("Encyclopedia", 3)
-		# "When you right-click on the Facilities Under Construction area ... one
-		# of the options is Status. This brings up the Facilities Under
-		# Construction window" (manual p086, Fig 3.29) - each queue has its own.
-		menu.add_item("Status", 4)
 		label.add_child(menu)
 		RegisterPopupMenu(menu)
 		menu.id_pressed.connect(func(id: int) -> void: _OnQueueOrder(id, producer))
@@ -489,7 +480,29 @@ func AttachQueueMenu(labelPath: String, _planet: Planet, producer: String, queue
 				menu.position = Vector2i(int(e.global_position.x), int(e.global_position.y))
 				menu.popup()
 				t.accept_event())
+	# Its items for the system as it is now, so refilled on every repaint.
+	menu.clear()
+	# A LINE WITH NOTHING TO BUILD IT ("0:0"): the original's short menu,
+	# Encyclopedia and Status, both greyed (TeeJ's screenshot of the original,
+	# 2026-09-30: Troops in Training on Coruscant, no training facility) - no
+	# orders, and no Status window for a facility that is not there.
+	var producers: int = Lq.count(planet.Facilities, func(f: Facility) -> bool: return f.HasRole(producer)) if planet != null else 0
+	if producers == 0:
+		menu.add_item("Encyclopedia", 3)
+		menu.set_item_disabled(menu.get_item_index(3), true)
+		menu.add_item("Status", 4)
+		menu.set_item_disabled(menu.get_item_index(4), true)
+		return
+	menu.add_item("Build...", 0)
+	menu.add_item("Stop", 1)
 	menu.set_item_disabled(menu.get_item_index(1), queue.size() == 0)
+	menu.add_item("Destination...", 2)
+	menu.add_separator()
+	menu.add_item("Encyclopedia", 3)
+	# "When you right-click on the Facilities Under Construction area ... one
+	# of the options is Status. This brings up the Facilities Under
+	# Construction window" (manual p086, Fig 3.29) - each queue has its own.
+	menu.add_item("Status", 4)
 
 
 ## An order from a queue's right-click menu (manual p084), on the system the
