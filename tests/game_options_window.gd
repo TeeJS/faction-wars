@@ -38,9 +38,24 @@ func _init() -> void:
 
 	var games: Array = SaveManager.Games()
 	_check(games.size() == 1 and games[0]["name"] == "From The Screen", "the game is saved under the typed name")
-	_check((w._rows[0]["state"] as Label).text.contains("From The Screen"), "it shows on the top row, the newest")
+	_check((w._rows[0]["name"] as LineEdit).text == "From The Screen", "it shows on the top row, the newest")
+	var side: String = GameOptionsWindow.SideWords("alliance")
+	_check(side != "Unknown side" and (w._rows[0]["state"] as Label).text.begins_with(side + ", Day "), "beside it the side played and the day (%s)" % (w._rows[0]["state"] as Label).text)
 	_check((w._rows[0]["state"] as Label).tooltip_text == SaveManager.SavedLabel(games[0]), "hovering it shows Saved and the day")
 	_check((w._rows[1]["state"] as Label).text == "(empty)", "the next row is empty")
+
+	# The manual's row (p075-p076): Save Game button, name field, the side, Load Game button.
+	var row: HBoxContainer = (w._rows[0]["name"] as LineEdit).get_parent()
+	var order: Array = row.get_children().map(func(c: Node) -> String: return (c as Button).text if c is Button else c.get_class())
+	_check(order == ["Save", "LineEdit", "Label", "Load"], "the row reads Save, name, side, Load (%s)" % str(order))
+	_check(not (w._rows[0]["load"] as Button).disabled and (w._rows[1]["load"] as Button).disabled, "Load is live on a saved game, off on an empty row")
+	var ask: ConfirmationDialog = w._on_load(0)
+	_check(ask != null and ask.dialog_text.contains("destroy unsaved changes") and ask.dialog_text.contains("Load without saving?"), "Load asks first, in the original's words")
+	_check(GameSettings.PendingLoadPath.is_empty(), "nothing loads before the answer")
+	if ask != null:
+		ask.confirmed.emit()   # sets PendingLoadPath, then changes scene
+	_check(GameSettings.PendingLoadPath == SaveManager.GamePath(games[0]["id"]), "Yes loads the row's game")
+	GameSettings.PendingLoadPath = ""
 
 	w.free()
 	_clean()

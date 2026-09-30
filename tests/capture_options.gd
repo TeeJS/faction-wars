@@ -24,13 +24,12 @@ func _init() -> void:
 	for _i in 8:
 		await process_frame
 	var ui: UIManager = main.get_node("UIManager")
-	ui.OnMenuButtonClicked()
+	ui.OpenGameOptions()
 	for _i in 3:
 		await process_frame
 	var screen: Control = ui.get_node_or_null("OptionsScreen")
 	if screen == null:
-		print("[capture_options] the original screen did not open (art imported?)")
-		quit(1)
+		_plain(ui, out)
 		return
 	(screen._names[0] as LineEdit).text = "1"
 	screen._save(0)
@@ -46,6 +45,28 @@ func _init() -> void:
 	var r := Rect2i(Vector2i(screen._canvas.global_position), Vector2i(Vector2(640, 480) * screen._s))
 	print("[capture_options] screen at %s, scale %.3f" % [str(r), screen._s])
 	var err := img.get_region(r).save_png(out)
+	_remove(SaveManager.Dir)
+	quit(0 if err == OK else 1)
+
+
+## Without the art (or a pack with a look): the plain Game Options window,
+## two games saved from its rows, cropped to the window.
+func _plain(ui: Node, out: String) -> void:
+	var w: GameOptionsWindow = ui.get_node_or_null("GameOptionsWindow")
+	if w == null:
+		print("[capture_options] no Game Options window opened")
+		quit(1)
+		return
+	(w._rows[0]["name"] as LineEdit).text = "Opening moves"
+	w._on_save(0)
+	(w._rows[1]["name"] as LineEdit).text = "Before the landings"
+	w._on_save(1)
+	for _i in 4:
+		await process_frame
+	var img: Image = root.get_viewport().get_texture().get_image()
+	var r := Rect2i(Vector2i(w.global_position) - Vector2i(8, 8), Vector2i(w.size) + Vector2i(16, 16))
+	print("[capture_options] plain window at %s" % str(r))
+	var err := img.get_region(r.intersection(Rect2i(Vector2i.ZERO, img.get_size()))).save_png(out)
 	_remove(SaveManager.Dir)
 	quit(0 if err == OK else 1)
 

@@ -3,7 +3,11 @@ extends PanelContainer
 ## The Game Options screen (manual p073-077) as a plain window, used when the
 ## original's art is not imported (original_options_screen.gd is the real one).
 ## The rows are the newest saved games (PROJECT.md): a name is a game - Save
-## with the name unchanged overwrites it, a new name makes a new game.
+## with the name unchanged overwrites it, a new name makes a new game. Each row
+## is the manual's (p075-p076, Fig. 3.16): "a Save Game button, a name field,
+## and a Load Game button", and between them what the original's icon shows,
+## the side played (here in words, with the day). Loading over the running
+## game asks first ("the computer asks you to confirm").
 ## Head-to-head it is the same screen (manual p163: "follow the same procedure
 ## as you would to save a single player game"): the host's Save writes the game
 ## on both computers (H2hSave); the guest's Save buttons are off.
@@ -20,7 +24,7 @@ const Rows := preload("res://src/ui/original_options_screen.gd").Rows
 const SaveFiles := preload("res://src/ui/save_files.gd")
 const AllGamesPlain := preload("res://src/ui/all_games_window.gd")
 
-var _rows: Array = []   # per row: { "name": LineEdit, "state": Label, "id": String }
+var _rows: Array = []   # per row: { "name": LineEdit, "state": Label, "load": Button, "id": String }
 var _h2h: H2hSaveLib = H2hSaveLib.new()
 
 
@@ -52,7 +56,7 @@ func _ready() -> void:
 	margin.add_child(box)
 
 	var title := Label.new()
-	title.text = "Game Options - Save Game"
+	title.text = "Game Options - Save Game / Load Game"
 	title.add_theme_font_size_override("font_size", 16)
 	box.add_child(title)
 	box.add_child(HSeparator.new())
@@ -60,21 +64,10 @@ func _ready() -> void:
 	for i in Rows:
 		var row := HBoxContainer.new()
 		row.add_theme_constant_override("separation", 8)
-
-		var state := Label.new()
-		state.custom_minimum_size = Vector2(150, 0)
-		state.add_theme_font_size_override("font_size", 12)
-		state.mouse_filter = Control.MOUSE_FILTER_PASS   # its hover shows the saved date
-		row.add_child(state)
-
-		var nameEdit := LineEdit.new()
-		nameEdit.placeholder_text = "Save name"
-		nameEdit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		row.add_child(nameEdit)
+		var slot := i
 
 		var saveBtn := Button.new()
 		saveBtn.text = "Save"
-		var slot := i
 		saveBtn.pressed.connect(func() -> void: _on_save(slot))
 		# "Only the host player can save the game" (manual p163).
 		if MpSetup.session != null and not MpSetup.hosting:
@@ -82,8 +75,25 @@ func _ready() -> void:
 			saveBtn.tooltip_text = "Only the host can save."
 		row.add_child(saveBtn)
 
+		var nameEdit := LineEdit.new()
+		nameEdit.placeholder_text = "Save name"
+		nameEdit.custom_minimum_size = Vector2(220, 0)
+		nameEdit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.add_child(nameEdit)
+
+		var state := Label.new()
+		state.custom_minimum_size = Vector2(130, 0)
+		state.add_theme_font_size_override("font_size", 12)
+		state.mouse_filter = Control.MOUSE_FILTER_PASS   # its hover shows the saved date
+		row.add_child(state)
+
+		var loadBtn := Button.new()
+		loadBtn.text = "Load"
+		loadBtn.pressed.connect(func() -> void: _on_load(slot))
+		row.add_child(loadBtn)
+
 		box.add_child(row)
-		_rows.append({ "name": nameEdit, "state": state, "id": "" })
+		_rows.append({ "name": nameEdit, "state": state, "load": loadBtn, "id": "" })
 
 	# Import Game and Manage Games, as on the real screen (TeeJ, 2026-09-28).
 	var tools := HBoxContainer.new()
@@ -104,6 +114,13 @@ func _ready() -> void:
 	box.add_child(closeBtn)
 
 	_refresh()
+	# In the middle of the screen: the centre anchors alone left it in the
+	# top-left corner (its parent has no size).
+	_center.call_deferred()
+
+
+func _center() -> void:
+	global_position = ((get_viewport_rect().size - size) / 2.0).floor()
 
 
 ## Fill the rows with the newest saved games, newest at the top.
@@ -114,10 +131,25 @@ func _refresh() -> void:
 		var g: Dictionary = games[i] if used else {}
 		var state: Label = _rows[i]["state"]
 		var nameEdit: LineEdit = _rows[i]["name"]
+		var loadBtn: Button = _rows[i]["load"]
 		_rows[i]["id"] = str(g["id"]) if used else ""
-		state.text = ("%s (Day %d)" % [g["name"], StrategicTickManager.Shown(int(g["day"]))]) if used else "(empty)"
+		state.text = ("%s, Day %d" % [SideWords(str(g["side"])), StrategicTickManager.Shown(int(g["day"]))]) if used else "(empty)"
 		state.tooltip_text = SaveManager.SavedLabel(g) if used else ""
 		nameEdit.text = str(g["name"]) if used else ""
+		# Head-to-head, a game is loaded from the Multiplayer Options (manual
+		# p163), as on the original's screen.
+		loadBtn.disabled = not used or MpSetup.session != null
+
+
+## The side a saved game was played as, in words: the faction's short name,
+## "Head-to-head" for a two-player game (what the original's icon shows).
+static func SideWords(side: String) -> String:
+	if side == "h2h":
+		return "Head-to-head"
+	var f: Faction = FactionRegistry.ById(side) if not side.is_empty() else null
+	if f == null or f == FactionRegistry.Unknown:
+		return "Unknown side"
+	return f.ShortName if not f.ShortName.is_empty() else f.DisplayName
 
 
 func _import() -> void:
@@ -128,7 +160,7 @@ func _import() -> void:
 func ImportBytes(bytes: PackedByteArray, file_name: String) -> Dictionary:
 	var r: Dictionary = SaveManager.Import(bytes, file_name)
 	_refresh()
-	_tell(("\"%s\" is in your saved games." % r["name"]) if r["ok"] else str(r["message"]))
+	_tell(SaveManager.ImportNote(r))
 	return r
 
 
@@ -163,6 +195,31 @@ func _on_save(row: int) -> void:
 		return
 	SaveManager.Save(nm)   # an empty name takes the next free "Saved game"
 	_refresh()
+
+
+## Load row `row`'s game over the running one, once the player confirms (the
+## original's words, REBDLOG.DLL, as original_options_screen.gd). Public so a
+## test can press it without a real click; returns the question asked, or null.
+func _on_load(row: int) -> ConfirmationDialog:
+	if row < 0 or row >= _rows.size() or not SaveManager.Exists(_rows[row]["id"]):
+		return null
+	var id: String = _rows[row]["id"]
+	var box := ConfirmationDialog.new()
+	box.name = "Confirm"
+	box.title = "Load Game"
+	box.dialog_text = "Loading the selected game will destroy unsaved changes.
+
+Load without saving?"
+	box.exclusive = true
+	add_child(box)
+	box.popup_centered()
+	box.confirmed.connect(func() -> void:
+		box.queue_free()
+		MpSetup.reset()
+		GameSettings.PendingLoadPath = SaveManager.GamePath(id)
+		get_tree().change_scene_to_file("res://Main.tscn"))
+	box.canceled.connect(box.queue_free)
+	return box
 
 
 func _process(_delta: float) -> void:

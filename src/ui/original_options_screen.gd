@@ -441,7 +441,7 @@ func ImportBytes(bytes: PackedByteArray, file_name: String) -> Dictionary:
 	var all: Node = get_node_or_null("AllGames")
 	if all != null:
 		all.Refresh()
-	_note(("\"%s\" is in your saved games." % r["name"]) if r["ok"] else str(r["message"]))
+	_note(SaveManager.ImportNote(r))
 	return r
 
 

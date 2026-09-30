@@ -93,7 +93,7 @@ func ImportBytes(bytes: PackedByteArray, file_name: String) -> Dictionary:
 	var r: Dictionary = SaveManager.Import(bytes, file_name)
 	var box := AcceptDialog.new()
 	box.title = "Import Game"
-	box.dialog_text = ("\"%s\" is in your saved games." % r["name"]) if r["ok"] else str(r["message"])
+	box.dialog_text = SaveManager.ImportNote(r)
 	get_parent().add_child(box)
 	box.popup_centered()
 	box.confirmed.connect(box.queue_free)
