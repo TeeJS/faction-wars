@@ -143,6 +143,14 @@ func Populate(facility: Facility) -> void:
 		iconLabel.text = "💥"
 	else:
 		iconLabel.text = "🛰️"
+	# The facility's own portrait over the glyph, where the pack or an art set
+	# has one - the character status window's rule. The box widens to it, so
+	# it shows at 1:1 (122x50) instead of shrunk.
+	var picture: Texture2D = Art.Portrait("facilities", facility.Def.Id if facility.Def != null else facility.Family())
+	var iconRect: Control = iconLabel.get_parent()
+	if picture != null:
+		iconRect.custom_minimum_size.x = maxf(iconRect.custom_minimum_size.x, picture.get_width())
+	Art.Fill(iconRect, picture)
 
 
 func Refresh() -> void:
