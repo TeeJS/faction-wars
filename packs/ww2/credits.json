@@ -32,6 +32,45 @@
       "files": ["look/europe_1941.jpg"]
     },
     {
+      "title": "Flags of the war years",
+      "what": "The systems' pictures: each country's own flag of the war years (71 flags)",
+      "author": "Wikimedia Commons contributors; each file's page, author and SHA-1 are in art/FLAGS.md",
+      "source": "https://commons.wikimedia.org/wiki/Category:Flags_by_country",
+      "licence": "Public domain (each file's grounds in art/FLAGS.md)",
+      "changes": "The PNG Commons renders from each SVG, fitted into 35 x 27 at its own proportions (the Baltic States: Estonia's, Latvia's and Lithuania's side by side), a little toned to the paper, edged in ink, on a 37 x 37 clear square.",
+      "files": ["art/planet_sprites/1.png", "art/planet_sprites/2.png", "art/planet_sprites/3.png", "art/planet_sprites/4.png", "art/planet_sprites/5.png", "art/planet_sprites/6.png", "art/planet_sprites/7.png", "art/planet_sprites/8.png", "art/planet_sprites/9.png", "art/planet_sprites/10.png", "art/planet_sprites/11.png", "art/planet_sprites/12.png", "art/planet_sprites/13.png", "art/planet_sprites/14.png", "art/planet_sprites/16.png", "art/planet_sprites/17.png", "art/planet_sprites/18.png", "art/planet_sprites/19.png", "art/planet_sprites/20.png", "art/planet_sprites/21.png", "art/planet_sprites/22.png", "art/planet_sprites/23.png", "art/planet_sprites/24.png", "art/planet_sprites/25.png", "art/planet_sprites/26.png", "art/planet_sprites/27.png", "art/planet_sprites/28.png", "art/planet_sprites/29.png", "art/planet_sprites/30.png", "art/planet_sprites/31.png", "art/planet_sprites/32.png", "art/planet_sprites/33.png", "art/planet_sprites/34.png", "art/planet_sprites/35.png", "art/planet_sprites/36.png", "art/planet_sprites/37.png", "art/planet_sprites/38.png", "art/planet_sprites/39.png", "art/planet_sprites/40.png", "art/planet_sprites/41.png", "art/planet_sprites/42.png", "art/planet_sprites/43.png", "art/planet_sprites/44.png", "art/planet_sprites/45.png", "art/planet_sprites/46.png", "art/planet_sprites/47.png", "art/planet_sprites/48.png", "art/planet_sprites/49.png", "art/planet_sprites/50.png", "art/planet_sprites/51.png", "art/planet_sprites/52.png", "art/planet_sprites/53.png", "art/planet_sprites/54.png", "art/planet_sprites/55.png", "art/planet_sprites/56.png", "art/planet_sprites/57.png", "art/planet_sprites/58.png", "art/planet_sprites/59.png", "art/planet_sprites/60.png", "art/planet_sprites/61.png", "art/planet_sprites/63.png", "art/planet_sprites/64.png", "art/planet_sprites/65.png", "art/planet_sprites/66.png", "art/planet_sprites/67.png", "art/planet_sprites/68.png", "art/planet_sprites/69.png", "art/planet_sprites/70.png", "art/planet_sprites/71.png", "art/planet_sprites/72.png", "art/planet_sprites/73.png", "art/planet_sprites/74.png", "art/planet_sprites/75.png", "art/planet_sprites/76.png", "art/planet_sprites/77.png", "art/planet_sprites/78.png", "art/planet_sprites/80.png", "art/planet_sprites/81.png", "art/planet_sprites/82.png", "art/planet_sprites/83.png", "art/planet_sprites/84.png", "art/planet_sprites/85.png", "art/planet_sprites/86.png", "art/planet_sprites/87.png", "art/planet_sprites/88.png"]
+    },
+    {
+      "title": "Flag: State of Burma (1943-1945)",
+      "what": "The picture of the systems that fly it",
+      "author": "* : * : Jaume Ollé",
+      "source": "https://commons.wikimedia.org/wiki/File:Flag_of_the_State_of_Burma_(1943%E2%80%931945).svg",
+      "licence": "CC BY-SA 3.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/3.0",
+      "changes": "Commons' PNG rendering, fitted into 35 x 27, a little toned to the paper, edged in ink, on a 37 x 37 clear square. Shared under the same licence.",
+      "files": ["art/planet_sprites/62.png"]
+    },
+    {
+      "title": "Flag: Fiji (1924-1970)",
+      "what": "The picture of the systems that fly it",
+      "author": "Simitukidia and Lokal Profil",
+      "source": "https://commons.wikimedia.org/wiki/File:Flag_of_Fiji_(1924%E2%80%931970).svg",
+      "licence": "CC BY-SA 3.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/3.0",
+      "changes": "Commons' PNG rendering, fitted into 35 x 27, a little toned to the paper, edged in ink, on a 37 x 37 clear square. Shared under the same licence.",
+      "files": ["art/planet_sprites/79.png"]
+    },
+    {
+      "title": "Flag: Spain (1938-1945)",
+      "what": "The picture of the systems that fly it",
+      "author": "SanchoPanzaXXI",
+      "source": "https://commons.wikimedia.org/wiki/File:Flag_of_Spain_(1938%E2%80%931945).svg",
+      "licence": "CC BY-SA 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "changes": "Commons' PNG rendering, fitted into 35 x 27, a little toned to the paper, edged in ink, on a 37 x 37 clear square. Shared under the same licence.",
+      "files": ["art/planet_sprites/15.png"]
+    },
+    {
       "title": "Oswald",
       "what": "Headings and labels",
       "author": "Vernon Adams and the Oswald Project Authors",

@@ -9,7 +9,8 @@ extends RefCounted
 ##     holds the whole theatre (look.json `map_insets`) - under a parchment
 ##     wash so the marks read, framed in brass;
 ##   - each system: a plotting mark in its side's map colour with an ink rim
-##     (an unheld one an ink ring); the HQ ring in brass;
+##     (an unheld one an ink ring); the HQ ring in brass; a system with its
+##     own picture (the WWII flags) is the picture alone, the HQ edged in brass;
 ##   - its name: the look's face, in its holder's colour darkened until it
 ##     reads on the parchment, in ink when no side holds it, with a paper halo;
 ##   - the corner icons: the same glyphs in ink on small paper tabs edged in
@@ -224,11 +225,25 @@ static func MapRect(manifest, tex: Texture2D) -> Rect2:
 
 ## A system: its side's map colour with an ink rim; an unheld one an ink ring
 ## on the parchment. The HQ ring (Gid.ShowHqHighlight) in brass.
+## A system with its own picture (the sector window's "sprite": the pack's
+## planet_sprites, the WWII pack's flags) is that picture alone - no disc
+## behind it, as the original draws none behind its planets and puts the side's
+## colour in the name (manual p025) - and the HQ keeps a brass edge round it.
 static func _mark(btn: Button, planet: Planet) -> void:
+	var hq: bool = Gid.ShowHqHighlight(planet)
+	if btn.has_meta("sprite"):
+		var clear := StyleBoxFlat.new()
+		clear.bg_color = Color(0, 0, 0, 0)
+		clear.border_color = Look.C("brass")
+		clear.set_border_width_all(3 if hq else 0)
+		clear.set_corner_radius_all(Look.Metric("radius"))
+		clear.anti_aliasing = true
+		for state in ["normal", "hover", "pressed"]:
+			btn.add_theme_stylebox_override(state, clear)
+		return
 	var was: StyleBox = btn.get_theme_stylebox("normal")
 	var disc: StyleBoxFlat = (was as StyleBoxFlat).duplicate() if was is StyleBoxFlat else StyleBoxFlat.new()
 	var owner: Faction = Holder(planet)
-	var hq: bool = Gid.ShowHqHighlight(planet)
 	disc.bg_color = owner.FactionColor if owner != null else Look.C("paper")
 	disc.border_color = Look.C("brass") if hq else Look.C("ink")
 	disc.set_border_width_all(3 if hq else RIM)
