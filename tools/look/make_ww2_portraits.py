@@ -22,9 +22,10 @@ The look: the photograph in black and white, lightly toned to the paper; the
 Encyclopedia picture is a personnel card - ruled index card on the left, the
 photograph mounted in photo corners on the right, the side's colour on the
 card's head. A character marked `generic` gets a drawn head-and-shoulders in
-the same mount. Every crop keeps clear of badges and insignia: no eagle,
-swastika or Iron Cross is in any picture, each German portrait checked by eye
-(TeeJ, 2026-09-29: no Nazi symbols in the game at all).
+the same mount. No picture shows a swastika or an Iron Cross, each German
+portrait checked by eye (TeeJ, 2026-09-29: no Nazi symbols in the game at all;
+2026-09-30: an eagle may show, as long as the swastika does not). A record's
+`note` says how a crop keeps one out.
 
 Colours are look.json's tokens (packs/ww2/look.json); the paper is
 packs/ww2/look/paper.png (make_ww2_textures.py). The same bytes come out every
@@ -211,7 +212,7 @@ def credit_entries(people, names):
             continue
         cc = p["licence"].upper().startswith("CC")
         lic = p["licence"] if cc or not p["licence_basis"] else "%s (%s)" % (p["licence"], ", ".join(p["licence_basis"]))
-        changes = "Cut to a square around the face, clear of any badge or insignia, black and white, toned; drawn as a 400 x 200 personnel card, an 80 x 80 portrait and a 61 x 25 miniature. Original SHA-1 %s." % p["sha1"]
+        changes = "Cut to a square around the face, clear of any swastika or Iron Cross, black and white, toned; drawn as a 400 x 200 personnel card, an 80 x 80 portrait and a 61 x 25 miniature. Original SHA-1 %s." % p["sha1"]
         if "SA" in p["licence"].upper():
             changes += " These pictures are shared under the same licence."
         e = {
@@ -227,6 +228,8 @@ def credit_entries(people, names):
         e["changes"] = changes
         e["files"] = files
         out.append(e)
+    if not generic_files:
+        return out
     out.append({
         "title": "Portrait: the generic stand-in",
         "what": "The picture of a person without a usable photograph: %s" % ", ".join(names.get(pid, people[pid]["name"]) for pid in people if "generic" in people[pid]),
@@ -255,9 +258,11 @@ def write_credits(entries):
 
 
 def write_provenance(people, names):
-    rows = []
+    rows, notes = [], []
     for pid, p in people.items():
         n = names.get(pid, p["name"])
+        if p.get("note"):
+            notes.append("- **%s**: %s" % (n, p["note"]))
         if "generic" in p:
             rows.append("| %s | `%s` | the generic stand-in: %s | | | |" % (n, pid, p["generic"]))
             continue
@@ -274,14 +279,14 @@ Wikimedia Commons: public domain, CC0, CC BY or CC BY-SA only, checked on the
 file's own page. The SHA-1 is Commons' own for the original, and the script
 refuses a download that does not match it. The crop is `[cx, cy, side]`: the
 square's centre as fractions of the picture's width and height, its side as a
-fraction of the height. Every crop keeps clear of badges and insignia - no
-eagle, swastika or Iron Cross is in any picture, and each German portrait was
-checked by eye; a person whose every photograph has one too close to the face,
-or who has no freely licensed photograph, gets the drawn stand-in instead.
+fraction of the height. No picture shows a swastika or an Iron Cross, and
+each German portrait was checked by eye; an eagle may show, as long as the
+swastika does not (TeeJ, 2026-09-30). A person with no freely licensed
+photograph gets the drawn stand-in instead.
 
 | Character | id | Commons file | Licence | Author / attribution | SHA-1 and crop |
 |---|---|---|---|---|---|
-""" + "\n".join(rows) + "\n"
+""" + "\n".join(rows) + "\n" + ("\n## Notes\n\n" + "\n".join(notes) + "\n" if notes else "")
     with open(os.path.join(ART, "PORTRAITS.md"), "w", encoding="utf-8", newline="\n") as f:
         f.write(text)
 

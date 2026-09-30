@@ -8,10 +8,10 @@ Wikimedia Commons: public domain, CC0, CC BY or CC BY-SA only, checked on the
 file's own page. The SHA-1 is Commons' own for the original, and the script
 refuses a download that does not match it. The crop is `[cx, cy, side]`: the
 square's centre as fractions of the picture's width and height, its side as a
-fraction of the height. Every crop keeps clear of badges and insignia - no
-eagle, swastika or Iron Cross is in any picture, and each German portrait was
-checked by eye; a person whose every photograph has one too close to the face,
-or who has no freely licensed photograph, gets the drawn stand-in instead.
+fraction of the height. No picture shows a swastika or an Iron Cross, and
+each German portrait was checked by eye; an eagle may show, as long as the
+swastika does not (TeeJ, 2026-09-30). A person with no freely licensed
+photograph gets the drawn stand-in instead.
 
 | Character | id | Commons file | Licence | Author / attribution | SHA-1 and crop |
 |---|---|---|---|---|---|
@@ -59,7 +59,7 @@ or who has no freely licensed photograph, gets the drawn stand-in instead.
 | J. Robert Oppenheimer | `oppenheimer` | [Oppenheimer (cropped).jpg](https://commons.wikimedia.org/wiki/File:Oppenheimer_(cropped).jpg) | Public domain (PD-USGov-DOE) | Unknown author | `c0d52b57c762739f4bcbe8c9f60d835cae54da67` `[0.47, 0.32, 0.52]` |
 | Joseph Stilwell | `stilwell` | [Stilwell001.jpg](https://commons.wikimedia.org/wiki/File:Stilwell001.jpg) | Public domain (PD-USArmy) | Unknown author | `b2fd96aa3501618d6a59da9613191b440c360559` `[0.5, 0.27, 0.45]` |
 | Philippe Leclerc | `leclerc` | [Liberation de paris - 26 aout 1944 - portrait du general jacques-philippe leclerc de hautecl 427563.jpg](https://commons.wikimedia.org/wiki/File:Liberation_de_paris_-_26_aout_1944_-_portrait_du_general_jacques-philippe_leclerc_de_hautecl_427563.jpg) | CC0 (cc-zero) | Unknown author, Agence LAPI (Les Actualités Photographiques Internationales) | `1f1ad6989ce187c32944af384b0955b322b42782` `[0.5, 0.3, 0.45]` |
-| Walter Model | `model` | the generic stand-in: Every freely licensed photograph of him on Wikimedia Commons shows the Nazi eagle on his cap or chest, too close to the face to crop out. | | | |
+| Walter Model | `model` | [Walther Model on the front.jpg](https://commons.wikimedia.org/wiki/File:Walther_Model_on_the_front.jpg) | Public domain (PD-Poland) | Unknown author | `a600a705daca7844c90480a70d3c88e7e32b9295` `[0.44, 0.41, 0.47]` |
 | Gerd von Rundstedt | `rundstedt` | [Bundesarchiv Bild 183-S37772, Gerd v. Rundstedt.jpg](https://commons.wikimedia.org/wiki/File:Bundesarchiv_Bild_183-S37772,_Gerd_v._Rundstedt.jpg) | CC BY-SA 3.0 de (Cc-by-sa-3.0-de) | Bundesarchiv, Bild 183-S37772 / CC-BY-SA 3.0 | `1a68bfe8ca012d7da369953b8fdb1caad3b947fa` `[0.5, 0.33, 0.56]` |
 | Kurt Student | `student` | [Wolfgang Willrich - General der Flieger Kurt Student, 1941.jpg](https://commons.wikimedia.org/wiki/File:Wolfgang_Willrich_-_General_der_Flieger_Kurt_Student,_1941.jpg) | Public domain (PD-Art) | Wolfgang Willrich | `6035c461ddd6559813f56da479921093fa81c9da` `[0.44, 0.29, 0.4]` |
 | Adolf Galland | `galland` | [Bundesarchiv Bild 146-2006-0123, Adolf Galland.jpg](https://commons.wikimedia.org/wiki/File:Bundesarchiv_Bild_146-2006-0123,_Adolf_Galland.jpg) | CC BY-SA 3.0 de (cc-by-sa-3.0-de) | Bundesarchiv, Bild 146-2006-0123 / Hoffmann, Heinrich / CC-BY-SA 3.0 | `986eecadd3bd2f3cadc3a7fc778063393ddd26a6` `[0.47, 0.3, 0.42]` |
@@ -85,4 +85,9 @@ or who has no freely licensed photograph, gets the drawn stand-in instead.
 | Orde Wingate | `wingate` | [Ordecharleswingate.jpg](https://commons.wikimedia.org/wiki/File:Ordecharleswingate.jpg) | Public domain (PD-USGov-Military) | U.S. military photo | `8510fe35e726d570801994e65396ab8c6b545dae` `[0.5, 0.33, 0.45]` |
 | Claire Chennault | `chennault` | [Claire L. Chennault.jpg](https://commons.wikimedia.org/wiki/File:Claire_L._Chennault.jpg) | Public domain (PD-USGov) | Unknown military photographer | `9db293aeab0a509771516bbb803fc9460896f042` `[0.5, 0.3, 0.45]` |
 | Zhu De | `zhu_de` | [Zhu De (1922).jpg](https://commons.wikimedia.org/wiki/File:Zhu_De_(1922).jpg) | Public domain (PD-anon-70-EU, PD-US-expired) | Unknown | `85b734089efee369b8e0bc1210341b8bf21d68b1` `[0.5, 0.33, 0.5]` |
-| Stewart Menzies | `menzies` | the generic stand-in: No freely licensed photograph found: the only close portraits on Wikimedia Commons (1953) are uploads under a CC BY-SA licence the uploader could not grant. | | | |
+| Stewart Menzies | `menzies` | [Keith and Stewart Menzies 1914.jpg](https://commons.wikimedia.org/wiki/File:Keith_and_Stewart_Menzies_1914.jpg) | Public domain (PD-old) | Unknown author | `e8fcb69289ce118dbc7b353442e9f3245247661d` `[0.654, 0.092, 0.16]` |
+
+## Notes
+
+- **Walter Model**: Cropped from below the cap eagle and the swastika in its talons (both above the top edge) to above the collar and its Knight's Cross: the oak wreath and cockade stay (TeeJ, 2026-09-30: the eagle may show, the swastika never).
+- **Stewart Menzies**: Stewart Menzies is the man on the right, beside his brother Keith, in 1914 (TeeJ, 2026-09-30). The only freely licensed photograph of him: the 1953 portraits on Commons carry a licence their uploaders could not grant. Small (497x800, from a book), so his picture is soft.

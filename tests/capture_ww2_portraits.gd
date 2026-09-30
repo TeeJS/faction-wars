@@ -4,11 +4,12 @@ extends SceneTree
 ## whole screen. Needs a window (NOT --headless), like tests/capture_look.gd:
 ##
 ##   Godot_console.exe --path . --resolution 1440x850 -s tests/capture_ww2_portraits.gd -- `
-##       --out=C:/tmp/ww2/portraits --pack=ww2 --faction=axis --record=user://capture-portraits.jsonl
+##       --out=C:/tmp/ww2/portraits --pack=ww2 --faction=axis --record=user://capture-portraits.jsonl [--who=model]
 ##
 ## writes <out>_ency.png (the Encyclopedia at a character), _status.png (a
-## character's status window), _status_generic.png (one with the drawn
-## stand-in), _personnel.png (the Personnel Finder), _defense.png (the
+## character's status window), _ency_<who>.png and _status_<who>.png (the
+## character --who= names, the status when it is on the roster),
+## _personnel.png (the Personnel Finder), _defense.png (the
 ## Defense window at the character's system: its personnel, with their
 ## miniatures) and _message.png (a message naming a character). --record= is REQUIRED, so the player's
 ## user://last-session.jsonl is untouched. No art set is read.
@@ -51,14 +52,15 @@ func _init() -> void:
 	var who: Character = Lq.first_or_null(ours, func(c: Character) -> bool: return not c.IsMajor)
 	if who == null:
 		who = ours[0] if not ours.is_empty() else null
-	# The stand-in: a character of ours whose record has `generic`.
-	var people: Dictionary = (JsonUtil.parse("res://tools/look/ww2_portraits.json") as Dictionary).get("people", {})
-	var stand_in: Character = Lq.first_or_null(GameState.ActiveRoster, func(c: Character) -> bool: return (people.get(c.PackId, {}) as Dictionary).has("generic"))
+	# One more character by id (--who=, default Model): its Encyclopedia
+	# picture, and its status window when it is on the roster.
+	var named_id := _arg("--who=", "model")
+	var named: Character = Lq.first_or_null(GameState.ActiveRoster, func(c: Character) -> bool: return c.PackId == named_id)
 
 	var shots := [
 		["ency", func() -> void: ui.OpenEncyclopedia("characters", who.PackId)],
 		["status", func() -> void: ui.OpenCharacterStatusWindow(who)],
-		["status_generic", func() -> void: ui.OpenCharacterStatusWindow(stand_in)],
+		["ency_" + named_id, func() -> void: ui.OpenEncyclopedia("characters", named_id)],
 		["personnel", func() -> void: ui.OpenPersonnelFinder()],
 		["defense", func() -> void: ui.OnDefenseClicked(who.Attached)],
 		["message", func() -> void:
@@ -66,6 +68,8 @@ func _init() -> void:
 				Enums.MessageCategory.Missions, StrategicTickManager.Today, home, who))
 			ui.OnMessageIndexClicked("Missions")],
 	]
+	if named != null:
+		shots.append(["status_" + named_id, func() -> void: ui.OpenCharacterStatusWindow(named)])
 	for s in shots:
 		ui.CloseAllWindows()
 		for _i in 3:
@@ -74,7 +78,7 @@ func _init() -> void:
 		for _i in 6:
 			await process_frame
 		ok = _shot(out, str(s[0])) and ok
-	print("[capture_ww2_portraits] %s (%s), stand-in %s" % [who.Name, who.PackId, stand_in.Name if stand_in != null else "none"])
+	print("[capture_ww2_portraits] %s (%s); %s %s" % [who.Name, who.PackId, named_id, "on the roster" if named != null else "not on the roster"])
 	quit(0 if ok else 1)
 
 
