@@ -70,6 +70,52 @@ func _init() -> void:
 		types.append(str(r.get_meta("defence_type")))
 	for t in ["planetary_shield", "turbolaser_battery", "ion_cannon"]:
 		_check(t in types, "a row names the %s" % Facility.NameOf(t))
+	_check(rows.all(func(r: Node) -> bool: return r.get_node_or_null("FacilityMenu") == null),
+		"an enemy's sighted defences have no facility menu")
+
+	# OUR OWN shields and batteries: the facility's right-click menu,
+	# Encyclopedia, Status, Scrap (manual p085; TeeJ's screenshot of the
+	# original, 2026-09-30).
+	if ours != null:
+		ours.AddFacility("turbolaser_battery")
+		w._associatedPlanet = ours
+		w.PopulateOrbitalDefenses(tabs, ours)
+		await process_frame
+		var own: Array = []
+		_collect_rows(tabs.get_node("Planetary Shield"), own)
+		_collect_rows(tabs.get_node("Planetary Battery"), own)
+		var menus := 0
+		var shield_row: Button = null
+		for r in own:
+			var m: PopupMenu = r.get_node_or_null("FacilityMenu")
+			if m != null and m.item_count == 3 and m.get_item_text(0) == "Encyclopedia" and not m.is_item_disabled(0) \
+					and m.get_item_text(1) == "Status" and m.get_item_text(2) == "Scrap":
+				menus += 1
+			if str(r.get_meta("defence_type")) == "planetary_shield":
+				shield_row = r
+		_check(own.size() >= 2 and menus == own.size(), "our shields and batteries: Encyclopedia, Status, Scrap on every row (%d of %d)" % [menus, own.size()])
+		if shield_row != null:
+			var click := InputEventMouseButton.new()
+			click.button_index = MOUSE_BUTTON_RIGHT
+			click.pressed = true
+			shield_row.gui_input.emit(click)
+			await process_frame
+			var sm: PopupMenu = shield_row.get_node("FacilityMenu")
+			_check(sm.visible, "a right-click on our shield opens its menu")
+			sm.hide()
+		var ourShield: Facility = Lq.first_or_null(ours.Facilities, func(f: Facility) -> bool: return f.Family() == "planetary_shield")
+		if ourShield != null:
+			w.ConfirmScrapFacility(ours, ourShield)
+			await process_frame
+			var ask: ConfirmationDialog = null
+			for c in w.get_children():
+				if c is ConfirmationDialog:
+					ask = c
+			_check(ask != null and ask.dialog_text.contains(ourShield.Name()), "Scrap asks first, naming the shield")
+			if ask != null:
+				ask.confirmed.emit()
+				await process_frame
+			_check(not ours.Facilities.has(ourShield), "... and the tick scraps it")
 	# Before any sighting the tab says so and offers nothing.
 	IntelManager.Reset()
 	w.PopulateOrbitalDefenses(tabs, them)
