@@ -106,6 +106,16 @@ func _init() -> void:
 		_check(pm != null and pm.visible, "right-clicking a pile brings up its menu")
 		_check(pm != null and pm.item_count == 2 and pm.get_item_text(0) == "Encyclopedia" and pm.get_item_text(1) == "Status"
 			and pm.is_item_disabled(0) and pm.is_item_disabled(1), "Encyclopedia and Status, both greyed (the original's)")
+	# A built facility's own menu: Encyclopedia live, and it opens the entry
+	# (manual p085; TeeJ, 2026-09-30).
+	if mine != null:
+		var mm: PopupMenu = Lq.first_or_null(mine.get_children(), func(c) -> bool: return c is PopupMenu)
+		var at: int = mm.get_item_index(2) if mm != null else -1
+		_check(at >= 0 and mm.get_item_text(at) == "Encyclopedia" and not mm.is_item_disabled(at), "a mine's menu: Encyclopedia live")
+		if at >= 0:
+			mm.id_pressed.emit(2)
+			await process_frame
+			_check(ui._openWindows.has("Encyclopedia"), "... and it opens the Encyclopedia")
 	_finish()
 
 

@@ -720,8 +720,10 @@ func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, fa
 			menu.set_item_disabled(menu.get_item_index(7), true)
 			menu.add_separator()
 
+		# Live: it opens the facility's entry (id 2 below). It was greyed from
+		# before the Encyclopedia existed (TeeJ, 2026-09-30).
 		menu.add_item("Encyclopedia", 2)
-		menu.set_item_disabled(menu.get_item_index(2), true)
+		menu.set_item_disabled(menu.get_item_index(2), rowFac.Def == null)
 		menu.add_item("Status", 1)
 
 		# "RESERVE on a construction yard means: if you turn over
