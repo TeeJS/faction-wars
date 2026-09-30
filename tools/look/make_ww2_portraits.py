@@ -228,6 +228,8 @@ def credit_entries(people, names):
         e["changes"] = changes
         e["files"] = files
         out.append(e)
+    if not generic_files:
+        return out
     out.append({
         "title": "Portrait: the generic stand-in",
         "what": "The picture of a person without a usable photograph: %s" % ", ".join(names.get(pid, people[pid]["name"]) for pid in people if "generic" in people[pid]),

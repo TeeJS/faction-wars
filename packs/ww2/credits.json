@@ -768,12 +768,12 @@
       "files": ["art/characters/zhu_de.png", "art/portraits/characters/zhu_de.png", "art/miniatures/characters/zhu_de.png"]
     },
     {
-      "title": "Portrait: the generic stand-in",
-      "what": "The picture of a person without a usable photograph: Stewart Menzies",
-      "author": "Faction Wars, drawn by tools/look/make_ww2_portraits.py",
-      "source": "https://github.com/TeeJS/faction-wars",
-      "licence": "Original work of the Faction Wars project",
-      "changes": "",
+      "title": "Portrait: Stewart Menzies",
+      "what": "Stewart Menzies's Encyclopedia picture, portrait and list miniature",
+      "author": "Unknown author",
+      "source": "https://commons.wikimedia.org/wiki/File:Keith_and_Stewart_Menzies_1914.jpg",
+      "licence": "Public domain (PD-old)",
+      "changes": "Cut to a square around the face, clear of any swastika or Iron Cross, black and white, toned; drawn as a 400 x 200 personnel card, an 80 x 80 portrait and a 61 x 25 miniature. Original SHA-1 e8fcb69289ce118dbc7b353442e9f3245247661d.",
       "files": ["art/characters/menzies.png", "art/portraits/characters/menzies.png", "art/miniatures/characters/menzies.png"]
     }
   ]

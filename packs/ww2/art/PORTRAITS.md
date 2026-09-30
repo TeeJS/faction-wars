@@ -85,8 +85,9 @@ photograph gets the drawn stand-in instead.
 | Orde Wingate | `wingate` | [Ordecharleswingate.jpg](https://commons.wikimedia.org/wiki/File:Ordecharleswingate.jpg) | Public domain (PD-USGov-Military) | U.S. military photo | `8510fe35e726d570801994e65396ab8c6b545dae` `[0.5, 0.33, 0.45]` |
 | Claire Chennault | `chennault` | [Claire L. Chennault.jpg](https://commons.wikimedia.org/wiki/File:Claire_L._Chennault.jpg) | Public domain (PD-USGov) | Unknown military photographer | `9db293aeab0a509771516bbb803fc9460896f042` `[0.5, 0.3, 0.45]` |
 | Zhu De | `zhu_de` | [Zhu De (1922).jpg](https://commons.wikimedia.org/wiki/File:Zhu_De_(1922).jpg) | Public domain (PD-anon-70-EU, PD-US-expired) | Unknown | `85b734089efee369b8e0bc1210341b8bf21d68b1` `[0.5, 0.33, 0.5]` |
-| Stewart Menzies | `menzies` | the generic stand-in: No freely licensed photograph found: the only close portraits on Wikimedia Commons (1953) are uploads under a CC BY-SA licence the uploader could not grant. | | | |
+| Stewart Menzies | `menzies` | [Keith and Stewart Menzies 1914.jpg](https://commons.wikimedia.org/wiki/File:Keith_and_Stewart_Menzies_1914.jpg) | Public domain (PD-old) | Unknown author | `e8fcb69289ce118dbc7b353442e9f3245247661d` `[0.654, 0.092, 0.16]` |
 
 ## Notes
 
 - **Walter Model**: Cropped from below the cap eagle and the swastika in its talons (both above the top edge) to above the collar and its Knight's Cross: the oak wreath and cockade stay (TeeJ, 2026-09-30: the eagle may show, the swastika never).
+- **Stewart Menzies**: Stewart Menzies is the man on the right, beside his brother Keith, in 1914 (TeeJ, 2026-09-30). The only freely licensed photograph of him: the 1953 portraits on Commons carry a licence their uploaders could not grant. Small (497x800, from a book), so his picture is soft.
