@@ -169,7 +169,7 @@ func ShowIndex(db: int = -1) -> void:
 	if _indexHeader != null:
 		_indexHeader.text = BandCaptions[_database] if _original else Databases[_database]
 	_side_states()
-	(get_node("%TitleBarLabel") as Label).text = " Galactic Encyclopedia - %s" % Databases[_database]
+	(get_node("%TitleBarLabel") as Label).text = " %s - %s" % [Terms.label("encyclopedia"), Databases[_database]]
 
 
 ## Topic view of one entry, by kind and id (from a right-click menu or the i
@@ -225,7 +225,7 @@ func _show_current() -> void:
 	_viewTopicBtn.disabled = true
 	_viewIndexBtn.disabled = false
 	_topicTitle.text = e.Name
-	(get_node("%TitleBarLabel") as Label).text = " Galactic Encyclopedia - %s" % e.Name
+	(get_node("%TitleBarLabel") as Label).text = " %s - %s" % [Terms.label("encyclopedia"), e.Name]
 	if _original:
 		# The picture at the original's 400x200, drawn K times as large.
 		(_picture as TextureRect).texture = Art.Scaled(PictureFor(e), OUI.K)
@@ -468,7 +468,7 @@ func _build_original() -> void:
 	OUI.Place(_indexView, OUI.Pic("ency_index_plate"), PlateX, PlateY, "Plate")
 	# Measured: the title (bold Arial 13) from (140, 14), "Topic" (Arial 13)
 	# from (36, 48), the typed text from (143, 45) in the plate's own box.
-	OUI.Text(_indexView, "Galactic Encyclopedia", 140, 15, 250, 16, 13, Color.WHITE, HORIZONTAL_ALIGNMENT_LEFT, true, "Title")
+	OUI.Text(_indexView, Terms.label("encyclopedia"), 140, 15, 250, 16, 13, Color.WHITE, HORIZONTAL_ALIGNMENT_LEFT, true, "Title")
 	OUI.Text(_indexView, "Topic", 36, 49, 90, 16, 13, Color.WHITE, HORIZONTAL_ALIGNMENT_LEFT, false, "TopicLabel")
 	_topicBox = LineEdit.new()
 	_topicBox.name = "TopicBox"
@@ -575,7 +575,7 @@ func _build_original() -> void:
 	_arrow_button(_topicView, "ency_next", 380, Next)
 	# The arrows sit on the frame's band: keep the topic view above the frame.
 	body.move_child(_topicView, body.get_child_count() - 1)
-	_frame_button(body, "ency_close", 0, "Close the Galactic Encyclopedia.", CloseWindow)
+	_frame_button(body, "ency_close", 0, "Close the %s." % Terms.label("encyclopedia"), CloseWindow)
 	_viewTopicBtn = _frame_button(body, "ency_view_topic", 1, "Click here to see the selected topic.", ViewTopic)
 	_viewIndexBtn = _frame_button(body, "ency_view_index", 2, "While viewing a topic, click here to come back to the index.", func() -> void: ShowIndex())
 
@@ -826,7 +826,7 @@ func _build() -> void:
 	side.add_child(_viewIndexBtn)
 	var closeBtn := Button.new()
 	closeBtn.text = "Close"
-	closeBtn.tooltip_text = "Close the Galactic Encyclopedia."
+	closeBtn.tooltip_text = "Close the %s." % Terms.label("encyclopedia")
 	closeBtn.pressed.connect(CloseWindow)
 	side.add_child(closeBtn)
 	root.add_child(side)

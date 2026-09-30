@@ -153,6 +153,24 @@ func _init() -> void:
 	var finder_said: Array = finder.find_children("*", "Label", true, false).map(func(l: Label) -> String: return l.text.strip_edges()) if finder != null else []
 	_check(finder_said.has(finder_word) and not (id == "ww2" and finder_said.any(func(t: String) -> bool: return t.contains("Planetary"))),
 		"%s: the finder's title says \"%s\"" % [id, finder_word])
+
+	# The Encyclopedia too (TeeJ, 2026-09-30: "Galactic encyclopedia is also
+	# wrong"): its title bar and its close button's hint.
+	var ency_word: String = Terms.label("encyclopedia")
+	_check(ency_word == ("Encyclopedia" if id == "ww2" else "Galactic Encyclopedia"), "%s: the Encyclopedia is called \"%s\"" % [id, ency_word])
+	ui.OpenEncyclopedia()
+	for _i in 3:
+		await process_frame
+	var ency: Node = Lq.first_or_null(_windows(ui), func(w: Node) -> bool: return w is EncyclopediaWindow)
+	var bar: Label = ency.get_node_or_null("%TitleBarLabel") if ency != null else null
+	var ency_text: Array = []
+	if ency != null:
+		for c in ency.find_children("*", "Control", true, false):
+			ency_text.append((c as Control).tooltip_text)
+			if c is Label or c is Button:
+				ency_text.append(c.text)
+	_check(bar != null and bar.text.strip_edges().begins_with(ency_word + " - ") and not (id == "ww2" and " ".join(ency_text).contains("Galactic")),
+		"%s: the Encyclopedia's title says \"%s\"%s" % [id, bar.text.strip_edges() if bar != null else "none", "" if id != "ww2" else ", and no \"Galactic\" anywhere in it"])
 	_done()
 
 

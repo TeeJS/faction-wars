@@ -74,6 +74,10 @@ const DEFAULTS := {
 	# Finder"); a pack sets its own (TeeJ, 2026-09-30: "Planetary system
 	# finder is wrong for WWII as well")
 	"system_finder":          "Planetary System Finder",
+	# the Encyclopedia's name: its title bar and its close button's hint
+	# (manual p073-p074: "Galactic Encyclopedia"); a pack sets its own (TeeJ,
+	# 2026-09-30: "Galactic encyclopedia is also wrong")
+	"encyclopedia":           "Galactic Encyclopedia",
 	# a message category with nothing in it
 	"no_messages":            "No transmissions.",
 }

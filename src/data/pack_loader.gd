@@ -54,7 +54,7 @@ const KNOWN_TERMS := [
 	# the word under a sector's name on the map
 	"sector",
 	# the Cockpit's size choice
-	"galaxy_size", "galaxy_overview", "system_finder",
+	"galaxy_size", "galaxy_overview", "system_finder", "encyclopedia",
 	# a message category with nothing in it
 	"no_messages",
 ]
