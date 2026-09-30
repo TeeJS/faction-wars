@@ -238,6 +238,21 @@ static func TexMargin(name: String) -> int:
 
 
 ## WCAG 2 contrast ratio of two colours, 1 to 21.
+## `fg` made readable on `bg`: moved towards white on a dark ground, or black
+## on a light one, a step at a time until it reaches `ratio`, so a side's or a
+## state's colour keeps its hue. Opaque, since a see-through colour is what
+## faded it.
+static func Readable(fg: Color, bg: Color, ratio: float = 4.5) -> Color:
+	var out := fg
+	out.a = 1.0
+	var dark_ground: bool = _luminance(bg) < 0.18
+	var guard := 0
+	while Contrast(out, bg) < ratio and guard < 30:
+		out = out.lightened(0.07) if dark_ground else out.darkened(0.07)
+		guard += 1
+	return out
+
+
 static func Contrast(a: Color, b: Color) -> float:
 	var la := _luminance(a)
 	var lb := _luminance(b)

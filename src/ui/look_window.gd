@@ -251,6 +251,143 @@ static func _remap_one(n: Node) -> void:
 					copy.bg_color = bg
 					copy.border_color = edge
 					c.add_theme_stylebox_override(name.get_slice("/", 1), copy)
+	_floor(c)
+	_readable(c)
+
+
+# ---------------------------------------------------------------------------
+# The readability floor (the WWII windows fix, step 1)
+# ---------------------------------------------------------------------------
+
+## THE READABILITY FLOOR (TeeJ, 2026-09-30: "things are very hard to read").
+## The plain windows set their own text sizes - 10 to 12 px in a hundred
+## places - and colours chosen for the old navy ground. In the look, no words
+## are smaller than its `small` size: a list's row (a button) goes to the body
+## size, the list rows' size everywhere else, a tab strip's titles to `small`
+## (so the tabs still fit), and other text to the `label` size. And no words
+## read at less than 4.5:1 on what is behind them (3:1 a
+## disabled control's): a colour below that is moved towards legibility, its
+## hue kept (Look.Readable). A symbol (a GID star's cross, a close box's "X")
+## keeps its size - it is a mark, not words. tests/look_legible.gd reads every
+## window and every tab against it.
+const FONT_SIZE_KEYS := ["font_size", "normal_font_size", "bold_font_size", "italics_font_size",
+	"bold_italics_font_size", "mono_font_size"]
+## A text colour and the button state whose box is behind it ("" the usual one).
+const STATE_OF := {"font_color": "", "font_hover_color": "hover", "font_pressed_color": "pressed",
+	"font_hover_pressed_color": "pressed", "font_focus_color": "", "font_disabled_color": "disabled",
+	"default_color": ""}
+
+
+static func _floor(c: Control) -> void:
+	if _is_symbol(c):
+		return
+	var least: int = Look.Size("small")
+	var to: int = Look.Size("label")
+	if c is Button:
+		to = Look.Size("body")
+	elif c is TabContainer or c is TabBar:
+		to = least   # a tab strip's titles: as small as allowed, so the tabs still fit
+	for key in FONT_SIZE_KEYS:
+		if c.has_theme_font_size_override(key) and c.get_theme_font_size(key) < least:
+			c.add_theme_font_size_override(key, to)
+
+
+static func _readable(c: Control) -> void:
+	for key in STATE_OF:
+		if not c.has_theme_color_override(key):
+			continue
+		var col: Color = c.get_theme_color(key)
+		var bg: Color = Background(c, STATE_OF[key])
+		var need: float = 3.0 if key == "font_disabled_color" else 4.5
+		var seen := Color(lerpf(bg.r, col.r, col.a), lerpf(bg.g, col.g, col.a), lerpf(bg.b, col.b, col.a))
+		if Look.Contrast(seen, bg) < need:
+			c.add_theme_color_override(key, Look.Readable(col, bg, need))
+
+
+## Text with no letter or digit in it: a mark, not words.
+static func _is_symbol(c: Control) -> bool:
+	var t := ""
+	if c is Label:
+		t = (c as Label).text
+	elif c is Button:
+		t = (c as Button).text
+	else:
+		return false
+	if t.strip_edges().is_empty():
+		return false
+	for ch in t:
+		if ch.to_upper() != ch.to_lower() or ch.is_valid_int():
+			return false
+	return true
+
+
+## What is behind a control's words: the nearest background drawn at or above
+## it - its own box or an ancestor's (a ColorRect, a panel's, a tab set's or a
+## solid button's flat box; a textured one, or a document's drawn paper, is
+## the paper), or a layer drawn under it (the sector plate's paper and wash) -
+## else the chassis every window is drawn on. `state` is the button state whose
+## box is behind the words ("normal", "hover", "pressed", "disabled").
+static func Background(c: Control, state: String = "") -> Color:
+	var n: Node = c
+	while n != null and n is Control:
+		var fill: Variant = _fill_of(n as Control, state if n == c else "")
+		if fill != null:
+			return fill
+		var under: Variant = _layer_under(n as Control)
+		if under != null:
+			return under
+		n = n.get_parent()
+	return Look.C("chassis")
+
+
+## A background layer drawn before `n` in its parent and covering its middle:
+## a ColorRect (its colour) or a picture (the paper).
+static func _layer_under(n: Control) -> Variant:
+	var p: Node = n.get_parent()
+	if p == null:
+		return null
+	var mid: Vector2 = n.get_global_rect().get_center()
+	for i in range(n.get_index() - 1, -1, -1):
+		var s: Node = p.get_child(i)
+		if not (s is ColorRect or s is TextureRect or s is NinePatchRect) or not (s as Control).visible:
+			continue
+		if not (s as Control).get_global_rect().has_point(mid):
+			continue
+		if s is ColorRect:
+			if (s as ColorRect).color.a >= 0.5:
+				return (s as ColorRect).color
+			continue
+		return Look.C("paper")
+	return null
+
+
+static func _fill_of(c: Control, state: String = "") -> Variant:
+	if c.has_meta("look_paper"):
+		return Look.C("paper")
+	if c is ColorRect:
+		return (c as ColorRect).color if (c as ColorRect).color.a >= 0.5 else null
+	var box: StyleBox = null
+	if c is Button:
+		var b := c as Button
+		if b.flat:
+			return null
+		if state.is_empty():
+			state = "normal"
+			if b.disabled:
+				state = "disabled"
+			elif b.toggle_mode and b.button_pressed:
+				state = "pressed"
+		box = b.get_theme_stylebox(state)
+	elif c is PanelContainer or c is Panel or c is TabContainer:
+		box = c.get_theme_stylebox("panel")
+	elif c is LineEdit:
+		box = c.get_theme_stylebox("normal")
+	if box is StyleBoxFlat:
+		var flat := box as StyleBoxFlat
+		return flat.bg_color if flat.draw_center and flat.bg_color.a >= 0.5 else null
+	if box is StyleBoxTexture:
+		return Look.C("paper")
+	return null
 
 
 ## A plain colour's token, alpha kept; the colour itself when it is none.
