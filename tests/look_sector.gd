@@ -142,6 +142,10 @@ func _init() -> void:
 				var corner_id: String = str(c.get_meta("corner"))
 				if own.has(corner_id) and (b.icon == null or not b.icon.resource_path.ends_with(str(own[corner_id]))):
 					bad.append("%s %s icon is not the pack's" % [p.Name, corner_id])
+				# The pack's word for a fleet held at a system (TeeJ, 2026-09-30:
+				# WWII fleets are not "in orbit").
+				if corner_id == "fleet" and not b.tooltip_text.contains(Terms.lower("in_orbit")):
+					bad.append("%s fleet icon's words are not the pack's (%s)" % [p.Name, b.tooltip_text.get_slice("\n", 0)])
 				var glyph: Color = b.get_theme_color("icon_normal_color")
 				var want: Color = Look.C("signal") if str(c.get_meta("corner")) == "uprising" else Look.C("ink")
 				var tab: StyleBox = b.get_theme_stylebox("normal")

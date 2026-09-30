@@ -31,7 +31,7 @@ static func CanAssault(fleet: Fleet, target: Planet) -> Result:
 	if fleet.Status == Enums.Status.Enroute:
 		return Result.fail("The fleet is %s." % Terms.label("in_transit"))
 	if fleet.Attached != target:
-		return Result.fail("The fleet is not in orbit above %s." % target.Name)
+		return Result.fail("The fleet is not %s at %s." % [Terms.lower("in_orbit"), target.Name])
 	if target.ControllingFaction == fleet.Faction:
 		return Result.fail("%s is already ours." % target.Name)
 	if LandingForce(fleet).is_empty():

@@ -4125,6 +4125,7 @@
       "fighter_squadrons": "Fighter Squadrons",
       "hull": "Hull Value",
       "hyperdrive": "Hyperdrive Rating",
+      "in_orbit": "in orbit",
       "in_transit": "in hyperspace",
       "maintenance": "Maintenance Cost",
       "mine": "mine",

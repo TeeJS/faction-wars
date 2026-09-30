@@ -45,6 +45,10 @@ const DEFAULTS := {
 	"trooper_regiments":    "Ground Regiments",
 	# movement between systems
 	"in_transit":           "in transit",
+	# a fleet held at a system, not moving (TeeJ, 2026-09-30: "I don't think WW2
+	# fleets were 'in orbit'"); a pack sets its own - the Star Wars pack's
+	# "in orbit", the WWII pack's "on station"
+	"in_orbit":             "on station",
 	# the five ship systems tactical damage tracks (manual p128: shield recharge,
 	# weapon recharge, tractor beam power, sub-light engines, hyperdrive)
 	"system_shield_recharge": "Shielding Recharge",
