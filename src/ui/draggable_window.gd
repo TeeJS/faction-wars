@@ -673,6 +673,11 @@ func AddCharacterToList(list: Container, characterData: Character, text: String,
 		OUI.Card(characterBtn, characterData.TitledName(), OUI.Mini("characters", characterData.PackId), cardColor,
 			OUI.SideColor(GameSettings.PlayerFaction), OUI.CharacterState(characterData), OUI.CharacterOver(characterData))
 		characterBtn.tooltip_text = text
+	elif IsPictureCardList(list):
+		if characterBtn.has_meta("miniature"):
+			characterBtn.remove_meta("miniature")
+		PictureCard(characterBtn, characterData.TitledName(), Art.Portrait("characters", characterData.PackId), text)
+		list = PictureCardRow(list)
 	characterBtn.CharacterData = characterData
 	characterBtn.UIManagerRef = uiManager
 	characterBtn.ParentWindow = self
@@ -1027,6 +1032,59 @@ func SetTitleIcon(planet: Planet) -> void:
 ## A list laid out as the original's grid of cards (OUI.Page) takes cards.
 static func IsCardList(list: Node) -> bool:
 	return list != null and list.has_meta("cards")
+
+
+## THE PLAIN LIST'S CARDS (TeeJ, 2026-09-30, the Defenses window's Personnel
+## tab: "I think it would be better like how SWR shows it"): in a list marked
+## "picture_cards", a person is a card - the picture over the name, the cards
+## in rows that wrap, as the original's page (Fig 3.73) - instead of a row
+## with a 61x25 miniature beside the name. Anything else on the list (a line
+## of text, a unit still on its way) stays a row of its own, under the cards
+## before it.
+static func IsPictureCardList(list: Node) -> bool:
+	return list != null and list.has_meta("picture_cards")
+
+
+## A card's width, and the gap between cards: three to a row in the Defenses
+## window, as the original's page has them.
+const PictureCardW := 120
+const PictureCardGap := 8
+
+
+## Where the next card goes: the wrapping row the list's last cards are in,
+## or a new one after whatever came since.
+static func PictureCardRow(list: Container) -> Container:
+	var n: int = list.get_child_count()
+	var last: Node = list.get_child(n - 1) if n > 0 else null
+	if last is HFlowContainer and last.has_meta("card_row") and not last.is_queued_for_deletion():
+		return last
+	var row := HFlowContainer.new()
+	row.name = "Cards"
+	row.set_meta("card_row", true)
+	row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_theme_constant_override("h_separation", PictureCardGap)
+	row.add_theme_constant_override("v_separation", PictureCardGap)
+	list.add_child(row)
+	return row
+
+
+## A button made a card: `picture` (the portrait, the face at its own size;
+## none, a card with the name alone) over `title`, wrapped to the card's
+## width. The status words are the tooltip's (`tip`), as on the original's
+## card; the name's colour still says them.
+static func PictureCard(btn: Button, title: String, picture: Texture2D, tip: String) -> void:
+	btn.text = title
+	btn.icon = picture
+	btn.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	btn.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP
+	btn.alignment = HORIZONTAL_ALIGNMENT_CENTER
+	btn.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	btn.add_theme_constant_override("icon_max_width", PictureCardW - 16)
+	btn.custom_minimum_size = Vector2(PictureCardW, 0)
+	btn.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	btn.size_flags_vertical = Control.SIZE_FILL   # a row's cards as tall as its tallest
+	btn.tooltip_text = tip
+	btn.set_meta("picture_card", true)
 
 
 ## The tab's name above a plain list (the look without the original's art).

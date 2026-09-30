@@ -105,16 +105,19 @@ func _init() -> void:
 	var upic: TextureRect = usw.get_node(UnitStatusWindow.PortraitPath).get_node_or_null("Picture") if usw != null else null
 	_check(upic != null and upic.texture != null, "Unit Status shows the unit's portrait")
 
-	# Defenses window: the miniature beside the name.
+	# Defenses window: the person's card.
 	ui.OnDefenseClicked(home)
 	for _i in 3:
 		await process_frame
 	var dw: DraggableWindow = _window_titled_like(ui, home.Name)
 	var row: Button = _row_for(dw, who)
-	# Only the miniature is imported here, not the window's own plate, so the
-	# window is the plain one: the row carries the 61x25 miniature beside the
-	# name (the original's card layout is tests/original_windows.gd).
-	_check(row != null and row.has_meta("miniature") and row.icon != null and row.icon.get_width() == 61 and row.icon.get_height() == 25, "the Defenses personnel row carries the 61x25 miniature")
+	# Only the pictures are imported here, not the window's own plate, so the
+	# window is the plain one: the person is a card, the 80x80 portrait over
+	# the name (TeeJ, 2026-09-30: "better like how SWR shows it"; the
+	# original's card layout is tests/original_windows.gd).
+	_check(row != null and row.has_meta("picture_card") and row.icon != null and row.icon.get_width() == 80 and row.icon.get_height() == 80 \
+		and row.vertical_icon_alignment == VERTICAL_ALIGNMENT_TOP and row.text == who.TitledName(), "the Defenses personnel card: the 80x80 portrait over the name")
+	_check(row != null and row.get_parent() is HFlowContainer, "the cards wrap in rows, as the original's page")
 
 	# Message window: the character's portrait on a message about them, shown
 	# 1:1 (the 180 px slot must not blow an 80 px face up), and the 400x200

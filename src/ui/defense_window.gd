@@ -214,6 +214,10 @@ func Populate(planet: Planet, uiManager: UIManager) -> void:
 	var original: bool = _BuildOriginal()
 	# Looked up after the build: the original's grid takes the list's name.
 	var _personnelList: Container = get_node_or_null("%PersonnelList")
+	# Without it, the plain list's people are cards too - the picture over the
+	# name, as the original's page (TeeJ, 2026-09-30; IsPictureCardList).
+	if not original and _personnelList != null:
+		_personnelList.set_meta("picture_cards", true)
 	# The original titles the window with the system's name alone, in the
 	# system's side's colour.
 	_titleBarLabel.text = planet.Name if original else " %s Defenses" % planet.Name
@@ -577,6 +581,12 @@ func AddUnitToList(list: Container, unitData: Unit, text: String, color: Color, 
 			OUI.SideColor(GameSettings.PlayerFaction), "enroute" if unitData.Status == Enums.Status.Enroute else "",
 			null, unitData.Type != Enums.UnitType.Fighter)   # a regiment on its plate, a squadron without
 		unitBtn.tooltip_text = text
+	elif IsPictureCardList(list):
+		# A Special Forces unit among the Personnel cards, a card itself.
+		if unitBtn.has_meta("miniature"):
+			unitBtn.remove_meta("miniature")
+		PictureCard(unitBtn, unitData.Name, Art.Portrait("units", unitData.PackId), text)
+		list = PictureCardRow(list)
 	unitBtn.UnitData = unitData
 	unitBtn.UIManagerRef = uiManager
 	unitBtn.ParentWindow = self
@@ -827,6 +837,13 @@ func _intel_target_row(list: Container, text: String, day: int, resolve: Callabl
 		rowBtn.tooltip_text = "%s (seen day %d)\n%s" % [text, StrategicTickManager.Shown(day), rowBtn.tooltip_text]
 		list.add_child(rowBtn)
 		return
+	if IsPictureCardList(list):
+		# The plain list's card for a sighting: the day is the tooltip's, as
+		# on the original's card.
+		PictureCard(rowBtn, text, mini, "%s (seen day %d)\n%s" % [text, StrategicTickManager.Shown(day), rowBtn.tooltip_text])
+		rowBtn.flat = false
+		PictureCardRow(list).add_child(rowBtn)
+		return
 	row.add_child(rowBtn)
 	var dayLbl := Label.new()
 	dayLbl.text = "(seen day %d)" % StrategicTickManager.Shown(day)
@@ -874,6 +891,10 @@ func _draw_intel_units(list: Container, planet: Planet, view: IntelManager.Intel
 		var title: String = str(line)
 		var mini: Texture2D = OUI.Mini("characters", _character_id_named(title)) \
 			if section == Enums.IntelSection.Characters else OUI.Mini("units", _unit_id_named(title))
+		# A plain list's card shows the portrait (PictureCard).
+		if IsPictureCardList(list):
+			mini = Art.Portrait("characters", _character_id_named(title)) \
+				if section == Enums.IntelSection.Characters else Art.Portrait("units", _unit_id_named(title))
 		_intel_target_row(list, title, view.Day, func() -> Variant:
 			var here: Array = _enemy_here(world, section)
 			return here[nth] if nth < here.size() else null, mini, section != Enums.IntelSection.Fighters)
