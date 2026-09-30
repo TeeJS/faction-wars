@@ -79,8 +79,13 @@ func _init() -> void:
 	w.ViewTopic()
 	_check(w._topicView.visible and not w._indexView.visible, "View Topic switches to Topic view")
 	_check(w._topicTitle.text == w._index.get_item_text(sel[0]), "the topic carries the entry's name")
-	_check(not w._text.text.is_empty() and w._text.text != "No description.", "a character with no imported text shows the pack's ratings")
-	_check(w._picture.get_node_or_null("Picture") == null, "no imported picture: the placeholder")
+	# The page (TeeJ, 2026-09-30): the pack's facts in the particulars ledger
+	# beside the picture - a person's ratings - and the words under them.
+	var ratings: int = who.Ratings.size()
+	_check(w._facts.get_child_count() == 2 * ratings and ratings > 0, "a character's ratings are the particulars ledger (%d lines)" % ratings)
+	_check(w._text.text.contains(w._topicTitle.text), "with no words written, the page says so by name")
+	_check(w._picture.get_node_or_null("Picture") == null and not w._picture.visible, "no imported picture: no picture box at all")
+	_check(w.size.x <= EncyclopediaWindow.PlainSize.x + 1 and w.size.y <= EncyclopediaWindow.PlainSize.y + 1, "the window is sized to its page (%s)" % str(w.size))
 
 	# Arrows browse the chosen database only.
 	var before: String = w._topicTitle.text
@@ -109,6 +114,8 @@ func _init() -> void:
 	_check(w._topicView.visible and w._topicTitle.text == unit.DisplayName, "opened by kind and id (a right-click's Encyclopedia) it shows that topic")
 	_check(w._text.text.contains("A test entry for"), "the imported description is shown")
 	_check(w._picture.get_node_or_null("Picture") != null, "the imported picture is shown")
+	_check(w._picture.custom_minimum_size == Vector2(400, 200), "the picture's box is its own size, 400 x 200 (%s)" % str(w._picture.custom_minimum_size))
+	_check(w._facts.get_child_count() == 4, "a unit's cost and upkeep are the particulars ledger")
 	_check(w._tabs[2].button_pressed or w._tabs[5].button_pressed, "the database follows the entry (Ship or Troop)")
 
 	DirAccess.remove_absolute(pic_path)

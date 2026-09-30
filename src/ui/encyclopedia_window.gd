@@ -22,6 +22,7 @@ extends DraggableWindow
 ## description shows what the pack itself knows - costs, ratings, the home
 ## sector - so no entry is ever blank.
 
+const LookDispatch := preload("res://src/ui/look_dispatch.gd")
 const Databases := ["All Databases", "System", "Ship", "Facilities", "Mission", "Troop", "Personnel"]
 
 
@@ -60,6 +61,15 @@ var _topicView: Control
 var _topicTitle: Label
 var _picture: Control
 var _text: RichTextLabel
+## The plain window's topic page (TeeJ, 2026-09-30: "the stats are being cut
+## off and the window is way too big for the content ... why are the stats
+## being pushed down in the corner"): a reference file - the picture at its
+## own size, the particulars ledger beside it, the entry's words under both.
+var _sheet: PanelContainer
+var _facts: GridContainer
+var _factsHead: Label
+## The page's database stamp in a pack's look (the dispatches' stamp).
+var _stamp: PanelContainer
 var _viewTopicBtn: BaseButton
 var _viewIndexBtn: BaseButton
 var _indexHeader: Label
@@ -238,11 +248,41 @@ func _show_current() -> void:
 		_text.text = _bbcode(TextFor(e))
 		_text.scroll_to_line(0)
 	else:
-		Art.Fill(_picture, PictureFor(e))
-		_text.text = TextFor(e)
+		_show_page(e)
 	for i in _tabs.size():
 		_tabs[i].button_pressed = i == _database
 	_side_states()
+
+
+## The plain window's page: the picture in a box its own shape and size (a
+## 400 x 200 plate at 1:1; a larger one drawn smaller to fit), the pack's
+## particulars beside it, the entry's words under both.
+func _show_page(e: Entry) -> void:
+	var picture: Texture2D = PictureFor(e)
+	_picture.visible = picture != null
+	if picture != null:
+		var k: float = minf(1.0, minf(PictureMax.x / picture.get_width(), PictureMax.y / picture.get_height()))
+		_picture.custom_minimum_size = Vector2(roundf(picture.get_width() * k), roundf(picture.get_height() * k))
+	Art.Fill(_picture, picture)
+	for c in _facts.get_children():
+		_facts.remove_child(c)
+		c.queue_free()
+	var rows: Array = ParticularsFor(e)
+	_factsHead.visible = not rows.is_empty()
+	for r in rows:
+		var key := Label.new()
+		key.text = str(r[0])
+		var value := Label.new()
+		value.text = str(r[1])
+		value.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		_facts.add_child(key)
+		_facts.add_child(value)
+		_dress_fact(key, value)
+	if _stamp != null:
+		LookDispatch._set_stamp(_stamp, DatabaseName(e.Database), false, true)
+	var words: String = WordsFor(e)
+	_text.text = words if not words.is_empty() else "No entry has been written for %s." % e.Name
+	_text.scroll_to_line(0)
 
 
 ## "Type in its name in the Topic entry box" - the first entry of the chosen
@@ -279,6 +319,97 @@ static func PictureFor(e: Entry) -> Texture2D:
 		var side: String = GameSettings.PlayerFaction.ArtSkin if GameSettings.PlayerFaction != null else ""
 		return Art.MissionPicture(e.Id, side)
 	return Art.Picture(e.Kind, e.Id)
+
+
+## The plain window's size, and the largest a picture is shown on its page:
+## the pictures are the original's 400 x 200 (TeeJ, 2026-09-30: "the window
+## is way too big for the content").
+const PlainSize := Vector2(820, 610)
+const PictureMax := Vector2(400, 200)
+
+
+## An entry's own words - its description, the pack's or an art set's - or
+## "" when it has none. The pack's facts are its particulars, not these.
+static func WordsFor(e: Entry) -> String:
+	return Art.Description(e.Kind, e.Id).strip_edges()
+
+
+## What the pack itself knows of an entry, as [label, value] rows for the
+## particulars ledger: a unit's or a facility's cost and upkeep, a person's
+## ratings, a territory's theatre, who may run a mission.
+static func ParticularsFor(e: Entry) -> Array:
+	var pack: PackLoader.LoadedPack = FactionRegistry.Pack
+	var rows: Array = []
+	match e.Kind:
+		KindUnit:
+			var u: PackDefs.UnitDef = MilitaryCatalog.ById(e.Id)
+			if u != null:
+				rows.append([Terms.label("refined_materials"), str(u.ConstructionCost)])
+				rows.append([Terms.label("maintenance"), str(u.MaintenanceCost)])
+		KindFacility:
+			for f in pack.Facilities:
+				if f.Id == e.Id:
+					rows.append([Terms.label("refined_materials"), str(f.ConstructionCost)])
+					rows.append([Terms.label("maintenance"), str(f.MaintenanceCost)])
+		KindCharacter:
+			for c in pack.Characters:
+				if c.Id == e.Id:
+					for rating in c.Ratings:
+						rows.append([str(rating).capitalize(), str(c.Ratings[rating].Base)])
+		KindSystem:
+			if pack.Map != null:
+				for p in pack.Map.Planets:
+					if p.Id == e.Id:
+						for s in pack.Map.Sectors:
+							if s.Id == p.Sector:
+								rows.append([Terms.label("sector"), s.DisplayName])
+		KindMission:
+			var d: PackDefs.MissionDefPack = MissionCatalog.ById(e.Id)
+			if d != null:
+				var sides: Array = d.AvailableTo.map(func(id: String) -> String:
+					var f: Faction = FactionRegistry.ById(id)
+					return f.DisplayName if f != null else id)
+				rows.append(["Available to", ", ".join(sides)])
+	return rows
+
+
+## The page in the look: parchment, the ledger in the typed face, the words in
+## ink - the dispatch's paper (look_dispatch.gd); plain, a dark well.
+func _dress_sheet() -> void:
+	if Look.Active():
+		_sheet.add_theme_stylebox_override("panel", Look.Paper(16))
+		_sheet.set_meta("look_paper", true)
+		_factsHead.add_theme_font_override("font", Look.F("typed_bold"))
+		_factsHead.add_theme_font_size_override("font_size", Look.Size("small"))
+		_factsHead.add_theme_color_override("font_color", Look.C("ink"))
+		_text.add_theme_font_override("normal_font", Look.F("body"))
+		_text.add_theme_color_override("default_color", Look.C("ink"))
+		var rule := Look.Rule()
+		for c in _sheet.find_children("*", "HSeparator", true, false):
+			if rule != null:
+				(c as HSeparator).add_theme_stylebox_override("separator", rule)
+		return
+	var well := StyleBoxFlat.new()
+	well.bg_color = Color(0.08, 0.1, 0.14, 1)
+	well.set_content_margin_all(14)
+	_sheet.add_theme_stylebox_override("panel", well)
+	_factsHead.add_theme_font_size_override("font_size", 12)
+	_factsHead.add_theme_color_override("font_color", Color(0.6, 0.7, 0.8))
+
+
+## One ledger line: its label quiet, its value firm.
+func _dress_fact(key: Label, value: Label) -> void:
+	if Look.Active():
+		key.add_theme_font_override("font", Look.F("typed"))
+		value.add_theme_font_override("font", Look.F("typed_bold"))
+		key.add_theme_color_override("font_color", Look.Readable(Look.C("ink_muted"), Look.C("paper")))
+		value.add_theme_color_override("font_color", Look.C("ink"))
+		for l in [key, value]:
+			l.add_theme_font_size_override("font_size", Look.Size("label"))
+		return
+	key.add_theme_color_override("font_color", Color(0.62, 0.72, 0.88))
+	for l in [key, value]:
+		l.add_theme_font_size_override("font_size", 15)
 
 
 ## The imported description when there is one, else what the pack knows.
@@ -731,6 +862,11 @@ class OriginalIndex extends Control:
 # ---- the window -----------------------------------------------------------
 
 func _build() -> void:
+	# Sized to what it holds, not the original's 1000 x 671 frame: a 400 x
+	# 200 picture, its particulars and a paragraph (TeeJ, 2026-09-30: "the
+	# window is way too big for the content").
+	custom_minimum_size = PlainSize
+	size = PlainSize
 	var area: MarginContainer = get_node("%ContentArea")
 	var root := HBoxContainer.new()
 	root.add_theme_constant_override("separation", 12)
@@ -804,18 +940,52 @@ func _build() -> void:
 	next.pressed.connect(Next)
 	titleRow.add_child(next)
 	_topicView.add_child(titleRow)
+	# The page: a sheet (parchment in a pack's look) holding the picture and
+	# the particulars side by side, a rule, then the entry's words.
+	_sheet = PanelContainer.new()
+	_sheet.name = "Sheet"
+	_sheet.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	var page := VBoxContainer.new()
+	page.add_theme_constant_override("separation", 12)
+	_sheet.add_child(page)
+	var head := HBoxContainer.new()
+	head.add_theme_constant_override("separation", 18)
+	page.add_child(head)
 	_picture = ColorRect.new()
-	_picture.color = Color(0.08, 0.1, 0.14, 1)
-	_picture.custom_minimum_size = Vector2(800, 400)
-	_picture.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	_topicView.add_child(_picture)
+	_picture.name = "PictureBox"
+	_picture.color = Color(0, 0, 0, 0)   # the picture fills its box: nothing shows round it
+	_picture.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	head.add_child(_picture)
+	var facts := VBoxContainer.new()
+	facts.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	facts.add_theme_constant_override("separation", 4)
+	_factsHead = Label.new()
+	_factsHead.text = "PARTICULARS"
+	facts.add_child(_factsHead)
+	_facts = GridContainer.new()
+	_facts.name = "Particulars"
+	_facts.columns = 2
+	_facts.add_theme_constant_override("h_separation", 14)
+	_facts.add_theme_constant_override("v_separation", 3)
+	facts.add_child(_facts)
+	head.add_child(facts)
+	if Look.Active():
+		# The file's database stamped in its corner, as a dispatch's category.
+		_stamp = LookDispatch._stamp(true)
+		_stamp.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+		head.add_child(_stamp)
+	page.add_child(HSeparator.new())
 	_text = RichTextLabel.new()
+	_text.name = "Words"
 	_text.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_text.custom_minimum_size = Vector2(0, 120)
 	_text.scroll_active = true
-	_text.add_theme_font_size_override("normal_font_size", 15)
-	_topicView.add_child(_text)
+	_text.add_theme_font_size_override("normal_font_size", 16)
+	page.add_child(_text)
+	_topicView.add_child(_sheet)
 	_topicView.visible = false
 	main.add_child(_topicView)
+	_dress_sheet()
 
 	# The right-hand buttons (Fig 3.10): View Topic, View Index, Close.
 	var side := VBoxContainer.new()
