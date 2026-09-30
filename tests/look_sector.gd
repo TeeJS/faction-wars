@@ -10,7 +10,9 @@ extends SceneTree
 ## from the look's inset where one holds the theatre; the wash; the frame) lies
 ## under every entry and takes no
 ## clicks; every system still has its mark and its name (manual p025); a mark
-## is its holder's map colour ink-rimmed, or an ink ring; a name is in the
+## is its holder's map colour ink-rimmed, or an ink ring - or, for a system
+## with its own picture (the WWII flags), the picture with no disc behind it,
+## the HQ edged in brass; a name is in the
 ## look's face with a paper halo and reads at 4.5:1 on parchment; a corner
 ## glyph is ink (an uprising's signal red) on a paper tab; every bar block is
 ## ink-edged, energy used ink, mines built olive, free ones open; none of the
@@ -101,6 +103,7 @@ func _init() -> void:
 
 		# Every system: its mark and its name (manual p025), dressed.
 		var marks := 0
+		var pictures := 0
 		var names := 0
 		var bad: Array = []
 		for c in map.get_children():
@@ -111,6 +114,14 @@ func _init() -> void:
 			if c is SectorWindow.PlanetMapButton:
 				marks += 1
 				var sb: StyleBoxFlat = (c as Button).get_theme_stylebox("normal") as StyleBoxFlat
+				if c.has_meta("sprite"):
+					# Its own picture (the WWII flags): no disc behind it, the HQ
+					# edged in brass, any other unedged.
+					pictures += 1
+					var hq_edge: bool = sb != null and sb.border_color.is_equal_approx(Look.C("brass")) and sb.border_width_left > 0
+					if sb == null or sb.bg_color.a > 0.0 or (hq_edge != Gid.ShowHqHighlight(p)) or (c as Button).icon == null:
+						bad.append("%s picture" % p.Name)
+					continue
 				var want_fill: Color = holder.FactionColor if holder != null else Look.C("paper")
 				var want_rim: Color = Look.C("brass") if Gid.ShowHqHighlight(p) else Look.C("ink")
 				if sb == null or not sb.bg_color.is_equal_approx(want_fill) or not sb.border_color.is_equal_approx(want_rim):
@@ -149,6 +160,8 @@ func _init() -> void:
 					i += 1
 		var in_sector: int = sector.Planets.size()
 		_check(marks == in_sector and names == in_sector, "%s: every system has its mark and name (%d of %d, %d)" % [s, marks, in_sector, names])
+		if id == "ww2":
+			_check(pictures == in_sector, "%s: every system flies its flag (%d of %d)" % [s, pictures, in_sector])
 		_check(bad.is_empty(), "%s: every mark, name, icon and bar in the look%s" % [s, "" if bad.is_empty() else " - " + ", ".join(bad.slice(0, 5))])
 	_check(sectors > 0, "%s: plain sector windows checked (%d)" % [id, sectors])
 	_done()

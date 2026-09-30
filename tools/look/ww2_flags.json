@@ -1,0 +1,1166 @@
+{
+ "_about": "The WWII pack's system pictures (tools/look/make_ww2_flags.py): each system flies the flag it flew in 1941, fixed like a planet's artwork - its own where it had one, else its sovereign's (Gibraltar the United Kingdom's, Sicily Italy's, Siberia the Soviet Union's). Germany flies the black-white-red tricolour: no Nazi symbols in the game at all (TeeJ, 2026-09-29). `flags`: the Wikimedia Commons file of each - its page, its SVG's address and SHA-1 as Commons publishes them, the PNG Commons renders from it (and that PNG's SHA-256), its licence. `systems`: which flag each system flies, and why.",
+ "flags": {
+  "afghanistan": {
+   "name": "Kingdom of Afghanistan",
+   "file": "Flag of Afghanistan (1931–1973).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Afghanistan_(1931%E2%80%931973).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/8/8b/Flag_of_Afghanistan_%281931%E2%80%931973%29.svg",
+   "sha1": "1b83ef7c3d54f5d81e0401b9ec8635ce6a7b8efb",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8b/Flag_of_Afghanistan_%281931%E2%80%931973%29.svg/330px-Flag_of_Afghanistan_%281931%E2%80%931973%29.svg.png",
+   "rendition_sha256": "ce4a9ea5499eed8eb522023cefba1c2e18500ee082f7752a527d963a0172a3bc",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Afghanistan",
+    "PD-ineligible",
+    "Insignia"
+   ],
+   "author": "Orange Tuesday at en.wikipedia"
+  },
+  "argentina": {
+   "name": "Argentina",
+   "file": "Flag of Argentina.svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Argentina.svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/1/1a/Flag_of_Argentina.svg",
+   "sha1": "b54fa14d4d27a1dc3f763d650f9e5afe155e376b",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1a/Flag_of_Argentina.svg/330px-Flag_of_Argentina.svg.png",
+   "rendition_sha256": "3841b93814d1e3abc464f4e0a0f87fb60a78fc87b860d79b6fb46758681b884c",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Argentina",
+    "PD-old-70-1923",
+    "insignia"
+   ],
+   "author": "Manuel Belgrano"
+  },
+  "australia": {
+   "name": "Australia",
+   "file": "Flag of Australia (converted).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Australia_(converted).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/8/88/Flag_of_Australia_%28converted%29.svg",
+   "sha1": "27ab3c995aa15c868289bd2a07bdeb7d1642d49d",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/88/Flag_of_Australia_%28converted%29.svg/330px-Flag_of_Australia_%28converted%29.svg.png",
+   "rendition_sha256": "46e7a6e7d53c14f485594a630a5857925f6138ea522fa4b5e82ace32eade70dc",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-AustraliaGov",
+    "Insignia"
+   ],
+   "author": "Unknown (Vector graphics image by Ian Fieggen) (only minor code changes by uploader.)"
+  },
+  "austria": {
+   "name": "Austria",
+   "file": "Flag of Austria.svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Austria.svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/4/41/Flag_of_Austria.svg",
+   "sha1": "6183e2da9a0264dc227387294332895f1da4b9bf",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/330px-Flag_of_Austria.svg.png",
+   "rendition_sha256": "4fc948c3ca7ac0e2eb8bd53f38321b5b08d1c18e7ef248603cdb55382e5c723c",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-AustrianGov",
+    "insignia"
+   ],
+   "author": "see the file's page"
+  },
+  "belgium": {
+   "name": "Belgium",
+   "file": "Flag of Belgium (civil).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Belgium_(civil).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/9/92/Flag_of_Belgium_%28civil%29.svg",
+   "sha1": "6a49004d51c767581802fcc2b320304f203fef60",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/92/Flag_of_Belgium_%28civil%29.svg/330px-Flag_of_Belgium_%28civil%29.svg.png",
+   "rendition_sha256": "b17460ceeb168ffbf05f4e4ae9f820c8eb8c41b668dd8905a3d9b17d6bc69c04",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-shape",
+    "Insignia"
+   ],
+   "author": "Dbenbenn"
+  },
+  "brazil": {
+   "name": "Brazil (21 stars)",
+   "file": "Flag of Brazil (1889–1960).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Brazil_(1889%E2%80%931960).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/9/92/Flag_of_Brazil_%281889%E2%80%931960%29.svg",
+   "sha1": "312c5b9cbc40d7c4957d020f514f3b5803ddfe9b",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/92/Flag_of_Brazil_%281889%E2%80%931960%29.svg/330px-Flag_of_Brazil_%281889%E2%80%931960%29.svg.png",
+   "rendition_sha256": "3d2d0b9aa5583cc8c9466b84809ae4d56933df87701a661f1b97c1ced31a39b9",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-BrazilGov",
+    "PD/1923"
+   ],
+   "author": "Raimundo Teixeira Mendes"
+  },
+  "bulgaria": {
+   "name": "Kingdom of Bulgaria",
+   "file": "Flag of Bulgaria.svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Bulgaria.svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/9/9a/Flag_of_Bulgaria.svg",
+   "sha1": "b976f224d05a6732c4b31f4593418ce4dc09d652",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9a/Flag_of_Bulgaria.svg/330px-Flag_of_Bulgaria.svg.png",
+   "rendition_sha256": "1a79bf7eedd280db9a59852f019138ed3c92a0ccbe20c881383a6cac0a5ed3c6",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "Insignia",
+    "PD-shape"
+   ],
+   "author": "SKopp"
+  },
+  "canada": {
+   "name": "Canada (Red Ensign)",
+   "file": "Flag of Canada (1921–1957).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Canada_(1921%E2%80%931957).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/6/6d/Flag_of_Canada_%281921%E2%80%931957%29.svg",
+   "sha1": "25a882b7ebdea30bb4a8f8960c521f6121202724",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6d/Flag_of_Canada_%281921%E2%80%931957%29.svg/330px-Flag_of_Canada_%281921%E2%80%931957%29.svg.png",
+   "rendition_sha256": "eac300075a24c45a8101a1c38937b81c35061372d9f82d37ba99f46520f2f09f",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-user"
+   ],
+   "author": "Hoshie"
+  },
+  "chile": {
+   "name": "Chile",
+   "file": "Flag of Chile.svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Chile.svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/7/78/Flag_of_Chile.svg",
+   "sha1": "22a43c801d3d9f56988f6d9947e5a03e1fc59c4b",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/78/Flag_of_Chile.svg/330px-Flag_of_Chile.svg.png",
+   "rendition_sha256": "746456396af4ac881256ff2f49ed07cb7081cb862e464bdb6a12fe6b6142c323",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Chile",
+    "PD-ineligible",
+    "insignia",
+    "self"
+   ],
+   "author": "see the file's page"
+  },
+  "china": {
+   "name": "Republic of China",
+   "file": "Flag of the Republic of China.svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_the_Republic_of_China.svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/7/72/Flag_of_the_Republic_of_China.svg",
+   "sha1": "784cf273d4caa8130068c0bdc730a43af7047657",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/72/Flag_of_the_Republic_of_China.svg/330px-Flag_of_the_Republic_of_China.svg.png",
+   "rendition_sha256": "4c8524ef9eb20df272d34fb39c81f2a79af5726a6dfef635ae4b21f8327f1966",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "Insignia",
+    "PD-ROC-exempt",
+    "PD-PRC-exempt"
+   ],
+   "author": "Sun Yat-sen"
+  },
+  "congo": {
+   "name": "Belgian Congo",
+   "file": "Flag of the Congo Free State.svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_the_Congo_Free_State.svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/7/7c/Flag_of_the_Congo_Free_State.svg",
+   "sha1": "98aafcfcd10c41846999684d7c88dc3e3cc46405",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7c/Flag_of_the_Congo_Free_State.svg/330px-Flag_of_the_Congo_Free_State.svg.png",
+   "rendition_sha256": "f41df17a1cde1f8c6f943ea6a5b9ebc37d8d008785b80e1e6b14edcfa5c4b76a",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Democratic Republic of the Congo",
+    "PD-ineligible",
+    "Insignia"
+   ],
+   "author": "see the file's page"
+  },
+  "czechoslovakia": {
+   "name": "Czechoslovakia",
+   "file": "Flag of the Czech Republic.svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_the_Czech_Republic.svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/c/cb/Flag_of_the_Czech_Republic.svg",
+   "sha1": "1f52e6f58d295f3b764784cca775b96e86f45b2d",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cb/Flag_of_the_Czech_Republic.svg/330px-Flag_of_the_Czech_Republic.svg.png",
+   "rendition_sha256": "7ae3546b55d6db5f369cff02bf5264c6f1d55a991a3c7910d9b0f8cbc0012291",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-CzechGov"
+   ],
+   "author": "Jaroslav Kursa"
+  },
+  "denmark": {
+   "name": "Denmark",
+   "file": "Flag of Denmark.svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Denmark.svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/9/9c/Flag_of_Denmark.svg",
+   "sha1": "f22f7a2eb507e529f963ad514a03e0ca1bfd6cc6",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9c/Flag_of_Denmark.svg/330px-Flag_of_Denmark.svg.png",
+   "rendition_sha256": "96df6a1ba46920bcaa1f517c1f8018c6bd0a7b42de999ac7f4d017dfca5ac032",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "Insignia",
+    "PD-shape"
+   ],
+   "author": "Madden and others"
+  },
+  "egypt": {
+   "name": "Kingdom of Egypt",
+   "file": "Flag of Egypt (1922-1958).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Egypt_(1922-1958).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/3/38/Flag_of_Egypt_%281922-1958%29.svg",
+   "sha1": "62a0956c41d8a7cf5a64ebb38d19291d822dac06",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/38/Flag_of_Egypt_%281922-1958%29.svg/330px-Flag_of_Egypt_%281922-1958%29.svg.png",
+   "rendition_sha256": "1e8462f7f9b06c3cb50067a5410b84335092b679fe05a01a753d6fba04a3d38d",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-user"
+   ],
+   "author": "Mysid"
+  },
+  "finland": {
+   "name": "Finland",
+   "file": "Flag of Finland.svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Finland.svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Flag_of_Finland.svg",
+   "sha1": "4ba6e5300c3ddd64f581df014e3aea3ad7254882",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bc/Flag_of_Finland.svg/330px-Flag_of_Finland.svg.png",
+   "rendition_sha256": "20f235d4eb6006e040621e7fb6a255ff356350a335f9471c6f6c1aa7f8496796",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-shape",
+    "PD-FinlandGov",
+    "insignia"
+   ],
+   "author": "Unknown"
+  },
+  "france": {
+   "name": "France",
+   "file": "Flag of France.svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_France.svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/c/c3/Flag_of_France.svg",
+   "sha1": "66bdc8e9edf0515a0742b58a4f04fa1103084d56",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c3/Flag_of_France.svg/330px-Flag_of_France.svg.png",
+   "rendition_sha256": "af70923789b41b4f29025c5f6944ff926cd8fa8e20a5bc510a7d82efb4218832",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-simple",
+    "Insignia",
+    "PD-flag",
+    "PD-France"
+   ],
+   "author": "see the file's page"
+  },
+  "germany": {
+   "name": "Germany: the black-white-red tricolour",
+   "file": "Flag of Germany (1867–1918).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Germany_(1867%E2%80%931918).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/1/1f/Flag_of_Germany_%281867%E2%80%931918%29.svg",
+   "sha1": "59fe0e22197ef0fa883aeb99f3122f686633d350",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1f/Flag_of_Germany_%281867%E2%80%931918%29.svg/330px-Flag_of_Germany_%281867%E2%80%931918%29.svg.png",
+   "rendition_sha256": "a6587dc8f5c5d87ccde3ed8f5149412895c9f088b40e38267a6d6e3224d202a5",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-shape",
+    "insignia"
+   ],
+   "author": "see the file's page"
+  },
+  "greece": {
+   "name": "Kingdom of Greece",
+   "file": "Flag of Greece (1822-1978).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Greece_(1822-1978).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/6/6e/Flag_of_Greece_%281822-1978%29.svg",
+   "sha1": "464feedccaff45457749c286ab174ae5cb6e104c",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6e/Flag_of_Greece_%281822-1978%29.svg/330px-Flag_of_Greece_%281822-1978%29.svg.png",
+   "rendition_sha256": "43b2e74faf70a0917417edae9c27e408569f06713673d72b23fbc9f73fafa409",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "pd-ineligible",
+    "Insignia"
+   ],
+   "author": "(of code) User:Makaristos"
+  },
+  "hungary": {
+   "name": "Kingdom of Hungary",
+   "file": "Flag of Hungary (1915-1918, 1919-1946).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Hungary_(1915-1918,_1919-1946).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/8/8b/Flag_of_Hungary_%281915-1918%2C_1919-1946%29.svg",
+   "sha1": "0f2b45457516c20fb92498bd1439821b963849c3",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8b/Flag_of_Hungary_%281915-1918%2C_1919-1946%29.svg/330px-Flag_of_Hungary_%281915-1918%2C_1919-1946%29.svg.png",
+   "rendition_sha256": "377baf09dd8306888808d17cc23c458206f9b70dbe08f861e3e49868477cc7a7",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "self",
+    "PD-Hungary",
+    "Insignia"
+   ],
+   "author": "User:Zscout370, colour correction: User:R-41, current version: Thommy"
+  },
+  "iceland": {
+   "name": "Iceland",
+   "file": "Flag of Iceland.svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Iceland.svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/c/ce/Flag_of_Iceland.svg",
+   "sha1": "4fcd6e0f507312e9c58cf342abc97569a6d6af0e",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/ce/Flag_of_Iceland.svg/330px-Flag_of_Iceland.svg.png",
+   "rendition_sha256": "af310c3f5afd84770fa2cdcb68c830ce91b2aae047b8c882a701301abd7c811e",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Iceland50",
+    "PD-shape",
+    "Insignia"
+   ],
+   "author": "see the file's page"
+  },
+  "india": {
+   "name": "British India (Star of India ensign)",
+   "file": "British Raj Red Ensign.svg",
+   "page": "https://commons.wikimedia.org/wiki/File:British_Raj_Red_Ensign.svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/b/be/British_Raj_Red_Ensign.svg",
+   "sha1": "df0d4e8729b043b8452736e5af4f384f3a0dd193",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/be/British_Raj_Red_Ensign.svg/330px-British_Raj_Red_Ensign.svg.png",
+   "rendition_sha256": "ae8a0f41a90d58c8c14d9478fa4144a62816a4f6408013c407f9314f0f9e8e7c",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "insignia",
+    "PD-self"
+   ],
+   "author": "Barryob"
+  },
+  "iraq": {
+   "name": "Kingdom of Iraq",
+   "file": "Flag of Iraq (1924–1959).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Iraq_(1924%E2%80%931959).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/c/c6/Flag_of_Iraq_%281924%E2%80%931959%29.svg",
+   "sha1": "68d213c9d21a7675bfc9e06f24c1fb7c899ed87e",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c6/Flag_of_Iraq_%281924%E2%80%931959%29.svg/330px-Flag_of_Iraq_%281924%E2%80%931959%29.svg.png",
+   "rendition_sha256": "52d3556ee12ff6d38312267ab9fed6baf475ab818d680a73674aacc7e374caae",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Iraq",
+    "PD-ineligible",
+    "Insignia"
+   ],
+   "author": "see the file's page"
+  },
+  "ireland": {
+   "name": "Ireland",
+   "file": "Flag of Ireland.svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Ireland.svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/4/45/Flag_of_Ireland.svg",
+   "sha1": "fb73800615b9414c8f48323c96b121898523fea0",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/45/Flag_of_Ireland.svg/330px-Flag_of_Ireland.svg.png",
+   "rendition_sha256": "3b3a100f0434d2a11fb418a537ed5996f8c5f2916507f87e030cdde344e2888a",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "Insignia",
+    "PD-IrishGov"
+   ],
+   "author": "Éire"
+  },
+  "italy": {
+   "name": "Kingdom of Italy",
+   "file": "Flag of Italy (1861–1946).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Italy_(1861%E2%80%931946).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/7/78/Flag_of_Italy_%281861%E2%80%931946%29.svg",
+   "sha1": "ff060347b1116848ade2b000e617fb1f13ffa279",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/78/Flag_of_Italy_%281861%E2%80%931946%29.svg/330px-Flag_of_Italy_%281861%E2%80%931946%29.svg.png",
+   "rendition_sha256": "4f01b331f1183a47ec0400cce544c9687254bcfa3d27a25d5ebc5cd799624ee2",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "insignia",
+    "PD-user"
+   ],
+   "author": "F l a n k e r"
+  },
+  "japan": {
+   "name": "Japan",
+   "file": "Flag of Japan (1870–1999).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Japan_(1870%E2%80%931999).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/1/1b/Flag_of_Japan_%281870%E2%80%931999%29.svg",
+   "sha1": "032e27bda4cb886bb6080f293d77f51a0eb9fa19",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1b/Flag_of_Japan_%281870%E2%80%931999%29.svg/330px-Flag_of_Japan_%281870%E2%80%931999%29.svg.png",
+   "rendition_sha256": "9c3e96d931b2d4a0000e7392bb029b1d3bf284be2d5c4c41dc63a269490d9594",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-shape",
+    "PD-old-auto",
+    "Insignia",
+    "PD-Japan"
+   ],
+   "author": "kahusi"
+  },
+  "manchukuo": {
+   "name": "Manchukuo",
+   "file": "Flag of Manchukuo.svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Manchukuo.svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/8/8c/Flag_of_Manchukuo.svg",
+   "sha1": "3f2e22a94d035f94c306d3ebee739e06f3d4138f",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8c/Flag_of_Manchukuo.svg/330px-Flag_of_Manchukuo.svg.png",
+   "rendition_sha256": "827e1099d74eb89698ba65e5e406ba2279dae86fb4c5bf191ce9c8c210310c8f",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-shape"
+   ],
+   "author": "Urmas"
+  },
+  "mexico": {
+   "name": "Mexico",
+   "file": "Flag of Mexico (1934-1968).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Mexico_(1934-1968).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/8/8f/Flag_of_Mexico_%281934-1968%29.svg",
+   "sha1": "4c7a2ade311b5bedb2e9b15aaebc3f5246607e39",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8f/Flag_of_Mexico_%281934-1968%29.svg/330px-Flag_of_Mexico_%281934-1968%29.svg.png",
+   "rendition_sha256": "09cbd574ea1f891488b4c1c27e724a34c372e8598772e37e067c93dc88f0e42d",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Coa-Mexico",
+    "insignia"
+   ],
+   "author": "TownDown"
+  },
+  "morocco": {
+   "name": "Morocco",
+   "file": "Flag of Morocco.svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Morocco.svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/2/2c/Flag_of_Morocco.svg",
+   "sha1": "13012b16d6e31cbf00f6a935227078d23d7447f6",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2c/Flag_of_Morocco.svg/330px-Flag_of_Morocco.svg.png",
+   "rendition_sha256": "ab2793fdfd55d62f79f2696319fb98c8db25c2bebd2f6850388cca8883443f16",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-ineligible",
+    "PD-Morocco",
+    "Insignia"
+   ],
+   "author": "Denelson83, Zscout370"
+  },
+  "netherlands": {
+   "name": "the Netherlands",
+   "file": "Flag of the Netherlands.svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_the_Netherlands.svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/2/20/Flag_of_the_Netherlands.svg",
+   "sha1": "e9d6d9f2ffe57c6a8109651ecccb442e14e9a2fd",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/20/Flag_of_the_Netherlands.svg/330px-Flag_of_the_Netherlands.svg.png",
+   "rendition_sha256": "2a782cc884d6e1d9f24036b5e471a8f7516686cb8cd577ba8f4933983befd4c2",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-shape",
+    "Insignia"
+   ],
+   "author": "Zscout370"
+  },
+  "new_zealand": {
+   "name": "New Zealand",
+   "file": "Flag of New Zealand.svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_New_Zealand.svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/3/3e/Flag_of_New_Zealand.svg",
+   "sha1": "ff6fceb20bbdf90878d8eb866a44d0edd281dfd2",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3e/Flag_of_New_Zealand.svg/330px-Flag_of_New_Zealand.svg.png",
+   "rendition_sha256": "9925867dbc8005f82b52d1ddd65d176036bee7cd7c4463a3a1a9b4669e0e509b",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "Insignia",
+    "PD-New Zealand",
+    "PD-US-expired"
+   ],
+   "author": "see the file's page"
+  },
+  "norway": {
+   "name": "Norway",
+   "file": "Flag of Norway.svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Norway.svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/d/d9/Flag_of_Norway.svg",
+   "sha1": "905b385ab20e146fbec17b14187c999d03970b30",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d9/Flag_of_Norway.svg/330px-Flag_of_Norway.svg.png",
+   "rendition_sha256": "f2d5d5116f4467d7fe455d8abe860740849077aeec2b7a4779dc361848138ddd",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-shape",
+    "insignia"
+   ],
+   "author": "see the file's page"
+  },
+  "panama": {
+   "name": "Panama",
+   "file": "Flag of Panama.svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Panama.svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/a/ab/Flag_of_Panama.svg",
+   "sha1": "a8422372fc1fe3b566cb75c3e5bf43719c1374af",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ab/Flag_of_Panama.svg/330px-Flag_of_Panama.svg.png",
+   "rendition_sha256": "57a3779cb6c458c931941b819765fb827a4a9e83991b6b017c94c9ecee32834b",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Panama",
+    "PD-ineligible",
+    "insignia"
+   ],
+   "author": "Zscout370 et al"
+  },
+  "persia": {
+   "name": "Persia",
+   "file": "State flag of Iran (1933–1964).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:State_flag_of_Iran_(1933%E2%80%931964).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/a/a8/State_flag_of_Iran_%281933%E2%80%931964%29.svg",
+   "sha1": "adc84169a3a0980b6a70237a5ff4766cf5870cfd",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a8/State_flag_of_Iran_%281933%E2%80%931964%29.svg/330px-State_flag_of_Iran_%281933%E2%80%931964%29.svg.png",
+   "rendition_sha256": "478cbb85269509c3227f56c1cf70cd0a5054ab9845e92899a75ba3781e0a7ff0",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-user-en",
+    "PD-Iran"
+   ],
+   "author": "Orange Tuesday"
+  },
+  "philippines": {
+   "name": "Commonwealth of the Philippines",
+   "file": "Flag of the Philippines (1936–1985, 1986–1998).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_the_Philippines_(1936%E2%80%931985,_1986%E2%80%931998).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/e/ea/Flag_of_the_Philippines_%281936%E2%80%931985%2C_1986%E2%80%931998%29.svg",
+   "sha1": "e9f547546d350cad1ffc524ef9a92144f8a13270",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ea/Flag_of_the_Philippines_%281936%E2%80%931985%2C_1986%E2%80%931998%29.svg/330px-Flag_of_the_Philippines_%281936%E2%80%931985%2C_1986%E2%80%931998%29.svg.png",
+   "rendition_sha256": "53f0f7ef2486addda6b4dac76825213ec24f644267f161ebfb2d0b5782c5830a",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Philippines-1972",
+    "Self2",
+    "PD-ineligible",
+    "insignia"
+   ],
+   "author": "Philippine Heraldry Committee"
+  },
+  "poland": {
+   "name": "Poland",
+   "file": "Flag of Poland.svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Poland.svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/1/12/Flag_of_Poland.svg",
+   "sha1": "55b10f15941c2e8e8c8bb5501567cf96958d1a36",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/12/Flag_of_Poland.svg/330px-Flag_of_Poland.svg.png",
+   "rendition_sha256": "be64629b88291f7a6c0df8863498814a7f7623e2d854ca5b754689ed0ae4f256",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "insignia",
+    "PD-shape"
+   ],
+   "author": "see the file's page"
+  },
+  "portugal": {
+   "name": "Portugal",
+   "file": "Flag of Portugal.svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Portugal.svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/5/5c/Flag_of_Portugal.svg",
+   "sha1": "8638595006e5e7b402055a0c784f43955e8ebee7",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5c/Flag_of_Portugal.svg/330px-Flag_of_Portugal.svg.png",
+   "rendition_sha256": "2a37322ed779de54fc15c61776dd31237347371864a03b40964f9d1b7aaecdb1",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-old-auto-expired",
+    "PD-EUGov",
+    "insignia"
+   ],
+   "author": "Vítor Luís Rodrigues; António Martins-Tuválkin (2004; this specific vector set: see sources)"
+  },
+  "romania": {
+   "name": "Kingdom of Romania",
+   "file": "Flag of Romania.svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Romania.svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/7/73/Flag_of_Romania.svg",
+   "sha1": "36b353013c3044eb705d37975db75f489f08e8fc",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/73/Flag_of_Romania.svg/330px-Flag_of_Romania.svg.png",
+   "rendition_sha256": "1fe6bb39553a0f0192bff1be65338dffd2153bb64d819d753b5d885a85bf4d9e",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "Insignia",
+    "PD-simple",
+    "PD-RO-exempt"
+   ],
+   "author": "AdiJapan"
+  },
+  "siam": {
+   "name": "Siam",
+   "file": "Flag of Thailand.svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Thailand.svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/a/a9/Flag_of_Thailand.svg",
+   "sha1": "271c0de39c27dee3efd2d49344e235ab5bf1eace",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a9/Flag_of_Thailand.svg/330px-Flag_of_Thailand.svg.png",
+   "rendition_sha256": "9ed7df516080309b7c7fa3b803a913b5877bdfbb2f1dd8c032cc28110edc0f1c",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Thailand",
+    "PD-shape",
+    "insignia"
+   ],
+   "author": "Zscout370"
+  },
+  "south_africa": {
+   "name": "Union of South Africa",
+   "file": "Flag of South Africa (1928–1994, dark colors).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_South_Africa_(1928%E2%80%931994,_dark_colors).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/a/a6/Flag_of_South_Africa_%281928%E2%80%931994%2C_dark_colors%29.svg",
+   "sha1": "6b7ca46c7aa599a9fd0ec0b9ac5dbbcc28dde4f7",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a6/Flag_of_South_Africa_%281928%E2%80%931994%2C_dark_colors%29.svg/330px-Flag_of_South_Africa_%281928%E2%80%931994%2C_dark_colors%29.svg.png",
+   "rendition_sha256": "6467f399aaa0503274c9216755e330c3fd88d7544d51795052010e93c9b2cbf8",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-South-Africa-exempt",
+    "PD-US-not renewed",
+    "insignia"
+   ],
+   "author": "Parliament of South Africa (Vector graphics image by Denelson83)"
+  },
+  "spain": {
+   "name": "Spain (1938-1945)",
+   "file": "Flag of Spain (1938–1945).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Spain_(1938%E2%80%931945).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/2/2c/Flag_of_Spain_%281938%E2%80%931945%29.svg",
+   "sha1": "62904589014933743a70e0771d3a1ce8e975e2f1",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2c/Flag_of_Spain_%281938%E2%80%931945%29.svg/330px-Flag_of_Spain_%281938%E2%80%931945%29.svg.png",
+   "rendition_sha256": "e85dd01ada52d46f8d52ed6753a71defa5e0c367d3cf7f7ee845ce8db3426d5e",
+   "licence": "CC BY-SA 4.0",
+   "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "licence_basis": [
+    "insignia",
+    "self"
+   ],
+   "author": "SanchoPanzaXXI"
+  },
+  "sweden": {
+   "name": "Sweden",
+   "file": "Flag of Sweden.svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Sweden.svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/4/4c/Flag_of_Sweden.svg",
+   "sha1": "e2717718a2b2089843c6fc487d65cbe6fdceb9c3",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4c/Flag_of_Sweden.svg/330px-Flag_of_Sweden.svg.png",
+   "rendition_sha256": "444d4d86c863baeec16d86ed5eb9759e33e6c7b3aed2658620968fbf52c93f67",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-shape",
+    "insignia"
+   ],
+   "author": "Jon Harald Søby and others"
+  },
+  "switzerland": {
+   "name": "Switzerland",
+   "file": "Flag of Switzerland.svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Switzerland.svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/f/f3/Flag_of_Switzerland.svg",
+   "sha1": "b59554bc284833d9f890531c537d862210d2215f",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f3/Flag_of_Switzerland.svg/330px-Flag_of_Switzerland.svg.png",
+   "rendition_sha256": "bd9649b7ea100789f2b8357ded761399b81d16c53c425dd97cabbea1e4124ad2",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-shape",
+    "insignia",
+    "PD-Flag-Switzerland"
+   ],
+   "author": "Original: Unknown"
+  },
+  "tunisia": {
+   "name": "Tunisia",
+   "file": "Flag of Tunisia (1959–1999).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Tunisia_(1959%E2%80%931999).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/e/e9/Flag_of_Tunisia_%281959%E2%80%931999%29.svg",
+   "sha1": "c7889cfe16fdfbab8a1bb7e0dea9d532d3fa255b",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e9/Flag_of_Tunisia_%281959%E2%80%931999%29.svg/330px-Flag_of_Tunisia_%281959%E2%80%931999%29.svg.png",
+   "rendition_sha256": "2a6f672b8ea16503add9928b9c0e9d18d15f17b2f6576e8feceb7b40682e3940",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Tunisia",
+    "PD-ineligible",
+    "Insignia"
+   ],
+   "author": "Orange Tuesday at en.wikipedia"
+  },
+  "turkey": {
+   "name": "Turkey",
+   "file": "Flag of Turkey.svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Turkey.svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/b/b4/Flag_of_Turkey.svg",
+   "sha1": "09edc7fca05aa88c1b316f1d3f97c587cdec5adb",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b4/Flag_of_Turkey.svg/330px-Flag_of_Turkey.svg.png",
+   "rendition_sha256": "6def8c3a323a751ce5c64aade54609fd513a945321b4bd853e03e71cd775145b",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Turkey",
+    "PD-shape",
+    "Insignia"
+   ],
+   "author": "Dbenbenn (original author)"
+  },
+  "uk": {
+   "name": "United Kingdom",
+   "file": "Flag of the United Kingdom (1-2).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_the_United_Kingdom_(1-2).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/a/a5/Flag_of_the_United_Kingdom_%281-2%29.svg",
+   "sha1": "574dcaf9b0f699c967fffb99499f89b92b75f8be",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a5/Flag_of_the_United_Kingdom_%281-2%29.svg/330px-Flag_of_the_United_Kingdom_%281-2%29.svg.png",
+   "rendition_sha256": "fbae9a498e885ba8351a9fcc277529f173e3ceb3dc9905e1487a986e34086bc1",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "Insignia",
+    "PD-UKGov",
+    "PD-old-100-1923",
+    "insignia"
+   ],
+   "author": "see the file's page"
+  },
+  "usa": {
+   "name": "United States (48 stars)",
+   "file": "Flag of the United States (1912-1959).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_the_United_States_(1912-1959).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/f/f5/Flag_of_the_United_States_%281912-1959%29.svg",
+   "sha1": "3106fe4f9da4d21fd5aba2deb4dcb199555ba928",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f5/Flag_of_the_United_States_%281912-1959%29.svg/330px-Flag_of_the_United_States_%281912-1959%29.svg.png",
+   "rendition_sha256": "55703ce46aa1f7e60a4c00cf032c98dc9e33cf6b71e47da2c85bb6c34adcd4c8",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-ineligible",
+    "insignia"
+   ],
+   "author": "Created by jacobolus using Adobe Illustrator"
+  },
+  "ussr": {
+   "name": "Soviet Union",
+   "file": "Flag of the Soviet Union (1936 – 1955).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_the_Soviet_Union_(1936_%E2%80%93_1955).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/8/86/Flag_of_the_Soviet_Union_%281936_%E2%80%93_1955%29.svg",
+   "sha1": "b4d45224eabe3f55f8f456da2b54e5bbb7291467",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/86/Flag_of_the_Soviet_Union_%281936_%E2%80%93_1955%29.svg/330px-Flag_of_the_Soviet_Union_%281936_%E2%80%93_1955%29.svg.png",
+   "rendition_sha256": "1f9a826ac78a4170cdc994915280bc80e7f8d8a6106402f2dcfe2a9cd659fe87",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Russia"
+   ],
+   "author": "created by rotemliss from :Image:Flag of the Soviet Union.svg"
+  },
+  "venezuela": {
+   "name": "Venezuela",
+   "file": "Flag of Venezuela (1930–2006).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Venezuela_(1930%E2%80%932006).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/e/ef/Flag_of_Venezuela_%281930%E2%80%932006%29.svg",
+   "sha1": "b736dc7cc70a2949a39ea6b739982613cfee2f05",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ef/Flag_of_Venezuela_%281930%E2%80%932006%29.svg/330px-Flag_of_Venezuela_%281930%E2%80%932006%29.svg.png",
+   "rendition_sha256": "94a0a00af563858f298e73a00b6be13fd19acf0bae8e2448b9e4b0dd319e28b5",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Venezuela",
+    "insignia",
+    "PD-shape"
+   ],
+   "author": "FXXX"
+  },
+  "yugoslavia": {
+   "name": "Kingdom of Yugoslavia",
+   "file": "Flag of Yugoslavia (1918–1941).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Yugoslavia_(1918%E2%80%931941).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/e/e5/Flag_of_Yugoslavia_%281918%E2%80%931941%29.svg",
+   "sha1": "4b14d0375d36cdc0efa5ad3117446b38647c84c5",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e5/Flag_of_Yugoslavia_%281918%E2%80%931941%29.svg/330px-Flag_of_Yugoslavia_%281918%E2%80%931941%29.svg.png",
+   "rendition_sha256": "90a6bf5aac9ee84c66717eedf957820a63e9c75892bce60942cd761bc3822415",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-self"
+   ],
+   "author": "Fibonacci"
+  }
+ },
+ "systems": {
+  "britain": {
+   "flag": "uk",
+   "why": "its own flag"
+  },
+  "ireland": {
+   "flag": "ireland",
+   "why": "its own flag"
+  },
+  "france": {
+   "flag": "france",
+   "why": "its own flag"
+  },
+  "belgium": {
+   "flag": "belgium",
+   "why": "its own flag"
+  },
+  "netherlands": {
+   "flag": "netherlands",
+   "why": "its own flag"
+  },
+  "switzerland": {
+   "flag": "switzerland",
+   "why": "its own flag"
+  },
+  "germany": {
+   "flag": "germany",
+   "why": "Germany's black-white-red tricolour, its national flag of 1933-35, in place of the swastika flag (TeeJ, 2026-09-29)"
+  },
+  "austria": {
+   "flag": "austria",
+   "why": "its own flag (annexed by Germany in 1938)"
+  },
+  "czechoslovakia": {
+   "flag": "czechoslovakia",
+   "why": "its own flag (occupied; its government in exile flew it)"
+  },
+  "hungary": {
+   "flag": "hungary",
+   "why": "its own flag"
+  },
+  "norway": {
+   "flag": "norway",
+   "why": "its own flag"
+  },
+  "sweden": {
+   "flag": "sweden",
+   "why": "its own flag"
+  },
+  "denmark": {
+   "flag": "denmark",
+   "why": "its own flag"
+  },
+  "finland": {
+   "flag": "finland",
+   "why": "its own flag"
+  },
+  "spain": {
+   "flag": "spain",
+   "why": "its own flag"
+  },
+  "portugal": {
+   "flag": "portugal",
+   "why": "its own flag"
+  },
+  "gibraltar": {
+   "flag": "uk",
+   "why": "a British colony"
+  },
+  "italy": {
+   "flag": "italy",
+   "why": "its own flag"
+  },
+  "sicily": {
+   "flag": "italy",
+   "why": "part of Italy"
+  },
+  "sardinia": {
+   "flag": "italy",
+   "why": "part of Italy"
+  },
+  "yugoslavia": {
+   "flag": "yugoslavia",
+   "why": "its own flag"
+  },
+  "greece": {
+   "flag": "greece",
+   "why": "its own flag"
+  },
+  "romania": {
+   "flag": "romania",
+   "why": "its own flag"
+  },
+  "bulgaria": {
+   "flag": "bulgaria",
+   "why": "its own flag"
+  },
+  "crete": {
+   "flag": "greece",
+   "why": "part of Greece"
+  },
+  "poland": {
+   "flag": "poland",
+   "why": "its own flag (occupied; its government in exile flew it)"
+  },
+  "baltic_states": {
+   "flag": "ussr",
+   "why": "annexed by the Soviet Union in 1940"
+  },
+  "belarus": {
+   "flag": "ussr",
+   "why": "a Soviet republic"
+  },
+  "ukraine": {
+   "flag": "ussr",
+   "why": "a Soviet republic"
+  },
+  "russia": {
+   "flag": "ussr",
+   "why": "its own flag"
+  },
+  "caucasus": {
+   "flag": "ussr",
+   "why": "part of the Soviet Union"
+  },
+  "urals": {
+   "flag": "ussr",
+   "why": "part of the Soviet Union"
+  },
+  "kazakhstan": {
+   "flag": "ussr",
+   "why": "a Soviet republic"
+  },
+  "siberia": {
+   "flag": "ussr",
+   "why": "part of the Soviet Union"
+  },
+  "morocco": {
+   "flag": "morocco",
+   "why": "its own flag (a French protectorate)"
+  },
+  "algeria": {
+   "flag": "france",
+   "why": "part of France"
+  },
+  "tunisia": {
+   "flag": "tunisia",
+   "why": "its own flag (a French protectorate)"
+  },
+  "libya": {
+   "flag": "italy",
+   "why": "an Italian colony"
+  },
+  "egypt": {
+   "flag": "egypt",
+   "why": "its own flag"
+  },
+  "malta": {
+   "flag": "uk",
+   "why": "a British colony"
+  },
+  "turkey": {
+   "flag": "turkey",
+   "why": "its own flag"
+  },
+  "syria": {
+   "flag": "france",
+   "why": "a French mandate (Syria and Lebanon, one system)"
+  },
+  "palestine": {
+   "flag": "uk",
+   "why": "a British mandate"
+  },
+  "iraq": {
+   "flag": "iraq",
+   "why": "its own flag"
+  },
+  "persia": {
+   "flag": "persia",
+   "why": "its own flag"
+  },
+  "iceland": {
+   "flag": "iceland",
+   "why": "its own flag"
+  },
+  "greenland": {
+   "flag": "denmark",
+   "why": "a Danish colony"
+  },
+  "azores": {
+   "flag": "portugal",
+   "why": "part of Portugal"
+  },
+  "newfoundland": {
+   "flag": "uk",
+   "why": "a British dominion under commission, whose national flag was the Union Flag"
+  },
+  "united_states": {
+   "flag": "usa",
+   "why": "its own flag"
+  },
+  "canada": {
+   "flag": "canada",
+   "why": "its own flag"
+  },
+  "alaska": {
+   "flag": "usa",
+   "why": "a US territory"
+  },
+  "mexico": {
+   "flag": "mexico",
+   "why": "its own flag"
+  },
+  "panama": {
+   "flag": "panama",
+   "why": "its own flag"
+  },
+  "japan": {
+   "flag": "japan",
+   "why": "its own flag"
+  },
+  "korea": {
+   "flag": "japan",
+   "why": "a Japanese colony"
+  },
+  "manchuria": {
+   "flag": "manchukuo",
+   "why": "its own flag (Manchukuo)"
+  },
+  "china": {
+   "flag": "china",
+   "why": "its own flag"
+  },
+  "formosa": {
+   "flag": "japan",
+   "why": "a Japanese colony"
+  },
+  "indochina": {
+   "flag": "france",
+   "why": "a French colony"
+  },
+  "siam": {
+   "flag": "siam",
+   "why": "its own flag"
+  },
+  "burma": {
+   "flag": "uk",
+   "why": "a British colony"
+  },
+  "malaya": {
+   "flag": "uk",
+   "why": "British Malaya"
+  },
+  "philippines": {
+   "flag": "philippines",
+   "why": "its own flag"
+  },
+  "dutch_east_indies": {
+   "flag": "netherlands",
+   "why": "a Dutch colony"
+  },
+  "india": {
+   "flag": "india",
+   "why": "its own flag"
+  },
+  "ceylon": {
+   "flag": "uk",
+   "why": "a British colony"
+  },
+  "afghanistan": {
+   "flag": "afghanistan",
+   "why": "its own flag"
+  },
+  "hawaii": {
+   "flag": "usa",
+   "why": "a US territory"
+  },
+  "midway": {
+   "flag": "usa",
+   "why": "a US possession"
+  },
+  "wake_island": {
+   "flag": "usa",
+   "why": "a US possession"
+  },
+  "marshall_islands": {
+   "flag": "japan",
+   "why": "a Japanese mandate"
+  },
+  "marianas": {
+   "flag": "japan",
+   "why": "a Japanese mandate"
+  },
+  "gilbert_islands": {
+   "flag": "uk",
+   "why": "a British colony"
+  },
+  "new_guinea": {
+   "flag": "australia",
+   "why": "an Australian territory"
+  },
+  "solomon_islands": {
+   "flag": "uk",
+   "why": "a British protectorate"
+  },
+  "australia": {
+   "flag": "australia",
+   "why": "its own flag"
+  },
+  "new_zealand": {
+   "flag": "new_zealand",
+   "why": "its own flag"
+  },
+  "fiji": {
+   "flag": "uk",
+   "why": "a British colony"
+  },
+  "brazil": {
+   "flag": "brazil",
+   "why": "its own flag"
+  },
+  "argentina": {
+   "flag": "argentina",
+   "why": "its own flag"
+  },
+  "chile": {
+   "flag": "chile",
+   "why": "its own flag"
+  },
+  "venezuela": {
+   "flag": "venezuela",
+   "why": "its own flag"
+  },
+  "west_africa": {
+   "flag": "france",
+   "why": "French West Africa"
+  },
+  "congo": {
+   "flag": "congo",
+   "why": "its own flag (the Belgian Congo)"
+  },
+  "east_africa": {
+   "flag": "uk",
+   "why": "British East Africa"
+  },
+  "south_africa": {
+   "flag": "south_africa",
+   "why": "its own flag"
+  },
+  "madagascar": {
+   "flag": "france",
+   "why": "a French colony"
+  }
+ }
+}
