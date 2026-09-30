@@ -104,6 +104,32 @@ func _init() -> void:
 	await process_frame
 	_check(not ui.IsTargeting and EconomyWindow.DestinationOf(home, "produces_unit") == b,
 		"a click on %s's Manufacturing window names %s" % [b.Name, b.Name])
+
+	# A LINE WITH NOTHING TO BUILD IT: the original's short menu, Encyclopedia
+	# and Status both greyed (TeeJ's screenshot of the original, 2026-09-30:
+	# Troops in Training on Coruscant with no training facility).
+	var bare: Planet = c
+	for f in bare.Facilities.duplicate():
+		if f.HasRole("produces_troop"):
+			bare.Facilities.erase(f)
+	if Lq.count(bare.Facilities, func(f: Facility) -> bool: return f.HasRole("produces_facility")) == 0:
+		bare.AddFacility("construction_yard")
+	ui.OnEconomyClicked(bare)
+	for _i in 3:
+		await process_frame
+	var cw: EconomyWindow = ui._openWindows.get(bare.Name + " Economy")
+	var tm: PopupMenu = cw.get_node("%TroopQueueLabel").get_node_or_null("QueueMenu") if cw != null else null
+	_check(tm != null and tm.item_count == 2 and tm.get_item_text(0) == "Encyclopedia" and tm.get_item_text(1) == "Status"
+		and tm.is_item_disabled(0) and tm.is_item_disabled(1),
+		"no training facility on %s: Troops in Training's menu is Encyclopedia and Status, both greyed" % bare.Name)
+	var fm: PopupMenu = cw.get_node("%FacQueueLabel").get_node_or_null("QueueMenu") if cw != null else null
+	var items: Array = []
+	if fm != null:
+		for i in fm.item_count:
+			if not fm.is_item_separator(i):
+				items.append(fm.get_item_text(i))
+	_check(items == ["Build...", "Stop", "Destination...", "Encyclopedia", "Status"] and not fm.is_item_disabled(fm.get_item_index(4)),
+		"a construction yard there: Facilities Under Construction keeps its orders and Status (%s)" % str(items))
 	_finish(main)
 
 
