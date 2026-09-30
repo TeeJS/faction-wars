@@ -112,6 +112,8 @@ const EDGE_MAP := [
 const TEXT_MAP := [
 	[Color(0.60, 0.70, 0.80), "heading"],        # a section's heading
 	[Color(0.60, 0.90, 0.60), "heading"],        # a highlighted line
+	[Color(0.565, 0.933, 0.565), "text"],        # Color.LIGHT_GREEN: running, present (Manufacturing's "[Operational]")
+	[Color(1.00, 0.843, 0.00), "heading"],       # Color.GOLD: at work ("[Building ...]")
 	[Color(0.50, 0.70, 1.00), "heading"],        # Manufacturing's "Destination"
 	[Color(0.92, 0.94, 1.00), "text"],
 	[Color(0.827, 0.827, 0.827), "text"],        # Color.LIGHT_GRAY: a listed line

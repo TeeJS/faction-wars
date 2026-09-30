@@ -138,6 +138,17 @@ func Populate(planet: Planet) -> void:
 		GreyEmptyTab(tabs, "Construction Yards", construction)
 		GreyEmptyTab(tabs, Terms.cap("refineries"), Lq.count(planet.Facilities, func(f: Facility) -> bool: return f.HasRole("refines")))
 		GreyEmptyTab(tabs, Terms.cap("mines"), Lq.count(planet.Facilities, func(f: Facility) -> bool: return f.HasRole("extracts_raw")))
+		if not original:
+			# EVERY TAB SHOWN (the WWII windows fix): the strip no longer
+			# clips, so the window widens to fit its six tabs instead of
+			# hiding three behind scroll arrows.
+			tabs.clip_tabs = false
+			# "The first number here is the number of ... at this site. The
+			# second number also includes the one now being built" (p083) -
+			# said where a player who never read the manual can find it.
+			for pair in [["%ShipCapLabel", "shipyard"], ["%TroopCapLabel", "training_facility"], ["%FacCapLabel", "construction_yard"]]:
+				(get_node(pair[0]) as Label).tooltip_text = "%s: built here : built here and being built" % Facility.NameOf(pair[1], 1)
+				(get_node(pair[0]) as Label).mouse_filter = Control.MOUSE_FILTER_PASS
 
 		# --- SPECIFIC MANAGEMENT TABS: Dynamic Population ---
 		PopulateFacilityTab(tabs, "Shipyards", planet, "shipyard", "No Shipyards operational.")
