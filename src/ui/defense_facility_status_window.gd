@@ -3,6 +3,10 @@ extends DraggableWindow
 ## frontend/DefenseFacilityStatusWindow.cs - the status block for a shield or
 ## a battery (manual p085, fig 3.28).
 
+## The picture box's height: the scene's box, as tall as the four fields
+## beside it.
+const BoxH := 120.0
+
 var _associatedFacility: Facility
 
 
@@ -143,14 +147,29 @@ func Populate(facility: Facility) -> void:
 		iconLabel.text = "💥"
 	else:
 		iconLabel.text = "🛰️"
-	# The facility's own portrait over the glyph, where the pack or an art set
-	# has one - the character status window's rule. The box widens to it, so
-	# it shows at 1:1 (122x50) instead of shrunk.
-	var picture: Texture2D = Art.Portrait("facilities", facility.Def.Id if facility.Def != null else facility.Family())
+	# The facility's own picture over the glyph, where the pack or an art set
+	# has one, FILLING its box (TeeJ, 2026-09-30: "it would be nice if the
+	# pictures filled up the space without black bars" - a 122x50 portrait sat
+	# in a 122x120 box). The Encyclopedia picture first, big enough to be
+	# drawn smaller and stay sharp (the WWII plate, 400x200), at the box's
+	# height; else the portrait at its own size. Either way the box is the
+	# picture's shape, so nothing shows around it.
+	var id: String = facility.Def.Id if facility.Def != null else facility.Family()
+	var picture: Texture2D = Art.Picture("facilities", id)
+	if picture == null:
+		picture = Art.Portrait("facilities", id)
 	var iconRect: Control = iconLabel.get_parent()
 	if picture != null:
-		iconRect.custom_minimum_size.x = maxf(iconRect.custom_minimum_size.x, picture.get_width())
+		iconRect.custom_minimum_size = PictureBox(picture)
+		iconRect.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	Art.Fill(iconRect, picture)
+
+
+## The box a picture fills: its own shape, no taller than the fields beside it
+## (BoxH) and never larger than the picture, so it is only ever drawn smaller.
+static func PictureBox(picture: Texture2D) -> Vector2:
+	var h: float = minf(BoxH, picture.get_height())
+	return Vector2(roundf(h * picture.get_width() / picture.get_height()), h)
 
 
 func Refresh() -> void:

@@ -28,6 +28,20 @@ func _init() -> void:
 		for w in ui._openWindows.values():
 			if is_instance_valid(w) and str(w.WindowTitle).begins_with('Status_') and not str(w.WindowTitle).contains(major.Name.replace(' ', '')):
 				w.position = Vector2(760, 200)   # beside the character's, not over it
+	# A facility's Status window too (its picture's box), under the character's.
+	var fac: Facility = null
+	for p in GameState.AllPlanets():
+		if p.ControllingFaction == us and not p.Facilities.is_empty():
+			fac = p.Facilities[0]
+			break
+	if fac != null:
+		var before: Array = ui._openWindows.values()
+		ui.OpenDefenseFacilityStatusWindow(fac)
+		for _i in 2:
+			await process_frame
+		for w in ui._openWindows.values():
+			if is_instance_valid(w) and not before.has(w):
+				w.position = Vector2(60, 470)
 	for _i in 6:
 		await process_frame
 	var img: Image = root.get_viewport().get_texture().get_image()
