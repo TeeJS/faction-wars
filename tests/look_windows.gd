@@ -100,6 +100,25 @@ func _init() -> void:
 		# so "none left" above means none.
 		_check(plain_seen >= 6, "%s: the plain colours are found in the windows as drawn (%d)" % [id, plain_seen])
 
+	# The Galaxy Overview goes by the pack's name (TeeJ, 2026-09-30, of the
+	# WWII agent's menu: "galaxy is the wrong term here!"): the menu item and
+	# the window's title.
+	var overview: String = Terms.label("galaxy_overview")
+	_check(overview == ("World Overview" if id == "ww2" else "Galaxy Overview"), "%s: the overview is called \"%s\"" % [id, overview])
+	var agent: PopupMenu = ui._AgentPopup()
+	var item: String = agent.get_item_text(agent.get_item_index(3))
+	_check(item == overview, "%s: the agent's menu says \"%s\"" % [id, item])
+	ui.OpenGalaxyOverview()
+	for _i in 3:
+		await process_frame
+	var gow: Node = ui.get_node_or_null("GalaxyOverviewWindow")
+	var said: Array = gow.find_children("*", "Label", true, false).map(func(l: Label) -> String: return l.text) if gow != null else []
+	_check(said.has(overview), "%s: the overview window's title says \"%s\"" % [id, overview])
+	if gow != null:
+		gow.queue_free()
+	for _i in 2:
+		await process_frame
+
 	# The head-to-head screens: the two that open without the relay (Locate
 	# Session asks the relay for its games at once - never from a test).
 	for path in ["res://src/ui/mp/MultiplayerConfiguration.tscn", "res://src/ui/mp/HostGame.tscn"]:

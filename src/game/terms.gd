@@ -66,6 +66,10 @@ const DEFAULTS := {
 	"sector":                 "Sector",
 	# the Cockpit's size choice (manual p021, Fig. 2.2: "galaxy size")
 	"galaxy_size":            "Galaxy Size",
+	# the window counting every type the sides have (manual p030, "Galaxy
+	# Overview"): its title and its menu item; a pack sets its own (TeeJ,
+	# 2026-09-30, of the WWII menu: "galaxy is the wrong term here!")
+	"galaxy_overview":        "Galaxy Overview",
 	# a message category with nothing in it
 	"no_messages":            "No transmissions.",
 }

@@ -1529,7 +1529,7 @@ func _AgentPopup() -> PopupMenu:
 	popup.add_item("Build Ships", 0)
 	popup.add_item("Build Troops", 1)
 	popup.add_item("Build Facilities", 2)
-	popup.add_item("Galaxy Overview", 3)
+	popup.add_item(Terms.label("galaxy_overview"), 3)
 	popup.add_item("Objectives", 4)
 	popup.add_check_item("Manage Garrisons", 5)
 	popup.add_check_item("Manage Production", 6)
