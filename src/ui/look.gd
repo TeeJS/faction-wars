@@ -188,17 +188,35 @@ static func F(role: String) -> Font:
 	return font
 
 
+## A face is drawn as a distance field (TeeJ, 2026-09-30: "text on this
+## screen still getting too thin in places", the Economy window's
+## "Destination"). The game is drawn at the window's size - in a browser
+## rarely a whole multiple of 1440x850 - and a face rasterised at that scale
+## lost the thin stems of its i's and t's and spaced its letters unevenly
+## ("Destinat ion"). A distance field keeps the letter's shape at any scale.
+## Its pixel range is twice the widest outline drawn with it (Godot's rule
+## for outlines on a distance field) and more: the map marks' ink rim, a
+## fifth of the mark - 9 px on the 46 px flare (galaxy_map.gd Place).
+const FontPixelRange := 20
+
 static func _load_font(rel: String) -> Font:
 	if rel.is_empty():
 		return null
 	var path := "%s/%s" % [Art._pack_dir(), rel]
+	var f: FontFile = null
 	if path.begins_with("res://"):
-		return load(path) as Font if ResourceLoader.exists(path) else null
-	if not FileAccess.file_exists(path):
+		if not ResourceLoader.exists(path):
+			return null
+		var imported: FontFile = load(path) as FontFile
+		f = imported.duplicate() as FontFile if imported != null else null
+	elif FileAccess.file_exists(path):
+		f = FontFile.new()
+		f.data = FileAccess.get_file_as_bytes(path)
+	if f == null or f.data.is_empty():
 		return null
-	var f := FontFile.new()
-	f.data = FileAccess.get_file_as_bytes(path)
-	return f if not f.data.is_empty() else null
+	f.multichannel_signed_distance_field = true
+	f.msdf_pixel_range = FontPixelRange
+	return f
 
 
 ## A texture by name (paper, paper_frame, desk, grain, rule), or null.

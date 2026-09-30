@@ -9,8 +9,10 @@ extends SceneTree
 ## visible piece of text in it: none may be smaller than the look's `small`
 ## size (13 px), and none may sit at less than 4.5:1 contrast on what is
 ## behind it (3:1 for a disabled control's). Prints each offender: the window,
-## the node, its words, its size and its colours. A pack without a look has
-## nothing to check.
+## the node, its words, its size and its colours. And every face of the look
+## is a distance field, so words drawn at a scale that is not a whole number
+## keep their thin stems and their spacing (TeeJ, 2026-09-30: "still getting
+## too thin in places"). A pack without a look has nothing to check.
 
 const Art := preload("res://src/ui/artwork.gd")
 const StandIns := preload("res://src/ui/art_standins.gd")
@@ -39,6 +41,11 @@ func _init() -> void:
 		print("[look_legible] %s has no look: nothing to check" % FactionRegistry.LoadedId())
 		quit(0)
 		return
+	# Every face a distance field (Look._load_font).
+	for role in ["display", "display_bold", "body", "body_bold", "typed", "typed_bold"]:
+		var f: Font = Look.F(role)
+		var base: Font = (f as FontVariation).base_font if f is FontVariation else f
+		_check(base is FontFile and (base as FontFile).multichannel_signed_distance_field, "the %s face is a distance field" % role)
 	MpSetup.reset()
 	GameSettings.SelectedDifficulty = Enums.Difficulty.Medium
 	GameSettings.SelectedSize = Enums.GalaxySize.Standard
