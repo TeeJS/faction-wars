@@ -241,7 +241,7 @@ static func Announce(r: BombardmentReport, fleet: Fleet, mode: int, day: int) ->
 
 	var lines := []
 	if r.ShipsDisabled > 0:
-		lines.append("%d ship(s) had their guns robbed of power by ion cannon fire." % r.ShipsDisabled)
+		lines.append("%d ship(s) %s." % [r.ShipsDisabled, Terms.label("disabled_by")])
 	if not r.ShipsLost.is_empty():
 		lines.append("Lost to defensive batteries: %s." % Lq.join(r.ShipsLost))
 	if not r.Damaged.is_empty():
@@ -259,7 +259,7 @@ static func Announce(r: BombardmentReport, fleet: Fleet, mode: int, day: int) ->
 	Forces(r, fleet)
 	# In the original's words, title and body (TEXTSTRA 28824-28826): what it did
 	# is in the results window opening it opens, as an assault's is.
-	var msg := GameMessage.new("Orbital bombardment of %s" % t.Name, Sentence(r), Enums.MessageCategory.Conflict, day, t)
+	var msg := GameMessage.new("%s of %s" % [Terms.label("bombardment_event"), t.Name], Sentence(r), Enums.MessageCategory.Conflict, day, t)
 	msg.Report = r
 	msg.Advisor = "bombardment"
 	EventBus.BroadcastMessage(msg)
@@ -313,8 +313,8 @@ static func Forces(r: BombardmentReport, fleet: Fleet) -> void:
 static func Sentence(r: BombardmentReport) -> String:
 	var att: String = AssaultManager.Adjective(r.Attacker)
 	if r.Defender == null:
-		return "%s ships have conducted an orbital strike on the non-aligned system %s" % [att, r.Target.Name]
-	return "%s ships have conducted an orbital strike on the %s system of %s" % [att, AssaultManager.Adjective(r.Defender), r.Target.Name]
+		return "%s ships have conducted %s on the non-aligned %s %s" % [att, Terms.label("strike"), Terms.lower("system"), r.Target.Name]
+	return "%s ships have conducted %s on the %s %s of %s" % [att, Terms.label("strike"), AssaultManager.Adjective(r.Defender), Terms.lower("system"), r.Target.Name]
 
 
 static func SectorPeers(p: Planet) -> Array:

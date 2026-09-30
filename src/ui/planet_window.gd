@@ -30,7 +30,7 @@ func Populate(planet: Planet) -> void:
 	# a Core world's owner and support the one live exception (manual p069). Routed
 	# through IntelManager so it obeys the same fog as the Defense/Economy windows.
 	if not planet.IsExplored:
-		_status.text = "Unexplored Planet"
+		_status.text = Terms.label("unexplored_system")
 		_resources.text = ""
 	elif IntelManager.IsLive(player, planet):
 		_PopulateLive(planet, player, _status, _resources, _facility)
@@ -73,7 +73,7 @@ func _PopulateLive(planet: Planet, player: Faction, _status: Label, _resources: 
 func _PopulateFromIntel(planet: Planet, player: Faction, _status: Label, _resources: Label, _facility: VBoxContainer) -> void:
 	var d: Dictionary = IntelManager.StatusSeen(player, planet)
 	if d.is_empty():
-		_status.text = "Sensors detect no data."
+		_status.text = Terms.label("no_data")
 		_resources.text = ""
 		return
 

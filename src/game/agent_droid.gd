@@ -49,7 +49,7 @@ static func NameFor(f: Faction) -> String:
 static func MessengerFor(f: Faction) -> String:
 	if f != null and not f.MessengerName.is_empty():
 		return f.MessengerName
-	return "Message droid"
+	return Terms.label("messenger")
 
 
 static func ProcessDay(galaxy: Array, day: int) -> void:

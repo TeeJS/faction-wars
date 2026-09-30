@@ -41,6 +41,12 @@ const QuestionCentre := 258.0
 const QuestionTops := [82, 145]
 const QuestionPx := 15.5
 const Questions := ["Which side do you want to play?", "What size galaxy would you like?"]
+
+
+## A question on page 1, the board in the pack's word ("What size map would
+## you like?").
+static func Question(i: int) -> String:
+	return "What size %s would you like?" % Terms.lower("galaxy") if i == 1 else Questions[i]
 const SideAt := [Vector2(389, 71), Vector2(440, 71)]
 const SizeAt := [Vector2(389, 133), Vector2(440, 133), Vector2(491, 133)]
 const SizePictures := ["standard", "large", "huge"]
@@ -172,6 +178,9 @@ func _ready() -> void:
 	_log.bbcode_enabled = false
 	_log.scroll_following = true
 	FactionRegistry.EnsureLoaded()
+	var sizeCaption: Label = get_node_or_null("CenterContainer/Console/SizeRow/SizeCaption")
+	if sizeCaption != null:
+		sizeCaption.text = Question(1)
 
 	# 1 "Which side do you want to play?" - the red symbol / the green symbol.
 	_side_group = ButtonGroup.new()
@@ -203,7 +212,7 @@ func _ready() -> void:
 		b.custom_minimum_size = Vector2(130, 44)
 		b.toggle_mode = true
 		b.button_group = _size_group
-		b.tooltip_text = "%s galaxy: %d systems." % [SizeNames[i], systems[i]]
+		b.tooltip_text = "%s %s: %d %s." % [SizeNames[i], Terms.lower("galaxy"), systems[i], Terms.lower("systems")]
 		b.set_meta("id", i)
 		var idx := i
 		b.pressed.connect(func() -> void: _host_change("size", idx))
@@ -540,7 +549,7 @@ func _dress() -> void:
 	_look = OriginalMp.Dress(self, "mp_options", _plates[0]) as OriginalMp
 	# Page 1: the manual's - side, galaxy size, Standard Game / HQ Victory, Load Game.
 	for i in Questions.size():
-		_oPage1.append(_look.Text(Questions[i], QuestionCentre - 150, QuestionTops[i], 300, QuestionPx, OriginalMp.Green, HORIZONTAL_ALIGNMENT_CENTER, "Question%d" % i))
+		_oPage1.append(_look.Text(Question(i), QuestionCentre - 150, QuestionTops[i], 300, QuestionPx, OriginalMp.Green, HORIZONTAL_ALIGNMENT_CENTER, "Question%d" % i))
 	for i in 2:
 		var f: Faction = FactionRegistry.Playable[i]
 		_oSides.append(_slot("Side%d" % i, SideAt[i], (_side_buttons[i] as Button).tooltip_text, "side", f.Id))
@@ -762,7 +771,7 @@ func _echo(key: String) -> void:
 		"side":
 			_say(host_name, "Host has chosen the %s side." % MpSetup.host_faction(_settings).DisplayName)
 		"size":
-			_say(host_name, "%s galaxy size selected." % SizeNames[clampi(int(_settings.get("size", 1)), 0, 2)])
+			_say(host_name, "%s %s size selected." % [SizeNames[clampi(int(_settings.get("size", 1)), 0, 2)], Terms.lower("galaxy")])
 		"hq_only":
 			_say(host_name, "%s selected." % ("HQ Only victory" if bool(_settings.get("hq_only", false)) else "Standard game victory"))
 		"speed_rule":

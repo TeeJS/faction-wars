@@ -60,7 +60,7 @@ func Populate(facility: Facility) -> void:
 	(get_node("%TitleBarLabel") as Label).text = "%s Status" % facilityType
 
 	# Location
-	var locationText: String = facility.Attached.Name if facility.Attached != null else "Unknown Planet"
+	var locationText: String = facility.Attached.Name if facility.Attached != null else Terms.label("unknown_system")
 	(get_node("%ValLocation") as Label).text = locationText
 
 	var statusText: String

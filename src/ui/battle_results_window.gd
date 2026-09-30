@@ -295,7 +295,7 @@ func Forces(c: FleetBattleManager.Casualties, fleet: Fleet) -> void:
 	tabs.add_theme_constant_override("separation", 4)
 	_body.add_child(tabs)
 
-	var names: Array[String] = ["Capital Ships", Terms.label("fighter_squadrons"), Terms.label("trooper_regiments"), "Personnel"]
+	var names: Array[String] = [Terms.label("capital_ships"), Terms.label("fighter_squadrons"), Terms.label("trooper_regiments"), "Personnel"]
 	for i in names.size():
 		var which: int = i
 		var b := Button.new()
@@ -454,7 +454,7 @@ func _Where() -> Planet:
 ## bombardment of |" (0xF778).
 func _Title() -> String:
 	if _bombard:
-		return "Orbital bombardment of %s" % _Where().Name
+		return "%s of %s" % [Terms.label("bombardment_event"), _Where().Name]
 	return ("Assault on %s" if _a != null else "Battle at %s") % _Where().Name
 
 
@@ -528,7 +528,7 @@ func _TabStems() -> Array:
 ## Facilities", TEXTSTRA.DLL with the results' own); "Manufacturing
 ## Facilities" is the manual's wording (p123), no string of its own found.
 func _TabNames() -> Array:
-	var names: Array = ["Capital Ships", Terms.label("fighter_squadrons")]
+	var names: Array = [Terms.label("capital_ships"), Terms.label("fighter_squadrons")]
 	if _a != null:
 		names.append_array(["Manufacturing Facilities", "Defense Facilities"])
 	names.append_array([Terms.label("trooper_regiments"), "Personnel"])
