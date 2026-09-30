@@ -31,7 +31,7 @@ func Setup() -> void:
 	root.add_child(header)
 
 	var title := Label.new()
-	title.text = "Galaxy Overview"
+	title.text = Terms.label("galaxy_overview")
 	title.add_theme_font_size_override("font_size", 20)
 	title.add_theme_color_override("font_color", Color(0.95, 0.97, 1.0))
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
