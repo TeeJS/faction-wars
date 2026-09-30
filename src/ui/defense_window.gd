@@ -339,6 +339,83 @@ func Populate(planet: Planet, uiManager: UIManager) -> void:
 
 	if original:
 		_GreyEmptyTabs(newSubject)
+	else:
+		_PlainTabs(newSubject)
+
+
+# ---- THE PLAIN WINDOW'S TABS -----------------------------------------------
+
+## A tab's title: the pack's own words for what it lists (TeeJ, 2026-09-30:
+## "this is still labeled Planetary Battery ... this shouldn't be called
+## planetary either"). The manual's five tabs (p126, Fig. 3.73) in the pack's
+## vocabulary - its Terms plurals, each word capitalised: the WWII pack's
+## Divisions, Air Squadrons, Fortifications, Coastal Batteries. The tab NODES
+## keep their names, which is how the window and its tests find them.
+static func TabTitle(index: int) -> String:
+	match index:
+		1:
+			return _title_case(Terms.label("trooper_regiments"))
+		2:
+			return _title_case(Terms.label("fighter_squadrons"))
+		3:
+			return _title_case(Terms.label("planetary_shields"))
+		4:
+			return _title_case(Terms.label("orbital_batteries"))
+	return "Personnel"
+
+
+static func _title_case(s: String) -> String:
+	var words: PackedStringArray = s.split(" ")
+	for i in words.size():
+		if not words[i].is_empty():
+			words[i] = words[i][0].to_upper() + words[i].substr(1)
+	return " ".join(words)
+
+
+## The plain window's tab strip: the pack's words, every tab shown in full
+## (the window widens to fit rather than hiding tabs behind scroll arrows),
+## and - as the original does (manual p126: "a tab with nothing on it is
+## greyed") - a tab with nothing on it greyed and closed. A new system opens
+## on its first tab with something on it.
+func _PlainTabs(newSubject: bool) -> void:
+	var tabs: TabContainer = get_node("%DefenseTabs")
+	tabs.clip_tabs = false
+	var counts: Array = []
+	for i in tabs.get_tab_count():
+		tabs.set_tab_title(i, TabTitle(i))
+		counts.append(_rows_on(tabs.get_child(i)))
+	var first := 0
+	for i in counts.size():
+		if counts[i] > 0:
+			first = i
+			break
+	for i in counts.size():
+		# Never every tab: with nothing anywhere, the first stays open.
+		tabs.set_tab_disabled(i, counts[i] == 0 and i != first)
+	if newSubject or tabs.is_tab_disabled(tabs.current_tab):
+		tabs.current_tab = first
+
+
+## What a plain page lists: its rows (buttons) and the units on their way
+## (their greyed lines) - not its caption or its "none here" line.
+static func _rows_on(page: Node) -> int:
+	var n := 0
+	for c in page.find_children("*", "", true, false):
+		if c.is_queued_for_deletion() or _gone(c):
+			continue
+		if c is Button or c.has_meta("defense_row"):
+			n += 1
+	return n
+
+
+## Under a node being freed: a list repainted this frame still holds its old rows.
+static func _gone(c: Node) -> bool:
+	var p: Node = c.get_parent()
+	while p != null:
+		if p.is_queued_for_deletion():
+			return true
+		p = p.get_parent()
+	return false
 
 
 # ---- THE ORIGINAL'S WINDOW -------------------------------------------------
@@ -424,7 +501,8 @@ func _page_list(container: Control, index: int, plainTitle: String, _view: Intel
 		child.queue_free()
 	var list := VBoxContainer.new()
 	container.add_child(list)
-	AddCaption(list, plainTitle)
+	# The tab's own title over its page, in the pack's words (TabTitle).
+	AddCaption(list, TabTitle(index) if index > 0 else plainTitle)
 	return list
 
 
@@ -432,6 +510,9 @@ func _page_list(container: Control, index: int, plainTitle: String, _view: Intel
 func _pending_row(list: Container, pending: String, uiManager: UIManager, selection: Array) -> void:
 	if not IsCardList(list):
 		AddUnitToList(list, null, pending, Color.DARK_GRAY, uiManager, selection)
+		# Something IS on the tab, only not here yet: it keeps the tab open.
+		if list.get_child_count() > 0:
+			list.get_child(list.get_child_count() - 1).set_meta("defense_row", true)
 		return
 	# Being built shows the side's grid over the picture, in transit the
 	# hyperspace plate - the original's own two states (manual p084).
@@ -688,12 +769,26 @@ func _defence_row(list: Container, text: String, family: String, status: String,
 	if IsCardList(list):
 		list.add_child(rowBtn)
 		return
+	# THE PLAIN ROW, LIKE A PERSONNEL ROW (TeeJ, 2026-09-30: "I can't tell
+	# what is going on and can barely read the text"): a solid row at the
+	# list size, the facility's own picture beside its name where the pack or
+	# an art set has one, and its state beside it - in the look's quiet text
+	# colour (its signal red when damaged) instead of the old cyan.
+	rowBtn.flat = false
+	rowBtn.add_theme_font_size_override("font_size", 16)
+	var mini: Texture2D = Art.Miniature("facilities", packId if not packId.is_empty() else family) if not family.is_empty() else null
+	if mini != null:
+		rowBtn.icon = mini
+		rowBtn.set_meta("miniature", true)
 	row.add_child(rowBtn)
 	if not status.is_empty():
 		var statusLbl := Label.new()
 		statusLbl.text = status
-		statusLbl.add_theme_font_size_override("font_size", 11)
+		statusLbl.add_theme_font_size_override("font_size", 14)
+		if Look.Active() and statusColor != Color.LIGHT_GRAY:
+			statusColor = Look.Readable(Look.C("signal"), Look.C("chassis")) if status == "[DAMAGED]" else Look.C("text_muted")
 		statusLbl.add_theme_color_override("font_color", statusColor)
+		statusLbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		row.add_child(statusLbl)
 	list.add_child(row)
 
