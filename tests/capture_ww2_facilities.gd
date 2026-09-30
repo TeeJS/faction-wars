@@ -66,6 +66,21 @@ func _init() -> void:
 					break],
 		["defense", func() -> void: ui.OnDefenseClicked(home)],
 	]
+	# A world of ours with the least on it: its empty tabs greyed.
+	var sparse: Planet = home
+	for p in GameState.AllPlanets():
+		if p.ControllingFaction == us and p.Facilities.size() < sparse.Facilities.size():
+			sparse = p
+	shots.append(["defense_sparse", func() -> void: ui.OnDefenseClicked(sparse)])
+	# Each of the Defenses window's tabs that has something on it.
+	for tab in [3, 4]:
+		shots.append(["defense_tab%d" % tab, func() -> void:
+			ui.OnDefenseClicked(home)
+			var w: Node = Lq.first_or_null(ui._openWindows.values(), func(x) -> bool: return x is DefenseWindow)
+			if w != null:
+				var tabs: TabContainer = w.get_node("%DefenseTabs")
+				if not tabs.is_tab_disabled(tab):
+					tabs.current_tab = tab])
 	if defence != null:
 		shots.append(["status", func() -> void: ui.OpenDefenseFacilityStatusWindow(defence)])
 	for s in shots:
