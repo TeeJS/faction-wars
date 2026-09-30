@@ -209,12 +209,20 @@ static func _CapitalShipFields(unit: Unit) -> Array:
 
 func Populate(unit: Unit) -> void:
 	_associatedUnit = unit
-	# The unit's portrait, when the pack or an art set has one
-	# (portraits/units/<id>.png). With none, no box at all and the name stands
-	# alone: the empty box said "[ 3D Model ]", the C# prototype's
-	# placeholder, and there are no 3D models (TeeJ, 2026-09-30).
-	var picture: Texture2D = Art.Portrait("units", unit.PackId)
+	# The unit's picture, when the pack or an art set has one, FILLING its box
+	# as a facility's does (DefenseFacilityStatusWindow.PictureBox): the
+	# Encyclopedia picture first (the WWII plate, 400x200, drawn smaller),
+	# else the portrait (portraits/units/<id>.png) at its own size. With none,
+	# no box at all and the name stands alone: the empty box said "[ 3D Model
+	# ]", the C# prototype's placeholder, and there are no 3D models (TeeJ,
+	# 2026-09-30).
+	var picture: Texture2D = Art.Picture("units", unit.PackId)
+	if picture == null:
+		picture = Art.Portrait("units", unit.PackId)
 	var box: Control = get_node_or_null(PortraitPath)
+	if box != null and picture != null:
+		box.custom_minimum_size = DefenseFacilityStatusWindow.PictureBox(picture)
+		box.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	Art.Fill(box, picture)
 	if box != null:
 		box.visible = picture != null

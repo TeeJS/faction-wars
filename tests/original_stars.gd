@@ -111,7 +111,9 @@ func _init() -> void:
 	_check(flame_btn != null and flame_btn.has_meta("original_icon"), "the uprising corner shows the imported flame")
 	home.IsInUprising = false
 
-	# Defenses window: the unit row carries the miniature.
+	# Defenses window: the unit carries the miniature - on its card in the
+	# plain window (only the miniature is imported here, so it is the card's
+	# picture; DraggableWindow.CardPicture).
 	ui.OnDefenseClicked(home)
 	for _i in 3:
 		await process_frame
@@ -121,7 +123,7 @@ func _init() -> void:
 		for n in dw.find_children("*", "Button", true, false):
 			if "UnitData" in n and n.UnitData == troop:
 				row = n
-	_check(row != null and row.has_meta("miniature") and row.icon != null, "the Defenses unit row carries the miniature")
+	_check(row != null and row.icon != null and row.icon == Art.Miniature("units", troop.PackId), "the Defenses unit's card carries the miniature")
 
 	# Remove the files: labels again.
 	for path in written:

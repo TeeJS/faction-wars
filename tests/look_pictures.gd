@@ -9,7 +9,9 @@ extends SceneTree
 ##   picture's shape, the picture the Encyclopedia plate, drawn smaller.
 ## - The Defenses window's Personnel tab: each person a card, the portrait over
 ##   the name, the cards in rows that wrap, a row's cards one height ("better
-##   like how SWR shows it").
+##   like how SWR shows it"); the other tabs' units and defences too.
+## - Every unit type has its plate, portrait and miniature, and a unit's
+##   Status window shows its plate filling its box (no "[ 3D Model ]").
 ## A pack without a look has nothing to check.
 
 const Art := preload("res://src/ui/artwork.gd")
@@ -122,6 +124,59 @@ func _init() -> void:
 		for t in tops:
 			per_row = maxi(per_row, tops[t].size())
 		_check(cards.size() < 3 or per_row == 3, "%s: three cards to a row (%d, the row %.0f px)" % [home.Name, per_row, (flow as Control).size.x if flow != null else 0.0])
+
+	# EVERY UNIT TYPE HAS ITS PICTURES (TeeJ, 2026-09-30: "do both" - the
+	# WWII units had none, so their Status window said "[ 3D Model ]"), in
+	# the original's three sizes.
+	var lacking: Array = []
+	for u in FactionRegistry.Pack.Units:
+		var sizes := [[Art.Picture("units", u.Id), Vector2i(400, 200)], [Art.Portrait("units", u.Id), Vector2i(122, 50)], [Art.Miniature("units", u.Id), Vector2i(61, 25)]]
+		for pair in sizes:
+			var t: Texture2D = pair[0]
+			if t == null or Vector2i(t.get_size()) != pair[1]:
+				lacking.append("%s %s" % [u.Id, str(pair[1])])
+	_check(lacking.is_empty(), "every unit type has its plate, portrait and miniature (%d types)%s" % [FactionRegistry.Pack.Units.size(), "" if lacking.is_empty() else " - not: " + ", ".join(lacking.slice(0, 5))])
+
+	# A UNIT'S STATUS: its plate fills its box, as a facility's does.
+	var ship: Unit = null
+	for p in GameState.AllPlanets():
+		for f in p.OrbitingFleets:
+			if ship == null and f.Faction == us and not f.Ships.is_empty():
+				ship = f.Ships[0]
+	_check(ship != null, "a ship of ours in orbit")
+	if ship != null:
+		ui.CloseAllWindows()
+		for _i in 2:
+			await process_frame
+		ui.OpenUnitStatusWindow(ship)
+		for _i in 3:
+			await process_frame
+		var usw: Node = Lq.first_or_null(ui._openWindows.values(), func(x) -> bool: return x is UnitStatusWindow)
+		var ubox: Control = usw.get_node(UnitStatusWindow.PortraitPath) if usw != null else null
+		var upic: TextureRect = ubox.get_node_or_null("Picture") if ubox != null else null
+		var plate: Texture2D = Art.Picture("units", ship.PackId)
+		var uratio: float = ubox.size.x / ubox.size.y if ubox != null and ubox.size.y > 0 else 0.0
+		_check(upic != null and upic.texture == plate and ubox.visible and absf(uratio - 2.0) < 0.02,
+			"%s Status: the plate fills its box (%s)" % [ship.Name, str(ubox.size) if ubox != null else "none"])
+
+	# THE OTHER DEFENSES TABS: units and defences are cards too, as on every
+	# page of the original's window (Fig 3.73).
+	if home != null:
+		ui.CloseAllWindows()
+		for _i in 2:
+			await process_frame
+		ui.OnDefenseClicked(home)
+		for _i in 4:
+			await process_frame
+		var dw2: Node = Lq.first_or_null(ui._openWindows.values(), func(x) -> bool: return x is DefenseWindow)
+		var tabs: TabContainer = dw2.get_node("%DefenseTabs") if dw2 != null else null
+		for i in range(1, tabs.get_tab_count() if tabs != null else 0):
+			var page: Node = tabs.get_child(i)
+			var buttons: Array = page.find_children("*", "Button", true, false).filter(func(b: Button) -> bool: return b.has_meta("defence_type") or b is UnitMenuButton)
+			if buttons.is_empty():
+				continue
+			var plain: Array = buttons.filter(func(b: Button) -> bool: return not b.has_meta("picture_card") or b.icon == null or not b.get_parent() is HFlowContainer)
+			_check(plain.is_empty(), "%s: the %s tab's %d are cards, each its picture over its name%s" % [home.Name, tabs.get_tab_title(i), buttons.size(), "" if plain.is_empty() else " - not: %d" % plain.size()])
 
 	print("[look_pictures] %d checks, %d failed" % [_checks, _fails])
 	quit(1 if _fails > 0 else 0)

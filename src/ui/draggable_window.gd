@@ -676,7 +676,7 @@ func AddCharacterToList(list: Container, characterData: Character, text: String,
 	elif IsPictureCardList(list):
 		if characterBtn.has_meta("miniature"):
 			characterBtn.remove_meta("miniature")
-		PictureCard(characterBtn, characterData.TitledName(), Art.Portrait("characters", characterData.PackId), text)
+		PictureCard(characterBtn, characterData.TitledName(), CardPicture("characters", characterData.PackId), text)
 		list = PictureCardRow(list)
 	characterBtn.CharacterData = characterData
 	characterBtn.UIManagerRef = uiManager
@@ -1066,6 +1066,13 @@ static func PictureCardRow(list: Container) -> Container:
 	row.add_theme_constant_override("v_separation", PictureCardGap)
 	list.add_child(row)
 	return row
+
+
+## A card's picture: the portrait, else the list miniature (a set that
+## imported only the miniatures), else none.
+static func CardPicture(kind: String, id: String) -> Texture2D:
+	var t: Texture2D = Art.Portrait(kind, id)
+	return t if t != null else Art.Miniature(kind, id)
 
 
 ## A button made a card: `picture` (the portrait, the face at its own size;
