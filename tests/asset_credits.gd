@@ -9,7 +9,9 @@ extends SceneTree
 ##   .\tools\run-gd.ps1 tests/asset_credits.gd
 ##
 ## Not shipped, so not walked: tests/, tools/, docs/, the gitignored art/ and
-## build/ folders, a pack's original/ (the player's own art, never shipped).
+## build/ folders, a pack's original/ (the player's own art, never shipped),
+## and any folder holding a .gdignore - Godot neither imports nor exports it
+## (assets/brand/source/, the brand's originals kept by #428).
 
 const MEDIA := ["png", "jpg", "jpeg", "webp", "svg", "bmp", "gif", "tga", "ttf", "otf", "woff", "woff2", "ogg", "ogv", "wav", "mp3"]
 const SKIP := ["res://.godot", "res://tests", "res://tools", "res://docs", "res://art", "res://build", "res://relay", "res://.github", "res://.claude"]
@@ -68,6 +70,8 @@ func _walk(dir: String, out: Array[String]) -> void:
 		if clean == s:
 			return
 	if clean.begins_with("res://packs/") and clean.get_file() == "original":
+		return
+	if clean != "res:/" and FileAccess.file_exists("%s/.gdignore" % clean):
 		return
 	for f in DirAccess.get_files_at(dir):
 		if MEDIA.has(f.get_extension().to_lower()):
