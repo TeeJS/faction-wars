@@ -170,6 +170,14 @@ func _init() -> void:
 		_check(files != null and picker._art_manage and rm != null and files.find_child("ImportMovies", true, false) != null
 			and files.find_child("ContinueWithout", true, false) == null and files.find_child("CloseFiles", true, false) != null,
 			"Manage files opens the files window: Remove and Import per file, Close, no way on")
+		# Play right of Close (TeeJ, 2026-09-30): launch without going back.
+		await process_frame
+		var close_b: Control = files.find_child("CloseFiles", true, false) if files != null else null
+		var play_b: Button = files.find_child("PlayFiles", true, false) if files != null else null
+		_check(close_b != null and play_b != null and play_b.text == "PLAY" and play_b.get_parent() == close_b.get_parent()
+			and play_b.get_index() == close_b.get_index() + 1 and play_b.global_position.x > close_b.global_position.x
+			and absf(play_b.global_position.y - close_b.global_position.y) <= 1.0,
+			"Manage files: Play at the foot, right of Close")
 		_check(files != null and ((files.find_child("FileRow_Art", true, false) as Node).find_child("StateText", true, false) as Label).text == "IMPORTED",
 			"the artwork's row: imported")
 		# TeeJ's words (2026-09-28), multiplayer at the foot, one wording for both builds.

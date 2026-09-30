@@ -1288,7 +1288,8 @@ func _tell(result: Dictionary, title: String = "Import") -> void:
 #     artwork is in.
 #   OUT OF DATE (Play, the artwork too old): the short version - export again,
 #     Import artwork file; Continue without updating on its own row.
-#   MANAGE FILES (the card's button): both rows, each with Import and Remove.
+#   MANAGE FILES (the card's button): both rows, each with Import and Remove;
+#     Close and Play at its foot.
 # The files import as they always did (PackImport.PickFile, a file dropped on
 # the window): the buttons only say which file is wanted.
 
@@ -1386,7 +1387,19 @@ func _open_art_window(pack_id: String, message: String = "", ok: bool = true, ma
 		var done := _button("CloseFiles", "Close")
 		done.custom_minimum_size = Vector2(130, 42)
 		done.pressed.connect(_close_art_window)
-		_actions(box, [done])
+		# Play, right of Close (TeeJ, 2026-09-30: "after removing or adding media
+		# files, I should be able to launch the game without having to go back to
+		# the main menu"): the card's Play, straight on - the files are as this
+		# window shows them, so no artwork window again.
+		var play := Button.new()
+		play.name = "PlayFiles"
+		play.text = "PLAY"
+		play.custom_minimum_size = Vector2(130, 42)
+		_primary(play)
+		play.pressed.connect(func() -> void:
+			_close_art_window()
+			Choose(pack_id))
+		_actions(box, [done, play])
 		return
 	# The way on, on a row of its own: Play once the artwork is in, else
 	# Continue without artwork, and what that means.
