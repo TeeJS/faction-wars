@@ -511,9 +511,15 @@ def soldier(v, x, hat, carry="rifle", coat=False, stride=1.0, kneel=False, fill=
     if carry in ("rifle", "smg"):
         f.rect(-9, hip - 14, -4.6, hip - 4, WASH_DARK, 0.5)                  # the pack
     shoulder = (2.0, hip - 12.5)
-    if carry == "rifle":                                                     # at the port, across the body, clear of the face
-        f.line([(-8, hip - 2), (14, hip - 22)], 1.2)
-        f.line([(shoulder[0], shoulder[1]), (7, hip - 8)], 1.3)
+    if carry == "rifle":
+        # At the slope: the hand holds the butt low in front, the rifle lies
+        # over the shoulder and its muzzle points up and BACK, behind the
+        # head (TeeJ, 2026-09-30: "rifles should go BACK over a soldier's
+        # shoulder ... pointing forward makes it look like they are giving a
+        # Nazi salute"). The arm hangs down to the butt - never raised
+        # forward. The head and hat are drawn over it below.
+        f.line([(7, hip - 4), (-11, hip - 33)], 1.2)
+        f.line([(shoulder[0], shoulder[1]), (6.5, hip - 5)], 1.3)
     elif carry == "smg":
         f.line([(shoulder[0], shoulder[1]), (8, hip - 8)], 1.3)
         f.line([(2, hip - 9), (15, hip - 10)], 1.4)
