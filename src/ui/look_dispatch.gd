@@ -23,6 +23,8 @@ const PaperPad := 14
 const PaperBand := 6
 const RowHeight := 52
 const RowBand := 4
+## How strongly the brass rule under each ledger row shows.
+const RuleAlpha := 0.55
 
 
 ## The whole window: its frame, the ledger's well, the keys, the dispatch.
@@ -237,6 +239,15 @@ static func Row(btn: Button, m: GameMessage) -> void:
 		box.add_child(stamp)
 		_set_stamp(stamp, word, urgent, false)
 	btn.add_child(box)
+	# A ruled line under every row, as a ledger's (TeeJ, 2026-09-30: "there is
+	# no separation between lines").
+	var rule := ColorRect.new()
+	rule.name = "LookRule"
+	rule.color = Color(Look.C("brass_dim"), RuleAlpha)
+	rule.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	rule.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
+	rule.offset_top = -1
+	btn.add_child(rule)
 	btn.toggled.connect(func(_on: bool) -> void: _paint_row(btn))
 	_paint_row(btn)
 

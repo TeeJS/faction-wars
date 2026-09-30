@@ -102,6 +102,13 @@ func _init() -> void:
 		_check(stamp != null and (stamp.get_node("Word") as Label).text == Look.Stamp("Fleets").to_upper(), "its stamp (%s)" % Look.Stamp("Fleets"))
 		_check(row.get_node_or_null("LookBand") == null, "no signal band on a fleet signal")
 		_check(subject != null and subject.get_theme_font("font") == Look.F("body_bold"), "unread: the subject in the bold face")
+		# A ruled line under every row (TeeJ, 2026-09-30: "there is no
+		# separation between lines"), and a mission report stamped as one
+		# ("none of these are 'orders'").
+		var rule: ColorRect = row.get_node_or_null("LookRule")
+		_check(rule != null and rule.anchor_top == 1.0 and rule.anchor_bottom == 1.0 and rule.color.a > 0.0, "a ruled line under the row")
+		if id == "ww2":
+			_check(Look.Stamp("Missions") == "Secret", "a mission report is stamped Secret, not Orders (%s)" % Look.Stamp("Missions"))
 
 	# The dispatch.
 	var detail: VBoxContainer = w.get_node("%DetailView")
