@@ -70,6 +70,10 @@ const DEFAULTS := {
 	# Overview"): its title and its menu item; a pack sets its own (TeeJ,
 	# 2026-09-30, of the WWII menu: "galaxy is the wrong term here!")
 	"galaxy_overview":        "Galaxy Overview",
+	# the System Finder's title (manual p075, Fig 3.12: "Planetary System
+	# Finder"); a pack sets its own (TeeJ, 2026-09-30: "Planetary system
+	# finder is wrong for WWII as well")
+	"system_finder":          "Planetary System Finder",
 	# a message category with nothing in it
 	"no_messages":            "No transmissions.",
 }
