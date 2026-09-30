@@ -702,7 +702,7 @@ func PopulateDefenceTab(tabs: TabContainer, tabName: String, index: int, planet:
 			_defence_row(list, def.Name() + " (Tier %d)" % def.Tier, def.Family(),
 				"[DAMAGED]" if def.IsDamaged else ("[%s]" % Terms.label("shield_active" if def.HasRole("shield") else "weapon_armed")),
 				Color.RED if def.IsDamaged else Color.CYAN,
-				func() -> Facility: return def, def.Def.Id if def.Def != null else "")
+				func() -> Facility: return def, def.Def.Id if def.Def != null else "", def)
 		return
 
 	var lines: Array = Lq.where(view.Lines, func(line) -> bool: return _LineHasAnyRole(str(line), roles))
@@ -749,7 +749,8 @@ static func _empty_defences(list: Container, text: String) -> void:
 ## One defence row: a flat button the mission crosshair can land on, with its
 ## status beside it. `resolve` returns the facility to target when clicked
 ## (null when the sighting is stale and nothing stands there any more).
-func _defence_row(list: Container, text: String, family: String, status: String, statusColor: Color, resolve: Callable, packId: String = "") -> void:
+## `live` is the facility itself on a live page: it gets the facility's menu.
+func _defence_row(list: Container, text: String, family: String, status: String, statusColor: Color, resolve: Callable, packId: String = "", live: Facility = null) -> void:
 	var row := HBoxContainer.new()
 	var rowBtn := Button.new()
 	rowBtn.text = text
@@ -776,6 +777,8 @@ func _defence_row(list: Container, text: String, family: String, status: String,
 				print("[Mission] Nothing answers at that position - the intelligence may be stale.")
 				return
 			_uiManager.ResolveObjectTarget(current))
+	if live != null:
+		_facility_menu(rowBtn, live)
 	if IsCardList(list):
 		list.add_child(rowBtn)
 		return
@@ -801,6 +804,68 @@ func _defence_row(list: Container, text: String, family: String, status: String,
 		statusLbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		row.add_child(statusLbl)
 	list.add_child(row)
+
+
+## A SHIELD'S OR BATTERY'S RIGHT-CLICK MENU: "Right-clicking a built facility
+## gives Encyclopedia, Status, Scrap" (manual p085), and TeeJ's screenshot of
+## the original (2026-09-30, a shield on Coruscant's Planetary Shields page)
+## shows exactly those three. The rows had only ever taken the Sabotage
+## crosshair, so a defence could not be looked up, inspected or scrapped.
+func _facility_menu(rowBtn: Button, fac: Facility) -> void:
+	var menu := PopupMenu.new()
+	menu.name = "FacilityMenu"
+	menu.add_item("Encyclopedia", 0)
+	menu.set_item_disabled(menu.get_item_index(0), fac.Def == null)
+	menu.add_item("Status", 1)
+	var planet: Planet = _associatedPlanet
+	if planet != null and planet.ControllingFaction == GameSettings.PlayerFaction and planet.CanScrap(fac):
+		menu.add_item("Scrap", 2)
+	rowBtn.add_child(menu)
+	RegisterPopupMenu(menu)
+	rowBtn.gui_input.connect(func(e: InputEvent) -> void:
+		if not (e is InputEventMouseButton) or not e.pressed or e.button_index != MOUSE_BUTTON_RIGHT:
+			return
+		if _uiManager != null and _uiManager.IsTargeting:
+			_uiManager.CancelTargeting()
+		else:
+			menu.position = Vector2i(int(e.global_position.x), int(e.global_position.y))
+			menu.popup()
+		rowBtn.accept_event())
+	var onMenuId := func(id: int) -> void:
+		match id:
+			0:
+				if _uiManager != null:
+					_uiManager.OpenEncyclopedia("facilities", fac.Def.Id)
+			1:
+				if _uiManager != null:
+					_uiManager.OpenDefenseFacilityStatusWindow(fac)
+			2:
+				ConfirmScrapFacility(planet, fac)
+	menu.id_pressed.connect(onMenuId)
+
+
+## Scrap asks first, as the Manufacturing window's does: the original's dialog
+## with the art, else the plain one; what scrapping returns is on the tick.
+func ConfirmScrapFacility(planet: Planet, fac: Facility) -> void:
+	var refund: int = FacilityCatalog.ConstructionCost(fac.Family(), fac.Tier) * Planet.ScrapRefundPercent / 100
+	var maint: int = FacilityCatalog.MaintenanceCost(fac.Family(), fac.Tier)
+	var note := "Returns %d %s and %d maintenance capacity, and frees one %s slot on %s." \
+		% [refund, Terms.lower("refined_materials"), maint, Terms.lower("energy"), planet.Name]
+	var scrap := func() -> void:
+		CommandBus.issue("scrap_facility", { "facility": fac.Serial })
+		if is_instance_valid(self):
+			Populate(planet, _uiManager)
+	ConfirmScrapUnits([fac.Name()], note, scrap, func() -> void:
+		var dialog := ConfirmationDialog.new()
+		dialog.title = "Confirm Scrap"
+		dialog.dialog_text = "Are you sure you want to scrap the following units?\n\n    %s\n\n%s" % [fac.Name(), note]
+		dialog.exclusive = true
+		dialog.confirmed.connect(func() -> void:
+			scrap.call()
+			dialog.queue_free())
+		dialog.canceled.connect(dialog.queue_free)
+		add_child(dialog)
+		dialog.popup_centered())
 
 
 ## A clickable row for an ENEMY sighting seen only through intel (a stale snapshot).
