@@ -1,5 +1,5 @@
 {
- "_about": "The WWII pack's system pictures (tools/look/make_ww2_flags.py): each system flies the flag it flew in 1941, fixed like a planet's artwork - its own where it had one, else its sovereign's (Gibraltar the United Kingdom's, Sicily Italy's, Siberia the Soviet Union's). Germany flies the black-white-red tricolour: no Nazi symbols in the game at all (TeeJ, 2026-09-29). `flags`: the Wikimedia Commons file of each - its page, its SVG's address and SHA-1 as Commons publishes them, the PNG Commons renders from it (and that PNG's SHA-256), its licence. `systems`: which flag each system flies, and why.",
+ "_about": "The WWII pack's system pictures (tools/look/make_ww2_flags.py): each system flies a flag that identifies that country itself, never its conqueror's (TeeJ, 2026-09-30), and that a historian would accept for the war years: its own national flag (a government in exile's counts), else its own state's, national movement's or colony's flag of the war years; the flag of whoever held it only where it had none of its own then, or is part of that country (Sicily, Siberia). Germany flies the black-white-red tricolour: no Nazi symbols in the game at all (TeeJ, 2026-09-29). `flags`: the Wikimedia Commons file of each - its page, its SVG's address and SHA-1 as Commons publishes them, the PNG Commons renders from it (and that PNG's SHA-256), its licence; a flag with `parts` is those flags side by side. `systems`: which flag each system flies, and why.",
  "flags": {
   "afghanistan": {
    "name": "Kingdom of Afghanistan",
@@ -17,6 +17,39 @@
     "Insignia"
    ],
    "author": "Orange Tuesday at en.wikipedia"
+  },
+  "alaska": {
+   "name": "Alaska (1927)",
+   "file": "Flag of Alaska.svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Alaska.svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/e/e6/Flag_of_Alaska.svg",
+   "sha1": "2b87f6468b49810b6af02983a6496c5a5d5670d2",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e6/Flag_of_Alaska.svg/330px-Flag_of_Alaska.svg.png",
+   "rendition_sha256": "5aa7a0b53966bdf6323c0757631205299151ceb7ab03f5bdf2e256a8b81ccbbe",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "pdc",
+    "PD-100",
+    "PD-OpenClipart"
+   ],
+   "author": "Benny Benson"
+  },
+  "algeria": {
+   "name": "Algeria: the national movement's flag (1934; set 1943-44)",
+   "file": "Flag of Algeria.svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Algeria.svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/7/77/Flag_of_Algeria.svg",
+   "sha1": "8664749d5bd40091a7b408045f61da79175102fc",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/77/Flag_of_Algeria.svg/330px-Flag_of_Algeria.svg.png",
+   "rendition_sha256": "1c5b8873b2e360b6df4fee0e1e21db9bfc85843d30438114662289f1a4f0d05c",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Algeria",
+    "PD-ineligible"
+   ],
+   "author": "see the file's page"
   },
   "argentina": {
    "name": "Argentina",
@@ -67,6 +100,14 @@
    ],
    "author": "see the file's page"
   },
+  "baltic": {
+   "name": "Estonia, Latvia and Lithuania",
+   "parts": [
+    "estonia",
+    "latvia",
+    "lithuania"
+   ]
+  },
   "belgium": {
    "name": "Belgium",
    "file": "Flag of Belgium (civil).svg",
@@ -115,6 +156,37 @@
    ],
    "author": "SKopp"
   },
+  "burma": {
+   "name": "State of Burma (1943-1945)",
+   "file": "Flag of the State of Burma (1943–1945).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_the_State_of_Burma_(1943%E2%80%931945).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/f/f3/Flag_of_the_State_of_Burma_%281943%E2%80%931945%29.svg",
+   "sha1": "2561998fa77b7c6e35467d1b546898c45e0f38c2",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f3/Flag_of_the_State_of_Burma_%281943%E2%80%931945%29.svg/330px-Flag_of_the_State_of_Burma_%281943%E2%80%931945%29.svg.png",
+   "rendition_sha256": "eb4ea4c33e98e95b368c779facb18f2f3baf791288cff9a752e7f9800bd52eb8",
+   "licence": "CC BY-SA 3.0",
+   "licence_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "licence_basis": [
+    "Cc-by-sa-3.0",
+    "PD-Flag"
+   ],
+   "author": "* : * : Jaume Ollé"
+  },
+  "byelorussia": {
+   "name": "Byelorussian SSR (1937-1951)",
+   "file": "Flag of the Byelorussian Soviet Socialist Republic (1937–1951).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_the_Byelorussian_Soviet_Socialist_Republic_(1937%E2%80%931951).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/7/7b/Flag_of_the_Byelorussian_Soviet_Socialist_Republic_%281937%E2%80%931951%29.svg",
+   "sha1": "706ee1319f241d3c9460aeab0a99981bda722929",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7b/Flag_of_the_Byelorussian_Soviet_Socialist_Republic_%281937%E2%80%931951%29.svg/330px-Flag_of_the_Byelorussian_Soviet_Socialist_Republic_%281937%E2%80%931951%29.svg.png",
+   "rendition_sha256": "4629dba72c7ffc9427f8e87fb6864e1df74d936b67f8949ba08785790532efe3",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-RU-exempt"
+   ],
+   "author": "see the file's page"
+  },
   "canada": {
    "name": "Canada (Red Ensign)",
    "file": "Flag of Canada (1921–1957).svg",
@@ -129,6 +201,21 @@
     "PD-user"
    ],
    "author": "Hoshie"
+  },
+  "ceylon": {
+   "name": "Ceylon: the lion flag",
+   "file": "Flag of Ceylon (1948–1951).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Ceylon_(1948%E2%80%931951).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/7/70/Flag_of_Ceylon_%281948%E2%80%931951%29.svg",
+   "sha1": "0470ac75e38dd5fa24720a5dc4cd5fe8a6ac1252",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/70/Flag_of_Ceylon_%281948%E2%80%931951%29.svg/330px-Flag_of_Ceylon_%281948%E2%80%931951%29.svg.png",
+   "rendition_sha256": "1f0080af3d7d4324b3cdd0ce1c10abac41b3c743a18cb916ee171a84b3417365",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-self"
+   ],
+   "author": "Zscout370"
   },
   "chile": {
    "name": "Chile",
@@ -228,6 +315,53 @@
    ],
    "author": "Mysid"
   },
+  "estonia": {
+   "name": "Estonia",
+   "file": "Flag of Estonia.svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Estonia.svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/8/8f/Flag_of_Estonia.svg",
+   "sha1": "32a8f18b8dff63f48888bae1513ec1f235461380",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8f/Flag_of_Estonia.svg/330px-Flag_of_Estonia.svg.png",
+   "rendition_sha256": "c5025027590ba01bfa1124202b87e2ed945e2ceb277aec81bf0efed427dd6b57",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Flag",
+    "PD-EE-exempt"
+   ],
+   "author": "see the file's page"
+  },
+  "ethiopia": {
+   "name": "Ethiopia (1897-1974)",
+   "file": "Flag of Ethiopia (1897–1974).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Ethiopia_(1897%E2%80%931974).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/f/ff/Flag_of_Ethiopia_%281897%E2%80%931974%29.svg",
+   "sha1": "ee414b9e8090013c8fb790db90f2a790809ea37a",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/ff/Flag_of_Ethiopia_%281897%E2%80%931974%29.svg/330px-Flag_of_Ethiopia_%281897%E2%80%931974%29.svg.png",
+   "rendition_sha256": "8828dcc10c433b47a3c13a094ba6556bcfad379a199942d60c1e2430c7e54d5d",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Ethiopia"
+   ],
+   "author": "TRAJAN 117"
+  },
+  "fiji": {
+   "name": "Fiji (1924-1970)",
+   "file": "Flag of Fiji (1924–1970).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Fiji_(1924%E2%80%931970).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/8/85/Flag_of_Fiji_%281924%E2%80%931970%29.svg",
+   "sha1": "f121c683a1d1e551ddf61ae91fb26d5269927632",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/85/Flag_of_Fiji_%281924%E2%80%931970%29.svg/330px-Flag_of_Fiji_%281924%E2%80%931970%29.svg.png",
+   "rendition_sha256": "38622119a41569888bd39ba20409071d1ef8a0b85634491e082e29d0b0f93ed6",
+   "licence": "CC BY-SA 3.0",
+   "licence_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "licence_basis": [
+    "cc-by-sa-3.0",
+    "cc-zero"
+   ],
+   "author": "Simitukidia and Lokal Profil"
+  },
   "finland": {
    "name": "Finland",
    "file": "Flag of Finland.svg",
@@ -279,6 +413,21 @@
    ],
    "author": "see the file's page"
   },
+  "gilbert": {
+   "name": "Gilbert and Ellice Islands (1937-1976)",
+   "file": "Flag of the Gilbert and Ellice Islands (1937–1976).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_the_Gilbert_and_Ellice_Islands_(1937%E2%80%931976).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/3/3f/Flag_of_the_Gilbert_and_Ellice_Islands_%281937%E2%80%931976%29.svg",
+   "sha1": "ad56bf737862d6db474be79ddd37ea1144ac808a",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3f/Flag_of_the_Gilbert_and_Ellice_Islands_%281937%E2%80%931976%29.svg/330px-Flag_of_the_Gilbert_and_Ellice_Islands_%281937%E2%80%931976%29.svg.png",
+   "rendition_sha256": "0eda16f416aa3b0c8f0dda73f8bf443531e85a97efe75b1d74edf831d6d3550d",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-self"
+   ],
+   "author": "Telim tor (original) Orange Tuesday (most recent)"
+  },
   "greece": {
    "name": "Kingdom of Greece",
    "file": "Flag of Greece (1822-1978).svg",
@@ -294,6 +443,22 @@
     "Insignia"
    ],
    "author": "(of code) User:Makaristos"
+  },
+  "hawaii": {
+   "name": "Hawaii",
+   "file": "Flag of Hawaii.svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Hawaii.svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/e/ef/Flag_of_Hawaii.svg",
+   "sha1": "2d21d9dbf312d653d1919620dd91b96af2e0afbb",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ef/Flag_of_Hawaii.svg/330px-Flag_of_Hawaii.svg.png",
+   "rendition_sha256": "e34400c8cdd4ee939d17e6d3a5edc0a5bf032616ea545cef18be0eaa89a4460f",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "pdc",
+    "PD-ineligible"
+   ],
+   "author": "Dbenbenn"
   },
   "hungary": {
    "name": "Kingdom of Hungary",
@@ -330,20 +495,35 @@
    "author": "see the file's page"
   },
   "india": {
-   "name": "British India (Star of India ensign)",
-   "file": "British Raj Red Ensign.svg",
-   "page": "https://commons.wikimedia.org/wiki/File:British_Raj_Red_Ensign.svg",
-   "url": "https://upload.wikimedia.org/wikipedia/commons/b/be/British_Raj_Red_Ensign.svg",
-   "sha1": "df0d4e8729b043b8452736e5af4f384f3a0dd193",
-   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/be/British_Raj_Red_Ensign.svg/330px-British_Raj_Red_Ensign.svg.png",
-   "rendition_sha256": "ae8a0f41a90d58c8c14d9478fa4144a62816a4f6408013c407f9314f0f9e8e7c",
+   "name": "India: the Indian National Congress flag (1931)",
+   "file": "1931 Flag of India.svg",
+   "page": "https://commons.wikimedia.org/wiki/File:1931_Flag_of_India.svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/5/5a/1931_Flag_of_India.svg",
+   "sha1": "37a0bb118ca507a2dc7288ee38afbd847149b41c",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5a/1931_Flag_of_India.svg/330px-1931_Flag_of_India.svg.png",
+   "rendition_sha256": "0b93d2cf500925bdbf45dfe209f1b3294a41005e29b5a6705d8f89f743f8ab63",
    "licence": "Public domain",
    "licence_url": "",
    "licence_basis": [
-    "insignia",
     "PD-self"
    ],
-   "author": "Barryob"
+   "author": "Nicholas (Nichalp)"
+  },
+  "indonesia": {
+   "name": "Indonesia: the red and white",
+   "file": "Flag of Indonesia.svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Indonesia.svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/9/9f/Flag_of_Indonesia.svg",
+   "sha1": "0ca13a2bf4045886b3926eb9ed58bdf2245da7d3",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9f/Flag_of_Indonesia.svg/330px-Flag_of_Indonesia.svg.png",
+   "rendition_sha256": "6a72bda33dcc5498030bad48247b9ac6550269f7f833e3122621b62caddc9aa9",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-shape",
+    "PD-Indonesia"
+   ],
+   "author": "Jayakatwang"
   },
   "iraq": {
    "name": "Kingdom of Iraq",
@@ -412,6 +592,98 @@
    ],
    "author": "kahusi"
   },
+  "kazakhstan": {
+   "name": "Kazakh SSR (1940-1953)",
+   "file": "Flag of the Kazakh Soviet Socialist Republic (1940–1953).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_the_Kazakh_Soviet_Socialist_Republic_(1940%E2%80%931953).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/7/7f/Flag_of_the_Kazakh_Soviet_Socialist_Republic_%281940%E2%80%931953%29.svg",
+   "sha1": "389efed5861e5b683d903c263e8aa0aaa369b0d4",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7f/Flag_of_the_Kazakh_Soviet_Socialist_Republic_%281940%E2%80%931953%29.svg/330px-Flag_of_the_Kazakh_Soviet_Socialist_Republic_%281940%E2%80%931953%29.svg.png",
+   "rendition_sha256": "1e7f590e31be35ad849d48ed8422b580f6f01d0a9ad0cdafdf417f161b7ef98b",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-self"
+   ],
+   "author": "see the file's page"
+  },
+  "korea": {
+   "name": "Korea: the Provisional Government's taegukgi",
+   "file": "Flag of the Provisional Government of the Republic of Korea.svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_the_Provisional_Government_of_the_Republic_of_Korea.svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/9/98/Flag_of_the_Provisional_Government_of_the_Republic_of_Korea.svg",
+   "sha1": "73506d65a3c27dffc6202d3c71aeeda80c8aba5c",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/98/Flag_of_the_Provisional_Government_of_the_Republic_of_Korea.svg/330px-Flag_of_the_Provisional_Government_of_the_Republic_of_Korea.svg.png",
+   "rendition_sha256": "b19c4c4acf5e824dbc3b788a67d9f24e757a317e70b520e76d123fbe1307c38e",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-ineligible"
+   ],
+   "author": "Lumia1234"
+  },
+  "latvia": {
+   "name": "Latvia",
+   "file": "Flag of Latvia.svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Latvia.svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/8/84/Flag_of_Latvia.svg",
+   "sha1": "3ecc84528084eca74366107c211584d36ae9f451",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/84/Flag_of_Latvia.svg/330px-Flag_of_Latvia.svg.png",
+   "rendition_sha256": "9db8ce30fa4d04af9549d0467a634f6eec549d9e35d999e65dafda74020e78ec",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Latvia"
+   ],
+   "author": "see the file's page"
+  },
+  "lithuania": {
+   "name": "Lithuania (1918-1940)",
+   "file": "Flag of Lithuania (1918–1940).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Lithuania_(1918%E2%80%931940).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/f/fd/Flag_of_Lithuania_%281918%E2%80%931940%29.svg",
+   "sha1": "6b99e0d70b9eb7db7ff0f4608ac365ff4ce911c3",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fd/Flag_of_Lithuania_%281918%E2%80%931940%29.svg/330px-Flag_of_Lithuania_%281918%E2%80%931940%29.svg.png",
+   "rendition_sha256": "476ece739562b3e25a4c1617d8953e17e2ea10781bdd017a8555622637a0a4bf",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-simple",
+    "PD-LT-exempt"
+   ],
+   "author": "see the file's page"
+  },
+  "malaya": {
+   "name": "Federated Malay States (1896-1950)",
+   "file": "Flag of Malaya (1896–1950).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Malaya_(1896%E2%80%931950).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/6/61/Flag_of_Malaya_%281896%E2%80%931950%29.svg",
+   "sha1": "1026619b434a03a6e867568a62301226c0b6d8bc",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/61/Flag_of_Malaya_%281896%E2%80%931950%29.svg/330px-Flag_of_Malaya_%281896%E2%80%931950%29.svg.png",
+   "rendition_sha256": "c8d520618bc04dd9e1d95a9c4f3ca117dce8c404eee8a2a5f352991e495a2abe",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-user-en",
+    "PD-Malaysia"
+   ],
+   "author": "see the file's page"
+  },
+  "malta": {
+   "name": "Malta (1943-1964)",
+   "file": "Flag of Malta (1943).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Malta_(1943).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/6/68/Flag_of_Malta_%281943%29.svg",
+   "sha1": "1f83e090a7acadb33d9cbb2815be50a85be346f9",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/68/Flag_of_Malta_%281943%29.svg/330px-Flag_of_Malta_%281943%29.svg.png",
+   "rendition_sha256": "293ac9bac57afa665592d3aa2db9a1cd4299a6d5c90cf96f1bc1f72d558acd04",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-self"
+   ],
+   "author": "Orange Tuesday"
+  },
   "manchukuo": {
    "name": "Manchukuo",
    "file": "Flag of Manchukuo.svg",
@@ -476,6 +748,21 @@
    ],
    "author": "Zscout370"
   },
+  "new_guinea": {
+   "name": "Territory of New Guinea",
+   "file": "Flag of the Territory of New Guinea.svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_the_Territory_of_New_Guinea.svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/4/44/Flag_of_the_Territory_of_New_Guinea.svg",
+   "sha1": "9bef6a16e147ec017136d304d21902dce2d099a8",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/44/Flag_of_the_Territory_of_New_Guinea.svg/330px-Flag_of_the_Territory_of_New_Guinea.svg.png",
+   "rendition_sha256": "f250ca2814c539a91b026dad615b0422b0e055e5d8ad592924a4251bafca20e1",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-self"
+   ],
+   "author": "Orange Tuesday"
+  },
   "new_zealand": {
    "name": "New Zealand",
    "file": "Flag of New Zealand.svg",
@@ -493,6 +780,22 @@
    ],
    "author": "see the file's page"
   },
+  "newfoundland": {
+   "name": "Newfoundland (1904-1949)",
+   "file": "Flag of Newfoundland (1904–1949).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Newfoundland_(1904%E2%80%931949).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/e/e1/Flag_of_Newfoundland_%281904%E2%80%931949%29.svg",
+   "sha1": "2b64a9ad55387b6503b3f10cddee683abcc73b13",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e1/Flag_of_Newfoundland_%281904%E2%80%931949%29.svg/330px-Flag_of_Newfoundland_%281904%E2%80%931949%29.svg.png",
+   "rendition_sha256": "b0765506d55442c264a5d6f1e7e309aec6d1f175155de9b60c4392547552c3f5",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Canada",
+    "PD-old-assumed"
+   ],
+   "author": "Lrenhrda"
+  },
   "norway": {
    "name": "Norway",
    "file": "Flag of Norway.svg",
@@ -508,6 +811,21 @@
     "insignia"
    ],
    "author": "see the file's page"
+  },
+  "palestine": {
+   "name": "Palestine: the Mandate's ensign (1927-1948)",
+   "file": "Ensign of the Palestine Mandate (1927–1948).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Ensign_of_the_Palestine_Mandate_(1927%E2%80%931948).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/7/77/Ensign_of_the_Palestine_Mandate_%281927%E2%80%931948%29.svg",
+   "sha1": "fc17af3990515ffde4447464da413292f112b4e3",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/77/Ensign_of_the_Palestine_Mandate_%281927%E2%80%931948%29.svg/330px-Ensign_of_the_Palestine_Mandate_%281927%E2%80%931948%29.svg.png",
+   "rendition_sha256": "f376972345798dfae5e71b564d78f3edaedd5d645aad586b6647385ddd62a292",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-self"
+   ],
+   "author": "User:Greentubing, User:AnonMoos"
   },
   "panama": {
    "name": "Panama",
@@ -610,6 +928,21 @@
    ],
    "author": "AdiJapan"
   },
+  "senussi": {
+   "name": "The Senussi banner",
+   "file": "Flag of Cyrenaica.svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Cyrenaica.svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/8/87/Flag_of_Cyrenaica.svg",
+   "sha1": "524a180599271be39e904dcffc72154aeec77769",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/87/Flag_of_Cyrenaica.svg/330px-Flag_of_Cyrenaica.svg.png",
+   "rendition_sha256": "de35d606723e1daa19f4d2311c28fde4650b37c796cd7e76b2b0b074e0ed8f3d",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-self"
+   ],
+   "author": "An Encore Performance From The Boys In The Band"
+  },
   "siam": {
    "name": "Siam",
    "file": "Flag of Thailand.svg",
@@ -626,6 +959,23 @@
     "insignia"
    ],
    "author": "Zscout370"
+  },
+  "solomons": {
+   "name": "British Solomon Islands (1906-1947)",
+   "file": "Flag of the Solomon Islands (1906–1947).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_the_Solomon_Islands_(1906%E2%80%931947).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/1/16/Flag_of_the_Solomon_Islands_%281906%E2%80%931947%29.svg",
+   "sha1": "43ecdb8f7ec752fbeedb63be95a62294369aedbe",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/16/Flag_of_the_Solomon_Islands_%281906%E2%80%931947%29.svg/330px-Flag_of_the_Solomon_Islands_%281906%E2%80%931947%29.svg.png",
+   "rendition_sha256": "2d9f6cf3a50c6495b1ee737f1e39e095466436269e7529612c51cc71a95adb37",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "cc-by-sa-4.0",
+    "PD-UKGov",
+    "self"
+   ],
+   "author": "Thommy (original)"
   },
   "south_africa": {
    "name": "Union of South Africa",
@@ -693,22 +1043,37 @@
    ],
    "author": "Original: Unknown"
   },
-  "tunisia": {
-   "name": "Tunisia",
-   "file": "Flag of Tunisia (1959–1999).svg",
-   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Tunisia_(1959%E2%80%931999).svg",
-   "url": "https://upload.wikimedia.org/wikipedia/commons/e/e9/Flag_of_Tunisia_%281959%E2%80%931999%29.svg",
-   "sha1": "c7889cfe16fdfbab8a1bb7e0dea9d532d3fa255b",
-   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e9/Flag_of_Tunisia_%281959%E2%80%931999%29.svg/330px-Flag_of_Tunisia_%281959%E2%80%931999%29.svg.png",
-   "rendition_sha256": "2a6f672b8ea16503add9928b9c0e9d18d15f17b2f6576e8feceb7b40682e3940",
+  "syria": {
+   "name": "Syria (1930-1958)",
+   "file": "Flag of Syria (1930–1958, 1961–1963).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Syria_(1930%E2%80%931958,_1961%E2%80%931963).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/b/b8/Flag_of_Syria_%281930%E2%80%931958%2C_1961%E2%80%931963%29.svg",
+   "sha1": "a13a41c7844d58b2e1c99d4b74b7036c5284a73e",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b8/Flag_of_Syria_%281930%E2%80%931958%2C_1961%E2%80%931963%29.svg/330px-Flag_of_Syria_%281930%E2%80%931958%2C_1961%E2%80%931963%29.svg.png",
+   "rendition_sha256": "02c31a408cc72f73b6b3eb3405a2c5a1db526ad7a3d28250c2618fdb07bde063",
    "licence": "Public domain",
    "licence_url": "",
    "licence_basis": [
-    "PD-Tunisia",
-    "PD-ineligible",
-    "Insignia"
+    "PD-self",
+    "PD-Syria",
+    "PD-shape"
    ],
-   "author": "Orange Tuesday at en.wikipedia"
+   "author": "see the file's page"
+  },
+  "tunisia": {
+   "name": "Tunisia (1831-1959)",
+   "file": "Flag of the Beylik of Tunis (1831–1881) and Tunisia (1881–1959).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_the_Beylik_of_Tunis_(1831%E2%80%931881)_and_Tunisia_(1881%E2%80%931959).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/2/28/Flag_of_the_Beylik_of_Tunis_%281831%E2%80%931881%29_and_Tunisia_%281881%E2%80%931959%29.svg",
+   "sha1": "925ba80f0533f34dcf0ffec24a4f5d11395f7edd",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/28/Flag_of_the_Beylik_of_Tunis_%281831%E2%80%931881%29_and_Tunisia_%281881%E2%80%931959%29.svg/330px-Flag_of_the_Beylik_of_Tunis_%281831%E2%80%931881%29_and_Tunisia_%281881%E2%80%931959%29.svg.png",
+   "rendition_sha256": "f944738c6e6fca3f3321f55cf9e817065f0549f71f8d4fc707e1567892747f1f",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-old-100-1923"
+   ],
+   "author": "see the file's page"
   },
   "turkey": {
    "name": "Turkey",
@@ -744,6 +1109,21 @@
     "insignia"
    ],
    "author": "see the file's page"
+  },
+  "ukraine": {
+   "name": "Ukrainian SSR (1937-1949)",
+   "file": "Flag of the Ukrainian Soviet Socialist Republic (1937–1949).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_the_Ukrainian_Soviet_Socialist_Republic_(1937%E2%80%931949).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/b/b1/Flag_of_the_Ukrainian_Soviet_Socialist_Republic_%281937%E2%80%931949%29.svg",
+   "sha1": "f28183c9398cef1720b8b72a054d6c726fdc1368",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b1/Flag_of_the_Ukrainian_Soviet_Socialist_Republic_%281937%E2%80%931949%29.svg/330px-Flag_of_the_Ukrainian_Soviet_Socialist_Republic_%281937%E2%80%931949%29.svg.png",
+   "rendition_sha256": "95e738a24cb8d6a3d7a5bc6ae605b4bbd2bedb747b26a22f98e0e41662da9211",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-self"
+   ],
+   "author": "SeNeKa"
   },
   "usa": {
    "name": "United States (48 stars)",
@@ -793,6 +1173,23 @@
    ],
    "author": "FXXX"
   },
+  "vietnam": {
+   "name": "Vietnam: the independence movement's flag (1940)",
+   "file": "Flag of North Vietnam (1945–1955).svg",
+   "page": "https://commons.wikimedia.org/wiki/File:Flag_of_North_Vietnam_(1945%E2%80%931955).svg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/b/b9/Flag_of_North_Vietnam_%281945%E2%80%931955%29.svg",
+   "sha1": "6f2654b161f1bd2b276b8b9b886a37d2e8abcdb2",
+   "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b9/Flag_of_North_Vietnam_%281945%E2%80%931955%29.svg/330px-Flag_of_North_Vietnam_%281945%E2%80%931955%29.svg.png",
+   "rendition_sha256": "d7b5b0477fc8f54e3f8e0ab8058fcbfa80a59d2a892d7a0d1ccbf813f1914d29",
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Vietnam",
+    "PD-ineligible",
+    "PD-shape"
+   ],
+   "author": "see the file's page"
+  },
   "yugoslavia": {
    "name": "Kingdom of Yugoslavia",
    "file": "Flag of Yugoslavia (1918–1941).svg",
@@ -840,11 +1237,11 @@
   },
   "austria": {
    "flag": "austria",
-   "why": "its own flag (annexed by Germany in 1938)"
+   "why": "Austria's own flag; annexed by Germany in 1938."
   },
   "czechoslovakia": {
    "flag": "czechoslovakia",
-   "why": "its own flag (occupied; its government in exile flew it)"
+   "why": "Czechoslovakia's own flag, flown by its government in exile in London."
   },
   "hungary": {
    "flag": "hungary",
@@ -876,7 +1273,7 @@
   },
   "gibraltar": {
    "flag": "uk",
-   "why": "a British colony"
+   "why": "A British colony since 1713, with no flag of its own until 1982."
   },
   "italy": {
    "flag": "italy",
@@ -884,11 +1281,11 @@
   },
   "sicily": {
    "flag": "italy",
-   "why": "part of Italy"
+   "why": "Part of Italy."
   },
   "sardinia": {
    "flag": "italy",
-   "why": "part of Italy"
+   "why": "Part of Italy."
   },
   "yugoslavia": {
    "flag": "yugoslavia",
@@ -908,79 +1305,79 @@
   },
   "crete": {
    "flag": "greece",
-   "why": "part of Greece"
+   "why": "Part of Greece."
   },
   "poland": {
    "flag": "poland",
-   "why": "its own flag (occupied; its government in exile flew it)"
+   "why": "Poland's own flag, flown by its government in exile in London."
   },
   "baltic_states": {
-   "flag": "ussr",
-   "why": "annexed by the Soviet Union in 1940"
+   "flag": "baltic",
+   "why": "Estonia, Latvia and Lithuania, each its own flag of 1918-1940, side by side: the system is all three, annexed by the Soviet Union in 1940."
   },
   "belarus": {
-   "flag": "ussr",
-   "why": "a Soviet republic"
+   "flag": "byelorussia",
+   "why": "Belarus's own flag in the war years, the Byelorussian SSR's (1937-1951)."
   },
   "ukraine": {
-   "flag": "ussr",
-   "why": "a Soviet republic"
+   "flag": "ukraine",
+   "why": "Ukraine's own flag in the war years, the Ukrainian SSR's (1937-1949)."
   },
   "russia": {
    "flag": "ussr",
-   "why": "its own flag"
+   "why": "The Soviet Union's own heart: Moscow was its capital."
   },
   "caucasus": {
    "flag": "ussr",
-   "why": "part of the Soviet Union"
+   "why": "Three Soviet republics (Georgia, Armenia, Azerbaijan) and part of Soviet Russia, in one system."
   },
   "urals": {
    "flag": "ussr",
-   "why": "part of the Soviet Union"
+   "why": "Part of Soviet Russia."
   },
   "kazakhstan": {
-   "flag": "ussr",
-   "why": "a Soviet republic"
+   "flag": "kazakhstan",
+   "why": "Kazakhstan's own flag in the war years, the Kazakh SSR's (1940-1953)."
   },
   "siberia": {
    "flag": "ussr",
-   "why": "part of the Soviet Union"
+   "why": "Part of Soviet Russia."
   },
   "morocco": {
    "flag": "morocco",
-   "why": "its own flag (a French protectorate)"
+   "why": "Morocco's own flag (1915), kept under the French protectorate."
   },
   "algeria": {
-   "flag": "france",
-   "why": "part of France"
+   "flag": "algeria",
+   "why": "Algeria's own flag: first sewn for Messali Hadj's Etoile Nord-Africaine in 1934, set in its present form by the Algerian People's Party in 1943-44."
   },
   "tunisia": {
    "flag": "tunisia",
-   "why": "its own flag (a French protectorate)"
+   "why": "Tunisia's own flag, the beys' since 1831, kept under the French protectorate."
   },
   "libya": {
-   "flag": "italy",
-   "why": "an Italian colony"
+   "flag": "senussi",
+   "why": "The Senussi banner: the Senussi order led Libya's resistance to Italy, and its emir Idris sided with Britain in 1940; Cyrenaica's flag from 1949. Libya had no flag of its own until then."
   },
   "egypt": {
    "flag": "egypt",
    "why": "its own flag"
   },
   "malta": {
-   "flag": "uk",
-   "why": "a British colony"
+   "flag": "malta",
+   "why": "Malta's own white and red, with the George Cross the island was awarded in April 1942 for the siege, on a blue canton: used on the island from 1943, flown by Malta at the 1948 Olympics."
   },
   "turkey": {
    "flag": "turkey",
    "why": "its own flag"
   },
   "syria": {
-   "flag": "france",
-   "why": "a French mandate (Syria and Lebanon, one system)"
+   "flag": "syria",
+   "why": "Syria's own flag, the State of Syria's under the French mandate (1930-1958). Lebanon, in the same system, had its own from 1943."
   },
   "palestine": {
-   "flag": "uk",
-   "why": "a British mandate"
+   "flag": "palestine",
+   "why": "The Palestine Mandate's own ensign (1927-1948), the only Palestine-specific flag not restricted to government use."
   },
   "iraq": {
    "flag": "iraq",
@@ -996,15 +1393,15 @@
   },
   "greenland": {
    "flag": "denmark",
-   "why": "a Danish colony"
+   "why": "A Danish colony, with no flag of its own until 1985."
   },
   "azores": {
    "flag": "portugal",
-   "why": "part of Portugal"
+   "why": "Part of Portugal."
   },
   "newfoundland": {
-   "flag": "uk",
-   "why": "a British dominion under commission, whose national flag was the Union Flag"
+   "flag": "newfoundland",
+   "why": "Newfoundland's own flag (1904-1949), with the Newfoundland seal."
   },
   "united_states": {
    "flag": "usa",
@@ -1015,8 +1412,8 @@
    "why": "its own flag"
   },
   "alaska": {
-   "flag": "usa",
-   "why": "a US territory"
+   "flag": "alaska",
+   "why": "The Territory of Alaska's own flag, adopted in 1927."
   },
   "mexico": {
    "flag": "mexico",
@@ -1031,12 +1428,12 @@
    "why": "its own flag"
   },
   "korea": {
-   "flag": "japan",
-   "why": "a Japanese colony"
+   "flag": "korea",
+   "why": "Korea's own flag, the taegukgi, as the Provisional Government of the Republic of Korea flew it in exile (Chongqing from 1940; at war with Japan from December 1941). Korea was a Japanese colony 1910-45."
   },
   "manchuria": {
    "flag": "manchukuo",
-   "why": "its own flag (Manchukuo)"
+   "why": "Manchuria's own state in the war years, Manchukuo (1932-1945)."
   },
   "china": {
    "flag": "china",
@@ -1044,75 +1441,75 @@
   },
   "formosa": {
    "flag": "japan",
-   "why": "a Japanese colony"
+   "why": "A Japanese colony from 1895 to 1945, with no flag of its own in those years."
   },
   "indochina": {
-   "flag": "france",
-   "why": "a French colony"
+   "flag": "vietnam",
+   "why": "Vietnam's own flag, most of Indochina: first raised in the Cochinchina uprising against French rule in November 1940, the Viet Minh's from its founding in May 1941 (this form 1945-1955)."
   },
   "siam": {
    "flag": "siam",
    "why": "its own flag"
   },
   "burma": {
-   "flag": "uk",
-   "why": "a British colony"
+   "flag": "burma",
+   "why": "Burma's own flag under the State of Burma (1943-45), with the green peacock, Burma's old national emblem. Before 1943 its only flag of its own was a British ensign."
   },
   "malaya": {
-   "flag": "uk",
-   "why": "British Malaya"
+   "flag": "malaya",
+   "why": "The Federated Malay States' flag (1896-1942), the Malay rulers' federation."
   },
   "philippines": {
    "flag": "philippines",
    "why": "its own flag"
   },
   "dutch_east_indies": {
-   "flag": "netherlands",
-   "why": "a Dutch colony"
+   "flag": "indonesia",
+   "why": "Indonesia's red and white: the national movement's flag from 1928, raised at the declaration of independence on 17 August 1945."
   },
   "india": {
    "flag": "india",
-   "why": "its own flag"
+   "why": "The Indian National Congress's flag from 1931, flown across India in the Quit India movement of 1942. British India's official flags were British ensigns."
   },
   "ceylon": {
-   "flag": "uk",
-   "why": "a British colony"
+   "flag": "ceylon",
+   "why": "Ceylon's own lion flag: the Kingdom of Kandy's, replaced by the Union Flag at the British takeover in 1815 and restored at independence in 1948 (its 1948 form). Ceylon's only flag in between was a British ensign."
   },
   "afghanistan": {
    "flag": "afghanistan",
    "why": "its own flag"
   },
   "hawaii": {
-   "flag": "usa",
-   "why": "a US territory"
+   "flag": "hawaii",
+   "why": "Hawaii's own flag, the kingdom's since 1845, kept by the Territory of Hawaii."
   },
   "midway": {
    "flag": "usa",
-   "why": "a US possession"
+   "why": "A United States possession, with no flag of its own."
   },
   "wake_island": {
    "flag": "usa",
-   "why": "a US possession"
+   "why": "A United States possession, with no flag of its own."
   },
   "marshall_islands": {
    "flag": "japan",
-   "why": "a Japanese mandate"
+   "why": "Japanese mandate islands, with no flag of their own until after the war."
   },
   "marianas": {
    "flag": "japan",
-   "why": "a Japanese mandate"
+   "why": "Japanese mandate islands (Saipan, Tinian); Guam was taken from the United States in December 1941. No flag of their own until after the war."
   },
   "gilbert_islands": {
-   "flag": "uk",
-   "why": "a British colony"
+   "flag": "gilbert",
+   "why": "The Gilbert and Ellice Islands' own flag (1937-1976), with its frigatebird badge."
   },
   "new_guinea": {
-   "flag": "australia",
-   "why": "an Australian territory"
+   "flag": "new_guinea",
+   "why": "The Territory of New Guinea's own flag."
   },
   "solomon_islands": {
-   "flag": "uk",
-   "why": "a British protectorate"
+   "flag": "solomons",
+   "why": "The British Solomon Islands Protectorate's own flag (1906-1947)."
   },
   "australia": {
    "flag": "australia",
@@ -1123,8 +1520,8 @@
    "why": "its own flag"
   },
   "fiji": {
-   "flag": "uk",
-   "why": "a British colony"
+   "flag": "fiji",
+   "why": "Fiji's own flag (1924-1970), with the colony's arms."
   },
   "brazil": {
    "flag": "brazil",
@@ -1144,15 +1541,15 @@
   },
   "west_africa": {
    "flag": "france",
-   "why": "French West Africa"
+   "why": "French West Africa (Dakar), which had no flag of its own."
   },
   "congo": {
    "flag": "congo",
    "why": "its own flag (the Belgian Congo)"
   },
   "east_africa": {
-   "flag": "uk",
-   "why": "British East Africa"
+   "flag": "ethiopia",
+   "why": "Ethiopia's own flag: the system is Ethiopia (Addis Ababa), conquered by Italy in 1936 and freed in 1941."
   },
   "south_africa": {
    "flag": "south_africa",
@@ -1160,7 +1557,7 @@
   },
   "madagascar": {
    "flag": "france",
-   "why": "a French colony"
+   "why": "A French colony from 1896 to 1958, with no flag of its own in those years."
   }
  }
 }
