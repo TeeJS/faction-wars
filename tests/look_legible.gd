@@ -57,6 +57,14 @@ func _init() -> void:
 	var sector: Sector = Lq.first_or_null(GameState.ActiveGalaxy, func(s: Sector) -> bool: return s.Planets.has(home))
 	var who: Character = Lq.first_or_null(GameState.ActiveRoster, func(c: Character) -> bool: return c.Faction == us)
 	var fac: Facility = Lq.first_or_null(home.Facilities, func(f: Facility) -> bool: return f.Def != null)
+	var fleet: Fleet = null
+	for p in GameState.AllPlanets():
+		for f in p.OrbitingFleets:
+			if fleet == null and f.Faction == us and not f.Ships.is_empty():
+				fleet = f
+	var ship: Unit = fleet.Ships[0] if fleet != null else null
+	var mission_id: String = FactionRegistry.Pack.Missions[0].Id if not FactionRegistry.Pack.Missions.is_empty() else ""
+	var unit_id: String = ship.PackId if ship != null else ""
 
 	var openers := [
 		["the Encyclopedia", func() -> void: ui.OpenEncyclopedia("characters", who.PackId)],
@@ -74,6 +82,18 @@ func _init() -> void:
 		["Game Options", func() -> void: ui.OpenGameOptions()],
 		["the Galaxy Overview", func() -> void: ui.OpenGalaxyOverview()],
 		["Objectives", func() -> void: ui.OpenObjectives()],
+		# The rest of the windows (step 5).
+		["the System window", func() -> void: ui.OnPlanetClicked(home)],
+		["a ship's Status", func() -> void: ui.OpenUnitStatusWindow(ship)],
+		["a fleet's Status", func() -> void: ui.OpenFleetStatusWindow(fleet)],
+		["the Encyclopedia at a ship", func() -> void: ui.OpenEncyclopedia("units", unit_id)],
+		["the Encyclopedia at a facility", func() -> void: ui.OpenEncyclopedia("facilities", fac.Def.Id)],
+		["the Encyclopedia at a system", func() -> void: ui.OpenEncyclopedia("planets", home.PackId)],
+		["the Encyclopedia at a mission", func() -> void: ui.OpenEncyclopedia("missions", mission_id)],
+		["a message read", func() -> void:
+			EventBus.Tell(us, GameMessage.new("%s reports" % who.Name, "The mission team has reached its destination and begun work.",
+				Enums.MessageCategory.Missions, StrategicTickManager.Today, home, who))
+			ui.OnMessageIndexClicked("Missions")],
 	]
 	for o in openers:
 		var what: String = o[0]

@@ -196,6 +196,12 @@ static func DressAny(w: Control) -> void:
 		w.theme = Look.GetTheme()
 	if w is MpScreen:
 		DressScreen(w)
+	# EVERY TAB SHOWN (the WWII windows fix): a tab strip does not clip, so a
+	# window widens to show all its tabs instead of hiding some behind scroll
+	# arrows (the System Finder's Unexplored, the Economy window's last three).
+	for t in w.find_children("*", "TabContainer", true, false):
+		if (t as TabContainer).tabs_visible:
+			(t as TabContainer).clip_tabs = false
 	Remap(w)
 
 
