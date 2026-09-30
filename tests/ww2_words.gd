@@ -27,8 +27,11 @@ const Words := ["galaxy", "galactic", "planet", "planets", "planetary", "hypersp
 	"coruscant", "yavin", "endor", "vader", "palpatine", "mothma", "jabba", "skywalker", "sub-light", "sublight"]
 const CaseWords := ["the Force"]
 ## Not the setting's words, so not a leak: the original game's name (the save
-## importer's hint), the space bar, and English's "message system".
-const Allowed := ["Star Wars: Rebellion", "Space pause", "message system"]
+## importer's hint), the space bar, English's "message system", and the war's
+## own proper names the Encyclopedia's history uses (art/descriptions.json).
+const Allowed := ["Star Wars: Rebellion", "Space pause", "message system",
+	"Imperial Japanese Army", "Imperial Japanese Navy", "Imperial General Staff", "Imperial German Navy",
+	"Imperial Russian Navy", "British Empire", "Empire of Japan", "Dowding system"]
 
 var _fails := 0
 var _checks := 0
@@ -58,7 +61,8 @@ func _init() -> void:
 	var alts: Array = []
 	for w in Words:
 		alts.append(RegEx.create_from_string("[\\s\\-]+").sub(w, "[\\s\\-]+", true))
-	_rx = RegEx.create_from_string("(?i)\\b(" + "|".join(alts) + ")\\b|\\b(" + "|".join(CaseWords) + ")\\b")
+	# The case words keep their case: "(?i)" at the front reaches them too.
+	_rx = RegEx.create_from_string("(?i)\\b(" + "|".join(alts) + ")\\b|\\b((?-i:" + "|".join(CaseWords) + "))\\b")
 	MpSetup.reset()
 	GameSettings.SelectedDifficulty = Enums.Difficulty.Medium
 	GameSettings.SelectedSize = Enums.GalaxySize.Standard
