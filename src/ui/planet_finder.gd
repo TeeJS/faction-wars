@@ -47,6 +47,7 @@ func _ready() -> void:
 	# two sides' tabs by their short names, in pack order as TabOf files them,
 	# and the search field's hint from the pack's terms.
 	_searchBar.placeholder_text = Terms.label("search_systems")
+	(get_node("%TitleBarLabel") as Label).text = " " + Terms.label("system_finder")
 	var tabs: TabContainer = get_node_or_null("%FactionTabs")
 	if tabs != null:
 		for order in 2:
@@ -119,7 +120,7 @@ func _BuildOriginal() -> void:
 	var tabs: Array = []
 	for i in TabStems.size():
 		tabs.append([TabStems[i], Caption(i)])
-	_o = OF.Build(self, "Planetary System Finder", "System Name", OUI.Pic("finder_systems"), tabs,
+	_o = OF.Build(self, Terms.label("system_finder"), "System Name", OUI.Pic("finder_systems"), tabs,
 		[["finder_display", "Open the Sector and Manufacturing windows for the selected system."]])
 	for i in _o["tabs"].size():
 		var tab: int = i

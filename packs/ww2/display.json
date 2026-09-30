@@ -681,6 +681,7 @@
     "sector": "Theatre",
     "galaxy_size": "Map Size",
     "galaxy_overview": "World Overview",
+    "system_finder": "System Finder",
     "no_messages": "No dispatches received."
   }
 }

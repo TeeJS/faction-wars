@@ -141,6 +141,18 @@ func _init() -> void:
 					_check((b as Button).theme_type_variation == Look.COMMAND, "%s: a command key: %s" % [what, (b as Button).text])
 		screen.queue_free()
 		await process_frame
+
+	# The System Finder goes by the pack's name (TeeJ, 2026-09-30:
+	# "Planetary system finder is wrong for WWII as well").
+	var finder_word: String = Terms.label("system_finder")
+	_check(finder_word == ("System Finder" if id == "ww2" else "Planetary System Finder"), "%s: the finder is called \"%s\"" % [id, finder_word])
+	ui.OpenPlanetFinder()
+	for _i in 3:
+		await process_frame
+	var finder: Node = Lq.first_or_null(_windows(ui), func(w: Node) -> bool: return w is PlanetFinder)
+	var finder_said: Array = finder.find_children("*", "Label", true, false).map(func(l: Label) -> String: return l.text.strip_edges()) if finder != null else []
+	_check(finder_said.has(finder_word) and not (id == "ww2" and finder_said.any(func(t: String) -> bool: return t.contains("Planetary"))),
+		"%s: the finder's title says \"%s\"" % [id, finder_word])
 	_done()
 
 
