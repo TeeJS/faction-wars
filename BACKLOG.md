@@ -118,6 +118,7 @@ SCHEMA.md §1 ("names are never behaviour") and would break a second pack.
 | **Alt+M** Mission / **Alt+S** Status for the *selected* unit | needs a global "selected unit" concept — verify it exists first, else it's a no-op |
 | "(captured)" label on a held enemy character in the Personnel tab | polish (see #4) |
 | `SaveManager.Save` atomicity — write the index before the slot file (or temp-then-rename) so a crash mid-save can't desync them | minor robustness |
+| **WWII words to discuss: "popular support" and "diplomacy"** | TeeJ, 2026-09-30: is "popular support" right when occupied populations mostly submitted rather than supported, and is "diplomacy" right for the Nazi leaders' dealings? Discuss with TeeJ first; change nothing until then |
 
 ## Known Bugs (confirmed, unfixed)
 
