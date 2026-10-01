@@ -83,6 +83,13 @@
     "rule": "look/rule.png",
     "map_detail": "look/world_1941_detail.jpg"
   },
+  "objectives_legend": {
+    "_comment": "The objectives on the map, over world_1941.jpg's own legend box (its pixels, measured 2026-09-30) in the legend's printed colours, sampled from look/world_1941_detail.jpg: paper, ink, the red of its numerals.",
+    "rect": [2, 722, 494, 312],
+    "paper": "#e6d9c0",
+    "ink": "#3e362c",
+    "accent": "#c8423c"
+  },
   "map_insets": [
     {"image": "look/europe_1941.jpg", "at": [328, 120, 57, 52]}
   ]
