@@ -21,9 +21,9 @@
    "attribution": "Bundesarchiv, Bild 183-S33882 / CC BY-SA 3.0 DE",
    "date": "20 April 1937",
    "crop": [
-    0.58,
-    0.37,
-    0.55
+    0.6,
+    0.4303,
+    0.8578
    ]
   },
   "mussolini": {
@@ -47,9 +47,9 @@
    "attribution": "",
    "date": "10 January 2009 (original upload date)",
    "crop": [
-    0.52,
-    0.2,
-    0.3
+    0.43,
+    0.2765,
+    0.325
    ]
   },
   "tojo": {
@@ -73,8 +73,8 @@
    "date": "",
    "crop": [
     0.5,
-    0.21,
-    0.38
+    0.298,
+    0.5667
    ]
   },
   "goring": {
@@ -98,9 +98,10 @@
    "date": "Taken on 6 January 1943[1][2]",
    "crop": [
     0.5,
-    0.3,
-    0.42
-   ]
+    0.3525,
+    0.495
+   ],
+   "note": "Cut above his collar: the Grand Cross of the Iron Cross at his neck and the eagles on his collar tabs stay out, so his head fills more of the picture."
   },
   "goebbels": {
    "name": "Joseph Goebbels",
@@ -122,9 +123,9 @@
    "attribution": "Bundesarchiv, Bild 146-1968-101-20A / Heinrich Hoffmann / CC-BY-SA 3.0",
    "date": "1933[1]",
    "crop": [
-    0.47,
-    0.37,
-    0.45
+    0.475,
+    0.3875,
+    0.625
    ]
   },
   "himmler": {
@@ -147,10 +148,11 @@
    "attribution": "Bundesarchiv, Bild 183-S72707 / CC-BY-SA 3.0",
    "date": "1942",
    "crop": [
-    0.5,
-    0.29,
-    0.4
-   ]
+    0.53,
+    0.3062,
+    0.5277
+   ],
+   "note": "Cut at the top of his collar tabs (oak leaves, his rank), well above the swastika lower in the photograph."
   },
   "canaris": {
    "name": "Wilhelm Canaris",
@@ -172,9 +174,9 @@
    "attribution": "Bundesarchiv, Bild 146-1979-013-43 / CC-BY-SA 3.0",
    "date": "1940",
    "crop": [
-    0.5,
-    0.3,
-    0.5
+    0.52,
+    0.3728,
+    0.8544
    ]
   },
   "speer": {
@@ -197,9 +199,9 @@
    "attribution": "Bundesarchiv, Bild 146II-277 / Binder / CC-BY-SA 3.0",
    "date": "1933",
    "crop": [
-    0.52,
-    0.35,
-    0.52
+    0.56,
+    0.4383,
+    0.8833
    ]
   },
   "rommel": {
@@ -223,9 +225,10 @@
    "date": "1941-07-31",
    "crop": [
     0.5,
-    0.3,
-    0.45
-   ]
+    0.3203,
+    0.6593
+   ],
+   "note": "Cut above his collar: the Knight's Cross at his neck and the eagle on his breast stay out."
   },
   "guderian": {
    "name": "Heinz Guderian",
@@ -247,10 +250,11 @@
    "attribution": "",
    "date": "1941-07",
    "crop": [
-    0.45,
-    0.27,
-    0.34
-   ]
+    0.43,
+    0.3053,
+    0.5493
+   ],
+   "note": "Cut above the Knight's Cross at his neck and the eagle on his breast; his collar's general's embroidery stays."
   },
   "manstein": {
    "name": "Erich von Manstein",
@@ -272,9 +276,9 @@
    "attribution": "Bundesarchiv, Bild 183-H01757 / CC-BY-SA 3.0",
    "date": "1938",
    "crop": [
-    0.5,
-    0.29,
-    0.54
+    0.49,
+    0.3997,
+    0.8007
    ]
   },
   "kesselring": {
@@ -297,10 +301,11 @@
    "attribution": "",
    "date": "Unknown date",
    "crop": [
-    0.5,
-    0.3,
-    0.45
-   ]
+    0.53,
+    0.3193,
+    0.6013
+   ],
+   "note": "Cut above his collar and the Knight's Cross at his neck."
   },
   "donitz": {
    "name": "Karl Dönitz",
@@ -323,9 +328,10 @@
    "date": "April 1943",
    "crop": [
     0.5,
-    0.24,
-    0.4
-   ]
+    0.2503,
+    0.4793
+   ],
+   "note": "Cut above his collar, above the Knight's Cross at his neck and the eagle on his breast."
   },
   "raeder": {
    "name": "Erich Raeder",
@@ -348,8 +354,8 @@
    "date": "1936",
    "crop": [
     0.55,
-    0.24,
-    0.34
+    0.3055,
+    0.4417
    ]
   },
   "skorzeny": {
@@ -372,10 +378,11 @@
    "attribution": "",
    "date": "1943-09",
    "crop": [
-    0.5,
-    0.3,
-    0.36
-   ]
+    0.47,
+    0.3152,
+    0.4997
+   ],
+   "note": "Cut above his collar tabs (the SS runes) and the Knight's Cross at his neck."
   },
   "yamamoto": {
    "name": "Isoroku Yamamoto",
@@ -397,9 +404,9 @@
    "attribution": "",
    "date": "1 February 1942",
    "crop": [
-    0.5,
-    0.4,
-    0.6
+    0.48,
+    0.4939,
+    1.0123
    ]
   },
   "nagumo": {
@@ -422,9 +429,9 @@
    "attribution": "",
    "date": "",
    "crop": [
-    0.49,
-    0.22,
-    0.34
+    0.5,
+    0.3015,
+    0.325
    ]
   },
   "yamashita": {
@@ -447,9 +454,9 @@
    "attribution": "",
    "date": "February 1943 - September 1945",
    "crop": [
-    0.5,
-    0.2,
-    0.28
+    0.52,
+    0.237,
+    0.35
    ]
   },
   "graziani": {
@@ -472,9 +479,9 @@
    "attribution": "",
    "date": "1940-06",
    "crop": [
-    0.45,
-    0.28,
-    0.32
+    0.4,
+    0.243,
+    0.4833
    ]
   },
   "ciano": {
@@ -497,9 +504,9 @@
    "attribution": "",
    "date": "2021-05-15",
    "crop": [
-    0.48,
-    0.3,
-    0.55
+    0.42,
+    0.436,
+    0.8
    ]
   },
   "churchill": {
@@ -524,9 +531,9 @@
    "attribution": "",
    "date": "30 December 1941",
    "crop": [
-    0.47,
-    0.19,
-    0.28
+    0.48,
+    0.3055,
+    0.3583
    ]
   },
   "roosevelt": {
@@ -549,9 +556,9 @@
    "attribution": "",
    "date": "1944-08-22",
    "crop": [
-    0.52,
-    0.34,
-    0.47
+    0.5,
+    0.4345,
+    0.6417
    ]
   },
   "stalin": {
@@ -577,8 +584,8 @@
    "date": "1945",
    "crop": [
     0.5,
-    0.3,
-    0.52
+    0.3605,
+    0.775
    ]
   },
   "chiang_kai_shek": {
@@ -602,8 +609,8 @@
    "date": "circa October 1943",
    "crop": [
     0.5,
-    0.17,
-    0.28
+    0.1975,
+    0.2917
    ]
   },
   "de_gaulle": {
@@ -626,9 +633,9 @@
    "attribution": "",
    "date": "1945",
    "crop": [
-    0.5,
-    0.18,
-    0.33
+    0.47,
+    0.2175,
+    0.4583
    ]
   },
   "eisenhower": {
@@ -651,9 +658,9 @@
    "attribution": "",
    "date": "1959-05-29",
    "crop": [
-    0.52,
-    0.3,
-    0.55
+    0.5,
+    0.3965,
+    0.7417
    ]
   },
   "montgomery": {
@@ -676,9 +683,9 @@
    "attribution": "",
    "date": "29 May 1943",
    "crop": [
-    0.5,
-    0.3,
-    0.48
+    0.4,
+    0.3205,
+    0.6083
    ]
   },
   "patton": {
@@ -701,9 +708,9 @@
    "attribution": "",
    "date": "1945",
    "crop": [
-    0.53,
-    0.27,
-    0.47
+    0.52,
+    0.3695,
+    0.5583
    ]
   },
   "zhukov": {
@@ -727,9 +734,9 @@
    "attribution": "",
    "date": "This copy is from the 12 February 1945 issue of Life. The photo was also published earlier, in the 31 July 1944 issue of Life.",
    "crop": [
-    0.44,
-    0.25,
-    0.45
+    0.48,
+    0.2905,
+    0.6083
    ]
   },
   "macarthur": {
@@ -753,9 +760,9 @@
    "attribution": "",
    "date": "1945-08-02",
    "crop": [
-    0.5,
-    0.25,
-    0.3
+    0.475,
+    0.2055,
+    0.3583
    ]
   },
   "nimitz": {
@@ -778,9 +785,9 @@
    "attribution": "",
    "date": "circa 1945",
    "crop": [
-    0.5,
-    0.36,
-    0.62
+    0.47,
+    0.4595,
+    0.8917
    ]
   },
   "halsey": {
@@ -803,9 +810,9 @@
    "attribution": "",
    "date": "circa late 1945, soon after promotion to Fleet Admiral",
    "crop": [
-    0.5,
-    0.26,
-    0.42
+    0.47,
+    0.283,
+    0.4833
    ]
   },
   "cunningham": {
@@ -828,9 +835,9 @@
    "attribution": "",
    "date": "",
    "crop": [
-    0.42,
-    0.37,
-    0.38
+    0.445,
+    0.34,
+    0.4167
    ]
   },
   "alanbrooke": {
@@ -853,9 +860,9 @@
    "attribution": "",
    "date": "1942",
    "crop": [
-    0.635,
-    0.4,
-    0.33
+    0.565,
+    0.4095,
+    0.3083
    ]
   },
   "dowding": {
@@ -878,9 +885,9 @@
    "attribution": "",
    "date": "circa 1935",
    "crop": [
-    0.5,
-    0.33,
-    0.5
+    0.47,
+    0.344,
+    0.7
    ]
   },
   "mountbatten": {
@@ -903,9 +910,9 @@
    "attribution": "",
    "date": "1943",
    "crop": [
-    0.5,
-    0.3,
-    0.52
+    0.53,
+    0.406,
+    0.8
    ]
   },
   "slim": {
@@ -928,9 +935,9 @@
    "attribution": "",
    "date": "1945-06",
    "crop": [
-    0.43,
-    0.32,
-    0.4
+    0.37,
+    0.3805,
+    0.4417
    ]
   },
   "bradley": {
@@ -953,9 +960,9 @@
    "attribution": "",
    "date": "circa 1945",
    "crop": [
-    0.47,
-    0.2,
-    0.33
+    0.455,
+    0.2345,
+    0.475
    ]
   },
   "konev": {
@@ -978,9 +985,9 @@
    "attribution": "Mil.ru",
    "date": "1945",
    "crop": [
-    0.5,
-    0.2,
-    0.38
+    0.47,
+    0.3085,
+    0.5083
    ]
   },
   "donovan": {
@@ -1003,9 +1010,9 @@
    "attribution": "",
    "date": "circa 1945",
    "crop": [
-    0.47,
-    0.25,
-    0.36
+    0.505,
+    0.2905,
+    0.4417
    ]
   },
   "turing": {
@@ -1029,9 +1036,9 @@
    "attribution": "",
    "date": "1951-03-29",
    "crop": [
-    0.5,
-    0.35,
-    0.55
+    0.43,
+    0.518,
+    0.9
    ]
   },
   "oppenheimer": {
@@ -1054,9 +1061,9 @@
    "attribution": "",
    "date": "1944",
    "crop": [
-    0.47,
-    0.32,
-    0.52
+    0.45,
+    0.4511,
+    0.8835
    ]
   },
   "stilwell": {
@@ -1079,9 +1086,9 @@
    "attribution": "",
    "date": "Unknown date",
    "crop": [
-    0.5,
-    0.27,
-    0.45
+    0.45,
+    0.351,
+    0.7167
    ]
   },
   "leclerc": {
@@ -1104,9 +1111,9 @@
    "attribution": "",
    "date": "Taken on 26 August 1944",
    "crop": [
-    0.5,
-    0.3,
-    0.45
+    0.36,
+    0.3205,
+    0.6083
    ]
   },
   "model": {
@@ -1129,9 +1136,9 @@
    "attribution": "",
    "date": "between 1939 and 1945, probably in the USSR, so after the 1941 summer, because of the fur collar, and earmuffs also present on other snapshots in the USSR.",
    "crop": [
-    0.44,
-    0.41,
-    0.47
+    0.36,
+    0.4325,
+    0.495
    ],
    "note": "Cropped from below the cap eagle and the swastika in its talons (both above the top edge) to above the collar and its Knight's Cross: the oak wreath and cockade stay (TeeJ, 2026-09-30: the eagle may show, the swastika never)."
   },
@@ -1155,10 +1162,11 @@
    "attribution": "Bundesarchiv, Bild 183-S37772 / CC-BY-SA 3.0",
    "date": "1932",
    "crop": [
-    0.5,
-    0.33,
-    0.56
-   ]
+    0.42,
+    0.3822,
+    0.7555
+   ],
+   "note": "Cut above the eagle on his breast; the photograph is close, so his head fills most of the picture."
   },
   "student": {
    "name": "Kurt Student",
@@ -1180,10 +1188,11 @@
    "attribution": "",
    "date": "1941",
    "crop": [
-    0.44,
-    0.29,
-    0.4
-   ]
+    0.52,
+    0.3777,
+    0.5247
+   ],
+   "note": "Cut above the collar insignia of the drawing."
   },
   "galland": {
    "name": "Adolf Galland",
@@ -1205,10 +1214,11 @@
    "attribution": "Bundesarchiv, Bild 146-2006-0123 / Hoffmann, Heinrich / CC-BY-SA 3.0",
    "date": "1940/41",
    "crop": [
-    0.47,
-    0.3,
-    0.42
-   ]
+    0.5,
+    0.3312,
+    0.6575
+   ],
+   "note": "Cut above the Knight's Cross at his neck."
   },
   "lutjens": {
    "name": "Günther Lütjens",
@@ -1231,9 +1241,10 @@
    "date": "1934",
    "crop": [
     0.49,
-    0.165,
-    0.2
-   ]
+    0.1767,
+    0.2367
+   ],
+   "note": "Cut above the eagle on his breast and the Iron Cross; the photograph is small, so his head fills most of the picture."
   },
   "ozawa": {
    "name": "Jisaburo Ozawa",
@@ -1255,9 +1266,9 @@
    "attribution": "",
    "date": "1940s",
    "crop": [
-    0.45,
-    0.25,
-    0.45
+    0.37,
+    0.298,
+    0.5667
    ]
   },
   "homma": {
@@ -1280,9 +1291,9 @@
    "attribution": "",
    "date": "1943",
    "crop": [
-    0.5,
-    0.3,
-    0.45
+    0.53,
+    0.423,
+    0.8167
    ]
   },
   "balbo": {
@@ -1305,9 +1316,9 @@
    "attribution": "",
    "date": "between 1938 and 1940",
    "crop": [
-    0.5,
-    0.3,
-    0.45
+    0.42,
+    0.331,
+    0.55
    ]
   },
   "messe": {
@@ -1331,9 +1342,9 @@
    "attribution": "",
    "date": "1941",
    "crop": [
-    0.5,
-    0.28,
-    0.42
+    0.49,
+    0.35,
+    0.6667
    ]
   },
   "kurusu": {
@@ -1357,9 +1368,9 @@
    "attribution": "",
    "date": "7 December 1941",
    "crop": [
-    0.49,
-    0.36,
-    0.28
+    0.585,
+    0.354,
+    0.5333
    ]
   },
   "marshall": {
@@ -1382,9 +1393,9 @@
    "attribution": "",
    "date": "1945",
    "crop": [
-    0.47,
-    0.25,
-    0.33
+    0.46,
+    0.296,
+    0.4667
    ]
   },
   "king": {
@@ -1407,9 +1418,9 @@
    "attribution": "",
    "date": "2016-04-07 08:17",
    "crop": [
-    0.5,
-    0.33,
-    0.45
+    0.45,
+    0.3635,
+    0.5917
    ]
   },
   "arnold": {
@@ -1432,9 +1443,9 @@
    "attribution": "",
    "date": "before 1949",
    "crop": [
-    0.43,
-    0.3,
-    0.48
+    0.47,
+    0.383,
+    0.8167
    ]
   },
   "harris": {
@@ -1458,8 +1469,8 @@
    "date": "Taken on 24 April 1944",
    "crop": [
     0.5,
-    0.28,
-    0.42
+    0.38,
+    0.5
    ]
   },
   "tedder": {
@@ -1482,9 +1493,9 @@
    "attribution": "",
    "date": "1943-12-17",
    "crop": [
-    0.5,
-    0.32,
-    0.45
+    0.47,
+    0.3835,
+    0.7583
    ]
   },
   "wavell": {
@@ -1507,9 +1518,9 @@
    "attribution": "",
    "date": "",
    "crop": [
-    0.6,
-    0.26,
-    0.4
+    0.54,
+    0.2525,
+    0.4583
    ]
   },
   "auchinleck": {
@@ -1532,9 +1543,9 @@
    "attribution": "",
    "date": "1941-07-31",
    "crop": [
-    0.38,
-    0.22,
-    0.36
+    0.445,
+    0.2755,
+    0.6083
    ]
   },
   "rokossovsky": {
@@ -1557,9 +1568,9 @@
    "attribution": "Mil.ru",
    "date": "1945-06",
    "crop": [
-    0.46,
-    0.18,
-    0.36
+    0.4,
+    0.231,
+    0.3833
    ]
   },
   "vasilevsky": {
@@ -1582,9 +1593,9 @@
    "attribution": "Mil.ru",
    "date": "after 1945",
    "crop": [
-    0.47,
-    0.19,
-    0.36
+    0.43,
+    0.228,
+    0.4
    ]
   },
   "chuikov": {
@@ -1607,9 +1618,9 @@
    "attribution": "Mos.ru",
    "date": "1948-06-05",
    "crop": [
-    0.47,
-    0.25,
-    0.43
+    0.38,
+    0.315,
+    0.5833
    ]
   },
   "spruance": {
@@ -1632,9 +1643,9 @@
    "attribution": "",
    "date": "1944-04-23",
    "crop": [
-    0.45,
-    0.45,
-    0.6
+    0.48,
+    0.435,
+    0.9167
    ]
   },
   "clark": {
@@ -1657,9 +1668,9 @@
    "attribution": "",
    "date": "1945",
    "crop": [
-    0.53,
-    0.26,
-    0.44
+    0.52,
+    0.3335,
+    0.7583
    ]
   },
   "juin": {
@@ -1682,9 +1693,9 @@
    "attribution": "",
    "date": "",
    "crop": [
-    0.5,
-    0.32,
-    0.5
+    0.45,
+    0.401,
+    0.7167
    ]
   },
   "wingate": {
@@ -1707,9 +1718,9 @@
    "attribution": "",
    "date": "",
    "crop": [
-    0.5,
-    0.33,
-    0.45
+    0.56,
+    0.371,
+    0.7167
    ]
   },
   "chennault": {
@@ -1732,9 +1743,9 @@
    "attribution": "",
    "date": "2009-11-22 13:32:24",
    "crop": [
-    0.5,
-    0.3,
-    0.45
+    0.52,
+    0.359,
+    0.6167
    ]
   },
   "zhu_de": {
@@ -1758,9 +1769,9 @@
    "attribution": "",
    "date": "September 1922",
    "crop": [
-    0.5,
-    0.33,
-    0.5
+    0.44,
+    0.42,
+    0.8333
    ]
   },
   "menzies": {
@@ -1783,9 +1794,9 @@
    "attribution": "",
    "date": "1914",
    "crop": [
-    0.654,
-    0.092,
-    0.16
+    0.655,
+    0.1125,
+    0.2083
    ],
    "note": "Stewart Menzies is the man on the right, beside his brother Keith, in 1914 (TeeJ, 2026-09-30). The only freely licensed photograph of him: the 1953 portraits on Commons carry a licence their uploaders could not grant. Small (497x800, from a book), so his picture is soft."
   }
