@@ -22,6 +22,13 @@ Downloads the SVG and the rendition into <download folder> (kept, so a second
 run fetches nothing), stops on any hash that differs, and writes:
 
     packs/ww2/art/planet_sprites/<artwork_id>.png   37x37, per system (map.json)
+    packs/ww2/art/planets/<id>.png                  400x200, per system: its
+                                                    Encyclopedia plate, the flag
+                                                    large on the look's paper
+                                                    (plates 93 on, after the
+                                                    units'; TeeJ, 2026-09-30:
+                                                    the territories' pages were
+                                                    blank)
     packs/ww2/art/FLAGS.md                          the provenance of each flag
     packs/ww2/credits.json                          the flags' entries (after
                                                     the Europe map's; every
@@ -49,6 +56,8 @@ ART = os.path.join(PACK, "art")
 UA = "faction-wars-portrait-provenance/1.0 (https://github.com/TeeJS/faction-wars)"
 SIZE, FIT_W, FIT_H = 37, 35, 27
 TONE = 0.35                 # how far the flag's colours go towards "multiplied by the paper"
+PLATE_FIT = (240, 128)      # the flag on an Encyclopedia plate: as large as fits, at its own proportions
+FIRST_PLATE = 93            # facilities 1-15, units 16-92 (make_ww2_units.py)
 
 
 def hexrgb(h):
@@ -94,7 +103,12 @@ def side_by_side(pngs):
     """Several flags as one picture (a system that is several countries): the
     3:2 box cut into as many upright panels, each the middle of one flag at its
     full height, with an ink line between them."""
-    fw, fh = FIT_W, int(round(FIT_W * 2 / 3))
+    return finish(*panels(pngs, FIT_W))
+
+
+def panels(pngs, fw):
+    """The side-by-side flag `fw` wide (3:2) and the x of its seams."""
+    fh = int(round(fw * 2 / 3))
     n = len(pngs)
     widths = [(fw - (n - 1)) // n + (1 if i < (fw - (n - 1)) % n else 0) for i in range(n)]
     out = Image.new("RGBA", (fw, fh), (0, 0, 0, 0))
@@ -109,7 +123,50 @@ def side_by_side(pngs):
         if x < fw:
             seps.append(x)
             x += 1
-    return finish(out, seps)
+    return out, seps
+
+
+def plate(flag, seps, number, name):
+    """A system's Encyclopedia plate, 400 x 200, in the unit and facility
+    plates' dress (make_ww2_facilities.plate): the flag as large as fits
+    PLATE_FIT at its own proportions, a little toned to the paper, over a soft
+    shadow and edged in ink, on the look's paper inside the double border, over
+    the title strip with its number and the system's name."""
+    import make_ww2_facilities as F
+    from PIL import ImageFilter
+    fw, fh = flag.size
+    k = min(PLATE_FIT[0] / fw, PLATE_FIT[1] / fh)
+    w, h = max(1, int(round(fw * k))), max(1, int(round(fh * k)))
+    big = np.asarray(flag.resize((w, h), Image.LANCZOS), np.float64)
+    big[..., :3] = big[..., :3] * (1.0 - TONE) + big[..., :3] * (PAPER / 255.0) * TONE
+    big = Image.fromarray(np.round(big).astype(np.uint8), "RGBA")
+    base = F.paper(400, 200, number)
+    x0, y0 = (400 - w) // 2, 16 + (150 - h) // 2
+    shadow = Image.new("RGBA", base.size, INK + (0,))
+    ImageDraw.Draw(shadow).rectangle([x0 + 3, y0 + 4, x0 + w + 2, y0 + h + 3], fill=INK + (90,))
+    base.alpha_composite(shadow.filter(ImageFilter.GaussianBlur(3)))
+    base.alpha_composite(big, (x0, y0))
+    d = ImageDraw.Draw(base)
+    for sx in seps:
+        x = x0 + int(round(sx * w / fw))
+        d.line([(x, y0), (x, y0 + h - 1)], fill=INK + (225,), width=2)
+    d.rectangle([x0 - 1, y0 - 1, x0 + w, y0 + h], outline=INK + (235,), width=2)
+    s = F.SS
+    frame = Image.new("RGBA", (400 * s, 200 * s), (0, 0, 0, 0))
+    fd = ImageDraw.Draw(frame)
+    fd.rectangle([7 * s, 7 * s, 393 * s - 1, 193 * s - 1], outline=INK + (255,), width=int(1.6 * s))
+    fd.rectangle([10 * s, 10 * s, 390 * s - 1, 190 * s - 1], outline=INK + (255,), width=int(0.6 * s))
+    fd.line([(10 * s, 170 * s), (390 * s, 170 * s)], fill=INK + (255,), width=int(0.6 * s))
+    fd.line([(88 * s, 170 * s), (88 * s, 190 * s)], fill=INK + (255,), width=int(0.6 * s))
+    fd.rectangle([10 * s + 1, 170 * s + 1, 390 * s - 1, 190 * s - 1], fill=None)
+    fd.text((49 * s, 180.5 * s), "PLATE %d" % number, font=F.font(F.FONT_PLATE, 10), fill=INK + (255,), anchor="mm")
+    label = " ".join(name.upper())
+    size = 11
+    while size > 7 and fd.textlength(label, font=F.font(F.FONT_NAME, size, 500)) > 290 * s:
+        size -= 1
+    fd.text((239 * s, 180.5 * s), label, font=F.font(F.FONT_NAME, size, 500), fill=INK + (255,), anchor="mm")
+    base.alpha_composite(frame.resize((400, 200), Image.LANCZOS))
+    return base.convert("RGB")
 
 
 def finish(flag, seps):
@@ -146,7 +203,7 @@ def write_credits(flags, used):
     all system pictures) and puts them after the Europe map's."""
     path = os.path.join(PACK, "credits.json")
     doc = json.load(open(path, encoding="utf-8"))
-    ours = lambda a: a.get("files") and all(f.startswith("art/planet_sprites/") for f in a["files"])
+    ours = lambda a: a.get("files") and all(f.startswith(("art/planet_sprites/", "art/planets/")) for f in a["files"])
     assets = [a for a in doc["assets"] if not ours(a)]
     by_licence = {}
     for key, files in used.items():
@@ -155,7 +212,8 @@ def write_credits(flags, used):
             sys.exit("%s: its parts have different licences - give it credits entries of its own" % key)
         by_licence.setdefault(lic, []).append(key)
     entries = []
-    by_number = lambda f: int(os.path.splitext(os.path.basename(f))[0])
+    stem = lambda f: os.path.splitext(os.path.basename(f))[0]
+    by_number = lambda f: (0, int(stem(f)), "") if stem(f).isdigit() else (1, 0, stem(f))   # the pictures, then the plates
     pd = sorted(by_licence.pop("Public domain", []))
     if pd:
         count = len({p for k in pd for p in flags[k].get("parts", [k])})
@@ -165,7 +223,7 @@ def write_credits(flags, used):
             "author": "Wikimedia Commons contributors; each file's page, author and SHA-1 are in art/FLAGS.md",
             "source": "https://commons.wikimedia.org/wiki/Category:Flags_by_country",
             "licence": "Public domain (each file's grounds in art/FLAGS.md)",
-            "changes": "The PNG Commons renders from each SVG, fitted into 35 x 27 at its own proportions (the Baltic States: Estonia's, Latvia's and Lithuania's side by side), a little toned to the paper, edged in ink, on a 37 x 37 clear square.",
+            "changes": "The PNG Commons renders from each SVG, fitted into 35 x 27 at its own proportions (the Baltic States: Estonia's, Latvia's and Lithuania's side by side), a little toned to the paper, edged in ink, on a 37 x 37 clear square; and each system's Encyclopedia plate (art/planets/, 400 x 200), the same flag fitted into 240 x 128 on the look's paper, in the plates' frame.",
             "files": sorted((f for k in pd for f in used[k]), key=by_number),
         })
     for licence, keys in sorted(by_licence.items()):
@@ -175,7 +233,7 @@ def write_credits(flags, used):
                  "source": f["page"], "licence": licence}
             if f["licence_url"]:
                 e["licence_url"] = re.sub(r"^http://", "https://", f["licence_url"])
-            e["changes"] = "Commons' PNG rendering, fitted into 35 x 27, a little toned to the paper, edged in ink, on a 37 x 37 clear square." + \
+            e["changes"] = "Commons' PNG rendering, fitted into 35 x 27, a little toned to the paper, edged in ink, on a 37 x 37 clear square; and on each system's Encyclopedia plate (art/planets/, 400 x 200), fitted into 240 x 128." + \
                 (" Shared under the same licence." if "SA" in licence.upper() else "")
             e["files"] = sorted(used[key], key=by_number)
             entries.append(e)
@@ -273,12 +331,23 @@ def main():
             made[key] = side_by_side([pngs[p] for p in f["parts"]])
     out = os.path.join(ART, "planet_sprites")
     os.makedirs(out, exist_ok=True)
+    plates = os.path.join(ART, "planets")
+    os.makedirs(plates, exist_ok=True)
     used = {}
-    for p in planets:
+    for n, p in enumerate(planets):
         key = systems[p["id"]]["flag"]
         name = "%d.png" % p["artwork_id"]
         made[key].save(os.path.join(out, name), optimize=True)
         used.setdefault(key, []).append("art/planet_sprites/" + name)
+        # Its Encyclopedia plate: the flag large (a side-by-side one at the
+        # plate's width), numbered on from the units' plates.
+        f = flags[key]
+        if "parts" in f:
+            big, seps = panels([pngs[q] for q in f["parts"]], PLATE_FIT[0])
+        else:
+            big, seps = Image.open(pngs[key]).convert("RGBA"), []
+        plate(big, seps, FIRST_PLATE + n, p["display_name"]).save(os.path.join(plates, p["id"] + ".png"), optimize=True)
+        used[key].append("art/planets/%s.png" % p["id"])
     write_credits(flags, used)
     write_provenance(flags, systems, planets)
     print("%d systems, %d flags" % (len(planets), len(used)))

@@ -1,0 +1,294 @@
+# WWII Encyclopedia texts: where each came from
+
+The words the Encyclopedia shows for every WWII entry are in `descriptions.json` (read by
+`Art.Description`). They were written for this pack on 2026-09-30. Every fact in them was checked
+against the English Wikipedia article text listed below. Where two articles disagreed, or a claim
+could not be found in the text, it was left out. Nothing after 1945 is described.
+
+The installations and missions say what each one does in the game, using the pack's own rules
+(`facilities.json`, `missions.json`) and the manual. Only their historical sentences have
+a source listed here.
+
+Some words are kept because they are the war's own proper names, such as the Imperial Japanese
+Navy or the British Empire. `tests/ww2_words.gd` allows those. Anywhere else, the texts avoid the
+Star Wars vocabulary that test guards against.
+
+## Territories
+
+- `britain`: <https://en.wikipedia.org/wiki/Battle_of_Britain>, <https://en.wikipedia.org/wiki/The_Blitz>, <https://en.wikipedia.org/wiki/Dunkirk_evacuation>, <https://en.wikipedia.org/wiki/British_home_front_during_World_War_II>, <https://en.wikipedia.org/wiki/Normandy_landings>, <https://en.wikipedia.org/wiki/Battle_of_France>, <https://en.wikipedia.org/wiki/Alan_Brooke,_1st_Viscount_Alanbrooke>, <https://en.wikipedia.org/wiki/George_S._Patton>
+- `ireland`: <https://en.wikipedia.org/wiki/The_Emergency_(Ireland)>, <https://en.wikipedia.org/wiki/Treaty_Ports_(Ireland)>
+- `france`: <https://en.wikipedia.org/wiki/Battle_of_France>, <https://en.wikipedia.org/wiki/Vichy_France>, <https://en.wikipedia.org/wiki/Liberation_of_Paris>, <https://en.wikipedia.org/wiki/Normandy_landings>
+- `belgium`: <https://en.wikipedia.org/wiki/Belgium_in_World_War_II>, <https://en.wikipedia.org/wiki/Battle_of_the_Bulge>, <https://en.wikipedia.org/wiki/Battle_of_the_Scheldt>
+- `netherlands`: <https://en.wikipedia.org/wiki/Netherlands_in_World_War_II>, <https://en.wikipedia.org/wiki/German_bombing_of_Rotterdam>, <https://en.wikipedia.org/wiki/Dutch_famine_of_1944%E2%80%931945>
+- `switzerland`: <https://en.wikipedia.org/wiki/Switzerland_during_World_War_I_and_World_War_II>
+- `germany`: <https://en.wikipedia.org/wiki/Nazi_Germany>, <https://en.wikipedia.org/wiki/The_Holocaust>, <https://en.wikipedia.org/wiki/Battle_of_the_Ruhr>, <https://en.wikipedia.org/wiki/Battle_of_Berlin>, <https://en.wikipedia.org/wiki/German_Instrument_of_Surrender>
+- `austria`: <https://en.wikipedia.org/wiki/Anschluss>, <https://en.wikipedia.org/wiki/Mauthausen_concentration_camp>, <https://en.wikipedia.org/wiki/Moscow_Declarations>, <https://en.wikipedia.org/wiki/Vienna_offensive>, <https://en.wikipedia.org/wiki/Allied-occupied_Austria>
+- `czechoslovakia`: <https://en.wikipedia.org/wiki/Occupation_of_Czechoslovakia_(1938%E2%80%931945)>, <https://en.wikipedia.org/wiki/Protectorate_of_Bohemia_and_Moravia>, <https://en.wikipedia.org/wiki/Slovak_Republic_(1939%E2%80%931945)>, <https://en.wikipedia.org/wiki/Assassination_of_Reinhard_Heydrich>
+- `hungary`: <https://en.wikipedia.org/wiki/Hungary_in_World_War_II>, <https://en.wikipedia.org/wiki/Siege_of_Budapest>
+- `norway`: <https://en.wikipedia.org/wiki/Norwegian_campaign>, <https://en.wikipedia.org/wiki/German_occupation_of_Norway>, <https://en.wikipedia.org/wiki/Norwegian_heavy_water_sabotage>
+- `sweden`: <https://en.wikipedia.org/wiki/Sweden_during_World_War_II>, <https://en.wikipedia.org/wiki/Rescue_of_the_Danish_Jews>
+- `denmark`: <https://en.wikipedia.org/wiki/Denmark_in_World_War_II>, <https://en.wikipedia.org/wiki/Rescue_of_the_Danish_Jews>
+- `finland`: <https://en.wikipedia.org/wiki/Winter_War>, <https://en.wikipedia.org/wiki/Continuation_War>, <https://en.wikipedia.org/wiki/Lapland_War>
+- `spain`: <https://en.wikipedia.org/wiki/Spain_during_World_War_II>, <https://en.wikipedia.org/wiki/Blue_Division>
+- `portugal`: <https://en.wikipedia.org/wiki/Portugal_during_World_War_II>, <https://en.wikipedia.org/wiki/Lajes_Field>
+- `gibraltar`: <https://en.wikipedia.org/wiki/Military_history_of_Gibraltar_during_World_War_II>
+- `italy`: <https://en.wikipedia.org/wiki/Military_history_of_Italy_during_World_War_II>, <https://en.wikipedia.org/wiki/Allied_invasion_of_Sicily>, <https://en.wikipedia.org/wiki/Armistice_of_Cassibile>, <https://en.wikipedia.org/wiki/Italian_Social_Republic>
+- `sicily`: <https://en.wikipedia.org/wiki/Allied_invasion_of_Sicily>, <https://en.wikipedia.org/wiki/Sardinia>
+- `sardinia`: <https://en.wikipedia.org/wiki/Sardinia>, <https://en.wikipedia.org/wiki/Allied_invasion_of_Sicily>, <https://en.wikipedia.org/wiki/Operation_Mincemeat>, <https://en.wikipedia.org/wiki/Military_history_of_Gibraltar_during_World_War_II>
+- `yugoslavia`: <https://en.wikipedia.org/wiki/Invasion_of_Yugoslavia>, <https://en.wikipedia.org/wiki/World_War_II_in_Yugoslavia>, <https://en.wikipedia.org/wiki/Independent_State_of_Croatia>
+- `greece`: <https://en.wikipedia.org/wiki/Greco-Italian_War>, <https://en.wikipedia.org/wiki/German_invasion_of_Greece>, <https://en.wikipedia.org/wiki/Axis_occupation_of_Greece>, <https://en.wikipedia.org/wiki/Great_Famine_(Greece)>
+- `romania`: <https://en.wikipedia.org/wiki/Romania_in_World_War_II>, <https://en.wikipedia.org/wiki/Operation_Tidal_Wave>, <https://en.wikipedia.org/wiki/1944_Romanian_coup_d'%C3%A9tat>
+- `bulgaria`: <https://en.wikipedia.org/wiki/Bulgaria_during_World_War_II>, <https://en.wikipedia.org/wiki/German_invasion_of_Greece>, <https://en.wikipedia.org/wiki/Invasion_of_Yugoslavia>
+- `crete`: <https://en.wikipedia.org/wiki/Battle_of_Crete>, <https://en.wikipedia.org/wiki/Axis_occupation_of_Greece>
+- `poland`: <https://en.wikipedia.org/wiki/Invasion_of_Poland>, <https://en.wikipedia.org/wiki/Occupation_of_Poland_(1939%E2%80%931945)>, <https://en.wikipedia.org/wiki/The_Holocaust_in_Poland>, <https://en.wikipedia.org/wiki/Warsaw_Uprising>, <https://en.wikipedia.org/wiki/Polish_government-in-exile>
+- `baltic_states`: <https://en.wikipedia.org/wiki/Occupation_of_the_Baltic_states>, <https://en.wikipedia.org/wiki/Soviet_occupation_of_the_Baltic_states_(1940)>, <https://en.wikipedia.org/wiki/The_Holocaust_in_Lithuania>, <https://en.wikipedia.org/wiki/Estonia_in_World_War_II>
+- `belarus`: <https://en.wikipedia.org/wiki/Byelorussian_Soviet_Socialist_Republic>, <https://en.wikipedia.org/wiki/German_occupation_of_Byelorussia_during_World_War_II>, <https://en.wikipedia.org/wiki/Operation_Bagration>
+- `ukraine`: <https://en.wikipedia.org/wiki/Reichskommissariat_Ukraine>, <https://en.wikipedia.org/wiki/Battle_of_Kiev_(1941)>, <https://en.wikipedia.org/wiki/Babi_Yar>, <https://en.wikipedia.org/wiki/Eastern_Front_(World_War_II)>
+- `russia`: <https://en.wikipedia.org/wiki/Battle_of_Moscow>, <https://en.wikipedia.org/wiki/Siege_of_Leningrad>, <https://en.wikipedia.org/wiki/Battle_of_Stalingrad>, <https://en.wikipedia.org/wiki/Battle_of_Kursk>, <https://en.wikipedia.org/wiki/Operation_Barbarossa>
+- `caucasus`: <https://en.wikipedia.org/wiki/Battle_of_the_Caucasus>, <https://en.wikipedia.org/wiki/Case_Blue>, <https://en.wikipedia.org/wiki/Operation_Lentil_(Caucasus)>
+- `urals`: <https://en.wikipedia.org/wiki/Ural_Mountains>, <https://en.wikipedia.org/wiki/Chelyabinsk>, <https://en.wikipedia.org/wiki/Chelyabinsk_Tractor_Plant>, <https://en.wikipedia.org/wiki/Soviet_Union_in_World_War_II>
+- `kazakhstan`: <https://en.wikipedia.org/wiki/Kazakh_Soviet_Socialist_Republic>, <https://en.wikipedia.org/wiki/Kazakhstan>, <https://en.wikipedia.org/wiki/316th_Rifle_Division>, <https://en.wikipedia.org/wiki/Operation_Lentil_(Caucasus)>, <https://en.wikipedia.org/wiki/Population_transfer_in_the_Soviet_Union>
+- `siberia`: <https://en.wikipedia.org/wiki/Siberia>, <https://en.wikipedia.org/wiki/Trans-Siberian_Railway>, <https://en.wikipedia.org/wiki/Battle_of_Moscow>, <https://en.wikipedia.org/wiki/Persian_Corridor>
+- `morocco`: <https://en.wikipedia.org/wiki/Operation_Torch>, <https://en.wikipedia.org/wiki/Casablanca_Conference>, <https://en.wikipedia.org/wiki/French_protectorate_in_Morocco>, <https://en.wikipedia.org/wiki/World_War_II_by_country>
+- `algeria`: <https://en.wikipedia.org/wiki/French_Algeria>, <https://en.wikipedia.org/wiki/Operation_Torch>, <https://en.wikipedia.org/wiki/S%C3%A9tif_and_Guelma_massacre>, <https://en.wikipedia.org/wiki/World_War_II_by_country>
+- `tunisia`: <https://en.wikipedia.org/wiki/Tunisian_campaign>, <https://en.wikipedia.org/wiki/French_protectorate_of_Tunisia>, <https://en.wikipedia.org/wiki/World_War_II_by_country>
+- `libya`: <https://en.wikipedia.org/wiki/Italian_Libya>, <https://en.wikipedia.org/wiki/Idris_of_Libya>, <https://en.wikipedia.org/wiki/Libyan_Arab_Force>, <https://en.wikipedia.org/wiki/Siege_of_Tobruk>, <https://en.wikipedia.org/wiki/Western_Desert_campaign>, <https://en.wikipedia.org/wiki/Tunisian_campaign>, <https://en.wikipedia.org/wiki/World_War_II_by_country>
+- `egypt`: <https://en.wikipedia.org/wiki/Kingdom_of_Egypt>, <https://en.wikipedia.org/wiki/1942_Abdeen_Palace_incident>, <https://en.wikipedia.org/wiki/First_Battle_of_El_Alamein>, <https://en.wikipedia.org/wiki/Second_Battle_of_El_Alamein>, <https://en.wikipedia.org/wiki/Ahmad_Maher_Pasha>, <https://en.wikipedia.org/wiki/World_War_II_by_country>
+- `malta`: <https://en.wikipedia.org/wiki/Siege_of_Malta_(World_War_II)>, <https://en.wikipedia.org/wiki/Operation_Pedestal>, <https://en.wikipedia.org/wiki/George_Cross>, <https://en.wikipedia.org/wiki/World_War_II_by_country>
+- `turkey`: <https://en.wikipedia.org/wiki/World_War_II_by_country>
+- `syria`: <https://en.wikipedia.org/wiki/Syria%E2%80%93Lebanon_campaign>, <https://en.wikipedia.org/wiki/World_War_II_by_country>
+- `palestine`: <https://en.wikipedia.org/wiki/Mandatory_Palestine>, <https://en.wikipedia.org/wiki/Jewish_Brigade>, <https://en.wikipedia.org/wiki/World_War_II_by_country>
+- `iraq`: <https://en.wikipedia.org/wiki/Anglo-Iraqi_War>, <https://en.wikipedia.org/wiki/Farhud>, <https://en.wikipedia.org/wiki/Syria%E2%80%93Lebanon_campaign>, <https://en.wikipedia.org/wiki/World_War_II_by_country>
+- `persia`: <https://en.wikipedia.org/wiki/Anglo-Soviet_invasion_of_Iran>, <https://en.wikipedia.org/wiki/Persian_Corridor>, <https://en.wikipedia.org/wiki/Tehran_Conference>, <https://en.wikipedia.org/wiki/World_War_II_by_country>
+- `iceland`: <https://en.wikipedia.org/wiki/Invasion_of_Iceland>, <https://en.wikipedia.org/wiki/Iceland_in_World_War_II>, <https://en.wikipedia.org/wiki/World_War_II_by_country>
+- `greenland`: <https://en.wikipedia.org/wiki/Greenland_in_World_War_II>, <https://en.wikipedia.org/wiki/Cryolite>, <https://en.wikipedia.org/wiki/Denmark_in_World_War_II>
+- `azores`: <https://en.wikipedia.org/wiki/Lajes_Field>, <https://en.wikipedia.org/wiki/Portugal_during_World_War_II>, <https://en.wikipedia.org/wiki/Azores>
+- `newfoundland`: <https://en.wikipedia.org/wiki/Military_history_of_Newfoundland_during_World_War_II>, <https://en.wikipedia.org/wiki/Atlantic_Charter>, <https://en.wikipedia.org/wiki/Placentia_Bay>, <https://en.wikipedia.org/wiki/World_War_II_by_country>
+- `united_states`: <https://en.wikipedia.org/wiki/Lend-Lease>, <https://en.wikipedia.org/wiki/Attack_on_Pearl_Harbor>, <https://en.wikipedia.org/wiki/Manhattan_Project>, <https://en.wikipedia.org/wiki/Atomic_bombings_of_Hiroshima_and_Nagasaki>
+- `canada`: <https://en.wikipedia.org/wiki/Canada_in_World_War_II>, <https://en.wikipedia.org/wiki/British_Commonwealth_Air_Training_Plan>, <https://en.wikipedia.org/wiki/Dieppe_Raid>, <https://en.wikipedia.org/wiki/Juno_Beach>
+- `alaska`: <https://en.wikipedia.org/wiki/Aleutian_Islands_campaign>, <https://en.wikipedia.org/wiki/Alaska_Highway>, <https://en.wikipedia.org/wiki/Territory_of_Alaska>
+- `mexico`: <https://en.wikipedia.org/wiki/Mexico_during_World_War_II>, <https://en.wikipedia.org/wiki/201st_Fighter_Squadron>, <https://en.wikipedia.org/wiki/Bracero_Program>, <https://en.wikipedia.org/wiki/World_War_II_by_country>
+- `panama`: <https://en.wikipedia.org/wiki/Panama_Canal>, <https://en.wikipedia.org/wiki/History_of_Panama_(1904%E2%80%931964)>, <https://en.wikipedia.org/wiki/Arnulfo_Arias>, <https://en.wikipedia.org/wiki/Panama>, <https://en.wikipedia.org/wiki/World_War_II_by_country>
+- `japan`: <https://en.wikipedia.org/wiki/Empire_of_Japan>, <https://en.wikipedia.org/wiki/Attack_on_Pearl_Harbor>, <https://en.wikipedia.org/wiki/Bombing_of_Tokyo>, <https://en.wikipedia.org/wiki/Surrender_of_Japan>
+- `korea`: <https://en.wikipedia.org/wiki/Korea_under_Japanese_rule>, <https://en.wikipedia.org/wiki/Provisional_Government_of_the_Republic_of_Korea>, <https://en.wikipedia.org/wiki/World_War_II_by_country>
+- `manchuria`: <https://en.wikipedia.org/wiki/Manchukuo>, <https://en.wikipedia.org/wiki/Battles_of_Khalkhin_Gol>, <https://en.wikipedia.org/wiki/Unit_731>, <https://en.wikipedia.org/wiki/Soviet_invasion_of_Manchuria>
+- `china`: <https://en.wikipedia.org/wiki/Second_Sino-Japanese_War>, <https://en.wikipedia.org/wiki/Nanjing_Massacre>, <https://en.wikipedia.org/wiki/Operation_Ichi-Go>
+- `formosa`: <https://en.wikipedia.org/wiki/Taiwan_under_Japanese_rule>, <https://en.wikipedia.org/wiki/Formosa_Air_Battle>
+- `indochina`: <https://en.wikipedia.org/wiki/Japanese_invasion_of_French_Indochina>, <https://en.wikipedia.org/wiki/Japanese_coup_d'%C3%A9tat_in_French_Indochina>, <https://en.wikipedia.org/wiki/Vietnamese_famine_of_1944%E2%80%931945>, <https://en.wikipedia.org/wiki/World_War_II_by_country>
+- `siam`: <https://en.wikipedia.org/wiki/Thailand_in_World_War_II>, <https://en.wikipedia.org/wiki/Franco-Thai_War>, <https://en.wikipedia.org/wiki/Burma_Railway>, <https://en.wikipedia.org/wiki/World_War_II_by_country>
+- `burma`: <https://en.wikipedia.org/wiki/Burma_campaign>, <https://en.wikipedia.org/wiki/Burma_Road>, <https://en.wikipedia.org/wiki/Burma_Railway>, <https://en.wikipedia.org/wiki/World_War_II_by_country>
+- `malaya`: <https://en.wikipedia.org/wiki/Malayan_campaign>, <https://en.wikipedia.org/wiki/Fall_of_Singapore>, <https://en.wikipedia.org/wiki/Sook_Ching>, <https://en.wikipedia.org/wiki/Japanese_occupation_of_Malaya>, <https://en.wikipedia.org/wiki/World_War_II_by_country>
+- `philippines`: <https://en.wikipedia.org/wiki/Philippines_campaign_(1941%E2%80%931942)>, <https://en.wikipedia.org/wiki/Bataan_Death_March>, <https://en.wikipedia.org/wiki/Battle_of_Leyte_Gulf>, <https://en.wikipedia.org/wiki/Battle_of_Manila_(1945)>, <https://en.wikipedia.org/wiki/World_War_II_by_country>
+- `dutch_east_indies`: <https://en.wikipedia.org/wiki/Dutch_East_Indies_campaign>, <https://en.wikipedia.org/wiki/Japanese_occupation_of_the_Dutch_East_Indies>, <https://en.wikipedia.org/wiki/Battle_of_the_Java_Sea>, <https://en.wikipedia.org/wiki/Proclamation_of_Indonesian_Independence>
+- `india`: <https://en.wikipedia.org/wiki/India_in_World_War_II>, <https://en.wikipedia.org/wiki/Quit_India_Movement>, <https://en.wikipedia.org/wiki/Bengal_famine_of_1943>, <https://en.wikipedia.org/wiki/Battle_of_Imphal>, <https://en.wikipedia.org/wiki/World_War_II_by_country>
+- `ceylon`: <https://en.wikipedia.org/wiki/Air_raid_on_Ceylon_(5_April_1942)>, <https://en.wikipedia.org/wiki/British_Ceylon>, <https://en.wikipedia.org/wiki/South_East_Asia_Command>, <https://en.wikipedia.org/wiki/World_War_II_by_country>
+- `afghanistan`: <https://en.wikipedia.org/wiki/Kingdom_of_Afghanistan>, <https://en.wikipedia.org/wiki/World_War_II_by_country>
+- `hawaii`: <https://en.wikipedia.org/wiki/Territory_of_Hawaii>, <https://en.wikipedia.org/wiki/Attack_on_Pearl_Harbor>
+- `midway`: <https://en.wikipedia.org/wiki/Battle_of_Midway>, <https://en.wikipedia.org/wiki/Midway_Atoll>
+- `wake_island`: <https://en.wikipedia.org/wiki/Battle_of_Wake_Island>, <https://en.wikipedia.org/wiki/Wake_Island>
+- `marshall_islands`: <https://en.wikipedia.org/wiki/Gilbert_and_Marshall_Islands_campaign>, <https://en.wikipedia.org/wiki/South_Seas_Mandate>, <https://en.wikipedia.org/wiki/Battle_of_Kwajalein>, <https://en.wikipedia.org/wiki/Battle_of_Eniwetok>
+- `marianas`: <https://en.wikipedia.org/wiki/Mariana_and_Palau_Islands_campaign>, <https://en.wikipedia.org/wiki/Battle_of_Saipan>, <https://en.wikipedia.org/wiki/Battle_of_Guam_(1944)>, <https://en.wikipedia.org/wiki/Battle_of_Tinian>
+- `gilbert_islands`: <https://en.wikipedia.org/wiki/Battle_of_Tarawa>, <https://en.wikipedia.org/wiki/Battle_of_Makin>, <https://en.wikipedia.org/wiki/Gilbert_and_Ellice_Islands>, <https://en.wikipedia.org/wiki/Gilbert_and_Marshall_Islands_campaign>
+- `new_guinea`: <https://en.wikipedia.org/wiki/New_Guinea_campaign>, <https://en.wikipedia.org/wiki/Kokoda_Track_campaign>, <https://en.wikipedia.org/wiki/Battle_of_Milne_Bay>, <https://en.wikipedia.org/wiki/World_War_II_by_country>
+- `solomon_islands`: <https://en.wikipedia.org/wiki/Guadalcanal_campaign>, <https://en.wikipedia.org/wiki/World_War_II_by_country>
+- `australia`: <https://en.wikipedia.org/wiki/Australia_in_World_War_II>, <https://en.wikipedia.org/wiki/Bombing_of_Darwin>, <https://en.wikipedia.org/wiki/Attack_on_Sydney_Harbour>
+- `new_zealand`: <https://en.wikipedia.org/wiki/Military_history_of_New_Zealand_during_World_War_II>, <https://en.wikipedia.org/wiki/World_War_II_by_country>
+- `fiji`: <https://en.wikipedia.org/wiki/History_of_Fiji>, <https://en.wikipedia.org/wiki/World_War_II_by_country>
+- `brazil`: <https://en.wikipedia.org/wiki/Brazil_in_World_War_II>, <https://en.wikipedia.org/wiki/Brazilian_Expeditionary_Force>, <https://en.wikipedia.org/wiki/World_War_II_by_country>
+- `argentina`: <https://en.wikipedia.org/wiki/Argentina_during_World_War_II>, <https://en.wikipedia.org/wiki/World_War_II_by_country>
+- `chile`: <https://en.wikipedia.org/wiki/Chile_during_the_Second_World_War>, <https://en.wikipedia.org/wiki/World_War_II_by_country>
+- `venezuela`: <https://en.wikipedia.org/wiki/Venezuela_during_World_War_II>, <https://en.wikipedia.org/wiki/Operation_Neuland>
+- `west_africa`: <https://en.wikipedia.org/wiki/French_West_Africa>, <https://en.wikipedia.org/wiki/Battle_of_Dakar>, <https://en.wikipedia.org/wiki/Thiaroye_massacre>, <https://en.wikipedia.org/wiki/World_War_II_by_country>
+- `congo`: <https://en.wikipedia.org/wiki/Belgian_Congo>, <https://en.wikipedia.org/wiki/World_War_II_by_country>
+- `east_africa`: <https://en.wikipedia.org/wiki/East_African_campaign_(World_War_II)>, <https://en.wikipedia.org/wiki/Gideon_Force>, <https://en.wikipedia.org/wiki/World_War_II_by_country>
+- `south_africa`: <https://en.wikipedia.org/wiki/Military_history_of_South_Africa_during_World_War_II>, <https://en.wikipedia.org/wiki/World_War_II_by_country>
+- `madagascar`: <https://en.wikipedia.org/wiki/Battle_of_Madagascar>, <https://en.wikipedia.org/wiki/Madagascar_Plan>, <https://en.wikipedia.org/wiki/World_War_II_by_country>
+
+## Units
+
+- `bismarck_class_battleship`: <https://en.wikipedia.org/wiki/Bismarck-class_battleship>
+- `scharnhorst_class_battlecruiser`: <https://en.wikipedia.org/wiki/Scharnhorst-class_battleship>
+- `hipper_class_heavy_cruiser`: <https://en.wikipedia.org/wiki/Admiral_Hipper-class_cruiser>
+- `axis_destroyer_flotilla`: <https://en.wikipedia.org/wiki/Destroyer>, <https://en.wikipedia.org/wiki/Battles_of_Narvik>, <https://en.wikipedia.org/wiki/Tokyo_Express>
+- `u_boat_flotilla`: <https://en.wikipedia.org/wiki/U-boat>, <https://en.wikipedia.org/wiki/Type_VII_submarine>, <https://en.wikipedia.org/wiki/Wolfpack_(naval_tactic)>
+- `axis_transport_convoy`: <https://en.wikipedia.org/wiki/Operation_Hannibal>, <https://en.wikipedia.org/wiki/MV_Wilhelm_Gustloff>
+- `axis_supply_convoy`: <https://en.wikipedia.org/wiki/Battle_of_the_Duisburg_Convoy>, <https://en.wikipedia.org/wiki/Force_K>, <https://en.wikipedia.org/wiki/Battle_of_the_Mediterranean>
+- `littorio_class_battleship`: <https://en.wikipedia.org/wiki/Littorio-class_battleship>
+- `zara_class_heavy_cruiser`: <https://en.wikipedia.org/wiki/Zara-class_cruiser>
+- `yamato_class_battleship`: <https://en.wikipedia.org/wiki/Yamato-class_battleship>
+- `shokaku_class_carrier`: <https://en.wikipedia.org/wiki/Sh%C5%8Dkaku-class_aircraft_carrier>
+- `takao_class_heavy_cruiser`: <https://en.wikipedia.org/wiki/Takao-class_cruiser>
+- `japanese_transport_convoy`: <https://en.wikipedia.org/wiki/Battle_of_the_Bismarck_Sea>, <https://en.wikipedia.org/wiki/Allied_submarines_in_the_Pacific_War>, <https://en.wikipedia.org/wiki/Hell_ship>
+- `king_george_v_class_battleship`: <https://en.wikipedia.org/wiki/King_George_V-class_battleship_(1939)>
+- `illustrious_class_carrier`: <https://en.wikipedia.org/wiki/Illustrious-class_aircraft_carrier>
+- `town_class_cruiser`: <https://en.wikipedia.org/wiki/Town-class_cruiser_(1936)>
+- `allied_destroyer_flotilla`: <https://en.wikipedia.org/wiki/Destroyer>, <https://en.wikipedia.org/wiki/Battles_of_Narvik>, <https://en.wikipedia.org/wiki/Dunkirk_evacuation>, <https://en.wikipedia.org/wiki/Destroyers-for-bases_deal>
+- `flower_class_corvette_group`: <https://en.wikipedia.org/wiki/Flower-class_corvette>
+- `liberty_ship_convoy`: <https://en.wikipedia.org/wiki/Liberty_ship>
+- `troopship_convoy`: <https://en.wikipedia.org/wiki/Troopship>, <https://en.wikipedia.org/wiki/RMS_Queen_Mary>, <https://en.wikipedia.org/wiki/RMS_Lancastria>
+- `iowa_class_battleship`: <https://en.wikipedia.org/wiki/Iowa-class_battleship>
+- `essex_class_carrier`: <https://en.wikipedia.org/wiki/Essex-class_aircraft_carrier>
+- `cleveland_class_cruiser`: <https://en.wikipedia.org/wiki/Cleveland-class_cruiser>
+- `fletcher_class_destroyer_flotilla`: <https://en.wikipedia.org/wiki/Fletcher-class_destroyer>
+- `gato_class_submarine_flotilla`: <https://en.wikipedia.org/wiki/Gato-class_submarine>
+- `gangut_class_battleship`: <https://en.wikipedia.org/wiki/Gangut-class_battleship>
+- `kirov_class_cruiser`: <https://en.wikipedia.org/wiki/Kirov-class_cruiser>
+- `north_carolina_class_battleship`: <https://en.wikipedia.org/wiki/North_Carolina-class_battleship>
+- `atomic_bomber_wing`: <https://en.wikipedia.org/wiki/Atomic_bombings_of_Hiroshima_and_Nagasaki>, <https://en.wikipedia.org/wiki/509th_Composite_Group>, <https://en.wikipedia.org/wiki/Silverplate>, <https://en.wikipedia.org/wiki/Boeing_B-29_Superfortress>
+- `bf_109_squadron`: <https://en.wikipedia.org/wiki/Messerschmitt_Bf_109>
+- `fw_190_squadron`: <https://en.wikipedia.org/wiki/Focke-Wulf_Fw_190>, <https://en.wikipedia.org/wiki/Junkers_Ju_87>
+- `ju_87_stuka_squadron`: <https://en.wikipedia.org/wiki/Junkers_Ju_87>
+- `a6m_zero_squadron`: <https://en.wikipedia.org/wiki/Mitsubishi_A6M_Zero>
+- `spitfire_squadron`: <https://en.wikipedia.org/wiki/Supermarine_Spitfire>
+- `p_51_mustang_squadron`: <https://en.wikipedia.org/wiki/North_American_P-51_Mustang>
+- `sbd_dauntless_squadron`: <https://en.wikipedia.org/wiki/Douglas_SBD_Dauntless>
+- `lancaster_squadron`: <https://en.wikipedia.org/wiki/Avro_Lancaster>
+- `waffen_ss_division`: <https://en.wikipedia.org/wiki/Waffen-SS>, <https://en.wikipedia.org/wiki/Le_Paradis_massacre>, <https://en.wikipedia.org/wiki/Oradour-sur-Glane_massacre>
+- `axis_naval_infantry_battalion`: <https://en.wikipedia.org/wiki/1st_San_Marco_Regiment>, <https://en.wikipedia.org/wiki/Kriegsmarine>, <https://en.wikipedia.org/wiki/1st_Marine_Division_(Wehrmacht)>, <https://en.wikipedia.org/wiki/Battle_of_Westerplatte>
+- `wehrmacht_infantry_division`: <https://en.wikipedia.org/wiki/German_Army_(1935%E2%80%931945)>, <https://en.wikipedia.org/wiki/Panzer_division_(Wehrmacht)>
+- `panzer_division`: <https://en.wikipedia.org/wiki/Panzer_division_(Wehrmacht)>
+- `fallschirmjager_division`: <https://en.wikipedia.org/wiki/Fallschirmj%C3%A4ger>, <https://en.wikipedia.org/wiki/Battle_of_Crete>
+- `royal_marines_brigade`: <https://en.wikipedia.org/wiki/Royal_Marines>
+- `british_infantry_division`: <https://en.wikipedia.org/wiki/British_Army_during_the_Second_World_War>, <https://en.wikipedia.org/wiki/Second_Battle_of_El_Alamein>
+- `chinese_infantry_division`: <https://en.wikipedia.org/wiki/National_Revolutionary_Army>, <https://en.wikipedia.org/wiki/German-trained_divisions_of_the_National_Revolutionary_Army>, <https://en.wikipedia.org/wiki/Chinese_Expeditionary_Force>
+- `soviet_guards_rifle_division`: <https://en.wikipedia.org/wiki/Guards_unit_(Soviet_Union)>
+- `us_marine_division`: <https://en.wikipedia.org/wiki/United_States_Marine_Corps>, <https://en.wikipedia.org/wiki/1st_Marine_Division>
+- `abwehr_agents`: <https://en.wikipedia.org/wiki/Abwehr>
+- `sd_intelligence_cell`: <https://en.wikipedia.org/wiki/Sicherheitsdienst>
+- `brandenburgers`: <https://en.wikipedia.org/wiki/Brandenburgers>
+- `kempeitai_operatives`: <https://en.wikipedia.org/wiki/Kempeitai>
+- `resistance_cell`: <https://en.wikipedia.org/wiki/Resistance_during_World_War_II>, <https://en.wikipedia.org/wiki/French_Resistance>
+- `commandos`: <https://en.wikipedia.org/wiki/Commandos_(United_Kingdom)>, <https://en.wikipedia.org/wiki/St_Nazaire_Raid>
+- `photo_reconnaissance_flight`: <https://en.wikipedia.org/wiki/Sidney_Cotton>, <https://en.wikipedia.org/wiki/RAF_Medmenham>, <https://en.wikipedia.org/wiki/No._1_Photographic_Reconnaissance_Unit_RAF>
+- `soe_agents`: <https://en.wikipedia.org/wiki/Special_Operations_Executive>, <https://en.wikipedia.org/wiki/Assassination_of_Reinhard_Heydrich>, <https://en.wikipedia.org/wiki/Norwegian_heavy_water_sabotage>
+- `macchi_c202_squadron`: <https://en.wikipedia.org/wiki/Macchi_C.202_Folgore>
+- `ki_43_oscar_squadron`: <https://en.wikipedia.org/wiki/Nakajima_Ki-43_Hayabusa>
+- `d3a_val_squadron`: <https://en.wikipedia.org/wiki/Aichi_D3A>
+- `italian_infantry_division`: <https://en.wikipedia.org/wiki/Royal_Italian_Army_during_World_War_II>, <https://en.wikipedia.org/wiki/Royal_Italian_Army>
+- `alpini_division`: <https://en.wikipedia.org/wiki/Alpini>, <https://en.wikipedia.org/wiki/Italian_Army_in_Russia>, <https://en.wikipedia.org/wiki/Battle_of_Nikolayevka>
+- `japanese_infantry_division`: <https://en.wikipedia.org/wiki/Organization_of_the_Imperial_Japanese_Army>, <https://en.wikipedia.org/wiki/Imperial_Japanese_Army>
+- `snlf_brigade`: <https://en.wikipedia.org/wiki/Special_Naval_Landing_Forces>
+- `hurricane_squadron`: <https://en.wikipedia.org/wiki/Hawker_Hurricane>
+- `f4f_wildcat_squadron`: <https://en.wikipedia.org/wiki/Grumman_F4F_Wildcat>
+- `f6f_hellcat_squadron`: <https://en.wikipedia.org/wiki/Grumman_F6F_Hellcat>
+- `tbf_avenger_squadron`: <https://en.wikipedia.org/wiki/Grumman_TBF_Avenger>
+- `yak_9_squadron`: <https://en.wikipedia.org/wiki/Yakovlev_Yak-9>
+- `il_2_sturmovik_squadron`: <https://en.wikipedia.org/wiki/Ilyushin_Il-2>
+- `p_40_warhawk_squadron`: <https://en.wikipedia.org/wiki/Curtiss_P-40_Warhawk>
+- `dewoitine_d520_squadron`: <https://en.wikipedia.org/wiki/Dewoitine_D.520>
+- `allied_naval_infantry_battalion`: <https://en.wikipedia.org/wiki/Russian_Naval_Infantry>, <https://en.wikipedia.org/wiki/Royal_Marines>, <https://en.wikipedia.org/wiki/United_States_Marine_Corps>
+- `us_infantry_division`: <https://en.wikipedia.org/wiki/Triangular_division>, <https://en.wikipedia.org/wiki/Army_Ground_Forces>, <https://en.wikipedia.org/wiki/United_States_Army>
+- `us_armored_division`: <https://en.wikipedia.org/wiki/Army_Ground_Forces>, <https://en.wikipedia.org/wiki/Triangular_division>, <https://en.wikipedia.org/wiki/Combat_command>
+- `soviet_rifle_division`: <https://en.wikipedia.org/wiki/List_of_infantry_divisions_of_the_Soviet_Union_1917%E2%80%931957>, <https://en.wikipedia.org/wiki/Division_(military)>
+- `guards_tank_corps`: <https://en.wikipedia.org/wiki/Tank_corps_(Soviet_Union)>, <https://en.wikipedia.org/wiki/2nd_Guards_Tank_Corps>
+- `french_infantry_division`: <https://en.wikipedia.org/wiki/Battle_of_France>, <https://en.wikipedia.org/wiki/Dunkirk_evacuation>, <https://en.wikipedia.org/wiki/French_Expeditionary_Corps_(1943%E2%80%9344)>
+- `commonwealth_division`: <https://en.wikipedia.org/wiki/9th_Division_(Australia)>, <https://en.wikipedia.org/wiki/Indian_Army_during_World_War_II>, <https://en.wikipedia.org/wiki/Second_Battle_of_El_Alamein>, <https://en.wikipedia.org/wiki/1st_Canadian_Division>
+
+## Installations
+
+- `headquarters`: game rules only
+- `shipyard`: game rules only
+- `training_facility`: game rules only
+- `construction_yard`: game rules only
+- `advanced_shipyard`: <https://en.wikipedia.org/wiki/Liberty_ship>
+- `advanced_training_facility`: game rules only
+- `advanced_construction_yard`: <https://en.wikipedia.org/wiki/Seabee>
+- `mine`: game rules only
+- `refinery`: game rules only
+- `minefield`: <https://en.wikipedia.org/wiki/Operation_Starvation>
+- `coastal_battery`: <https://en.wikipedia.org/wiki/Atlantic_Wall>
+- `fortifications`: game rules only
+- `hardened_airbase`: <https://en.wikipedia.org/wiki/Battle_of_Britain>
+- `heavy_coastal_battery`: game rules only
+- `fortress_line`: game rules only
+
+## Missions
+
+- `diplomacy`: game rules only
+- `rescue`: game rules only
+- `sabotage`: game rules only
+- `espionage`: game rules only
+- `reconnaissance`: game rules only
+- `recruitment`: game rules only
+- `abduction`: game rules only
+- `ship_design_research`: game rules only
+- `facility_design_research`: game rules only
+- `troop_training_research`: game rules only
+- `incite_uprising`: game rules only
+- `sabotage_atomic_program`: game rules only
+- `subdue_uprising`: game rules only
+- `assassination`: <https://en.wikipedia.org/wiki/Operation_Anthropoid>
+
+## People
+
+- `hitler`: <https://en.wikipedia.org/wiki/Adolf_Hitler>
+- `mussolini`: <https://en.wikipedia.org/wiki/Benito_Mussolini>
+- `tojo`: <https://en.wikipedia.org/wiki/Hideki_Tojo>
+- `goring`: <https://en.wikipedia.org/wiki/Hermann_G%C3%B6ring>
+- `goebbels`: <https://en.wikipedia.org/wiki/Joseph_Goebbels>
+- `himmler`: <https://en.wikipedia.org/wiki/Heinrich_Himmler>
+- `canaris`: <https://en.wikipedia.org/wiki/Wilhelm_Canaris>
+- `speer`: <https://en.wikipedia.org/wiki/Albert_Speer>
+- `rommel`: <https://en.wikipedia.org/wiki/Erwin_Rommel>
+- `guderian`: <https://en.wikipedia.org/wiki/Heinz_Guderian>, <https://en.wikipedia.org/wiki/Erich_von_Manstein>
+- `manstein`: <https://en.wikipedia.org/wiki/Erich_von_Manstein>
+- `kesselring`: <https://en.wikipedia.org/wiki/Albert_Kesselring>
+- `donitz`: <https://en.wikipedia.org/wiki/Karl_D%C3%B6nitz>
+- `raeder`: <https://en.wikipedia.org/wiki/Erich_Raeder>
+- `skorzeny`: <https://en.wikipedia.org/wiki/Otto_Skorzeny>, <https://en.wikipedia.org/wiki/Benito_Mussolini>
+- `yamamoto`: <https://en.wikipedia.org/wiki/Isoroku_Yamamoto>
+- `nagumo`: <https://en.wikipedia.org/wiki/Ch%C5%ABichi_Nagumo>
+- `yamashita`: <https://en.wikipedia.org/wiki/Tomoyuki_Yamashita>
+- `graziani`: <https://en.wikipedia.org/wiki/Rodolfo_Graziani>
+- `ciano`: <https://en.wikipedia.org/wiki/Galeazzo_Ciano>, <https://en.wikipedia.org/wiki/Benito_Mussolini>
+- `churchill`: <https://en.wikipedia.org/wiki/Winston_Churchill>
+- `roosevelt`: <https://en.wikipedia.org/wiki/Franklin_D._Roosevelt>
+- `stalin`: <https://en.wikipedia.org/wiki/Joseph_Stalin>, <https://en.wikipedia.org/wiki/Benito_Mussolini>
+- `chiang_kai_shek`: <https://en.wikipedia.org/wiki/Chiang_Kai-shek>
+- `de_gaulle`: <https://en.wikipedia.org/wiki/Charles_de_Gaulle>
+- `eisenhower`: <https://en.wikipedia.org/wiki/Dwight_D._Eisenhower>
+- `montgomery`: <https://en.wikipedia.org/wiki/Bernard_Montgomery>
+- `patton`: <https://en.wikipedia.org/wiki/George_S._Patton>
+- `zhukov`: <https://en.wikipedia.org/wiki/Georgy_Zhukov>
+- `macarthur`: <https://en.wikipedia.org/wiki/Douglas_MacArthur>
+- `nimitz`: <https://en.wikipedia.org/wiki/Chester_W._Nimitz>, <https://en.wikipedia.org/wiki/Ernest_J._King>
+- `halsey`: <https://en.wikipedia.org/wiki/William_Halsey_Jr.>
+- `cunningham`: <https://en.wikipedia.org/wiki/Andrew_Cunningham,_1st_Viscount_Cunningham_of_Hyndhope>
+- `alanbrooke`: <https://en.wikipedia.org/wiki/Alan_Brooke,_1st_Viscount_Alanbrooke>
+- `dowding`: <https://en.wikipedia.org/wiki/Hugh_Dowding>
+- `mountbatten`: <https://en.wikipedia.org/wiki/Lord_Mountbatten>
+- `slim`: <https://en.wikipedia.org/wiki/William_Slim,_1st_Viscount_Slim>
+- `bradley`: <https://en.wikipedia.org/wiki/Omar_Bradley>
+- `konev`: <https://en.wikipedia.org/wiki/Ivan_Konev>
+- `donovan`: <https://en.wikipedia.org/wiki/William_J._Donovan>
+- `turing`: <https://en.wikipedia.org/wiki/Alan_Turing>
+- `oppenheimer`: <https://en.wikipedia.org/wiki/J._Robert_Oppenheimer>
+- `stilwell`: <https://en.wikipedia.org/wiki/Joseph_Stilwell>
+- `leclerc`: <https://en.wikipedia.org/wiki/Philippe_Leclerc_de_Hauteclocque>
+- `model`: <https://en.wikipedia.org/wiki/Walter_Model>
+- `rundstedt`: <https://en.wikipedia.org/wiki/Gerd_von_Rundstedt>
+- `student`: <https://en.wikipedia.org/wiki/Kurt_Student>
+- `galland`: <https://en.wikipedia.org/wiki/Adolf_Galland>
+- `lutjens`: <https://en.wikipedia.org/wiki/G%C3%BCnther_L%C3%BCtjens>
+- `ozawa`: <https://en.wikipedia.org/wiki/Jisabur%C5%8D_Ozawa>
+- `homma`: <https://en.wikipedia.org/wiki/Masaharu_Homma>, <https://en.wikipedia.org/wiki/Bataan_Death_March>, <https://en.wikipedia.org/wiki/Douglas_MacArthur>
+- `balbo`: <https://en.wikipedia.org/wiki/Italo_Balbo>
+- `messe`: <https://en.wikipedia.org/wiki/Giovanni_Messe>
+- `kurusu`: <https://en.wikipedia.org/wiki/Sabur%C5%8D_Kurusu>
+- `marshall`: <https://en.wikipedia.org/wiki/George_C._Marshall>, <https://en.wikipedia.org/wiki/Dwight_D._Eisenhower>, <https://en.wikipedia.org/wiki/Ernest_J._King>
+- `king`: <https://en.wikipedia.org/wiki/Ernest_J._King>
+- `arnold`: <https://en.wikipedia.org/wiki/Henry_H._Arnold>
+- `harris`: <https://en.wikipedia.org/wiki/Arthur_Harris>
+- `tedder`: <https://en.wikipedia.org/wiki/Arthur_Tedder,_1st_Baron_Tedder>
+- `wavell`: <https://en.wikipedia.org/wiki/Archibald_Wavell,_1st_Earl_Wavell>, <https://en.wikipedia.org/wiki/Operation_Compass>, <https://en.wikipedia.org/wiki/Claude_Auchinleck>
+- `auchinleck`: <https://en.wikipedia.org/wiki/Claude_Auchinleck>
+- `rokossovsky`: <https://en.wikipedia.org/wiki/Konstantin_Rokossovsky>
+- `vasilevsky`: <https://en.wikipedia.org/wiki/Aleksandr_Vasilevsky>
+- `chuikov`: <https://en.wikipedia.org/wiki/Vasily_Chuikov>
+- `spruance`: <https://en.wikipedia.org/wiki/Raymond_A._Spruance>, <https://en.wikipedia.org/wiki/William_Halsey_Jr.>
+- `clark`: <https://en.wikipedia.org/wiki/Mark_W._Clark>
+- `juin`: <https://en.wikipedia.org/wiki/Alphonse_Juin>, <https://en.wikipedia.org/wiki/Marocchinate>
+- `wingate`: <https://en.wikipedia.org/wiki/Orde_Wingate>
+- `chennault`: <https://en.wikipedia.org/wiki/Claire_Lee_Chennault>
+- `zhu_de`: <https://en.wikipedia.org/wiki/Zhu_De>
+- `menzies`: <https://en.wikipedia.org/wiki/Stewart_Menzies>
