@@ -2175,11 +2175,14 @@
           "ParentId": 1,
           "ProbabilityThreshold": 1,
           "Multiplier": 1,
-          "ChildrenCount": 2,
+          "ChildrenCount": 3,
           "Assets": [
             null,
             {
               "facility": "construction_yard"
+            },
+            {
+              "facility": "shipyard"
             }
           ]
         }
@@ -2268,7 +2271,7 @@
           "ParentId": 1,
           "ProbabilityThreshold": 1,
           "Multiplier": 1,
-          "ChildrenCount": 6,
+          "ChildrenCount": 7,
           "Assets": [
             null,
             {
@@ -2285,6 +2288,9 @@
             },
             {
               "unit": "a6m_zero_squadron"
+            },
+            {
+              "facility": "shipyard"
             }
           ]
         }
