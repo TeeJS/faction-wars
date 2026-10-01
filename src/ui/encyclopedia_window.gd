@@ -26,10 +26,15 @@ const LookDispatch := preload("res://src/ui/look_dispatch.gd")
 const Databases := ["All Databases", "System", "Ship", "Facilities", "Mission", "Troop", "Personnel"]
 
 
-## A database's name on screen: the places' in the pack's word (Terms
-## "system"), the rest as the original's.
+## A database's name on screen: the places' and the ships' in the pack's
+## words (Terms "system", "ship_database"; TeeJ, 2026-09-30: "rename ships to
+## Units"), the rest as the original's.
 static func DatabaseName(i: int) -> String:
-	return Terms.label("system") if i == 1 else Databases[i]
+	if i == 1:
+		return Terms.label("system")
+	if i == 2:
+		return Terms.label("ship_database")
+	return Databases[i]
 ## Entry kinds, as the overlay files are named.
 const KindSystem := "planets"
 const KindUnit := "units"
@@ -68,8 +73,19 @@ var _text: RichTextLabel
 var _sheet: PanelContainer
 var _facts: GridContainer
 var _factsHead: Label
-## The page's database stamp in a pack's look (the dispatches' stamp).
+## The page's database stamp in a pack's look (the dispatches' stamp): a
+## mission's page only now.
 var _stamp: PanelContainer
+## THE FILE CARD (TeeJ, 2026-09-30): a territory's, a unit's or a facility's
+## page is the personnel card's layout turned round - a ruled index card on
+## the left with the particulars written along its top lines, the picture on
+## the right. A person's picture already is such a card. In a pack's look the
+## card carries the database's rubber stamp, struck across its lines at an
+## angle in the entry's side's colour (red for the one, blue for the other).
+var _head: HBoxContainer
+var _card: Control
+var _factsCol: VBoxContainer
+var _mark: Control
 var _viewTopicBtn: BaseButton
 var _viewIndexBtn: BaseButton
 var _indexHeader: Label
@@ -260,8 +276,9 @@ func _show_current() -> void:
 func _show_page(e: Entry) -> void:
 	var picture: Texture2D = PictureFor(e)
 	_picture.visible = picture != null
+	var k: float = 1.0
 	if picture != null:
-		var k: float = minf(1.0, minf(PictureMax.x / picture.get_width(), PictureMax.y / picture.get_height()))
+		k = minf(1.0, minf(PictureMax.x / picture.get_width(), PictureMax.y / picture.get_height()))
 		_picture.custom_minimum_size = Vector2(roundf(picture.get_width() * k), roundf(picture.get_height() * k))
 	Art.Fill(_picture, picture)
 	for c in _facts.get_children():
@@ -280,9 +297,166 @@ func _show_page(e: Entry) -> void:
 		_dress_fact(key, value)
 	if _stamp != null:
 		LookDispatch._set_stamp(_stamp, DatabaseName(e.Database), false, true)
+	_lay_out(e, k)
+	if _mark != null:
+		_mark.set("Word", DatabaseName(e.Database).to_upper())
+		_mark.set("Ink", StampInk(e))
+		_mark.queue_redraw()
 	var words: String = WordsFor(e)
 	_text.text = words if not words.is_empty() else "No entry has been written for %s." % e.Name
 	_text.scroll_to_line(0)
+
+
+## Where the page's parts go for `e` (k: the picture's scale on the page):
+##   a territory, a unit, a facility - the card on the left, the particulars
+##   along its top lines and the stamp across it, the picture on the right;
+##   a person - the picture (itself a card) on the left with the stamp across
+##   its card, the particulars centred in the column beside it;
+##   a mission - the picture, then its particulars under their heading, and
+##   the database's stamp in the corner, as before.
+func _lay_out(e: Entry, k: float) -> void:
+	var on_card: bool = e.Kind in [KindSystem, KindUnit, KindFacility]
+	var person: bool = e.Kind == KindCharacter
+	_card.visible = on_card
+	_factsCol.visible = not on_card
+	_factsHead.visible = e.Kind == KindMission and _facts.get_child_count() > 0
+	if _stamp != null:
+		_stamp.visible = e.Kind == KindMission
+	var holder: Control = _card.get_node("Lines") if on_card else _factsCol
+	if _facts.get_parent() != holder:
+		_facts.get_parent().remove_child(_facts)
+		holder.add_child(_facts)
+	_facts.size_flags_horizontal = Control.SIZE_SHRINK_CENTER if person else Control.SIZE_EXPAND_FILL
+	# On a card a long value (a theatre's name) runs on to the next line;
+	# beside a picture each value keeps to its one line.
+	for i in _facts.get_child_count():
+		var l: Label = _facts.get_child(i)
+		l.vertical_alignment = VERTICAL_ALIGNMENT_TOP if on_card else VERTICAL_ALIGNMENT_BOTTOM
+		l.size_flags_vertical = Control.SIZE_SHRINK_BEGIN if on_card else Control.SIZE_FILL
+		if i % 2 == 1:
+			l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART if on_card else TextServer.AUTOWRAP_OFF
+	_factsCol.alignment = BoxContainer.ALIGNMENT_CENTER if person else BoxContainer.ALIGNMENT_BEGIN
+	_head.move_child(_card, 0)
+	_head.move_child(_picture, 1 if on_card else 0)
+	# The card's head band in the side's colour, as a person's card has it.
+	var side: Faction = SideOf(e)
+	(_card as FileCard).Band = Color(Look.SideColor(side) if side != null else Look.C("ink_muted"), 0.9) if Look.Active() else Color(0, 0, 0, 0)
+	_card.queue_redraw()
+	if _mark == null:
+		return
+	# The stamp: across the card's ruled lines, under what is written on it;
+	# on a person's picture, across the card printed on its left half.
+	var stage: Control = _card if on_card else _picture
+	if _mark.get_parent() != stage:
+		_mark.get_parent().remove_child(_mark)
+		stage.add_child(_mark)
+	_mark.visible = on_card or (person and _picture.visible)
+	if on_card:
+		var top: float = CardLines + int(_facts.get_child_count() / 2.0) * CardPitch
+		_mark.set("Centre", Vector2(CardSize.x / 2.0, (top + CardSize.y) / 2.0))
+	else:
+		_mark.set("Centre", PersonCardCentre * k)
+
+
+## A card's size, its first written line and the pitch of its ruled lines -
+## the personnel card's own (tools/look/make_ww2_portraits.py: a 200 x 200
+## half of the picture, ruled every 18 px from 58, the head rule at 40), a
+## little wider so a theatre's name fits on one line.
+const CardSize := Vector2(250, 200)
+const CardLines := 25.0
+const CardPitch := 18.0
+## Where a person's card is on their picture: the middle of its ruled part.
+const PersonCardCentre := Vector2(107, 113)
+
+
+## The colour a page's stamp is struck in: the entry's side's (TeeJ: "red for
+## axis and blue for allies") - a person's own side; the one side that can
+## build a unit or a facility; a territory's owner when the war begins - else
+## the look's muted ink.
+static func StampInk(e: Entry) -> Color:
+	var side: Faction = SideOf(e)
+	var c: Color = side.FactionColor.darkened(0.12) if side != null else Look.C("ink_muted")
+	c.a = 0.82
+	return c
+
+
+static func SideOf(e: Entry) -> Faction:
+	var pack: PackLoader.LoadedPack = FactionRegistry.Pack
+	var id := ""
+	match e.Kind:
+		KindCharacter:
+			for c in pack.Characters:
+				if c.Id == e.Id:
+					id = c.FactionId
+		KindUnit:
+			var u: PackDefs.UnitDef = MilitaryCatalog.ById(e.Id)
+			if u != null and u.BuildableBy.size() == 1:
+				id = u.BuildableBy[0]
+		KindFacility:
+			for f in pack.Facilities:
+				if f.Id == e.Id and f.BuildableBy.size() == 1:
+					id = f.BuildableBy[0]
+		KindSystem:
+			for f in FactionRegistry.Playable:
+				if f.Hq != null and f.Hq.Planet == e.Id:
+					id = f.Id
+				for sp in f.StartingPlanets:
+					if sp.Planet == e.Id:
+						id = f.Id
+	if id.is_empty():
+		return null
+	for f in FactionRegistry.Playable:
+		if f.Id == id:
+			return f
+	return null
+
+
+## The card: a ruled index card in a pack's look (the personnel card's paper,
+## its side band, head rule and lines), a plain dark panel without one.
+class FileCard extends Control:
+	var Band: Color = Color(0, 0, 0, 0)
+
+	func _draw() -> void:
+		var r := Rect2(Vector2.ZERO, size)
+		if not Look.Active():
+			draw_rect(r, Color(0.11, 0.13, 0.18))
+			draw_rect(r, Color(0.25, 0.32, 0.42), false, 1.0)
+			return
+		var paper: StyleBox = Look.Paper(0)
+		if paper != null:
+			draw_style_box(paper, r)
+		else:
+			draw_rect(r, Look.C("paper"))
+		draw_rect(r.grow(-0.5), Color(Look.C("paper_edge"), 0.9), false, 1.0)
+		draw_rect(Rect2(18, 18, size.x - 36, 5), Band)
+		draw_line(Vector2(18, 40), Vector2(size.x - 18, 40), Color(Look.C("signal"), 0.6), 1.0)
+		var y := 58.0
+		while y < size.y - 12:
+			draw_line(Vector2(18, y), Vector2(size.x - 18, y), Color8(0x8d, 0x9c, 0xae, 95), 1.0)
+			y += 18.0
+
+
+## A rubber stamp: the word in capitals inside a double rule, struck across
+## the card at 40 degrees, in its ink (the dispatches' stamp, inked by hand).
+class RubberStamp extends Control:
+	var Word: String = ""
+	var Ink: Color = Color.BLACK
+	var Centre: Vector2 = Vector2.ZERO
+	const Angle := -40.0
+
+	func _draw() -> void:
+		if Word.is_empty():
+			return
+		var font: Font = Look.F("display_bold") if Look.Active() else ThemeDB.fallback_font
+		var px := 24
+		var spaced := " ".join(Word.split(""))
+		var w: float = font.get_string_size(spaced, HORIZONTAL_ALIGNMENT_LEFT, -1, px).x
+		var box := Rect2(Vector2(-w / 2.0 - 12.0, -px * 0.5 - 9.0), Vector2(w + 24.0, px + 18.0))
+		draw_set_transform(Centre, deg_to_rad(Angle))
+		draw_rect(box, Ink, false, 3.0)
+		draw_rect(box.grow(-5.0), Ink, false, 1.0)
+		draw_string(font, Vector2(-w / 2.0, font.get_ascent(px) * 0.5 + 1.0), spaced, HORIZONTAL_ALIGNMENT_LEFT, -1, px, Ink)
+		draw_set_transform(Vector2.ZERO)
 
 
 ## "Type in its name in the Topic entry box" - the first entry of the chosen
@@ -397,8 +571,11 @@ func _dress_sheet() -> void:
 	_factsHead.add_theme_color_override("font_color", Color(0.6, 0.7, 0.8))
 
 
-## One ledger line: its label quiet, its value firm.
+## One ledger line: its label quiet, its value firm. On a card each sits on
+## one of its ruled lines.
 func _dress_fact(key: Label, value: Label) -> void:
+	for l in [key, value]:
+		l.custom_minimum_size.y = CardPitch
 	if Look.Active():
 		key.add_theme_font_override("font", Look.F("typed"))
 		value.add_theme_font_override("font", Look.F("typed_bold"))
@@ -951,29 +1128,48 @@ func _build() -> void:
 	var head := HBoxContainer.new()
 	head.add_theme_constant_override("separation", 18)
 	page.add_child(head)
+	_head = head
+	_card = FileCard.new()
+	_card.name = "Card"
+	_card.custom_minimum_size = CardSize
+	_card.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	_card.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	head.add_child(_card)
+	var lines := VBoxContainer.new()
+	lines.name = "Lines"
+	lines.position = Vector2(18, CardLines)
+	lines.size = Vector2(CardSize.x - 36, CardSize.y - CardLines - 8)
+	lines.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_card.add_child(lines)
 	_picture = ColorRect.new()
 	_picture.name = "PictureBox"
 	_picture.color = Color(0, 0, 0, 0)   # the picture fills its box: nothing shows round it
 	_picture.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 	head.add_child(_picture)
-	var facts := VBoxContainer.new()
-	facts.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	facts.add_theme_constant_override("separation", 4)
+	_factsCol = VBoxContainer.new()
+	_factsCol.name = "FactsColumn"
+	_factsCol.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_factsCol.add_theme_constant_override("separation", 4)
 	_factsHead = Label.new()
 	_factsHead.text = "PARTICULARS"
-	facts.add_child(_factsHead)
+	_factsCol.add_child(_factsHead)
 	_facts = GridContainer.new()
 	_facts.name = "Particulars"
 	_facts.columns = 2
 	_facts.add_theme_constant_override("h_separation", 14)
 	_facts.add_theme_constant_override("v_separation", 3)
-	facts.add_child(_facts)
-	head.add_child(facts)
+	_factsCol.add_child(_facts)
+	head.add_child(_factsCol)
 	if Look.Active():
-		# The file's database stamped in its corner, as a dispatch's category.
+		# A mission's database stamped in its corner, as a dispatch's category.
 		_stamp = LookDispatch._stamp(true)
 		_stamp.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 		head.add_child(_stamp)
+		_mark = RubberStamp.new()
+		_mark.name = "Stamp"
+		_mark.set_anchors_preset(Control.PRESET_FULL_RECT)
+		_mark.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_card.add_child(_mark)
 	page.add_child(HSeparator.new())
 	_text = RichTextLabel.new()
 	_text.name = "Words"

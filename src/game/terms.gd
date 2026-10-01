@@ -78,6 +78,9 @@ const DEFAULTS := {
 	# (manual p073-p074: "Galactic Encyclopedia"); a pack sets its own (TeeJ,
 	# 2026-09-30: "Galactic encyclopedia is also wrong")
 	"encyclopedia":           "Galactic Encyclopedia",
+	# the Encyclopedia's ships' database, its tab and its stamp (manual p073:
+	# "Ship"); a pack sets its own (TeeJ, 2026-09-30: "rename ships to Units")
+	"ship_database":          "Ship",
 	# ---- THE REST OF THE ENGINE'S OWN STAR WARS WORDS (TeeJ, 2026-09-30:
 	# "please review all of the WWII game and make sure there is no more wrong
 	# terminology used!"; tests/ww2_words.gd reads every word the WWII game
