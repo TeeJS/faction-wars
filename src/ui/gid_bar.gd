@@ -6,6 +6,7 @@ extends CanvasLayer
 
 var _map: GalaxyMap
 var _activeLabel: Label
+var _noneLabel: Label        # "None" under it when the mode marks no world
 var _key: GidKey
 var _okey: Control = null    # the original's key, under the frame (original_gid_key.gd)
 var _panel: PanelContainer   # the category selector's bar
@@ -50,6 +51,25 @@ func Setup(map: GalaxyMap) -> void:
 	_activeLabel.offset_top = 44
 	_activeLabel.offset_bottom = 78
 	add_child(_activeLabel)
+
+	# "None" under the mode's name when it marks no world on the map (TeeJ,
+	# 2026-09-30, on an Idle Naval Yards view that showed nothing at all). A
+	# child of the name, so it goes wherever the name goes.
+	_noneLabel = Label.new()
+	_noneLabel.name = "None"
+	_noneLabel.text = "None"
+	_noneLabel.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_noneLabel.add_theme_font_size_override("font_size", 14)
+	_noneLabel.add_theme_color_override("font_color", Color(0.75, 0.78, 0.85))
+	_noneLabel.anchor_left = 0.0
+	_noneLabel.anchor_right = 1.0
+	_noneLabel.anchor_top = 1.0
+	_noneLabel.anchor_bottom = 1.0
+	_noneLabel.offset_top = -4
+	_noneLabel.offset_bottom = 14
+	_noneLabel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_noneLabel.visible = false
+	_activeLabel.add_child(_noneLabel)
 
 	# --- Category selector: a solid backed bar sitting ABOVE the bottom HUD row ---
 	var panel := PanelContainer.new()
@@ -114,6 +134,10 @@ func ApplyLook() -> void:
 	_activeLabel.add_theme_font_override("font", Look.F("display"))
 	_activeLabel.add_theme_color_override("font_color", Look.SideColor(GameSettings.PlayerFaction))
 	_activeLabel.uppercase = true
+	_noneLabel.add_theme_font_override("font", Look.F("body"))
+	_noneLabel.add_theme_font_size_override("font_size", Look.Size("small"))
+	_noneLabel.add_theme_color_override("font_color", Look.C("text_muted"))
+	_noneLabel.uppercase = true
 	_panel.theme = Look.GetTheme()
 	_panel.add_theme_stylebox_override("panel", Look.Edged("chassis", "brass_dim", SIDE_TOP, 1, 6))
 	for b in _row.get_children():
@@ -195,6 +219,12 @@ func Row() -> HBoxContainer:
 func SetActiveLabel(text: String) -> void:
 	if _activeLabel != null:
 		_activeLabel.text = text
+
+
+## Say "None" under the mode's name: it marks no world on the map.
+func ShowNone(none: bool) -> void:
+	if _noneLabel != null:
+		_noneLabel.visible = none
 
 
 ## Rebuild the key for the newly-selected mode (hides itself on Display Off).

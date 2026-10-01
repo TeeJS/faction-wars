@@ -394,12 +394,15 @@ func RefreshVisuals() -> void:
 	# Recorded before the repaint, so a redraw triggered from anywhere else
 	# also settles the poll.
 	_paintedVisuals = VisualSignature()
+	var lit := 0   # worlds the mode marks: none, and the bar says so
 
 	for planet in _planetStars.keys():
 		var dot: Label = _planetStars[planet]
 		var flare: Label = _planetFlares[planet]
 
 		var known: bool = _mode().Reveal.call(planet)
+		if known and not displayOff and _mode().TierFor(_mode().Magnitude.call(planet)).FlareSize > 0:
+			lit += 1
 
 		# Independent of the active mode and of Display Off: your HQ stays marked.
 		if Gid.ShowHqHighlight(planet):
@@ -443,12 +446,16 @@ func RefreshVisuals() -> void:
 		else:
 			Place(flare, "", 0, faction, planet)
 
+	if _bar != null:
+		_bar.ShowNone(lit == 0 and not displayOff)
 	queue_redraw()   # repaint the HQ highlight
 
 
 ## A briefing view: only its lit systems in colour, or nothing when it is off.
 func _paint_view() -> void:
 	_hqPlanet = null
+	if _bar != null:
+		_bar.ShowNone(false)
 	_paintedVisuals = VisualSignature()
 	var lit: Dictionary = _view.lit
 	for planet in _planetStars.keys():

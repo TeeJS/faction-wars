@@ -2141,7 +2141,7 @@
           "ParentId": 2,
           "ProbabilityThreshold": 2,
           "Multiplier": 1,
-          "ChildrenCount": 5,
+          "ChildrenCount": 6,
           "Assets": [
             null,
             {
@@ -2152,6 +2152,9 @@
             },
             {
               "facility": "construction_yard"
+            },
+            {
+              "facility": "shipyard"
             },
             {
               "facility": "fortifications"
@@ -2336,7 +2339,7 @@
           "ParentId": 1,
           "ProbabilityThreshold": 1,
           "Multiplier": 1,
-          "ChildrenCount": 6,
+          "ChildrenCount": 7,
           "Assets": [
             null,
             {
@@ -2353,6 +2356,9 @@
             },
             {
               "unit": "f4f_wildcat_squadron"
+            },
+            {
+              "facility": "shipyard"
             }
           ]
         }

@@ -3,7 +3,10 @@ extends SceneTree
 ## map picture with its regions over it. Needs a window (NOT --headless), like
 ## tests/capture_menu.gd:
 ##
-##   Godot_console.exe --path . --resolution 1280x850 -s tests/capture_map.gd -- --out=C:/tmp/map.png [--pack=ww2] [--titles]
+##   Godot_console.exe --path . --resolution 1280x850 -s tests/capture_map.gd -- --out=C:/tmp/map.png [--pack=ww2] [--titles] [--mode=<GID mode id>]
+##
+## --mode=: the Galactic Information Display showing that mode (display.json
+## galaxy_display_modes, e.g. idle_shipyards, mines).
 
 func _init() -> void:
 	await process_frame
@@ -12,10 +15,24 @@ func _init() -> void:
 	MpSetup.reset()
 	GameSettings.SelectedDifficulty = Enums.Difficulty.Medium
 	GameSettings.SelectedSize = Enums.GalaxySize.Huge
+	var side := _arg("--faction=", "")
+	if not side.is_empty():
+		GameSettings.PlayerFaction = FactionRegistry.ById(side)
 	var main: Node = load("res://Main.tscn").instantiate()
 	root.add_child(main)
 	for _i in 12:
 		await process_frame
+	var mode_id := _arg("--mode=", "")
+	if not mode_id.is_empty():
+		var mode = Gid.ModeById(mode_id)
+		if mode == null:
+			push_error("[capture_map] no GID mode '%s'" % mode_id)
+		else:
+			var map: GalaxyMap = main.get_node("GalaxyMap")
+			map.SetMode(mode)   # as the selector does: the bar's name follows
+			map.RefreshVisuals()
+			for _i in 4:
+				await process_frame
 	# --titles: paint every theatre's hover name as if hovered, for a look.
 	if OS.get_cmdline_user_args().has("--titles"):
 		var map: GalaxyMap = main.get_node("GalaxyMap")
