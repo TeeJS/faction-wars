@@ -310,6 +310,25 @@ static func Edged(fill: String, edge: String, side: int, width: int, pad: int = 
 	return sb
 
 
+## A folder tab: `fill`, outlined in `edge` along its top (`top` px) and
+## sides, with no bottom edge so it opens into its page; rounded top corners;
+## drawn a pixel in on each side, so neighbouring tabs stand 2 px apart.
+static func _FolderTab(fill: String, edge: String, top: int) -> StyleBoxFlat:
+	var sb := Box(fill, "", 0, -1, 6)
+	sb.border_color = C(edge)
+	sb.border_width_left = 1
+	sb.border_width_right = 1
+	sb.border_width_top = top
+	sb.border_width_bottom = 0
+	sb.corner_radius_top_left = 3
+	sb.corner_radius_top_right = 3
+	sb.expand_margin_left = -1
+	sb.expand_margin_right = -1
+	sb.content_margin_left = 10
+	sb.content_margin_right = 10
+	return sb
+
+
 ## The focus ring: brass, no fill, standing 3 px clear of the control so it
 ## reads as "keyboard here", never as the control's own pressed edge.
 static func FocusRing() -> StyleBoxFlat:
@@ -449,11 +468,16 @@ static func _build() -> Theme:
 	t.set_color("font_hovered_color", "ItemList", C("text"))
 	t.set_color("font_selected_color", "ItemList", C("text"))
 
+	# FOLDER TABS (TeeJ, 2026-09-30: "the separation between the tabs ... are
+	# not distinct enough - it's hard to tell they are tabs"): every tab its
+	# own outlined card with rounded top corners and a gap to the next; the
+	# chosen one olive under a heavy brass top edge, open into the page below;
+	# a hovered one lifted and brass-edged; an empty one flat, its words grey.
 	for type in ["TabBar", "TabContainer"]:
-		t.set_stylebox("tab_selected", type, Edged("olive_deep", "brass", SIDE_TOP, 2, 6))
-		t.set_stylebox("tab_unselected", type, Box("chassis_raised", "", 0, -1, 6))
-		t.set_stylebox("tab_hovered", type, Box("chassis_hover", "", 0, -1, 6))
-		t.set_stylebox("tab_disabled", type, Box("chassis", "", 0, -1, 6))
+		t.set_stylebox("tab_selected", type, _FolderTab("olive_deep", "brass", 3))
+		t.set_stylebox("tab_unselected", type, _FolderTab("chassis_raised", "edge", 1))
+		t.set_stylebox("tab_hovered", type, _FolderTab("chassis_hover", "brass_dim", 1))
+		t.set_stylebox("tab_disabled", type, _FolderTab("chassis_deep", "edge", 1))
 		t.set_stylebox("tab_focus", type, FocusRing())
 		t.set_color("font_selected_color", type, C("text"))
 		t.set_color("font_unselected_color", type, C("text_muted"))
