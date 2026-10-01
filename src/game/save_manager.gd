@@ -9,16 +9,24 @@ extends RefCounted
 ## every one. A game's NAME is its identity: saving under a name that is taken
 ## overwrites that game, a new name makes a new game.
 ##
-## Game files:   <Dir>/games/<id>.jsonl   - a copy of the command log
-## Game index:   <Dir>/games.json         - { "next": n, "games": { id: {name, day, saved_at, side, seq} } }
+## Game files:   <Dir>/<pack>/games/<id>.jsonl   - a copy of the command log
+## Game index:   <Dir>/<pack>/games.json         - { "next": n, "games": { id: {name, day, saved_at, side, seq} } }
+##
+## EACH PACK KEEPS ITS OWN SAVED GAMES (TeeJ, 2026-09-30: "THE DIFFERENT PACKS
+## NEED DIFFERENT SAVE LOCATIONS"). <pack> is the loaded pack's id: a game
+## only loads on the pack it was played on (FactionRegistry.EnsureLoaded), so
+## another pack's games have no place in the list. The one list every pack
+## shared before that (<Dir>/games.json) is copied into each pack's folder the
+## first time that pack's list is read (_migrate_shared), and left untouched.
 ##
 ## `seq` orders the list (a save counter: two saves in one second keep their
 ## order); `saved_at` is shown. `side` is what the Saved Games screen's icon
 ## shows (manual p075: "an icon ... shows whether you were playing the Empire,
 ## the Alliance, or a head-to-head game"): the player's faction id, or "h2h".
 ##
-## The six fixed slots this replaced (<Dir>/slot<N>.jsonl + slots.json) are
-## copied into the list the first time it is read, and left untouched.
+## The six fixed slots the list replaced (<Dir>/slot<N>.jsonl + slots.json)
+## were copied into the shared list the first time it was read, and left
+## untouched; they still are, on the way into the pack folders.
 ##
 ## HEAD-TO-HEAD (manual p163, issue #301): "only the host player can save the
 ## game. Star Wars Rebellion will create a saved game on both computers in the
@@ -34,9 +42,13 @@ extends RefCounted
 ## Export / import: a .fwsave file is JSON lines - one line of the game's
 ## name, saved date, day and side, then the save itself, byte for byte.
 
-## The save directory. A static var (not a const) so a headless test can point it
-## at a scratch directory and never touch a player's real saves.
+## The save directory, which holds a folder per pack. A static var (not a
+## const) so a headless test can point it at a scratch directory and never
+## touch a player's real saves.
 static var Dir := "user://saves"
+## The pack a saved game belongs to when its header names none: the headers
+## carried no pack before there was a second one (tests/pack_plumbing.gd).
+const PACK_BEFORE_HEADERS := "star-wars-rebellion"
 ## The default name for a game saved without one.
 const DEFAULT_NAME := "Saved game"
 ## The first line of an exported file carries this key (and the format version).
@@ -49,23 +61,49 @@ const OLD_SLOTS := 6
 const H2H_FIELDS := ["h2h_id", "host", "guest", "local", "seeded_by", "settings"]
 
 
-static func GamePath(id: String) -> String:
-	return "%s/games/%s.jsonl" % [Dir, id]
+## The folder of pack `pack`'s saved games; the loaded pack's when empty.
+static func PackDir(pack: String = "") -> String:
+	return "%s/%s" % [Dir, _pack(pack)]
 
 
-static func _index_path() -> String:
-	return "%s/games.json" % Dir
+static func GamePath(id: String, pack: String = "") -> String:
+	return "%s/games/%s.jsonl" % [PackDir(pack), id]
+
+
+static func _index_path(pack: String = "") -> String:
+	return "%s/games.json" % PackDir(pack)
+
+
+## `pack`, or the loaded pack when empty (the default pack before any load).
+static func _pack(pack: String) -> String:
+	if not pack.is_empty():
+		return pack
+	var id: String = FactionRegistry.LoadedId()
+	return id if not id.is_empty() else FactionRegistry.DefaultPackId()
+
+
+## A pack id is a folder name: nothing that could climb out of <Dir>.
+static func _pack_ok(pack: String) -> bool:
+	return not pack.is_empty() and pack.is_valid_filename() and not pack.begins_with(".")
+
+
+## Pack `pack`'s name as its card shows it (pack.json display_name), else its id.
+static func PackTitle(pack: String) -> String:
+	var d: Variant = JsonUtil.parse("%s/pack.json" % FactionRegistry.PackDir(pack))
+	var title: String = str(d.get("display_name", "")) if d is Dictionary else ""
+	return title if not title.is_empty() else pack
 
 
 # ---- the list ------------------------------------------------------------------
 
-## Every saved game as [{id, name, day, saved_at, side}], newest first.
-static func Games() -> Array:
-	var idx: Dictionary = _index()
+## Every saved game of `pack` (the loaded pack's when empty) as
+## [{id, name, day, saved_at, side}], newest first.
+static func Games(pack: String = "") -> Array:
+	var idx: Dictionary = _index(pack)
 	var out: Array = []
 	for id: String in idx["games"]:
 		var g: Dictionary = idx["games"][id]
-		if not FileAccess.file_exists(GamePath(id)):
+		if not FileAccess.file_exists(GamePath(id, pack)):
 			continue
 		out.append({
 			"id": id,
@@ -88,8 +126,8 @@ static func Recent(count: int) -> Array:
 
 
 ## The id of the game called `name`, or "".
-static func Find(name: String) -> String:
-	for g: Dictionary in Games():
+static func Find(name: String, pack: String = "") -> String:
+	for g: Dictionary in Games(pack):
 		if g["name"] == name.strip_edges():
 			return g["id"]
 	return ""
@@ -105,14 +143,14 @@ static func Exists(id: String) -> bool:
 
 
 ## A name no game has: `base`, else "base (2)", "base (3)" ...
-static func FreeName(base: String = DEFAULT_NAME) -> String:
+static func FreeName(base: String = DEFAULT_NAME, pack: String = "") -> String:
 	base = base.strip_edges()
 	if base.is_empty():
 		base = DEFAULT_NAME
-	if Find(base).is_empty():
+	if Find(base, pack).is_empty():
 		return base
 	var n := 2
-	while not Find("%s (%d)" % [base, n]).is_empty():
+	while not Find("%s (%d)" % [base, n], pack).is_empty():
 		n += 1
 	return "%s (%d)" % [base, n]
 
@@ -163,7 +201,7 @@ static func Delete(id: String) -> bool:
 		return false
 	var idx: Dictionary = _index()
 	(idx["games"] as Dictionary).erase(id)
-	_write_index(idx)
+	_write_index(idx, _index_path())
 	DirAccess.remove_absolute(GamePath(id))
 	return true
 
@@ -362,7 +400,9 @@ static func Detect(bytes: PackedByteArray) -> String:
 
 
 ## Import a saved game file. Its Saved date is now, and it never overwrites:
-## a name already taken gets " (2)". Returns {ok, id, name, message}.
+## a name already taken gets " (2)". It goes into the list of the pack it was
+## played on (its header's), which need not be the loaded one. Returns
+## {ok, id, name, pack, message}.
 static func Import(bytes: PackedByteArray, file_name: String = "") -> Dictionary:
 	var kind: String = Detect(bytes)
 	if kind == "original":
@@ -380,6 +420,11 @@ static func Import(bytes: PackedByteArray, file_name: String = "") -> Dictionary
 	var header: Variant = JSON.parse_string(lines[0]) if lines.size() > 0 else null
 	if not (header is Dictionary) or not (header as Dictionary).has("pack"):
 		return {"ok": false, "id": "", "name": "", "message": "That saved game is damaged: it has no header."}
+	var pack: String = str((header as Dictionary)["pack"])
+	if pack.is_empty():
+		pack = _pack("")
+	if not _pack_ok(pack):
+		return {"ok": false, "id": "", "name": "", "message": "That saved game is damaged: it names no pack."}
 	var day: int = int(meta.get("day", 0))
 	if day <= 0:
 		for line in lines:
@@ -387,12 +432,23 @@ static func Import(bytes: PackedByteArray, file_name: String = "") -> Dictionary
 			if d is Dictionary and (d as Dictionary).has("hash"):
 				day = maxi(day, int(d["day"]))
 	var base: String = str(meta.get("name", file_name.get_file().get_basename()))
-	var name: String = FreeName(base)
+	var name: String = FreeName(base, pack)
 	var side: String = str(meta.get("side", (header as Dictionary).get("local", "")))
-	var id: String = _store("", text, name, day, side)
+	var id: String = _store("", text, name, day, side, {}, pack)
 	if id.is_empty():
-		return {"ok": false, "id": "", "name": "", "message": "The saved game could not be written."}
-	return {"ok": true, "id": id, "name": name, "message": ""}
+		return {"ok": false, "id": "", "name": "", "pack": pack, "message": "The saved game could not be written."}
+	return {"ok": true, "id": id, "name": name, "pack": pack, "message": ""}
+
+
+## What the Import tells the player about result `r`: where the game went, or
+## why it did not come in.
+static func ImportNote(r: Dictionary) -> String:
+	if not r["ok"]:
+		return str(r["message"])
+	var pack: String = str(r.get("pack", ""))
+	if pack.is_empty() or pack == _pack(""):
+		return "\"%s\" is in your saved games." % r["name"]
+	return "\"%s\" is a %s game: it is in that pack's saved games." % [r["name"], PackTitle(pack)]
 
 
 ## A Star Wars: Rebellion saved game: checked against the pack (nothing about
@@ -422,22 +478,23 @@ static func _import_original(bytes: PackedByteArray, file_name: String) -> Dicti
 	var name: String = FreeName(base)
 	var id: String = _store("", JSON.stringify(header) + "\n", name, int(plan["day"]), str(plan["side"]))
 	if id.is_empty():
-		return {"ok": false, "id": "", "name": "", "message": "The saved game could not be written."}
-	return {"ok": true, "id": id, "name": name, "message": ""}
+		return {"ok": false, "id": "", "name": "", "pack": header["pack"], "message": "The saved game could not be written."}
+	return {"ok": true, "id": id, "name": name, "pack": header["pack"], "message": ""}
 
 
 # ---- the store ---------------------------------------------------------------------
 
-## Write `content` as game `id` (a new id if empty) and make it the newest.
-static func _store(id: String, content: String, name: String, day: int, side: String, extra: Dictionary = {}) -> String:
-	var idx: Dictionary = _index()
+## Write `content` as game `id` (a new id if empty) of `pack` (the loaded
+## pack when empty) and make it the newest.
+static func _store(id: String, content: String, name: String, day: int, side: String, extra: Dictionary = {}, pack: String = "") -> String:
+	var idx: Dictionary = _index(pack)
 	if id.is_empty():
 		id = "g%d" % int(idx["next"])
 		idx["next"] = int(idx["next"]) + 1
-	DirAccess.make_dir_recursive_absolute("%s/games" % Dir)
-	var f: FileAccess = FileAccess.open(GamePath(id), FileAccess.WRITE)
+	DirAccess.make_dir_recursive_absolute("%s/games" % PackDir(pack))
+	var f: FileAccess = FileAccess.open(GamePath(id, pack), FileAccess.WRITE)
 	if f == null:
-		push_error("[SaveManager] cannot write %s" % GamePath(id))
+		push_error("[SaveManager] cannot write %s" % GamePath(id, pack))
 		return ""
 	f.store_string(content)
 	f.close()
@@ -450,15 +507,19 @@ static func _store(id: String, content: String, name: String, day: int, side: St
 		"seq": int(idx["seq"]),
 	}
 	(idx["games"][id] as Dictionary).merge(extra)
-	_write_index(idx)
+	_write_index(idx, _index_path(pack))
 	return id
 
 
-static func _index() -> Dictionary:
-	_migrate_slots()
+static func _index(pack: String = "") -> Dictionary:
+	_migrate_shared(_pack(pack))
+	return _read_index(_index_path(pack))
+
+
+static func _read_index(path: String) -> Dictionary:
 	var d: Variant = null
-	if FileAccess.file_exists(_index_path()):
-		d = JSON.parse_string(FileAccess.get_file_as_string(_index_path()))
+	if FileAccess.file_exists(path):
+		d = JSON.parse_string(FileAccess.get_file_as_string(path))
 	var idx: Dictionary = d if d is Dictionary else {}
 	if not (idx.get("games") is Dictionary):
 		idx["games"] = {}
@@ -467,20 +528,63 @@ static func _index() -> Dictionary:
 	return idx
 
 
-static func _write_index(idx: Dictionary) -> void:
-	DirAccess.make_dir_recursive_absolute(Dir)
-	var f: FileAccess = FileAccess.open(_index_path(), FileAccess.WRITE)
+static func _write_index(idx: Dictionary, path: String) -> void:
+	DirAccess.make_dir_recursive_absolute(path.get_base_dir())
+	var f: FileAccess = FileAccess.open(path, FileAccess.WRITE)
 	if f != null:
 		f.store_string(JSON.stringify(idx))
 		f.close()
 
 
-## Copy the six fixed slots this list replaced into it, once: oldest first, so
-## the list keeps their order; a repeated name gets " (2)". The slot files and
-## their index are only read, never changed or removed.
+## The list every pack shared (header): its index and its game files.
+static func _shared_index() -> String:
+	return "%s/games.json" % Dir
+
+
+static func _shared_game(id: String) -> String:
+	return "%s/games/%s.jsonl" % [Dir, id]
+
+
+## Copy pack `pack`'s games out of the shared list into its own folder, once
+## (when the pack has no list yet): the games whose header names the pack,
+## under the same ids, names, dates and order, and the list's counters, so a
+## later save is numbered after them. The shared list and its files are only
+## read, never changed or removed - every pack takes its own games from it.
+static func _migrate_shared(pack: String) -> void:
+	if FileAccess.file_exists(_index_path(pack)):
+		return
+	_migrate_slots()
+	if not FileAccess.file_exists(_shared_index()):
+		return
+	var old: Dictionary = _read_index(_shared_index())
+	var idx := {"next": old["next"], "seq": old["seq"], "games": {}}
+	DirAccess.make_dir_recursive_absolute("%s/games" % PackDir(pack))
+	for id: String in old["games"]:
+		var from: String = _shared_game(id)
+		if not FileAccess.file_exists(from) or _pack_of(from) != pack:
+			continue
+		if DirAccess.copy_absolute(from, GamePath(id, pack)) != OK:
+			push_error("[SaveManager] could not copy %s into %s's saved games" % [from, pack])
+			continue
+		idx["games"][id] = old["games"][id]
+	_write_index(idx, _index_path(pack))
+
+
+## The pack a saved game file was played on: its header's, else
+## PACK_BEFORE_HEADERS. Reads the first line only (a save can be long).
+static func _pack_of(path: String) -> String:
+	var f: FileAccess = FileAccess.open(path, FileAccess.READ)
+	var header: Variant = JSON.parse_string(f.get_line()) if f != null else null
+	var pack: String = str((header as Dictionary).get("pack", "")) if header is Dictionary else ""
+	return pack if not pack.is_empty() else PACK_BEFORE_HEADERS
+
+
+## Copy the six fixed slots the list replaced into the shared list, once:
+## oldest first, so the list keeps their order; a repeated name gets " (2)".
+## The slot files and their index are only read, never changed or removed.
 static func _migrate_slots() -> void:
 	var old_index: String = "%s/slots.json" % Dir
-	if FileAccess.file_exists(_index_path()) or not FileAccess.file_exists(old_index):
+	if FileAccess.file_exists(_shared_index()) or not FileAccess.file_exists(old_index):
 		return
 	var d: Variant = JSON.parse_string(FileAccess.get_file_as_string(old_index))
 	var old: Dictionary = d if d is Dictionary else {}
@@ -506,7 +610,7 @@ static func _migrate_slots() -> void:
 		taken[name] = true
 		var id: String = "g%d" % int(idx["next"])
 		idx["next"] = int(idx["next"]) + 1
-		if DirAccess.copy_absolute(s["path"], GamePath(id)) != OK:
+		if DirAccess.copy_absolute(s["path"], _shared_game(id)) != OK:
 			push_error("[SaveManager] could not copy %s into the list" % s["path"])
 			continue
 		idx["seq"] = int(idx["seq"]) + 1
@@ -523,7 +627,7 @@ static func _migrate_slots() -> void:
 			var from: String = "id" if k == "h2h_id" else k
 			if meta.has(from):
 				idx["games"][id][k] = meta[from]
-	_write_index(idx)
+	_write_index(idx, _shared_index())
 
 
 static func _line_end(bytes: PackedByteArray) -> int:
