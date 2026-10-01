@@ -34,6 +34,7 @@ var _view: Dictionary = {}
 ## The player's own artwork overlay (tools/FactionWarsExporter).
 const Art := preload("res://src/ui/artwork.gd")
 const OUI := preload("res://src/ui/original_ui.gd")
+const ObjectivesLegendScript := preload("res://src/ui/look_objectives_legend.gd")
 ## The original drew its 15 px stars on a 640-wide screen; ours is 1440.
 const StarScale := 2.0
 var _planetSprites: Dictionary = {}   # Planet -> TextureRect (the original's star)
@@ -621,6 +622,12 @@ func _load_backdrop() -> void:
 	_backdrop.z_index = -10
 	_backdrop.z_as_relative = false
 	add_child(_backdrop)
+	# A look's objectives, over the picture's own printed legend.
+	var legend: Dictionary = Look.ObjectivesLegend() if Look.Active() else {}
+	if not legend.is_empty():
+		var sheet: Control = ObjectivesLegendScript.new()
+		add_child(sheet)
+		sheet.Setup(legend, fit)
 
 
 ## The Alliance HQ highlight: a thin white 8-point burst centered exactly on

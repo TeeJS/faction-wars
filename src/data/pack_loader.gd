@@ -429,6 +429,27 @@ static func _validate_look(pack: LoadedPack, pack_dir: String, errors: Array[Str
 				ok = ok and float(r[2]) > 0 and float(r[3]) > 0
 			if not ok:
 				errors.append("look.json dossier.map_rect: must be [x, y, w, h] in map_image's pixels, w and h above 0.")
+	# The objectives on the map, over the picture's own legend: where it is, in
+	# map_image's pixels, and the legend's printed colours.
+	if look.has("objectives_legend"):
+		var legend: Variant = look["objectives_legend"]
+		if not legend is Dictionary:
+			errors.append("look.json: `objectives_legend` must be an object {rect, paper, ink, accent}.")
+		else:
+			for key in JsonUtil.data_keys(legend):
+				if not ["rect", "paper", "ink", "accent"].has(key):
+					errors.append("look.json objectives_legend: '%s' is not known. Known: rect, paper, ink, accent." % key)
+			var r: Variant = legend.get("rect")
+			var ok: bool = r is Array and (r as Array).size() == 4
+			if ok:
+				for n in r:
+					ok = ok and (n is float or n is int) and float(n) >= 0
+				ok = ok and float(r[2]) > 0 and float(r[3]) > 0
+			if not ok:
+				errors.append("look.json objectives_legend.rect: must be [x, y, w, h] in map_image's pixels, w and h above 0.")
+			for key in ["paper", "ink", "accent"]:
+				if legend.has(key):
+					_require_color(str(legend[key]), "look.json objectives_legend.%s" % key, errors)
 	var textures: Variant = look.get("textures", {})
 	if not textures is Dictionary:
 		errors.append("look.json: `textures` must be an object of name -> picture.")

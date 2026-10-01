@@ -261,6 +261,9 @@ func _init() -> void:
 	_look_case("a map inset field the engine does not know", look, {"insets": [{"image": "look/europe_1941.jpg", "at": [328, 120, 57, 52], "scale": 2}]}, "map_insets[0]: 'scale' is not known")
 	_look_case("a dossier map plate that is not [x, y, w, h]", look, {"dossier": ["map_rect", [10, 10, 0]]}, "dossier.map_rect: must be [x, y, w, h]")
 	_look_case("a dossier field the engine does not know", look, {"dossier": ["banner", "x"]}, "dossier: 'banner' is not known")
+	_look_case("an objectives legend that is not [x, y, w, h]", look, {"legend": ["rect", [2, 722, 494]]}, "objectives_legend.rect: must be [x, y, w, h]")
+	_look_case("an objectives legend colour that is not #rrggbb", look, {"legend": ["accent", "red"]}, "objectives_legend.accent")
+	_look_case("an objectives legend field the engine does not know", look, {"legend": ["font", "x"]}, "objectives_legend: 'font' is not known")
 	_look_case("a messages field the engine does not know", look, {"messages": ["footer", "x"]}, "messages: 'footer' is not known")
 	_look_case("a dispatch header that is not text", look, {"messages": ["header", 3]}, "messages.header: must be text")
 	_look_case("a stamp for no message category", look, {"stamp": ["Weather", "Met"]}, "messages.stamps: 'Weather' is not a message category")
@@ -621,6 +624,8 @@ func _look_case(what: String, look: Dictionary, change: Dictionary, expect: Stri
 		l["messages"]["stamps"][change["stamp"][0]] = change["stamp"][1]
 	if change.has("insets"):
 		l["map_insets"] = change["insets"]
+	if change.has("legend"):
+		l["objectives_legend"][change["legend"][0]] = change["legend"][1]
 	var p := _ww2()
 	p.Look = l
 	_expect(what, func(errors: Array[String]) -> void: PackLoader._validate_look(p, WW2_DIR, errors), expect)

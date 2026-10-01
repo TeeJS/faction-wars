@@ -904,7 +904,8 @@ then stopped the game on its first day (the editor handoff, 2026-09-23):
     known name; `overlay_alpha` is 0-1; each texture is a `.png` the pack ships (`map_detail` may be a `.jpg`), by known name, its `margin` 0 or more; each `map_insets` entry is `{image, at}` with a `.png` or `.jpg` the pack ships and `at` four numbers, `w` and `h` above 0;
     `dossier` holds only `subtitle` and `map_caption` (text) and `map_rect` (four numbers, 0 or more, width and height
     above 0); `messages` holds only `header` (text), `stamps` (message category -> text) and `urgent` (a list of
-    message categories).
+    message categories); `objectives_legend` holds only `rect` (four numbers, 0 or more, width and height above 0) and
+    `paper`, `ink`, `accent` (each `#rrggbb`).
 32. ✅ `credits.json` (§16), when the pack ships one: an object with an `assets` list; each asset names a `title`, an
     `author` and a `licence` and one or more `files` the pack ships; its `source` and `licence_url`, when given, are
     `https://` addresses. (That every shipped picture and font HAS an entry is `tests/asset_credits.gd`'s check, not the
@@ -1186,6 +1187,7 @@ An excerpt of `packs/ww2/look.json`:
 | `messages` | Optional - the Message Index as dispatches (`src/ui/look_dispatch.gd`, the plain Message Index of a pack with a look): `header` (the word typed over every dispatch, e.g. "Dispatch"), `stamps` (message category -> the small stamp its rows and dispatches carry: `Loyalty`, `Fleets`, `Missions`, `Resources`, `Manufacturing`, `Defense`, `Conflict`, `Chat`, `Advice`; a category left out has none) and `urgent` (the categories that carry the signal-red band, e.g. `["Conflict"]`). The empty category's words are `display.json`'s `no_messages` term (§10). |
 | `textures` | Optional, name -> a `.png` the pack ships, or `{file, margin}` for a nine-slice: `paper` (tiles; headers and edges only - never under long text), `paper_frame` (a document's frame, flat centre), `desk`, `grain` (the chassis and its static grain), `rule` (the brass divider), `map_detail` (a sharper copy of `map_image` over the same `map_image_rect`, for the sector windows' theatre plates; a `.jpg` allowed, since it is a scan). |
 | `map_insets` | Optional, a list of `{"image": "<file>", "at": [x, y, w, h]}`: a larger-scale map of part of the world, lined up with `map_image`, covering `at` in map units (`map_image_rect`'s space). A sector window's theatre plate is cut from the sharpest picture that holds the whole theatre: an inset when one does, else `map_detail`, else `map_image`. A `.png` or `.jpg`. WWII: page 14 of the 1941 atlas, for the five small European theatres (`look/MAP-DETAIL.md`). |
+| `objectives_legend` | Optional - the objectives on the map (`src/ui/look_objectives_legend.gd`, TeeJ 2026-09-30): a sheet laid over the map picture's own printed legend, showing each side's victory conditions as the Objectives window does (manual p136-p137), a box per condition ticked when met. `rect` (`[x, y, w, h]` in `map_image`'s own pixels: the legend's box) and the legend's printed colours `paper`, `ink` and `accent` (its numerals' colour, used for the boxes); a colour left out is the look's `paper`, `ink` or `signal`. WWII: the 1941 map's "States and their capitals" box, its colours sampled from `look/world_1941_detail.jpg`. |
 
 The WWII pack's textures are drawn by `tools/look/make_ww2_textures.py` from
 seeded noise; its faces and their licences are in `packs/ww2/look/fonts/`.

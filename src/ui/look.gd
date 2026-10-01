@@ -255,6 +255,23 @@ static func TexMargin(name: String) -> int:
 	return int(t.get("margin", 0)) if t is Dictionary else 0
 
 
+## The objectives on the map (look.json `objectives_legend`): where the map
+## picture's own legend is, in its pixels, and the legend's printed colours -
+## {"rect": Rect2, "paper": Color, "ink": Color, "accent": Color}; a colour
+## left out is the look's paper, ink or signal. {} without one.
+static func ObjectivesLegend() -> Dictionary:
+	var d: Variant = _def().get("objectives_legend")
+	if not d is Dictionary or not (d as Dictionary).get("rect") is Array or (d["rect"] as Array).size() != 4:
+		return {}
+	var r: Array = d["rect"]
+	return {
+		"rect": Rect2(float(r[0]), float(r[1]), float(r[2]), float(r[3])),
+		"paper": Color.html(str(d["paper"])) if d.has("paper") else C("paper"),
+		"ink": Color.html(str(d["ink"])) if d.has("ink") else C("ink"),
+		"accent": Color.html(str(d["accent"])) if d.has("accent") else C("signal"),
+	}
+
+
 ## WCAG 2 contrast ratio of two colours, 1 to 21.
 ## `fg` made readable on `bg`: moved towards white on a dark ground, or black
 ## on a light one, a step at a time until it reaches `ratio`, so a side's or a
