@@ -99,8 +99,11 @@ def fetch(rec, folder):
 
 def crop(path, c):
     """The square [cx, cy, side] (fractions: of the width and height for the
-    centre, of the height for the side), as greyscale; past an edge the edge
-    pixels repeat."""
+    centre, of the height for the side), as greyscale. Past an edge the
+    photograph's own edge is carried on, out of focus, so a face can stand in
+    the middle with room round its head (TeeJ, 2026-09-30: "the face should be
+    centered horizontally ... it should look like an ID picture") without a
+    hard seam or streaks."""
     im = ImageOps.exif_transpose(Image.open(path))
     if im.mode in ("I;16", "I;16B", "I;16L", "I"):
         im = im.point(lambda v: v / 256)
@@ -110,6 +113,18 @@ def crop(path, c):
     x0, y0 = int(round(c[0] * w - side / 2)), int(round(c[1] * h - side / 2))
     pad = ((max(0, -y0), max(0, y0 + side - h)), (max(0, -x0), max(0, x0 + side - w)))
     g = np.pad(g, pad, mode="edge")
+    if any(v for p in pad for v in p):
+        # The carried-on edge, blurred, faded in across the seam.
+        r = max(2.0, side * 0.04)
+        soft = np.asarray(Image.fromarray(g, "L").filter(ImageFilter.GaussianBlur(r)), np.float64)
+        mask = np.zeros(g.shape, np.uint8)
+        mask[:pad[0][0], :] = 255
+        mask[g.shape[0] - pad[0][1]:, :] = 255
+        mask[:, :pad[1][0]] = 255
+        mask[:, g.shape[1] - pad[1][1]:] = 255
+        m = np.asarray(Image.fromarray(mask, "L").filter(ImageFilter.GaussianBlur(r / 2)), np.float64) / 255.0
+        m = np.maximum(m, mask / 255.0)
+        g = np.round(g * (1.0 - m) + soft * m).astype(np.uint8)
     x0, y0 = x0 + pad[1][0], y0 + pad[0][0]
     return Image.fromarray(np.ascontiguousarray(g[y0:y0 + side, x0:x0 + side]), "L")
 
@@ -279,7 +294,13 @@ Wikimedia Commons: public domain, CC0, CC BY or CC BY-SA only, checked on the
 file's own page. The SHA-1 is Commons' own for the original, and the script
 refuses a download that does not match it. The crop is `[cx, cy, side]`: the
 square's centre as fractions of the picture's width and height, its side as a
-fraction of the height. No picture shows a swastika or an Iron Cross, and
+fraction of the height. Each is framed as an ID photograph (TeeJ,
+2026-09-30): the whole head from the top of the hair or the hat to the chin,
+the face centred across, the head about three-fifths of the height with the
+shoulders below; past the photograph's own edge its edge is carried on out
+of focus. A head fills more of the square only where the photograph has no
+more, or where a Nazi symbol below it is the reason to crop (the notes).
+No picture shows a swastika or an Iron Cross, and
 each German portrait was checked by eye; an eagle may show, as long as the
 swastika does not (TeeJ, 2026-09-30). A person with no freely licensed
 photograph gets the drawn stand-in instead.
