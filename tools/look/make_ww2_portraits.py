@@ -103,7 +103,9 @@ def crop(path, c):
     photograph's own edge is carried on, out of focus, so a face can stand in
     the middle with room round its head (TeeJ, 2026-09-30: "the face should be
     centered horizontally ... it should look like an ID picture") without a
-    hard seam or streaks."""
+    hard seam or streaks. A fourth number is where the photograph is cut off
+    first (a fraction of its height): below it is a Nazi symbol, so nothing
+    under that line is used - the line is carried on as the bottom edge."""
     im = ImageOps.exif_transpose(Image.open(path))
     if im.mode in ("I;16", "I;16B", "I;16L", "I"):
         im = im.point(lambda v: v / 256)
@@ -111,22 +113,80 @@ def crop(path, c):
     h, w = g.shape
     side = int(round(c[2] * h))
     x0, y0 = int(round(c[0] * w - side / 2)), int(round(c[1] * h - side / 2))
+    if len(c) > 3:
+        g = g[:int(round(c[3] * h))]
+        h = g.shape[0]
     pad = ((max(0, -y0), max(0, y0 + side - h)), (max(0, -x0), max(0, x0 + side - w)))
-    g = np.pad(g, pad, mode="edge")
+    seam = h - y0          # where the photograph ends, in the square's rows
     if any(v for p in pad for v in p):
-        # The carried-on edge, blurred, faded in across the seam.
-        r = max(2.0, side * 0.04)
-        soft = np.asarray(Image.fromarray(g, "L").filter(ImageFilter.GaussianBlur(r)), np.float64)
-        mask = np.zeros(g.shape, np.uint8)
-        mask[:pad[0][0], :] = 255
-        mask[g.shape[0] - pad[0][1]:, :] = 255
-        mask[:, :pad[1][0]] = 255
-        mask[:, g.shape[1] - pad[1][1]:] = 255
-        m = np.asarray(Image.fromarray(mask, "L").filter(ImageFilter.GaussianBlur(r / 2)), np.float64) / 255.0
-        m = np.maximum(m, mask / 255.0)
-        g = np.round(g * (1.0 - m) + soft * m).astype(np.uint8)
+        g = _extend(g.astype(np.float64), pad, side)
     x0, y0 = x0 + pad[1][0], y0 + pad[0][0]
-    return Image.fromarray(np.ascontiguousarray(g[y0:y0 + side, x0:x0 + side]), "L")
+    sq = np.ascontiguousarray(g[y0:y0 + side, x0:x0 + side])
+    if pad[0][1]:
+        sq = _vignette(sq, seam, side)
+    return Image.fromarray(sq, "L")
+
+
+def _vignette(sq, seam, side):
+    """Under the photograph's bottom edge (its own, or the cut above a Nazi
+    symbol): a studio print's fade to light, starting well above the edge so
+    no line shows, light from just below it."""
+    a = sq.astype(np.float64)
+    light = np.percentile(a, 92)
+    start, end = seam - side * 0.16, seam + side * 0.03
+    y = np.arange(side, dtype=np.float64)[:, None]
+    t = np.clip((y - start) / max(1.0, end - start), 0.0, 1.0)
+    t = t * t * (3 - 2 * t)
+    return np.round(a * (1 - t) + light * t).astype(np.uint8)
+
+
+def _extend(g, pad, side):
+    """The photograph carried past its edges as a studio print's soft fade:
+    each new row (or column) is the edge's own row, smoothed along its
+    length, fading over a seventh of the picture to the same row smoothed
+    much further (a dark coat stays dark below, a light wall light) - no
+    streaks - with the seam itself softened."""
+    reach = max(1.0, side * 0.14)
+    smooth = max(2.0, side * 0.04)
+    wide = max(4.0, side * 0.16)
+
+    def blur1d(v, r):
+        n = len(v)
+        k = int(3 * r) + 1
+        x = np.arange(-k, k + 1)
+        kern = np.exp(-0.5 * (x / r) ** 2)
+        kern /= kern.sum()
+        return np.convolve(np.pad(v, k, mode="edge"), kern, mode="same")[k:k + n]
+
+    def grow(a, before, after):
+        """Rows added above (`before`) and below (`after`) array `a`."""
+        parts = []
+        if before:
+            edge = a[0]
+            e, t = blur1d(edge, smooth), blur1d(edge, wide)
+            k = np.arange(before, 0, -1)[:, None]
+            wgt = np.minimum(1.0, k / reach)
+            parts.append(e[None, :] * (1 - wgt) + t * wgt)
+        parts.append(a)
+        if after:
+            edge = a[-1]
+            e, t = blur1d(edge, smooth), blur1d(edge, wide)
+            k = np.arange(1, after + 1)[:, None]
+            wgt = np.minimum(1.0, k / reach)
+            parts.append(e[None, :] * (1 - wgt) + t * wgt)
+        return np.vstack(parts)
+
+    h0, w0 = g.shape
+    g = grow(g, pad[0][0], pad[0][1])
+    g = grow(g.T, pad[1][0], pad[1][1]).T
+    # Soften the seam: the band round the original edge, blended.
+    mask = np.ones(g.shape, np.uint8) * 255
+    mask[pad[0][0]:pad[0][0] + h0, pad[1][0]:pad[1][0] + w0] = 0
+    r = max(2.0, side * 0.05)
+    m = np.asarray(Image.fromarray(mask, "L").filter(ImageFilter.GaussianBlur(r)), np.float64) / 255.0
+    m = np.maximum(m, mask / 255.0)
+    soft = np.asarray(Image.fromarray(np.clip(g, 0, 255).astype(np.uint8), "L").filter(ImageFilter.GaussianBlur(r)), np.float64)
+    return np.round(np.clip(g * (1 - m) + soft * m, 0, 255)).astype(np.uint8)
 
 
 def tone(gray):
@@ -295,11 +355,13 @@ file's own page. The SHA-1 is Commons' own for the original, and the script
 refuses a download that does not match it. The crop is `[cx, cy, side]`: the
 square's centre as fractions of the picture's width and height, its side as a
 fraction of the height. Each is framed as an ID photograph (TeeJ,
-2026-09-30): the whole head from the top of the hair or the hat to the chin,
-the face centred across, the head about three-fifths of the height with the
-shoulders below; past the photograph's own edge its edge is carried on out
-of focus. A head fills more of the square only where the photograph has no
-more, or where a Nazi symbol below it is the reason to crop (the notes).
+2026-09-30): the whole head, its top a tenth of the way down, centred
+across, the head about half to three-fifths of the height with the
+shoulders below - checked by eye in each rendered square, not only on the
+original. Where the photograph runs out it fades out like a studio print.
+Where a Nazi symbol sits below the head, a fourth number cuts the
+photograph off above it and the print fades out below the cut (the notes);
+Model alone keeps his cap cut, below the swastika on its eagle.
 No picture shows a swastika or an Iron Cross, and
 each German portrait was checked by eye; an eagle may show, as long as the
 swastika does not (TeeJ, 2026-09-30). A person with no freely licensed
