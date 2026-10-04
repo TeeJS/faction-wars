@@ -85,7 +85,8 @@ func _init() -> void:
 		_check(LICENCES.has(str(p.get("licence", ""))), "%s: an accepted licence (%s)" % [id, p.get("licence", "")])
 		_check(not str(p.get("author", "")).is_empty(), "%s: an author" % id)
 		var crop: Variant = p.get("crop")
-		_check(crop is Array and crop.size() == 3, "%s: a crop" % id)
+		# x, y, side, and optionally the cut (make_ww2_portraits.crop)
+		_check(crop is Array and crop.size() in [3, 4], "%s: a crop" % id)
 	_check(people.size() == ids.size(), "a record for each character and no more (%d)" % people.size())
 	print("[ww2_portraits] %d characters, %d with the stand-in" % [ids.size(), generic])
 

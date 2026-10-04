@@ -43,7 +43,9 @@ Original backup hashes, 400 x 200 game size, 1600 x 800 master size and exact
 exterior pixel preservation outside the portrait aperture were verified.
 
 Only the direct `art/characters/*.png` cards were changed. The separate 80 x 80
-portraits and 61 x 25 miniatures retain their original photos. `.gdignore` keeps
+portraits and 61 x 25 miniatures retain their original photos. (Later the same
+day all 71 characters' portraits and miniatures were cut from these cards
+by `tools/look/make_ww2_small_from_plates.py characters`.) `.gdignore` keeps
 this archive and the original backup out of Godot imports/exports.
 
 To restore the comic cards after running `tools/look/make_ww2_portraits.py`, copy
