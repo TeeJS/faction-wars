@@ -1,0 +1,114 @@
+[
+  {
+    "id": "burma",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-53608635-b3af-4387-a1d6-da3d5f6eadad.png",
+    "prompt": "Use case: style-transfer. Image 1 is the exact flag reference and edit target. Redraw ONLY its ink/printing texture in Joe Palooka / Ham Fisher 1930s newspaper comic style: confident black outlines, restrained crosshatching and stipple, rich original flat colours. Full-bleed 2:1 flag, same entire canvas geometry as reference. No card, captions, margins, pole, folds or perspective. Preserve precise original positions, proportions and sizes of canton, badge, glyphs and emblems. Union Jack counterchanged diagonals must match exactly. Keep badge size and circular/shield shape identical to reference; no enlargement. No Nazi symbols.",
+    "source": {
+      "sha1": "63a0c8c4bfb1b8d9212d6b7a791e8e0591105771",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "file": "Flag_of_Burma_%281939%E2%80%931941%2C_1945%E2%80%931948%29.svg",
+      "rendition_sha256": "ac0e971c32c588dfdc01d40468e82376b156eff43f77f46b23a261d6436ea6d5",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/6/66/Flag_of_Burma_%281939%E2%80%931941%2C_1945%E2%80%931948%29.svg",
+      "period": "1939–1941, 1945–1948",
+      "author": "Beao (original), Fry1989, Havsjo",
+      "hash": "6/66",
+      "path": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\flag-proposal-references\\burma.png",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Burma_(1939%E2%80%931941%2C_1945%E2%80%931948).svg",
+      "id": "burma",
+      "license": "CC BY-SA 3.0",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/66/Flag_of_Burma_%281939%E2%80%931941%2C_1945%E2%80%931948%29.svg/1280px-Flag_of_Burma_%281939%E2%80%931941%2C_1945%E2%80%931948%29.svg.png",
+      "downloaded_reference_sha256": "AC0E971C32C588DFDC01D40468E82376B156EFF43F77F46B23A261D6436EA6D5"
+    },
+    "status": "approved_and_installed",
+    "approval": "User approved all five previews on 2026-10-04: approved"
+  },
+  {
+    "id": "ceylon",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-35250525-7c0e-493b-b383-dcd12f80576f.png",
+    "prompt": "Use case: style-transfer. Image 1 is the exact flag reference and edit target. Redraw ONLY its ink/printing texture in Joe Palooka / Ham Fisher 1930s newspaper comic style: confident black outlines, restrained crosshatching and stipple, rich original flat colours. Full-bleed 2:1 flag, same entire canvas geometry as reference. No card, captions, margins, pole, folds or perspective. Preserve precise original positions, proportions and sizes of canton, badge, glyphs and emblems. Union Jack counterchanged diagonals must match exactly. Keep badge size and circular/shield shape identical to reference; no enlargement. No Nazi symbols.",
+    "source": {
+      "sha1": "979df8d68b6999ed9c7c26e83bfe2fb69d8cd07f",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "file": "Flag_of_Ceylon_%281875%E2%80%931948%29.svg",
+      "rendition_sha256": "f2c20ed229deaf26590d539110a8045dc30db45d1d7f36d262ae36f14d0a9523",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/d/db/Flag_of_Ceylon_%281875%E2%80%931948%29.svg",
+      "period": "1875–1948",
+      "author": "Samhanin (original)",
+      "hash": "d/db",
+      "path": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\flag-proposal-references\\ceylon.png",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Ceylon_(1875%E2%80%931948).svg",
+      "id": "ceylon",
+      "license": "CC BY-SA 4.0",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/db/Flag_of_Ceylon_%281875%E2%80%931948%29.svg/1280px-Flag_of_Ceylon_%281875%E2%80%931948%29.svg.png",
+      "downloaded_reference_sha256": "F2C20ED229DEAF26590D539110A8045DC30DB45D1D7F36D262AE36F14D0A9523"
+    },
+    "status": "approved_and_installed",
+    "approval": "User approved all five previews on 2026-10-04: approved"
+  },
+  {
+    "id": "malta",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-f687288a-abb5-4580-a9c4-728f7cee1f47.png",
+    "prompt": "Use case: style-transfer. Image 1 is the exact flag reference and edit target. Redraw ONLY its ink/printing texture in Joe Palooka / Ham Fisher 1930s newspaper comic style: confident black outlines, restrained crosshatching and stipple, rich original flat colours. Full-bleed 2:1 flag, same entire canvas geometry as reference. No card, captions, margins, pole, folds or perspective. Preserve precise original positions, proportions and sizes of canton, badge, glyphs and emblems. Union Jack counterchanged diagonals must match exactly. Keep badge size and circular/shield shape identical to reference; no enlargement. No Nazi symbols.",
+    "source": {
+      "licenseUrl": "",
+      "file": "Flag_of_Malta_%281923%E2%80%931943%29.svg",
+      "rendition_sha256": "6529cb6782dedd9bddfd9a98fb43e6138f00113c70a6cdaf404ae1048a323c47",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/9c/Flag_of_Malta_%281923%E2%80%931943%29.svg",
+      "period": "1923–1943",
+      "author": "Orange Tuesday",
+      "hash": "9/9c",
+      "path": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\flag-proposal-references\\malta.png",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Malta_(1923%E2%80%931943).svg",
+      "id": "malta",
+      "license": "Public domain",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9c/Flag_of_Malta_%281923%E2%80%931943%29.svg/1280px-Flag_of_Malta_%281923%E2%80%931943%29.svg.png",
+      "downloaded_reference_sha256": "6529CB6782DEDD9BDDFD9A98FB43E6138F00113C70A6CDAF404AE1048A323C47"
+    },
+    "status": "approved_and_installed",
+    "approval": "User approved all five previews on 2026-10-04: approved"
+  },
+  {
+    "id": "kazakhstan",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-05114446-9408-499c-aed3-b5a653806b3f.png",
+    "prompt": "Use case: style-transfer. Image 1 is the exact flag reference and edit target. Redraw ONLY its ink/printing texture in Joe Palooka / Ham Fisher 1930s newspaper comic style: confident black outlines, restrained crosshatching and stipple, rich original flat colours. Full-bleed 2:1 flag, same entire canvas geometry as reference. No card, captions, margins, pole, folds or perspective. Preserve precise original positions, proportions and sizes of canton, badge, glyphs and emblems. Union Jack counterchanged diagonals must match exactly. Keep exact QAZAQ SSR and КАЗАХСКАЯ ССР lettering, hammer and sickle, no star. No Nazi symbols.",
+    "source": {
+      "licenseUrl": "",
+      "file": "Flag_of_the_Kazakh_Soviet_Socialist_Republic_%281937%E2%80%931940%29.svg",
+      "rendition_sha256": "5db6ba59f09a1ed6ef3f5d96229639b886d6a713dcd8e91b028f709eaaad498d",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/9f/Flag_of_the_Kazakh_Soviet_Socialist_Republic_%281937%E2%80%931940%29.svg",
+      "period": "1937–1940",
+      "author": "Wassily",
+      "hash": "9/9f",
+      "path": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\flag-proposal-references\\kazakhstan.png",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_the_Kazakh_Soviet_Socialist_Republic_(1937%E2%80%931940).svg",
+      "id": "kazakhstan",
+      "license": "Public domain",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9f/Flag_of_the_Kazakh_Soviet_Socialist_Republic_%281937%E2%80%931940%29.svg/1280px-Flag_of_the_Kazakh_Soviet_Socialist_Republic_%281937%E2%80%931940%29.svg.png",
+      "downloaded_reference_sha256": "5DB6BA59F09A1ED6EF3F5D96229639B886D6A713DCD8E91B028F709EAAAD498D"
+    },
+    "status": "approved_and_installed",
+    "approval": "User approved all five previews on 2026-10-04: approved"
+  },
+  {
+    "id": "indochina",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-46e3d150-f4a2-40fd-97dd-2e0031319262.png",
+    "prompt": "Use case: style-transfer. Image 1 is the exact flag reference and edit target. Redraw ONLY its ink/printing texture in Joe Palooka / Ham Fisher 1930s newspaper comic style: confident black outlines, restrained crosshatching and stipple, rich original flat colours. Full-bleed 2:1 flag, same entire canvas geometry as reference. No card, captions, margins, pole, folds or perspective. Preserve precise original positions, proportions and sizes of canton, badge, glyphs and emblems. Union Jack counterchanged diagonals must match exactly. Preserve transparent triangular swallowtail cutout: notch vertex at center of whole flag (50% width), French canton exactly 25% whole width and 50% whole height. Actual alpha outside flag, no black triangular cloth. No Nazi symbols.",
+    "source": {
+      "licenseUrl": "",
+      "file": "Ensign_of_French_Indochina.svg",
+      "rendition_sha256": "02d7b48675917a1d5e6affd19aa1731ad261a7cd8d65e6f05cd75b7e0d79c522",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/a/a2/Ensign_of_French_Indochina.svg",
+      "period": "1923–1949 civil/naval ensign",
+      "author": "Jarisg",
+      "hash": "a/a2",
+      "path": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\flag-proposal-references\\indochina.png",
+      "page": "https://commons.wikimedia.org/wiki/File:Ensign_of_French_Indochina.svg",
+      "id": "indochina",
+      "license": "Public domain",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a2/Ensign_of_French_Indochina.svg/1280px-Ensign_of_French_Indochina.svg.png",
+      "downloaded_reference_sha256": "02D7B48675917A1D5E6AFFD19AA1731AD261A7CD8D65E6F05CD75B7E0D79C522"
+    },
+    "status": "approved_and_installed",
+    "approval": "User approved all five previews on 2026-10-04: approved"
+  }
+]

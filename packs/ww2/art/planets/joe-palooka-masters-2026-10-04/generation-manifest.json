@@ -1,0 +1,1492 @@
+[
+  {
+    "id": "afghanistan",
+    "flag": "afghanistan",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-1035921b-2bf2-43b4-b54b-746566caa514.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Kingdom of Afghanistan. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\n",
+    "source": {
+      "name": "Kingdom of Afghanistan",
+      "file": "Flag of Afghanistan (1931–1973).svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Afghanistan_(1931%E2%80%931973).svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/8/8b/Flag_of_Afghanistan_%281931%E2%80%931973%29.svg",
+      "sha1": "1b83ef7c3d54f5d81e0401b9ec8635ce6a7b8efb",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8b/Flag_of_Afghanistan_%281931%E2%80%931973%29.svg/330px-Flag_of_Afghanistan_%281931%E2%80%931973%29.svg.png",
+      "rendition_sha256": "ce4a9ea5499eed8eb522023cefba1c2e18500ee082f7752a527d963a0172a3bc",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-Afghanistan",
+        "PD-ineligible",
+        "Insignia"
+      ],
+      "author": "Orange Tuesday at en.wikipedia"
+    },
+    "previousPath": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-1e11dec1-782a-4f8a-89c5-44a38080e334.png",
+    "correctionPrompt": "Precise-object-edit. Image 1 is the illustrated card to correct; Image 2 is the original flag design reference. Correct only the two inscriptions in the white historical emblem to match Image 2 precisely. Above the ribbon the date is ۱۳۴۸ (1348), and the ribbon text is افغانستان. Copy the visible glyph shapes from reference, no invented marks. Keep the mosque, wreath, white emblem, original black/red/green tricolour and Joe Palooka ink style unchanged; retain card border and caption."
+  },
+  {
+    "id": "alaska",
+    "flag": "alaska",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-91ae309d-34b6-4db1-a548-0378dc9353ce.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Alaska (1927). Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\nExactly EIGHT gold stars, seven forming the Big Dipper and one larger Polaris at upper right. Copy their positions.",
+    "source": {
+      "name": "Alaska (1927)",
+      "file": "Flag of Alaska.svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Alaska.svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/e/e6/Flag_of_Alaska.svg",
+      "sha1": "2b87f6468b49810b6af02983a6496c5a5d5670d2",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e6/Flag_of_Alaska.svg/330px-Flag_of_Alaska.svg.png",
+      "rendition_sha256": "5aa7a0b53966bdf6323c0757631205299151ceb7ab03f5bdf2e256a8b81ccbbe",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "pdc",
+        "PD-100",
+        "PD-OpenClipart"
+      ],
+      "author": "Benny Benson"
+    }
+  },
+  {
+    "id": "algeria",
+    "flag": "algeria",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-2a4fd0dc-efef-4d6b-9b12-332e998e4bfb.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Algeria: the national movement's flag (1934; set 1943-44). Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\n",
+    "source": {
+      "name": "Algeria: the national movement's flag (1934; set 1943-44)",
+      "file": "Flag of Algeria.svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Algeria.svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/7/77/Flag_of_Algeria.svg",
+      "sha1": "8664749d5bd40091a7b408045f61da79175102fc",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/77/Flag_of_Algeria.svg/330px-Flag_of_Algeria.svg.png",
+      "rendition_sha256": "1c5b8873b2e360b6df4fee0e1e21db9bfc85843d30438114662289f1a4f0d05c",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-Algeria",
+        "PD-ineligible"
+      ],
+      "author": "see the file's page"
+    }
+  },
+  {
+    "id": "argentina",
+    "flag": "argentina",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-4a7b4fa3-37ae-468f-b3fa-922a36adf9ba.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Argentina. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\nSun of May has exactly THIRTY-TWO rays alternating sixteen straight and sixteen wavy rays, original human face. Preserve light blue stripes.",
+    "source": {
+      "name": "Argentina",
+      "file": "Flag of Argentina.svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Argentina.svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/1/1a/Flag_of_Argentina.svg",
+      "sha1": "b54fa14d4d27a1dc3f763d650f9e5afe155e376b",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1a/Flag_of_Argentina.svg/330px-Flag_of_Argentina.svg.png",
+      "rendition_sha256": "3841b93814d1e3abc464f4e0a0f87fb60a78fc87b860d79b6fb46758681b884c",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-Argentina",
+        "PD-old-70-1923",
+        "insignia"
+      ],
+      "author": "Manuel Belgrano"
+    }
+  },
+  {
+    "id": "australia",
+    "flag": "australia",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-7c1e0e13-424c-4028-b0c7-3fed73e82f62.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Australia. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nPreserve six stars: a seven-point Commonwealth star at lower hoist and FIVE Southern Cross stars at fly, with correct point counts.",
+    "source": {
+      "name": "Australia",
+      "file": "Flag of Australia (converted).svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Australia_(converted).svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/8/88/Flag_of_Australia_%28converted%29.svg",
+      "sha1": "27ab3c995aa15c868289bd2a07bdeb7d1642d49d",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/88/Flag_of_Australia_%28converted%29.svg/330px-Flag_of_Australia_%28converted%29.svg.png",
+      "rendition_sha256": "46e7a6e7d53c14f485594a630a5857925f6138ea522fa4b5e82ace32eade70dc",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-AustraliaGov",
+        "Insignia"
+      ],
+      "author": "Unknown (Vector graphics image by Ian Fieggen) (only minor code changes by uploader.)"
+    }
+  },
+  {
+    "id": "austria",
+    "flag": "austria",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-c9184f05-12cf-4dae-b6cf-1d3d0d0e235d.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Austria. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\n",
+    "source": {
+      "name": "Austria",
+      "file": "Flag of Austria.svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Austria.svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/4/41/Flag_of_Austria.svg",
+      "sha1": "6183e2da9a0264dc227387294332895f1da4b9bf",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/330px-Flag_of_Austria.svg.png",
+      "rendition_sha256": "4fc948c3ca7ac0e2eb8bd53f38321b5b08d1c18e7ef248603cdb55382e5c723c",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-AustrianGov",
+        "insignia"
+      ],
+      "author": "see the file's page"
+    }
+  },
+  {
+    "id": "baltic_states",
+    "flag": "baltic",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-92eb1d9f-97d8-4e0d-be62-8e910cd9c751.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Estonia, Latvia and Lithuania. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\n",
+    "source": {
+      "name": "Estonia, Latvia and Lithuania",
+      "parts": [
+        "estonia",
+        "latvia",
+        "lithuania"
+      ]
+    }
+  },
+  {
+    "id": "belarus",
+    "flag": "byelorussia",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-276faec5-a87f-4a34-8393-3b335741e8c7.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Byelorussian SSR (1937-1951). Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\n",
+    "source": {
+      "name": "Byelorussian SSR (1937-1951)",
+      "file": "Flag of the Byelorussian Soviet Socialist Republic (1937–1951).svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_the_Byelorussian_Soviet_Socialist_Republic_(1937%E2%80%931951).svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/7/7b/Flag_of_the_Byelorussian_Soviet_Socialist_Republic_%281937%E2%80%931951%29.svg",
+      "sha1": "706ee1319f241d3c9460aeab0a99981bda722929",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7b/Flag_of_the_Byelorussian_Soviet_Socialist_Republic_%281937%E2%80%931951%29.svg/330px-Flag_of_the_Byelorussian_Soviet_Socialist_Republic_%281937%E2%80%931951%29.svg.png",
+      "rendition_sha256": "4629dba72c7ffc9427f8e87fb6864e1df74d936b67f8949ba08785790532efe3",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-RU-exempt"
+      ],
+      "author": "see the file's page"
+    },
+    "previousPath": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-a54ed1a6-b975-4db8-89ac-9982da6aa6eb.png",
+    "correctionPrompt": "Precise-object-edit. Image 1 is the illustrated card to correct; Image 2 is the original flag design reference. Change ONLY the small five-point star above the hammer and sickle: it must be a thin GOLD OUTLINE with an entirely RED CENTER matching the red flag field, as in Image 2. Remove the filled gold interior and hatching inside that star. Retain hammer and sickle, exact Cyrillic БССР, all colors, texture, geometry and original card caption."
+  },
+  {
+    "id": "belgium",
+    "flag": "belgium",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-7d859f98-4dbf-4a99-b1fe-169e23c1a789.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Belgium. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\n",
+    "source": {
+      "name": "Belgium",
+      "file": "Flag of Belgium (civil).svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Belgium_(civil).svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/92/Flag_of_Belgium_%28civil%29.svg",
+      "sha1": "6a49004d51c767581802fcc2b320304f203fef60",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/92/Flag_of_Belgium_%28civil%29.svg/330px-Flag_of_Belgium_%28civil%29.svg.png",
+      "rendition_sha256": "b17460ceeb168ffbf05f4e4ae9f820c8eb8c41b668dd8905a3d9b17d6bc69c04",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-shape",
+        "Insignia"
+      ],
+      "author": "Dbenbenn"
+    }
+  },
+  {
+    "id": "brazil",
+    "flag": "brazil",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-3799b4b2-9e5d-436b-951e-be483f0f0364.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Brazil (21 stars). Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nPreserve EXACTLY 21 stars and the inscription ORDEM E PROGRESSO, with the same constellation arrangement as the supplied image.",
+    "source": {
+      "name": "Brazil (21 stars)",
+      "file": "Flag of Brazil (1889–1960).svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Brazil_(1889%E2%80%931960).svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/92/Flag_of_Brazil_%281889%E2%80%931960%29.svg",
+      "sha1": "312c5b9cbc40d7c4957d020f514f3b5803ddfe9b",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/92/Flag_of_Brazil_%281889%E2%80%931960%29.svg/330px-Flag_of_Brazil_%281889%E2%80%931960%29.svg.png",
+      "rendition_sha256": "3d2d0b9aa5583cc8c9466b84809ae4d56933df87701a661f1b97c1ced31a39b9",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-BrazilGov",
+        "PD/1923"
+      ],
+      "author": "Raimundo Teixeira Mendes"
+    },
+    "previousPath": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-26e1a653-6deb-4088-88a1-bd10574713bb.png",
+    "correctionPrompt": "Full-bleed reference-based style transfer; verified exactly 21 stars and original constellation arrangement.",
+    "fullBleed": true
+  },
+  {
+    "id": "britain",
+    "flag": "uk",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-3c8cdcce-a0d8-4373-8ba5-969192836bc5.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: United Kingdom. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.",
+    "source": {
+      "name": "United Kingdom",
+      "file": "Flag of the United Kingdom (1-2).svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_the_United_Kingdom_(1-2).svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/a/a5/Flag_of_the_United_Kingdom_%281-2%29.svg",
+      "sha1": "574dcaf9b0f699c967fffb99499f89b92b75f8be",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a5/Flag_of_the_United_Kingdom_%281-2%29.svg/330px-Flag_of_the_United_Kingdom_%281-2%29.svg.png",
+      "rendition_sha256": "fbae9a498e885ba8351a9fcc277529f173e3ceb3dc9905e1487a986e34086bc1",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "Insignia",
+        "PD-UKGov",
+        "PD-old-100-1923",
+        "insignia"
+      ],
+      "author": "see the file's page"
+    }
+  },
+  {
+    "id": "bulgaria",
+    "flag": "bulgaria",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-bb82fcd0-0ade-4e3f-b455-3e2fde1ce173.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Kingdom of Bulgaria. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\n",
+    "source": {
+      "name": "Kingdom of Bulgaria",
+      "file": "Flag of Bulgaria.svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Bulgaria.svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/9a/Flag_of_Bulgaria.svg",
+      "sha1": "b976f224d05a6732c4b31f4593418ce4dc09d652",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9a/Flag_of_Bulgaria.svg/330px-Flag_of_Bulgaria.svg.png",
+      "rendition_sha256": "1a79bf7eedd280db9a59852f019138ed3c92a0ccbe20c881383a6cac0a5ed3c6",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "Insignia",
+        "PD-shape"
+      ],
+      "author": "SKopp"
+    }
+  },
+  {
+    "id": "canada",
+    "flag": "canada",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-6704e0ce-c692-4c9b-8aa8-2a75f049c89c.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Canada (Red Ensign). Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.",
+    "source": {
+      "name": "Canada (Red Ensign)",
+      "file": "Flag of Canada (1921–1957).svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Canada_(1921%E2%80%931957).svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/6/6d/Flag_of_Canada_%281921%E2%80%931957%29.svg",
+      "sha1": "25a882b7ebdea30bb4a8f8960c521f6121202724",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6d/Flag_of_Canada_%281921%E2%80%931957%29.svg/330px-Flag_of_Canada_%281921%E2%80%931957%29.svg.png",
+      "rendition_sha256": "eac300075a24c45a8101a1c38937b81c35061372d9f82d37ba99f46520f2f09f",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-user"
+      ],
+      "author": "Hoshie"
+    }
+  },
+  {
+    "id": "chile",
+    "flag": "chile",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-7e657837-47ce-4e99-817b-12475586fe7a.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Chile. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\n",
+    "source": {
+      "name": "Chile",
+      "file": "Flag of Chile.svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Chile.svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/7/78/Flag_of_Chile.svg",
+      "sha1": "22a43c801d3d9f56988f6d9947e5a03e1fc59c4b",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/78/Flag_of_Chile.svg/330px-Flag_of_Chile.svg.png",
+      "rendition_sha256": "746456396af4ac881256ff2f49ed07cb7081cb862e464bdb6a12fe6b6142c323",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-Chile",
+        "PD-ineligible",
+        "insignia",
+        "self"
+      ],
+      "author": "see the file's page"
+    }
+  },
+  {
+    "id": "china",
+    "flag": "china",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-8aefe5e3-17f8-4902-817a-1b5fe4112887.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Republic of China. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.",
+    "source": {
+      "name": "Republic of China",
+      "file": "Flag of the Republic of China.svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_the_Republic_of_China.svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/7/72/Flag_of_the_Republic_of_China.svg",
+      "sha1": "784cf273d4caa8130068c0bdc730a43af7047657",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/72/Flag_of_the_Republic_of_China.svg/330px-Flag_of_the_Republic_of_China.svg.png",
+      "rendition_sha256": "4c8524ef9eb20df272d34fb39c81f2a79af5726a6dfef635ae4b21f8327f1966",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "Insignia",
+        "PD-ROC-exempt",
+        "PD-PRC-exempt"
+      ],
+      "author": "Sun Yat-sen"
+    }
+  },
+  {
+    "id": "congo",
+    "flag": "congo",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-7be7c49a-b3f3-4221-b2a7-b430f6c7e402.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Belgian Congo. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\n",
+    "source": {
+      "name": "Belgian Congo",
+      "file": "Flag of the Congo Free State.svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_the_Congo_Free_State.svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/7/7c/Flag_of_the_Congo_Free_State.svg",
+      "sha1": "98aafcfcd10c41846999684d7c88dc3e3cc46405",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7c/Flag_of_the_Congo_Free_State.svg/330px-Flag_of_the_Congo_Free_State.svg.png",
+      "rendition_sha256": "f41df17a1cde1f8c6f943ea6a5b9ebc37d8d008785b80e1e6b14edcfa5c4b76a",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-Democratic Republic of the Congo",
+        "PD-ineligible",
+        "Insignia"
+      ],
+      "author": "see the file's page"
+    }
+  },
+  {
+    "id": "czechoslovakia",
+    "flag": "czechoslovakia",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-3ebbae8d-671d-40fd-a61e-e2a0ca7e11a0.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Czechoslovakia. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\n",
+    "source": {
+      "name": "Czechoslovakia",
+      "file": "Flag of the Czech Republic.svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_the_Czech_Republic.svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/c/cb/Flag_of_the_Czech_Republic.svg",
+      "sha1": "1f52e6f58d295f3b764784cca775b96e86f45b2d",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cb/Flag_of_the_Czech_Republic.svg/330px-Flag_of_the_Czech_Republic.svg.png",
+      "rendition_sha256": "7ae3546b55d6db5f369cff02bf5264c6f1d55a991a3c7910d9b0f8cbc0012291",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-CzechGov"
+      ],
+      "author": "Jaroslav Kursa"
+    }
+  },
+  {
+    "id": "denmark",
+    "flag": "denmark",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-938eb0d4-9cda-4b4d-8427-3d735cddfb43.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Denmark. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\n",
+    "source": {
+      "name": "Denmark",
+      "file": "Flag of Denmark.svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Denmark.svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/9c/Flag_of_Denmark.svg",
+      "sha1": "f22f7a2eb507e529f963ad514a03e0ca1bfd6cc6",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9c/Flag_of_Denmark.svg/330px-Flag_of_Denmark.svg.png",
+      "rendition_sha256": "96df6a1ba46920bcaa1f517c1f8018c6bd0a7b42de999ac7f4d017dfca5ac032",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "Insignia",
+        "PD-shape"
+      ],
+      "author": "Madden and others"
+    }
+  },
+  {
+    "id": "dutch_east_indies",
+    "flag": "indonesia",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-ea266e03-1427-44e6-8f9f-ded5046de72a.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Indonesia: the red and white. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\n",
+    "source": {
+      "name": "Indonesia: the red and white",
+      "file": "Flag of Indonesia.svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Indonesia.svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/9f/Flag_of_Indonesia.svg",
+      "sha1": "0ca13a2bf4045886b3926eb9ed58bdf2245da7d3",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9f/Flag_of_Indonesia.svg/330px-Flag_of_Indonesia.svg.png",
+      "rendition_sha256": "6a72bda33dcc5498030bad48247b9ac6550269f7f833e3122621b62caddc9aa9",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-shape",
+        "PD-Indonesia"
+      ],
+      "author": "Jayakatwang"
+    }
+  },
+  {
+    "id": "east_africa",
+    "flag": "ethiopia",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-fdf596e5-56d4-48e8-9b0f-a30ea04790bc.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Ethiopia (1897-1974). Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\n",
+    "source": {
+      "name": "Ethiopia (1897-1974)",
+      "file": "Flag of Ethiopia (1897–1974).svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Ethiopia_(1897%E2%80%931974).svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/f/ff/Flag_of_Ethiopia_%281897%E2%80%931974%29.svg",
+      "sha1": "ee414b9e8090013c8fb790db90f2a790809ea37a",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/ff/Flag_of_Ethiopia_%281897%E2%80%931974%29.svg/330px-Flag_of_Ethiopia_%281897%E2%80%931974%29.svg.png",
+      "rendition_sha256": "8828dcc10c433b47a3c13a094ba6556bcfad379a199942d60c1e2430c7e54d5d",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-Ethiopia"
+      ],
+      "author": "TRAJAN 117"
+    }
+  },
+  {
+    "id": "egypt",
+    "flag": "egypt",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-a7e274d6-e212-408f-9e63-5b2f220f0fa0.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Kingdom of Egypt. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\n",
+    "source": {
+      "name": "Kingdom of Egypt",
+      "file": "Flag of Egypt (1922-1958).svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Egypt_(1922-1958).svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/3/38/Flag_of_Egypt_%281922-1958%29.svg",
+      "sha1": "62a0956c41d8a7cf5a64ebb38d19291d822dac06",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/38/Flag_of_Egypt_%281922-1958%29.svg/330px-Flag_of_Egypt_%281922-1958%29.svg.png",
+      "rendition_sha256": "1e8462f7f9b06c3cb50067a5410b84335092b679fe05a01a753d6fba04a3d38d",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-user"
+      ],
+      "author": "Mysid"
+    }
+  },
+  {
+    "id": "fiji",
+    "flag": "fiji",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-9219071d-7c83-42fe-b397-bbae7e8f29c5.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Fiji (1924-1970). Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\n",
+    "source": {
+      "name": "Fiji (1924-1970)",
+      "file": "Flag of Fiji (1924–1970).svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Fiji_(1924%E2%80%931970).svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/8/85/Flag_of_Fiji_%281924%E2%80%931970%29.svg",
+      "sha1": "f121c683a1d1e551ddf61ae91fb26d5269927632",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/85/Flag_of_Fiji_%281924%E2%80%931970%29.svg/330px-Flag_of_Fiji_%281924%E2%80%931970%29.svg.png",
+      "rendition_sha256": "38622119a41569888bd39ba20409071d1ef8a0b85634491e082e29d0b0f93ed6",
+      "licence": "CC BY-SA 3.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/3.0",
+      "licence_basis": [
+        "cc-by-sa-3.0",
+        "cc-zero"
+      ],
+      "author": "Simitukidia and Lokal Profil"
+    }
+  },
+  {
+    "id": "finland",
+    "flag": "finland",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-1ca29b12-80ba-4fd2-87bd-ae067f3919aa.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Finland. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\n",
+    "source": {
+      "name": "Finland",
+      "file": "Flag of Finland.svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Finland.svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Flag_of_Finland.svg",
+      "sha1": "4ba6e5300c3ddd64f581df014e3aea3ad7254882",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bc/Flag_of_Finland.svg/330px-Flag_of_Finland.svg.png",
+      "rendition_sha256": "20f235d4eb6006e040621e7fb6a255ff356350a335f9471c6f6c1aa7f8496796",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-shape",
+        "PD-FinlandGov",
+        "insignia"
+      ],
+      "author": "Unknown"
+    }
+  },
+  {
+    "id": "france",
+    "flag": "france",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-7cdf2a28-9e20-4985-b80b-d9bd9f906e55.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: France. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.",
+    "source": {
+      "name": "France",
+      "file": "Flag of France.svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_France.svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/c/c3/Flag_of_France.svg",
+      "sha1": "66bdc8e9edf0515a0742b58a4f04fa1103084d56",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c3/Flag_of_France.svg/330px-Flag_of_France.svg.png",
+      "rendition_sha256": "af70923789b41b4f29025c5f6944ff926cd8fa8e20a5bc510a7d82efb4218832",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-simple",
+        "Insignia",
+        "PD-flag",
+        "PD-France"
+      ],
+      "author": "see the file's page"
+    }
+  },
+  {
+    "id": "germany",
+    "flag": "germany",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-8a555bb8-f472-4fa0-90ca-c3b4b0a11c1b.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Germany: the black-white-red tricolour. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.",
+    "source": {
+      "name": "Germany: the black-white-red tricolour",
+      "file": "Flag of Germany (1867–1918).svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Germany_(1867%E2%80%931918).svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/1/1f/Flag_of_Germany_%281867%E2%80%931918%29.svg",
+      "sha1": "59fe0e22197ef0fa883aeb99f3122f686633d350",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1f/Flag_of_Germany_%281867%E2%80%931918%29.svg/330px-Flag_of_Germany_%281867%E2%80%931918%29.svg.png",
+      "rendition_sha256": "a6587dc8f5c5d87ccde3ed8f5149412895c9f088b40e38267a6d6e3224d202a5",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-shape",
+        "insignia"
+      ],
+      "author": "see the file's page"
+    }
+  },
+  {
+    "id": "gilbert_islands",
+    "flag": "gilbert",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-d2dc0a7c-b100-48af-b593-41a1f60f7d75.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Gilbert and Ellice Islands (1937-1976). Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\n",
+    "source": {
+      "name": "Gilbert and Ellice Islands (1937-1976)",
+      "file": "Flag of the Gilbert and Ellice Islands (1937–1976).svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_the_Gilbert_and_Ellice_Islands_(1937%E2%80%931976).svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/3/3f/Flag_of_the_Gilbert_and_Ellice_Islands_%281937%E2%80%931976%29.svg",
+      "sha1": "ad56bf737862d6db474be79ddd37ea1144ac808a",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3f/Flag_of_the_Gilbert_and_Ellice_Islands_%281937%E2%80%931976%29.svg/330px-Flag_of_the_Gilbert_and_Ellice_Islands_%281937%E2%80%931976%29.svg.png",
+      "rendition_sha256": "0eda16f416aa3b0c8f0dda73f8bf443531e85a97efe75b1d74edf831d6d3550d",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-self"
+      ],
+      "author": "Telim tor (original) Orange Tuesday (most recent)"
+    }
+  },
+  {
+    "id": "greece",
+    "flag": "greece",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-40cc9416-88dc-4978-bda0-a1c69b1270b0.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Kingdom of Greece. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\n",
+    "source": {
+      "name": "Kingdom of Greece",
+      "file": "Flag of Greece (1822-1978).svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Greece_(1822-1978).svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/6/6e/Flag_of_Greece_%281822-1978%29.svg",
+      "sha1": "464feedccaff45457749c286ab174ae5cb6e104c",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6e/Flag_of_Greece_%281822-1978%29.svg/330px-Flag_of_Greece_%281822-1978%29.svg.png",
+      "rendition_sha256": "43b2e74faf70a0917417edae9c27e408569f06713673d72b23fbc9f73fafa409",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "pd-ineligible",
+        "Insignia"
+      ],
+      "author": "(of code) User:Makaristos"
+    }
+  },
+  {
+    "id": "hawaii",
+    "flag": "hawaii",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-a5bd044a-6a44-4287-9744-b6617c03ccac.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Hawaii. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\nExactly EIGHT horizontal stripes in original order WHITE RED BLUE WHITE RED BLUE WHITE RED; Union Jack canton fills the first five stripes vertically as shown in supplied historical source. Do not alter count or canton dimensions.",
+    "source": {
+      "name": "Hawaii",
+      "file": "Flag of Hawaii.svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Hawaii.svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/e/ef/Flag_of_Hawaii.svg",
+      "sha1": "2d21d9dbf312d653d1919620dd91b96af2e0afbb",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ef/Flag_of_Hawaii.svg/330px-Flag_of_Hawaii.svg.png",
+      "rendition_sha256": "e34400c8cdd4ee939d17e6d3a5edc0a5bf032616ea545cef18be0eaa89a4460f",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "pdc",
+        "PD-ineligible"
+      ],
+      "author": "Dbenbenn"
+    }
+  },
+  {
+    "id": "hungary",
+    "flag": "hungary",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-37743546-6db6-498d-85b4-7be31697e02d.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Kingdom of Hungary. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\n",
+    "source": {
+      "name": "Kingdom of Hungary",
+      "file": "Flag of Hungary (1915-1918, 1919-1946).svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Hungary_(1915-1918,_1919-1946).svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/8/8b/Flag_of_Hungary_%281915-1918%2C_1919-1946%29.svg",
+      "sha1": "0f2b45457516c20fb92498bd1439821b963849c3",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8b/Flag_of_Hungary_%281915-1918%2C_1919-1946%29.svg/330px-Flag_of_Hungary_%281915-1918%2C_1919-1946%29.svg.png",
+      "rendition_sha256": "377baf09dd8306888808d17cc23c458206f9b70dbe08f861e3e49868477cc7a7",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "self",
+        "PD-Hungary",
+        "Insignia"
+      ],
+      "author": "User:Zscout370, colour correction: User:R-41, current version: Thommy"
+    }
+  },
+  {
+    "id": "iceland",
+    "flag": "iceland",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-c93aaf84-c9cf-40cb-a4a9-a8dced75dd60.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Iceland. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\n",
+    "source": {
+      "name": "Iceland",
+      "file": "Flag of Iceland.svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Iceland.svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/c/ce/Flag_of_Iceland.svg",
+      "sha1": "4fcd6e0f507312e9c58cf342abc97569a6d6af0e",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/ce/Flag_of_Iceland.svg/330px-Flag_of_Iceland.svg.png",
+      "rendition_sha256": "af310c3f5afd84770fa2cdcb68c830ce91b2aae047b8c882a701301abd7c811e",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-Iceland50",
+        "PD-shape",
+        "Insignia"
+      ],
+      "author": "see the file's page"
+    }
+  },
+  {
+    "id": "india",
+    "flag": "india",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-b43cb442-594e-4b69-83fb-951a6771126d.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: India: the Indian National Congress flag (1931). Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nKeep the original charkha SPINNING WHEEL and its shaft/spindle, NOT the modern Ashoka chakra.",
+    "source": {
+      "name": "India: the Indian National Congress flag (1931)",
+      "file": "1931 Flag of India.svg",
+      "page": "https://commons.wikimedia.org/wiki/File:1931_Flag_of_India.svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/5/5a/1931_Flag_of_India.svg",
+      "sha1": "37a0bb118ca507a2dc7288ee38afbd847149b41c",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5a/1931_Flag_of_India.svg/330px-1931_Flag_of_India.svg.png",
+      "rendition_sha256": "0b93d2cf500925bdbf45dfe209f1b3294a41005e29b5a6705d8f89f743f8ab63",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-self"
+      ],
+      "author": "Nicholas (Nichalp)"
+    }
+  },
+  {
+    "id": "iraq",
+    "flag": "iraq",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-74596e7d-d3a1-4c50-85a0-4c6dfe7d4508.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Kingdom of Iraq. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\nThe red hoist trapezoid has EXACTLY TWO white SEVEN-pointed stars vertically aligned, matching the supplied 1924–1959 flag. No third star, no triangle substitution.",
+    "source": {
+      "name": "Kingdom of Iraq",
+      "file": "Flag of Iraq (1924–1959).svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Iraq_(1924%E2%80%931959).svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/c/c6/Flag_of_Iraq_%281924%E2%80%931959%29.svg",
+      "sha1": "68d213c9d21a7675bfc9e06f24c1fb7c899ed87e",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c6/Flag_of_Iraq_%281924%E2%80%931959%29.svg/330px-Flag_of_Iraq_%281924%E2%80%931959%29.svg.png",
+      "rendition_sha256": "52d3556ee12ff6d38312267ab9fed6baf475ab818d680a73674aacc7e374caae",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-Iraq",
+        "PD-ineligible",
+        "Insignia"
+      ],
+      "author": "see the file's page"
+    }
+  },
+  {
+    "id": "ireland",
+    "flag": "ireland",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-e03d297a-f730-4b8a-abd5-a0c9887f5e78.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Ireland. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\n",
+    "source": {
+      "name": "Ireland",
+      "file": "Flag of Ireland.svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Ireland.svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/4/45/Flag_of_Ireland.svg",
+      "sha1": "fb73800615b9414c8f48323c96b121898523fea0",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/45/Flag_of_Ireland.svg/330px-Flag_of_Ireland.svg.png",
+      "rendition_sha256": "3b3a100f0434d2a11fb418a537ed5996f8c5f2916507f87e030cdde344e2888a",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "Insignia",
+        "PD-IrishGov"
+      ],
+      "author": "Éire"
+    }
+  },
+  {
+    "id": "italy",
+    "flag": "italy",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-0760dad9-f33e-4ef4-a901-1419d40b6d8e.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Kingdom of Italy. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.",
+    "source": {
+      "name": "Kingdom of Italy",
+      "file": "Flag of Italy (1861–1946).svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Italy_(1861%E2%80%931946).svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/7/78/Flag_of_Italy_%281861%E2%80%931946%29.svg",
+      "sha1": "ff060347b1116848ade2b000e617fb1f13ffa279",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/78/Flag_of_Italy_%281861%E2%80%931946%29.svg/330px-Flag_of_Italy_%281861%E2%80%931946%29.svg.png",
+      "rendition_sha256": "4f01b331f1183a47ec0400cce544c9687254bcfa3d27a25d5ebc5cd799624ee2",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "insignia",
+        "PD-user"
+      ],
+      "author": "F l a n k e r"
+    }
+  },
+  {
+    "id": "japan",
+    "flag": "japan",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-a92c43ff-beb7-4551-9e00-ae8d3cde3d01.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Japan. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.",
+    "source": {
+      "name": "Japan",
+      "file": "Flag of Japan (1870–1999).svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Japan_(1870%E2%80%931999).svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/1/1b/Flag_of_Japan_%281870%E2%80%931999%29.svg",
+      "sha1": "032e27bda4cb886bb6080f293d77f51a0eb9fa19",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1b/Flag_of_Japan_%281870%E2%80%931999%29.svg/330px-Flag_of_Japan_%281870%E2%80%931999%29.svg.png",
+      "rendition_sha256": "9c3e96d931b2d4a0000e7392bb029b1d3bf284be2d5c4c41dc63a269490d9594",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-shape",
+        "PD-old-auto",
+        "Insignia",
+        "PD-Japan"
+      ],
+      "author": "kahusi"
+    }
+  },
+  {
+    "id": "korea",
+    "flag": "korea",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-e8533fb0-89d0-40e7-bba3-f741f40443e7.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Korea: the Provisional Government's taegukgi. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\nPreserve this supplied historical taegukgi exactly: vertically oriented red/blue central taegeuk with red on the RIGHT and blue/purple LEFT, and each corner trigram's exact solid/broken bars. Do not substitute today's diagonal taegeuk.",
+    "source": {
+      "name": "Korea: the Provisional Government's taegukgi",
+      "file": "Flag of the Provisional Government of the Republic of Korea.svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_the_Provisional_Government_of_the_Republic_of_Korea.svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/98/Flag_of_the_Provisional_Government_of_the_Republic_of_Korea.svg",
+      "sha1": "73506d65a3c27dffc6202d3c71aeeda80c8aba5c",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/98/Flag_of_the_Provisional_Government_of_the_Republic_of_Korea.svg/330px-Flag_of_the_Provisional_Government_of_the_Republic_of_Korea.svg.png",
+      "rendition_sha256": "b19c4c4acf5e824dbc3b788a67d9f24e757a317e70b520e76d123fbe1307c38e",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-ineligible"
+      ],
+      "author": "Lumia1234"
+    }
+  },
+  {
+    "id": "libya",
+    "flag": "senussi",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-0307b90b-8d7b-42f6-87c6-a549581cdf85.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: The Senussi banner. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\n",
+    "source": {
+      "name": "The Senussi banner",
+      "file": "Flag of Cyrenaica.svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Cyrenaica.svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/8/87/Flag_of_Cyrenaica.svg",
+      "sha1": "524a180599271be39e904dcffc72154aeec77769",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/87/Flag_of_Cyrenaica.svg/330px-Flag_of_Cyrenaica.svg.png",
+      "rendition_sha256": "de35d606723e1daa19f4d2311c28fde4650b37c796cd7e76b2b0b074e0ed8f3d",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-self"
+      ],
+      "author": "An Encore Performance From The Boys In The Band"
+    }
+  },
+  {
+    "id": "malaya",
+    "flag": "malaya",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-9a6579d3-f4fe-49c8-b298-915057eb2dd0.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Federated Malay States (1896-1950). Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\nRetain the central white oval and running striped tiger, four equal bands WHITE RED YELLOW BLACK.",
+    "source": {
+      "name": "Federated Malay States (1896-1950)",
+      "file": "Flag of Malaya (1896–1950).svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Malaya_(1896%E2%80%931950).svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/6/61/Flag_of_Malaya_%281896%E2%80%931950%29.svg",
+      "sha1": "1026619b434a03a6e867568a62301226c0b6d8bc",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/61/Flag_of_Malaya_%281896%E2%80%931950%29.svg/330px-Flag_of_Malaya_%281896%E2%80%931950%29.svg.png",
+      "rendition_sha256": "c8d520618bc04dd9e1d95a9c4f3ca117dce8c404eee8a2a5f352991e495a2abe",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-user-en",
+        "PD-Malaysia"
+      ],
+      "author": "see the file's page"
+    }
+  },
+  {
+    "id": "manchuria",
+    "flag": "manchukuo",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-b12fdfee-46d5-4a67-9fa9-d08f705add4f.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Manchukuo. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\n",
+    "source": {
+      "name": "Manchukuo",
+      "file": "Flag of Manchukuo.svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Manchukuo.svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/8/8c/Flag_of_Manchukuo.svg",
+      "sha1": "3f2e22a94d035f94c306d3ebee739e06f3d4138f",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8c/Flag_of_Manchukuo.svg/330px-Flag_of_Manchukuo.svg.png",
+      "rendition_sha256": "827e1099d74eb89698ba65e5e406ba2279dae86fb4c5bf191ce9c8c210310c8f",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-shape"
+      ],
+      "author": "Urmas"
+    }
+  },
+  {
+    "id": "mexico",
+    "flag": "mexico",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-5c392c43-ada3-4d24-8861-f447006c4b42.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Mexico. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\nMatch the original period eagle-and-snake coat of arms, including pose, cactus and wreath; do not substitute a new emblem.",
+    "source": {
+      "name": "Mexico",
+      "file": "Flag of Mexico (1934-1968).svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Mexico_(1934-1968).svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/8/8f/Flag_of_Mexico_%281934-1968%29.svg",
+      "sha1": "4c7a2ade311b5bedb2e9b15aaebc3f5246607e39",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8f/Flag_of_Mexico_%281934-1968%29.svg/330px-Flag_of_Mexico_%281934-1968%29.svg.png",
+      "rendition_sha256": "09cbd574ea1f891488b4c1c27e724a34c372e8598772e37e067c93dc88f0e42d",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-Coa-Mexico",
+        "insignia"
+      ],
+      "author": "TownDown"
+    }
+  },
+  {
+    "id": "morocco",
+    "flag": "morocco",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-2e9a26a5-2858-4b15-87d0-3f197705eef8.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Morocco. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\n",
+    "source": {
+      "name": "Morocco",
+      "file": "Flag of Morocco.svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Morocco.svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/2/2c/Flag_of_Morocco.svg",
+      "sha1": "13012b16d6e31cbf00f6a935227078d23d7447f6",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2c/Flag_of_Morocco.svg/330px-Flag_of_Morocco.svg.png",
+      "rendition_sha256": "ab2793fdfd55d62f79f2696319fb98c8db25c2bebd2f6850388cca8883443f16",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-ineligible",
+        "PD-Morocco",
+        "Insignia"
+      ],
+      "author": "Denelson83, Zscout370"
+    }
+  },
+  {
+    "id": "netherlands",
+    "flag": "netherlands",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-ab046e20-b987-4c6c-84f1-7c20b18f9894.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: the Netherlands. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\n",
+    "source": {
+      "name": "the Netherlands",
+      "file": "Flag of the Netherlands.svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_the_Netherlands.svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/2/20/Flag_of_the_Netherlands.svg",
+      "sha1": "e9d6d9f2ffe57c6a8109651ecccb442e14e9a2fd",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/20/Flag_of_the_Netherlands.svg/330px-Flag_of_the_Netherlands.svg.png",
+      "rendition_sha256": "2a782cc884d6e1d9f24036b5e471a8f7516686cb8cd577ba8f4933983befd4c2",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-shape",
+        "Insignia"
+      ],
+      "author": "Zscout370"
+    }
+  },
+  {
+    "id": "new_guinea",
+    "flag": "new_guinea",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-deeabd58-a83e-405d-96a9-3afee0c1517d.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Territory of New Guinea. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\nBadge inscription EXACTLY T.N.G. with dots and the existing British crown above.",
+    "source": {
+      "name": "Territory of New Guinea",
+      "file": "Flag of the Territory of New Guinea.svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_the_Territory_of_New_Guinea.svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/4/44/Flag_of_the_Territory_of_New_Guinea.svg",
+      "sha1": "9bef6a16e147ec017136d304d21902dce2d099a8",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/44/Flag_of_the_Territory_of_New_Guinea.svg/330px-Flag_of_the_Territory_of_New_Guinea.svg.png",
+      "rendition_sha256": "f250ca2814c539a91b026dad615b0422b0e055e5d8ad592924a4251bafca20e1",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-self"
+      ],
+      "author": "Orange Tuesday"
+    }
+  },
+  {
+    "id": "new_zealand",
+    "flag": "new_zealand",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-f72554ac-a7d9-43ba-832c-fc7e485481b1.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: New Zealand. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\nExactly FOUR red FIVE-pointed stars with white outlines, original positions and sizes of Southern Cross.",
+    "source": {
+      "name": "New Zealand",
+      "file": "Flag of New Zealand.svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_New_Zealand.svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/3/3e/Flag_of_New_Zealand.svg",
+      "sha1": "ff6fceb20bbdf90878d8eb866a44d0edd281dfd2",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3e/Flag_of_New_Zealand.svg/330px-Flag_of_New_Zealand.svg.png",
+      "rendition_sha256": "9925867dbc8005f82b52d1ddd65d176036bee7cd7c4463a3a1a9b4669e0e509b",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "Insignia",
+        "PD-New Zealand",
+        "PD-US-expired"
+      ],
+      "author": "see the file's page"
+    }
+  },
+  {
+    "id": "newfoundland",
+    "flag": "newfoundland",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-0018a3b3-d4bf-408a-b228-8402816eb5a0.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Newfoundland (1904-1949). Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\nKeep the existing round yellow badge and inscription TERRA NOVA; keep the two supporting figures and shield as in the supplied source.",
+    "source": {
+      "name": "Newfoundland (1904-1949)",
+      "file": "Flag of Newfoundland (1904–1949).svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Newfoundland_(1904%E2%80%931949).svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/e/e1/Flag_of_Newfoundland_%281904%E2%80%931949%29.svg",
+      "sha1": "2b64a9ad55387b6503b3f10cddee683abcc73b13",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e1/Flag_of_Newfoundland_%281904%E2%80%931949%29.svg/330px-Flag_of_Newfoundland_%281904%E2%80%931949%29.svg.png",
+      "rendition_sha256": "b0765506d55442c264a5d6f1e7e309aec6d1f175155de9b60c4392547552c3f5",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-Canada",
+        "PD-old-assumed"
+      ],
+      "author": "Lrenhrda"
+    }
+  },
+  {
+    "id": "norway",
+    "flag": "norway",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-ae2f167c-8c08-46d7-8047-595c4cdf6409.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Norway. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\n",
+    "source": {
+      "name": "Norway",
+      "file": "Flag of Norway.svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Norway.svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/d/d9/Flag_of_Norway.svg",
+      "sha1": "905b385ab20e146fbec17b14187c999d03970b30",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d9/Flag_of_Norway.svg/330px-Flag_of_Norway.svg.png",
+      "rendition_sha256": "f2d5d5116f4467d7fe455d8abe860740849077aeec2b7a4779dc361848138ddd",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-shape",
+        "insignia"
+      ],
+      "author": "see the file's page"
+    }
+  },
+  {
+    "id": "palestine",
+    "flag": "palestine",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-8dcc10f8-9a65-4025-9530-420ab4dfc5bd.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Palestine: the Mandate's ensign (1927-1948). Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\nKeep the circular white badge with the exact curved black inscription PALESTINE and preserve the offset counterchanged Union Jack.",
+    "source": {
+      "name": "Palestine: the Mandate's ensign (1927-1948)",
+      "file": "Ensign of the Palestine Mandate (1927–1948).svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Ensign_of_the_Palestine_Mandate_(1927%E2%80%931948).svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/7/77/Ensign_of_the_Palestine_Mandate_%281927%E2%80%931948%29.svg",
+      "sha1": "fc17af3990515ffde4447464da413292f112b4e3",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/77/Ensign_of_the_Palestine_Mandate_%281927%E2%80%931948%29.svg/330px-Ensign_of_the_Palestine_Mandate_%281927%E2%80%931948%29.svg.png",
+      "rendition_sha256": "f376972345798dfae5e71b564d78f3edaedd5d645aad586b6647385ddd62a292",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-self"
+      ],
+      "author": "User:Greentubing, User:AnonMoos"
+    }
+  },
+  {
+    "id": "panama",
+    "flag": "panama",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-d5ea4e40-9215-4217-9ccb-48ee767774d3.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Panama. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\n",
+    "source": {
+      "name": "Panama",
+      "file": "Flag of Panama.svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Panama.svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/a/ab/Flag_of_Panama.svg",
+      "sha1": "a8422372fc1fe3b566cb75c3e5bf43719c1374af",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ab/Flag_of_Panama.svg/330px-Flag_of_Panama.svg.png",
+      "rendition_sha256": "57a3779cb6c458c931941b819765fb827a4a9e83991b6b017c94c9ecee32834b",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-Panama",
+        "PD-ineligible",
+        "insignia"
+      ],
+      "author": "Zscout370 et al"
+    }
+  },
+  {
+    "id": "persia",
+    "flag": "persia",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-2225aa3f-0f90-48ff-9521-a5f8aece8a00.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Persia. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\n",
+    "source": {
+      "name": "Persia",
+      "file": "State flag of Iran (1933–1964).svg",
+      "page": "https://commons.wikimedia.org/wiki/File:State_flag_of_Iran_(1933%E2%80%931964).svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/a/a8/State_flag_of_Iran_%281933%E2%80%931964%29.svg",
+      "sha1": "adc84169a3a0980b6a70237a5ff4766cf5870cfd",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a8/State_flag_of_Iran_%281933%E2%80%931964%29.svg/330px-State_flag_of_Iran_%281933%E2%80%931964%29.svg.png",
+      "rendition_sha256": "478cbb85269509c3227f56c1cf70cd0a5054ab9845e92899a75ba3781e0a7ff0",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-user-en",
+        "PD-Iran"
+      ],
+      "author": "Orange Tuesday"
+    }
+  },
+  {
+    "id": "philippines",
+    "flag": "philippines",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-38c22c51-1f44-469e-8c54-551f3676c42e.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Commonwealth of the Philippines. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\nExactly THREE five-point gold stars, and gold sun with EIGHT main rays, each comprising three narrow ray lines. Original dark navy blue upper field, red lower, white triangle.",
+    "source": {
+      "name": "Commonwealth of the Philippines",
+      "file": "Flag of the Philippines (1936–1985, 1986–1998).svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_the_Philippines_(1936%E2%80%931985,_1986%E2%80%931998).svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/e/ea/Flag_of_the_Philippines_%281936%E2%80%931985%2C_1986%E2%80%931998%29.svg",
+      "sha1": "e9f547546d350cad1ffc524ef9a92144f8a13270",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ea/Flag_of_the_Philippines_%281936%E2%80%931985%2C_1986%E2%80%931998%29.svg/330px-Flag_of_the_Philippines_%281936%E2%80%931985%2C_1986%E2%80%931998%29.svg.png",
+      "rendition_sha256": "53f0f7ef2486addda6b4dac76825213ec24f644267f161ebfb2d0b5782c5830a",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-Philippines-1972",
+        "Self2",
+        "PD-ineligible",
+        "insignia"
+      ],
+      "author": "Philippine Heraldry Committee"
+    }
+  },
+  {
+    "id": "poland",
+    "flag": "poland",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-aefa187e-3d6d-48ee-96f2-4d9dc8662bb6.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Poland. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\n",
+    "source": {
+      "name": "Poland",
+      "file": "Flag of Poland.svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Poland.svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/1/12/Flag_of_Poland.svg",
+      "sha1": "55b10f15941c2e8e8c8bb5501567cf96958d1a36",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/12/Flag_of_Poland.svg/330px-Flag_of_Poland.svg.png",
+      "rendition_sha256": "be64629b88291f7a6c0df8863498814a7f7623e2d854ca5b754689ed0ae4f256",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "insignia",
+        "PD-shape"
+      ],
+      "author": "see the file's page"
+    }
+  },
+  {
+    "id": "portugal",
+    "flag": "portugal",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-ba8a613d-271f-4979-ac18-6acc9f9a9df4.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Portugal. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\n",
+    "source": {
+      "name": "Portugal",
+      "file": "Flag of Portugal.svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Portugal.svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/5/5c/Flag_of_Portugal.svg",
+      "sha1": "8638595006e5e7b402055a0c784f43955e8ebee7",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5c/Flag_of_Portugal.svg/330px-Flag_of_Portugal.svg.png",
+      "rendition_sha256": "2a37322ed779de54fc15c61776dd31237347371864a03b40964f9d1b7aaecdb1",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-old-auto-expired",
+        "PD-EUGov",
+        "insignia"
+      ],
+      "author": "Vítor Luís Rodrigues; António Martins-Tuválkin (2004; this specific vector set: see sources)"
+    }
+  },
+  {
+    "id": "romania",
+    "flag": "romania",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-0435349c-42a8-4318-a4a5-764e0c8bc918.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Kingdom of Romania. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\n",
+    "source": {
+      "name": "Kingdom of Romania",
+      "file": "Flag of Romania.svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Romania.svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/7/73/Flag_of_Romania.svg",
+      "sha1": "36b353013c3044eb705d37975db75f489f08e8fc",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/73/Flag_of_Romania.svg/330px-Flag_of_Romania.svg.png",
+      "rendition_sha256": "1fe6bb39553a0f0192bff1be65338dffd2153bb64d819d753b5d885a85bf4d9e",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "Insignia",
+        "PD-simple",
+        "PD-RO-exempt"
+      ],
+      "author": "AdiJapan"
+    }
+  },
+  {
+    "id": "russia",
+    "flag": "ussr",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-81720619-cd8b-4598-9335-52be3a287103.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Soviet Union. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nPreserve the original gold outlined five-point star above the hammer-and-sickle at upper hoist and its exact small scale.",
+    "source": {
+      "name": "Soviet Union",
+      "file": "Flag of the Soviet Union (1936 – 1955).svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_the_Soviet_Union_(1936_%E2%80%93_1955).svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/8/86/Flag_of_the_Soviet_Union_%281936_%E2%80%93_1955%29.svg",
+      "sha1": "b4d45224eabe3f55f8f456da2b54e5bbb7291467",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/86/Flag_of_the_Soviet_Union_%281936_%E2%80%93_1955%29.svg/330px-Flag_of_the_Soviet_Union_%281936_%E2%80%93_1955%29.svg.png",
+      "rendition_sha256": "1f9a826ac78a4170cdc994915280bc80e7f8d8a6106402f2dcfe2a9cd659fe87",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-Russia"
+      ],
+      "author": "created by rotemliss from :Image:Flag of the Soviet Union.svg"
+    }
+  },
+  {
+    "id": "siam",
+    "flag": "siam",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-4e4e845d-e140-4af9-8891-971643b2e641.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Siam. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\nOriginal five bands RED WHITE BLUE WHITE RED, the central blue band DOUBLE the height of each other band.",
+    "source": {
+      "name": "Siam",
+      "file": "Flag of Thailand.svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Thailand.svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/a/a9/Flag_of_Thailand.svg",
+      "sha1": "271c0de39c27dee3efd2d49344e235ab5bf1eace",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a9/Flag_of_Thailand.svg/330px-Flag_of_Thailand.svg.png",
+      "rendition_sha256": "9ed7df516080309b7c7fa3b803a913b5877bdfbb2f1dd8c032cc28110edc0f1c",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-Thailand",
+        "PD-shape",
+        "insignia"
+      ],
+      "author": "Zscout370"
+    }
+  },
+  {
+    "id": "solomon_islands",
+    "flag": "solomons",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-5442bf0a-cbe9-4038-9be1-61189675c90f.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: British Solomon Islands (1906-1947). Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\nCircular white badge: BRITISH SOLOMON above the British crown, ISLANDS below. Preserve exactly.",
+    "source": {
+      "name": "British Solomon Islands (1906-1947)",
+      "file": "Flag of the Solomon Islands (1906–1947).svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_the_Solomon_Islands_(1906%E2%80%931947).svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/1/16/Flag_of_the_Solomon_Islands_%281906%E2%80%931947%29.svg",
+      "sha1": "43ecdb8f7ec752fbeedb63be95a62294369aedbe",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/16/Flag_of_the_Solomon_Islands_%281906%E2%80%931947%29.svg/330px-Flag_of_the_Solomon_Islands_%281906%E2%80%931947%29.svg.png",
+      "rendition_sha256": "2d9f6cf3a50c6495b1ee737f1e39e095466436269e7529612c51cc71a95adb37",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "cc-by-sa-4.0",
+        "PD-UKGov",
+        "self"
+      ],
+      "author": "Thommy (original)"
+    }
+  },
+  {
+    "id": "south_africa",
+    "flag": "south_africa",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-44003f09-2947-4c9e-b93e-e112bdd5d3f4.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Union of South Africa. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\nPreserve the small three-flag emblem on the white stripe exactly, including original mini Union Jack, vertical Orange Free State flag and Transvaal four-color flag. No modern design substitution.",
+    "source": {
+      "name": "Union of South Africa",
+      "file": "Flag of South Africa (1928–1994, dark colors).svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_South_Africa_(1928%E2%80%931994,_dark_colors).svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/a/a6/Flag_of_South_Africa_%281928%E2%80%931994%2C_dark_colors%29.svg",
+      "sha1": "6b7ca46c7aa599a9fd0ec0b9ac5dbbcc28dde4f7",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a6/Flag_of_South_Africa_%281928%E2%80%931994%2C_dark_colors%29.svg/330px-Flag_of_South_Africa_%281928%E2%80%931994%2C_dark_colors%29.svg.png",
+      "rendition_sha256": "6467f399aaa0503274c9216755e330c3fd88d7544d51795052010e93c9b2cbf8",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-South-Africa-exempt",
+        "PD-US-not renewed",
+        "insignia"
+      ],
+      "author": "Parliament of South Africa (Vector graphics image by Denelson83)"
+    }
+  },
+  {
+    "id": "spain",
+    "flag": "spain",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-f2b51a9d-2acb-4ae2-a6e8-dd10efe44b1f.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Spain (1938-1945). Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nPreserve the supplied 1938–1945 Spanish coat of arms: this Spanish eagle is not a German emblem; do not replace or remove it.",
+    "source": {
+      "name": "Spain (1938-1945)",
+      "file": "Flag of Spain (1938–1945).svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Spain_(1938%E2%80%931945).svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/2/2c/Flag_of_Spain_%281938%E2%80%931945%29.svg",
+      "sha1": "62904589014933743a70e0771d3a1ce8e975e2f1",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2c/Flag_of_Spain_%281938%E2%80%931945%29.svg/330px-Flag_of_Spain_%281938%E2%80%931945%29.svg.png",
+      "rendition_sha256": "e85dd01ada52d46f8d52ed6753a71defa5e0c367d3cf7f7ee845ce8db3426d5e",
+      "licence": "CC BY-SA 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "licence_basis": [
+        "insignia",
+        "self"
+      ],
+      "author": "SanchoPanzaXXI"
+    },
+    "previousPath": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-30871ec8-e6af-4db4-be6b-efcdced5df4c.png",
+    "correctionPrompt": "Precise-object-edit. Image 1 is the illustrated card to correct; Image 2 is the original flag design reference. Correct only the coat-of-arms lettering to match the larger source flag in Image 2. The upper ribbon reads exactly VNA GRANDE LIBRE (classical V for U). The left pillar ribbon reads PLVS and the right reads VLTRA. Keep this ORIGINAL 1938–1945 Spanish coat of arms with the St John eagle, crown, quartered shield, pillars, yoke and arrows exactly; no modern substitute, no Nazi insignia. Preserve overall ink style, flag dimensions, colors, card frame, label."
+  },
+  {
+    "id": "sweden",
+    "flag": "sweden",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-435be1f4-9b75-4145-8c14-c4278708bb62.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Sweden. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\n",
+    "source": {
+      "name": "Sweden",
+      "file": "Flag of Sweden.svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Sweden.svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/4/4c/Flag_of_Sweden.svg",
+      "sha1": "e2717718a2b2089843c6fc487d65cbe6fdceb9c3",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4c/Flag_of_Sweden.svg/330px-Flag_of_Sweden.svg.png",
+      "rendition_sha256": "444d4d86c863baeec16d86ed5eb9759e33e6c7b3aed2658620968fbf52c93f67",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-shape",
+        "insignia"
+      ],
+      "author": "Jon Harald Søby and others"
+    }
+  },
+  {
+    "id": "switzerland",
+    "flag": "switzerland",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-d9ffbc4e-92bf-4355-bcde-e1a024121588.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Switzerland. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\n",
+    "source": {
+      "name": "Switzerland",
+      "file": "Flag of Switzerland.svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Switzerland.svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/f/f3/Flag_of_Switzerland.svg",
+      "sha1": "b59554bc284833d9f890531c537d862210d2215f",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f3/Flag_of_Switzerland.svg/330px-Flag_of_Switzerland.svg.png",
+      "rendition_sha256": "bd9649b7ea100789f2b8357ded761399b81d16c53c425dd97cabbea1e4124ad2",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-shape",
+        "insignia",
+        "PD-Flag-Switzerland"
+      ],
+      "author": "Original: Unknown"
+    }
+  },
+  {
+    "id": "syria",
+    "flag": "syria",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-a9c36d0f-7c7a-4340-93d0-831816a5dbd7.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Syria (1930-1958). Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\nExactly THREE red five-point stars evenly spaced on the white stripe, green above black below.",
+    "source": {
+      "name": "Syria (1930-1958)",
+      "file": "Flag of Syria (1930–1958, 1961–1963).svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Syria_(1930%E2%80%931958,_1961%E2%80%931963).svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/b/b8/Flag_of_Syria_%281930%E2%80%931958%2C_1961%E2%80%931963%29.svg",
+      "sha1": "a13a41c7844d58b2e1c99d4b74b7036c5284a73e",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b8/Flag_of_Syria_%281930%E2%80%931958%2C_1961%E2%80%931963%29.svg/330px-Flag_of_Syria_%281930%E2%80%931958%2C_1961%E2%80%931963%29.svg.png",
+      "rendition_sha256": "02c31a408cc72f73b6b3eb3405a2c5a1db526ad7a3d28250c2618fdb07bde063",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-self",
+        "PD-Syria",
+        "PD-shape"
+      ],
+      "author": "see the file's page"
+    }
+  },
+  {
+    "id": "tunisia",
+    "flag": "tunisia",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-f1ddc597-d0a6-44e6-8632-aa60d392fdc9.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Tunisia (1831-1959). Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\n",
+    "source": {
+      "name": "Tunisia (1831-1959)",
+      "file": "Flag of the Beylik of Tunis (1831–1881) and Tunisia (1881–1959).svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_the_Beylik_of_Tunis_(1831%E2%80%931881)_and_Tunisia_(1881%E2%80%931959).svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/2/28/Flag_of_the_Beylik_of_Tunis_%281831%E2%80%931881%29_and_Tunisia_%281881%E2%80%931959%29.svg",
+      "sha1": "925ba80f0533f34dcf0ffec24a4f5d11395f7edd",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/28/Flag_of_the_Beylik_of_Tunis_%281831%E2%80%931881%29_and_Tunisia_%281881%E2%80%931959%29.svg/330px-Flag_of_the_Beylik_of_Tunis_%281831%E2%80%931881%29_and_Tunisia_%281881%E2%80%931959%29.svg.png",
+      "rendition_sha256": "f944738c6e6fca3f3321f55cf9e817065f0549f71f8d4fc707e1567892747f1f",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-old-100-1923"
+      ],
+      "author": "see the file's page"
+    }
+  },
+  {
+    "id": "turkey",
+    "flag": "turkey",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-2218cb22-28a5-449c-b5a3-3306d7b86924.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Turkey. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\n",
+    "source": {
+      "name": "Turkey",
+      "file": "Flag of Turkey.svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Turkey.svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/b/b4/Flag_of_Turkey.svg",
+      "sha1": "09edc7fca05aa88c1b316f1d3f97c587cdec5adb",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b4/Flag_of_Turkey.svg/330px-Flag_of_Turkey.svg.png",
+      "rendition_sha256": "6def8c3a323a751ce5c64aade54609fd513a945321b4bd853e03e71cd775145b",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-Turkey",
+        "PD-shape",
+        "Insignia"
+      ],
+      "author": "Dbenbenn (original author)"
+    }
+  },
+  {
+    "id": "ukraine",
+    "flag": "ukraine",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-0f64bac5-cd51-47dd-9fd7-3969bc754fcb.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Ukrainian SSR (1937-1949). Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\nPreserve the Cyrillic inscription exactly УРСР, not Latin lettering, plus the small gold hammer and sickle above. There is no star on this supplied flag.",
+    "source": {
+      "name": "Ukrainian SSR (1937-1949)",
+      "file": "Flag of the Ukrainian Soviet Socialist Republic (1937–1949).svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_the_Ukrainian_Soviet_Socialist_Republic_(1937%E2%80%931949).svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/b/b1/Flag_of_the_Ukrainian_Soviet_Socialist_Republic_%281937%E2%80%931949%29.svg",
+      "sha1": "f28183c9398cef1720b8b72a054d6c726fdc1368",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b1/Flag_of_the_Ukrainian_Soviet_Socialist_Republic_%281937%E2%80%931949%29.svg/330px-Flag_of_the_Ukrainian_Soviet_Socialist_Republic_%281937%E2%80%931949%29.svg.png",
+      "rendition_sha256": "95e738a24cb8d6a3d7a5bc6ae605b4bbd2bedb747b26a22f98e0e41662da9211",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-self"
+      ],
+      "author": "SeNeKa"
+    }
+  },
+  {
+    "id": "united_states",
+    "flag": "usa",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-e006e363-94de-4e36-b050-bbe77d1ac09c.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: United States (48 stars). Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.",
+    "source": {
+      "name": "United States (48 stars)",
+      "file": "Flag of the United States (1912-1959).svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_the_United_States_(1912-1959).svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/f/f5/Flag_of_the_United_States_%281912-1959%29.svg",
+      "sha1": "3106fe4f9da4d21fd5aba2deb4dcb199555ba928",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f5/Flag_of_the_United_States_%281912-1959%29.svg/330px-Flag_of_the_United_States_%281912-1959%29.svg.png",
+      "rendition_sha256": "55703ce46aa1f7e60a4c00cf032c98dc9e33cf6b71e47da2c85bb6c34adcd4c8",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-ineligible",
+        "insignia"
+      ],
+      "author": "Created by jacobolus using Adobe Illustrator"
+    }
+  },
+  {
+    "id": "venezuela",
+    "flag": "venezuela",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-e00077e7-6d0c-4044-a2fb-0603fcf6b228.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Venezuela. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\nExactly SEVEN white five-point stars in the arc. Do not use the modern eight-star flag.",
+    "source": {
+      "name": "Venezuela",
+      "file": "Flag of Venezuela (1930–2006).svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Venezuela_(1930%E2%80%932006).svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/e/ef/Flag_of_Venezuela_%281930%E2%80%932006%29.svg",
+      "sha1": "b736dc7cc70a2949a39ea6b739982613cfee2f05",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ef/Flag_of_Venezuela_%281930%E2%80%932006%29.svg/330px-Flag_of_Venezuela_%281930%E2%80%932006%29.svg.png",
+      "rendition_sha256": "94a0a00af563858f298e73a00b6be13fd19acf0bae8e2448b9e4b0dd319e28b5",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-Venezuela",
+        "insignia",
+        "PD-shape"
+      ],
+      "author": "FXXX"
+    }
+  },
+  {
+    "id": "yugoslavia",
+    "flag": "yugoslavia",
+    "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-2c9ef8b2-31bc-4017-9a65-df6c7cbd0a61.png",
+    "prompt": "Edit target: the supplied WWII region Encyclopedia card. Redraw ONLY the flag artwork in the vintage Joe Palooka / Ham Fisher newspaper comic-strip style: bold hand-inked contours, controlled fine pen crosshatching and sparse stippling, subtly aged printed color on paper. RETAIN THE FLAG'S COLORS: keep the original hue families and clear white fields, add texture with ink rather than turning the flag into monochrome sepia. Precise-object-edit: preserve the supplied flag design literally, including stripe order and widths, correct color placement, EXACT counts of stars/stripes and their arrangement, geometry, heraldic emblem shapes and all original inscriptions. Use this supplied historical version, never a modern substitute. Preserve the exact flat rectangular outline, aspect ratio, size, position, front-facing display and orientation. No waving cloth, folds, poles, perspective, new symbols, decorative scenes or people. Retain the entire card's original double-line border, parchment background, bottom caption band, PLATE number and region label verbatim. Style change only; do not redesign or correct the historical flag. Flag identity: Kingdom of Yugoslavia. Germany retains its supplied black-white-red horizontal tricolour with no Nazi symbols. No Nazi symbols anywhere.\nIf the design includes a Union Jack, preserve its COUNTERCHANGED diagonal red saltire: narrow red diagonals offset within the white diagonal bands, with alternating wider white sides exactly as in the reference, never centered red diagonal lines.\n",
+    "source": {
+      "name": "Kingdom of Yugoslavia",
+      "file": "Flag of Yugoslavia (1918–1941).svg",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Yugoslavia_(1918%E2%80%931941).svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/e/e5/Flag_of_Yugoslavia_%281918%E2%80%931941%29.svg",
+      "sha1": "4b14d0375d36cdc0efa5ad3117446b38647c84c5",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e5/Flag_of_Yugoslavia_%281918%E2%80%931941%29.svg/330px-Flag_of_Yugoslavia_%281918%E2%80%931941%29.svg.png",
+      "rendition_sha256": "90a6bf5aac9ee84c66717eedf957820a63e9c75892bce60942cd761bc3822415",
+      "licence": "Public domain",
+      "licence_url": "",
+      "licence_basis": [
+        "PD-self"
+      ],
+      "author": "Fibonacci"
+    }
+  }
+]

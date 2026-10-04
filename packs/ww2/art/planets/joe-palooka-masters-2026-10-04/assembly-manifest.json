@@ -1,0 +1,1496 @@
+[
+  {
+    "id": "afghanistan",
+    "flag": "afghanistan",
+    "sourceRegion": "afghanistan",
+    "originalBounds": [
+      103,
+      26,
+      194,
+      130
+    ],
+    "generatedBounds": [
+      455,
+      116,
+      862,
+      576
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "alaska",
+    "flag": "alaska",
+    "sourceRegion": "alaska",
+    "originalBounds": [
+      108,
+      26,
+      183,
+      130
+    ],
+    "generatedBounds": [
+      480,
+      114,
+      812,
+      579
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "algeria",
+    "flag": "algeria",
+    "sourceRegion": "algeria",
+    "originalBounds": [
+      103,
+      26,
+      194,
+      130
+    ],
+    "generatedBounds": [
+      457,
+      114,
+      861,
+      578
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "argentina",
+    "flag": "argentina",
+    "sourceRegion": "argentina",
+    "originalBounds": [
+      97,
+      26,
+      206,
+      130
+    ],
+    "generatedBounds": [
+      429,
+      112,
+      915,
+      583
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "australia",
+    "flag": "australia",
+    "sourceRegion": "australia",
+    "originalBounds": [
+      79,
+      30,
+      242,
+      122
+    ],
+    "generatedBounds": [
+      351,
+      130,
+      1073,
+      545
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "austria",
+    "flag": "austria",
+    "sourceRegion": "austria",
+    "originalBounds": [
+      103,
+      26,
+      194,
+      130
+    ],
+    "generatedBounds": [
+      458,
+      113,
+      860,
+      578
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "baltic_states",
+    "flag": "baltic",
+    "sourceRegion": "baltic_states",
+    "originalBounds": [
+      103,
+      26,
+      194,
+      130
+    ],
+    "generatedBounds": [
+      457,
+      116,
+      861,
+      575
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "belarus",
+    "flag": "byelorussia",
+    "sourceRegion": "belarus",
+    "originalBounds": [
+      79,
+      30,
+      242,
+      122
+    ],
+    "generatedBounds": [
+      350,
+      131,
+      1076,
+      543
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "belgium",
+    "flag": "belgium",
+    "sourceRegion": "belgium",
+    "originalBounds": [
+      103,
+      26,
+      194,
+      130
+    ],
+    "generatedBounds": [
+      457,
+      114,
+      861,
+      577
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "brazil",
+    "flag": "brazil",
+    "sourceRegion": "brazil",
+    "originalBounds": [
+      107,
+      26,
+      185,
+      130
+    ],
+    "generatedBounds": [
+      0,
+      0,
+      1500,
+      1050
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "britain",
+    "flag": "uk",
+    "sourceRegion": "britain",
+    "originalBounds": [
+      79,
+      30,
+      242,
+      122
+    ],
+    "generatedBounds": [
+      350,
+      132,
+      1072,
+      541
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "gibraltar",
+    "flag": "uk",
+    "sourceRegion": "britain",
+    "originalBounds": [
+      79,
+      30,
+      242,
+      122
+    ],
+    "generatedBounds": [
+      350,
+      132,
+      1072,
+      541
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "bulgaria",
+    "flag": "bulgaria",
+    "sourceRegion": "bulgaria",
+    "originalBounds": [
+      92,
+      26,
+      215,
+      130
+    ],
+    "generatedBounds": [
+      410,
+      113,
+      952,
+      578
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "canada",
+    "flag": "canada",
+    "sourceRegion": "canada",
+    "originalBounds": [
+      79,
+      30,
+      242,
+      122
+    ],
+    "generatedBounds": [
+      350,
+      130,
+      1075,
+      545
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "chile",
+    "flag": "chile",
+    "sourceRegion": "chile",
+    "originalBounds": [
+      103,
+      26,
+      194,
+      130
+    ],
+    "generatedBounds": [
+      457,
+      115,
+      861,
+      574
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "china",
+    "flag": "china",
+    "sourceRegion": "china",
+    "originalBounds": [
+      103,
+      26,
+      194,
+      130
+    ],
+    "generatedBounds": [
+      457,
+      114,
+      862,
+      578
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "congo",
+    "flag": "congo",
+    "sourceRegion": "congo",
+    "originalBounds": [
+      103,
+      26,
+      194,
+      130
+    ],
+    "generatedBounds": [
+      455,
+      114,
+      863,
+      580
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "czechoslovakia",
+    "flag": "czechoslovakia",
+    "sourceRegion": "czechoslovakia",
+    "originalBounds": [
+      103,
+      26,
+      194,
+      130
+    ],
+    "generatedBounds": [
+      458,
+      114,
+      860,
+      576
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "denmark",
+    "flag": "denmark",
+    "sourceRegion": "denmark",
+    "originalBounds": [
+      114,
+      26,
+      171,
+      130
+    ],
+    "generatedBounds": [
+      505,
+      115,
+      759,
+      576
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "greenland",
+    "flag": "denmark",
+    "sourceRegion": "denmark",
+    "originalBounds": [
+      114,
+      26,
+      171,
+      130
+    ],
+    "generatedBounds": [
+      505,
+      115,
+      759,
+      576
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "dutch_east_indies",
+    "flag": "indonesia",
+    "sourceRegion": "dutch_east_indies",
+    "originalBounds": [
+      103,
+      26,
+      194,
+      130
+    ],
+    "generatedBounds": [
+      458,
+      115,
+      859,
+      576
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "east_africa",
+    "flag": "ethiopia",
+    "sourceRegion": "east_africa",
+    "originalBounds": [
+      103,
+      26,
+      194,
+      130
+    ],
+    "generatedBounds": [
+      457,
+      116,
+      860,
+      576
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "egypt",
+    "flag": "egypt",
+    "sourceRegion": "egypt",
+    "originalBounds": [
+      103,
+      26,
+      194,
+      130
+    ],
+    "generatedBounds": [
+      454,
+      113,
+      866,
+      580
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "fiji",
+    "flag": "fiji",
+    "sourceRegion": "fiji",
+    "originalBounds": [
+      79,
+      30,
+      242,
+      122
+    ],
+    "generatedBounds": [
+      351,
+      133,
+      1073,
+      541
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "finland",
+    "flag": "finland",
+    "sourceRegion": "finland",
+    "originalBounds": [
+      94,
+      26,
+      211,
+      130
+    ],
+    "generatedBounds": [
+      418,
+      114,
+      935,
+      577
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "france",
+    "flag": "france",
+    "sourceRegion": "france",
+    "originalBounds": [
+      103,
+      26,
+      194,
+      130
+    ],
+    "generatedBounds": [
+      455,
+      114,
+      863,
+      576
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "west_africa",
+    "flag": "france",
+    "sourceRegion": "france",
+    "originalBounds": [
+      103,
+      26,
+      194,
+      130
+    ],
+    "generatedBounds": [
+      455,
+      114,
+      863,
+      576
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "madagascar",
+    "flag": "france",
+    "sourceRegion": "france",
+    "originalBounds": [
+      103,
+      26,
+      194,
+      130
+    ],
+    "generatedBounds": [
+      455,
+      114,
+      863,
+      576
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "germany",
+    "flag": "germany",
+    "sourceRegion": "germany",
+    "originalBounds": [
+      103,
+      26,
+      194,
+      130
+    ],
+    "generatedBounds": [
+      457,
+      117,
+      860,
+      573
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "gilbert_islands",
+    "flag": "gilbert",
+    "sourceRegion": "gilbert_islands",
+    "originalBounds": [
+      79,
+      30,
+      242,
+      122
+    ],
+    "generatedBounds": [
+      352,
+      133,
+      1070,
+      542
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "greece",
+    "flag": "greece",
+    "sourceRegion": "greece",
+    "originalBounds": [
+      103,
+      26,
+      194,
+      130
+    ],
+    "generatedBounds": [
+      457,
+      114,
+      861,
+      578
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "crete",
+    "flag": "greece",
+    "sourceRegion": "greece",
+    "originalBounds": [
+      103,
+      26,
+      194,
+      130
+    ],
+    "generatedBounds": [
+      457,
+      114,
+      861,
+      578
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "hawaii",
+    "flag": "hawaii",
+    "sourceRegion": "hawaii",
+    "originalBounds": [
+      79,
+      30,
+      242,
+      122
+    ],
+    "generatedBounds": [
+      349,
+      131,
+      1076,
+      545
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "hungary",
+    "flag": "hungary",
+    "sourceRegion": "hungary",
+    "originalBounds": [
+      79,
+      30,
+      242,
+      122
+    ],
+    "generatedBounds": [
+      350,
+      132,
+      1074,
+      541
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "iceland",
+    "flag": "iceland",
+    "sourceRegion": "iceland",
+    "originalBounds": [
+      110,
+      26,
+      179,
+      130
+    ],
+    "generatedBounds": [
+      488,
+      113,
+      795,
+      577
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "india",
+    "flag": "india",
+    "sourceRegion": "india",
+    "originalBounds": [
+      103,
+      26,
+      194,
+      130
+    ],
+    "generatedBounds": [
+      457,
+      116,
+      861,
+      575
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "iraq",
+    "flag": "iraq",
+    "sourceRegion": "iraq",
+    "originalBounds": [
+      79,
+      30,
+      242,
+      122
+    ],
+    "generatedBounds": [
+      348,
+      129,
+      1076,
+      548
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "ireland",
+    "flag": "ireland",
+    "sourceRegion": "ireland",
+    "originalBounds": [
+      79,
+      30,
+      242,
+      122
+    ],
+    "generatedBounds": [
+      350,
+      132,
+      1074,
+      543
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "italy",
+    "flag": "italy",
+    "sourceRegion": "italy",
+    "originalBounds": [
+      103,
+      26,
+      194,
+      130
+    ],
+    "generatedBounds": [
+      456,
+      114,
+      862,
+      575
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "sicily",
+    "flag": "italy",
+    "sourceRegion": "italy",
+    "originalBounds": [
+      103,
+      26,
+      194,
+      130
+    ],
+    "generatedBounds": [
+      456,
+      114,
+      862,
+      575
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "sardinia",
+    "flag": "italy",
+    "sourceRegion": "italy",
+    "originalBounds": [
+      103,
+      26,
+      194,
+      130
+    ],
+    "generatedBounds": [
+      456,
+      114,
+      862,
+      575
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "japan",
+    "flag": "japan",
+    "sourceRegion": "japan",
+    "originalBounds": [
+      107,
+      26,
+      185,
+      130
+    ],
+    "generatedBounds": [
+      476,
+      113,
+      822,
+      579
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "formosa",
+    "flag": "japan",
+    "sourceRegion": "japan",
+    "originalBounds": [
+      107,
+      26,
+      185,
+      130
+    ],
+    "generatedBounds": [
+      476,
+      113,
+      822,
+      579
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "marshall_islands",
+    "flag": "japan",
+    "sourceRegion": "japan",
+    "originalBounds": [
+      107,
+      26,
+      185,
+      130
+    ],
+    "generatedBounds": [
+      476,
+      113,
+      822,
+      579
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "marianas",
+    "flag": "japan",
+    "sourceRegion": "japan",
+    "originalBounds": [
+      107,
+      26,
+      185,
+      130
+    ],
+    "generatedBounds": [
+      476,
+      113,
+      822,
+      579
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "korea",
+    "flag": "korea",
+    "sourceRegion": "korea",
+    "originalBounds": [
+      103,
+      26,
+      194,
+      130
+    ],
+    "generatedBounds": [
+      457,
+      114,
+      860,
+      578
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "libya",
+    "flag": "senussi",
+    "sourceRegion": "libya",
+    "originalBounds": [
+      103,
+      26,
+      194,
+      130
+    ],
+    "generatedBounds": [
+      456,
+      117,
+      862,
+      572
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "malaya",
+    "flag": "malaya",
+    "sourceRegion": "malaya",
+    "originalBounds": [
+      79,
+      30,
+      242,
+      122
+    ],
+    "generatedBounds": [
+      351,
+      133,
+      1073,
+      540
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "manchuria",
+    "flag": "manchukuo",
+    "sourceRegion": "manchuria",
+    "originalBounds": [
+      103,
+      26,
+      194,
+      130
+    ],
+    "generatedBounds": [
+      458,
+      113,
+      860,
+      577
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "mexico",
+    "flag": "mexico",
+    "sourceRegion": "mexico",
+    "originalBounds": [
+      87,
+      26,
+      225,
+      130
+    ],
+    "generatedBounds": [
+      386,
+      116,
+      997,
+      573
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "morocco",
+    "flag": "morocco",
+    "sourceRegion": "morocco",
+    "originalBounds": [
+      103,
+      26,
+      194,
+      130
+    ],
+    "generatedBounds": [
+      456,
+      114,
+      863,
+      578
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "netherlands",
+    "flag": "netherlands",
+    "sourceRegion": "netherlands",
+    "originalBounds": [
+      103,
+      26,
+      194,
+      130
+    ],
+    "generatedBounds": [
+      457,
+      114,
+      861,
+      577
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "new_guinea",
+    "flag": "new_guinea",
+    "sourceRegion": "new_guinea",
+    "originalBounds": [
+      79,
+      30,
+      242,
+      122
+    ],
+    "generatedBounds": [
+      350,
+      133,
+      1074,
+      540
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "new_zealand",
+    "flag": "new_zealand",
+    "sourceRegion": "new_zealand",
+    "originalBounds": [
+      79,
+      30,
+      242,
+      122
+    ],
+    "generatedBounds": [
+      349,
+      130,
+      1076,
+      544
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "newfoundland",
+    "flag": "newfoundland",
+    "sourceRegion": "newfoundland",
+    "originalBounds": [
+      79,
+      30,
+      242,
+      122
+    ],
+    "generatedBounds": [
+      350,
+      131,
+      1075,
+      542
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "norway",
+    "flag": "norway",
+    "sourceRegion": "norway",
+    "originalBounds": [
+      111,
+      26,
+      178,
+      130
+    ],
+    "generatedBounds": [
+      493,
+      115,
+      789,
+      576
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "palestine",
+    "flag": "palestine",
+    "sourceRegion": "palestine",
+    "originalBounds": [
+      79,
+      30,
+      242,
+      122
+    ],
+    "generatedBounds": [
+      349,
+      133,
+      1077,
+      541
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "panama",
+    "flag": "panama",
+    "sourceRegion": "panama",
+    "originalBounds": [
+      103,
+      26,
+      194,
+      130
+    ],
+    "generatedBounds": [
+      456,
+      113,
+      862,
+      578
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "persia",
+    "flag": "persia",
+    "sourceRegion": "persia",
+    "originalBounds": [
+      79,
+      50,
+      242,
+      82
+    ],
+    "generatedBounds": [
+      346,
+      218,
+      1082,
+      369
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "philippines",
+    "flag": "philippines",
+    "sourceRegion": "philippines",
+    "originalBounds": [
+      79,
+      30,
+      242,
+      122
+    ],
+    "generatedBounds": [
+      349,
+      129,
+      1076,
+      545
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "poland",
+    "flag": "poland",
+    "sourceRegion": "poland",
+    "originalBounds": [
+      97,
+      26,
+      206,
+      130
+    ],
+    "generatedBounds": [
+      431,
+      120,
+      912,
+      569
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "portugal",
+    "flag": "portugal",
+    "sourceRegion": "portugal",
+    "originalBounds": [
+      103,
+      26,
+      194,
+      130
+    ],
+    "generatedBounds": [
+      458,
+      116,
+      859,
+      575
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "azores",
+    "flag": "portugal",
+    "sourceRegion": "portugal",
+    "originalBounds": [
+      103,
+      26,
+      194,
+      130
+    ],
+    "generatedBounds": [
+      458,
+      116,
+      859,
+      575
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "romania",
+    "flag": "romania",
+    "sourceRegion": "romania",
+    "originalBounds": [
+      103,
+      26,
+      194,
+      130
+    ],
+    "generatedBounds": [
+      455,
+      115,
+      865,
+      578
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "russia",
+    "flag": "ussr",
+    "sourceRegion": "russia",
+    "originalBounds": [
+      79,
+      30,
+      242,
+      122
+    ],
+    "generatedBounds": [
+      349,
+      132,
+      1077,
+      543
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "caucasus",
+    "flag": "ussr",
+    "sourceRegion": "russia",
+    "originalBounds": [
+      79,
+      30,
+      242,
+      122
+    ],
+    "generatedBounds": [
+      349,
+      132,
+      1077,
+      543
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "urals",
+    "flag": "ussr",
+    "sourceRegion": "russia",
+    "originalBounds": [
+      79,
+      30,
+      242,
+      122
+    ],
+    "generatedBounds": [
+      349,
+      132,
+      1077,
+      543
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "siberia",
+    "flag": "ussr",
+    "sourceRegion": "russia",
+    "originalBounds": [
+      79,
+      30,
+      242,
+      122
+    ],
+    "generatedBounds": [
+      349,
+      132,
+      1077,
+      543
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "siam",
+    "flag": "siam",
+    "sourceRegion": "siam",
+    "originalBounds": [
+      103,
+      26,
+      194,
+      130
+    ],
+    "generatedBounds": [
+      457,
+      114,
+      861,
+      577
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "solomon_islands",
+    "flag": "solomons",
+    "sourceRegion": "solomon_islands",
+    "originalBounds": [
+      79,
+      30,
+      242,
+      122
+    ],
+    "generatedBounds": [
+      351,
+      133,
+      1074,
+      541
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "south_africa",
+    "flag": "south_africa",
+    "sourceRegion": "south_africa",
+    "originalBounds": [
+      103,
+      26,
+      194,
+      130
+    ],
+    "generatedBounds": [
+      455,
+      116,
+      864,
+      577
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "spain",
+    "flag": "spain",
+    "sourceRegion": "spain",
+    "originalBounds": [
+      103,
+      26,
+      194,
+      130
+    ],
+    "generatedBounds": [
+      456,
+      116,
+      861,
+      574
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "sweden",
+    "flag": "sweden",
+    "sourceRegion": "sweden",
+    "originalBounds": [
+      97,
+      26,
+      206,
+      130
+    ],
+    "generatedBounds": [
+      429,
+      115,
+      917,
+      577
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "switzerland",
+    "flag": "switzerland",
+    "sourceRegion": "switzerland",
+    "originalBounds": [
+      135,
+      26,
+      130,
+      130
+    ],
+    "generatedBounds": [
+      599,
+      115,
+      576,
+      576
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "syria",
+    "flag": "syria",
+    "sourceRegion": "syria",
+    "originalBounds": [
+      79,
+      30,
+      242,
+      122
+    ],
+    "generatedBounds": [
+      350,
+      131,
+      1075,
+      542
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "tunisia",
+    "flag": "tunisia",
+    "sourceRegion": "tunisia",
+    "originalBounds": [
+      103,
+      26,
+      194,
+      130
+    ],
+    "generatedBounds": [
+      457,
+      116,
+      862,
+      575
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "turkey",
+    "flag": "turkey",
+    "sourceRegion": "turkey",
+    "originalBounds": [
+      103,
+      26,
+      194,
+      130
+    ],
+    "generatedBounds": [
+      455,
+      113,
+      864,
+      579
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "ukraine",
+    "flag": "ukraine",
+    "sourceRegion": "ukraine",
+    "originalBounds": [
+      79,
+      30,
+      242,
+      122
+    ],
+    "generatedBounds": [
+      351,
+      132,
+      1074,
+      543
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "united_states",
+    "flag": "usa",
+    "sourceRegion": "united_states",
+    "originalBounds": [
+      79,
+      26,
+      242,
+      129
+    ],
+    "generatedBounds": [
+      351,
+      116,
+      1073,
+      570
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "midway",
+    "flag": "usa",
+    "sourceRegion": "united_states",
+    "originalBounds": [
+      79,
+      26,
+      242,
+      129
+    ],
+    "generatedBounds": [
+      351,
+      116,
+      1073,
+      570
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "wake_island",
+    "flag": "usa",
+    "sourceRegion": "united_states",
+    "originalBounds": [
+      79,
+      26,
+      242,
+      129
+    ],
+    "generatedBounds": [
+      351,
+      116,
+      1073,
+      570
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "venezuela",
+    "flag": "venezuela",
+    "sourceRegion": "venezuela",
+    "originalBounds": [
+      103,
+      26,
+      194,
+      130
+    ],
+    "generatedBounds": [
+      457,
+      107,
+      860,
+      584
+    ],
+    "status": "style_only"
+  },
+  {
+    "id": "yugoslavia",
+    "flag": "yugoslavia",
+    "sourceRegion": "yugoslavia",
+    "originalBounds": [
+      103,
+      26,
+      194,
+      130
+    ],
+    "generatedBounds": [
+      457,
+      113,
+      860,
+      579
+    ],
+    "status": "style_only"
+  }
+]

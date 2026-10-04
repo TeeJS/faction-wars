@@ -1,0 +1,695 @@
+[
+  {
+    "name": "afghanistan.png",
+    "sha256": "4C37FA43C0399C039FC2C78729638AA8A45342029E0995E103D234142CF1A15E",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 23680,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "alaska.png",
+    "sha256": "526F39AF69A92E7475452F9ADC26BEB1BE6B1DEAD9E16A6355C738D1D4355B00",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 22554,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "algeria.png",
+    "sha256": "5214B903E3B87A5BA0B0D501C169BD46CFEDC175A7813271FBB13384BA36ABF0",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 23937,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "argentina.png",
+    "sha256": "C5118DCD0A09E127C74CDF621B9478D13160B4E195159B4AA2C15A7EFC0BDA50",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 25452,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "australia.png",
+    "sha256": "C0547E568417E9A40FF5411409540B8E1FFF1191699CF3D23D0482F2633186B5",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 28084,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "austria.png",
+    "sha256": "92961645397620EFB0B90B3DC26EC78F677E95B625341C441C68DFAB05836E1D",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 23940,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "azores.png",
+    "sha256": "248C9DA2C50B96E09B7DC957D4A4AE2B3F7B045B73D260CD70EEB3D59205D03E",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 23940,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "baltic_states.png",
+    "sha256": "78520849888818C8AE1FCA73DF2AFEB0E2E1A4E1D1B773A480E3B78A50D1C84E",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 23938,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "belarus.png",
+    "sha256": "DC8A2A27567A69269D39C3F7CC3B63B2547437A1DA8E694B0C465901E87D8737",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 28084,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "belgium.png",
+    "sha256": "F802C3661007BCCA42CE06CF41F29CA7F8C044D2B47BA5629E67F831BF71B3E9",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 23709,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "brazil.png",
+    "sha256": "623A9C929ECA0E3C78503821256A5BA41E2F00178BC0B1CFB2AC12BC7D4D6602",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 22806,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "britain.png",
+    "sha256": "B3F6F6BFDF383388CE04DAA7A8294468CCD6F372586CB972918FFA9BB8B8D0CC",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 28084,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "bulgaria.png",
+    "sha256": "2E0EF78C9E2383ABA84C7FE8FE471B379F0B88D6D81957A9FC22F40DE89350A1",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 26585,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "canada.png",
+    "sha256": "18D7F47C7461C96EC6E52C9647FC33A5E1B1ACFB9BCB9028F03FF9BB22302DF5",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 28084,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "caucasus.png",
+    "sha256": "F71D82C39129DF078EAE56566FF90124E1E5A378BF1D590D573165A6BD6E38C8",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 28084,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "chile.png",
+    "sha256": "0BAB0560691BC77228C6475D17CC75F86227645110B28EC200826475DC83545C",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 23937,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "china.png",
+    "sha256": "AAE6615E0BF83F610EC5B20D247C953C7EE55CABA081009DE6AEE23C2E4BD2F2",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 23940,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "congo.png",
+    "sha256": "57FD2C647F1F9FE1ACBD52D3892EEC17424CC9E4772BDF09D7EB0B57BBD9CC44",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 23940,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "crete.png",
+    "sha256": "3D62AA104100574D27BEFAD8F984B363FCD8A587144050A449AD0F671CD25F78",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 23939,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "czechoslovakia.png",
+    "sha256": "DC28819EECDFC2D87C0811D11C3E5EDBD134C8E6D2FB2DDCE03C5823221F6DF8",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 23940,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "denmark.png",
+    "sha256": "E8CCAB21C0CD8A486DF926DFD4C1F2B3EC15368382C0A63C6AF938D5F9374B28",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 21042,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "dutch_east_indies.png",
+    "sha256": "C2E930F824208B61104D18D39B572563955073B92F2A2D169523AB0DAEDA484C",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 23940,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "east_africa.png",
+    "sha256": "8B4EF2B2B0CA87544CD749E6B5DA61E91ED0E093A39EBCE4B78B01977F029CCE",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 23926,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "egypt.png",
+    "sha256": "18374482F529DC59E6069B5501E5C0B7CC893C7785324A781E1611B108E3D793",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 23940,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "fiji.png",
+    "sha256": "9D86F122D273029FD90FAEB2E4F6B95FE3AFE5D520F06D6F64A25A04D1DC367E",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 28083,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "finland.png",
+    "sha256": "ECF0BC1DB237E4EDA83C9CE1CD2849A0C30DC0BE1291195E3E45DDC85B14270E",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 26080,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "formosa.png",
+    "sha256": "1B6E108B8418AC5242709EA5F5824ABB92DBDFF6D9544F394ABA9D1F3AEED8FF",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 22806,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "france.png",
+    "sha256": "40913EF8705B2E209C655AB695FD68360E3FA6D235593FCC08C2657023408263",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 23940,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "germany.png",
+    "sha256": "1C4E474392B3840AD952D4D4510046DE26138C1AFACF8DA48C04F459B09AE544",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 23162,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "gibraltar.png",
+    "sha256": "2E2901928600DE80CAC5594718768FEDFC60336F04919DBF045E8BAC89BCE95C",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 28084,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "gilbert_islands.png",
+    "sha256": "9DB9850A4E2EFDBB37335A840D581C554845D2E1C0BC4C90F40C265C2CA017DB",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 28082,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "greece.png",
+    "sha256": "6A39F71BEA4246C2B84837A28E68D6F18D973DFD7925176F2CAE3C857248AEC5",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 23939,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "greenland.png",
+    "sha256": "EAEE38734EAD6064BA5424E6E039A0149443E98A9FF32F227D6C2E94BF8E265F",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 21042,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "hawaii.png",
+    "sha256": "A134BFEDFCC3DA37CAB6EDCB098AFADC1BC156B1337060FE3290C55C8FE99CC1",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 28084,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "hungary.png",
+    "sha256": "174284360F5361FEDB332F35B8E7D8E5E8BA8EB06CDBC36F1078B96AEDB7EDC6",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 28084,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "iceland.png",
+    "sha256": "E9177913923342BA5E066033699DBAAEB7176FAF5EE23C6F20E0B5C2912F8BFC",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 22050,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "india.png",
+    "sha256": "58A948DA1D888C137A0D63A3CC7B6C88A0A3E095EACD66D4B111CEB914259BDD",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 23938,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "iraq.png",
+    "sha256": "B853386934F346D26E085DBA3E4D501C5BF6A4988B25954AE89D8074063575F6",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 27972,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "ireland.png",
+    "sha256": "3C9276D7729AA60170DC28587D77888F32893951F1E1591E7CC3731D4A56FC9B",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 28084,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "italy.png",
+    "sha256": "E29C2B1B1B9C4C8AC13B27DC9D0985EE56F49CEA8A7A490D4C77A08BA79888AF",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 23940,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "japan.png",
+    "sha256": "DEF606C10384A20F9E08899F403D8BB7B477CF071DF7BCDEF96E2698A9CEC8A6",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 22806,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "korea.png",
+    "sha256": "77AFF4BCAC5E463EF49099A3A9C7FA60419C7BF5206B8045C8D9D152A1E579D6",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 23833,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "libya.png",
+    "sha256": "1E1822774EF84D22B63B3D838C913E85FCF33B55BD74F9574E3B5611AAA8EF92",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 22891,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "madagascar.png",
+    "sha256": "EB080D3EC0439455BEB1054D727F9CE5544FC5C4B495E17BCF45256339BA398C",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 23940,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "malaya.png",
+    "sha256": "17BA8F783CE2C8ACDDDF670C51361D333E8449908205EDA68317B534244FE7CA",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 28064,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "manchuria.png",
+    "sha256": "C789D06EA5B6C21A497398DA8FA90F2E8ADE5A9EB569747CFFB7FAD6655D7661",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 23864,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "marianas.png",
+    "sha256": "FCC6F53CF8CDCC966A38960426EE40DB8794B16813F99581EE4346319B051485",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 22806,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "marshall_islands.png",
+    "sha256": "8284FA86C720C09A40FD79977110822D4897FFF9392F216111539CBF23BAFF29",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 22806,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "mexico.png",
+    "sha256": "DF6FA97DE0741EFB0707655CFAC346D0DEB90055B90E6BBAF3AF9DE81CD8591F",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 27845,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "midway.png",
+    "sha256": "6AD3A514CB765CF56F4D162B60CD1EED5E52E1F94D6DB3848444E141C916C8FC",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 29750,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "morocco.png",
+    "sha256": "C32DCC6BEA67C47AA97693B006E72E5B3B8359140B6A880C3A7A1CDD2C809F7F",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 23940,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "netherlands.png",
+    "sha256": "4CBFF65BD0A97899BC9314D8EA074AD0F6C2A3184879734621A36A49B25486FD",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 23940,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "new_guinea.png",
+    "sha256": "63DBF3B2CC22DE6CB332A80B1DB6A676011B09762618B8A85FAA8B24C1D51DB1",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 28084,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "new_zealand.png",
+    "sha256": "9845735C5C70AEF6F11CD42215C877ED61EC25D1EF6414137B4B5B25AB6F5160",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 28084,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "newfoundland.png",
+    "sha256": "A0155F197C91775228A7F97BA66311D5067C7DCAF0C3932A587CFF667A9D9B09",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 28084,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "norway.png",
+    "sha256": "B9E7D3B5B3B11DFCB3F78A60A973227C47B8C4CA94A7EBF5435CFCB18524F81D",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 21924,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "palestine.png",
+    "sha256": "693ABCA3AB64047091FD7EA38F5EF61A2C2DA599D672DC7C4C71F0026D1F55F5",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 28077,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "panama.png",
+    "sha256": "FC81BD5C88C7C85BD1936FA0F3670C6C58B56BA8B2759794455F7F056F9C5139",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 23940,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "persia.png",
+    "sha256": "A48F872CBA235977298D519AF4D291C3900894D0507EEF98627CB609FD396EF9",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 18563,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "philippines.png",
+    "sha256": "24C38B448F852CA46E8EEBC21B4A885E2F5AE031045B3257C5AC29C5B7F9FFCE",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 28082,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "poland.png",
+    "sha256": "879A51DC514776CB51D341B0A774F63C416D7981B3C0E4F353F1CAC1DB055F18",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 25452,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "portugal.png",
+    "sha256": "75B23281287D46ABACAF4F1496F6F53917ABE2123E60D1D666CDE89E8D46D3B1",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 23940,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "romania.png",
+    "sha256": "81284DBC7478D3C6F618401CB8DC004B58535869F124BF69C8201AA5A2C48888",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 23939,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "russia.png",
+    "sha256": "16E5BDE8D8410D07C7375F0A9C467B06E155B4558D4825C567459D31436BB339",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 28084,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "sardinia.png",
+    "sha256": "8B6520FAAD860C1CBEA3E24F8D08117E92B9F026EB46591275EB1E3B2368461C",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 23940,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "siam.png",
+    "sha256": "03EAD8C381D8D3C7F67602A65A11AA1083D5B15C7A5CE85AA52C7EF41C709411",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 23940,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "siberia.png",
+    "sha256": "DE61CA67659FBE905FC1FE33BEABA5E1EC6E2FACADE342AAEA73B529A79B4059",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 28084,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "sicily.png",
+    "sha256": "B309FBAD8FF565862FDAC0BDE2DC088677A8D40FE435EB15A531CC6A482E624C",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 23940,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "solomon_islands.png",
+    "sha256": "8D01AC9E8A94626C1D29FD396B676A8BB0B4C932FEEFCDA84C9C809CCC3129A8",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 28083,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "south_africa.png",
+    "sha256": "C0A14A0C463CED0E1D5FB0551133E59BEF834B0A9DF31C5A5CAE77D8BF0B20BD",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 23939,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "spain.png",
+    "sha256": "71238BE5135FD938C875130610A0E44FB5B649414E4B6D25601EAC3A5EAF909F",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 23936,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "sweden.png",
+    "sha256": "DBEF55176F6DB098114250EDD001E05586E75F82E72AE0DD3AB521D2F8B675D4",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 25450,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "switzerland.png",
+    "sha256": "C5B8FD66D6AC1A6D58B3170305C127D1A5927ECA5F8CEED9AE7E81A158FC39CC",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 15876,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "syria.png",
+    "sha256": "2787BF5B7AAF28C2F955DD8AC2446824437B71CE0AF9D092ED595C67641F3D33",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 27948,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "tunisia.png",
+    "sha256": "41BC04306B6660E96B2C0B65E60970BE4414F1C07ACC4EA10426F0C2D1E60AF2",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 23940,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "turkey.png",
+    "sha256": "FC6148AEA4AF655102DD643B4FFEFE7D8007F2CD76DD51674B5297CD575A8211",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 23940,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "ukraine.png",
+    "sha256": "0A5CC5DAB0A50CE29EC09F61276F79E1B959E912AF035FB021DA259C7BB91B50",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 28084,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "united_states.png",
+    "sha256": "44C1131D0DDAE22F2B7EFF3F925997FD66474C839FDDD58278F8A6453B1237D4",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 29750,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "urals.png",
+    "sha256": "202D1DA8016C9E369B5798D0FE08D619758D1036800BAE23AC19147F178ABC57",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 28084,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "venezuela.png",
+    "sha256": "B6312D44453D2F543BC36975EFCE0736282AD5422A98C6C6ECD4E7B33BAA4350",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 23940,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "wake_island.png",
+    "sha256": "5E2B48575777903E2B7EB93283CEA1BF817F16DA2A9F9173FB9690119B92514E",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 29750,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "west_africa.png",
+    "sha256": "3D657B33F6D5DED9D814704193D1B475F57A6E315FCC14501E5E5FBF47AA2AD9",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 23940,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "yugoslavia.png",
+    "sha256": "8FB10A409016C4FAE25E0C9B829BA4C97C08287082ECD5F0FF2614BDD7620EC8",
+    "outside_flag_changed_pixels": 0,
+    "inside_flag_changed_pixels": 23940,
+    "status": "installed_style_only"
+  },
+  {
+    "name": "burma.png",
+    "sha256": "32105028225EF3089C0753F28B3CEA3B0E6AF7D6CB65A2BEBC8DEB1CED83512D",
+    "status": "approved_1939_replacement",
+    "outside_card_illustration_changed_pixels": 0,
+    "source": {
+      "sha1": "63a0c8c4bfb1b8d9212d6b7a791e8e0591105771",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "file": "Flag_of_Burma_%281939%E2%80%931941%2C_1945%E2%80%931948%29.svg",
+      "rendition_sha256": "ac0e971c32c588dfdc01d40468e82376b156eff43f77f46b23a261d6436ea6d5",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/6/66/Flag_of_Burma_%281939%E2%80%931941%2C_1945%E2%80%931948%29.svg",
+      "period": "1939–1941, 1945–1948",
+      "author": "Beao (original), Fry1989, Havsjo",
+      "hash": "6/66",
+      "path": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\flag-proposal-references\\burma.png",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Burma_(1939%E2%80%931941%2C_1945%E2%80%931948).svg",
+      "id": "burma",
+      "license": "CC BY-SA 3.0",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/66/Flag_of_Burma_%281939%E2%80%931941%2C_1945%E2%80%931948%29.svg/1280px-Flag_of_Burma_%281939%E2%80%931941%2C_1945%E2%80%931948%29.svg.png",
+      "downloaded_reference_sha256": "AC0E971C32C588DFDC01D40468E82376B156EFF43F77F46B23A261D6436EA6D5"
+    },
+    "approval": "User approved all five previews on 2026-10-04: approved"
+  },
+  {
+    "name": "ceylon.png",
+    "sha256": "660B2F21D573665C0857AE1F48DE98FDDEAF8C4E2AB780C4E862032FD2C2438A",
+    "status": "approved_1939_replacement",
+    "outside_card_illustration_changed_pixels": 0,
+    "source": {
+      "sha1": "979df8d68b6999ed9c7c26e83bfe2fb69d8cd07f",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "file": "Flag_of_Ceylon_%281875%E2%80%931948%29.svg",
+      "rendition_sha256": "f2c20ed229deaf26590d539110a8045dc30db45d1d7f36d262ae36f14d0a9523",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/d/db/Flag_of_Ceylon_%281875%E2%80%931948%29.svg",
+      "period": "1875–1948",
+      "author": "Samhanin (original)",
+      "hash": "d/db",
+      "path": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\flag-proposal-references\\ceylon.png",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Ceylon_(1875%E2%80%931948).svg",
+      "id": "ceylon",
+      "license": "CC BY-SA 4.0",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/db/Flag_of_Ceylon_%281875%E2%80%931948%29.svg/1280px-Flag_of_Ceylon_%281875%E2%80%931948%29.svg.png",
+      "downloaded_reference_sha256": "F2C20ED229DEAF26590D539110A8045DC30DB45D1D7F36D262AE36F14D0A9523"
+    },
+    "approval": "User approved all five previews on 2026-10-04: approved"
+  },
+  {
+    "name": "malta.png",
+    "sha256": "D29D5ECFCB36637FE833B0C43516221F531DA18CE752211BB24EC177FEEFA8A1",
+    "status": "approved_1939_replacement",
+    "outside_card_illustration_changed_pixels": 0,
+    "source": {
+      "licenseUrl": "",
+      "file": "Flag_of_Malta_%281923%E2%80%931943%29.svg",
+      "rendition_sha256": "6529cb6782dedd9bddfd9a98fb43e6138f00113c70a6cdaf404ae1048a323c47",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/9c/Flag_of_Malta_%281923%E2%80%931943%29.svg",
+      "period": "1923–1943",
+      "author": "Orange Tuesday",
+      "hash": "9/9c",
+      "path": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\flag-proposal-references\\malta.png",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Malta_(1923%E2%80%931943).svg",
+      "id": "malta",
+      "license": "Public domain",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9c/Flag_of_Malta_%281923%E2%80%931943%29.svg/1280px-Flag_of_Malta_%281923%E2%80%931943%29.svg.png",
+      "downloaded_reference_sha256": "6529CB6782DEDD9BDDFD9A98FB43E6138F00113C70A6CDAF404AE1048A323C47"
+    },
+    "approval": "User approved all five previews on 2026-10-04: approved"
+  },
+  {
+    "name": "kazakhstan.png",
+    "sha256": "5DCC5BCD78F86F7192B0B3204CDCD01D265AC311477B2C4A20745AA1194A2A95",
+    "status": "approved_1939_replacement",
+    "outside_card_illustration_changed_pixels": 0,
+    "source": {
+      "licenseUrl": "",
+      "file": "Flag_of_the_Kazakh_Soviet_Socialist_Republic_%281937%E2%80%931940%29.svg",
+      "rendition_sha256": "5db6ba59f09a1ed6ef3f5d96229639b886d6a713dcd8e91b028f709eaaad498d",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/9f/Flag_of_the_Kazakh_Soviet_Socialist_Republic_%281937%E2%80%931940%29.svg",
+      "period": "1937–1940",
+      "author": "Wassily",
+      "hash": "9/9f",
+      "path": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\flag-proposal-references\\kazakhstan.png",
+      "page": "https://commons.wikimedia.org/wiki/File:Flag_of_the_Kazakh_Soviet_Socialist_Republic_(1937%E2%80%931940).svg",
+      "id": "kazakhstan",
+      "license": "Public domain",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9f/Flag_of_the_Kazakh_Soviet_Socialist_Republic_%281937%E2%80%931940%29.svg/1280px-Flag_of_the_Kazakh_Soviet_Socialist_Republic_%281937%E2%80%931940%29.svg.png",
+      "downloaded_reference_sha256": "5DB6BA59F09A1ED6EF3F5D96229639B886D6A713DCD8E91B028F709EAAAD498D"
+    },
+    "approval": "User approved all five previews on 2026-10-04: approved"
+  },
+  {
+    "name": "indochina.png",
+    "sha256": "4A32430607F35DD347D0D3B27CD9B7AE81C00518DF8D284CC32BDDE9370BBE4C",
+    "status": "approved_1939_replacement",
+    "outside_card_illustration_changed_pixels": 0,
+    "source": {
+      "licenseUrl": "",
+      "file": "Ensign_of_French_Indochina.svg",
+      "rendition_sha256": "02d7b48675917a1d5e6affd19aa1731ad261a7cd8d65e6f05cd75b7e0d79c522",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/a/a2/Ensign_of_French_Indochina.svg",
+      "period": "1923–1949 civil/naval ensign",
+      "author": "Jarisg",
+      "hash": "a/a2",
+      "path": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\flag-proposal-references\\indochina.png",
+      "page": "https://commons.wikimedia.org/wiki/File:Ensign_of_French_Indochina.svg",
+      "id": "indochina",
+      "license": "Public domain",
+      "rendition": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a2/Ensign_of_French_Indochina.svg/1280px-Ensign_of_French_Indochina.svg.png",
+      "downloaded_reference_sha256": "02D7B48675917A1D5E6AFFD19AA1731AD261A7CD8D65E6F05CD75B7E0D79C522"
+    },
+    "approval": "User approved all five previews on 2026-10-04: approved"
+  }
+]
