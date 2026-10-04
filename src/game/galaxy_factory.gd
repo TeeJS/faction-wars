@@ -43,6 +43,7 @@ static func LoadFromPack(pack: PackLoader.LoadedPack, size: int) -> Array[Sector
 		s.Name = sd.DisplayName
 		s.GalaxyRing = sd.Ring
 		s.StartsNeutral = sd.StartsNeutral
+		s.StartsExplored = sd.StartsExplored
 		s.MapX = sd.MapX
 		s.MapY = sd.MapY
 		sector_map[sd.Id] = s

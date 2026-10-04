@@ -553,6 +553,10 @@ class SectorDef:
 	var DisplayName: String
 	var Ring: int             # 1 = Core, >1 = Rim
 	var StartsNeutral: bool
+	## map.json `starts_explored`: every world here is charted for every side at
+	## day zero, as a Core sector's are, whatever its ring (TeeJ, 2026-10-03:
+	## "WWII should start with the whole world charted").
+	var StartsExplored: bool
 	var MapX: int
 	var MapY: int
 	## The SMALLEST galaxy size this sector appears in; sizes are cumulative.
@@ -567,6 +571,7 @@ class SectorDef:
 		o.DisplayName = JsonUtil.str_or(d, "display_name", "")
 		o.Ring = JsonUtil.int_or(d, "ring")
 		o.StartsNeutral = JsonUtil.bool_or(d, "starts_neutral")
+		o.StartsExplored = JsonUtil.bool_or(d, "starts_explored")
 		var m: Variant = JsonUtil.get_ci(d, "map")
 		if m is Dictionary:
 			o.MapX = JsonUtil.int_or(m, "x")
