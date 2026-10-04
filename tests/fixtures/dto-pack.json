@@ -6811,6 +6811,7 @@
         "MinSize": "huge",
         "Ring": 2,
         "SourceId": 20,
+        "StartsExplored": false,
         "StartsNeutral": false
       },
       {
@@ -6822,6 +6823,7 @@
         "MinSize": "huge",
         "Ring": 3,
         "SourceId": 21,
+        "StartsExplored": false,
         "StartsNeutral": true
       },
       {
@@ -6833,6 +6835,7 @@
         "MinSize": "standard",
         "Ring": 2,
         "SourceId": 22,
+        "StartsExplored": false,
         "StartsNeutral": false
       },
       {
@@ -6844,6 +6847,7 @@
         "MinSize": "standard",
         "Ring": 1,
         "SourceId": 23,
+        "StartsExplored": false,
         "StartsNeutral": false
       },
       {
@@ -6855,6 +6859,7 @@
         "MinSize": "standard",
         "Ring": 2,
         "SourceId": 24,
+        "StartsExplored": false,
         "StartsNeutral": false
       },
       {
@@ -6866,6 +6871,7 @@
         "MinSize": "huge",
         "Ring": 1,
         "SourceId": 25,
+        "StartsExplored": false,
         "StartsNeutral": false
       },
       {
@@ -6877,6 +6883,7 @@
         "MinSize": "standard",
         "Ring": 2,
         "SourceId": 26,
+        "StartsExplored": false,
         "StartsNeutral": false
       },
       {
@@ -6888,6 +6895,7 @@
         "MinSize": "huge",
         "Ring": 1,
         "SourceId": 27,
+        "StartsExplored": false,
         "StartsNeutral": false
       },
       {
@@ -6899,6 +6907,7 @@
         "MinSize": "large",
         "Ring": 1,
         "SourceId": 28,
+        "StartsExplored": false,
         "StartsNeutral": false
       },
       {
@@ -6910,6 +6919,7 @@
         "MinSize": "large",
         "Ring": 2,
         "SourceId": 29,
+        "StartsExplored": false,
         "StartsNeutral": false
       },
       {
@@ -6921,6 +6931,7 @@
         "MinSize": "large",
         "Ring": 3,
         "SourceId": 30,
+        "StartsExplored": false,
         "StartsNeutral": true
       },
       {
@@ -6932,6 +6943,7 @@
         "MinSize": "large",
         "Ring": 2,
         "SourceId": 31,
+        "StartsExplored": false,
         "StartsNeutral": false
       },
       {
@@ -6943,6 +6955,7 @@
         "MinSize": "standard",
         "Ring": 2,
         "SourceId": 32,
+        "StartsExplored": false,
         "StartsNeutral": false
       },
       {
@@ -6954,6 +6967,7 @@
         "MinSize": "standard",
         "Ring": 3,
         "SourceId": 33,
+        "StartsExplored": false,
         "StartsNeutral": true
       },
       {
@@ -6965,6 +6979,7 @@
         "MinSize": "standard",
         "Ring": 3,
         "SourceId": 34,
+        "StartsExplored": false,
         "StartsNeutral": true
       },
       {
@@ -6976,6 +6991,7 @@
         "MinSize": "large",
         "Ring": 3,
         "SourceId": 35,
+        "StartsExplored": false,
         "StartsNeutral": true
       },
       {
@@ -6987,6 +7003,7 @@
         "MinSize": "standard",
         "Ring": 1,
         "SourceId": 36,
+        "StartsExplored": false,
         "StartsNeutral": false
       },
       {
@@ -6998,6 +7015,7 @@
         "MinSize": "standard",
         "Ring": 1,
         "SourceId": 37,
+        "StartsExplored": false,
         "StartsNeutral": false
       },
       {
@@ -7009,6 +7027,7 @@
         "MinSize": "standard",
         "Ring": 3,
         "SourceId": 38,
+        "StartsExplored": false,
         "StartsNeutral": true
       },
       {
@@ -7020,6 +7039,7 @@
         "MinSize": "huge",
         "Ring": 3,
         "SourceId": 39,
+        "StartsExplored": false,
         "StartsNeutral": true
       }
     ]

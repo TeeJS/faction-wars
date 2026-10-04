@@ -79,6 +79,15 @@ static func InitializeGalaxyState(galaxy: Array, human_faction: Faction, difficu
 				return s.GalaxyRing == 1
 		return false
 
+	# CHARTED AT DAY ZERO: a Core world, or any world in a sector the pack
+	# charts (map.json `starts_explored`) - exploration only; resources,
+	# population and the buckets keep reading the ring.
+	var is_charted_world := func(p: Planet) -> bool:
+		for s in galaxy:
+			if s.Planets.has(p):
+				return s.GalaxyRing == 1 or s.StartsExplored
+		return false
+
 	var core_count := Lq.count(all_planets, func(p): return is_core_world.call(p) and p.IsInhabited)
 
 	var bucket := func(entry_id: int, side: Faction) -> int:
@@ -119,7 +128,7 @@ static func InitializeGalaxyState(galaxy: Array, human_faction: Faction, difficu
 				var contested := FactionRegistry.Playable
 				if contested.size() > 0:
 					p.SetSupportFor(contested[rng.NextMax(contested.size())], support)
-				p.SetExploredForAll(is_core)
+				p.SetExploredForAll(is_charted_world.call(p))
 				continue
 
 			if strong_slot:
@@ -129,8 +138,9 @@ static func InitializeGalaxyState(galaxy: Array, human_faction: Faction, difficu
 
 			p.ControllingFaction = claimant
 			# Core worlds are charted for everyone; a rim claim only for its claimant.
+			var charted: bool = is_charted_world.call(p)
 			for other in FactionRegistry.Playable:
-				p.SetExplored(other, is_core or claimant == other)
+				p.SetExplored(other, charted or claimant == other)
 
 			var support_base := SideLotteryManager.GetProbability(SideLotteryManager.StrongSupportBase if strong_slot else SideLotteryManager.WeakSupportBase, human_faction, difficulty, claimant)
 			var support_var := SideLotteryManager.GetProbability(SideLotteryManager.StrongSupportVar if strong_slot else SideLotteryManager.WeakSupportVar, human_faction, difficulty, claimant)
@@ -254,6 +264,19 @@ static func InitializeGalaxyState(galaxy: Array, human_faction: Faction, difficu
 			var extra_imp: Character = unassigned_empire[rng.NextMax(unassigned_empire.size())]
 			extra_imp.Attached = side_b_hq
 			unassigned_empire.erase(extra_imp)
+
+	# THE PACK'S CHARTED SECTORS, every world in them - the uninhabited too,
+	# which nothing above charts - for every side; but never another side's
+	# hidden headquarters (its own placement decides who knows it).
+	for sector in galaxy:
+		if not sector.StartsExplored:
+			continue
+		for p in sector.Planets:
+			for f in FactionRegistry.Playable:
+				var seat_owner: Faction = Lq.first_or_null(FactionRegistry.Playable, func(o): return hq_of.get(o) == p)
+				if seat_owner != null and seat_owner.HasHiddenHq() and seat_owner != f:
+					continue
+				p.SetExplored(f, true)
 
 	# --- 6. DAY ZERO STATISTICAL REPORT ---
 	var total := all_planets.size()

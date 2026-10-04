@@ -4,7 +4,7 @@
       "id": "british_isles",
       "display_name": "British Isles",
       "ring": 1,
-      "starts_neutral": false,
+      "starts_neutral": false, "starts_explored": true,
       "map": {
         "x": 338,
         "y": 127
@@ -16,7 +16,7 @@
       "id": "western_europe",
       "display_name": "Western Europe",
       "ring": 1,
-      "starts_neutral": false,
+      "starts_neutral": false, "starts_explored": true,
       "map": {
         "x": 355,
         "y": 136
@@ -28,7 +28,7 @@
       "id": "central_europe",
       "display_name": "Central Europe",
       "ring": 1,
-      "starts_neutral": false,
+      "starts_neutral": false, "starts_explored": true,
       "map": {
         "x": 372,
         "y": 137
@@ -40,7 +40,7 @@
       "id": "scandinavia",
       "display_name": "Scandinavia",
       "ring": 2,
-      "starts_neutral": false,
+      "starts_neutral": false, "starts_explored": true,
       "map": {
         "x": 371,
         "y": 107
@@ -52,7 +52,7 @@
       "id": "iberia",
       "display_name": "Iberia",
       "ring": 2,
-      "starts_neutral": true,
+      "starts_neutral": true, "starts_explored": true,
       "map": {
         "x": 336,
         "y": 162
@@ -64,7 +64,7 @@
       "id": "italian_peninsula",
       "display_name": "Italian Peninsula",
       "ring": 1,
-      "starts_neutral": false,
+      "starts_neutral": false, "starts_explored": true,
       "map": {
         "x": 368,
         "y": 158
@@ -76,7 +76,7 @@
       "id": "balkans",
       "display_name": "Balkans",
       "ring": 2,
-      "starts_neutral": false,
+      "starts_neutral": false, "starts_explored": true,
       "map": {
         "x": 388,
         "y": 155
@@ -88,7 +88,7 @@
       "id": "eastern_front",
       "display_name": "Eastern Front",
       "ring": 1,
-      "starts_neutral": false,
+      "starts_neutral": false, "starts_explored": true,
       "map": {
         "x": 395,
         "y": 124
@@ -100,7 +100,7 @@
       "id": "caucasus_urals",
       "display_name": "Caucasus and Urals",
       "ring": 2,
-      "starts_neutral": false,
+      "starts_neutral": false, "starts_explored": true,
       "map": {
         "x": 458,
         "y": 124
@@ -112,7 +112,7 @@
       "id": "north_africa",
       "display_name": "North Africa",
       "ring": 2,
-      "starts_neutral": false,
+      "starts_neutral": false, "starts_explored": true,
       "map": {
         "x": 367,
         "y": 176
@@ -124,7 +124,7 @@
       "id": "middle_east",
       "display_name": "Middle East",
       "ring": 2,
-      "starts_neutral": true,
+      "starts_neutral": true, "starts_explored": true,
       "map": {
         "x": 420,
         "y": 170
@@ -136,7 +136,7 @@
       "id": "north_atlantic",
       "display_name": "North Atlantic",
       "ring": 2,
-      "starts_neutral": false,
+      "starts_neutral": false, "starts_explored": true,
       "map": {
         "x": 285,
         "y": 119
@@ -148,7 +148,7 @@
       "id": "north_america",
       "display_name": "North America",
       "ring": 2,
-      "starts_neutral": false,
+      "starts_neutral": false, "starts_explored": true,
       "map": {
         "x": 168,
         "y": 149
@@ -160,7 +160,7 @@
       "id": "east_asia",
       "display_name": "East Asia",
       "ring": 2,
-      "starts_neutral": false,
+      "starts_neutral": false, "starts_explored": true,
       "map": {
         "x": 566,
         "y": 160
@@ -172,7 +172,7 @@
       "id": "southeast_asia",
       "display_name": "Southeast Asia",
       "ring": 3,
-      "starts_neutral": false,
+      "starts_neutral": false, "starts_explored": true,
       "map": {
         "x": 542,
         "y": 211
@@ -184,7 +184,7 @@
       "id": "south_asia",
       "display_name": "South Asia",
       "ring": 3,
-      "starts_neutral": false,
+      "starts_neutral": false, "starts_explored": true,
       "map": {
         "x": 484,
         "y": 193
@@ -196,7 +196,7 @@
       "id": "central_pacific",
       "display_name": "Central Pacific",
       "ring": 3,
-      "starts_neutral": false,
+      "starts_neutral": false, "starts_explored": true,
       "map": {
         "x": 652,
         "y": 197
@@ -208,7 +208,7 @@
       "id": "south_pacific",
       "display_name": "South Pacific",
       "ring": 3,
-      "starts_neutral": false,
+      "starts_neutral": false, "starts_explored": true,
       "map": {
         "x": 632,
         "y": 275
@@ -220,7 +220,7 @@
       "id": "south_america",
       "display_name": "South America",
       "ring": 3,
-      "starts_neutral": true,
+      "starts_neutral": true, "starts_explored": true,
       "map": {
         "x": 237,
         "y": 269
@@ -232,7 +232,7 @@
       "id": "sub_saharan_africa",
       "display_name": "Sub-Saharan Africa",
       "ring": 3,
-      "starts_neutral": false,
+      "starts_neutral": false, "starts_explored": true,
       "map": {
         "x": 398,
         "y": 248
