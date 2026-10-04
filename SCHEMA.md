@@ -1133,6 +1133,7 @@ engine's own art.
 | any row (`characters`, `units`, `facilities`, `missions`, `map.json` planets) | `art` | `"[<set>:]<kind>/<id>"` - this row's pictures (Encyclopedia picture, portrait, miniature, mission pictures, description) are that row's in the art set. Optional: a row without it is looked up by its own id, so rows that keep the original's ids (a `shipyard`, a `mine`) need nothing. |
 | `<pack>/art/...` | the pack's own pictures | The art set's layout (`portraits/<kind>/<id>.png`, ...), searched **first**. Only pictures the pack's author may share - never the art set's (the exporter's pack builder and the game's import refuse them). |
 | `map_image`, `menu.image` | `"<set>:<path>"` | A picture from the art set (`swr-original:screens/galaxy.png`, `swr-original:screens/cockpit.png`). |
+| `<pack>/art/placeholder.png` | the stand-in | Optional, 400 x 200 (★ 2026-10-03, TeeJ: *"a generic 1940's wartime image to use when no other exists"*): shown in a picture slot whose own picture the pack does not have - the Encyclopedia's page, the Create Mission window, the Mission window (`Art.OrPlaceholder`). Without one such a slot hides or stays empty, as before. WWII: a field desk under a wall map, `tools/look/make_ww2_missions.py`. |
 
 Where the engine looks (`src/ui/artwork.gd`): the pack's own `art/`, then for each
 declared set `res://art/<set>/` (a checkout's exported folder, gitignored and

@@ -491,8 +491,8 @@ func JumpTo(text: String) -> void:
 static func PictureFor(e: Entry) -> Texture2D:
 	if e.Kind == KindMission:
 		var side: String = GameSettings.PlayerFaction.ArtSkin if GameSettings.PlayerFaction != null else ""
-		return Art.MissionPicture(e.Id, side)
-	return Art.Picture(e.Kind, e.Id)
+		return Art.OrPlaceholder(Art.MissionPicture(e.Id, side))
+	return Art.OrPlaceholder(Art.Picture(e.Kind, e.Id))
 
 
 ## The plain window's size, and the largest a picture is shown on its page:
