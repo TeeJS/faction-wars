@@ -14,3 +14,7 @@ Mechanical downsampling used System.Drawing HighQualityBicubic. Artistic edits w
 The existing tools/look/make_ww2_facilities.py generates the previous engineering-plate art and would overwrite these replacements if rerun. Use the saved game-size masters to restore this new set. Portraits and miniatures were outside this request and remain unchanged.
 
 Backup and master directories have .gdignore files to keep these archival copies out of Godot's resource imports.
+
+## Naval yard revision 2 (2026-10-04)
+
+Redrew the ship with a coherent curved steel hull, pointed bow, stern rudder, unfinished deckhouse, and slipway braces. First attempt preserved in revisions/shipyard-v1/. Current masters, game-size image, manifests and contact sheet updated. Exact revision prompt: shipyard-v2-generation.json.
