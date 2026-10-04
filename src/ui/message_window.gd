@@ -383,7 +383,7 @@ static func MessagePicture(message: GameMessage) -> Texture2D:
 		if pic != null:
 			return pic
 	if message.AssociatedLocation is Planet:
-		return Art.Picture("planets", (message.AssociatedLocation as Planet).PackId)
+		return Art.Picture("locations", (message.AssociatedLocation as Planet).PackId)
 	return null
 
 

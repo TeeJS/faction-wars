@@ -1020,7 +1020,7 @@ func SetTitleIcon(planet: Planet) -> void:
 		return
 	var hbox: Node = label.get_parent()
 	var icon: TextureRect = hbox.get_node_or_null("TitleIcon")
-	var tex: Texture2D = Art.PlanetSprite(planet.ArtworkId)
+	var tex: Texture2D = Art.LocationSprite(planet.ArtworkId)
 	if tex == null:
 		if icon != null:
 			icon.queue_free()

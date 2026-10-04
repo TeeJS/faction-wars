@@ -65,7 +65,7 @@ var _originalTitle: Label
 
 
 static func CanBuildOriginal() -> bool:
-	return Art.PlanetSprite(1) != null and Art.ButtonIcon("sector_switch") != null \
+	return Art.LocationSprite(1) != null and Art.ButtonIcon("sector_switch") != null \
 		and Art.ButtonIcon("title_close") != null and Art.ButtonIcon("title_minimize") != null
 
 
@@ -307,7 +307,7 @@ func Populate(sector: Sector, uiManager: UIManager) -> void:
 		# p025: "planet artwork with the system name beneath, coloured by
 		# controlling faction"). The disc's colour moves to the name; the HQ
 		# ring stays. Without a sprite the coloured disc is drawn as before.
-		var sprite: Texture2D = Art.PlanetSprite(planet.ArtworkId)
+		var sprite: Texture2D = Art.LocationSprite(planet.ArtworkId)
 		var nameColor := Color(0.8, 0.8, 0.8, 0.9)
 		if sprite != null:
 			planetMapNode.icon = sprite

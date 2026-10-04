@@ -85,8 +85,8 @@ func _init() -> void:
 	_png("%s/windows/card_enroute.png" % dir, 61, 25, Color(0.1, 0.1, 0.3))
 	_png("%s/windows/card_transit.png" % dir, 61, 25, Color(0.2, 0.3, 0.2))
 	if far.ArtworkId > 0:
-		DirAccess.make_dir_recursive_absolute("%s/planet_sprites" % dir)
-		_png("%s/planet_sprites/%d.png" % [dir, far.ArtworkId], 37, 37, Color(0.5, 0.5, 0.9))
+		DirAccess.make_dir_recursive_absolute("%s/location_sprites" % dir)
+		_png("%s/location_sprites/%d.png" % [dir, far.ArtworkId], 37, 37, Color(0.5, 0.5, 0.9))
 	var d: PackDefs.MissionDefPack = MissionCatalog.DefFor(dip)
 	_png("%s/missions/%s.%s.tile.png" % [dir, d.Id, side], 73, 48, Color(0.7, 0.2, 0.2))
 	Art.Reset()

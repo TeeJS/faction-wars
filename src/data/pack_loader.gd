@@ -121,7 +121,11 @@ const KNOWN_UNIT_ROLES := ["superweapon", "garrison_troop"]
 ## (skins) each has.
 const KNOWN_ART_SETS := {"swr-original": ["alliance", "empire"]}
 ## The row kinds an `art` reference may name.
-const ART_KINDS := ["characters", "units", "facilities", "missions", "planets"]
+const ART_KINDS := ["characters", "units", "facilities", "missions", "locations"]
+## A kind's old name, still read (TeeJ, 2026-10-04: "planets" became
+## "locations", the folder and the kind): an art reference or an art set made
+## before keeps working.
+const OLD_ART_KINDS := {"planets": "locations"}
 ## SCHEMA.md section 15, `look.json`: the tokens a pack's look declares
 ## (src/ui/look.gd builds the theme from them). Every colour is required - a
 ## look that forgot one would draw that piece in some other token's colour -
@@ -1609,14 +1613,18 @@ static func SplitArtRef(ref: String) -> PackedStringArray:
 
 ## A row's `art`, "[<set>:]<kind>/<id>", as [set, kind, id] (set "" = any of
 ## the pack's), or [] when malformed or naming a set the pack does not declare.
+## A kind's old name (OLD_ART_KINDS) comes back as its new one.
 static func ParseArtRef(ref: String, sets: Array) -> Array:
 	var split := SplitArtRef(ref)
 	if not split[0].is_empty() and not sets.has(split[0]):
 		return []
 	var parts := split[1].split("/")
-	if parts.size() != 2 or not ART_KINDS.has(parts[0]) or parts[1].strip_edges().is_empty():
+	if parts.size() != 2 or parts[1].strip_edges().is_empty():
 		return []
-	return [split[0], parts[0], parts[1]]
+	var kind: String = OLD_ART_KINDS.get(parts[0], parts[0])
+	if not ART_KINDS.has(kind):
+		return []
+	return [split[0], kind, parts[1]]
 
 
 static func _require_color(value: String, ctx: String, errors: Array[String]) -> void:

@@ -50,7 +50,7 @@ func _init() -> void:
 	_check(planets.size() == 88, "the pack has 88 systems (%d)" % planets.size())
 	var numbers := {}
 	for p in planets:
-		var tex: Texture2D = Art.PlanetSprite(p.ArtworkId)
+		var tex: Texture2D = Art.LocationSprite(p.ArtworkId)
 		numbers[p.ArtworkId] = p.Id
 		_check(tex != null, "%s: its picture (%d) is found" % [p.Id, p.ArtworkId])
 		if tex == null:
@@ -88,7 +88,7 @@ func _init() -> void:
 	for p in planets:
 		if p.Id == "germany":
 			germany = p
-	var tex: Texture2D = Art.PlanetSprite(germany.ArtworkId) if germany != null else null
+	var tex: Texture2D = Art.LocationSprite(germany.ArtworkId) if germany != null else null
 	if tex != null:
 		var img: Image = tex.get_image()
 		var top := img.get_pixel(18, 11)

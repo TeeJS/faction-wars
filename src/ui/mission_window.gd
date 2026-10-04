@@ -23,7 +23,7 @@ func Populate(planet: Planet) -> void:
 	(get_node("%TitleBarLabel") as Label).text = " Missions at %s" % planet.Name
 	(get_node("%PlanetName") as Label).text = planet.Name
 	# The target world's picture, when the player imported the original's.
-	Art.Fill(get_node_or_null(PlanetPicturePath), Art.Picture("planets", planet.PackId))
+	Art.Fill(get_node_or_null(PlanetPicturePath), Art.Picture("locations", planet.PackId))
 
 	var tabs: TabContainer = get_node("%MissionTabs")
 	# Only jump to the first tab when this window is opened on a NEW

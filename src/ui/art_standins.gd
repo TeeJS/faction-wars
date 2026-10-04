@@ -25,7 +25,7 @@ const LookLib := preload("res://src/ui/look.gd")
 ## The file-name states a picture comes in; the stand-in draws each.
 const States := ["pressed", "disabled", "grey", "lit", "picked", "hover", "chosen", "off"]
 const Sides := {"alliance": Color(1, 0, 0), "empire": Color(0, 1, 0)}
-## The original's planet pictures: 26 of them, 37 x 37 (planet_sprites/<n>).
+## The original's planet pictures: 26 of them, 37 x 37 (location_sprites/<n>).
 const PlanetSprites := 26
 ## A tier's star: the plus's reach from its middle, and its arms' width.
 const StarReach := {"big": 7, "mid": 5, "low": 3, "none": 1}
@@ -144,7 +144,7 @@ static func Table() -> Dictionary:
 	for b in [["title_close", "close"], ["title_minimize", "minimize"], ["title_system", "system"], ["sector_switch", "switch"]]:
 		t["buttons/%s.png" % b[0]] = {"kind": "button", "size": Vector2i(14, 14), "glyph": b[1]}
 	for n in range(1, PlanetSprites + 1):
-		t["planet_sprites/%d.png" % n] = {"kind": "planet", "size": Vector2i(37, 37), "n": n}
+		t["location_sprites/%d.png" % n] = {"kind": "planet", "size": Vector2i(37, 37), "n": n}
 	for side in ["alliance", "empire", "neutral", "unexplored"]:
 		for tier in ["big", "mid", "low", "none"]:
 			t["gid/%s.%s.png" % [side, tier]] = {"kind": "star", "size": Vector2i(15, 15), "side": side, "tier": tier}

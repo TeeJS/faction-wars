@@ -59,7 +59,7 @@ func _init() -> void:
 	# Write two test pictures where an imported art set lives.
 	var dir := "%s/%s" % [Art.UserArtRoot, sets[0] if not sets.is_empty() else "swr-original"]
 	DirAccess.make_dir_recursive_absolute(dir + "/icons")
-	DirAccess.make_dir_recursive_absolute(dir + "/planet_sprites")
+	DirAccess.make_dir_recursive_absolute(dir + "/location_sprites")
 	var icon := Image.create(16, 16, false, Image.FORMAT_RGBA8)
 	icon.fill(Color(0.2, 0.9, 0.3))
 	var icon_path := "%s/icons/manufacturing.%s.png" % [dir, side]
@@ -71,7 +71,7 @@ func _init() -> void:
 	if art_id > 0:
 		var sprite := Image.create(37, 37, false, Image.FORMAT_RGBA8)
 		sprite.fill(Color(0.5, 0.5, 0.9))
-		sprite_path = "%s/planet_sprites/%d.png" % [dir, art_id]
+		sprite_path = "%s/location_sprites/%d.png" % [dir, art_id]
 		sprite.save_png(sprite_path)
 	Art.Reset()
 

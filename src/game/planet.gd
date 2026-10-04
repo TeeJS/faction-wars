@@ -14,7 +14,7 @@ var SectorId: int
 var BaseEnergy: int
 var BaseRawMaterials: int
 ## map.json `artwork_id`: which of the pack's planet pictures this world uses.
-## Presentation only (Artwork.PlanetSprite); the simulation never reads it.
+## Presentation only (Artwork.LocationSprite); the simulation never reads it.
 var ArtworkId: int = 0
 var ControllingFaction: Faction   # set to the pack's neutral at generation
 ## EXPLORATION IS PER FACTION (docs/m0-audit.md section 2). "Known to the

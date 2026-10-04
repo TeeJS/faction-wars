@@ -39,9 +39,9 @@ func _init() -> void:
 	var sets: Array = FactionRegistry.Pack.Manifest.ArtSets
 	if not sets.is_empty():
 		var dir := "%s/%s" % [ArtRoot, sets[0]]
-		for sub in ["planet_sprites", "buttons"]:
+		for sub in ["location_sprites", "buttons"]:
 			DirAccess.make_dir_recursive_absolute("%s/%s" % [dir, sub])
-		_png("%s/planet_sprites/1.png" % dir, 20, 20)
+		_png("%s/location_sprites/1.png" % dir, 20, 20)
 		for b in ["sector_switch", "title_close", "title_minimize"]:
 			_png("%s/buttons/%s.png" % [dir, b], 14, 14)
 		Art.Reset()

@@ -215,8 +215,10 @@ func _init() -> void:
 	# Rule 18 - art sets, skins and art references (SCHEMA.md section 13).
 	var art := {"art_sets": ["swr-original"], "skin": "empire"}
 	_clean("an art-set pack: a skin, art references, art-set pictures",
-		_pack({}, {"art": "swr-original:planets/coruscant"}, art.merged({"char_art": "characters/luke_skywalker",
+		_pack({}, {"art": "swr-original:locations/coruscant"}, art.merged({"char_art": "characters/luke_skywalker",
 			"map_image": "swr-original:screens/galaxy.png"})))
+	_clean("an art reference by the kind's old name (planets/, now locations/)",
+		_pack({}, {"art": "swr-original:planets/coruscant"}, art.merged({"map_image": "swr-original:screens/galaxy.png"})))
 	_case("an art set the engine does not know",
 		_pack({}, {}, {"art_sets": ["lotr-original"]}), "'lotr-original' is not an art set the engine knows")
 	_case("art sets declared, a faction with no skin",
@@ -228,7 +230,7 @@ func _init() -> void:
 	_case("an art reference that is not <kind>/<id>",
 		_pack({}, {}, art.merged({"char_art": "luke_skywalker"})), "must be [<art set>:]<kind>/<id>")
 	_case("an art reference to an art set the pack does not declare",
-		_pack({}, {"art": "other-set:planets/coruscant"}, art), "must be [<art set>:]<kind>/<id>")
+		_pack({}, {"art": "other-set:locations/coruscant"}, art), "must be [<art set>:]<kind>/<id>")
 	_case("an art reference with no art set declared",
 		_pack({}, {}, {"char_art": "characters/luke_skywalker"}), "'characters/luke_skywalker' needs pack.json art_sets")
 	_case("a map_image in an art set the pack does not declare",

@@ -1115,6 +1115,7 @@ What changed from the source repo's 2026-07-25 draft, and why.
 | 80 | **`advice`** (§2): the agent's advice messages per side - the art set's list, the group a game opens with, the picture; validation rule 29 | TeeJ, 2026-09-27: "there are no advice messages loaded when the briefing ends" (his screenshot of the original's Advice tab) | Additive; nothing is posted without the art set's `advice.json` (exporter 2.6.2). Star Wars' is the original's own TEXTSTRA lists, group 7 at the start |
 | 81 | **`advice`** (§2): `events`, `periodic`, `every` - the later tips' moments; rule 29 checks them | TeeJ, 2026-09-27: "yes, you may disassemble REBEXE for the later advice tips" | Additive; without them only the opening advice comes. Star Wars' are REBEXE's |
 | 82 | **`briefing.<side>.release`** (§2): the focus step at which the clock goes; rule 28 checks it | TeeJ, 2026-09-27: "Make it match the original" (the head-to-head briefings' end; REBEXE read with his approval) | Additive; without it the clock goes at the end. Star Wars' is the original's 11 |
+| 83 | **§14: the picture folders `planets/` and `planet_sprites/` are now `locations/` and `location_sprites/`**, and the `art` kind `planets` is now `locations` (descriptions.json's section too) | TeeJ, 2026-10-04: rename `packs\ww2\art\planets` to `locations`, the game, the editor and the exporter with it (option A) | The old names are still read wherever the new one has nothing: art sets already imported and packs made before need no change. `map.json`'s `planets` key is the data format and is unchanged |
 
 ---
 
@@ -1131,7 +1132,7 @@ engine's own art.
 |---|---|---|
 | `pack.json` | `art_sets` | e.g. `["swr-original"]`. Known sets: `swr-original` (skins `alliance`, `empire`). |
 | `factions.json`, per faction | `skin` | Which of the set's side looks the faction wears: title-bar colour, tab sets, message icons, GID stars, the Encyclopedia column. **Required when `art_sets` is declared.** A custom side can wear either: Separatists as `empire`, the Trade Federation as `alliance`. |
-| any row (`characters`, `units`, `facilities`, `missions`, `map.json` planets) | `art` | `"[<set>:]<kind>/<id>"` - this row's pictures (Encyclopedia picture, portrait, miniature, mission pictures, description) are that row's in the art set. Optional: a row without it is looked up by its own id, so rows that keep the original's ids (a `shipyard`, a `mine`) need nothing. |
+| any row (`characters`, `units`, `facilities`, `missions`, `map.json` planets) | `art` | `"[<set>:]<kind>/<id>"`, the kind one of `characters`, `units`, `facilities`, `missions`, `locations` (the map's rows; `planets`, its old name, is still read) - this row's pictures (Encyclopedia picture, portrait, miniature, mission pictures, description) are that row's in the art set. Optional: a row without it is looked up by its own id, so rows that keep the original's ids (a `shipyard`, a `mine`) need nothing. |
 | `<pack>/art/...` | the pack's own pictures | The art set's layout (`portraits/<kind>/<id>.png`, ...), searched **first**. Only pictures the pack's author may share - never the art set's (the exporter's pack builder and the game's import refuse them). |
 | `map_image`, `menu.image` | `"<set>:<path>"` | A picture from the art set (`swr-original:screens/galaxy.png`, `swr-original:screens/cockpit.png`). |
 | `<pack>/art/placeholder.png` | the stand-in | Optional, 400 x 200 (★ 2026-10-03, TeeJ: *"a generic 1940's wartime image to use when no other exists"*): shown in a picture slot whose own picture the pack does not have - the Encyclopedia's page, the Create Mission window, the Mission window (`Art.OrPlaceholder`). Without one such a slot hides or stays empty, as before. WWII: a field desk under a wall map, `tools/look/make_ww2_missions.py`. |
@@ -1141,6 +1142,13 @@ declared set `res://art/<set>/` (a checkout's exported folder, gitignored and
 excluded from exports) and `user://art/<set>/` (imported). Nothing of an art set
 is ever committed: CI fails a build that carries any. The art set's layout is the exporter's
 (`tools/FactionWarsExporter/README.md`).
+
+**★ 2026-10-04 (TeeJ).** A system's pictures live in `locations/<id>.png` (the
+400 x 200 Encyclopedia picture) and `location_sprites/<n>.png` (the 37 x 37 map
+picture, by `artwork_id`), and descriptions.json's section is `locations`.
+These were `planets/`, `planet_sprites/` and `planets`. Wherever the new name
+has nothing - the pack's own `art/` or an art set - the old one is read, so an
+art set imported before, or a pack made before, needs no change.
 
 Packs load from `res://packs/<id>/` (shipped) and `user://packs/<id>/`
 (imported; a shipped pack of the same id wins).

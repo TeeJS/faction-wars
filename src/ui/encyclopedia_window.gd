@@ -35,8 +35,9 @@ static func DatabaseName(i: int) -> String:
 	if i == 2:
 		return Terms.label("ship_database")
 	return Databases[i]
-## Entry kinds, as the overlay files are named.
-const KindSystem := "planets"
+## Entry kinds, as the picture folders are named (systems: locations/, once
+## planets/ - Artwork reads the old folder too).
+const KindSystem := "locations"
 const KindUnit := "units"
 const KindFacility := "facilities"
 const KindMission := "missions"

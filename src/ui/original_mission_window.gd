@@ -308,7 +308,7 @@ func _target_picture(m: Mission) -> Texture2D:
 			return Art.Scaled(Art.Portrait("units", m.TargetUnit.PackId), K)
 	if not _planet.IsExplored:
 		return null
-	return Art.Scaled(Art.PlanetSprite(_planet.ArtworkId), K)
+	return Art.Scaled(Art.LocationSprite(_planet.ArtworkId), K)
 
 
 func _target_name(m: Mission) -> String:
