@@ -41,4 +41,3 @@ foreach($row in $rows) {
 ConvertTo-Json -InputObject $rows -Depth 15|Set-Content -LiteralPath (Join-Path $masterRoot 'generation-manifest.json')
 ConvertTo-Json -InputObject $assembled -Depth 8|Set-Content -LiteralPath (Join-Path $masterRoot 'assembly-manifest.json')
 Write-Output ('Assembled '+$assembled.Count+' region cards from '+$rows.Count+' unique flag redraws.')
-

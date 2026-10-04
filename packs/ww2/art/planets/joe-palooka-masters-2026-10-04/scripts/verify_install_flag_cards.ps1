@@ -43,4 +43,3 @@ if((Get-FileHash -LiteralPath (Join-Path $root $name)).Hash -ne $row.sha256){thr
 }
 ConvertTo-Json -InputObject $result -Depth 5|Set-Content -LiteralPath (Join-Path $master 'installation-manifest.json')
 Write-Output 'PASS: all 88 backup hashes verified; 83 cards installed at 400x200 with exact original pixels outside flag interiors; all five pending proposals remain unchanged.'
-

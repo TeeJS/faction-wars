@@ -49,4 +49,3 @@ $a.Dispose();$b.Dispose();$i++
 }
 $font.Dispose();$g.Dispose();$sheet.Save((Join-Path $proposalRoot 'approval-comparison.png'));$sheet.Dispose()
 Write-Output 'Five proposals assembled; not installed.'
-
