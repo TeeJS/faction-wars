@@ -2,7 +2,7 @@ $ErrorActionPreference='Stop'
 Add-Type -AssemblyName System.Drawing
 $repo='D:\Github\faction-wars'
 $root=Join-Path $repo 'packs\ww2\art\planets'
-$master=Join-Path $root 'joe-palooka-masters-2026-10-04'
+$master=Join-Path $root 'vintage-1940s-comic-masters-2026-10-04'
 $proposals=Join-Path $master '1939-proposals'
 $rows=@(Get-Content -LiteralPath (Join-Path $proposals 'manifest.json') -Raw|ConvertFrom-Json)
 $installation=@(Get-Content -LiteralPath (Join-Path $master 'installation-manifest.json') -Raw|ConvertFrom-Json)
@@ -47,7 +47,7 @@ author=$s.author
 source=$s.page
 licence=$s.license
 licence_url=$s.licenseUrl
-changes='Reference flag redrawn with OpenAI ImageGen in Joe Palooka / Ham Fisher newspaper-comic ink style; period '+$s.period+'. Original card frame and caption preserved; flag balanced at 2:1. Installed 400 x 200 after explicit user approval. Adaptation shared under the same source licence where applicable. Source images, hashes and prompts: art/planets/joe-palooka-masters-2026-10-04/1939-proposals/manifest.json.'
+changes='Reference flag redrawn with OpenAI ImageGen in vintage 1940s comic style; period '+$s.period+'. Original card frame and caption preserved; flag balanced at 2:1. Installed 400 x 200 after explicit user approval. Adaptation shared under the same source licence where applicable. Source images, hashes and prompts: art/planets/vintage-1940s-comic-masters-2026-10-04/1939-proposals/manifest.json.'
 files=@('art/planets/'+$row.id+'.png')
 }
 }
@@ -76,7 +76,7 @@ choices supersede the older country-identity presentation policy below.
 The original source table below continues to describe the unchanged 37x37
 sprites; approved card sources, attribution and licences are recorded in
 the five separate pack-credit entries and in
-`planets/joe-palooka-masters-2026-10-04/approved-card-sources.json`.
+`planets/vintage-1940s-comic-masters-2026-10-04/approved-card-sources.json`.
 Burma adaptation: CC BY-SA 3.0; Ceylon: CC BY-SA 4.0; the other three
 reference designs are public domain. See the archived comparison and
 source README under `1939-proposals/`.

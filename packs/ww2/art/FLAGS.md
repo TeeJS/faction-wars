@@ -3,7 +3,7 @@
 ## Comic card redraws (2026-10-04)
 
 All 88 Encyclopedia cards in `planets/` now use an OpenAI ImageGen
-adaptation in Joe Palooka / Ham Fisher newspaper-comic ink style.
+adaptation in vintage 1940s comic style.
 83 retain their existing flag designs and proportions; five use the
 approved 1939 replacements described below. All original borders, plate
 numbers and captions are preserved. Every pixel outside the flag
@@ -14,7 +14,7 @@ interiors remains unchanged for the 83 style-only cards. The cards remain
 All 88 original cards have byte-for-byte backups and SHA-256 hashes in
 `planets/backup-originals-2026-10-04/`. Source records, prompts, generated
 originals, review sheets and installation hashes are archived in
-`planets/joe-palooka-masters-2026-10-04/`. Both archive directories have
+`planets/vintage-1940s-comic-masters-2026-10-04/`. Both archive directories have
 `.gdignore`, so they are excluded from Godot imports and exports. Original
 attribution and licences below still apply; the Fiji adaptation is shared
 under the source's CC BY-SA 3.0 licence; Spain under CC BY-SA 4.0.
@@ -28,7 +28,7 @@ choices supersede the older country-identity presentation policy below.
 The original source table below continues to describe the unchanged 37x37
 sprites; approved card sources, attribution and licences are recorded in
 the five separate pack-credit entries and in
-`planets/joe-palooka-masters-2026-10-04/approved-card-sources.json`.
+`planets/vintage-1940s-comic-masters-2026-10-04/approved-card-sources.json`.
 Burma adaptation: CC BY-SA 3.0; Ceylon: CC BY-SA 4.0; the other three
 reference designs are public domain. See the archived comparison and
 source README under `1939-proposals/`.

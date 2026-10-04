@@ -1,6 +1,6 @@
 # WW2 unit art reference index
 
-77 unit plates redrawn on 2026-10-04 in the requested Joe Palooka / Ham Fisher comic-strip style. Filenames and plate captions were matched to packs/ww2/units.json. Historical references informed identifying silhouettes, equipment and markings; the drawings remain stylized game illustrations rather than technical plans. Generic formations and convoys use the representative examples stated below. Intelligence scenes are imagined composites, not portraits or reconstructions of a particular operation.
+77 unit plates redrawn on 2026-10-04 in the requested vintage 1940s comic style. Filenames and plate captions were matched to packs/ww2/units.json. Historical references informed identifying silhouettes, equipment and markings; the drawings remain stylized game illustrations rather than technical plans. Generic formations and convoys use the representative examples stated below. Intelligence scenes are imagined composites, not portraits or reconstructions of a particular operation.
 
 Sources were consulted for historical subject identification and descriptive guidance. Source photographs were not copied into these plates. The user’s supplied Zero photo was also used directly as an image reference. The facility construction-yard master supplied the common visual style.
 

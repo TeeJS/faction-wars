@@ -1,6 +1,6 @@
 # WW2 unit redraws — 2026-10-04
 
-All 77 unit PNGs were redrawn in the requested Joe Palooka / Ham Fisher comic-strip style, with historical subject research recorded in REFERENCES.md. Original filenames, plate numbers, captions and 400 × 200 game dimensions were preserved.
+All 77 unit PNGs were redrawn in the requested vintage 1940s comic style, with historical subject research recorded in REFERENCES.md. Original filenames, plate numbers, captions and 400 × 200 game dimensions were preserved.
 
 - Parent directory: the 77 installed game PNGs.
 - This directory: 77 full-resolution generated masters, generation-manifest.json, installed-manifest.json and six contact sheets showing every plate at its native 400 × 200 game size.

@@ -1,0 +1,105 @@
+{
+  "date": "2026-10-04",
+  "tool": "built-in image_gen",
+  "styleReference": "D:\\Github\\faction-wars\\packs\\ww2\\art\\facilities\\vintage-1940s-comic-masters-2026-10-04\\advanced_construction_yard.png",
+  "outputs": [
+    {
+      "name": "abduction",
+      "plate": "187",
+      "caption": "ABDUCTION",
+      "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-96795bb3-540f-4dad-a85d-4677cde09347.png",
+      "prompt": "Use case: style-transfer. Redraw the EDIT TARGET in vintage 1940s comic style, matching the STYLE REFERENCE. Expressive confident brush-and-pen black ink contours, varied line weights, chunky black shadows, economical crosshatching, warm aged ivory newsprint and subtle sepia. Draw people as convincing period comic-strip figures with natural anatomy, clear hands and faces; preserve their roles and scene intent. Preserve target composition and identifying objects while improving legibility and perspective. Wide 2:1 illustration, double-line rectangular border, separate lower caption strip with bold accurate text readable when reduced to 400x200. No speech balloons, logos, extra captions, Nazi symbols or recognizable real people. Input 1 is EDIT TARGET; Input 2 is STYLE REFERENCE only. Scene: Two civilian agents in 1940s hats and overcoats escort a captive man between them beside a brick wall at left; waiting period sedan and streetlamp at right. Three people total, clear natural hands and legs, no injury or gore. Exact footer: 'PLATE 187' at left and 'ABDUCTION' centered."
+    },
+    {
+      "name": "assassination",
+      "plate": "194",
+      "caption": "ASSASSINATION",
+      "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-5fc781ac-cad8-4b61-8a89-98aeaacd3595.png",
+      "prompt": "Use case: style-transfer. Redraw the EDIT TARGET in vintage 1940s comic style, matching the STYLE REFERENCE. Expressive confident brush-and-pen black ink contours, varied line weights, chunky black shadows, economical crosshatching, warm aged ivory newsprint and subtle sepia. Draw people as convincing period comic-strip figures with natural anatomy, clear hands and faces; preserve their roles and scene intent. Preserve target composition and identifying objects while improving legibility and perspective. Wide 2:1 illustration, double-line rectangular border, separate lower caption strip with bold accurate text readable when reduced to 400x200. No speech balloons, logos, extra captions, Nazi symbols or recognizable real people. Input 1 is EDIT TARGET; Input 2 is STYLE REFERENCE only. Scene: View from inside a dim upstairs room at left toward a four-pane window: a period rifle rests across the sill. Through the window and at right see the street, parked 1940s sedan and building opposite. Suspenseful espionage scene with no victim, no firing, no gore. Exact footer: 'PLATE 194' at left and 'ASSASSINATION' centered."
+    },
+    {
+      "name": "diplomacy",
+      "plate": "181",
+      "caption": "DIPLOMACY",
+      "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-2c228658-389d-46ce-b122-813c933f1943.png",
+      "prompt": "Use case: style-transfer. Redraw the EDIT TARGET in vintage 1940s comic style, matching the STYLE REFERENCE. Expressive confident brush-and-pen black ink contours, varied line weights, chunky black shadows, economical crosshatching, warm aged ivory newsprint and subtle sepia. Draw people as convincing period comic-strip figures with natural anatomy, clear hands and faces; preserve their roles and scene intent. Preserve target composition and identifying objects while improving legibility and perspective. Wide 2:1 illustration, double-line rectangular border, separate lower caption strip with bold accurate text readable when reduced to 400x200. No speech balloons, logos, extra captions, Nazi symbols or recognizable real people. Input 1 is EDIT TARGET; Input 2 is STYLE REFERENCE only. Scene: Two civilian diplomats in 1940s suits and hats shake hands centrally in a formal room, one aide carrying a briefcase at right; desk with documents at left and two tall arched windows behind. Natural anatomically coherent handshake, three people total. Exact footer: 'PLATE 181' at left and 'DIPLOMACY' centered."
+    },
+    {
+      "name": "espionage",
+      "plate": "184",
+      "caption": "ESPIONAGE",
+      "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-ea1809bd-1cc1-4e3e-8d3c-792f9e78362f.png",
+      "prompt": "Use case: style-transfer. Redraw the EDIT TARGET in vintage 1940s comic style, matching the STYLE REFERENCE. Expressive confident brush-and-pen black ink contours, varied line weights, chunky black shadows, economical crosshatching, warm aged ivory newsprint and subtle sepia. Draw people as convincing period comic-strip figures with natural anatomy, clear hands and faces; preserve their roles and scene intent. Preserve target composition and identifying objects while improving legibility and perspective. Wide 2:1 illustration, double-line rectangular border, separate lower caption strip with bold accurate text readable when reduced to 400x200. No speech balloons, logos, extra captions, Nazi symbols or recognizable real people. Input 1 is EDIT TARGET; Input 2 is STYLE REFERENCE only. Scene: A civilian spy in a 1940s fedora and overcoat peers through compact binoculars from behind a brick wall at left toward a sawtooth-roof factory, smoking chimney, streetlamp and barbed-wire perimeter fence at right. One person, believable binocular pose. Exact footer: 'PLATE 184' at left and 'ESPIONAGE' centered."
+    },
+    {
+      "name": "facility_design_research",
+      "plate": "189",
+      "caption": "FORTIFICATION DESIGN RESEARCH",
+      "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-9b49d687-3d24-46c2-9ea9-c5f10b2fe635.png",
+      "prompt": "Use case: style-transfer. Redraw the EDIT TARGET in vintage 1940s comic style, matching the STYLE REFERENCE. Expressive confident brush-and-pen black ink contours, varied line weights, chunky black shadows, economical crosshatching, warm aged ivory newsprint and subtle sepia. Draw people as convincing period comic-strip figures with natural anatomy, clear hands and faces; preserve their roles and scene intent. Preserve target composition and identifying objects while improving legibility and perspective. Wide 2:1 illustration, double-line rectangular border, separate lower caption strip with bold accurate text readable when reduced to 400x200. No speech balloons, logos, extra captions, Nazi symbols or recognizable real people. Input 1 is EDIT TARGET; Input 2 is STYLE REFERENCE only. Scene: A military engineer at left in plain uniform and peaked cap points at a large upright gridded drafting board showing a clear underground fortification cutaway: gun turret, bunker, stairs, vertical shaft and horizontal tunnel. A tripod survey instrument stands at right. One person. Exact footer: 'PLATE 189' at left and 'FORTIFICATION DESIGN RESEARCH' centered."
+    },
+    {
+      "name": "incite_uprising",
+      "plate": "191",
+      "caption": "FOMENT RESISTANCE",
+      "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-a4d4edc4-5dd4-49b4-b742-2297fe398cf1.png",
+      "prompt": "Use case: style-transfer. Redraw the EDIT TARGET in vintage 1940s comic style, matching the STYLE REFERENCE. Expressive confident brush-and-pen black ink contours, varied line weights, chunky black shadows, economical crosshatching, warm aged ivory newsprint and subtle sepia. Draw people as convincing period comic-strip figures with natural anatomy, clear hands and faces; preserve their roles and scene intent. Preserve target composition and identifying objects while improving legibility and perspective. Wide 2:1 illustration, double-line rectangular border, separate lower caption strip with bold accurate text readable when reduced to 400x200. No speech balloons, logos, extra captions, Nazi symbols or recognizable real people. Input 1 is EDIT TARGET; Input 2 is STYLE REFERENCE only. Scene: A civilian resistance contact with briefcase approaches a standing agent with raised arm and portable radio antenna beside a small safehouse at left and bicycle. At upper right a parachute lowers a rectangular supply crate, with another crate on ground. Two people, no insignia. Exact footer: 'PLATE 191' at left and 'FOMENT RESISTANCE' centered."
+    },
+    {
+      "name": "reconnaissance",
+      "plate": "185",
+      "caption": "RECONNAISSANCE",
+      "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-5cc55340-b577-4630-bd96-59b9020f7016.png",
+      "prompt": "Use case: style-transfer. Redraw the EDIT TARGET in vintage 1940s comic style, matching the STYLE REFERENCE. Expressive confident brush-and-pen black ink contours, varied line weights, chunky black shadows, economical crosshatching, warm aged ivory newsprint and subtle sepia. Draw people as convincing period comic-strip figures with natural anatomy, clear hands and faces; preserve their roles and scene intent. Preserve target composition and identifying objects while improving legibility and perspective. Wide 2:1 illustration, double-line rectangular border, separate lower caption strip with bold accurate text readable when reduced to 400x200. No speech balloons, logos, extra captions, Nazi symbols or recognizable real people. Input 1 is EDIT TARGET; Input 2 is STYLE REFERENCE only. Scene: A believable single-engine 1940s propeller reconnaissance airplane flies across upper half in side profile, nose right; beneath it a compact row of town buildings. Faint schematic field-of-view lines from airplane down toward town. A few small clouds. Aircraft anatomy coherent with clear wings, tail and propeller; no insignia. Exact footer: 'PLATE 185' at left and 'RECONNAISSANCE' centered."
+    },
+    {
+      "name": "recruitment",
+      "plate": "186",
+      "caption": "RECRUITMENT",
+      "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-c0bf3f73-fe5e-4c2d-aa4d-c378d899c1c5.png",
+      "prompt": "Use case: style-transfer. Redraw the EDIT TARGET in vintage 1940s comic style, matching the STYLE REFERENCE. Expressive confident brush-and-pen black ink contours, varied line weights, chunky black shadows, economical crosshatching, warm aged ivory newsprint and subtle sepia. Draw people as convincing period comic-strip figures with natural anatomy, clear hands and faces; preserve their roles and scene intent. Preserve target composition and identifying objects while improving legibility and perspective. Wide 2:1 illustration, double-line rectangular border, separate lower caption strip with bold accurate text readable when reduced to 400x200. No speech balloons, logos, extra captions, Nazi symbols or recognizable real people. Input 1 is EDIT TARGET; Input 2 is STYLE REFERENCE only. Scene: Four civilians in 1940s hats queue at left to enlist, an officer at right behind an outdoor recruitment desk beside a military administrative building. Officer holds a clipboard; candidates carry small cases. Five people total with natural poses, no extra words or signage. Exact footer: 'PLATE 186' at left and 'RECRUITMENT' centered."
+    },
+    {
+      "name": "rescue",
+      "plate": "182",
+      "caption": "RESCUE",
+      "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-36cb72fd-d590-4433-a1c2-abe1ecbfd07b.png",
+      "prompt": "Use case: style-transfer. Redraw the EDIT TARGET in vintage 1940s comic style, matching the STYLE REFERENCE. Expressive confident brush-and-pen black ink contours, varied line weights, chunky black shadows, economical crosshatching, warm aged ivory newsprint and subtle sepia. Draw people as convincing period comic-strip figures with natural anatomy, clear hands and faces; preserve their roles and scene intent. Preserve target composition and identifying objects while improving legibility and perspective. Wide 2:1 illustration, double-line rectangular border, separate lower caption strip with bold accurate text readable when reduced to 400x200. No speech balloons, logos, extra captions, Nazi symbols or recognizable real people. Input 1 is EDIT TARGET; Input 2 is STYLE REFERENCE only. Scene: An escape from a prison camp: a plain-uniformed guard at far left, a freed prisoner crossing through an open barbed-wire gate in center, civilian rescuer waiting immediately right of gate; tall guard tower and fence extend at right. Three people, clear open gate, tense but no wounds or gore. Exact footer: 'PLATE 182' at left and 'RESCUE' centered."
+    },
+    {
+      "name": "sabotage_atomic_program",
+      "plate": "192",
+      "caption": "SABOTAGE ATOMIC PROGRAM",
+      "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-e08ac376-6652-483f-bf97-02cc109dfd25.png",
+      "prompt": "Use case: style-transfer. Redraw the EDIT TARGET in vintage 1940s comic style, matching the STYLE REFERENCE. Expressive confident brush-and-pen black ink contours, varied line weights, chunky black shadows, economical crosshatching, warm aged ivory newsprint and subtle sepia. Draw people as convincing period comic-strip figures with natural anatomy, clear hands and faces; preserve their roles and scene intent. Preserve target composition and identifying objects while improving legibility and perspective. Wide 2:1 illustration, double-line rectangular border, separate lower caption strip with bold accurate text readable when reduced to 400x200. No speech balloons, logos, extra captions, Nazi symbols or recognizable real people. Input 1 is EDIT TARGET; Input 2 is STYLE REFERENCE only. Scene: A plain-uniformed covert agent beside a parked 1940s military bomber inside a fenced airfield, a small closed equipment case at the agent's feet. Broadside aircraft with tail left, nose right, believable wing and landing gear. Keep mission symbolic and nontechnical: no cutaways, no bomb schematics, no blast or instructions. One person, no insignia. Exact footer: 'PLATE 192' at left and 'SABOTAGE ATOMIC PROGRAM' centered."
+    },
+    {
+      "name": "sabotage",
+      "plate": "183",
+      "caption": "SABOTAGE",
+      "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-37e1884d-cc1a-47b8-b3d0-ff045c3e2649.png",
+      "prompt": "Use case: style-transfer. Redraw the EDIT TARGET in vintage 1940s comic style, matching the STYLE REFERENCE. Expressive confident brush-and-pen black ink contours, varied line weights, chunky black shadows, economical crosshatching, warm aged ivory newsprint and subtle sepia. Draw people as convincing period comic-strip figures with natural anatomy, clear hands and faces; preserve their roles and scene intent. Preserve target composition and identifying objects while improving legibility and perspective. Wide 2:1 illustration, double-line rectangular border, separate lower caption strip with bold accurate text readable when reduced to 400x200. No speech balloons, logos, extra captions, Nazi symbols or recognizable real people. Input 1 is EDIT TARGET; Input 2 is STYLE REFERENCE only. Scene: A covert agent kneels or leans beside a small closed equipment case near the landward abutment of a steel truss bridge spanning water at right. Rail or roadway approaches from left. One person in plain period clothes. Symbolic mission depiction only, no explosive wiring diagrams, no blast or gore. Exact footer: 'PLATE 183' at left and 'SABOTAGE' centered."
+    },
+    {
+      "name": "ship_design_research",
+      "plate": "188",
+      "caption": "NAVAL DESIGN RESEARCH",
+      "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-58a60661-5199-4293-92fb-6a1c571aea1d.png",
+      "prompt": "Use case: style-transfer. Redraw the EDIT TARGET in vintage 1940s comic style, matching the STYLE REFERENCE. Expressive confident brush-and-pen black ink contours, varied line weights, chunky black shadows, economical crosshatching, warm aged ivory newsprint and subtle sepia. Draw people as convincing period comic-strip figures with natural anatomy, clear hands and faces; preserve their roles and scene intent. Preserve target composition and identifying objects while improving legibility and perspective. Wide 2:1 illustration, double-line rectangular border, separate lower caption strip with bold accurate text readable when reduced to 400x200. No speech balloons, logos, extra captions, Nazi symbols or recognizable real people. Input 1 is EDIT TARGET; Input 2 is STYLE REFERENCE only. Scene: Naval engineer in 1940s suit and hat at right points to an upright gridded drafting board at left showing the accurate broadside elevation of a warship with coherent curved hull, pointed bow, stern, turrets, bridge, mast and smokestack. Drafting table and rolled plans at far right. One person, drawing of ship clearly legible. Exact footer: 'PLATE 188' at left and 'NAVAL DESIGN RESEARCH' centered."
+    },
+    {
+      "name": "subdue_uprising",
+      "plate": "193",
+      "caption": "SUPPRESS RESISTANCE",
+      "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-40ddde2c-ad92-41ff-95d2-d51ad73d78c7.png",
+      "prompt": "Use case: style-transfer. Redraw the EDIT TARGET in vintage 1940s comic style, matching the STYLE REFERENCE. Expressive confident brush-and-pen black ink contours, varied line weights, chunky black shadows, economical crosshatching, warm aged ivory newsprint and subtle sepia. Draw people as convincing period comic-strip figures with natural anatomy, clear hands and faces; preserve their roles and scene intent. Preserve target composition and identifying objects while improving legibility and perspective. Wide 2:1 illustration, double-line rectangular border, separate lower caption strip with bold accurate text readable when reduced to 400x200. No speech balloons, logos, extra captions, Nazi symbols or recognizable real people. Input 1 is EDIT TARGET; Input 2 is STYLE REFERENCE only. Scene: A plain-uniformed officer and civilian in hat and overcoat facing each other beside a checkpoint, officer gestures toward the civilian's identification papers; striped road barrier and small sentry hut with searchlight at left, building at right. Two people, natural interaction, no violence or insignia. Exact footer: 'PLATE 193' at left and 'SUPPRESS RESISTANCE' centered."
+    },
+    {
+      "name": "troop_training_research",
+      "plate": "190",
+      "caption": "ARMY DOCTRINE RESEARCH",
+      "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-977c8c8c-bf4e-4214-a9cd-5801a1df294f.png",
+      "prompt": "Use case: style-transfer. Redraw the EDIT TARGET in vintage 1940s comic style, matching the STYLE REFERENCE. Expressive confident brush-and-pen black ink contours, varied line weights, chunky black shadows, economical crosshatching, warm aged ivory newsprint and subtle sepia. Draw people as convincing period comic-strip figures with natural anatomy, clear hands and faces; preserve their roles and scene intent. Preserve target composition and identifying objects while improving legibility and perspective. Wide 2:1 illustration, double-line rectangular border, separate lower caption strip with bold accurate text readable when reduced to 400x200. No speech balloons, logos, extra captions, Nazi symbols or recognizable real people. Input 1 is EDIT TARGET; Input 2 is STYLE REFERENCE only. Scene: Military instructor in plain uniform and cap at left points to a large upright tactical map board. The board has sparse terrain contour lines, three rectangular unit symbols with crossed diagonals near bottom and several large directional arrows pointing toward upper right. One person, clear period military classroom diagram, no extra lettering. Exact footer: 'PLATE 190' at left and 'ARMY DOCTRINE RESEARCH' centered."
+    }
+  ]
+}

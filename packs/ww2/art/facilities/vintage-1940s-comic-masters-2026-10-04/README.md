@@ -1,6 +1,6 @@
-# WWII facility Joe Palooka redraws
+# WWII facility vintage 1940s comic style redraws
 
-Created 2026-10-04 with the built-in image_gen tool at the user's request. All 15 root facility PNGs were backed up, redrawn in the style of Joe Palooka by Ham Fisher, and replaced at their existing 400 x 200 size. The previously generated construction battalion plate serves as the shared style reference and its replacement.
+Created 2026-10-04 with the built-in image_gen tool at the user's request. All 15 root facility PNGs were backed up, redrawn in vintage 1940s comic style, and replaced at their existing 400 x 200 size. The previously generated construction battalion plate serves as the shared style reference and its replacement.
 
 - Original PNGs: ../backup-originals-2026-10-04/ (SHA-256 hashes in manifest.json).
 - Full-resolution generated masters: this directory, under the original filenames.

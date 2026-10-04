@@ -1,0 +1,114 @@
+{
+  "date": "2026-10-04",
+  "tool": "built-in image_gen",
+  "styleReference": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-599c52e6-cb15-4faa-8c25-97767dc90625.png",
+  "outputs": [
+    {
+      "name": "advanced_construction_yard",
+      "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-599c52e6-cb15-4faa-8c25-97767dc90625.png",
+      "plate": "7",
+      "caption": "CONSTRUCTION BATTALION",
+      "prompt": "Original single-image redraw: vintage 1940s comic style; bold brush-and-pen black inks, chunky shadows, crosshatching and warm aged ivory newspaper texture. Preserve factory, twin smokestacks, gantry crane, 2:1 plate frame and exact PLATE 7 / CONSTRUCTION BATTALION footer."
+    },
+    {
+      "name": "advanced_shipyard",
+      "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-e9584fb6-8107-4384-a17d-d0f8f97b9836.png",
+      "plate": "5",
+      "caption": "FLEET BASE",
+      "prompt": "Redraw the EDIT TARGET in vintage 1940s comic style. Match the STYLE REFERENCE's bold confident brush-and-pen black ink contours, varied line weights, chunky black shadows, economical crosshatching, lively hand-drawn detail and warm aged ivory newsprint. Wide 2:1 panel with double-line rectangular border and separate lower caption strip. Preserve the target's subjects, layout and identifying features. No added people, speech balloons, logos, insignia, extra words or Nazi symbols. Make text accurate, bold, clear and readable when reduced to 400x200. Keep caption strip height like the target. Input 1 is EDIT TARGET; Input 2 is STYLE REFERENCE only. Scene: A dockside lattice crane at left and a military ship afloat to the right; ship has deck turrets, bridge, mast and smokestack. Exact footer: 'PLATE 5' at left and 'FLEET BASE' centered."
+    },
+    {
+      "name": "advanced_training_facility",
+      "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-b4e578b1-f986-4f3d-844b-9b31e939af73.png",
+      "plate": "6",
+      "caption": "ARMY TRAINING CENTRE",
+      "prompt": "Redraw the EDIT TARGET in vintage 1940s comic style. Match the STYLE REFERENCE's bold confident brush-and-pen black ink contours, varied line weights, chunky black shadows, economical crosshatching, lively hand-drawn detail and warm aged ivory newsprint. Wide 2:1 panel with double-line rectangular border and separate lower caption strip. Preserve the target's subjects, layout and identifying features. No added people, speech balloons, logos, insignia, extra words or Nazi symbols. Make text accurate, bold, clear and readable when reduced to 400x200. Keep caption strip height like the target. Input 1 is EDIT TARGET; Input 2 is STYLE REFERENCE only. Scene: A two-story training academy with central clock tower at left; three shooting targets; tall lattice parachute training tower and suspended parachute at right. Exact footer: 'PLATE 6' at left and 'ARMY TRAINING CENTRE' centered."
+    },
+    {
+      "name": "coastal_battery",
+      "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-bed72c08-6b01-4fb7-9cd6-a6af0255f355.png",
+      "plate": "11",
+      "caption": "COASTAL BATTERY",
+      "prompt": "Redraw the EDIT TARGET in vintage 1940s comic style. Match the STYLE REFERENCE's bold confident brush-and-pen black ink contours, varied line weights, chunky black shadows, economical crosshatching, lively hand-drawn detail and warm aged ivory newsprint. Wide 2:1 panel with double-line rectangular border and separate lower caption strip. Preserve the target's subjects, layout and identifying features. No added people, speech balloons, logos, insignia, extra words or Nazi symbols. Make text accurate, bold, clear and readable when reduced to 400x200. Keep caption strip height like the target. Input 1 is EDIT TARGET; Input 2 is STYLE REFERENCE only. Scene: A single-barrel armored gun emplacement atop a coastal cliff, small observation bunker and plain flag at left, sea waves at right. Exact footer: 'PLATE 11' at left and 'COASTAL BATTERY' centered."
+    },
+    {
+      "name": "construction_yard",
+      "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-8b0ef0e9-3946-49f9-97c3-ee80b5c72a0b.png",
+      "plate": "4",
+      "caption": "ENGINEER CORPS",
+      "prompt": "Redraw the EDIT TARGET in vintage 1940s comic style. Match the STYLE REFERENCE's bold confident brush-and-pen black ink contours, varied line weights, chunky black shadows, economical crosshatching, lively hand-drawn detail and warm aged ivory newsprint. Wide 2:1 panel with double-line rectangular border and separate lower caption strip. Preserve the target's subjects, layout and identifying features. No added people, speech balloons, logos, insignia, extra words or Nazi symbols. Make text accurate, bold, clear and readable when reduced to 400x200. Keep caption strip height like the target. Input 1 is EDIT TARGET; Input 2 is STYLE REFERENCE only. Scene: A workshop shed at left, lattice derrick crane suspending a beam centrally, a short lattice bridge across water at right. Exact footer: 'PLATE 4' at left and 'ENGINEER CORPS' centered."
+    },
+    {
+      "name": "fortifications",
+      "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-0b0dea2e-27b5-44b3-99a4-6133beab5238.png",
+      "plate": "12",
+      "caption": "FORTIFICATIONS",
+      "prompt": "Redraw the EDIT TARGET in vintage 1940s comic style. Match the STYLE REFERENCE's bold confident brush-and-pen black ink contours, varied line weights, chunky black shadows, economical crosshatching, lively hand-drawn detail and warm aged ivory newsprint. Wide 2:1 panel with double-line rectangular border and separate lower caption strip. Preserve the target's subjects, layout and identifying features. No added people, speech balloons, logos, insignia, extra words or Nazi symbols. Make text accurate, bold, clear and readable when reduced to 400x200. Keep caption strip height like the target. Input 1 is EDIT TARGET; Input 2 is STYLE REFERENCE only. Scene: Concrete defensive bunker with two firing slits in the center, dragon's teeth obstacles at left, barbed wire obstacles at right. Exact footer: 'PLATE 12' at left and 'FORTIFICATIONS' centered."
+    },
+    {
+      "name": "fortress_line",
+      "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-e6673531-eca0-43ad-985f-b2c12106ec1b.png",
+      "plate": "15",
+      "caption": "FORTRESS LINE",
+      "prompt": "Redraw the EDIT TARGET in vintage 1940s comic style. Match the STYLE REFERENCE's bold confident brush-and-pen black ink contours, varied line weights, chunky black shadows, economical crosshatching, lively hand-drawn detail and warm aged ivory newsprint. Wide 2:1 panel with double-line rectangular border and separate lower caption strip. Preserve the target's subjects, layout and identifying features. No added people, speech balloons, logos, insignia, extra words or Nazi symbols. Make text accurate, bold, clear and readable when reduced to 400x200. Keep caption strip height like the target. Input 1 is EDIT TARGET; Input 2 is STYLE REFERENCE only. Scene: CUTAWAY cross-section: gun turret on top of an underground bunker with stairs, vertical access shaft and long horizontal underground tunnel, small observation cupola, defensive obstacles at right. Preserve clear underground cutaway. Exact footer: 'PLATE 15' at left and 'FORTRESS LINE' centered."
+    },
+    {
+      "name": "hardened_airbase",
+      "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-3cd02c7b-3537-45cf-ac7a-860514a20e62.png",
+      "plate": "13",
+      "caption": "HARDENED AIRBASE",
+      "prompt": "Redraw the EDIT TARGET in vintage 1940s comic style. Match the STYLE REFERENCE's bold confident brush-and-pen black ink contours, varied line weights, chunky black shadows, economical crosshatching, lively hand-drawn detail and warm aged ivory newsprint. Wide 2:1 panel with double-line rectangular border and separate lower caption strip. Preserve the target's subjects, layout and identifying features. No added people, speech balloons, logos, insignia, extra words or Nazi symbols. Make text accurate, bold, clear and readable when reduced to 400x200. Keep caption strip height like the target. Input 1 is EDIT TARGET; Input 2 is STYLE REFERENCE only. Scene: Arched reinforced aircraft hangar at left, air traffic control tower centrally, propeller military airplane on the runway at right and plain windsock. Exact footer: 'PLATE 13' at left and 'HARDENED AIRBASE' centered."
+    },
+    {
+      "name": "headquarters",
+      "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-422feed5-9f50-460b-b656-6e0891205135.png",
+      "plate": "1",
+      "caption": "GENERAL HEADQUARTERS",
+      "prompt": "Redraw the EDIT TARGET in vintage 1940s comic style. Match the STYLE REFERENCE's bold confident brush-and-pen black ink contours, varied line weights, chunky black shadows, economical crosshatching, lively hand-drawn detail and warm aged ivory newsprint. Wide 2:1 panel with double-line rectangular border and separate lower caption strip. Preserve the target's subjects, layout and identifying features. No added people, speech balloons, logos, insignia, extra words or Nazi symbols. Make text accurate, bold, clear and readable when reduced to 400x200. Keep caption strip height like the target. Input 1 is EDIT TARGET; Input 2 is STYLE REFERENCE only. Scene: Symmetrical two-story military headquarters building with central classical portico, pillars, triangular pediment, plain flag, two wings and round trees flanking. Exact footer: 'PLATE 1' at left and 'GENERAL HEADQUARTERS' centered."
+    },
+    {
+      "name": "heavy_coastal_battery",
+      "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-5e602288-e822-4505-b4ff-4c0fad74dd76.png",
+      "plate": "14",
+      "caption": "HEAVY COASTAL BATTERY",
+      "prompt": "Redraw the EDIT TARGET in vintage 1940s comic style. Match the STYLE REFERENCE's bold confident brush-and-pen black ink contours, varied line weights, chunky black shadows, economical crosshatching, lively hand-drawn detail and warm aged ivory newsprint. Wide 2:1 panel with double-line rectangular border and separate lower caption strip. Preserve the target's subjects, layout and identifying features. No added people, speech balloons, logos, insignia, extra words or Nazi symbols. Make text accurate, bold, clear and readable when reduced to 400x200. Keep caption strip height like the target. Input 1 is EDIT TARGET; Input 2 is STYLE REFERENCE only. Scene: Large twin-barrel armored coastal gun turret atop a cliff overlooking sea at right, lattice observation tower at left. Exact footer: 'PLATE 14' at left and 'HEAVY COASTAL BATTERY' centered."
+    },
+    {
+      "name": "mine",
+      "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-542308c9-5b47-41e2-90a3-d8805e42c0c5.png",
+      "plate": "8",
+      "caption": "MINE",
+      "prompt": "Redraw the EDIT TARGET in vintage 1940s comic style. Match the STYLE REFERENCE's bold confident brush-and-pen black ink contours, varied line weights, chunky black shadows, economical crosshatching, lively hand-drawn detail and warm aged ivory newsprint. Wide 2:1 panel with double-line rectangular border and separate lower caption strip. Preserve the target's subjects, layout and identifying features. No added people, speech balloons, logos, insignia, extra words or Nazi symbols. Make text accurate, bold, clear and readable when reduced to 400x200. Keep caption strip height like the target. Input 1 is EDIT TARGET; Input 2 is STYLE REFERENCE only. Scene: Spoil heap at left, tall lattice mine headframe with wheel centrally, mine building and tall smoking chimney, small ore cart at right. Exact footer: 'PLATE 8' at left and 'MINE' centered."
+    },
+    {
+      "name": "minefield",
+      "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-0fea7202-b79d-40f5-a411-a4bff54c449b.png",
+      "plate": "10",
+      "caption": "MINEFIELD",
+      "prompt": "Redraw the EDIT TARGET in vintage 1940s comic style. Match the STYLE REFERENCE's bold confident brush-and-pen black ink contours, varied line weights, chunky black shadows, economical crosshatching, lively hand-drawn detail and warm aged ivory newsprint. Wide 2:1 panel with double-line rectangular border and separate lower caption strip. Preserve the target's subjects, layout and identifying features. No added people, speech balloons, logos, insignia, extra words or Nazi symbols. Make text accurate, bold, clear and readable when reduced to 400x200. Keep caption strip height like the target. Input 1 is EDIT TARGET; Input 2 is STYLE REFERENCE only. Scene: UNDERWATER cross-section of four spherical spiked naval mines at differing depths, each tethered by a vertical line to an anchor block on the seabed. Waves and seabed. Preserve all four mines and their tethers. Exact footer: 'PLATE 10' at left and 'MINEFIELD' centered."
+    },
+    {
+      "name": "refinery",
+      "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-08f967af-3241-4dd5-bc00-5956d6a6c265.png",
+      "plate": "9",
+      "caption": "REFINERY",
+      "prompt": "Redraw the EDIT TARGET in vintage 1940s comic style. Match the STYLE REFERENCE's bold confident brush-and-pen black ink contours, varied line weights, chunky black shadows, economical crosshatching, lively hand-drawn detail and warm aged ivory newsprint. Wide 2:1 panel with double-line rectangular border and separate lower caption strip. Preserve the target's subjects, layout and identifying features. No added people, speech balloons, logos, insignia, extra words or Nazi symbols. Make text accurate, bold, clear and readable when reduced to 400x200. Keep caption strip height like the target. Input 1 is EDIT TARGET; Input 2 is STYLE REFERENCE only. Scene: Industrial oil refinery with two tall distillation columns at left, two cylindrical storage tanks centrally, one spherical tank on legs at right, connecting pipes. Exact footer: 'PLATE 9' at left and 'REFINERY' centered."
+    },
+    {
+      "name": "shipyard",
+      "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-38950134-f12b-45b7-9023-9d89c35bd773.png",
+      "plate": "2",
+      "caption": "NAVAL YARD",
+      "prompt": "Edit the provided NAVAL YARD illustration. Keep its vintage 1940s comic style vintage newspaper-comic brush-and-pen style, warm aged ivory paper, bold black contours, crosshatching, wide 2:1 panel, double border, lattice gantry crane overhead, small workshop at left, shoreline at right, and EXACT footer text 'PLATE 2' and 'NAVAL YARD'. REDRAW THE SHIP COMPLETELY: the current hull looks like a giant flat tub with an unnatural dividing line. Replace it with a convincingly drawn 1940s steel naval vessel under construction on a shipyard slipway, viewed broadside with a slight three-quarter angle showing the deck's width. Bow on RIGHT, stern on LEFT. Long low proportionate continuous curved steel hull with elegant raked pointed bow, rounded bilges leading to a straight keel, believable tapered stern and a visible rudder near stern. Clear sheer line, readable horizontal steel plating seams following the hull curves, no giant vertical stripe dividing the hull into two mismatched halves. Show an unfinished but recognizable ship: exposed upper deck, modest partially built bridge/deckhouse and framework, no sails, no flags or insignia, no people. Ship rests on properly spaced timber keel blocks and angled side braces on a launch slipway leading toward water. The ship should fit comfortably beneath the crane and read instantly as a real ship being built, with coherent perspective and balanced proportions. Keep surrounding composition and typography as close to the original as possible.",
+      "revision": 2,
+      "reference": "D:\\Github\\faction-wars\\packs\\ww2\\art\\facilities\\vintage-1940s-comic-masters-2026-10-04\\revisions\\shipyard-v1\\shipyard-master.png"
+    },
+    {
+      "name": "training_facility",
+      "path": "C:\\Users\\tschmitz\\.codex\\generated_images\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\exec-ec309283-40ad-47cd-a890-a201227b4d8b.png",
+      "plate": "3",
+      "caption": "TRAINING DEPOT",
+      "prompt": "Redraw the EDIT TARGET in vintage 1940s comic style. Match the STYLE REFERENCE's bold confident brush-and-pen black ink contours, varied line weights, chunky black shadows, economical crosshatching, lively hand-drawn detail and warm aged ivory newsprint. Wide 2:1 panel with double-line rectangular border and separate lower caption strip. Preserve the target's subjects, layout and identifying features. No added people, speech balloons, logos, insignia, extra words or Nazi symbols. Make text accurate, bold, clear and readable when reduced to 400x200. Keep caption strip height like the target. Input 1 is EDIT TARGET; Input 2 is STYLE REFERENCE only. Scene: Three barracks huts at left, tall plain flagpole, obstacle course with vertical climbing wall and triangular climbing frame at right. Exact footer: 'PLATE 3' at left and 'TRAINING DEPOT' centered."
+    }
+  ]
+}

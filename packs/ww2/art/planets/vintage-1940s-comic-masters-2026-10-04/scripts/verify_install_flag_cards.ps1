@@ -17,7 +17,7 @@ public class CardVerify {
 '@ -ReferencedAssemblies @([System.Drawing.Bitmap].Assembly.Location,[System.Drawing.Color].Assembly.Location,[System.Reflection.Assembly]::Load('System.Private.Windows.GdiPlus').Location,[System.Reflection.Assembly]::Load('System.Private.Windows.Core').Location)
 $root='D:\Github\faction-wars\packs\ww2\art\planets'
 $backup=Join-Path $root 'backup-originals-2026-10-04'
-$master=Join-Path $root 'joe-palooka-masters-2026-10-04'
+$master=Join-Path $root 'vintage-1940s-comic-masters-2026-10-04'
 $originals=@(Get-Content -LiteralPath (Join-Path $backup 'manifest.json') -Raw|ConvertFrom-Json)
 foreach($row in $originals){
 if((Get-FileHash -LiteralPath (Join-Path $backup $row.name) -Algorithm SHA256).Hash -ne $row.sha256){throw ('Backup hash mismatch '+$row.name)}

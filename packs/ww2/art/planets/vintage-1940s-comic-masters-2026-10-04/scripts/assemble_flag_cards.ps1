@@ -2,7 +2,7 @@ $ErrorActionPreference='Stop'
 . 'C:\Users\tschmitz\.codex\visualizations\2026\10\04\01a1057c-8f88-73b2-a4a2-f23faa440ea7\flag_bounds.ps1' | Out-Null
 $taskRoot='C:\Users\tschmitz\.codex\visualizations\2026\10\04\01a1057c-8f88-73b2-a4a2-f23faa440ea7'
 $flagRoot='D:\Github\faction-wars\packs\ww2\art\planets'
-$masterRoot=Join-Path $flagRoot 'joe-palooka-masters-2026-10-04'
+$masterRoot=Join-Path $flagRoot 'vintage-1940s-comic-masters-2026-10-04'
 $sourceData=Get-Content -LiteralPath (Join-Path $masterRoot 'original-sources.json') -Raw | ConvertFrom-Json
 $rows=@(Get-ChildItem -LiteralPath $taskRoot -Filter 'flag-progress-*.json' -File|ForEach-Object {Get-Content -LiteralPath $_.FullName -Raw|ConvertFrom-Json})
 $assembled=@()

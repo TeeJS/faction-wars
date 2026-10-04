@@ -1,7 +1,7 @@
 # Character card redraws — 2026-10-04
 
 67 of 71 Encyclopedia cards were redrawn with the built-in AI image-generation
-tool in the requested Joe Palooka / Ham Fisher newspaper comic ink style.
+tool in the requested vintage 1940s comic style.
 Hitler, Himmler, Raeder and Leclerc were rejected by the image tool and remain
 unchanged; see `generation-failures.json`. No substitute image was installed.
 
@@ -32,8 +32,7 @@ in `../../PORTRAITS.md`, `../../../credits.json` and each generation record. The
 comic cards are adaptations of those credited sources. CC BY and CC BY-SA
 attribution remains in force; CC BY-SA adaptations are distributed under the
 same listed source licence. Source public-domain status is not a new claim about
-the legal status of AI-generated additions. This is generated artwork inspired
-by the requested comic style, not artwork authored by Ham Fisher.
+the legal status of AI-generated additions. These are AI-generated adaptations in vintage 1940s comic style.
 
 ## Review and restoration
 

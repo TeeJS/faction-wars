@@ -3,7 +3,7 @@
 ## Comic card adaptations (2026-10-04)
 
 The 400 x 200 Encyclopedia cards in `art/characters/` now contain 67 AI-redrawn
-portraits in the Joe Palooka / Ham Fisher newspaper comic ink style. Their original
+portraits in vintage 1940s comic style. Their original
 paper, faction stripe, ruled area, white photo borders and black corner mounts are
 retained; the replacement artwork is clipped into the existing portrait aperture.
 The redraws use the source photographs credited below, with balanced framing and
@@ -24,7 +24,7 @@ All 71 original cards are preserved byte-for-byte in
 `characters/backup-originals-2026-10-04/`, with SHA-256 hashes. Finished cards,
 1600 x 800 assembled masters, raw generations, prompts, source metadata, review
 contact sheets and rejection records are in
-`characters/joe-palooka-masters-2026-10-04/`. Both archive directories have
+`characters/vintage-1940s-comic-masters-2026-10-04/`. Both archive directories have
 `.gdignore` files so they are excluded from game imports and exports.
 
 **Regeneration:** `make_ww2_portraits.py` recreates the original photographic cards

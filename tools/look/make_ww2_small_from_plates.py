@@ -1,6 +1,6 @@
 """The WWII pack's small unit and facility pictures, cut from the installed
 Encyclopedia plates (TeeJ, 2026-10-04: the plates were redrawn by hand in the
-Joe Palooka style - packs/ww2/art/units/joe-palooka-masters-2026-10-04/README.md
+vintage 1940s comic style - packs/ww2/art/units/vintage-1940s-comic-masters-2026-10-04/README.md
 - and "update them in game"):
 
     packs/ww2/art/portraits/<kind>/<id>.png     122x50  portrait

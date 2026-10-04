@@ -1,6 +1,6 @@
 $ErrorActionPreference='Stop'
 Add-Type -AssemblyName System.Drawing
-$master='D:\Github\faction-wars\packs\ww2\art\planets\joe-palooka-masters-2026-10-04'
+$master='D:\Github\faction-wars\packs\ww2\art\planets\vintage-1940s-comic-masters-2026-10-04'
 $cards=@(Get-ChildItem -LiteralPath (Join-Path $master 'game-size') -Filter '*.png' -File|Sort-Object Name)
 for($start=0;$start -lt $cards.Count;$start+=15){
  $count=[Math]::Min(15,$cards.Count-$start)

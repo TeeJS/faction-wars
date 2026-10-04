@@ -1,6 +1,6 @@
-# WWII mission Joe Palooka redraws
+# WWII mission vintage 1940s comic style redraws
 
-Created 2026-10-04 with built-in image_gen at the user's request, following the approved WWII facility redraw direction. All 14 PNGs directly in art/missions were backed up, redrawn in the style of Joe Palooka by Ham Fisher, and replaced at their existing 400 x 200 size. Construction Battalion is the shared style reference.
+Created 2026-10-04 with built-in image_gen at the user's request, following the approved WWII facility redraw direction. All 14 PNGs directly in art/missions were backed up, redrawn in vintage 1940s comic style, and replaced at their existing 400 x 200 size. Construction Battalion is the shared style reference.
 
 - Original PNGs: ../backup-originals-2026-10-04/ (SHA-256 manifest.json).
 - Full-resolution generated masters: this directory, original filenames.

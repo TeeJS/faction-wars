@@ -2,7 +2,7 @@ $ErrorActionPreference='Stop'
 Add-Type -AssemblyName System.Drawing
 $taskRoot='C:\Users\tschmitz\.codex\visualizations\2026\10\04\01a1057c-8f88-73b2-a4a2-f23faa440ea7'
 $flagRoot='D:\Github\faction-wars\packs\ww2\art\planets'
-$master=Join-Path $flagRoot 'joe-palooka-masters-2026-10-04'
+$master=Join-Path $flagRoot 'vintage-1940s-comic-masters-2026-10-04'
 $proposalRoot=Join-Path $master '1939-proposals'
 New-Item -ItemType Directory -Path $proposalRoot -Force|Out-Null
 $blank=[System.Drawing.Image]::FromFile('C:\Users\tschmitz\.codex\generated_images\01a1057c-8f88-73b2-a4a2-f23faa440ea7\exec-9e109827-c7c1-4052-b8b1-21628dc7435f.png')
