@@ -1,0 +1,77 @@
+[
+  {
+    "name": "advanced_construction_yard.png",
+    "sha256": "45BBE2F4599B96BB895E88C4812B08B08D9AEC1555E507A4A725B3617AE4996F",
+    "bytes": 73971
+  },
+  {
+    "name": "advanced_shipyard.png",
+    "sha256": "2A733BCB065BEE60F1EDAEAF6124331E9E0988F25CB97D8A5C35DC4593781387",
+    "bytes": 80791
+  },
+  {
+    "name": "advanced_training_facility.png",
+    "sha256": "3AF306734F58D269AB22D0D2D024AEFA6F702146B530A537520053A489671D2C",
+    "bytes": 73860
+  },
+  {
+    "name": "coastal_battery.png",
+    "sha256": "EDC6D8685E36385D77F9C655810C8BBF3C8461AA50DB97ED3EDBB41CCDD28E9A",
+    "bytes": 77534
+  },
+  {
+    "name": "construction_yard.png",
+    "sha256": "6FB06741EF3D28BCC0C5B4FB585F06AC9171F005A1F012DDE73C132C1640D9FE",
+    "bytes": 78180
+  },
+  {
+    "name": "fortifications.png",
+    "sha256": "DB8887C27959F0BB035DAFBB96B4EFA443D1CED2D5197EC7F1D9FDDBEE8E1BC8",
+    "bytes": 78322
+  },
+  {
+    "name": "fortress_line.png",
+    "sha256": "8EC3C5CFB09BB825CE28882B33E6EE7572E82ED6171E4BFEE96360C7285A3A45",
+    "bytes": 77609
+  },
+  {
+    "name": "hardened_airbase.png",
+    "sha256": "88B3BF880FA2E0985189A94121D88251A3FD76250D0E6FDA8C0FBDD3255A4238",
+    "bytes": 78567
+  },
+  {
+    "name": "headquarters.png",
+    "sha256": "5D408D0AFBFFCE8DDFC35573EC021855751924BE70ECA0F55BD9ED65C4ADF32C",
+    "bytes": 69721
+  },
+  {
+    "name": "heavy_coastal_battery.png",
+    "sha256": "5DB8B6DDE23A75AFB6EEF47071E6FDBF03CCAFC687782230C4D3A09A507D4916",
+    "bytes": 77153
+  },
+  {
+    "name": "mine.png",
+    "sha256": "5A0307C24B1B0F7B2C456B66F8FD82F1015A0B45EC320665D52A8703074C7237",
+    "bytes": 84849
+  },
+  {
+    "name": "minefield.png",
+    "sha256": "9BD354BAC76597515761C7B8FA1D8226C86EE5E6D46B69C570BE012D62B0ED60",
+    "bytes": 90889
+  },
+  {
+    "name": "refinery.png",
+    "sha256": "9369D121EEB0822ED4363699BDF666391F64892B8FFB965FF1F1BFB50671960D",
+    "bytes": 74490
+  },
+  {
+    "name": "shipyard.png",
+    "sha256": "492FD25E5DC9DAE1974A546CEDF3AFDB5EF5335C2D02495E1E621DA4219E9C6B",
+    "bytes": 84157
+  },
+  {
+    "name": "training_facility.png",
+    "sha256": "A7278EC2CBF9EA11A7FE7E61848D8192F82D97F01E5E5E7B2D4F095A09D867D3",
+    "bytes": 72864
+  }
+]
