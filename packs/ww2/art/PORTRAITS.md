@@ -1,7 +1,40 @@
 # WWII personnel pictures: where each comes from
 
-Made by `tools/look/make_ww2_portraits.py` from `tools/look/ww2_portraits.json`;
-regenerate rather than edit. Each character's three pictures (SCHEMA.md
+## Comic card adaptations (2026-10-04)
+
+The 400 x 200 Encyclopedia cards in `art/characters/` now contain 67 AI-redrawn
+portraits in the Joe Palooka / Ham Fisher newspaper comic ink style. Their original
+paper, faction stripe, ruled area, white photo borders and black corner mounts are
+retained; the replacement artwork is clipped into the existing portrait aperture.
+The redraws use the source photographs credited below, with balanced framing and
+reconstructed shoulders where the original symbol-removal crop was tight. German
+uniforms and caps omit Nazi emblems, eagles, SS insignia and German decorations.
+All 67 final cards were visually reviewed for symbols, likeness and framing.
+
+Hitler, Himmler, Raeder and Leclerc remain the original photographic cards because
+the image-generation tool rejected their redraw requests. The separate 80 x 80
+portraits and 61 x 25 miniatures remain photographic for every character.
+
+Source author, attribution, licence and licence links below and in `../credits.json`
+continue to apply to the adaptations. CC BY-SA adaptations are distributed under
+the same listed source licence; the redraw does not remove attribution or
+ShareAlike obligations. No additional photographic source was substituted.
+
+All 71 original cards are preserved byte-for-byte in
+`characters/backup-originals-2026-10-04/`, with SHA-256 hashes. Finished cards,
+1600 x 800 assembled masters, raw generations, prompts, source metadata, review
+contact sheets and rejection records are in
+`characters/joe-palooka-masters-2026-10-04/`. Both archive directories have
+`.gdignore` files so they are excluded from game imports and exports.
+
+**Regeneration:** `make_ww2_portraits.py` recreates the original photographic cards
+and will overwrite these adaptations. After running it, restore the 67 finished
+cards from the archive's `game-size/` directory. The JSON source records and the
+crop table below document the original photographic pipeline.
+
+## Original photographic sources and pipeline
+
+Made by `tools/look/make_ww2_portraits.py` from `tools/look/ww2_portraits.json`. Each character's three pictures (SCHEMA.md
 section 14: `characters/<id>.png` 400x200, `portraits/characters/<id>.png`
 80x80, `miniatures/characters/<id>.png` 61x25) are cut from one photograph on
 Wikimedia Commons: public domain, CC0, CC BY or CC BY-SA only, checked on the

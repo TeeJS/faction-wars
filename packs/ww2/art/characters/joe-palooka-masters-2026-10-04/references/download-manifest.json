@@ -1,0 +1,385 @@
+[
+  {
+    "id": "hitler",
+    "path": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\character-reference-cache\\hitler.jpg",
+    "sha1": "5061e9e427ffd617f63638af96fb4ff311a8785e",
+    "status": "verified"
+  },
+  {
+    "id": "mussolini",
+    "path": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\character-reference-cache\\mussolini.jpg",
+    "sha1": "33040b918cd0400c6e68a2c6b0154c82f3c26021",
+    "status": "verified"
+  },
+  {
+    "id": "tojo",
+    "path": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\character-reference-cache\\tojo.jpg",
+    "sha1": "554c245d121c7aa26ffc4cfed0735a69f81f5d78",
+    "status": "verified"
+  },
+  {
+    "id": "goring",
+    "path": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\character-reference-cache\\goring.jpg",
+    "sha1": "de2cea82677562642573561736b07c53c186a1bd",
+    "status": "verified"
+  },
+  {
+    "id": "goebbels",
+    "path": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\character-reference-cache\\goebbels.jpg",
+    "sha1": "89d5837f01ae37221f572eeb703b20f5af8d6858",
+    "status": "verified"
+  },
+  {
+    "id": "himmler",
+    "path": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\character-reference-cache\\himmler.jpg",
+    "sha1": "cf6bd1a5080bcce166a8309a6cd5030da254c6e7",
+    "status": "verified"
+  },
+  {
+    "id": "canaris",
+    "path": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\character-reference-cache\\canaris.jpg",
+    "sha1": "53bd3c52dfbcedf145eb11ad2fcd0b7af2b29bcc",
+    "status": "verified"
+  },
+  {
+    "id": "speer",
+    "path": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\character-reference-cache\\speer.jpg",
+    "sha1": "0d596362de26df9dcf54e56d3687766d132e085b",
+    "status": "verified"
+  },
+  {
+    "id": "rommel",
+    "path": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\character-reference-cache\\rommel.jpg",
+    "sha1": "f303333c71d550d6a1fe7fa292f3023be37ca11e",
+    "status": "verified"
+  },
+  {
+    "id": "guderian",
+    "path": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\character-reference-cache\\guderian.jpg",
+    "sha1": "15136c837418981a0de41cffd0acd1a56e472886",
+    "status": "verified"
+  },
+  {
+    "id": "manstein",
+    "path": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\character-reference-cache\\manstein.jpg",
+    "sha1": "ebf0871e5c291090c40dfc796887a88cf39645cc",
+    "status": "verified"
+  },
+  {
+    "id": "kesselring",
+    "path": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\character-reference-cache\\kesselring.jpg",
+    "sha1": "715e119c86d10063e737e8d4463719abcf137f79",
+    "status": "verified"
+  },
+  {
+    "id": "donitz",
+    "path": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\character-reference-cache\\donitz.jpg",
+    "sha1": "7091f0d89889c0592a15d62f71d38639dcb007e7",
+    "status": "verified"
+  },
+  {
+    "id": "raeder",
+    "path": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\character-reference-cache\\raeder.jpg",
+    "sha1": "51d4c2f4d3a4b6545ed7f762f7a0c04a81672ba0",
+    "status": "verified"
+  },
+  {
+    "id": "skorzeny",
+    "path": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\character-reference-cache\\skorzeny.jpg",
+    "sha1": "8507ca991cf1c06b81942a2f5c56e89854789732",
+    "status": "verified"
+  },
+  {
+    "id": "yamamoto",
+    "path": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\character-reference-cache\\yamamoto.jpg",
+    "sha1": "09b06c35f460ffe76c4cfcdfc51d09975ed847d5",
+    "status": "verified"
+  },
+  {
+    "id": "nagumo",
+    "path": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\character-reference-cache\\nagumo.jpg",
+    "sha1": "6166d1495baa9697246c19ad32d1c863f98b7a20",
+    "status": "verified"
+  },
+  {
+    "id": "yamashita",
+    "path": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\character-reference-cache\\yamashita.jpg",
+    "sha1": "a378811c09b4bf8b1fc09eabb60ec762c343e732",
+    "status": "verified"
+  },
+  {
+    "id": "graziani",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "ciano",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "churchill",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "roosevelt",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "stalin",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "chiang_kai_shek",
+    "path": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\character-reference-cache\\chiang_kai_shek.jpg",
+    "sha1": "e13cbd09932ac957c3cee800f3920a22c3ee4707",
+    "status": "verified"
+  },
+  {
+    "id": "de_gaulle",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "eisenhower",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "montgomery",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "patton",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "zhukov",
+    "path": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\character-reference-cache\\zhukov.jpg",
+    "sha1": "7da11d378f8bb3f809d17a1f4f7ca98f7db39471",
+    "status": "verified"
+  },
+  {
+    "id": "macarthur",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "nimitz",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "halsey",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "cunningham",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "alanbrooke",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "dowding",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "mountbatten",
+    "path": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\character-reference-cache\\mountbatten.jpg",
+    "sha1": "cc21583341fc2724ac28962553fd85b4cea7314f",
+    "status": "verified"
+  },
+  {
+    "id": "slim",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "bradley",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "konev",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "donovan",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "turing",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "oppenheimer",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "stilwell",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "leclerc",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "model",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "rundstedt",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "student",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "galland",
+    "path": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\character-reference-cache\\galland.jpg",
+    "sha1": "986eecadd3bd2f3cadc3a7fc778063393ddd26a6",
+    "status": "verified"
+  },
+  {
+    "id": "lutjens",
+    "path": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\character-reference-cache\\lutjens.jpg",
+    "sha1": "aa192b95eaf76910b1ed1f535985391923542bdb",
+    "status": "verified"
+  },
+  {
+    "id": "ozawa",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "homma",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "balbo",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "messe",
+    "path": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\character-reference-cache\\messe.jpg",
+    "sha1": "54c8d401369a6d475b53489a48967a51ba5b8d6d",
+    "status": "verified"
+  },
+  {
+    "id": "kurusu",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "marshall",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "king",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "arnold",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "harris",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "tedder",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "wavell",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "auchinleck",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "rokossovsky",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "vasilevsky",
+    "path": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\character-reference-cache\\vasilevsky.jpg",
+    "sha1": "24edff5766a094e6fb3c38ae74bc628024dbc521",
+    "status": "verified"
+  },
+  {
+    "id": "chuikov",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "spruance",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "clark",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "juin",
+    "path": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\character-reference-cache\\juin.jpg",
+    "sha1": "ec5a3fddbb14c351fbbfa5b089e5415e46669d09",
+    "status": "verified"
+  },
+  {
+    "id": "wingate",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "chennault",
+    "path": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\character-reference-cache\\chennault.jpg",
+    "sha1": "9db293aeab0a509771516bbb803fc9460896f042",
+    "status": "verified"
+  },
+  {
+    "id": "zhu_de",
+    "status": "failed",
+    "error": "HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)"
+  },
+  {
+    "id": "menzies",
+    "path": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\character-reference-cache\\menzies.jpg",
+    "sha1": "e8fcb69289ce118dbc7b353442e9f3245247661d",
+    "status": "verified"
+  }
+]

@@ -1,0 +1,1820 @@
+{
+ "_about": "The WWII pack's personnel pictures (tools/look/make_ww2_portraits.py): per character, the Wikimedia Commons file its picture is cut from - the file's page, its original's address and SHA-1 as Commons publishes them, its licence and author - and the crop, [cx, cy, side]: the square's centre as fractions of the picture's width and height, its side as a fraction of the height. Every crop keeps clear of the swastika and the Iron Cross: no picture shows either (TeeJ, 2026-09-30: an eagle may show, the swastika never). A character with `generic` gets the drawn stand-in, for the reason given.",
+ "people": {
+  "hitler": {
+   "name": "Adolf Hitler",
+   "side": "axis",
+   "file": "Adolf Hitler cropped restored 3x4.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Adolf_Hitler_cropped_restored_3x4.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/1/16/Adolf_Hitler_cropped_restored_3x4.jpg",
+   "sha1": "5061e9e427ffd617f63638af96fb4ff311a8785e",
+   "size": [
+    1727,
+    2301
+   ],
+   "licence": "CC BY-SA 3.0 de",
+   "licence_url": "https://creativecommons.org/licenses/by-sa/3.0/de/deed.en",
+   "licence_basis": [
+    "Cc-by-sa-3.0-de"
+   ],
+   "author": "Unknown author",
+   "attribution": "Bundesarchiv, Bild 183-S33882 / CC BY-SA 3.0 DE",
+   "date": "20 April 1937",
+   "crop": [
+    0.52,
+    0.4389,
+    1.0293,
+    0.88
+   ]
+  },
+  "mussolini": {
+   "name": "Benito Mussolini",
+   "side": "axis",
+   "file": "Mussolini mezzobusto.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Mussolini_mezzobusto.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/8/8a/Mussolini_mezzobusto.jpg",
+   "sha1": "33040b918cd0400c6e68a2c6b0154c82f3c26021",
+   "size": [
+    958,
+    1297
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Italia",
+    "PD-1996"
+   ],
+   "author": "Unknown",
+   "attribution": "",
+   "date": "10 January 2009 (original upload date)",
+   "crop": [
+    0.4449,
+    0.2838,
+    0.5737
+   ]
+  },
+  "tojo": {
+   "name": "Hideki Tojo",
+   "side": "axis",
+   "file": "Hideki Tojo.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Hideki_Tojo.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/f/f0/Hideki_Tojo.jpg",
+   "sha1": "554c245d121c7aa26ffc4cfed0735a69f81f5d78",
+   "size": [
+    480,
+    613
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-USGov-Military-Army"
+   ],
+   "author": "Unknown",
+   "attribution": "",
+   "date": "",
+   "crop": [
+    0.5217,
+    0.2983,
+    0.695
+   ]
+  },
+  "goring": {
+   "name": "Hermann Göring",
+   "side": "axis",
+   "file": "Hermann Göring - Röhr.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Hermann_G%C3%B6ring_-_R%C3%B6hr.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/2/22/Hermann_G%C3%B6ring_-_R%C3%B6hr.jpg",
+   "sha1": "de2cea82677562642573561736b07c53c186a1bd",
+   "size": [
+    2519,
+    3499
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Poland"
+   ],
+   "author": "Robert Röhr",
+   "attribution": "",
+   "date": "Taken on 6 January 1943[1][2]",
+   "crop": [
+    0.4856,
+    0.3279,
+    0.7774,
+    0.6
+   ],
+   "note": "Cut off above his collar (the Grand Cross of the Iron Cross at his neck, the eagles on his collar tabs) and faded out below like a studio print."
+  },
+  "goebbels": {
+   "name": "Joseph Goebbels",
+   "side": "axis",
+   "file": "Bundesarchiv Bild 146-1968-101-20A, Joseph Goebbels.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Bundesarchiv_Bild_146-1968-101-20A,_Joseph_Goebbels.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/3/35/Bundesarchiv_Bild_146-1968-101-20A%2C_Joseph_Goebbels.jpg",
+   "sha1": "89d5837f01ae37221f572eeb703b20f5af8d6858",
+   "size": [
+    572,
+    768
+   ],
+   "licence": "CC BY-SA 3.0 de",
+   "licence_url": "https://creativecommons.org/licenses/by-sa/3.0/de/deed.en",
+   "licence_basis": [
+    "Cc-by-sa-3.0-de"
+   ],
+   "author": "Heinrich Hoffmann",
+   "attribution": "Bundesarchiv, Bild 146-1968-101-20A / Heinrich Hoffmann / CC-BY-SA 3.0",
+   "date": "1933[1]",
+   "crop": [
+    0.4806,
+    0.3785,
+    0.8531
+   ]
+  },
+  "himmler": {
+   "name": "Heinrich Himmler",
+   "side": "axis",
+   "file": "Bundesarchiv Bild 183-S72707, Heinrich Himmler.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Bundesarchiv_Bild_183-S72707,_Heinrich_Himmler.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/7/79/Bundesarchiv_Bild_183-S72707%2C_Heinrich_Himmler.jpg",
+   "sha1": "cf6bd1a5080bcce166a8309a6cd5030da254c6e7",
+   "size": [
+    544,
+    796
+   ],
+   "licence": "CC BY-SA 3.0 de",
+   "licence_url": "https://creativecommons.org/licenses/by-sa/3.0/de/deed.en",
+   "licence_basis": [
+    "Cc-by-sa-3.0-de"
+   ],
+   "author": "Friedrich Franz Bauer",
+   "attribution": "Bundesarchiv, Bild 183-S72707 / CC-BY-SA 3.0",
+   "date": "1942",
+   "crop": [
+    0.5377,
+    0.3287,
+    0.6895,
+    0.57
+   ],
+   "note": "Cut off at the top of his collar tabs, well above the swastika lower in the photograph, and faded out below."
+  },
+  "canaris": {
+   "name": "Wilhelm Canaris",
+   "side": "axis",
+   "file": "Bundesarchiv Bild 146-1979-013-43, Wilhelm Canaris.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Bundesarchiv_Bild_146-1979-013-43,_Wilhelm_Canaris.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/c/c5/Bundesarchiv_Bild_146-1979-013-43%2C_Wilhelm_Canaris.jpg",
+   "sha1": "53bd3c52dfbcedf145eb11ad2fcd0b7af2b29bcc",
+   "size": [
+    538,
+    793
+   ],
+   "licence": "CC BY-SA 3.0 de",
+   "licence_url": "https://creativecommons.org/licenses/by-sa/3.0/de/deed.en",
+   "licence_basis": [
+    "Cc-by-sa-3.0-de"
+   ],
+   "author": "Unknown",
+   "attribution": "Bundesarchiv, Bild 146-1979-013-43 / CC-BY-SA 3.0",
+   "date": "1940",
+   "crop": [
+    0.5074,
+    0.3959,
+    0.9548,
+    0.8
+   ]
+  },
+  "speer": {
+   "name": "Albert Speer",
+   "side": "axis",
+   "file": "Bundesarchiv Bild 146II-277, Albert Speer.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Bundesarchiv_Bild_146II-277,_Albert_Speer.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/8/8c/Bundesarchiv_Bild_146II-277%2C_Albert_Speer.jpg",
+   "sha1": "0d596362de26df9dcf54e56d3687766d132e085b",
+   "size": [
+    584,
+    794
+   ],
+   "licence": "CC BY-SA 3.0 de",
+   "licence_url": "https://creativecommons.org/licenses/by-sa/3.0/de/deed.en",
+   "licence_basis": [
+    "Cc-by-sa-3.0-de"
+   ],
+   "author": "Binder (maybe Atelier Binder after Alexander Binders death in 1929)",
+   "attribution": "Bundesarchiv, Bild 146II-277 / Binder / CC-BY-SA 3.0",
+   "date": "1933",
+   "crop": [
+    0.4759,
+    0.4232,
+    1.0002,
+    0.88
+   ]
+  },
+  "rommel": {
+   "name": "Erwin Rommel",
+   "side": "axis",
+   "file": "Erwin-Rommel-1941 (2).jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Erwin-Rommel-1941_(2).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/3/3d/Erwin-Rommel-1941_%282%29.jpg",
+   "sha1": "f303333c71d550d6a1fe7fa292f3023be37ca11e",
+   "size": [
+    1205,
+    1531
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-US-alien property"
+   ],
+   "author": "Unknown author",
+   "attribution": "",
+   "date": "1941-07-31",
+   "crop": [
+    0.4246,
+    0.3546,
+    0.844,
+    0.65
+   ],
+   "note": "Cut off above his collar, the Knight's Cross at his neck and the eagle on his breast, and faded out below."
+  },
+  "guderian": {
+   "name": "Heinz Guderian",
+   "side": "axis",
+   "file": "Heinz Guderian portrait.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Heinz_Guderian_portrait.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/f/fe/Heinz_Guderian_portrait.jpg",
+   "sha1": "15136c837418981a0de41cffd0acd1a56e472886",
+   "size": [
+    2404,
+    3504
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Poland"
+   ],
+   "author": "Unknown author",
+   "attribution": "",
+   "date": "1941-07",
+   "crop": [
+    0.5101,
+    0.3365,
+    0.6958,
+    0.58
+   ],
+   "note": "Cut off above the Knight's Cross at his neck and the eagle on his breast, and faded out below; his collar's general's embroidery stays."
+  },
+  "manstein": {
+   "name": "Erich von Manstein",
+   "side": "axis",
+   "file": "Bundesarchiv Bild 183-H01757, Erich von Manstein.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Bundesarchiv_Bild_183-H01757,_Erich_von_Manstein.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/5/5b/Bundesarchiv_Bild_183-H01757%2C_Erich_von_Manstein.jpg",
+   "sha1": "ebf0871e5c291090c40dfc796887a88cf39645cc",
+   "size": [
+    588,
+    797
+   ],
+   "licence": "CC BY-SA 3.0 de",
+   "licence_url": "https://creativecommons.org/licenses/by-sa/3.0/de/deed.en",
+   "licence_basis": [
+    "Cc-by-sa-3.0-de"
+   ],
+   "author": "Unknown",
+   "attribution": "Bundesarchiv, Bild 183-H01757 / CC-BY-SA 3.0",
+   "date": "1938",
+   "crop": [
+    0.5443,
+    0.4156,
+    0.9606,
+    0.8
+   ]
+  },
+  "kesselring": {
+   "name": "Albert Kesselring",
+   "side": "axis",
+   "file": "Albert Kesselring portrait.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Albert_Kesselring_portrait.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Albert_Kesselring_portrait.jpg",
+   "sha1": "715e119c86d10063e737e8d4463719abcf137f79",
+   "size": [
+    2036,
+    3520
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Poland"
+   ],
+   "author": "Unknown author",
+   "attribution": "",
+   "date": "Unknown date",
+   "crop": [
+    0.4572,
+    0.4203,
+    0.8689,
+    0.62
+   ],
+   "note": "Cut off above his collar and the Knight's Cross at his neck, and faded out below and at the sides (the photograph is narrow)."
+  },
+  "donitz": {
+   "name": "Karl Dönitz",
+   "side": "axis",
+   "file": "Bundesarchiv Bild 146-1976-127-06A, Karl Dönitz (cropped)(3) (cropped).jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Bundesarchiv_Bild_146-1976-127-06A,_Karl_D%C3%B6nitz_(cropped)(3)_(cropped).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/8/82/Bundesarchiv_Bild_146-1976-127-06A%2C_Karl_D%C3%B6nitz_%28cropped%29%283%29_%28cropped%29.jpg",
+   "sha1": "7091f0d89889c0592a15d62f71d38639dcb007e7",
+   "size": [
+    351,
+    471
+   ],
+   "licence": "CC BY-SA 3.0 de",
+   "licence_url": "https://creativecommons.org/licenses/by-sa/3.0/de/deed.en",
+   "licence_basis": [
+    "Cc-by-sa-3.0-de"
+   ],
+   "author": "Unknown",
+   "attribution": "Bundesarchiv, Bild 146-1976-127-06A / CC-BY-SA 3.0",
+   "date": "April 1943",
+   "crop": [
+    0.4936,
+    0.2977,
+    0.6578,
+    0.49
+   ],
+   "note": "Cut off above his collar, the Knight's Cross at his neck and the eagle on his breast, and faded out below."
+  },
+  "raeder": {
+   "name": "Erich Raeder",
+   "side": "axis",
+   "file": "Langhammer - Erich Raeder 1936.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Langhammer_-_Erich_Raeder_1936.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/a/a5/Langhammer_-_Erich_Raeder_1936.jpg",
+   "sha1": "51d4c2f4d3a4b6545ed7f762f7a0c04a81672ba0",
+   "size": [
+    1613,
+    2151
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-scan"
+   ],
+   "author": "Franz Langhammer",
+   "attribution": "",
+   "date": "1936",
+   "crop": [
+    0.5795,
+    0.2812,
+    0.4584,
+    0.55
+   ]
+  },
+  "skorzeny": {
+   "name": "Otto Skorzeny",
+   "side": "axis",
+   "file": "Otto Skorzeny portait.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Otto_Skorzeny_portait.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/3/3a/Otto_Skorzeny_portait.jpg",
+   "sha1": "8507ca991cf1c06b81942a2f5c56e89854789732",
+   "size": [
+    2500,
+    3499
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Poland"
+   ],
+   "author": "Unknown author",
+   "attribution": "",
+   "date": "1943-09",
+   "crop": [
+    0.505,
+    0.365,
+    0.7364,
+    0.565
+   ],
+   "note": "Cut off above his collar tabs (the SS runes) and the Knight's Cross at his neck, and faded out below."
+  },
+  "yamamoto": {
+   "name": "Isoroku Yamamoto",
+   "side": "axis",
+   "file": "Yamamoto-Isoroku.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Yamamoto-Isoroku.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/4/48/Yamamoto-Isoroku.jpg",
+   "sha1": "09b06c35f460ffe76c4cfcdfc51d09975ed847d5",
+   "size": [
+    540,
+    720
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Japan-oldphoto"
+   ],
+   "author": "The Advance in Nippon 画報 躍進之日本 (Gaho Yakushin no Nihon)",
+   "attribution": "",
+   "date": "1 February 1942",
+   "crop": [
+    0.4935,
+    0.4715,
+    1.0575
+   ]
+  },
+  "nagumo": {
+   "name": "Chuichi Nagumo",
+   "side": "axis",
+   "file": "Chuichi Nagumo.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Chuichi_Nagumo.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/c/cc/Chuichi_Nagumo.jpg",
+   "sha1": "6166d1495baa9697246c19ad32d1c863f98b7a20",
+   "size": [
+    4592,
+    5784
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Japan-oldphoto"
+   ],
+   "author": "Unknown author",
+   "attribution": "",
+   "date": "",
+   "crop": [
+    0.4632,
+    0.3143,
+    0.5505
+   ]
+  },
+  "yamashita": {
+   "name": "Tomoyuki Yamashita",
+   "side": "axis",
+   "file": "Yamashita Tomoyuki.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Yamashita_Tomoyuki.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/f/f5/Yamashita_Tomoyuki.jpg",
+   "sha1": "a378811c09b4bf8b1fc09eabb60ec762c343e732",
+   "size": [
+    688,
+    974
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Japan"
+   ],
+   "author": "Unknown Japanese Army Photographer",
+   "attribution": "",
+   "date": "February 1943 - September 1945",
+   "crop": [
+    0.525,
+    0.2574,
+    0.4623
+   ]
+  },
+  "graziani": {
+   "name": "Rodolfo Graziani",
+   "side": "axis",
+   "file": "Rodolfo Graziani 1940 (Retouched).jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Rodolfo_Graziani_1940_(Retouched).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/2/28/Rodolfo_Graziani_1940_%28Retouched%29.jpg",
+   "sha1": "55463e98fce7352e592631cca9db65dc1065ff2f",
+   "size": [
+    553,
+    800
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-anon-70-EU"
+   ],
+   "author": "Unknown author",
+   "attribution": "",
+   "date": "1940-06",
+   "crop": [
+    0.4699,
+    0.2651,
+    0.611
+   ]
+  },
+  "ciano": {
+   "name": "Galeazzo Ciano",
+   "side": "axis",
+   "file": "Galeazzo Ciano 1936.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Galeazzo_Ciano_1936.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/f/fc/Galeazzo_Ciano_1936.jpg",
+   "sha1": "e8013b606fc4aa101c0f11e552d52afee7e68ec9",
+   "size": [
+    633,
+    892
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Italy"
+   ],
+   "author": "Atelier Binder",
+   "attribution": "",
+   "date": "2021-05-15",
+   "crop": [
+    0.5387,
+    0.4001,
+    0.9354
+   ]
+  },
+  "churchill": {
+   "name": "Winston Churchill",
+   "side": "allies",
+   "file": "Sir Winston Churchill - 19086236948 (restored).jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Sir_Winston_Churchill_-_19086236948_(restored).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/0/02/Sir_Winston_Churchill_-_19086236948_%28restored%29.jpg",
+   "sha1": "005c8e2c7b24a3bbd8d3c243e78cd17b16a0e50e",
+   "size": [
+    6036,
+    7504
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Canada",
+    "PD-US-1996",
+    "cc-by-2.0"
+   ],
+   "author": "Yousuf Karsh",
+   "attribution": "",
+   "date": "30 December 1941",
+   "crop": [
+    0.5069,
+    0.2627,
+    0.4069
+   ]
+  },
+  "roosevelt": {
+   "name": "Franklin D. Roosevelt",
+   "side": "allies",
+   "file": "FDR 1944 Color Portrait.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:FDR_1944_Color_Portrait.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/4/42/FDR_1944_Color_Portrait.jpg",
+   "sha1": "c70fde92ee31c9bb02a5df1153e9c6581cec8ab2",
+   "size": [
+    2754,
+    3969
+   ],
+   "licence": "CC BY 2.0",
+   "licence_url": "https://creativecommons.org/licenses/by/2.0",
+   "licence_basis": [
+    "cc-by-2.0"
+   ],
+   "author": "Leon Perskie",
+   "attribution": "",
+   "date": "1944-08-22",
+   "crop": [
+    0.4908,
+    0.3961,
+    0.6901
+   ]
+  },
+  "stalin": {
+   "name": "Joseph Stalin",
+   "side": "allies",
+   "file": "Joseph Stalin official portrait.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Joseph_Stalin_official_portrait.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/f/f7/Joseph_Stalin_official_portrait.jpg",
+   "sha1": "bc66dc681a268c66c599e641246f90563c01c686",
+   "size": [
+    2222,
+    3000
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Russia-1996",
+    "PD-in",
+    "Mil.ru"
+   ],
+   "author": "Ivan Shagin",
+   "attribution": "",
+   "date": "1945",
+   "crop": [
+    0.5209,
+    0.3821,
+    0.9066
+   ]
+  },
+  "chiang_kai_shek": {
+   "name": "Chiang Kai-shek",
+   "side": "allies",
+   "file": "Chiang Kai-shek（蔣中正）.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Chiang_Kai-shek%EF%BC%88%E8%94%A3%E4%B8%AD%E6%AD%A3%EF%BC%89.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/3/38/Chiang_Kai-shek%EF%BC%88%E8%94%A3%E4%B8%AD%E6%AD%A3%EF%BC%89.jpg",
+   "sha1": "e13cbd09932ac957c3cee800f3920a22c3ee4707",
+   "size": [
+    2517,
+    3331
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-China-1996"
+   ],
+   "author": "Unknown author",
+   "attribution": "",
+   "date": "circa October 1943",
+   "crop": [
+    0.4923,
+    0.1969,
+    0.3412
+   ]
+  },
+  "de_gaulle": {
+   "name": "Charles de Gaulle",
+   "side": "allies",
+   "file": "General Charles de Gaulle in 1945.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:General_Charles_de_Gaulle_in_1945.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/e/ea/General_Charles_de_Gaulle_in_1945.jpg",
+   "sha1": "3e317d8abedce04bc6f00bf75b3530f643d9c77c",
+   "size": [
+    750,
+    996
+   ],
+   "licence": "No restrictions",
+   "licence_url": "https://www.flickr.com/commons/usage/",
+   "licence_basis": [
+    "Flickr-no known copyright restrictions"
+   ],
+   "author": "The National Archives UK",
+   "attribution": "",
+   "date": "1945",
+   "crop": [
+    0.5065,
+    0.2613,
+    0.5794
+   ]
+  },
+  "eisenhower": {
+   "name": "Dwight D. Eisenhower",
+   "side": "allies",
+   "file": "Dwight D. Eisenhower, official photo portrait, May 29, 1959.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Dwight_D._Eisenhower,_official_photo_portrait,_May_29,_1959.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/6/63/Dwight_D._Eisenhower%2C_official_photo_portrait%2C_May_29%2C_1959.jpg",
+   "sha1": "3dbed688659ffdca6f538a8e8d94d7ef5b8a6b63",
+   "size": [
+    2782,
+    3474
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-USGov-POTUS"
+   ],
+   "author": "White House",
+   "attribution": "",
+   "date": "1959-05-29",
+   "crop": [
+    0.4907,
+    0.4229,
+    0.9376
+   ]
+  },
+  "montgomery": {
+   "name": "Bernard Montgomery",
+   "side": "allies",
+   "file": "General Sir Bernard Montgomery in England, 1943 TR1036.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:General_Sir_Bernard_Montgomery_in_England,_1943_TR1036.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/d/db/General_Sir_Bernard_Montgomery_in_England%2C_1943_TR1036.jpg",
+   "sha1": "62beeb1385a7fad6d0859eaa8e4daf7f6be699b0",
+   "size": [
+    3848,
+    4243
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Scan"
+   ],
+   "author": "Possibly Edward George William Malindine",
+   "attribution": "",
+   "date": "29 May 1943",
+   "crop": [
+    0.4335,
+    0.4015,
+    0.7805
+   ]
+  },
+  "patton": {
+   "name": "George S. Patton",
+   "side": "allies",
+   "file": "General George Patton by Robert F. Cranston, Lee Elkins, and Harry Warnecke, 1945, color carbro print, from the National Portrait Gallery - NPG-NPG 95 404Patton-000002.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:General_George_Patton_by_Robert_F._Cranston,_Lee_Elkins,_and_Harry_Warnecke,_1945,_color_carbro_print,_from_the_National_Portrait_Gallery_-_NPG-NPG_95_404Patton-000002.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/a/a0/General_George_Patton_by_Robert_F._Cranston%2C_Lee_Elkins%2C_and_Harry_Warnecke%2C_1945%2C_color_carbro_print%2C_from_the_National_Portrait_Gallery_-_NPG-NPG_95_404Patton-000002.jpg",
+   "sha1": "1ed64e91083a262dd06ee0abbc2144019e06ed62",
+   "size": [
+    3732,
+    4718
+   ],
+   "licence": "CC0",
+   "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+   "licence_basis": [
+    "cc-zero"
+   ],
+   "author": "Robert F. Cranston / Harry Warnecke",
+   "attribution": "",
+   "date": "1945",
+   "crop": [
+    0.4777,
+    0.3867,
+    0.7268
+   ]
+  },
+  "zhukov": {
+   "name": "Georgy Zhukov",
+   "side": "allies",
+   "file": "Zhukov-LIFE-1944-1945.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Zhukov-LIFE-1944-1945.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/4/43/Zhukov-LIFE-1944-1945.jpg",
+   "sha1": "7da11d378f8bb3f809d17a1f4f7ca98f7db39471",
+   "size": [
+    733,
+    1024
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-US-not renewed",
+    "PD-Russia"
+   ],
+   "author": "Grigory Vayl",
+   "attribution": "",
+   "date": "This copy is from the 12 February 1945 issue of Life. The photo was also published earlier, in the 31 July 1944 issue of Life.",
+   "crop": [
+    0.5055,
+    0.3473,
+    0.8264
+   ]
+  },
+  "macarthur": {
+   "name": "Douglas MacArthur",
+   "side": "allies",
+   "file": "MacArthur Manila (cropped2).jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:MacArthur_Manila_(cropped2).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/b/bc/MacArthur_Manila_%28cropped2%29.jpg",
+   "sha1": "02eb6696613ea37df6209032d9eebb36e9fe11ec",
+   "size": [
+    2633,
+    3211
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-USGov-Military-Army",
+    "PDreview"
+   ],
+   "author": "Photographer not credited",
+   "attribution": "",
+   "date": "1945-08-02",
+   "crop": [
+    0.5405,
+    0.2768,
+    0.5544
+   ]
+  },
+  "nimitz": {
+   "name": "Chester Nimitz",
+   "side": "allies",
+   "file": "Chester Nimitz-fleet-admiral.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Chester_Nimitz-fleet-admiral.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/9/94/Chester_Nimitz-fleet-admiral.jpg",
+   "sha1": "ac24d00cd1076132b8e534a90f48fe839250b102",
+   "size": [
+    485,
+    563
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-USGov-Military-Navy"
+   ],
+   "author": "Official U.S. Navy Photograph now in the collections of the National Archive",
+   "attribution": "",
+   "date": "circa 1945",
+   "crop": [
+    0.4804,
+    0.5137,
+    1.1609
+   ]
+  },
+  "halsey": {
+   "name": "William Halsey",
+   "side": "allies",
+   "file": "W Halsey.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:W_Halsey.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/c/cd/W_Halsey.jpg",
+   "sha1": "c7e0b311ef2044e0fefda9737530a568ca355cb8",
+   "size": [
+    590,
+    733
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-USGov-Military-Navy"
+   ],
+   "author": "Official U.S. Navy photograph #80-G-K-15137, now in the National Archives collection",
+   "attribution": "",
+   "date": "circa late 1945, soon after promotion to Fleet Admiral",
+   "crop": [
+    0.5224,
+    0.3343,
+    0.8323
+   ]
+  },
+  "cunningham": {
+   "name": "Andrew Cunningham",
+   "side": "allies",
+   "file": "Andrew Cunningham.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Andrew_Cunningham.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/a/af/Andrew_Cunningham.jpg",
+   "sha1": "60492df00307a911d63cfeac9665d11878dbab39",
+   "size": [
+    800,
+    585
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-UKGov"
+   ],
+   "author": "Unknown",
+   "attribution": "",
+   "date": "",
+   "crop": [
+    0.442,
+    0.3465,
+    0.5268
+   ]
+  },
+  "alanbrooke": {
+   "name": "Alan Brooke",
+   "side": "allies",
+   "file": "Alan Brooke at desk 1942.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Alan_Brooke_at_desk_1942.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/3/35/Alan_Brooke_at_desk_1942.jpg",
+   "sha1": "54b5abfbe695365b252fca398955ea7e08fa6c57",
+   "size": [
+    800,
+    594
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-UKGov"
+   ],
+   "author": "War Office official photographer",
+   "attribution": "",
+   "date": "1942",
+   "crop": [
+    0.565,
+    0.3632,
+    0.2904
+   ]
+  },
+  "dowding": {
+   "name": "Hugh Dowding",
+   "side": "allies",
+   "file": "Hugh Dowding.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Hugh_Dowding.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/7/7c/Hugh_Dowding.jpg",
+   "sha1": "66fdaf34ac9369ee9cc399b5fc8da309f852c436",
+   "size": [
+    1867,
+    2480
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-UKGov"
+   ],
+   "author": "Ministry of Information official photographer",
+   "attribution": "",
+   "date": "circa 1935",
+   "crop": [
+    0.377,
+    0.4003,
+    0.8057
+   ]
+  },
+  "mountbatten": {
+   "name": "Louis Mountbatten",
+   "side": "allies",
+   "file": "Admiral Lord Louis Mountbatten, 1943. TR1230 (cropped).jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Admiral_Lord_Louis_Mountbatten,_1943._TR1230_(cropped).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/5/51/Admiral_Lord_Louis_Mountbatten%2C_1943._TR1230_%28cropped%29.jpg",
+   "sha1": "cc21583341fc2724ac28962553fd85b4cea7314f",
+   "size": [
+    642,
+    856
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Scan"
+   ],
+   "author": "British official photographer",
+   "attribution": "",
+   "date": "1943",
+   "crop": [
+    0.4873,
+    0.4123,
+    0.9358
+   ]
+  },
+  "slim": {
+   "name": "William Slim",
+   "side": "allies",
+   "file": "FM william Slim.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:FM_william_Slim.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/5/52/FM_william_Slim.jpg",
+   "sha1": "acf52785e0dc15fe1fa9c8f96795c13eaf049b40",
+   "size": [
+    526,
+    526
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-UKGov"
+   ],
+   "author": "Ministry of Information Photo Division Photographer",
+   "attribution": "",
+   "date": "1945-06",
+   "crop": [
+    0.4009,
+    0.3879,
+    0.5208
+   ]
+  },
+  "bradley": {
+   "name": "Omar Bradley",
+   "side": "allies",
+   "file": "Omar Bradley, official military photo, 1949.JPEG",
+   "page": "https://commons.wikimedia.org/wiki/File:Omar_Bradley,_official_military_photo,_1949.JPEG",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/b/bf/Omar_Bradley%2C_official_military_photo%2C_1949.JPEG",
+   "sha1": "5232dfa66d9b5e46abdad3093a3ebc1fd2412e66",
+   "size": [
+    885,
+    1350
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-USArmy"
+   ],
+   "author": "United States Army",
+   "attribution": "",
+   "date": "circa 1945",
+   "crop": [
+    0.4912,
+    0.2669,
+    0.5915
+   ]
+  },
+  "konev": {
+   "name": "Ivan Konev",
+   "side": "allies",
+   "file": "Ivan Stepanovich Konev.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Ivan_Stepanovich_Konev.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/3/32/Ivan_Stepanovich_Konev.jpg",
+   "sha1": "b1b75cadf189925617a02794ac1ce1380c77c995",
+   "size": [
+    914,
+    1273
+   ],
+   "licence": "CC BY 4.0",
+   "licence_url": "https://creativecommons.org/licenses/by/4.0",
+   "licence_basis": [
+    "Mil.ru"
+   ],
+   "author": "Unknown author",
+   "attribution": "Mil.ru",
+   "date": "1945",
+   "crop": [
+    0.4566,
+    0.2667,
+    0.5795
+   ]
+  },
+  "donovan": {
+   "name": "William Donovan",
+   "side": "allies",
+   "file": "William Joseph (Wild Bill) Donovan, Head of the OSS.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:William_Joseph_(Wild_Bill)_Donovan,_Head_of_the_OSS.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/e/eb/William_Joseph_%28Wild_Bill%29_Donovan%2C_Head_of_the_OSS.jpg",
+   "sha1": "48072b14568162e00b7142fccdb251e32aab6121",
+   "size": [
+    650,
+    553
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-USGov"
+   ],
+   "author": "Not provided",
+   "attribution": "",
+   "date": "circa 1945",
+   "crop": [
+    0.4524,
+    0.2974,
+    0.5584
+   ]
+  },
+  "turing": {
+   "name": "Alan Turing",
+   "side": "allies",
+   "file": "Alan Turing (1951) (crop).jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Alan_Turing_(1951)_(crop).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/6/66/Alan_Turing_%281951%29_%28crop%29.jpg",
+   "sha1": "f0545ef42650f09a87b250e107fb82aeed8030a6",
+   "size": [
+    712,
+    949
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-two",
+    "PD-in"
+   ],
+   "author": "Elliott & Fry",
+   "attribution": "",
+   "date": "1951-03-29",
+   "crop": [
+    0.5371,
+    0.3967,
+    0.9922
+   ]
+  },
+  "oppenheimer": {
+   "name": "J. Robert Oppenheimer",
+   "side": "allies",
+   "file": "Oppenheimer (cropped).jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Oppenheimer_(cropped).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/8/85/Oppenheimer_%28cropped%29.jpg",
+   "sha1": "c0d52b57c762739f4bcbe8c9f60d835cae54da67",
+   "size": [
+    1698,
+    2471
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-USGov-DOE"
+   ],
+   "author": "Unknown author",
+   "attribution": "",
+   "date": "1944",
+   "crop": [
+    0.45,
+    0.4069,
+    0.8835
+   ]
+  },
+  "stilwell": {
+   "name": "Joseph Stilwell",
+   "side": "allies",
+   "file": "Stilwell001.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Stilwell001.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/d/dc/Stilwell001.jpg",
+   "sha1": "b2fd96aa3501618d6a59da9613191b440c360559",
+   "size": [
+    2572,
+    3314
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-USArmy"
+   ],
+   "author": "Unknown author",
+   "attribution": "",
+   "date": "Unknown date",
+   "crop": [
+    0.5054,
+    0.3801,
+    0.879
+   ]
+  },
+  "leclerc": {
+   "name": "Philippe Leclerc",
+   "side": "allies",
+   "file": "Liberation de paris - 26 aout 1944 - portrait du general jacques-philippe leclerc de hautecl 427563.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Liberation_de_paris_-_26_aout_1944_-_portrait_du_general_jacques-philippe_leclerc_de_hautecl_427563.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/d/d6/Liberation_de_paris_-_26_aout_1944_-_portrait_du_general_jacques-philippe_leclerc_de_hautecl_427563.jpg",
+   "sha1": "1f1ad6989ce187c32944af384b0955b322b42782",
+   "size": [
+    4222,
+    5596
+   ],
+   "licence": "CC0",
+   "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+   "licence_basis": [
+    "cc-zero"
+   ],
+   "author": "Unknown author, Agence LAPI (Les Actualités Photographiques Internationales)",
+   "attribution": "",
+   "date": "Taken on 26 August 1944",
+   "crop": [
+    0.4326,
+    0.3604,
+    0.769
+   ]
+  },
+  "model": {
+   "name": "Walter Model",
+   "side": "axis",
+   "file": "Walther Model on the front.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Walther_Model_on_the_front.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/9/9b/Walther_Model_on_the_front.jpg",
+   "sha1": "a600a705daca7844c90480a70d3c88e7e32b9295",
+   "size": [
+    2203,
+    3498
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Poland"
+   ],
+   "author": "Unknown author",
+   "attribution": "",
+   "date": "between 1939 and 1945, probably in the USSR, so after the 1941 summer, because of the fur collar, and earmuffs also present on other snapshots in the USSR.",
+   "crop": [
+    0.36,
+    0.4325,
+    0.495
+   ],
+   "note": "Cropped from below the cap eagle and the swastika in its talons (both above the top edge) to above the collar and its Knight's Cross: the oak wreath and cockade stay (TeeJ, 2026-09-30: the eagle may show, the swastika never)."
+  },
+  "rundstedt": {
+   "name": "Gerd von Rundstedt",
+   "side": "axis",
+   "file": "Bundesarchiv Bild 183-S37772, Gerd v. Rundstedt.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Bundesarchiv_Bild_183-S37772,_Gerd_v._Rundstedt.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/a/a6/Bundesarchiv_Bild_183-S37772%2C_Gerd_v._Rundstedt.jpg",
+   "sha1": "1a68bfe8ca012d7da369953b8fdb1caad3b947fa",
+   "size": [
+    546,
+    800
+   ],
+   "licence": "CC BY-SA 3.0 de",
+   "licence_url": "https://creativecommons.org/licenses/by-sa/3.0/de/deed.en",
+   "licence_basis": [
+    "Cc-by-sa-3.0-de"
+   ],
+   "author": "Unknown",
+   "attribution": "Bundesarchiv, Bild 183-S37772 / CC-BY-SA 3.0",
+   "date": "1932",
+   "crop": [
+    0.4917,
+    0.469,
+    1.0547,
+    0.76
+   ],
+   "note": "Cut off above the eagle on his breast and faded out below and at the sides."
+  },
+  "student": {
+   "name": "Kurt Student",
+   "side": "axis",
+   "file": "Wolfgang Willrich - General der Flieger Kurt Student, 1941.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Wolfgang_Willrich_-_General_der_Flieger_Kurt_Student,_1941.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/2/28/Wolfgang_Willrich_-_General_der_Flieger_Kurt_Student%2C_1941.jpg",
+   "sha1": "6035c461ddd6559813f56da479921093fa81c9da",
+   "size": [
+    899,
+    1201
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Art"
+   ],
+   "author": "Wolfgang Willrich",
+   "attribution": "",
+   "date": "1941",
+   "crop": [
+    0.492,
+    0.4092,
+    0.7084,
+    0.64
+   ],
+   "note": "Cut off above the collar insignia of the drawing and faded out below."
+  },
+  "galland": {
+   "name": "Adolf Galland",
+   "side": "axis",
+   "file": "Bundesarchiv Bild 146-2006-0123, Adolf Galland.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Bundesarchiv_Bild_146-2006-0123,_Adolf_Galland.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/a/a8/Bundesarchiv_Bild_146-2006-0123%2C_Adolf_Galland.jpg",
+   "sha1": "986eecadd3bd2f3cadc3a7fc778063393ddd26a6",
+   "size": [
+    472,
+    799
+   ],
+   "licence": "CC BY-SA 3.0 de",
+   "licence_url": "https://creativecommons.org/licenses/by-sa/3.0/de/deed.en",
+   "licence_basis": [
+    "cc-by-sa-3.0-de"
+   ],
+   "author": "Heinrich Hoffmann",
+   "attribution": "Bundesarchiv, Bild 146-2006-0123 / Hoffmann, Heinrich / CC-BY-SA 3.0",
+   "date": "1940/41",
+   "crop": [
+    0.5564,
+    0.3814,
+    0.886,
+    0.66
+   ],
+   "note": "Cut off above the Knight's Cross at his neck and faded out below and at the sides."
+  },
+  "lutjens": {
+   "name": "Günther Lütjens",
+   "side": "axis",
+   "file": "Bundesarchiv Bild 146-2003-0027, Günter Lütjens.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Bundesarchiv_Bild_146-2003-0027,_G%C3%BCnter_L%C3%BCtjens.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/4/4e/Bundesarchiv_Bild_146-2003-0027%2C_G%C3%BCnter_L%C3%BCtjens.jpg",
+   "sha1": "aa192b95eaf76910b1ed1f535985391923542bdb",
+   "size": [
+    497,
+    795
+   ],
+   "licence": "CC BY-SA 3.0 de",
+   "licence_url": "https://creativecommons.org/licenses/by-sa/3.0/de/deed.en",
+   "licence_basis": [
+    "Cc-by-sa-3.0-de"
+   ],
+   "author": "Unknown author",
+   "attribution": "Bundesarchiv, Bild 146-2003-0027 / CC-BY-SA 3.0",
+   "date": "1934",
+   "crop": [
+    0.5203,
+    0.2061,
+    0.3398,
+    0.295
+   ],
+   "note": "Cut off above the eagle on his breast and the Iron Cross, and faded out below."
+  },
+  "ozawa": {
+   "name": "Jisaburo Ozawa",
+   "side": "axis",
+   "file": "Ozawa11.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Ozawa11.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/6/64/Ozawa11.jpg",
+   "sha1": "c4a06db2f63a22374f7282952333363b7d02fc12",
+   "size": [
+    2100,
+    2558
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Japan-oldphoto"
+   ],
+   "author": "Unknown author",
+   "attribution": "",
+   "date": "1940s",
+   "crop": [
+    0.4735,
+    0.2855,
+    0.6629
+   ]
+  },
+  "homma": {
+   "name": "Masaharu Homma",
+   "side": "axis",
+   "file": "Portrait of General Masaharu Homma, 1943.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Portrait_of_General_Masaharu_Homma,_1943.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/4/44/Portrait_of_General_Masaharu_Homma%2C_1943.jpg",
+   "sha1": "e88b8e6cb2b4172e72332d21a75a760b70f180e2",
+   "size": [
+    686,
+    1024
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Japan-oldphoto"
+   ],
+   "author": "比島派遣軍 (Japanese army news agency)",
+   "attribution": "",
+   "date": "1943",
+   "crop": [
+    0.53,
+    0.3827,
+    0.8996
+   ]
+  },
+  "balbo": {
+   "name": "Italo Balbo",
+   "side": "axis",
+   "file": "Italio Balbo in the mountains (cropped).jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Italio_Balbo_in_the_mountains_(cropped).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/9/92/Italio_Balbo_in_the_mountains_%28cropped%29.jpg",
+   "sha1": "6b1e495357872c5634fe99acf5a93aa9b5afd2e7",
+   "size": [
+    1598,
+    2018
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Poland"
+   ],
+   "author": "Unknown author",
+   "attribution": "",
+   "date": "between 1938 and 1940",
+   "crop": [
+    0.4774,
+    0.3155,
+    0.7283
+   ]
+  },
+  "messe": {
+   "name": "Giovanni Messe",
+   "side": "axis",
+   "file": "Giovanni Messe.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Giovanni_Messe.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/f/fa/Giovanni_Messe.jpg",
+   "sha1": "54c8d401369a6d475b53489a48967a51ba5b8d6d",
+   "size": [
+    270,
+    371
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-Italy",
+    "PD-retouched-user-w"
+   ],
+   "author": "Official photograph of Kingdom of Italy with no credited author",
+   "attribution": "",
+   "date": "1941",
+   "crop": [
+    0.5104,
+    0.3957,
+    0.9257
+   ]
+  },
+  "kurusu": {
+   "name": "Saburo Kurusu",
+   "side": "axis",
+   "file": "Saburo-Kurusu-in-Washington-7-Dec-1941.png",
+   "page": "https://commons.wikimedia.org/wiki/File:Saburo-Kurusu-in-Washington-7-Dec-1941.png",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/4/4d/Saburo-Kurusu-in-Washington-7-Dec-1941.png",
+   "sha1": "d580fe6c7a0081825dfa60edb4e06a63fc172ea8",
+   "size": [
+    1167,
+    1701
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-US",
+    "PD-USGov"
+   ],
+   "author": "Office for Emergency Management. Office of War Information. Overseas Operations Branch. New York Office. News and Features Bureau. 12/17/1942-9/15/1945",
+   "attribution": "",
+   "date": "7 December 1941",
+   "crop": [
+    0.5395,
+    0.328,
+    0.7887
+   ]
+  },
+  "marshall": {
+   "name": "George C. Marshall",
+   "side": "allies",
+   "file": "General George C. Marshall (4616939916).jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:General_George_C._Marshall_(4616939916).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/2/25/General_George_C._Marshall_%284616939916%29.jpg",
+   "sha1": "97c7c4c78a3279bba065a52e5dc92800763f5928",
+   "size": [
+    2451,
+    3000
+   ],
+   "licence": "No restrictions",
+   "licence_url": "https://www.flickr.com/commons/usage/",
+   "licence_basis": [
+    "Flickr-no known copyright restrictions"
+   ],
+   "author": "NASA on The Commons",
+   "attribution": "",
+   "date": "1945",
+   "crop": [
+    0.4828,
+    0.2973,
+    0.5283
+   ]
+  },
+  "king": {
+   "name": "Ernest King",
+   "side": "allies",
+   "file": "Admiral Ernest J. King, 80-G-K-13715 (26222680321) (cropped).jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Admiral_Ernest_J._King,_80-G-K-13715_(26222680321)_(cropped).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Admiral_Ernest_J._King%2C_80-G-K-13715_%2826222680321%29_%28cropped%29.jpg",
+   "sha1": "e5ca046c0558ab7dfcdbdb316e9632500f30a290",
+   "size": [
+    2391,
+    2988
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-USGov-Military-Navy"
+   ],
+   "author": "National Museum of the U.S. Navy",
+   "attribution": "",
+   "date": "2016-04-07 08:17",
+   "crop": [
+    0.5193,
+    0.485,
+    0.9664
+   ]
+  },
+  "arnold": {
+   "name": "Henry H. Arnold",
+   "side": "allies",
+   "file": "Henry Harley Arnold.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Henry_Harley_Arnold.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/2/2e/Henry_Harley_Arnold.jpg",
+   "sha1": "6b1f83d4c0250b4dbd490c3fe172e0db131ad99e",
+   "size": [
+    2256,
+    2848
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-USGov-Military"
+   ],
+   "author": "Unknown author",
+   "attribution": "",
+   "date": "before 1949",
+   "crop": [
+    0.47,
+    0.3854,
+    0.9263
+   ]
+  },
+  "harris": {
+   "name": "Arthur Harris",
+   "side": "allies",
+   "file": "Air Chief Marshal Sir Arthur Harris.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Air_Chief_Marshal_Sir_Arthur_Harris.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/0/0b/Air_Chief_Marshal_Sir_Arthur_Harris.jpg",
+   "sha1": "51e16af04761c88a99da522df73e013e2c084000",
+   "size": [
+    1772,
+    2329
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-UKGov"
+   ],
+   "author": "Fg Off Stannus, Royal Air Force official photographer",
+   "attribution": "",
+   "date": "Taken on 24 April 1944",
+   "crop": [
+    0.5263,
+    0.3659,
+    0.5959
+   ]
+  },
+  "tedder": {
+   "name": "Arthur Tedder",
+   "side": "allies",
+   "file": "Tedder1943 detail.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Tedder1943_detail.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/6/6d/Tedder1943_detail.jpg",
+   "sha1": "31eb94d264dd96cc4c0baa23e1d5910099b67021",
+   "size": [
+    912,
+    1179
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-UKGov"
+   ],
+   "author": "British official photographer",
+   "attribution": "",
+   "date": "1943-12-17",
+   "crop": [
+    0.5582,
+    0.3875,
+    0.8441
+   ]
+  },
+  "wavell": {
+   "name": "Archibald Wavell",
+   "side": "allies",
+   "file": "Archibald Wavell2.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Archibald_Wavell2.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/5/52/Archibald_Wavell2.jpg",
+   "sha1": "811b5c77a5e3dd842b455e1765f7820cca487361",
+   "size": [
+    1860,
+    2156
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-UKGov"
+   ],
+   "author": "Unknown",
+   "attribution": "",
+   "date": "",
+   "crop": [
+    0.5772,
+    0.2424,
+    0.5361
+   ]
+  },
+  "auchinleck": {
+   "name": "Claude Auchinleck",
+   "side": "allies",
+   "file": "Auchinleck.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Auchinleck.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/e/ef/Auchinleck.jpg",
+   "sha1": "deadd6410306f52e460cbb07fe472f337565c5c3",
+   "size": [
+    2480,
+    1745
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-UKGov"
+   ],
+   "author": "Palmer (Lt), No 1 Army Film & Photographic Unit",
+   "attribution": "",
+   "date": "1941-07-31",
+   "crop": [
+    0.4664,
+    0.3032,
+    0.7231
+   ]
+  },
+  "rokossovsky": {
+   "name": "Konstantin Rokossovsky",
+   "side": "allies",
+   "file": "Маршал Советского Союза дважды Герой Советского Союза Константин Константинович Рокоссовский.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:%D0%9C%D0%B0%D1%80%D1%88%D0%B0%D0%BB_%D0%A1%D0%BE%D0%B2%D0%B5%D1%82%D1%81%D0%BA%D0%BE%D0%B3%D0%BE_%D0%A1%D0%BE%D1%8E%D0%B7%D0%B0_%D0%B4%D0%B2%D0%B0%D0%B6%D0%B4%D1%8B_%D0%93%D0%B5%D1%80%D0%BE%D0%B9_%D0%A1%D0%BE%D0%B2%D0%B5%D1%82%D1%81%D0%BA%D0%BE%D0%B3%D0%BE_%D0%A1%D0%BE%D1%8E%D0%B7%D0%B0_%D0%9A%D0%BE%D0%BD%D1%81%D1%82%D0%B0%D0%BD%D1%82%D0%B8%D0%BD_%D0%9A%D0%BE%D0%BD%D1%81%D1%82%D0%B0%D0%BD%D1%82%D0%B8%D0%BD%D0%BE%D0%B2%D0%B8%D1%87_%D0%A0%D0%BE%D0%BA%D0%BE%D1%81%D1%81%D0%BE%D0%B2%D1%81%D0%BA%D0%B8%D0%B9.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/5/55/%D0%9C%D0%B0%D1%80%D1%88%D0%B0%D0%BB_%D0%A1%D0%BE%D0%B2%D0%B5%D1%82%D1%81%D0%BA%D0%BE%D0%B3%D0%BE_%D0%A1%D0%BE%D1%8E%D0%B7%D0%B0_%D0%B4%D0%B2%D0%B0%D0%B6%D0%B4%D1%8B_%D0%93%D0%B5%D1%80%D0%BE%D0%B9_%D0%A1%D0%BE%D0%B2%D0%B5%D1%82%D1%81%D0%BA%D0%BE%D0%B3%D0%BE_%D0%A1%D0%BE%D1%8E%D0%B7%D0%B0_%D0%9A%D0%BE%D0%BD%D1%81%D1%82%D0%B0%D0%BD%D1%82%D0%B8%D0%BD_%D0%9A%D0%BE%D0%BD%D1%81%D1%82%D0%B0%D0%BD%D1%82%D0%B8%D0%BD%D0%BE%D0%B2%D0%B8%D1%87_%D0%A0%D0%BE%D0%BA%D0%BE%D1%81%D1%81%D0%BE%D0%B2%D1%81%D0%BA%D0%B8%D0%B9.jpg",
+   "sha1": "822e2fc13b3e7177f3900121e7daa6a0b01eed4d",
+   "size": [
+    1542,
+    2100
+   ],
+   "licence": "CC BY 4.0",
+   "licence_url": "https://creativecommons.org/licenses/by/4.0",
+   "licence_basis": [
+    "Mil.ru"
+   ],
+   "author": "Unknown author",
+   "attribution": "Mil.ru",
+   "date": "1945-06",
+   "crop": [
+    0.454,
+    0.241,
+    0.5716
+   ]
+  },
+  "vasilevsky": {
+   "name": "Aleksandr Vasilevsky",
+   "side": "allies",
+   "file": "Aleksandr Vasilevsky 4.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Aleksandr_Vasilevsky_4.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/4/4d/Aleksandr_Vasilevsky_4.jpg",
+   "sha1": "24edff5766a094e6fb3c38ae74bc628024dbc521",
+   "size": [
+    475,
+    630
+   ],
+   "licence": "CC BY 4.0",
+   "licence_url": "https://creativecommons.org/licenses/by/4.0",
+   "licence_basis": [
+    "Mil.ru"
+   ],
+   "author": "Unknown author",
+   "attribution": "Mil.ru",
+   "date": "after 1945",
+   "crop": [
+    0.3433,
+    0.2397,
+    0.5863
+   ]
+  },
+  "chuikov": {
+   "name": "Vasily Chuikov",
+   "side": "allies",
+   "file": "Vasily Chuikov's photo from autograf.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Vasily_Chuikov%27s_photo_from_autograf.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/e/e7/Vasily_Chuikov%27s_photo_from_autograf.jpg",
+   "sha1": "21018c590057610ccfb00652d2a36712cbd87808",
+   "size": [
+    1280,
+    1669
+   ],
+   "licence": "CC BY 4.0",
+   "licence_url": "https://creativecommons.org/licenses/by/4.0",
+   "licence_basis": [
+    "mos.ru"
+   ],
+   "author": "Главархив Москвы",
+   "attribution": "Mos.ru",
+   "date": "1948-06-05",
+   "crop": [
+    0.342,
+    0.3522,
+    0.7493
+   ]
+  },
+  "spruance": {
+   "name": "Raymond Spruance",
+   "side": "allies",
+   "file": "Ray Spruance.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Ray_Spruance.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/e/e2/Ray_Spruance.jpg",
+   "sha1": "5c76d22a36afaef09d888eb1a1571fa137dc3ac7",
+   "size": [
+    4550,
+    5765
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-USGov-Military-Navy"
+   ],
+   "author": "U.S. Navy",
+   "attribution": "",
+   "date": "1944-04-23",
+   "crop": [
+    0.4452,
+    0.424,
+    1.0038
+   ]
+  },
+  "clark": {
+   "name": "Mark Clark",
+   "side": "allies",
+   "file": "General Mark Wayne Clark, Comandante do 5º Exército Norte Americano.tif",
+   "page": "https://commons.wikimedia.org/wiki/File:General_Mark_Wayne_Clark,_Comandante_do_5%C2%BA_Ex%C3%A9rcito_Norte_Americano.tif",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/5/5a/General_Mark_Wayne_Clark%2C_Comandante_do_5%C2%BA_Ex%C3%A9rcito_Norte_Americano.tif",
+   "sha1": "f8bc55090360304524aca20288790d4fdf972237",
+   "size": [
+    1051,
+    1403
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "Arquivo Nacional PD-license"
+   ],
+   "author": "Unknown",
+   "attribution": "",
+   "date": "1945",
+   "crop": [
+    0.52,
+    0.3624,
+    0.8639
+   ]
+  },
+  "juin": {
+   "name": "Alphonse Juin",
+   "side": "allies",
+   "file": "USA-MTO-NWA-p651 Alphonse Juin.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:USA-MTO-NWA-p651_Alphonse_Juin.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/4/4f/USA-MTO-NWA-p651_Alphonse_Juin.jpg",
+   "sha1": "ec5a3fddbb14c351fbbfa5b089e5415e46669d09",
+   "size": [
+    360,
+    431
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-USGov-Military-Army"
+   ],
+   "author": "Unknown author",
+   "attribution": "",
+   "date": "",
+   "crop": [
+    0.4757,
+    0.3905,
+    0.7978
+   ]
+  },
+  "wingate": {
+   "name": "Orde Wingate",
+   "side": "allies",
+   "file": "Ordecharleswingate.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Ordecharleswingate.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/8/8d/Ordecharleswingate.jpg",
+   "sha1": "8510fe35e726d570801994e65396ab8c6b545dae",
+   "size": [
+    334,
+    444
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-USGov-Military"
+   ],
+   "author": "U.S. military photo",
+   "attribution": "",
+   "date": "",
+   "crop": [
+    0.5791,
+    0.339,
+    0.7978
+   ]
+  },
+  "chennault": {
+   "name": "Claire Chennault",
+   "side": "allies",
+   "file": "Claire L. Chennault.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Claire_L._Chennault.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/2/29/Claire_L._Chennault.jpg",
+   "sha1": "9db293aeab0a509771516bbb803fc9460896f042",
+   "size": [
+    1000,
+    1200
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-USGov"
+   ],
+   "author": "Unknown military photographer",
+   "attribution": "",
+   "date": "2009-11-22 13:32:24",
+   "crop": [
+    0.5792,
+    0.3398,
+    0.764
+   ]
+  },
+  "zhu_de": {
+   "name": "Zhu De",
+   "side": "allies",
+   "file": "Zhu De (1922).jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Zhu_De_(1922).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/2/20/Zhu_De_%281922%29.jpg",
+   "sha1": "85b734089efee369b8e0bc1210341b8bf21d68b1",
+   "size": [
+    675,
+    800
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-anon-70-EU",
+    "PD-US-expired"
+   ],
+   "author": "Unknown",
+   "attribution": "",
+   "date": "September 1922",
+   "crop": [
+    0.4696,
+    0.4002,
+    0.9434
+   ]
+  },
+  "menzies": {
+   "name": "Stewart Menzies",
+   "side": "allies",
+   "file": "Keith and Stewart Menzies 1914.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Keith_and_Stewart_Menzies_1914.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Keith_and_Stewart_Menzies_1914.jpg",
+   "sha1": "e8fcb69289ce118dbc7b353442e9f3245247661d",
+   "size": [
+    497,
+    800
+   ],
+   "licence": "Public domain",
+   "licence_url": "",
+   "licence_basis": [
+    "PD-old"
+   ],
+   "author": "Unknown author",
+   "attribution": "",
+   "date": "1914",
+   "crop": [
+    0.6483,
+    0.1006,
+    0.2201
+   ],
+   "note": "Stewart Menzies is the man on the right, beside his brother Keith, in 1914 (TeeJ, 2026-09-30). The only freely licensed photograph of him: the 1953 portraits on Commons carry a licence their uploaders could not grant. Small (497x800, from a book), so his picture is soft."
+  }
+ }
+}

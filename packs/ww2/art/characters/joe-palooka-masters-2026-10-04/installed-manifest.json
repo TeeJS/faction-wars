@@ -1,0 +1,704 @@
+[
+  {
+    "id": "alanbrooke",
+    "name": "alanbrooke.png",
+    "status": "redrawn",
+    "original_sha256": "51E7852E079A2FD1C050FA82728CEBD1A9D5B411DE48A9DEC9E16989685680E7",
+    "sha256": "E53F1FB8F95780AB16641E6E96EA981B9E0A0FD06875D5DB2072D478E3EFA07C",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "arnold",
+    "name": "arnold.png",
+    "status": "redrawn",
+    "original_sha256": "D19AFEEBADBB571F56D7B5677E2830888E7D1796C81D6ECCE49CCAE585EC018E",
+    "sha256": "FE472F6A583438EBE11B319FEF3F7FA4B3956843CA933BC48B148B4E3958C62F",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "auchinleck",
+    "name": "auchinleck.png",
+    "status": "redrawn",
+    "original_sha256": "9DC5A7AFB3CD2FE3A7AB803C85FE52C97471DC8673C9B9C5FDA10888E0CDD2A1",
+    "sha256": "3459E6ADD88DC92C3A4485E1F385905CD2F53CA72DB36B7BD60DF5FF2CFA93AF",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "balbo",
+    "name": "balbo.png",
+    "status": "redrawn",
+    "original_sha256": "D9BA49700C1D4AFD7B90317AF57FCBDE5574D38C7F803D027F5983E4A0991987",
+    "sha256": "7FDBB540EBAAB73F98090D428646340231A1B154716973BCBEEAFB5FBA68D41F",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "bradley",
+    "name": "bradley.png",
+    "status": "redrawn",
+    "original_sha256": "7C3D6050BE8447165FE7877B34C5080899CCA8CB0E5768B9740AFAE53C38D3C2",
+    "sha256": "74605088B9655613348E20B8D0D1A883F4705A8BF0E96E10C4CDAABC381D0FA3",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "canaris",
+    "name": "canaris.png",
+    "status": "redrawn",
+    "original_sha256": "03607EC09AC9D3D75FE96E6C39C6CE8F31B118B960DAF277CB04AAA71BC88772",
+    "sha256": "0989D7E9E2552BC2C9F8BE1016BA887A2509AF471B05C313370D1DA67188B8DF",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "chennault",
+    "name": "chennault.png",
+    "status": "redrawn",
+    "original_sha256": "77D5ABBDA4F79343FB5980CBEFBCD2C6D8AC6F70510586FD03B9086B546703BC",
+    "sha256": "3AD76AC005DC68E6A265F424B2501267546EF111A0C013B4AF70EA3C4F237405",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "chiang_kai_shek",
+    "name": "chiang_kai_shek.png",
+    "status": "redrawn",
+    "original_sha256": "B11C757897994048DC0EF6566AF90CAACF1E9E9C3B2E870FDD32BD0146334929",
+    "sha256": "9360674D8189FA34E511F92F2D074C904A56D187A9DFB4D604419D1D34579865",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "chuikov",
+    "name": "chuikov.png",
+    "status": "redrawn",
+    "original_sha256": "709C80623D31AB81D6700DFC2B5A699CABFE0C8F760521F6666EDF5FA26A2DE8",
+    "sha256": "303688C7076DBC2B408264B52FB14A2CDF11DE568B753474E91F58FA23ACDE8F",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "churchill",
+    "name": "churchill.png",
+    "status": "redrawn",
+    "original_sha256": "B5264AC96391CEBC7AFFAC2892085EE9F1913B1C64ABF0B3154E2BCE1AAFD442",
+    "sha256": "341F63CDE84E67CF46D16172C5892C8DEC77B15DE6D2ABF2C5FB769FE7870EBE",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "ciano",
+    "name": "ciano.png",
+    "status": "redrawn",
+    "original_sha256": "1F7D02B765F0887B481E1ACCF8277107DF2C49E266BEFCFAE9A4822ACCEDC456",
+    "sha256": "B1C01D046DFA2688CEA02C8D1D9E1610862223391A4D9455D3289E4733778FA5",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "clark",
+    "name": "clark.png",
+    "status": "redrawn",
+    "original_sha256": "804A114853607B069CBDBEB8972038199832FE09A6127D65D0374DE56AB9677E",
+    "sha256": "C384F49839AB48591BAD133D86BD3BDAF486053166E5226B8132971A7530FA08",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "cunningham",
+    "name": "cunningham.png",
+    "status": "redrawn",
+    "original_sha256": "6316095E74EF0340C7F14C13755546DD979B43D5BD110D050F075F96CEF3B19A",
+    "sha256": "6840A467355A44A9B79E5971E4B60C19315A14B260CF0D9A642072429138E239",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "de_gaulle",
+    "name": "de_gaulle.png",
+    "status": "redrawn",
+    "original_sha256": "42E31CE02C30FC9603F161D46B330A0138616F150CEFD643E7AD26AFCF622F0D",
+    "sha256": "A01DBFF5F716FA28FEC7D40FDE68CB6C76ACEC88D26D0B079DD091C550D8754F",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "donitz",
+    "name": "donitz.png",
+    "status": "redrawn",
+    "original_sha256": "C7A3C16EEED79EB3E985E83033A1916F1D48B9490E89692DF9E949357B0A92DA",
+    "sha256": "EC359CA1535821F787CB9D6D9312B2729610C38A8E22F544C1CB3B8541A77790",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "donovan",
+    "name": "donovan.png",
+    "status": "redrawn",
+    "original_sha256": "B8132C3EB433D702DB88252918C9C7F0D1D0637BAF5FA57CC50614D79256A64D",
+    "sha256": "78922B8F196D26F1DC6F49FA1F5DD1D35B983F18E17676B2E4FE9BBB5D0281E6",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "dowding",
+    "name": "dowding.png",
+    "status": "redrawn",
+    "original_sha256": "55773BFA477198A6F9A5DDE17E83AA591DCD11540B2EC7D7CAF6953696B8E909",
+    "sha256": "E988E9AD0CFECDED2D6CFDE8F24FA1A56394861E48FD84C732E8FCD726312C8E",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "eisenhower",
+    "name": "eisenhower.png",
+    "status": "redrawn",
+    "original_sha256": "C3308A6FBFBC7DD3782BE49797E83A43C149A31E99C91B51620E789D9B04D609",
+    "sha256": "AEB495057C191397D24FC68242CB86FE6D8B0DDAC3C75910D1B21FA5348236DD",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "galland",
+    "name": "galland.png",
+    "status": "redrawn",
+    "original_sha256": "D692589D06CA746FD64737AA4AF2BF1B4EB2937894E626EC2E78A31C0B31AB13",
+    "sha256": "0E5C029C5FC68D402310D09A8580D2197F3943198823E8EA8D44EC19D776D882",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "goebbels",
+    "name": "goebbels.png",
+    "status": "redrawn",
+    "original_sha256": "D239F39961EDB4A1636F071A2D0C56736B5C8A72C601CF62FC061332B5344EEA",
+    "sha256": "7C7757A7929E67533B0E4E389CF9563CCAF1DD23EE50C7A236C27EE2EBC531C8",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "goring",
+    "name": "goring.png",
+    "status": "redrawn",
+    "original_sha256": "A2DD95C47B46B73FD6A54007EB8F6215434D726B9B815B078C96536A51A37014",
+    "sha256": "7BD051D32983BA9B5C1832F4B2D0508BCE999F418B19BF84653900C2A8910C6C",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "graziani",
+    "name": "graziani.png",
+    "status": "redrawn",
+    "original_sha256": "B27454F1FB7E2945B2C952D07B9CD572711A5E6B6AD9CD9BE1AAC540FD8407D0",
+    "sha256": "73BD5F8395F83B6634E7F456608C1342A5DE93E97566955F20E4B681E8655CEB",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "guderian",
+    "name": "guderian.png",
+    "status": "redrawn",
+    "original_sha256": "020C94DB486E5F4E34F17F0B14C116888451AD0F0DEC4A54CBD1D8D5072A92CC",
+    "sha256": "247B106EAA6285B8D41A825F2755C0B85A82877F84C2B8DE589D38E72944B0B1",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "halsey",
+    "name": "halsey.png",
+    "status": "redrawn",
+    "original_sha256": "C4579817AFE7F33438D89BF4D32E76604A287B1B3041C9E1A95D9E5DF1CD7A87",
+    "sha256": "A10112279FEF5CA675EDE1D93548B575DBFBA83428DF796E97A1E1DD9635F553",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "harris",
+    "name": "harris.png",
+    "status": "redrawn",
+    "original_sha256": "F6A341A7AD36DBF59AFB41DE9853AD71B9FDB1C54FA00641ECCF5B774518767B",
+    "sha256": "02217E2D8292E6100ED62F6A14C57CA362D860C318BA9AFE95B9718B7AC27C89",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "homma",
+    "name": "homma.png",
+    "status": "redrawn",
+    "original_sha256": "47A6F8D48EA22936162B52B3C277F74FB3325A2C3EF5DC949FCF4E83777A50C9",
+    "sha256": "5E403A6CCE5C63974753ACA1AA66470BF9CD7C12D0DA10564E0DA6B99531782B",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "juin",
+    "name": "juin.png",
+    "status": "redrawn",
+    "original_sha256": "488574C5990D157384C94916A7A45B282E4C8CC132E94ED9E3B6EDFEDA5D7588",
+    "sha256": "AE079911761F3230FB4AF5EEDBB860C09FD537D908567A1BBD916E9C23627991",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "kesselring",
+    "name": "kesselring.png",
+    "status": "redrawn",
+    "original_sha256": "BFE31ECEA2602753540D0CD1E15C94725E87ECFB1D365C1A6527CF9CBF5C1F23",
+    "sha256": "07392066B4DF85DD816731E81323B19AF0E3E3468B57D39AB45644F0B14D0A2F",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "king",
+    "name": "king.png",
+    "status": "redrawn",
+    "original_sha256": "95D604C6590401850FF4E5CF2446D12C841039CC5416AA9DD1885B9DD3B63FE0",
+    "sha256": "8AAED94F341C87F3D083C47D28E09A69522D5306F4D0991FC60E15F3FEBBAC2B",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "konev",
+    "name": "konev.png",
+    "status": "redrawn",
+    "original_sha256": "0098C459C26073FCAE9EAB53873910069E9945A36632292511F21977F8F6CA22",
+    "sha256": "77AD8D9B254A800255E9C50A2A7C5B480402F7B504E475E3903E56182963CBED",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "kurusu",
+    "name": "kurusu.png",
+    "status": "redrawn",
+    "original_sha256": "4BFBE149D4BAED4EE53E26AFAF1DE39A2D4114CB201794639570A62496C19D86",
+    "sha256": "B5191025DC68A7A4648BA7E364357CC077D9F6C9D0EC5D47A0D7D45C04B27320",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "lutjens",
+    "name": "lutjens.png",
+    "status": "redrawn",
+    "original_sha256": "C3572DFD994778542A92F8BA6DEBB75BDFF3786085BE9CA9CBA66E106517F5AA",
+    "sha256": "F4BF73BBBC9DD9BEFF244CF6FCDB61A9A55FEAB943FE524D2122174955913B8C",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "macarthur",
+    "name": "macarthur.png",
+    "status": "redrawn",
+    "original_sha256": "2A840F3A37AA7FC659D072D812498C88324D8AE0D353597BD9F022624BBCEAF9",
+    "sha256": "AA32906779184776E40F00013D2F7FD46A0EB659C1E0B4279FA7886AFE59FFF4",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "manstein",
+    "name": "manstein.png",
+    "status": "redrawn",
+    "original_sha256": "6E6858522BB9B7273373E86D0494A5C518E9443F56FD397D76ADBA663E67384A",
+    "sha256": "D3747B5960388EBD0C1D001ED26F9E0CE2F238D2B48257BB746AD043419415F1",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "marshall",
+    "name": "marshall.png",
+    "status": "redrawn",
+    "original_sha256": "26F22AAAEA683B94F952EA71952C53456CC49F2DE36994590EEFB6D368597874",
+    "sha256": "C6AF316CC05F4D46DFE7DEEAE8E8D22351B9AEC621CC1D186DA77B56F83AAF2A",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "menzies",
+    "name": "menzies.png",
+    "status": "redrawn",
+    "original_sha256": "6F38AE5FD067BD04ED74ED5985077576245201CBAA3A58D7B6670DABC21AA8C2",
+    "sha256": "48F3C5E6C703C2182263B405228D2535BD10F26096596396613B818378F88BDF",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "messe",
+    "name": "messe.png",
+    "status": "redrawn",
+    "original_sha256": "BB8B661F02A0A7745EC9B1BCB6FE17790AE6B088FB576663030B75ED3DA2800E",
+    "sha256": "96292D6DCF861C949CE8D9C1526CA721CCB799A5AEB56602D7D0C5DB15E41E3F",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "model",
+    "name": "model.png",
+    "status": "redrawn",
+    "original_sha256": "C063A0E09339BEE68CE78B0922C0DC0E034D35AF4563212CB4FC37C22C889EF4",
+    "sha256": "BD3380E565520BBBE7E20A48116973A7EE078A67555278C11CC5F15BDCB6F061",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "montgomery",
+    "name": "montgomery.png",
+    "status": "redrawn",
+    "original_sha256": "55764CAC849CCDA8169579A03C9B1ABC12CD3294415588B076807C3993653A48",
+    "sha256": "455055484415B53207C6DADCF7FF25AEDC4C367CDFE7BF2A75D6426A464D9710",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "mountbatten",
+    "name": "mountbatten.png",
+    "status": "redrawn",
+    "original_sha256": "1B819815FEFA875312DAD41E330A8751B378C477940BBBF282BFEB194082ED26",
+    "sha256": "8E0128F172E61CB761A02AD8278DB017EE75A60AFD247FC1AD9F3A329A24EB90",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "mussolini",
+    "name": "mussolini.png",
+    "status": "redrawn",
+    "original_sha256": "6AD4CDB9A47247585804A686917B91166D0DF95A442AB4EE59164ACDAD8A7C8F",
+    "sha256": "C9A23875287356216F773268F313B667424CCFE56B1B16996E71DAAF38F27B9B",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "nagumo",
+    "name": "nagumo.png",
+    "status": "redrawn",
+    "original_sha256": "68E18F52F419078B8E9FA6EFD1FF4E3A219953AD1545D73C96B80261CA0201D3",
+    "sha256": "BD20BEDFE7C250DD2CC06089351687668595837C4D2EA7F4CCD4653BA29325B5",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "nimitz",
+    "name": "nimitz.png",
+    "status": "redrawn",
+    "original_sha256": "39659D9A3B1CCA2D5924A9F8747B23CC48B93626A0C4DF46CB37554D943D3293",
+    "sha256": "EA349FD3E894E4F8741F17B7642532AC4615393FE1B5AAC974357601E04EDFEE",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "oppenheimer",
+    "name": "oppenheimer.png",
+    "status": "redrawn",
+    "original_sha256": "173DE73E247167FCECB6AE46CD65A896CCD2F6A6E2CF21B79904A06C7EF97868",
+    "sha256": "1923C7B0272C296248300333CF2A461AF35869B1CCAF4B4912BBDD178D207566",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "ozawa",
+    "name": "ozawa.png",
+    "status": "redrawn",
+    "original_sha256": "3D147D455833F169AD7B9DA9E71CABE11C1B22368A42AF9F7A7EADD44020FCB1",
+    "sha256": "3ECC82419E6A4043592AA44CADA8525469443A2102169EC81E1EA3E733AEC5F2",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "patton",
+    "name": "patton.png",
+    "status": "redrawn",
+    "original_sha256": "C5C575D70C2DF768789964F366C16872BF0CAAB2BF16E77CDBE7C9D3628F0C28",
+    "sha256": "3DD51AC83557AB61F1F989444BC3C2F38F0F02F57EBCDB35023C301101D84496",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "rokossovsky",
+    "name": "rokossovsky.png",
+    "status": "redrawn",
+    "original_sha256": "B23034D978C9413E15B32F24A9FFD690FFC26839EDE2950CC79C7201D82DD42A",
+    "sha256": "A60C9333A7520749362CD27ECC2BFF4604E08D678D3A029D9ADAB1C717693463",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "rommel",
+    "name": "rommel.png",
+    "status": "redrawn",
+    "original_sha256": "F46B96890BBFA88F9EA2BF1FBDD2CA4DA744425F3CCDF6A57EE8D81B852BED33",
+    "sha256": "081E4597763D8932DDA584FE7D87994720E3522B5C12D58F1844FA7B4EA2F688",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "roosevelt",
+    "name": "roosevelt.png",
+    "status": "redrawn",
+    "original_sha256": "88AB2F9118F8E9CF4B4FC7E507B5BD040ADAB45D3213DD0439412BF59CA2B757",
+    "sha256": "D68601262A640693C3475362DDE3A05C824D0E734766E69A19A66B85DBFDF72F",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "rundstedt",
+    "name": "rundstedt.png",
+    "status": "redrawn",
+    "original_sha256": "63FC059E39A4D2D3BFF557B37DD4BD82DB48BCEDA95EA125C26403F74064DF7F",
+    "sha256": "3A923B605639F2A20A194B672F1B0555DEB3A60F3F138D85A72E372CC35F474C",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "skorzeny",
+    "name": "skorzeny.png",
+    "status": "redrawn",
+    "original_sha256": "558009984D269E1962BE82918338ACA7ED3E459CAD9BEE189F17BFB1BE039EAB",
+    "sha256": "097174CA246BB05EA2759AB37954E4443CDA71D9F29366FE5B6FF9A76C98515B",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "slim",
+    "name": "slim.png",
+    "status": "redrawn",
+    "original_sha256": "0FD9A9BC313D1AF9F3B7D86C6F83E00D0F871B2CBFEAF8D96608ADABDF7B06CE",
+    "sha256": "4981433D760938B8A2E931AC7788B4F4D0D4E1AB53015D3FC90C8D6FBDD8B518",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "speer",
+    "name": "speer.png",
+    "status": "redrawn",
+    "original_sha256": "A43FB0DF718E9D3DBF26DAAF7DC108630C0F69F0942208DF4092E892BFF5D8FE",
+    "sha256": "BF06BBF6D093BEA71252446BBEA2AD7DD8F5499ACD4543206268587C173EC5DA",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "spruance",
+    "name": "spruance.png",
+    "status": "redrawn",
+    "original_sha256": "6476B7AF3417BD4DB7B238A2E4BE2A91544A0B574966B749F12795247E7EDB46",
+    "sha256": "149025A0285CF32569A9DA6B5C8711FA85C3F6AFC18A7CCF4E60E5A515ACDB25",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "stalin",
+    "name": "stalin.png",
+    "status": "redrawn",
+    "original_sha256": "CEFECCC8413A7376656B170843914B25DF40CF3DB23E8D0E3C465892B8A7A515",
+    "sha256": "407A10C95AC527F3D373C74BD9610AE09C371C46A8C1BDAE61EDD4746FC2EDCA",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "stilwell",
+    "name": "stilwell.png",
+    "status": "redrawn",
+    "original_sha256": "DD080FEC7C18B7B8FB59F3D2B3B11951BD6E82F5F148591D5C1A4EA1FF76995E",
+    "sha256": "59767753760BA09569E05C0DD4C6D4F0055D55BC30F9D5B66029749CBE1F903F",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "student",
+    "name": "student.png",
+    "status": "redrawn",
+    "original_sha256": "B8B4D42D10F577B3543DD0FFB1D9D3F8F592A09C43CB8E4B01EA88D7BD4BCB7A",
+    "sha256": "221272E22AB27856F464E88A87E483FE1C8D48F9E70031B57C6372D104F699E8",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "tedder",
+    "name": "tedder.png",
+    "status": "redrawn",
+    "original_sha256": "886B961F5DD38843F6F10E5758D4F388B8BEE4DEB6262E5DE59DC57521A2ED19",
+    "sha256": "BF4B8A35848A9D5370CA898E01E46975EA20E0186ADD2CB7414614C699568050",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "tojo",
+    "name": "tojo.png",
+    "status": "redrawn",
+    "original_sha256": "0C439FCCECF97C66634BC2047F62BBF14848824063550EFA88E09AFE2AAFE59C",
+    "sha256": "8074B672D1FDC7D5434245F4E6C0337610DD0A70235E002BDB3742D7C9221024",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "turing",
+    "name": "turing.png",
+    "status": "redrawn",
+    "original_sha256": "8C91C5FA920F155E965566E60282ED8B61D7924D51CD90FE0DF4D657CB203747",
+    "sha256": "34972A6D8A7C6552B2DF0FA7B56B9F949E3ED986F4932D9EAAFE712DB6A31B35",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "vasilevsky",
+    "name": "vasilevsky.png",
+    "status": "redrawn",
+    "original_sha256": "658EB19E216FCD8007AA049C0B571427A01848890F8E604FB08FACC1498697F8",
+    "sha256": "788F6DD20E1616AE752D7A1DDCC07F477C6565C8B5B1B967113D7F4FF99072DA",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "wavell",
+    "name": "wavell.png",
+    "status": "redrawn",
+    "original_sha256": "9E125F2DEDE0C2C6D0BAE99DF952FE5F0ADCBD62EF0627E495D6A2A7B822AAC4",
+    "sha256": "CFAF312350EF6827F0AFB861A637A29F11D223E5B82B5BB1B221EDEB579B5778",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "wingate",
+    "name": "wingate.png",
+    "status": "redrawn",
+    "original_sha256": "8E160C81AF88C58A796952804B6935CB2CFD9CBC256DF95A3B93C60B5EBBEFCA",
+    "sha256": "9F2277E267957D10B337FEF4483F53DE1C02BBD46E037D861527BF58A03E8D15",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "yamamoto",
+    "name": "yamamoto.png",
+    "status": "redrawn",
+    "original_sha256": "3BC6B8BC2737813C23398CAFE149E88DE42042CC755ACA01E7794F8FAE417DD4",
+    "sha256": "CDE136F2D390B47218653C74B2496B57D9A33164927659D5A83BD927140C8797",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "yamashita",
+    "name": "yamashita.png",
+    "status": "redrawn",
+    "original_sha256": "72F6BC18CCAA5CE16B7918B70A246F1A92C585C6A148B2A5C6886A19307C9145",
+    "sha256": "91564492E403276FD093B2F9F3119964D6814A87E90696879E1DD7C8ACF45895",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "zhu_de",
+    "name": "zhu_de.png",
+    "status": "redrawn",
+    "original_sha256": "0B6FBDFB8D1DABC9E1F6FF3C15576495080F068B868C6B3FB20B5179A92BC4FD",
+    "sha256": "FC6842134431E5B783927BA5AF4BD35F5231FA84E24241F5D53CC4B0D95CF5DE",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "zhukov",
+    "name": "zhukov.png",
+    "status": "redrawn",
+    "original_sha256": "064AFBFE34B69956D8CE05597FD540AE9A9A12A4DE42E38A745A9B816F71B41B",
+    "sha256": "4925A4299B55DC474DE12C8D6E0E1368F66101162D92F24FB0272AF6990B95EE",
+    "width": 400,
+    "height": 200,
+    "exterior_pixels_unchanged": true
+  },
+  {
+    "id": "hitler",
+    "name": "hitler.png",
+    "status": "unchanged_image_tool_rejected",
+    "sha256": "205D6625EF216777F94EE9269CEFF007E2FE68903018CD6A57A15DB38A32D5F0",
+    "width": 400,
+    "height": 200
+  },
+  {
+    "id": "himmler",
+    "name": "himmler.png",
+    "status": "unchanged_image_tool_rejected",
+    "sha256": "FD71146402D669A279354A60A152E63EC1EB9D114FAC85588E79CEAB4BD6BBD4",
+    "width": 400,
+    "height": 200
+  },
+  {
+    "id": "raeder",
+    "name": "raeder.png",
+    "status": "unchanged_image_tool_rejected",
+    "sha256": "D1EC0E630F732403F1CF726CA8A83D805213F3BB3B55F1A9EBE2989C786C7AEB",
+    "width": 400,
+    "height": 200
+  },
+  {
+    "id": "leclerc",
+    "name": "leclerc.png",
+    "status": "unchanged_image_tool_rejected",
+    "sha256": "8BB8880CF17A62DE55B03DAB30E30A7D83D0D11D88A6F72185D09A24A8041FF2",
+    "width": 400,
+    "height": 200
+  }
+]
