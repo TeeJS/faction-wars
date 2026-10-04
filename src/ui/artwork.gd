@@ -132,6 +132,22 @@ static func Picture(kind: String, id: String) -> Texture2D:
 	return _row(kind, id, "{k}/{i}.png")
 
 
+## THE STAND-IN (TeeJ, 2026-10-03: "can we come up with a generic 1940's
+## wartime image to use when no other exists?"): the pack's own
+## art/placeholder.png, a 400 x 200 picture shown in a picture slot whose own
+## picture the pack does not have. null when the pack ships none (the slot
+## then hides or stays empty, as before).
+static func Placeholder() -> Texture2D:
+	_check_pack()
+	var dir: String = _pack_dir()
+	return _load("%s/art/placeholder.png" % dir) if not dir.is_empty() else null
+
+
+## `tex`, else the pack's stand-in (Placeholder).
+static func OrPlaceholder(tex: Texture2D) -> Texture2D:
+	return tex if tex != null else Placeholder()
+
+
 ## A mission's picture for a side: missions/<mission id>.<side>.png, else the
 ## side-less missions/<mission id>.png.
 static func MissionPicture(mission_id: String, side: String) -> Texture2D:

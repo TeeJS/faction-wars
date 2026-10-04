@@ -424,7 +424,7 @@ func OpenCreateMission(team: Array, origin: Planet, target: Planet, picked: Vari
 	box.add_child(picker)
 	var showMission := func(index: int) -> void:
 		var d: PackDefs.MissionDefPack = MissionCatalog.DefFor(legal[index])
-		Art.Fill(missionPic, Art.MissionPicture(d.Id, actor.ArtSkin) if d != null else null)
+		Art.Fill(missionPic, Art.OrPlaceholder(Art.MissionPicture(d.Id, actor.ArtSkin) if d != null else null))
 	picker.item_selected.connect(showMission)
 	showMission.call(0)
 
