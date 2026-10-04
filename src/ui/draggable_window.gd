@@ -313,6 +313,49 @@ static func LegalMissions(team: Array, target: Planet, victim: Character, thing:
 	return legal
 
 
+## WHY NO MISSION CAN GO, and the RIGHT why (TeeJ, 2026-10-03: George
+## Marshall dropped on unexplored Canada was told "Sabotage needs a specific
+## target"). In order: the picked object cannot be sabotaged; a team rule
+## (Recruitment without a major character); the target turns away every
+## mission this team runs on a system (unexplored, enemy-held, ...); only
+## then, when sabotage is all the team does, where its target is; nothing
+## this team can do at all.
+static func RefusalReason(team: Array, target: Planet, victim: Character, thing: Variant) -> String:
+	var actor: Faction = team[0].Faction
+	if thing != null:
+		var sab: Result = MissionManager.CanSabotage(actor, thing, target)
+		if not sab.ok:
+			return sab.error
+	var elsewhere: Array = MissionManager.PerformableBy(team)
+	if thing == null and victim == null:
+		# A mission this team could run here but for a team rule - name the rule.
+		for t in Enums.MissionType.values():
+			if MissionManager.NeedsCharacterTarget(t) or MissionManager.NeedsObjectTarget(t):
+				continue
+			if not MissionManager.CanTarget(t, actor, target).ok or not Lq.all(team, func(u: Unit) -> bool: return MissionManager.CanPerform(u, t)):
+				continue
+			var rule: Result = MissionManager.TeamMeetsExtraRule(team, t)
+			if not rule.ok:
+				return rule.error
+		# The target itself turns this team's system missions away.
+		for t in elsewhere:
+			if MissionManager.NeedsCharacterTarget(t) or MissionManager.NeedsObjectTarget(t):
+				continue
+			var at: Result = MissionManager.CanTarget(t, actor, target)
+			if not at.ok:
+				return at.error
+		if MissionManager.TeamCanPerform(team, Enums.MissionType.Sabotage):
+			# The targets are named in the PACK's words (display.json terms): a
+			# setting without shields or squadrons lists what it does have.
+			return ("Sabotage needs a specific target, not the system: open the "
+				+ "system's Defenses or Manufacturing window and put the crosshair on "
+				+ "the %s, %s, %s, %s or facility itself, or on a ship in a fleet.") 				% [Terms.lower("planetary_shields"), Terms.lower("orbital_batteries"), Terms.lower("trooper_regiment"), Terms.lower("fighter_squadron")]
+	if elsewhere.is_empty():
+		return "%s cannot perform any mission this game has implemented yet." 			% ", ".join(Lq.select(team, func(u: Unit) -> String: return u.Name))
+	var why: String = MissionManager.CanTarget(elsewhere[0], actor, target).error
+	return why if not why.is_empty() else "%s is not a valid target for this team." % target.Name
+
+
 func OpenCreateMission(team: Array, origin: Planet, target: Planet, picked: Variant = null) -> void:
 	if target == null:
 		print("[Mission] That target is nowhere we can reach.")
@@ -326,41 +369,7 @@ func OpenCreateMission(team: Array, origin: Planet, target: Planet, picked: Vari
 	var legal: Array[int] = LegalMissions(team, target, victim, thing)
 
 	if legal.is_empty():
-		# Say WHY, and say the RIGHT why.
-		var elsewhere: Array = MissionManager.PerformableBy(team)
-		var why: String = ""
-		var sab: Result = MissionManager.CanSabotage(actor, thing, target) if thing != null else null
-		# A mission this team could run here but for a team rule (Recruitment
-		# without a major character) - name the rule.
-		var ruled_out: String = ""
-		if thing == null and victim == null:
-			for t in Enums.MissionType.values():
-				if MissionManager.NeedsCharacterTarget(t) or MissionManager.NeedsObjectTarget(t):
-					continue
-				if not MissionManager.CanTarget(t, actor, target).ok or not Lq.all(team, func(u: Unit) -> bool: return MissionManager.CanPerform(u, t)):
-					continue
-				var rule: Result = MissionManager.TeamMeetsExtraRule(team, t)
-				if not rule.ok:
-					ruled_out = rule.error
-					break
-		if thing != null and not sab.ok:
-			why = sab.error
-		elif not ruled_out.is_empty():
-			why = ruled_out
-		elif thing == null and victim == null and MissionManager.TeamCanPerform(team, Enums.MissionType.Sabotage):
-			# The targets are named in the PACK's words (display.json terms): a
-			# setting without shields or squadrons lists what it does have.
-			why = ("Sabotage needs a specific target, not the system: open the "
-				+ "system's Defenses or Manufacturing window and put the crosshair on "
-				+ "the %s, %s, %s, %s or facility itself, or on a ship in a fleet.") \
-				% [Terms.lower("planetary_shields"), Terms.lower("orbital_batteries"), Terms.lower("trooper_regiment"), Terms.lower("fighter_squadron")]
-		elif elsewhere.is_empty():
-			why = "%s cannot perform any mission this game has implemented yet." \
-				% ", ".join(Lq.select(team, func(u: Unit) -> String: return u.Name))
-		else:
-			why = MissionManager.CanTarget(elsewhere[0], actor, target).error
-			if why.is_empty():
-				why = "%s is not a valid target for this team." % target.Name
+		var why: String = RefusalReason(team, target, victim, thing)
 		# "C-3PO or IMP-22 indicates the error" (manual p102) - and that is all
 		# the original does (TeeJ, 2026-09-28: "this message should not appear -
 		# C3PO's message is enough - the original has no such message"). The box
