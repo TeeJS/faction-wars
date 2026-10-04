@@ -9,7 +9,8 @@ approved 1939 replacements described below. All original borders, plate
 numbers and captions are preserved. Every pixel outside the flag
 interiors remains unchanged for the 83 style-only cards. The cards remain
 400 x 200; archived masters are 1600 x 800. The 37 x 37
-`planet_sprites/` are unchanged.
+`planet_sprites/` are cut from these cards, each card's own flag, by
+`tools/look/make_ww2_small_from_plates.py flags`.
 
 All 88 original cards have byte-for-byte backups and SHA-256 hashes in
 `planets/backup-originals-2026-10-04/`. Source records, prompts, generated
@@ -25,8 +26,8 @@ uses its 1937–1940 inscriptions; Indochina uses the 1923–1949 yellow
 swallowtail civil/naval ensign. Their original card borders and captions
 are preserved, with flags balanced at 240 x 120. These five approved card
 choices supersede the older country-identity presentation policy below.
-The original source table below continues to describe the unchanged 37x37
-sprites; approved card sources, attribution and licences are recorded in
+The original source table below continues to describe the other 83 flags
+(the State of Burma flag is no longer shown); approved card sources, attribution and licences are recorded in
 the five separate pack-credit entries and in
 `planets/vintage-1940s-comic-masters-2026-10-04/approved-card-sources.json`.
 Burma adaptation: CC BY-SA 3.0; Ceylon: CC BY-SA 4.0; the other three

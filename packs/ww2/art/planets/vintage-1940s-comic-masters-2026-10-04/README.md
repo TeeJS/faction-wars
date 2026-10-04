@@ -11,7 +11,7 @@
 - 1939-proposals/: five approved replacement designs, installed on 2026-10-04. See its README for source/licence details.
 - scripts/: assembly, packaging, review-sheet and verification scripts used for this batch.
 - Both this directory and the backup have .gdignore; none of these archives are shipped by Godot.
-- 37x37 planet_sprites and tools/look/ww2_flags.json remain unchanged.
+- 37x37 planet_sprites and tools/look/ww2_flags.json remain unchanged. (Later the same day the 37x37 planet_sprites were cut from these cards by `tools/look/make_ww2_small_from_plates.py flags`.)
 
 The 83 style-only cards preserve all pixels outside the flag interiors. The five approved replacement cards preserve original frames and labels, with new parchment interiors and balanced 2:1 flags. No Nazi symbols added; Germany remains black-white-red. United States retains 48 stars; Brazil retains 21; Venezuela retains seven. Korea retains the original historical taegeuk orientation. Hawaii retains the original canton four stripe-heights tall (an early prompt note said five, but the reference and selected output retain four).
 

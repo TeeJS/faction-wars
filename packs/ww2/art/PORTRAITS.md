@@ -11,8 +11,9 @@ reconstructed shoulders where the original symbol-removal crop was tight. German
 uniforms and caps omit Nazi emblems, eagles, SS insignia and German decorations.
 All 71 final cards were visually reviewed for symbols, likeness and framing.
 
-Hitler, Himmler, Raeder and Leclerc were completed on later neutral historical edits after initial image-tool rejections. The historical failures remain logged, and the selected final portraits contain no Nazi symbols. The separate 80 x 80
-portraits and 61 x 25 miniatures remain photographic for every character.
+Hitler, Himmler, Raeder and Leclerc were completed on later neutral historical edits after initial image-tool rejections. The historical failures remain logged, and the selected final portraits contain no Nazi symbols. The 80 x 80
+portraits and 61 x 25 miniatures of all 71 are cut from their redrawn cards by
+`tools/look/make_ww2_small_from_plates.py characters`.
 
 Source author, attribution, licence and licence links below and in `../credits.json`
 continue to apply to the adaptations. CC BY-SA adaptations are distributed under
@@ -27,8 +28,9 @@ contact sheets and rejection records are in
 `.gdignore` files so they are excluded from game imports and exports.
 
 **Regeneration:** `make_ww2_portraits.py` recreates the original photographic cards
-and will overwrite these adaptations. After running it, restore the 67 finished
-cards from the archive's `game-size/` directory. The JSON source records and the
+and will overwrite these adaptations. After running it, restore the 71 finished
+cards from the archive's `game-size/` directory, then run
+`make_ww2_small_from_plates.py characters` again. The JSON source records and the
 crop table below document the original photographic pipeline.
 
 ## Original photographic sources and pipeline
