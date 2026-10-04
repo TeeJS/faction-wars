@@ -60,6 +60,15 @@ static func Build(menu: Control, first: Faction, second: Faction, load_btn: Butt
 	col.add_child(main)
 	main.add_child(_dossier())
 	main.add_child(_orders(menu))
+	# The option check boxes moved into the orders panel before it hung under
+	# the menu, and a move out of the owner's reach drops the owner - and with
+	# it the %name the menu reads them by when a side is picked (TeeJ,
+	# 2026-10-04: "now I can't pick a side and proceed to the game"). Give
+	# them back to the menu, now that it is their ancestor again.
+	for chk_name in ["ChkHQOnly", "ChkFeedback"]:
+		var chk: Node = main.find_child(chk_name, true, false)
+		if chk != null:
+			chk.owner = menu
 
 	# The launch plates: the scene's side buttons, one click each, as before.
 	var faction_label: Label = menu.get_node("CenterContainer/MenuVBox/FactionLabel")

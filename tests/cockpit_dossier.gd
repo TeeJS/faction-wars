@@ -103,6 +103,18 @@ func _init() -> void:
 		await process_frame
 		await process_frame
 		_check(menu.get_node_or_null("CreditsWindow") == null, "Close takes the sheet away")
+	# Picking a side reads the option boxes by their %names (menu.gd
+	# StartGame): moved into the orders, they must still answer to them
+	# (TeeJ, 2026-10-04: "now I can't pick a side and proceed to the game").
+	var layout: Node = menu.get_node_or_null("DossierLayout")
+	for n in ["ChkHQOnly", "ChkFeedback"]:
+		var by_name: Node = menu.get_node_or_null("%" + n)
+		_check(by_name != null and layout != null and layout.is_ancestor_of(by_name), "%%%s still finds the box in the orders" % n)
+	var hq: CheckBox = menu.get_node_or_null("%ChkHQOnly")
+	if hq != null:
+		hq.button_pressed = true
+		_check((menu.get_node("%ChkHQOnly") as CheckBox).button_pressed, "and reads what was ticked")
+		hq.button_pressed = false
 	menu.queue_free()
 	await process_frame
 
