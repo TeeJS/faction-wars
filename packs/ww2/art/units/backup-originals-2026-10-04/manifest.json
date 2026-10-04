@@ -1,0 +1,387 @@
+[
+  {
+    "name": "a6m_zero_squadron.png",
+    "sha256": "688D513BF0B142E97C998E7F6DE43A0E6E5F89204EA3AD1F9CF75DE56E611B42",
+    "bytes": 71849
+  },
+  {
+    "name": "abwehr_agents.png",
+    "sha256": "9FABEDFADC0623B56A3A906A46AB5DFC51AC004013BB19FFD392803D802801CA",
+    "bytes": 71614
+  },
+  {
+    "name": "allied_destroyer_flotilla.png",
+    "sha256": "5B1BCA229DF8173CE039276BE4DC1A8C67D005A9A3EB35A098B78B354DEE454F",
+    "bytes": 80718
+  },
+  {
+    "name": "allied_naval_infantry_battalion.png",
+    "sha256": "E26CC9484B5EA8CF38FDD39C8343F81874D6EF0C20537B0E4AFDAFC5DE6A2F29",
+    "bytes": 77025
+  },
+  {
+    "name": "alpini_division.png",
+    "sha256": "A71372A19588E6F302C548088BAF6F751BA005432EBBDBB8FFA7068ECB7BC2FC",
+    "bytes": 95509
+  },
+  {
+    "name": "atomic_bomber_wing.png",
+    "sha256": "E2F2436FA1AE2C179EAAE5067C0953881EC4D5D299E45DAB55BE066B2DE0A9B9",
+    "bytes": 72273
+  },
+  {
+    "name": "axis_destroyer_flotilla.png",
+    "sha256": "ED1BDDD85D95F3B81AFCD0564829FD1C52D65381C90EC017D73D30F0A148ADA7",
+    "bytes": 81867
+  },
+  {
+    "name": "axis_naval_infantry_battalion.png",
+    "sha256": "2E07ABDF666E35F7FE8090E4A74841A2CC7CA61B1AC158FAEB9B9E49C21149AD",
+    "bytes": 77887
+  },
+  {
+    "name": "axis_supply_convoy.png",
+    "sha256": "80978FD95FEBF008C52D8C551958D319F091DC300E68D988476D47C55248F666",
+    "bytes": 78377
+  },
+  {
+    "name": "axis_transport_convoy.png",
+    "sha256": "5DF29EDD1203FD97B1559E9CCB8902DA107B90A6988CFA34A44F2CD0BBB3A101",
+    "bytes": 80730
+  },
+  {
+    "name": "bf_109_squadron.png",
+    "sha256": "7770F37020782CB98C09F66B08942F489163BAB6F02B1F39BA0C8B4DB290F65B",
+    "bytes": 71069
+  },
+  {
+    "name": "bismarck_class_battleship.png",
+    "sha256": "9AFEE1C7EFC56CB2C816364F47FB89D05FD4949BB6512D7C24AC3552FA4697B9",
+    "bytes": 73550
+  },
+  {
+    "name": "brandenburgers.png",
+    "sha256": "3C5B74036BB70131874FD9F8A91D29251EC9A614DA18D736627214035830741F",
+    "bytes": 83605
+  },
+  {
+    "name": "british_infantry_division.png",
+    "sha256": "E30CA83CEE0675FF4F876C60837F6861ADEA7695197BC8B90564FFE4C99E2E06",
+    "bytes": 78386
+  },
+  {
+    "name": "chinese_infantry_division.png",
+    "sha256": "400EBBD58B498324A9755A10867657D5F67A9CEEE7E447CE3252021DF8476000",
+    "bytes": 78339
+  },
+  {
+    "name": "cleveland_class_cruiser.png",
+    "sha256": "3B3B8B9D9E9D669405846AA2420567FA874A107173AD1AA0A4049096A34B35ED",
+    "bytes": 73623
+  },
+  {
+    "name": "commandos.png",
+    "sha256": "15A2F2C06ADA368E746F3FFC2F15FF45B95037A977AF74AD8A379C4292A47160",
+    "bytes": 82417
+  },
+  {
+    "name": "commonwealth_division.png",
+    "sha256": "8B353382E202A1F5E20C1FF49AFCA2B7BD189D60B5360CFD709DD8A4A0C8FC26",
+    "bytes": 78246
+  },
+  {
+    "name": "d3a_val_squadron.png",
+    "sha256": "99D6915AA4D39C99E3DFBC187AA9CA0590159AEBBE29F4EAE2A0FAE3B6667A3C",
+    "bytes": 74052
+  },
+  {
+    "name": "dewoitine_d520_squadron.png",
+    "sha256": "8A66B0372E9874653EEF8A3FD1D12B0AECB095617B53D134692C0E6ACB100ADB",
+    "bytes": 72437
+  },
+  {
+    "name": "essex_class_carrier.png",
+    "sha256": "A7E6A745E2BE6078402BC6598DA755D14EBAC83B2EC975A850CAF0FA1F4B1A89",
+    "bytes": 70457
+  },
+  {
+    "name": "f4f_wildcat_squadron.png",
+    "sha256": "CC576ADF51A4D22CB2B5A567CF204715D1656C419FC5C24920056D306C51575B",
+    "bytes": 71869
+  },
+  {
+    "name": "f6f_hellcat_squadron.png",
+    "sha256": "0530A43F024B28D04AE682D70D679F5905C7EF914692F08587BBABBFDCC5B4C3",
+    "bytes": 71103
+  },
+  {
+    "name": "fallschirmjager_division.png",
+    "sha256": "EE2066E93E49A0DCEDDF25A622873CDC77AD8931EDF3A03FEA0F7E156B8AEDD3",
+    "bytes": 82066
+  },
+  {
+    "name": "fletcher_class_destroyer_flotilla.png",
+    "sha256": "E57AB5B1D65D059C70730425FEA1E88646C31C06024C8ACDFEAFA8F5F0E90585",
+    "bytes": 82155
+  },
+  {
+    "name": "flower_class_corvette_group.png",
+    "sha256": "4ABD1298E2428031D35234DA6FE339BA0F6BE0BAA6BBB122E79B7C27B5C975F0",
+    "bytes": 81060
+  },
+  {
+    "name": "french_infantry_division.png",
+    "sha256": "234D5E6327C57DBE0CBDD675AB8009BAB2A8421B8E3D6A04FDD695528E4F2BC5",
+    "bytes": 78498
+  },
+  {
+    "name": "fw_190_squadron.png",
+    "sha256": "A4BDA3F933037F1CBF06382004D9CF8CFCB3A3E76088708C29CC97C7FBF8C7FC",
+    "bytes": 70359
+  },
+  {
+    "name": "gangut_class_battleship.png",
+    "sha256": "41786647BFECC9C2840A3FCCB8437F9C37960B4E763AE8EE2CEF1EC4912EF354",
+    "bytes": 74033
+  },
+  {
+    "name": "gato_class_submarine_flotilla.png",
+    "sha256": "9D8DD8CACAB5B6918CC0AA0DDA9C5678FB589452FAECE5DFA04B9776161E17EF",
+    "bytes": 79662
+  },
+  {
+    "name": "guards_tank_corps.png",
+    "sha256": "6451129C6764BAF7FD1992D2C643EFD2BADFEF14569C106C98D4C7910C648E98",
+    "bytes": 78162
+  },
+  {
+    "name": "hipper_class_heavy_cruiser.png",
+    "sha256": "386947349D36AB3B07C5A2B6891EA36FD3B735E2937738A44DE5B90B6BCF7D2B",
+    "bytes": 74492
+  },
+  {
+    "name": "hurricane_squadron.png",
+    "sha256": "D79FF9BE5DFFD9617B418E6831160DDF1526A9F5D431D90B3CB319F34C20BFA4",
+    "bytes": 73217
+  },
+  {
+    "name": "il_2_sturmovik_squadron.png",
+    "sha256": "F0ABC13B25DF66BDE5F0FE64E97645FBCC049185C02F23A4C403C6AA5188E4BB",
+    "bytes": 74195
+  },
+  {
+    "name": "illustrious_class_carrier.png",
+    "sha256": "56CB0BD2AB00BD595AD88C419D07C4AEC5BC0A4B72A28D1E5E61B91A128A1801",
+    "bytes": 70602
+  },
+  {
+    "name": "iowa_class_battleship.png",
+    "sha256": "0EEE73090F449F0DC7B08B92C81C4910898E9367CF1C5F35EBC67B50BCAB9E07",
+    "bytes": 73498
+  },
+  {
+    "name": "italian_infantry_division.png",
+    "sha256": "72A636E9A16F4D398861FEE56A5B155B652D9194BFBEBB248ED11B5F435F6210",
+    "bytes": 78693
+  },
+  {
+    "name": "japanese_infantry_division.png",
+    "sha256": "9F0AC78F2F90A4AD3462F4013378AF44FAE14028F91980A7CC450E2BC88FD798",
+    "bytes": 78551
+  },
+  {
+    "name": "japanese_transport_convoy.png",
+    "sha256": "A184EF5E20F7ABB756971242CCA3010951B5B3DD6F5F584B246C554BE8044F1A",
+    "bytes": 80660
+  },
+  {
+    "name": "ju_87_stuka_squadron.png",
+    "sha256": "7C33CDF90C75A381C574E1D3D8E899E7A1281E42B107AA62899F0AA32CBC847E",
+    "bytes": 74906
+  },
+  {
+    "name": "kempeitai_operatives.png",
+    "sha256": "DE709D146184AF37DC6F93431E49B6F3DC04403FBDDFF48CB5C552207AC92267",
+    "bytes": 77493
+  },
+  {
+    "name": "ki_43_oscar_squadron.png",
+    "sha256": "CDD1A6F94E79E4E122772C3DE9ED4D5A8F7BC33D42F4A16EBC43AC52BDBAE5BD",
+    "bytes": 71944
+  },
+  {
+    "name": "king_george_v_class_battleship.png",
+    "sha256": "28169865F462EFFC8E8643665AB5E1218FA79BC3BE10E9C0E96BCC0A01781502",
+    "bytes": 74251
+  },
+  {
+    "name": "kirov_class_cruiser.png",
+    "sha256": "A291F94CD9EE2C02056BB11EC58DBC447423569F5FA25131F834FEC43AC6300F",
+    "bytes": 73610
+  },
+  {
+    "name": "lancaster_squadron.png",
+    "sha256": "594107D96728F67AEA59C7911B2504BC19E9665211E0265AA7270BF5872B5F21",
+    "bytes": 72282
+  },
+  {
+    "name": "liberty_ship_convoy.png",
+    "sha256": "0E26D0E54395FA15319F9032CA72989415E60FB4DEF4F491AD98B4FA889060FC",
+    "bytes": 79834
+  },
+  {
+    "name": "littorio_class_battleship.png",
+    "sha256": "0DF5B47BA89B18AB7D3C5717EF8FF50AF697919A9BAC4717ECBBB13A0F9640B9",
+    "bytes": 73221
+  },
+  {
+    "name": "macchi_c202_squadron.png",
+    "sha256": "BCE7DAEC7F55F5507F239DE452646DD48EDE63223A5BB4BCB66C21AD17EA78A1",
+    "bytes": 73328
+  },
+  {
+    "name": "north_carolina_class_battleship.png",
+    "sha256": "A59D3F3EBA964071B2774BF5A00C60BB05386A8B011B9D484E302DAB4DFEAC8C",
+    "bytes": 74363
+  },
+  {
+    "name": "p_40_warhawk_squadron.png",
+    "sha256": "D194AC178A1B442260AEFF89652655B5DA54F2D203874605122A3DF9DC59A1BC",
+    "bytes": 73512
+  },
+  {
+    "name": "p_51_mustang_squadron.png",
+    "sha256": "7E720362963A0669C7B277D74906772C6AE470780F5CCE1E7DA9DE1007498FA4",
+    "bytes": 72579
+  },
+  {
+    "name": "panzer_division.png",
+    "sha256": "39B6C4D12B0038DCA1524D135DAE3628FE650D448D67B46B8DB3482E15C1F05B",
+    "bytes": 72101
+  },
+  {
+    "name": "photo_reconnaissance_flight.png",
+    "sha256": "AF029E870122C52E0C56D096D0E9260162B9427D66735E0B42C902C8532CB72A",
+    "bytes": 73632
+  },
+  {
+    "name": "resistance_cell.png",
+    "sha256": "EEF7E1460BA65208E0F280384F6E87CDF86F470D9924E16DD9EDCFE0ED11DA47",
+    "bytes": 78319
+  },
+  {
+    "name": "royal_marines_brigade.png",
+    "sha256": "97446F65F863169DCD9750AC9F7115954BC851522131A300ACA0951C258B7A82",
+    "bytes": 75669
+  },
+  {
+    "name": "sbd_dauntless_squadron.png",
+    "sha256": "6464B1391019A5048A7EB0D821F1639A06C884668CAC8BF7F039AA7E34011293",
+    "bytes": 72055
+  },
+  {
+    "name": "scharnhorst_class_battlecruiser.png",
+    "sha256": "0C539C4176A969C30D5EC24EAD4D9A9DF92CD8F8E1CD3543C65647BFE582FDD7",
+    "bytes": 74247
+  },
+  {
+    "name": "sd_intelligence_cell.png",
+    "sha256": "A11A7902E5A8676F559276CD3FA65AD236400E0C41F1E07BC374B1CE3A15AEEE",
+    "bytes": 74561
+  },
+  {
+    "name": "shokaku_class_carrier.png",
+    "sha256": "65EA2AE526020CCEE60152471089BDABBB84530BDDC27B9BC1CEDEF36084074D",
+    "bytes": 70650
+  },
+  {
+    "name": "snlf_brigade.png",
+    "sha256": "AB0C4F5A2C522A83F2F17A15FDC5677A2A1FB3073C59FBD806A0815449FC95BD",
+    "bytes": 77718
+  },
+  {
+    "name": "soe_agents.png",
+    "sha256": "CBFB684DD144D97DCEFB4F3C111A91EFA3F58FB38BF4DE0D9B9401C08C54E2C9",
+    "bytes": 75943
+  },
+  {
+    "name": "soviet_guards_rifle_division.png",
+    "sha256": "738CEB5595E906FDE8A641CBEDBDB07D62464AF52E01D111555A3E905FA4548F",
+    "bytes": 80811
+  },
+  {
+    "name": "soviet_rifle_division.png",
+    "sha256": "EC075AB2896CC85A2A4ABE0794F4DF92A76B060B3B08B7ADBC5E6BCDFA26B431",
+    "bytes": 77638
+  },
+  {
+    "name": "spitfire_squadron.png",
+    "sha256": "9DD467209372CB2CD53C88FE8F3316797D7288AF569F35C29546C89CE846194D",
+    "bytes": 71806
+  },
+  {
+    "name": "takao_class_heavy_cruiser.png",
+    "sha256": "CD98D7BE2457BD1562191FFB1BACF907C17805737DCDE03A5482A1C6AE2FD8BD",
+    "bytes": 73724
+  },
+  {
+    "name": "tbf_avenger_squadron.png",
+    "sha256": "DAB43DED31ADC09A18ACF4FC5ED170FEB2FD762262EAD0DD5CFE311A1E36A80C",
+    "bytes": 70696
+  },
+  {
+    "name": "town_class_cruiser.png",
+    "sha256": "DA7E788DC7BDB21C97E8F73C5D69E2BDCF64FBBA13B6F752235368327F85C248",
+    "bytes": 73414
+  },
+  {
+    "name": "troopship_convoy.png",
+    "sha256": "37B1111440F9A56F6F9D0E8468547EE2E9BD46AB8B6116D0F25A637E66F35F05",
+    "bytes": 75835
+  },
+  {
+    "name": "u_boat_flotilla.png",
+    "sha256": "6239C882D653D463AE0AAF4C006D37354DFB8281E266F0556783495CCC040AAF",
+    "bytes": 79436
+  },
+  {
+    "name": "us_armored_division.png",
+    "sha256": "CDC76C2FB5F19AA8B1C564EE8C7C56D61B61B1EAF46D332F226794AA217A75CE",
+    "bytes": 73331
+  },
+  {
+    "name": "us_infantry_division.png",
+    "sha256": "D367D5A302F77FA56D25A21B58094A8CDB164BA0BAEB5D3974F7F5321293A208",
+    "bytes": 77084
+  },
+  {
+    "name": "us_marine_division.png",
+    "sha256": "707F4ADC339A5B23FD52B4F90A3B2C8F24E4B77927F0233B0EED86E3F44CDB46",
+    "bytes": 75214
+  },
+  {
+    "name": "waffen_ss_division.png",
+    "sha256": "7F17D1EFAB00ECBFEBD12E34CA11C56ED90ACD819DA33780E101B1F2813C2412",
+    "bytes": 81235
+  },
+  {
+    "name": "wehrmacht_infantry_division.png",
+    "sha256": "7E18408F5B85037121D36EAEBEBEC1B3175D362D508C61816BAC30DB4378FA68",
+    "bytes": 79792
+  },
+  {
+    "name": "yak_9_squadron.png",
+    "sha256": "550ECF187E980625F0232F9446B15E95D9C7E0EE7DEB1DE01AFFC5F9F798FBA4",
+    "bytes": 71754
+  },
+  {
+    "name": "yamato_class_battleship.png",
+    "sha256": "A3D25194EDF13718AA91E5FD614CB80F76695BBE42603144AA8F7DB6EF3CD842",
+    "bytes": 73644
+  },
+  {
+    "name": "zara_class_heavy_cruiser.png",
+    "sha256": "3A2C82C38D5927DEA618645BA3D0A39925A6F9917A2335E7FE752BB8DBC10A1E",
+    "bytes": 74366
+  }
+]
