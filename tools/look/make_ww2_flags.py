@@ -1,5 +1,5 @@
 """The WWII pack's system pictures: each of its 88 systems flies a flag, as
-its 37x37 system picture (SCHEMA.md section 14's planet_sprites/<artwork_id>.png,
+its 37x37 system picture (SCHEMA.md section 14's location_sprites/<artwork_id>.png,
 which the sector window, the System window's title bar and the mission
 windows show).
 
@@ -21,8 +21,8 @@ Nazi symbols in the game at all).
 Downloads the SVG and the rendition into <download folder> (kept, so a second
 run fetches nothing), stops on any hash that differs, and writes:
 
-    packs/ww2/art/planet_sprites/<artwork_id>.png   37x37, per system (map.json)
-    packs/ww2/art/planets/<id>.png                  400x200, per system: its
+    packs/ww2/art/location_sprites/<artwork_id>.png 37x37, per system (map.json)
+    packs/ww2/art/locations/<id>.png                400x200, per system: its
                                                     Encyclopedia plate, the flag
                                                     large on the look's paper
                                                     (plates 93 on, after the
@@ -203,7 +203,7 @@ def write_credits(flags, used):
     all system pictures) and puts them after the Europe map's."""
     path = os.path.join(PACK, "credits.json")
     doc = json.load(open(path, encoding="utf-8"))
-    ours = lambda a: a.get("files") and all(f.startswith(("art/planet_sprites/", "art/planets/")) for f in a["files"])
+    ours = lambda a: a.get("files") and all(f.startswith(("art/location_sprites/", "art/locations/")) for f in a["files"])
     assets = [a for a in doc["assets"] if not ours(a)]
     by_licence = {}
     for key, files in used.items():
@@ -223,7 +223,7 @@ def write_credits(flags, used):
             "author": "Wikimedia Commons contributors; each file's page, author and SHA-1 are in art/FLAGS.md",
             "source": "https://commons.wikimedia.org/wiki/Category:Flags_by_country",
             "licence": "Public domain (each file's grounds in art/FLAGS.md)",
-            "changes": "The PNG Commons renders from each SVG, fitted into 35 x 27 at its own proportions (the Baltic States: Estonia's, Latvia's and Lithuania's side by side), a little toned to the paper, edged in ink, on a 37 x 37 clear square; and each system's Encyclopedia plate (art/planets/, 400 x 200), the same flag fitted into 240 x 128 on the look's paper, in the plates' frame.",
+            "changes": "The PNG Commons renders from each SVG, fitted into 35 x 27 at its own proportions (the Baltic States: Estonia's, Latvia's and Lithuania's side by side), a little toned to the paper, edged in ink, on a 37 x 37 clear square; and each system's Encyclopedia plate (art/locations/, 400 x 200), the same flag fitted into 240 x 128 on the look's paper, in the plates' frame.",
             "files": sorted((f for k in pd for f in used[k]), key=by_number),
         })
     for licence, keys in sorted(by_licence.items()):
@@ -233,7 +233,7 @@ def write_credits(flags, used):
                  "source": f["page"], "licence": licence}
             if f["licence_url"]:
                 e["licence_url"] = re.sub(r"^http://", "https://", f["licence_url"])
-            e["changes"] = "Commons' PNG rendering, fitted into 35 x 27, a little toned to the paper, edged in ink, on a 37 x 37 clear square; and on each system's Encyclopedia plate (art/planets/, 400 x 200), fitted into 240 x 128." + \
+            e["changes"] = "Commons' PNG rendering, fitted into 35 x 27, a little toned to the paper, edged in ink, on a 37 x 37 clear square; and on each system's Encyclopedia plate (art/locations/, 400 x 200), fitted into 240 x 128." + \
                 (" Shared under the same licence." if "SA" in licence.upper() else "")
             e["files"] = sorted(used[key], key=by_number)
             entries.append(e)
@@ -264,7 +264,7 @@ def write_provenance(flags, systems, planets):
 
 Made by `tools/look/make_ww2_flags.py` from `tools/look/ww2_flags.json`;
 regenerate rather than edit. Each system's picture (SCHEMA.md section 14:
-`planet_sprites/<artwork_id>.png`, 37x37) is a flag, fixed like a planet's
+`location_sprites/<artwork_id>.png`, 37x37) is a flag, fixed like a planet's
 artwork, that identifies the country itself, never its conqueror (TeeJ,
 2026-09-30), and that holds up for the war years:
 
@@ -329,16 +329,16 @@ def main():
     for key, f in flags.items():
         if "parts" in f:
             made[key] = side_by_side([pngs[p] for p in f["parts"]])
-    out = os.path.join(ART, "planet_sprites")
+    out = os.path.join(ART, "location_sprites")
     os.makedirs(out, exist_ok=True)
-    plates = os.path.join(ART, "planets")
+    plates = os.path.join(ART, "locations")
     os.makedirs(plates, exist_ok=True)
     used = {}
     for n, p in enumerate(planets):
         key = systems[p["id"]]["flag"]
         name = "%d.png" % p["artwork_id"]
         made[key].save(os.path.join(out, name), optimize=True)
-        used.setdefault(key, []).append("art/planet_sprites/" + name)
+        used.setdefault(key, []).append("art/location_sprites/" + name)
         # Its Encyclopedia plate: the flag large (a side-by-side one at the
         # plate's width), numbered on from the units' plates.
         f = flags[key]
@@ -347,7 +347,7 @@ def main():
         else:
             big, seps = Image.open(pngs[key]).convert("RGBA"), []
         plate(big, seps, FIRST_PLATE + n, p["display_name"]).save(os.path.join(plates, p["id"] + ".png"), optimize=True)
-        used[key].append("art/planets/%s.png" % p["id"])
+        used[key].append("art/locations/%s.png" % p["id"])
     write_credits(flags, used)
     write_provenance(flags, systems, planets)
     print("%d systems, %d flags" % (len(planets), len(used)))

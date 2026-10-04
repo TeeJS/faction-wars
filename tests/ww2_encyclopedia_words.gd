@@ -5,7 +5,7 @@ extends SceneTree
 ## (Art.Description) carries a text for every territory, unit, facility,
 ## mission and person the Encyclopedia lists, none of them in the Star Wars
 ## words tests/ww2_words.gd keeps out; every territory has its plate
-## (art/planets/<id>.png, tools/look/make_ww2_flags.py). Headless:
+## (art/locations/<id>.png, tools/look/make_ww2_flags.py). Headless:
 ##
 ##   .\tools\run-gd.ps1 tests/ww2_encyclopedia_words.gd -- --pack=ww2
 

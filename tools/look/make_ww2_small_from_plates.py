@@ -10,7 +10,7 @@ kind's plates - and "update them in game"):
         packs/ww2/art/portraits/characters/<id>.png     80x80  portrait
         packs/ww2/art/miniatures/characters/<id>.png    61x25  list miniature
     flags
-        packs/ww2/art/planet_sprites/<artwork_id>.png   37x37  the system's map picture
+        packs/ww2/art/location_sprites/<artwork_id>.png 37x37  the system's map picture
 
     python tools\\look\\make_ww2_small_from_plates.py [units|facilities|characters|flags ...]
 
@@ -196,15 +196,15 @@ def sprite(flag):
 def flags():
     planets = json.load(open(os.path.join(PACK, "map.json"), encoding="utf-8"))["planets"]
     for p in planets:
-        plate = Image.open(os.path.join(ART, "planets", p["id"] + ".png")).convert("RGB")
+        plate = Image.open(os.path.join(ART, "locations", p["id"] + ".png")).convert("RGB")
         box = flag_box(plate)
-        big = master("planets", p["id"])
+        big = master("locations", p["id"])
         if box is None or big is None:
-            sys.exit("planets/%s: no flag found / no master" % p["id"])
+            sys.exit("locations/%s: no flag found / no master" % p["id"])
         # Inside the ink edge (2 px on the plate), from the 4x master.
         l, t, r, b = box
         flag = big.crop(((l + 2) * 4, (t + 2) * 4, (r - 2) * 4, (b - 2) * 4))
-        save(sprite(flag), "planet_sprites/%d.png" % p["artwork_id"])
+        save(sprite(flag), "location_sprites/%d.png" % p["artwork_id"])
     print("flags: %d system pictures" % len(planets))
 
 
