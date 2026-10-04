@@ -1,0 +1,72 @@
+[
+  {
+    "name": "abduction.png",
+    "sha256": "EC1AFA87337A248B7000EB04145C4C77BA2157028846EBE4D4C64467C40F0AE6",
+    "bytes": 75566
+  },
+  {
+    "name": "assassination.png",
+    "sha256": "BFE257C6C3E77A0636C0B09353A8CD6411B5930F3B5FB547A01D9152D050A4BD",
+    "bytes": 69798
+  },
+  {
+    "name": "diplomacy.png",
+    "sha256": "8E9E59972867CFC9F4C972AEE380D1693A7DD51B1FC06F9FD6B88EAC471E37A5",
+    "bytes": 75837
+  },
+  {
+    "name": "espionage.png",
+    "sha256": "3ACFBE96942ACBBBFC415BCC169787EEDD47DA3E365E0C535BC5082F157C5656",
+    "bytes": 76374
+  },
+  {
+    "name": "facility_design_research.png",
+    "sha256": "3CBD5C79A548408981D5C7E0458C0DBC7A2817892051CAB0BB152C4DBECB6DD5",
+    "bytes": 81964
+  },
+  {
+    "name": "incite_uprising.png",
+    "sha256": "C211D92FFD2EC193C82A051788934B699C93CBDF3006EE4B10F78101E7122BCA",
+    "bytes": 76779
+  },
+  {
+    "name": "reconnaissance.png",
+    "sha256": "A2571211C21B1B14B36A5F74A8F00AF72496E4AA8E9201CACCC4B092D94DE87D",
+    "bytes": 81692
+  },
+  {
+    "name": "recruitment.png",
+    "sha256": "D73E7435AAB4336E4514E43501BD1A154DDDFED29A4DDEBF3DD4B94905EB4F0F",
+    "bytes": 72779
+  },
+  {
+    "name": "rescue.png",
+    "sha256": "46C5704EBBE73880CD58DFB6B39BD95BCEE69CE5F48DED8CCC6C1F6450285E3B",
+    "bytes": 87429
+  },
+  {
+    "name": "sabotage_atomic_program.png",
+    "sha256": "9D0910FAB8F4697C34627111EF59C9EDB0C44BD19E9021992BE95C624AF2560E",
+    "bytes": 84413
+  },
+  {
+    "name": "sabotage.png",
+    "sha256": "8218312CB6ED95395931C3CD0C77BE4B7DF892379B7435C550830C3F22DBAD51",
+    "bytes": 81999
+  },
+  {
+    "name": "ship_design_research.png",
+    "sha256": "B50B42777F53675AFE1D97DBC90E6DE07898B5A2F4D49BA27811D42310D28E07",
+    "bytes": 73355
+  },
+  {
+    "name": "subdue_uprising.png",
+    "sha256": "89713E468DD07C22E450A29D62E1A05ED630157024217C0F9119F488830965A1",
+    "bytes": 76343
+  },
+  {
+    "name": "troop_training_research.png",
+    "sha256": "7BB89784684057F6CB4D79CC61D8ACED236C6AA7FC98EE8D5559B556D6FB2105",
+    "bytes": 73122
+  }
+]
