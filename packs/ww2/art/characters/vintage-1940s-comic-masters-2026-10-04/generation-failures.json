@@ -1,18 +1,22 @@
 [
   {
     "id": "hitler",
-    "error": "Image tool moderation blocked two neutral historical portrait requests."
+    "error": "Image tool moderation blocked two neutral historical portrait requests.",
+    "resolution": "Succeeded on later neutral historical edit; installed in 400x200 game card and archived in game-size/"
   },
   {
     "id": "himmler",
-    "error": "Image tool moderation blocked neutral historical portrait request."
+    "error": "Image tool moderation blocked neutral historical portrait request.",
+    "resolution": "Succeeded on later neutral historical edit; installed in 400x200 game card and archived in game-size/"
   },
   {
     "id": "raeder",
-    "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 590e29ac-ed51-4baf-85b6-af49719e78f3. safety_violations=[abuse].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"other\\\"\\n      ]\\n    }\\n  }\\n}\")"
+    "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 590e29ac-ed51-4baf-85b6-af49719e78f3. safety_violations=[abuse].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"other\\\"\\n      ]\\n    }\\n  }\\n}\")",
+    "resolution": "Succeeded on later neutral historical edit; installed in 400x200 game card and archived in game-size/"
   },
   {
     "id": "leclerc",
-    "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID d4bbd5b2-9ef7-4dd6-9c06-7f8c19531ee0. safety_violations=[abuse].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"other\\\"\\n      ]\\n    }\\n  }\\n}\")"
+    "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID d4bbd5b2-9ef7-4dd6-9c06-7f8c19531ee0. safety_violations=[abuse].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"other\\\"\\n      ]\\n    }\\n  }\\n}\")",
+    "resolution": "Succeeded on later neutral historical edit; installed in 400x200 game card and archived in game-size/"
   }
 ]

@@ -1,16 +1,15 @@
 # Character card redraws — 2026-10-04
 
-67 of 71 Encyclopedia cards were redrawn with the built-in AI image-generation
+All 71 Encyclopedia cards were redrawn with the built-in AI image-generation
 tool in the requested vintage 1940s comic style.
-Hitler, Himmler, Raeder and Leclerc were rejected by the image tool and remain
-unchanged; see `generation-failures.json`. No substitute image was installed.
+Hitler, Himmler, Raeder and Leclerc succeeded on later neutral historical edits. Their original image-tool rejections remain in `generation-failures.json` for audit; the successful outputs and assembly records are in `*-redraw.json`. The four selected portraits were checked for Nazi symbols.
 
 ## Files
 
 - `game-size/<id>.png`: installed 400 x 200 cards.
 - `<id>.png`: 1600 x 800 assembled masters with the original card frame enlarged.
 - `generated-raw/<id>.png`: full-resolution AI output before frame assembly.
-- `contact-sheet-01.png` through `contact-sheet-05.png`: all 67 reviewed cards.
+- `contact-sheet-01.png` through `contact-sheet-05.png`: original 67 reviewed cards; `contact-sheet-06.png`: four later completions.
 - `original-sources.json`: the original source data supplied by the user.
 - `generation-manifest.json`: per-person source, prompt, output path, reference and corrections.
 - `installed-manifest.json`: original/final hashes, dimensions, installed status.

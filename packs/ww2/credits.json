@@ -153,7 +153,7 @@
       "source": "https://commons.wikimedia.org/wiki/File:Adolf_Hitler_cropped_restored_3x4.jpg",
       "licence": "CC BY-SA 3.0 de",
       "licence_url": "https://creativecommons.org/licenses/by-sa/3.0/de/deed.en",
-      "changes": "Cut to a square around the face, clear of any swastika or Iron Cross, black and white, toned; drawn as a 400 x 200 personnel card, an 80 x 80 portrait and a 61 x 25 miniature. Original SHA-1 5061e9e427ffd617f63638af96fb4ff311a8785e. These pictures are shared under the same licence.",
+      "changes": "Cut to a square around the face, clear of any swastika or Iron Cross, black and white, toned; drawn as a 400 x 200 personnel card, an 80 x 80 portrait and a 61 x 25 miniature. Original SHA-1 5061e9e427ffd617f63638af96fb4ff311a8785e. These pictures are shared under the same licence. The 400 x 200 Encyclopedia card portrait was redrawn with OpenAI ImageGen in vintage 1940s comic style from the credited source photograph on 2026-10-04, keeping the original frame and mounts and omitting Nazi symbols. The 80 x 80 portrait and 61 x 25 miniature remain photographic. Original source attribution and licence remain applicable. This adaptation is shared under the same CC BY-SA licence.",
       "files": ["art/characters/hitler.png", "art/portraits/characters/hitler.png", "art/miniatures/characters/hitler.png"]
     },
     {
@@ -200,7 +200,7 @@
       "source": "https://commons.wikimedia.org/wiki/File:Bundesarchiv_Bild_183-S72707,_Heinrich_Himmler.jpg",
       "licence": "CC BY-SA 3.0 de",
       "licence_url": "https://creativecommons.org/licenses/by-sa/3.0/de/deed.en",
-      "changes": "Cut to a square around the face, clear of any swastika or Iron Cross, black and white, toned; drawn as a 400 x 200 personnel card, an 80 x 80 portrait and a 61 x 25 miniature. Original SHA-1 cf6bd1a5080bcce166a8309a6cd5030da254c6e7. These pictures are shared under the same licence.",
+      "changes": "Cut to a square around the face, clear of any swastika or Iron Cross, black and white, toned; drawn as a 400 x 200 personnel card, an 80 x 80 portrait and a 61 x 25 miniature. Original SHA-1 cf6bd1a5080bcce166a8309a6cd5030da254c6e7. These pictures are shared under the same licence. The 400 x 200 Encyclopedia portrait aperture was redrawn with OpenAI ImageGen in vintage 1940s comic style from the credited photograph on 2026-10-04; the original card frame and mounts were retained. The 80 x 80 portrait and 61 x 25 miniature remain photographic. The adaptation is shared under CC BY-SA 3.0 de.",
       "files": ["art/characters/himmler.png", "art/portraits/characters/himmler.png", "art/miniatures/characters/himmler.png"]
     },
     {
@@ -276,7 +276,7 @@
       "author": "Franz Langhammer",
       "source": "https://commons.wikimedia.org/wiki/File:Langhammer_-_Erich_Raeder_1936.jpg",
       "licence": "Public domain (PD-scan)",
-      "changes": "Cut to a square around the face, clear of any swastika or Iron Cross, black and white, toned; drawn as a 400 x 200 personnel card, an 80 x 80 portrait and a 61 x 25 miniature. Original SHA-1 51d4c2f4d3a4b6545ed7f762f7a0c04a81672ba0.",
+      "changes": "Cut to a square around the face, clear of any swastika or Iron Cross, black and white, toned; drawn as a 400 x 200 personnel card, an 80 x 80 portrait and a 61 x 25 miniature. Original SHA-1 51d4c2f4d3a4b6545ed7f762f7a0c04a81672ba0. The 400 x 200 Encyclopedia card portrait was redrawn with OpenAI ImageGen in vintage 1940s comic style from the credited source photograph on 2026-10-04, keeping the original frame and mounts and omitting Nazi symbols. The 80 x 80 portrait and 61 x 25 miniature remain photographic. Original source attribution and licence remain applicable.",
       "files": ["art/characters/raeder.png", "art/portraits/characters/raeder.png", "art/miniatures/characters/raeder.png"]
     },
     {
@@ -551,7 +551,7 @@
       "source": "https://commons.wikimedia.org/wiki/File:Liberation_de_paris_-_26_aout_1944_-_portrait_du_general_jacques-philippe_leclerc_de_hautecl_427563.jpg",
       "licence": "CC0",
       "licence_url": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
-      "changes": "Cut to a square around the face, clear of any swastika or Iron Cross, black and white, toned; drawn as a 400 x 200 personnel card, an 80 x 80 portrait and a 61 x 25 miniature. Original SHA-1 1f1ad6989ce187c32944af384b0955b322b42782.",
+      "changes": "Cut to a square around the face, clear of any swastika or Iron Cross, black and white, toned; drawn as a 400 x 200 personnel card, an 80 x 80 portrait and a 61 x 25 miniature. Original SHA-1 1f1ad6989ce187c32944af384b0955b322b42782. The 400 x 200 Encyclopedia card portrait was redrawn with OpenAI ImageGen in vintage 1940s comic style from the credited source photograph on 2026-10-04, keeping the original frame and mounts and omitting Nazi symbols. The 80 x 80 portrait and 61 x 25 miniature remain photographic. Original source attribution and licence remain applicable.",
       "files": ["art/characters/leclerc.png", "art/portraits/characters/leclerc.png", "art/miniatures/characters/leclerc.png"]
     },
     {

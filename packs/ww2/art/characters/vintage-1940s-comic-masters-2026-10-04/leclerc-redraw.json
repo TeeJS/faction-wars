@@ -1,0 +1,25 @@
+{
+  "id": "leclerc",
+  "status": "successful_after_earlier_tool_rejection",
+  "source": null,
+  "original_sha256": "8BB8880CF17A62DE55B03DAB30E30A7D83D0D11D88A6F72185D09A24A8041FF2",
+  "generated_raw": "generated-raw/leclerc.png",
+  "game_size": "game-size/leclerc.png",
+  "master": "leclerc.png",
+  "generated_preview_sha256": "23BB43E92665B82EA3CE48698F53DF50F5282E1E76B8E66FA91AC376506DB389",
+  "installed_sha256": "AAC06225F3F0E82C34D8A64E3843B908F667E7B54B49A278C80DA9EC77575B8A",
+  "changed_photo_pixels": 23407,
+  "assembly_source_rect": [
+    989.0,
+    119.0,
+    654.0,
+    671.0
+  ],
+  "assembly_dest_rect": [
+    222.0,
+    24.0,
+    152.0,
+    154.0
+  ],
+  "note": "Only portrait aperture changed; original frame and mounts retained. No Nazi symbols in selected image."
+}

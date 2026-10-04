@@ -2191,5 +2191,50 @@
     },
     "fullPhotoReference": "C:\\Users\\tschmitz\\.codex\\visualizations\\2026\\10\\04\\01a1057c-8f88-73b2-a4a2-f23faa440ea7\\character-reference-cache\\zhukov.jpg",
     "angle": 1.2
+  },
+  {
+    "id": "himmler",
+    "path": "D:\\Github\\faction-wars\\packs\\ww2\\art\\characters\\vintage-1940s-comic-masters-2026-10-04\\generated-raw\\himmler.png",
+    "prompt": "Neutral archival historical portrait edit: redraw only Heinrich Himmler portrait in vintage 1940s comic style with pen contours, hatching and sepia; retain card layout, mounts, proportions and likeness; no Nazi symbols, uniforms, flags, endorsement or glorification.",
+    "source": {
+      "page": "https://commons.wikimedia.org/wiki/File:Bundesarchiv_Bild_183-S72707,_Heinrich_Himmler.jpg",
+      "author": "Bundesarchiv, Bild 183-S72707 / CC-BY-SA 3.0",
+      "licence": "CC BY-SA 3.0 de",
+      "original_sha1": "cf6bd1a5080bcce166a8309a6cd5030da254c6e7"
+    },
+    "fullPhotoReference": null,
+    "angle": "front",
+    "status": "succeeded_after_earlier_rejection",
+    "assemblyRecord": "himmler-redraw.json"
+  },
+  {
+    "id": "hitler",
+    "path": "D:\\Github\\faction-wars\\packs\\ww2\\art\\characters\\vintage-1940s-comic-masters-2026-10-04\\generated-raw\\hitler.png",
+    "prompt": "Use case: style-transfer. Image 1 is a historical portrait card. Image 2 is the previously approved vintage 1940s comic illustration treatment, style reference only. Create a neutral archival illustration of Adolf Hitler, limited to the portrait aperture on the RIGHT of Image 1. Use black ink contours, restrained crosshatching and warm sepia newsprint. Keep facial likeness and proportions, side-facing three-quarter head angle, combed hair, distinctive small moustache, white shirt, tie and plain civilian jacket. No glorification or endorsement. NO Nazi symbols, flags, uniform insignia, eagles, swastikas, armbands, salutes, slogans or propaganda. No extra people, no added text. Preserve original card geometry, parchment, red faction stripe, left blank ruled writing area, white photo border and black triangular photo corner mounts; wide 2:1 composition.",
+    "source": null,
+    "fullPhotoReference": null,
+    "angle": "historical portrait",
+    "status": "succeeded_after_earlier_rejection",
+    "assemblyRecord": "hitler-redraw.json"
+  },
+  {
+    "id": "raeder",
+    "path": "D:\\Github\\faction-wars\\packs\\ww2\\art\\characters\\vintage-1940s-comic-masters-2026-10-04\\generated-raw\\raeder.png",
+    "prompt": "Use case: style-transfer. Image 1 is the historical portrait card to edit. Image 2 shows the approved vintage 1940s comic ink treatment for style reference only. Redraw only the portrait aperture on the RIGHT of Image 1 as a neutral archival illustration of Admiral Erich Raeder. Preserve his likeness and side-profile angle, combed short hair, forehead, long nose, and balanced head and shoulders proportions. Ink treatment: expressive brush-and-pen contours, solid black shadows, fine crosshatching and restrained warm sepia newsprint. Show a plain dark unmarked naval-style coat silhouette with no badges or emblems. Remove any insignia from the shoulder and simplify it into unmarked fabric. No Nazi symbols, swastikas, eagles, SS marks, flags, medals, propaganda, text or added people. Keep the original card outside portrait aperture exactly unchanged: aged parchment, red faction stripe, blank ruled writing area, photo border and black triangular corner mounts. Wide 2:1 card.",
+    "source": null,
+    "fullPhotoReference": null,
+    "angle": "historical portrait",
+    "status": "succeeded_after_earlier_rejection",
+    "assemblyRecord": "raeder-redraw.json"
+  },
+  {
+    "id": "leclerc",
+    "path": "D:\\Github\\faction-wars\\packs\\ww2\\art\\characters\\vintage-1940s-comic-masters-2026-10-04\\generated-raw\\leclerc.png",
+    "prompt": "Use case: style-transfer. Image 1 is the historical portrait card to edit. Image 2 is the approved vintage 1940s comic style portrait card for matching ink treatment only. Redraw only the portrait aperture on the RIGHT in Image 1 as a neutral archival illustration of Free French General Philippe Leclerc: expressive brush-and-pen contours, solid black shadows, fine crosshatching, warm sepia newsprint. Preserve Leclerc's recognizable face, narrow moustache, head angle, period kepi and plain military coat silhouette, balanced head-and-shoulders crop. Simplify all clothing and any background into plain unmarked forms: NO badges, medals, eagles, swastikas, SS marks, flags or Nazi symbols anywhere. Keep the entire original card outside the portrait aperture exactly unchanged, including blue faction stripe, ruled blank writing area, parchment, white photo border and black triangular corner mounts. Wide 2:1 card, no text, no added people.",
+    "source": null,
+    "fullPhotoReference": null,
+    "angle": "historical portrait",
+    "status": "succeeded_after_earlier_rejection",
+    "assemblyRecord": "leclerc-redraw.json"
   }
 ]

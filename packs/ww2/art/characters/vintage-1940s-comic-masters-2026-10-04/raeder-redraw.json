@@ -1,0 +1,25 @@
+{
+  "id": "raeder",
+  "status": "successful_after_earlier_tool_rejection",
+  "source": null,
+  "original_sha256": "D1EC0E630F732403F1CF726CA8A83D805213F3BB3B55F1A9EBE2989C786C7AEB",
+  "generated_raw": "generated-raw/raeder.png",
+  "game_size": "game-size/raeder.png",
+  "master": "raeder.png",
+  "generated_preview_sha256": "0D4583734826EB179982F31357300F8177B038EC223E783D4F2D2FBD6A2342E0",
+  "installed_sha256": "C02D73CB4A62CA861F8220056C3BB8466AAFF4467E906328C3F224CBE5CBC6B9",
+  "changed_photo_pixels": 23404,
+  "assembly_source_rect": [
+    989.0,
+    119.0,
+    654.0,
+    671.0
+  ],
+  "assembly_dest_rect": [
+    222.0,
+    24.0,
+    152.0,
+    154.0
+  ],
+  "note": "Only portrait aperture changed; original frame and mounts retained. No Nazi symbols in selected image."
+}

@@ -2,17 +2,16 @@
 
 ## Comic card adaptations (2026-10-04)
 
-The 400 x 200 Encyclopedia cards in `art/characters/` now contain 67 AI-redrawn
+The 400 x 200 Encyclopedia cards in `art/characters/` now contain 71 AI-redrawn
 portraits in vintage 1940s comic style. Their original
 paper, faction stripe, ruled area, white photo borders and black corner mounts are
 retained; the replacement artwork is clipped into the existing portrait aperture.
 The redraws use the source photographs credited below, with balanced framing and
 reconstructed shoulders where the original symbol-removal crop was tight. German
 uniforms and caps omit Nazi emblems, eagles, SS insignia and German decorations.
-All 67 final cards were visually reviewed for symbols, likeness and framing.
+All 71 final cards were visually reviewed for symbols, likeness and framing.
 
-Hitler, Himmler, Raeder and Leclerc remain the original photographic cards because
-the image-generation tool rejected their redraw requests. The separate 80 x 80
+Hitler, Himmler, Raeder and Leclerc were completed on later neutral historical edits after initial image-tool rejections. The historical failures remain logged, and the selected final portraits contain no Nazi symbols. The separate 80 x 80
 portraits and 61 x 25 miniatures remain photographic for every character.
 
 Source author, attribution, licence and licence links below and in `../credits.json`

@@ -672,33 +672,41 @@
   {
     "id": "hitler",
     "name": "hitler.png",
-    "status": "unchanged_image_tool_rejected",
-    "sha256": "205D6625EF216777F94EE9269CEFF007E2FE68903018CD6A57A15DB38A32D5F0",
+    "status": "redrawn",
+    "sha256": "3CCFFEFD5D0140F8A931C7B90C4A0950840FF3690DF373666E40F955CAEB0606",
     "width": 400,
-    "height": 200
+    "height": 200,
+    "original_sha256": "205D6625EF216777F94EE9269CEFF007E2FE68903018CD6A57A15DB38A32D5F0",
+    "exterior_pixels_unchanged": true
   },
   {
     "id": "himmler",
     "name": "himmler.png",
-    "status": "unchanged_image_tool_rejected",
-    "sha256": "FD71146402D669A279354A60A152E63EC1EB9D114FAC85588E79CEAB4BD6BBD4",
+    "status": "redrawn",
+    "sha256": "FF312A4340E7F5947793AB3B449F9A59400349B0800CEBB8EDD0FD6596555609",
     "width": 400,
-    "height": 200
+    "height": 200,
+    "original_sha256": "FD71146402D669A279354A60A152E63EC1EB9D114FAC85588E79CEAB4BD6BBD4",
+    "exterior_pixels_unchanged": true
   },
   {
     "id": "raeder",
     "name": "raeder.png",
-    "status": "unchanged_image_tool_rejected",
-    "sha256": "D1EC0E630F732403F1CF726CA8A83D805213F3BB3B55F1A9EBE2989C786C7AEB",
+    "status": "redrawn",
+    "sha256": "C02D73CB4A62CA861F8220056C3BB8466AAFF4467E906328C3F224CBE5CBC6B9",
     "width": 400,
-    "height": 200
+    "height": 200,
+    "original_sha256": "D1EC0E630F732403F1CF726CA8A83D805213F3BB3B55F1A9EBE2989C786C7AEB",
+    "exterior_pixels_unchanged": true
   },
   {
     "id": "leclerc",
     "name": "leclerc.png",
-    "status": "unchanged_image_tool_rejected",
-    "sha256": "8BB8880CF17A62DE55B03DAB30E30A7D83D0D11D88A6F72185D09A24A8041FF2",
+    "status": "redrawn",
+    "sha256": "AAC06225F3F0E82C34D8A64E3843B908F667E7B54B49A278C80DA9EC77575B8A",
     "width": 400,
-    "height": 200
+    "height": 200,
+    "original_sha256": "8BB8880CF17A62DE55B03DAB30E30A7D83D0D11D88A6F72185D09A24A8041FF2",
+    "exterior_pixels_unchanged": true
   }
 ]

@@ -1,0 +1,25 @@
+{
+  "id": "hitler",
+  "status": "successful_after_earlier_tool_rejection",
+  "source": null,
+  "original_sha256": "205D6625EF216777F94EE9269CEFF007E2FE68903018CD6A57A15DB38A32D5F0",
+  "generated_raw": "generated-raw/hitler.png",
+  "game_size": "game-size/hitler.png",
+  "master": "hitler.png",
+  "generated_preview_sha256": "FA1ADF3072CA6E5855B03D17AF77960FD3C38EF8F62E9C324225F4F876A8A64E",
+  "installed_sha256": "3CCFFEFD5D0140F8A931C7B90C4A0950840FF3690DF373666E40F955CAEB0606",
+  "changed_photo_pixels": 23408,
+  "assembly_source_rect": [
+    989.0,
+    119.0,
+    654.0,
+    671.0
+  ],
+  "assembly_dest_rect": [
+    222.0,
+    24.0,
+    152.0,
+    154.0
+  ],
+  "note": "Only portrait aperture changed; original frame and mounts retained. No Nazi symbols in selected image."
+}

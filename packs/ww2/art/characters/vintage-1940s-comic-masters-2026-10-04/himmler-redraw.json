@@ -1,0 +1,27 @@
+{
+  "id": "himmler",
+  "subject": "Heinrich Himmler",
+  "status": "successful_after_earlier_tool_rejection",
+  "source": "user-supplied george.png portrait card visually identical to the backed-up Himmler card",
+  "source_credit": "https://commons.wikimedia.org/wiki/File:Bundesarchiv_Bild_183-S72707,_Heinrich_Himmler.jpg",
+  "source_licence": "CC BY-SA 3.0 de",
+  "source_original_sha256": "FD71146402D669A279354A60A152E63EC1EB9D114FAC85588E79CEAB4BD6BBD4",
+  "generated_raw": "generated-raw/himmler.png",
+  "game_size": "game-size/himmler.png",
+  "master": "himmler.png",
+  "generated_preview_sha256": "1FF0C373B18533740E8EF3D436D5A0D5E3A60215A4A8CA73081B7943766B9B7E",
+  "installed_sha256": "FF312A4340E7F5947793AB3B449F9A59400349B0800CEBB8EDD0FD6596555609",
+  "assembly_source_rect": [
+    989.0,
+    119.0,
+    654.0,
+    671.0
+  ],
+  "assembly_dest_rect": [
+    222.0,
+    24.0,
+    152.0,
+    154.0
+  ],
+  "notes": "Only photo aperture replaced. Original parchment, ruled lines, frame and mounts preserved."
+}
