@@ -1,7 +1,7 @@
 """The WWII pack's small pictures, cut from the installed Encyclopedia plates
 (TeeJ, 2026-10-04: the plates were redrawn by hand in the vintage 1940s comic
-style - see the vintage-1940s-comic-masters-2026-10-04/README.md beside each
-kind's plates - and "update them in game"):
+style - see art-archive/ww2/<kind>/vintage-1940s-comic-masters-2026-10-04/README.md
+- and "update them in game"):
 
     units, facilities
         packs/ww2/art/portraits/<kind>/<id>.png        122x50  portrait
@@ -51,6 +51,9 @@ from PIL import Image, ImageDraw, ImageFilter
 ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
 PACK = os.path.join(ROOT, "packs", "ww2")
 ART = os.path.join(PACK, "art")
+# The redraws' masters and records, outside the pack (TeeJ, 2026-10-04: the
+# pack folder holds only what the game uses).
+ARCHIVE = os.path.join(ROOT, "art-archive", "ww2")
 MASTERS = "vintage-1940s-comic-masters-2026-10-04"
 PICTURE = (11, 11, 389, 168)          # the plate's picture, inside the frame, above the caption
 LOOK = json.load(open(os.path.join(PACK, "look.json"), encoding="utf-8"))
@@ -102,7 +105,7 @@ def plates(kind):
 
 def master(kind, i):
     """The plate's 1600 x 800 master, or None when the plate was not redrawn."""
-    path = os.path.join(ART, kind, MASTERS, i + ".png")
+    path = os.path.join(ARCHIVE, kind, MASTERS, i + ".png")
     if not os.path.exists(path):
         return None
     im = Image.open(path).convert("RGB")
@@ -120,7 +123,7 @@ def drawn_print(card, pid):
     # pasted square over the old mount: <id>-redraw.json's assembly_dest_rect
     # (x, y, w, h on the 400 x 200 card). The same 2 px off the top and 7 px
     # off each side, square.
-    record = os.path.join(ART, "characters", MASTERS, pid + "-redraw.json")
+    record = os.path.join(ARCHIVE, "characters", MASTERS, pid + "-redraw.json")
     if os.path.exists(record):
         x, y, w, h = json.load(open(record, encoding="utf-8"))["assembly_dest_rect"]
         side = w - 14

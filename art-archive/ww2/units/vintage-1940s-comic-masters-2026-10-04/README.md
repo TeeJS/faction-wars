@@ -1,5 +1,10 @@
 # WW2 unit redraws — 2026-10-04
 
+> **Moved 2026-10-04** from `packs/ww2/art/units/` to `art-archive/ww2/units/`, so the
+> pack folder holds only what the game uses. Below, "the parent directory" and
+> `art/units/` mean the pack's `packs/ww2/art/units/`; `../backup-originals-2026-10-04/`
+> still sits beside this folder.
+
 All 77 unit PNGs were redrawn in the requested vintage 1940s comic style, with historical subject research recorded in REFERENCES.md. Original filenames, plate numbers, captions and 400 × 200 game dimensions were preserved.
 
 - Parent directory: the 77 installed game PNGs.

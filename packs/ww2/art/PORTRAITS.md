@@ -21,11 +21,12 @@ the same listed source licence; the redraw does not remove attribution or
 ShareAlike obligations. No additional photographic source was substituted.
 
 All 71 original cards are preserved byte-for-byte in
-`characters/backup-originals-2026-10-04/`, with SHA-256 hashes. Finished cards,
+`art-archive/ww2/characters/backup-originals-2026-10-04/`, with SHA-256 hashes. Finished cards,
 1600 x 800 assembled masters, raw generations, prompts, source metadata, review
 contact sheets and rejection records are in
-`characters/vintage-1940s-comic-masters-2026-10-04/`. Both archive directories have
-`.gdignore` files so they are excluded from game imports and exports.
+`art-archive/ww2/characters/vintage-1940s-comic-masters-2026-10-04/`. Both are at the
+repository's root, outside the pack (moved there 2026-10-04), and Godot never
+imports or exports them.
 
 **Regeneration:** `make_ww2_portraits.py` recreates the original photographic cards
 and will overwrite these adaptations. After running it, restore the 71 finished

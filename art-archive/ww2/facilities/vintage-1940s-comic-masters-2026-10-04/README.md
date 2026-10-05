@@ -1,5 +1,10 @@
 # WWII facility vintage 1940s comic style redraws
 
+> **Moved 2026-10-04** from `packs/ww2/art/facilities/` to `art-archive/ww2/facilities/`, so the
+> pack folder holds only what the game uses. Below, "the parent directory" and
+> `art/facilities/` mean the pack's `packs/ww2/art/facilities/`; `../backup-originals-2026-10-04/`
+> still sits beside this folder.
+
 Created 2026-10-04 with the built-in image_gen tool at the user's request. All 15 root facility PNGs were backed up, redrawn in vintage 1940s comic style, and replaced at their existing 400 x 200 size. The previously generated construction battalion plate serves as the shared style reference and its replacement.
 
 - Original PNGs: ../backup-originals-2026-10-04/ (SHA-256 hashes in manifest.json).
