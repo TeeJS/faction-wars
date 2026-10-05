@@ -1,0 +1,2557 @@
+{
+  "about": "Draft substitutions for the star-wars-rebellion pack: every Star Wars name in characters, ships/troops/special forces, facilities, sectors and locations, with its replacement. Not applied anywhere yet. `from` is the current display_name, `string_id` is where the player's own TEXTSTRA.DLL holds it (planets and sectors: the low 16 bits). See README.md.",
+  "kept_unchanged": {
+    "units": [
+      "Bulk Cruiser",
+      "Assault Frigate",
+      "Alliance Escort Carrier",
+      "Medium Transport",
+      "Bulk Transport",
+      "Alliance Dreadnaught",
+      "Bulwark Battlecruiser",
+      "Liberator Cruiser",
+      "Dauntless Cruiser",
+      "Strike Cruiser",
+      "Lancer Frigate",
+      "Interdictor Cruiser",
+      "Carrack Light Cruiser",
+      "Victory Destroyer",
+      "Assault Transport",
+      "Galleon",
+      "Star Galleon",
+      "Imperial Escort Carrier",
+      "Imperial Dreadnaught",
+      "Alliance Fleet Regiment",
+      "Alliance Army Regiment",
+      "Imperial Fleet Regiment",
+      "Imperial Army Regiment",
+      "Guerrillas",
+      "Infiltrators",
+      "Imperial Commandos",
+      "Bounty Hunters"
+    ],
+    "facilities": [
+      "Headquarters",
+      "Orbital Shipyard",
+      "Training Facility",
+      "Construction Yard",
+      "Advanced Shipyard",
+      "Advanced Training Facility",
+      "Advanced Construction Yard",
+      "Mine",
+      "Refinery"
+    ]
+  },
+  "characters": [
+    {
+      "id": "mon_mothma",
+      "new_id": "sera_valcourt",
+      "from": "Mon Mothma",
+      "to": "Sera Valcourt",
+      "side": "alliance",
+      "string_id": 10304
+    },
+    {
+      "id": "leia_organa",
+      "new_id": "maren_solace",
+      "from": "Leia Organa",
+      "to": "Maren Solace",
+      "side": "alliance",
+      "string_id": 10305
+    },
+    {
+      "id": "luke_skywalker",
+      "new_id": "corin_ashford",
+      "from": "Luke Skywalker",
+      "to": "Corin Ashford",
+      "side": "alliance",
+      "string_id": 10306
+    },
+    {
+      "id": "han_solo",
+      "new_id": "jace_rennick",
+      "from": "Han Solo",
+      "to": "Jace Rennick",
+      "side": "alliance",
+      "string_id": 10307
+    },
+    {
+      "id": "emperor_palpatine",
+      "new_id": "emperor_malvorn",
+      "from": "Emperor Palpatine",
+      "to": "Emperor Malvorn",
+      "side": "empire",
+      "string_id": 10368
+    },
+    {
+      "id": "darth_vader",
+      "new_id": "lord_sarvex",
+      "from": "Darth Vader",
+      "to": "Lord Sarvex",
+      "side": "empire",
+      "string_id": 10369
+    },
+    {
+      "id": "ackbar",
+      "new_id": "gorrund",
+      "from": "Ackbar",
+      "to": "Gorrund",
+      "side": "alliance",
+      "string_id": 10816
+    },
+    {
+      "id": "wedge_antilles",
+      "new_id": "tobin_hale",
+      "from": "Wedge Antilles",
+      "to": "Tobin Hale",
+      "side": "alliance",
+      "string_id": 10817
+    },
+    {
+      "id": "lando_calrissian",
+      "new_id": "rafe_moraine",
+      "from": "Lando Calrissian",
+      "to": "Rafe Moraine",
+      "side": "alliance",
+      "string_id": 10818
+    },
+    {
+      "id": "chewbacca",
+      "new_id": "grothmar",
+      "from": "Chewbacca",
+      "to": "Grothmar",
+      "side": "alliance",
+      "string_id": 10819
+    },
+    {
+      "id": "jan_dodonna",
+      "new_id": "edric_vael",
+      "from": "Jan Dodonna",
+      "to": "Edric Vael",
+      "side": "alliance",
+      "string_id": 10820
+    },
+    {
+      "id": "crix_madine",
+      "new_id": "brannoc_teague",
+      "from": "Crix Madine",
+      "to": "Brannoc Teague",
+      "side": "alliance",
+      "string_id": 10821
+    },
+    {
+      "id": "carlist_rieekan",
+      "new_id": "halden_roarke",
+      "from": "Carlist Rieekan",
+      "to": "Halden Roarke",
+      "side": "alliance",
+      "string_id": 10822
+    },
+    {
+      "id": "afyon",
+      "new_id": "ossrik",
+      "from": "Afyon",
+      "to": "Ossrik",
+      "side": "alliance",
+      "string_id": 10823
+    },
+    {
+      "id": "drayson",
+      "new_id": "kellam",
+      "from": "Drayson",
+      "to": "Kellam",
+      "side": "alliance",
+      "string_id": 10824
+    },
+    {
+      "id": "borsk_fey_lya",
+      "new_id": "vresh_talmar",
+      "from": "Borsk Fey'lya",
+      "to": "Vresh Tal'mar",
+      "side": "alliance",
+      "string_id": 10825
+    },
+    {
+      "id": "tura_raftican",
+      "new_id": "nyla_corvane",
+      "from": "Tura Raftican",
+      "to": "Nyla Corvane",
+      "side": "alliance",
+      "string_id": 10826
+    },
+    {
+      "id": "bren_derlin",
+      "new_id": "brask_holloway",
+      "from": "Bren Derlin",
+      "to": "Brask Holloway",
+      "side": "alliance",
+      "string_id": 10827
+    },
+    {
+      "id": "garm_bel_iblis",
+      "new_id": "davian_strell",
+      "from": "Garm Bel Iblis",
+      "to": "Davian Strell",
+      "side": "alliance",
+      "string_id": 10828
+    },
+    {
+      "id": "talon_karrde",
+      "new_id": "silas_varr",
+      "from": "Talon Karrde",
+      "to": "Silas Varr",
+      "side": "alliance",
+      "string_id": 10829
+    },
+    {
+      "id": "narra",
+      "new_id": "vesk",
+      "from": "Narra",
+      "to": "Vesk",
+      "side": "alliance",
+      "string_id": 10830
+    },
+    {
+      "id": "huoba_neva",
+      "new_id": "pellu_nask",
+      "from": "Huoba Neva",
+      "to": "Pellu Nask",
+      "side": "alliance",
+      "string_id": 10831
+    },
+    {
+      "id": "page",
+      "new_id": "stroud",
+      "from": "Page",
+      "to": "Stroud",
+      "side": "alliance",
+      "string_id": 10832
+    },
+    {
+      "id": "syub_snunb",
+      "new_id": "tibbik_wuun",
+      "from": "Syub Snunb",
+      "to": "Tibbik Wuun",
+      "side": "alliance",
+      "string_id": 10833
+    },
+    {
+      "id": "adar_tallon",
+      "new_id": "orin_castell",
+      "from": "Adar Tallon",
+      "to": "Orin Castell",
+      "side": "alliance",
+      "string_id": 10834
+    },
+    {
+      "id": "sarin_virgilio",
+      "new_id": "teodor_vasque",
+      "from": "Sarin Virgilio",
+      "to": "Teodor Vasque",
+      "side": "alliance",
+      "string_id": 10835
+    },
+    {
+      "id": "vanden_willard",
+      "new_id": "corwin_ashe",
+      "from": "Vanden Willard",
+      "to": "Corwin Ashe",
+      "side": "alliance",
+      "string_id": 10836
+    },
+    {
+      "id": "roget_jiriss",
+      "new_id": "ansel_drevik",
+      "from": "Roget Jiriss",
+      "to": "Ansel Drevik",
+      "side": "alliance",
+      "string_id": 10837
+    },
+    {
+      "id": "kaiya_andrimetrum",
+      "new_id": "mira_calloway",
+      "from": "Kaiya Andrimetrum",
+      "to": "Mira Calloway",
+      "side": "alliance",
+      "string_id": 10838
+    },
+    {
+      "id": "mazer_rackus",
+      "new_id": "tarn_velloc",
+      "from": "Mazer Rackus",
+      "to": "Tarn Velloc",
+      "side": "alliance",
+      "string_id": 10839
+    },
+    {
+      "id": "orrimaarko",
+      "new_id": "ussrigal",
+      "from": "Orrimaarko",
+      "to": "Ussrigal",
+      "side": "alliance",
+      "string_id": 10840
+    },
+    {
+      "id": "ma_w_shiye",
+      "new_id": "tsaven",
+      "from": "Ma'w'shiye",
+      "to": "Tsa'ven",
+      "side": "alliance",
+      "string_id": 10841
+    },
+    {
+      "id": "jerjerrod",
+      "new_id": "halvric",
+      "from": "Jerjerrod",
+      "to": "Halvric",
+      "side": "empire",
+      "string_id": 10880
+    },
+    {
+      "id": "ozzel",
+      "new_id": "dravel",
+      "from": "Ozzel",
+      "to": "Dravel",
+      "side": "empire",
+      "string_id": 10881
+    },
+    {
+      "id": "piett",
+      "new_id": "ostrum",
+      "from": "Piett",
+      "to": "Ostrum",
+      "side": "empire",
+      "string_id": 10882
+    },
+    {
+      "id": "veers",
+      "new_id": "kortland",
+      "from": "Veers",
+      "to": "Kortland",
+      "side": "empire",
+      "string_id": 10883
+    },
+    {
+      "id": "brandei",
+      "new_id": "vessick",
+      "from": "Brandei",
+      "to": "Vessick",
+      "side": "empire",
+      "string_id": 10884
+    },
+    {
+      "id": "covell",
+      "new_id": "malkin",
+      "from": "Covell",
+      "to": "Malkin",
+      "side": "empire",
+      "string_id": 10885
+    },
+    {
+      "id": "dorja",
+      "new_id": "ardrin",
+      "from": "Dorja",
+      "to": "Ardrin",
+      "side": "empire",
+      "string_id": 10886
+    },
+    {
+      "id": "bin_essada",
+      "new_id": "coll_varek",
+      "from": "Bin Essada",
+      "to": "Coll Varek",
+      "side": "empire",
+      "string_id": 10887
+    },
+    {
+      "id": "niles_ferrier",
+      "new_id": "dorran_pike",
+      "from": "Niles Ferrier",
+      "to": "Dorran Pike",
+      "side": "empire",
+      "string_id": 10888
+    },
+    {
+      "id": "grammel",
+      "new_id": "grisk",
+      "from": "Grammel",
+      "to": "Grisk",
+      "side": "empire",
+      "string_id": 10889
+    },
+    {
+      "id": "griff",
+      "new_id": "hesk",
+      "from": "Griff",
+      "to": "Hesk",
+      "side": "empire",
+      "string_id": 10890
+    },
+    {
+      "id": "klev",
+      "new_id": "klavik",
+      "from": "Klev",
+      "to": "Klavik",
+      "side": "empire",
+      "string_id": 10891
+    },
+    {
+      "id": "needa",
+      "new_id": "selvin",
+      "from": "Needa",
+      "to": "Selvin",
+      "side": "empire",
+      "string_id": 10892
+    },
+    {
+      "id": "bane_nothos",
+      "new_id": "cael_morrick",
+      "from": "Bane Nothos",
+      "to": "Cael Morrick",
+      "side": "empire",
+      "string_id": 10893
+    },
+    {
+      "id": "orlok",
+      "new_id": "varnok",
+      "from": "Orlok",
+      "to": "Varnok",
+      "side": "empire",
+      "string_id": 10894
+    },
+    {
+      "id": "pellaeon",
+      "new_id": "aldenor",
+      "from": "Pellaeon",
+      "to": "Aldenor",
+      "side": "empire",
+      "string_id": 10895
+    },
+    {
+      "id": "screed",
+      "new_id": "kragg",
+      "from": "Screed",
+      "to": "Kragg",
+      "side": "empire",
+      "string_id": 10896
+    },
+    {
+      "id": "thrawn",
+      "new_id": "ixaran",
+      "from": "Thrawn",
+      "to": "Ixaran",
+      "side": "empire",
+      "string_id": 10897
+    },
+    {
+      "id": "zuggs",
+      "new_id": "brugg",
+      "from": "Zuggs",
+      "to": "Brugg",
+      "side": "empire",
+      "string_id": 10898
+    },
+    {
+      "id": "daala",
+      "new_id": "sevrine",
+      "from": "Daala",
+      "to": "Sevrine",
+      "side": "empire",
+      "string_id": 10899
+    },
+    {
+      "id": "pter_thanas",
+      "new_id": "joss_venner",
+      "from": "Pter Thanas",
+      "to": "Joss Venner",
+      "side": "empire",
+      "string_id": 10900
+    },
+    {
+      "id": "bevel_lemelisk",
+      "new_id": "ottar_grimsby",
+      "from": "Bevel Lemelisk",
+      "to": "Ottar Grimsby",
+      "side": "empire",
+      "string_id": 10901
+    },
+    {
+      "id": "shenir_rix",
+      "new_id": "shael_ruskin",
+      "from": "Shenir Rix",
+      "to": "Shael Ruskin",
+      "side": "empire",
+      "string_id": 10902
+    },
+    {
+      "id": "noval_garaint",
+      "new_id": "davor_kessix",
+      "from": "Noval Garaint",
+      "to": "Davor Kessix",
+      "side": "empire",
+      "string_id": 10903
+    },
+    {
+      "id": "garindan",
+      "new_id": "sniv",
+      "from": "Garindan",
+      "to": "Sniv",
+      "side": "empire",
+      "string_id": 10904
+    },
+    {
+      "id": "menndo",
+      "new_id": "vorko",
+      "from": "Menndo",
+      "to": "Vorko",
+      "side": "empire",
+      "string_id": 10905
+    },
+    {
+      "id": "labansat",
+      "new_id": "malbek",
+      "from": "Labansat",
+      "to": "Malbek",
+      "side": "empire",
+      "string_id": 10906
+    },
+    {
+      "id": "villar",
+      "new_id": "venric",
+      "from": "Villar",
+      "to": "Venric",
+      "side": "empire",
+      "string_id": 10907
+    }
+  ],
+  "units": [
+    {
+      "id": "mon_calamari_cruiser",
+      "new_id": "nerithian_cruiser",
+      "from": "Mon Calamari Cruiser",
+      "to": "Nerithian Cruiser",
+      "kind": "capital_ship",
+      "string_id": 10048
+    },
+    {
+      "id": "nebulon_b_frigate",
+      "new_id": "picket_frigate",
+      "from": "Nebulon-B Frigate",
+      "to": "Picket Frigate",
+      "kind": "capital_ship",
+      "string_id": 10051
+    },
+    {
+      "id": "corellian_corvette",
+      "new_id": "calvessan_corvette",
+      "from": "Corellian Corvette",
+      "to": "Calvessan Corvette",
+      "kind": "capital_ship",
+      "string_id": 10053
+    },
+    {
+      "id": "corellian_gunship",
+      "new_id": "calvessan_gunship",
+      "from": "Corellian Gunship",
+      "to": "Calvessan Gunship",
+      "kind": "capital_ship",
+      "string_id": 10056
+    },
+    {
+      "id": "cc_7700_frigate",
+      "new_id": "rampart_frigate",
+      "from": "CC-7700 Frigate",
+      "to": "Rampart Frigate",
+      "kind": "capital_ship",
+      "string_id": 10058
+    },
+    {
+      "id": "cc_9600_frigate",
+      "new_id": "bastion_frigate",
+      "from": "CC-9600 Frigate",
+      "to": "Bastion Frigate",
+      "kind": "capital_ship",
+      "string_id": 10061
+    },
+    {
+      "id": "imperial_star_destroyer",
+      "new_id": "imperial_destroyer",
+      "from": "Imperial Star Destroyer",
+      "to": "Imperial Destroyer",
+      "kind": "capital_ship",
+      "string_id": 10117
+    },
+    {
+      "id": "super_star_destroyer",
+      "new_id": "titan_destroyer",
+      "from": "Super Star Destroyer",
+      "to": "Titan Destroyer",
+      "kind": "capital_ship",
+      "string_id": 10118
+    },
+    {
+      "id": "death_star",
+      "new_id": "annihilator",
+      "from": "Death Star",
+      "to": "Annihilator",
+      "kind": "capital_ship",
+      "string_id": 10120
+    },
+    {
+      "id": "victory_ii_star_destroyer",
+      "new_id": "victory_ii_destroyer",
+      "from": "Victory II Star Destroyer",
+      "to": "Victory II Destroyer",
+      "kind": "capital_ship",
+      "string_id": 10122
+    },
+    {
+      "id": "imperial_ii_star_destroyer",
+      "new_id": "imperial_ii_destroyer",
+      "from": "Imperial II Star Destroyer",
+      "to": "Imperial II Destroyer",
+      "kind": "capital_ship",
+      "string_id": 10123
+    },
+    {
+      "id": "a_wing",
+      "new_id": "kestrel",
+      "from": "A-wing",
+      "to": "Kestrel",
+      "kind": "fighter",
+      "string_id": 9792
+    },
+    {
+      "id": "b_wing",
+      "new_id": "halberd",
+      "from": "B-wing",
+      "to": "Halberd",
+      "kind": "fighter",
+      "string_id": 9793
+    },
+    {
+      "id": "x_wing",
+      "new_id": "crossbow",
+      "from": "X-wing",
+      "to": "Crossbow",
+      "kind": "fighter",
+      "string_id": 9794
+    },
+    {
+      "id": "y_wing",
+      "new_id": "anvil",
+      "from": "Y-wing",
+      "to": "Anvil",
+      "kind": "fighter",
+      "string_id": 9795
+    },
+    {
+      "id": "tie_fighter",
+      "new_id": "dart_fighter",
+      "from": "TIE Fighter",
+      "to": "Dart Fighter",
+      "kind": "fighter",
+      "string_id": 9856
+    },
+    {
+      "id": "tie_interceptor",
+      "new_id": "dart_interceptor",
+      "from": "TIE Interceptor",
+      "to": "Dart Interceptor",
+      "kind": "fighter",
+      "string_id": 9857
+    },
+    {
+      "id": "tie_bomber",
+      "new_id": "dart_bomber",
+      "from": "TIE Bomber",
+      "to": "Dart Bomber",
+      "kind": "fighter",
+      "string_id": 9858
+    },
+    {
+      "id": "tie_defender",
+      "new_id": "dart_defender",
+      "from": "TIE Defender",
+      "to": "Dart Defender",
+      "kind": "fighter",
+      "string_id": 9859
+    },
+    {
+      "id": "sullustan_regiment",
+      "new_id": "tarrowan_regiment",
+      "from": "Sullustan Regiment",
+      "to": "Tarrowan Regiment",
+      "kind": "troop",
+      "string_id": 9282
+    },
+    {
+      "id": "wookiee_regiment",
+      "new_id": "vahruuni_regiment",
+      "from": "Wookiee Regiment",
+      "to": "Vahruuni Regiment",
+      "kind": "troop",
+      "string_id": 9283
+    },
+    {
+      "id": "mon_calamari_regiment",
+      "new_id": "nerithian_regiment",
+      "from": "Mon Calamari Regiment",
+      "to": "Nerithian Regiment",
+      "kind": "troop",
+      "string_id": 9284
+    },
+    {
+      "id": "stormtrooper_regiment",
+      "new_id": "shocktrooper_regiment",
+      "from": "Stormtrooper Regiment",
+      "to": "Shocktrooper Regiment",
+      "kind": "troop",
+      "string_id": 9344
+    },
+    {
+      "id": "war_droid_regiment",
+      "new_id": "war_robot_regiment",
+      "from": "War Droid Regiment",
+      "to": "War Robot Regiment",
+      "kind": "troop",
+      "string_id": 9347
+    },
+    {
+      "id": "dark_trooper_regiment",
+      "new_id": "phantom_trooper_regiment",
+      "from": "Dark Trooper Regiment",
+      "to": "Phantom Trooper Regiment",
+      "kind": "troop",
+      "string_id": 9348
+    },
+    {
+      "id": "longprobe_y_wing_recon_team",
+      "new_id": "longprobe_anvil_recon_team",
+      "from": "Longprobe Y-wing Recon Team",
+      "to": "Longprobe Anvil Recon Team",
+      "kind": "spec_force",
+      "string_id": 9538
+    },
+    {
+      "id": "bothan_spies",
+      "new_id": "vessari_spies",
+      "from": "Bothan Spies",
+      "to": "Vessari Spies",
+      "kind": "spec_force",
+      "string_id": 9539
+    },
+    {
+      "id": "imperial_probe_droid",
+      "new_id": "imperial_probe_drone",
+      "from": "Imperial Probe Droid",
+      "to": "Imperial Probe Drone",
+      "kind": "spec_force",
+      "string_id": 9600
+    },
+    {
+      "id": "imperial_espionage_droid",
+      "new_id": "imperial_espionage_drone",
+      "from": "Imperial Espionage Droid",
+      "to": "Imperial Espionage Drone",
+      "kind": "spec_force",
+      "string_id": 9601
+    },
+    {
+      "id": "noghri_death_commandos",
+      "new_id": "vaskari_death_commandos",
+      "from": "Noghri Death Commandos",
+      "to": "Vaskari Death Commandos",
+      "kind": "spec_force",
+      "string_id": 9603
+    }
+  ],
+  "facilities": [
+    {
+      "id": "ion_cannon",
+      "new_id": "ion_cannon",
+      "from": "KDY-150",
+      "to": "Ion Cannon",
+      "string_id": 8704
+    },
+    {
+      "id": "turbolaser_battery",
+      "new_id": "laser_battery",
+      "from": "LNR Series I",
+      "to": "Laser Battery I",
+      "string_id": 8705
+    },
+    {
+      "id": "planetary_shield",
+      "new_id": "planetary_shield",
+      "from": "GenCore Level I",
+      "to": "Shield Generator I",
+      "string_id": 8706
+    },
+    {
+      "id": "death_star_shield",
+      "new_id": "annihilator_shield",
+      "from": "Death Star Shield",
+      "to": "Annihilator Shield",
+      "string_id": 8832
+    },
+    {
+      "id": "advanced_turbolaser_battery",
+      "new_id": "advanced_laser_battery",
+      "from": "LNR Series II",
+      "to": "Laser Battery II",
+      "string_id": 8707
+    },
+    {
+      "id": "advanced_planetary_shield",
+      "new_id": "advanced_planetary_shield",
+      "from": "GenCore Level II",
+      "to": "Shield Generator II",
+      "string_id": 8708
+    }
+  ],
+  "sectors": [
+    {
+      "id": "abrion",
+      "new_id": "halcyra",
+      "from": "Abrion",
+      "to": "Halcyra",
+      "string_id": 142720
+    },
+    {
+      "id": "atrivis",
+      "new_id": "corvantis",
+      "from": "Atrivis",
+      "to": "Corvantis",
+      "string_id": 142721
+    },
+    {
+      "id": "churba",
+      "new_id": "meridane",
+      "from": "Churba",
+      "to": "Meridane",
+      "string_id": 142722
+    },
+    {
+      "id": "corellian",
+      "new_id": "calvessan",
+      "from": "Corellian",
+      "to": "Calvessan",
+      "string_id": 142723
+    },
+    {
+      "id": "calaron",
+      "new_id": "varkesh",
+      "from": "Calaron",
+      "to": "Varkesh",
+      "string_id": 142724
+    },
+    {
+      "id": "dolomar",
+      "new_id": "estravon",
+      "from": "Dolomar",
+      "to": "Estravon",
+      "string_id": 142725
+    },
+    {
+      "id": "dufilvan",
+      "new_id": "ashmere",
+      "from": "Dufilvan",
+      "to": "Ashmere",
+      "string_id": 142726
+    },
+    {
+      "id": "fakir",
+      "new_id": "solvane",
+      "from": "Fakir",
+      "to": "Solvane",
+      "string_id": 142727
+    },
+    {
+      "id": "farfin",
+      "new_id": "theskara",
+      "from": "Farfin",
+      "to": "Theskara",
+      "string_id": 142728
+    },
+    {
+      "id": "glythe",
+      "new_id": "hallorn",
+      "from": "Glythe",
+      "to": "Hallorn",
+      "string_id": 142729
+    },
+    {
+      "id": "jospro",
+      "new_id": "dunmarrow",
+      "from": "Jospro",
+      "to": "Dunmarrow",
+      "string_id": 142730
+    },
+    {
+      "id": "kanchen",
+      "new_id": "kethrane",
+      "from": "Kanchen",
+      "to": "Kethrane",
+      "string_id": 142731
+    },
+    {
+      "id": "mayagil",
+      "new_id": "belcaro",
+      "from": "Mayagil",
+      "to": "Belcaro",
+      "string_id": 142732
+    },
+    {
+      "id": "moddell",
+      "new_id": "morrowgate",
+      "from": "Moddell",
+      "to": "Morrowgate",
+      "string_id": 142733
+    },
+    {
+      "id": "orus",
+      "new_id": "durance",
+      "from": "Orus",
+      "to": "Durance",
+      "string_id": 142734
+    },
+    {
+      "id": "quelli",
+      "new_id": "quentavar",
+      "from": "Quelli",
+      "to": "Quentavar",
+      "string_id": 142735
+    },
+    {
+      "id": "sesswenna",
+      "new_id": "celestine",
+      "from": "Sesswenna",
+      "to": "Celestine",
+      "string_id": 142736
+    },
+    {
+      "id": "sluis",
+      "new_id": "tessarine",
+      "from": "Sluis",
+      "to": "Tessarine",
+      "string_id": 142737
+    },
+    {
+      "id": "sumitra",
+      "new_id": "samaris",
+      "from": "Sumitra",
+      "to": "Samaris",
+      "string_id": 142738
+    },
+    {
+      "id": "xappyh",
+      "new_id": "xalvane",
+      "from": "Xappyh",
+      "to": "Xalvane",
+      "string_id": 142739
+    }
+  ],
+  "locations": [
+    {
+      "id": "abregado",
+      "new_id": "ostrevan",
+      "from": "Abregado",
+      "to": "Ostrevan",
+      "sector": "Halcyra",
+      "string_id": 142848
+    },
+    {
+      "id": "cathar",
+      "new_id": "velmora",
+      "from": "Cathar",
+      "to": "Velmora",
+      "sector": "Halcyra",
+      "string_id": 142849
+    },
+    {
+      "id": "da_soocha",
+      "new_id": "ka_tessri",
+      "from": "Da Soocha",
+      "to": "Ka Tessri",
+      "sector": "Halcyra",
+      "string_id": 142850
+    },
+    {
+      "id": "galpos_ii",
+      "new_id": "drennick_ii",
+      "from": "Galpos II",
+      "to": "Drennick II",
+      "sector": "Halcyra",
+      "string_id": 142851
+    },
+    {
+      "id": "garban",
+      "new_id": "torvane",
+      "from": "Garban",
+      "to": "Torvane",
+      "sector": "Halcyra",
+      "string_id": 142852
+    },
+    {
+      "id": "hefi",
+      "new_id": "ulma",
+      "from": "Hefi",
+      "to": "Ulma",
+      "sector": "Halcyra",
+      "string_id": 142853
+    },
+    {
+      "id": "hishyim",
+      "new_id": "saskhem",
+      "from": "Hishyim",
+      "to": "Saskhem",
+      "sector": "Halcyra",
+      "string_id": 142854
+    },
+    {
+      "id": "intuci",
+      "new_id": "ombrel",
+      "from": "Intuci",
+      "to": "Ombrel",
+      "sector": "Halcyra",
+      "string_id": 142855
+    },
+    {
+      "id": "tieos",
+      "new_id": "pallis",
+      "from": "Tieos",
+      "to": "Pallis",
+      "sector": "Halcyra",
+      "string_id": 142856
+    },
+    {
+      "id": "ukio",
+      "new_id": "rhovek",
+      "from": "Ukio",
+      "to": "Rhovek",
+      "sector": "Halcyra",
+      "string_id": 142857
+    },
+    {
+      "id": "despayre",
+      "new_id": "grimhold",
+      "from": "Despayre",
+      "to": "Grimhold",
+      "sector": "Corvantis",
+      "string_id": 142864
+    },
+    {
+      "id": "fedje",
+      "new_id": "felk",
+      "from": "Fedje",
+      "to": "Felk",
+      "sector": "Corvantis",
+      "string_id": 142865
+    },
+    {
+      "id": "generis",
+      "new_id": "lumeris",
+      "from": "Generis",
+      "to": "Lumeris",
+      "sector": "Corvantis",
+      "string_id": 142866
+    },
+    {
+      "id": "moltok",
+      "new_id": "brakkus",
+      "from": "Moltok",
+      "to": "Brakkus",
+      "sector": "Corvantis",
+      "string_id": 142867
+    },
+    {
+      "id": "nam_ta",
+      "new_id": "selka",
+      "from": "Nam'ta",
+      "to": "Sel'ka",
+      "sector": "Corvantis",
+      "string_id": 142868
+    },
+    {
+      "id": "spefik",
+      "new_id": "torrin",
+      "from": "Spefik",
+      "to": "Torrin",
+      "sector": "Corvantis",
+      "string_id": 142869
+    },
+    {
+      "id": "tibrin",
+      "new_id": "quessa",
+      "from": "Tibrin",
+      "to": "Quessa",
+      "sector": "Corvantis",
+      "string_id": 142870
+    },
+    {
+      "id": "togoria",
+      "new_id": "feralis",
+      "from": "Togoria",
+      "to": "Feralis",
+      "sector": "Corvantis",
+      "string_id": 142871
+    },
+    {
+      "id": "trammis",
+      "new_id": "dravos",
+      "from": "Trammis",
+      "to": "Dravos",
+      "sector": "Corvantis",
+      "string_id": 142872
+    },
+    {
+      "id": "zeffliffl",
+      "new_id": "ziffavell",
+      "from": "Zeffliffl",
+      "to": "Ziffavell",
+      "sector": "Corvantis",
+      "string_id": 142873
+    },
+    {
+      "id": "akrit_tar",
+      "new_id": "okkravel",
+      "from": "Akrit'tar",
+      "to": "Okkra'vel",
+      "sector": "Varkesh",
+      "string_id": 142880
+    },
+    {
+      "id": "f_tral",
+      "new_id": "kvessa",
+      "from": "F'tral",
+      "to": "K'vessa",
+      "sector": "Varkesh",
+      "string_id": 142881
+    },
+    {
+      "id": "fwillsving",
+      "new_id": "pwellin",
+      "from": "Fwillsving",
+      "to": "Pwellin",
+      "sector": "Varkesh",
+      "string_id": 142882
+    },
+    {
+      "id": "ithor",
+      "new_id": "sylvara",
+      "from": "Ithor",
+      "to": "Sylvara",
+      "sector": "Varkesh",
+      "string_id": 142883
+    },
+    {
+      "id": "jerijador",
+      "new_id": "haldemar",
+      "from": "Jerijador",
+      "to": "Haldemar",
+      "sector": "Varkesh",
+      "string_id": 142884
+    },
+    {
+      "id": "kessel",
+      "new_id": "skarrow",
+      "from": "Kessel",
+      "to": "Skarrow",
+      "sector": "Varkesh",
+      "string_id": 142885
+    },
+    {
+      "id": "kubindi",
+      "new_id": "tukkari",
+      "from": "Kubindi",
+      "to": "Tukkari",
+      "sector": "Varkesh",
+      "string_id": 142886
+    },
+    {
+      "id": "morvogodine",
+      "new_id": "velogrund",
+      "from": "Morvogodine",
+      "to": "Velogrund",
+      "sector": "Varkesh",
+      "string_id": 142887
+    },
+    {
+      "id": "norval_ii",
+      "new_id": "asker_ii",
+      "from": "Norval II",
+      "to": "Asker II",
+      "sector": "Varkesh",
+      "string_id": 142888
+    },
+    {
+      "id": "skor_ii",
+      "new_id": "brenn_ii",
+      "from": "Skor II",
+      "to": "Brenn II",
+      "sector": "Varkesh",
+      "string_id": 142889
+    },
+    {
+      "id": "allyuen",
+      "new_id": "essalyn",
+      "from": "Allyuen",
+      "to": "Essalyn",
+      "sector": "Meridane",
+      "string_id": 142896
+    },
+    {
+      "id": "anoat",
+      "new_id": "krevit",
+      "from": "Anoat",
+      "to": "Krevit",
+      "sector": "Meridane",
+      "string_id": 142897
+    },
+    {
+      "id": "bespin",
+      "new_id": "nimbara",
+      "from": "Bespin",
+      "to": "Nimbara",
+      "sector": "Meridane",
+      "string_id": 142898
+    },
+    {
+      "id": "deyer",
+      "new_id": "holm",
+      "from": "Deyer",
+      "to": "Holm",
+      "sector": "Meridane",
+      "string_id": 142899
+    },
+    {
+      "id": "gentes",
+      "new_id": "tavren",
+      "from": "Gentes",
+      "to": "Tavren",
+      "sector": "Meridane",
+      "string_id": 142900
+    },
+    {
+      "id": "hoth",
+      "new_id": "rime",
+      "from": "Hoth",
+      "to": "Rime",
+      "sector": "Meridane",
+      "string_id": 142901
+    },
+    {
+      "id": "lelmra",
+      "new_id": "ombrin",
+      "from": "Lelmra",
+      "to": "Ombrin",
+      "sector": "Meridane",
+      "string_id": 142902
+    },
+    {
+      "id": "new_cov",
+      "new_id": "new_tessa",
+      "from": "New Cov",
+      "to": "New Tessa",
+      "sector": "Meridane",
+      "string_id": 142903
+    },
+    {
+      "id": "storthus",
+      "new_id": "brakken",
+      "from": "Storthus",
+      "to": "Brakken",
+      "sector": "Meridane",
+      "string_id": 142904
+    },
+    {
+      "id": "tokmia",
+      "new_id": "ulvira",
+      "from": "Tokmia",
+      "to": "Ulvira",
+      "sector": "Meridane",
+      "string_id": 142905
+    },
+    {
+      "id": "commenor",
+      "new_id": "hesperan",
+      "from": "Commenor",
+      "to": "Hesperan",
+      "sector": "Calvessan",
+      "string_id": 142912
+    },
+    {
+      "id": "corellia",
+      "new_id": "calvessa",
+      "from": "Corellia",
+      "to": "Calvessa",
+      "sector": "Calvessan",
+      "string_id": 142913
+    },
+    {
+      "id": "corfai",
+      "new_id": "daskel",
+      "from": "Corfai",
+      "to": "Daskel",
+      "sector": "Calvessan",
+      "string_id": 142914
+    },
+    {
+      "id": "duros",
+      "new_id": "orrin",
+      "from": "Duros",
+      "to": "Orrin",
+      "sector": "Calvessan",
+      "string_id": 142915
+    },
+    {
+      "id": "drall",
+      "new_id": "drune",
+      "from": "Drall",
+      "to": "Drune",
+      "sector": "Calvessan",
+      "string_id": 142916
+    },
+    {
+      "id": "selonia",
+      "new_id": "ondessa",
+      "from": "Selonia",
+      "to": "Ondessa",
+      "sector": "Calvessan",
+      "string_id": 142917
+    },
+    {
+      "id": "talus",
+      "new_id": "iver",
+      "from": "Talus",
+      "to": "Iver",
+      "sector": "Calvessan",
+      "string_id": 142918
+    },
+    {
+      "id": "tralus",
+      "new_id": "ivra",
+      "from": "Tralus",
+      "to": "Ivra",
+      "sector": "Calvessan",
+      "string_id": 142919
+    },
+    {
+      "id": "vagran",
+      "new_id": "kessith",
+      "from": "Vagran",
+      "to": "Kessith",
+      "sector": "Calvessan",
+      "string_id": 142920
+    },
+    {
+      "id": "xyquine",
+      "new_id": "zyrel",
+      "from": "Xyquine",
+      "to": "Zyrel",
+      "sector": "Calvessan",
+      "string_id": 142921
+    },
+    {
+      "id": "balfron",
+      "new_id": "calder",
+      "from": "Balfron",
+      "to": "Calder",
+      "sector": "Estravon",
+      "string_id": 142928
+    },
+    {
+      "id": "caprionril",
+      "new_id": "saphrel",
+      "from": "Caprionril",
+      "to": "Saphrel",
+      "sector": "Estravon",
+      "string_id": 142929
+    },
+    {
+      "id": "kamparas",
+      "new_id": "tallow",
+      "from": "Kamparas",
+      "to": "Tallow",
+      "sector": "Estravon",
+      "string_id": 142930
+    },
+    {
+      "id": "ketaris",
+      "new_id": "orvane",
+      "from": "Ketaris",
+      "to": "Orvane",
+      "sector": "Estravon",
+      "string_id": 142931
+    },
+    {
+      "id": "omwat",
+      "new_id": "umwen",
+      "from": "Omwat",
+      "to": "Umwen",
+      "sector": "Estravon",
+      "string_id": 142932
+    },
+    {
+      "id": "pantolomin",
+      "new_id": "lirenza",
+      "from": "Pantolomin",
+      "to": "Lirenza",
+      "sector": "Estravon",
+      "string_id": 142933
+    },
+    {
+      "id": "phorliss",
+      "new_id": "fennick",
+      "from": "Phorliss",
+      "to": "Fennick",
+      "sector": "Estravon",
+      "string_id": 142934
+    },
+    {
+      "id": "sarka",
+      "new_id": "drossa",
+      "from": "Sarka",
+      "to": "Drossa",
+      "sector": "Estravon",
+      "string_id": 142935
+    },
+    {
+      "id": "tangrene",
+      "new_id": "vellin",
+      "from": "Tangrene",
+      "to": "Vellin",
+      "sector": "Estravon",
+      "string_id": 142936
+    },
+    {
+      "id": "wor_tandell",
+      "new_id": "kel_marran",
+      "from": "Wor Tandell",
+      "to": "Kel Marran",
+      "sector": "Estravon",
+      "string_id": 142937
+    },
+    {
+      "id": "algarian",
+      "new_id": "oskeran",
+      "from": "Algarian",
+      "to": "Oskeran",
+      "sector": "Ashmere",
+      "string_id": 142944
+    },
+    {
+      "id": "filve",
+      "new_id": "fesk",
+      "from": "Filve",
+      "to": "Fesk",
+      "sector": "Ashmere",
+      "string_id": 142945
+    },
+    {
+      "id": "gamorr",
+      "new_id": "grukk",
+      "from": "Gamorr",
+      "to": "Grukk",
+      "sector": "Ashmere",
+      "string_id": 142946
+    },
+    {
+      "id": "klatooine",
+      "new_id": "ostravel",
+      "from": "Klatooine",
+      "to": "Ostravel",
+      "sector": "Ashmere",
+      "string_id": 142947
+    },
+    {
+      "id": "ord_mantell",
+      "new_id": "hold_varra",
+      "from": "Ord Mantell",
+      "to": "Hold Varra",
+      "sector": "Ashmere",
+      "string_id": 142948
+    },
+    {
+      "id": "ord_pardon",
+      "new_id": "hold_sennet",
+      "from": "Ord Pardon",
+      "to": "Hold Sennet",
+      "sector": "Ashmere",
+      "string_id": 142949
+    },
+    {
+      "id": "ord_trasi",
+      "new_id": "hold_quill",
+      "from": "Ord Trasi",
+      "to": "Hold Quill",
+      "sector": "Ashmere",
+      "string_id": 142950
+    },
+    {
+      "id": "toprawa",
+      "new_id": "sendara",
+      "from": "Toprawa",
+      "to": "Sendara",
+      "sector": "Ashmere",
+      "string_id": 142951
+    },
+    {
+      "id": "womrik",
+      "new_id": "vormak",
+      "from": "Womrik",
+      "to": "Vormak",
+      "sector": "Ashmere",
+      "string_id": 142952
+    },
+    {
+      "id": "zebitrope_iv",
+      "new_id": "zelmira_iv",
+      "from": "Zebitrope IV",
+      "to": "Zelmira IV",
+      "sector": "Ashmere",
+      "string_id": 142953
+    },
+    {
+      "id": "ando",
+      "new_id": "mirelle",
+      "from": "Ando",
+      "to": "Mirelle",
+      "sector": "Solvane",
+      "string_id": 142960
+    },
+    {
+      "id": "berchest",
+      "new_id": "bastrel",
+      "from": "Berchest",
+      "to": "Bastrel",
+      "sector": "Solvane",
+      "string_id": 142961
+    },
+    {
+      "id": "bimmisaari",
+      "new_id": "pemmisol",
+      "from": "Bimmisaari",
+      "to": "Pemmisol",
+      "sector": "Solvane",
+      "string_id": 142962
+    },
+    {
+      "id": "carida",
+      "new_id": "kordava",
+      "from": "Carida",
+      "to": "Kordava",
+      "sector": "Solvane",
+      "string_id": 142963
+    },
+    {
+      "id": "delaya",
+      "new_id": "elyra",
+      "from": "Delaya",
+      "to": "Elyra",
+      "sector": "Solvane",
+      "string_id": 142964
+    },
+    {
+      "id": "halowan",
+      "new_id": "haverin",
+      "from": "Halowan",
+      "to": "Haverin",
+      "sector": "Solvane",
+      "string_id": 142965
+    },
+    {
+      "id": "mrisst",
+      "new_id": "tssira",
+      "from": "Mrisst",
+      "to": "Tssira",
+      "sector": "Solvane",
+      "string_id": 142966
+    },
+    {
+      "id": "obroa_skai",
+      "new_id": "ombra_tel",
+      "from": "Obroa-skai",
+      "to": "Ombra-tel",
+      "sector": "Solvane",
+      "string_id": 142967
+    },
+    {
+      "id": "palanhi",
+      "new_id": "pavesh",
+      "from": "Palanhi",
+      "to": "Pavesh",
+      "sector": "Solvane",
+      "string_id": 142968
+    },
+    {
+      "id": "ralltiir",
+      "new_id": "rasken",
+      "from": "Ralltiir",
+      "to": "Rasken",
+      "sector": "Solvane",
+      "string_id": 142969
+    },
+    {
+      "id": "bilbringi",
+      "new_id": "brindell",
+      "from": "Bilbringi",
+      "to": "Brindell",
+      "sector": "Theskara",
+      "string_id": 142976
+    },
+    {
+      "id": "byss",
+      "new_id": "umbrax",
+      "from": "Byss",
+      "to": "Umbrax",
+      "sector": "Theskara",
+      "string_id": 142977
+    },
+    {
+      "id": "charmath",
+      "new_id": "dannoch",
+      "from": "Charmath",
+      "to": "Dannoch",
+      "sector": "Theskara",
+      "string_id": 142978
+    },
+    {
+      "id": "firro",
+      "new_id": "pherra",
+      "from": "Firro",
+      "to": "Pherra",
+      "sector": "Theskara",
+      "string_id": 142979
+    },
+    {
+      "id": "khomm",
+      "new_id": "kolm",
+      "from": "Khomm",
+      "to": "Kolm",
+      "sector": "Theskara",
+      "string_id": 142980
+    },
+    {
+      "id": "kinyen",
+      "new_id": "nyssen",
+      "from": "Kinyen",
+      "to": "Nyssen",
+      "sector": "Theskara",
+      "string_id": 142981
+    },
+    {
+      "id": "phraetiss",
+      "new_id": "fraylis",
+      "from": "Phraetiss",
+      "to": "Fraylis",
+      "sector": "Theskara",
+      "string_id": 142982
+    },
+    {
+      "id": "rishi",
+      "new_id": "oressa",
+      "from": "Rishi",
+      "to": "Oressa",
+      "sector": "Theskara",
+      "string_id": 142983
+    },
+    {
+      "id": "taanab",
+      "new_id": "tarrabe",
+      "from": "Taanab",
+      "to": "Tarrabe",
+      "sector": "Theskara",
+      "string_id": 142984
+    },
+    {
+      "id": "wistril",
+      "new_id": "wyndel",
+      "from": "Wistril",
+      "to": "Wyndel",
+      "sector": "Theskara",
+      "string_id": 142985
+    },
+    {
+      "id": "altarrn",
+      "new_id": "astarne",
+      "from": "Altarrn",
+      "to": "Astarne",
+      "sector": "Hallorn",
+      "string_id": 142992
+    },
+    {
+      "id": "arkania",
+      "new_id": "arvenna",
+      "from": "Arkania",
+      "to": "Arvenna",
+      "sector": "Hallorn",
+      "string_id": 142993
+    },
+    {
+      "id": "elrood",
+      "new_id": "edrell",
+      "from": "Elrood",
+      "to": "Edrell",
+      "sector": "Hallorn",
+      "string_id": 142994
+    },
+    {
+      "id": "fef",
+      "new_id": "pim",
+      "from": "Fef",
+      "to": "Pim",
+      "sector": "Hallorn",
+      "string_id": 142995
+    },
+    {
+      "id": "fornax",
+      "new_id": "sorrex",
+      "from": "Fornax",
+      "to": "Sorrex",
+      "sector": "Hallorn",
+      "string_id": 142996
+    },
+    {
+      "id": "nentan",
+      "new_id": "nennic",
+      "from": "Nentan",
+      "to": "Nennic",
+      "sector": "Hallorn",
+      "string_id": 142997
+    },
+    {
+      "id": "sedri",
+      "new_id": "sevra",
+      "from": "Sedri",
+      "to": "Sevra",
+      "sector": "Hallorn",
+      "string_id": 142998
+    },
+    {
+      "id": "valrar",
+      "new_id": "vaurel",
+      "from": "Valrar",
+      "to": "Vaurel",
+      "sector": "Hallorn",
+      "string_id": 142999
+    },
+    {
+      "id": "vortex",
+      "new_id": "gyre",
+      "from": "Vortex",
+      "to": "Gyre",
+      "sector": "Hallorn",
+      "string_id": 143000
+    },
+    {
+      "id": "yag_dhul",
+      "new_id": "ysstavar",
+      "from": "Yag'Dhul",
+      "to": "Yss'tavar",
+      "sector": "Hallorn",
+      "string_id": 143001
+    },
+    {
+      "id": "azbian",
+      "new_id": "azren",
+      "from": "Azbian",
+      "to": "Azren",
+      "sector": "Dunmarrow",
+      "string_id": 143104
+    },
+    {
+      "id": "cardooine",
+      "new_id": "cardell",
+      "from": "Cardooine",
+      "to": "Cardell",
+      "sector": "Dunmarrow",
+      "string_id": 143105
+    },
+    {
+      "id": "chrondre",
+      "new_id": "chalmis",
+      "from": "Chrondre",
+      "to": "Chalmis",
+      "sector": "Dunmarrow",
+      "string_id": 143106
+    },
+    {
+      "id": "dar_or",
+      "new_id": "veska",
+      "from": "Dar'Or",
+      "to": "Ves'Ka",
+      "sector": "Dunmarrow",
+      "string_id": 143107
+    },
+    {
+      "id": "douglas_iii",
+      "new_id": "harlan_iii",
+      "from": "Douglas III",
+      "to": "Harlan III",
+      "sector": "Dunmarrow",
+      "string_id": 143108
+    },
+    {
+      "id": "engira",
+      "new_id": "ingrava",
+      "from": "Engira",
+      "to": "Ingrava",
+      "sector": "Dunmarrow",
+      "string_id": 143109
+    },
+    {
+      "id": "jomark",
+      "new_id": "jessom",
+      "from": "Jomark",
+      "to": "Jessom",
+      "sector": "Dunmarrow",
+      "string_id": 143110
+    },
+    {
+      "id": "kiffex",
+      "new_id": "kivrel",
+      "from": "Kiffex",
+      "to": "Kivrel",
+      "sector": "Dunmarrow",
+      "string_id": 143111
+    },
+    {
+      "id": "trogan",
+      "new_id": "trask",
+      "from": "Trogan",
+      "to": "Trask",
+      "sector": "Dunmarrow",
+      "string_id": 143112
+    },
+    {
+      "id": "waskiro",
+      "new_id": "wesmora",
+      "from": "Waskiro",
+      "to": "Wesmora",
+      "sector": "Dunmarrow",
+      "string_id": 143113
+    },
+    {
+      "id": "culroon_iii",
+      "new_id": "carran_iii",
+      "from": "Culroon III",
+      "to": "Carran III",
+      "sector": "Kethrane",
+      "string_id": 143120
+    },
+    {
+      "id": "davnar",
+      "new_id": "davolin",
+      "from": "Davnar",
+      "to": "Davolin",
+      "sector": "Kethrane",
+      "string_id": 143121
+    },
+    {
+      "id": "derra_iv",
+      "new_id": "dessar_iv",
+      "from": "Derra IV",
+      "to": "Dessar IV",
+      "sector": "Kethrane",
+      "string_id": 143122
+    },
+    {
+      "id": "mindar",
+      "new_id": "mennir",
+      "from": "Mindar",
+      "to": "Mennir",
+      "sector": "Kethrane",
+      "string_id": 143123
+    },
+    {
+      "id": "munto_codru",
+      "new_id": "murro_tessk",
+      "from": "Munto Codru",
+      "to": "Murro Tessk",
+      "sector": "Kethrane",
+      "string_id": 143124
+    },
+    {
+      "id": "nal_hutta",
+      "new_id": "vos_kerrat",
+      "from": "Nal Hutta",
+      "to": "Vos Kerrat",
+      "sector": "Kethrane",
+      "string_id": 143125
+    },
+    {
+      "id": "smarteel",
+      "new_id": "sharrel",
+      "from": "Smarteel",
+      "to": "Sharrel",
+      "sector": "Kethrane",
+      "string_id": 143126
+    },
+    {
+      "id": "spuma",
+      "new_id": "spirra",
+      "from": "Spuma",
+      "to": "Spirra",
+      "sector": "Kethrane",
+      "string_id": 143127
+    },
+    {
+      "id": "vodran",
+      "new_id": "odrava",
+      "from": "Vodran",
+      "to": "Odrava",
+      "sector": "Kethrane",
+      "string_id": 143128
+    },
+    {
+      "id": "xa_fel",
+      "new_id": "xi_vorr",
+      "from": "Xa Fel",
+      "to": "Xi Vorr",
+      "sector": "Kethrane",
+      "string_id": 143129
+    },
+    {
+      "id": "anchoron",
+      "new_id": "ankerrin",
+      "from": "Anchoron",
+      "to": "Ankerrin",
+      "sector": "Belcaro",
+      "string_id": 143136
+    },
+    {
+      "id": "chalcedon",
+      "new_id": "quorith",
+      "from": "Chalcedon",
+      "to": "Quorith",
+      "sector": "Belcaro",
+      "string_id": 143137
+    },
+    {
+      "id": "clak_dor_vii",
+      "new_id": "tlakveth_vii",
+      "from": "Clak'dor VII",
+      "to": "Tlak'veth VII",
+      "sector": "Belcaro",
+      "string_id": 143138
+    },
+    {
+      "id": "cona",
+      "new_id": "corra",
+      "from": "Cona",
+      "to": "Corra",
+      "sector": "Belcaro",
+      "string_id": 143139
+    },
+    {
+      "id": "dantooine",
+      "new_id": "daventh",
+      "from": "Dantooine",
+      "to": "Daventh",
+      "sector": "Belcaro",
+      "string_id": 143140
+    },
+    {
+      "id": "h_nemthe",
+      "new_id": "hvessa",
+      "from": "H'nemthe",
+      "to": "H'vessa",
+      "sector": "Belcaro",
+      "string_id": 143141
+    },
+    {
+      "id": "kabal",
+      "new_id": "kesset",
+      "from": "Kabal",
+      "to": "Kesset",
+      "sector": "Belcaro",
+      "string_id": 143142
+    },
+    {
+      "id": "oetrago",
+      "new_id": "ilvarro",
+      "from": "Oetrago",
+      "to": "Ilvarro",
+      "sector": "Belcaro",
+      "string_id": 143143
+    },
+    {
+      "id": "triton",
+      "new_id": "vellus",
+      "from": "Triton",
+      "to": "Vellus",
+      "sector": "Belcaro",
+      "string_id": 143144
+    },
+    {
+      "id": "urdur",
+      "new_id": "urrik",
+      "from": "Urdur",
+      "to": "Urrik",
+      "sector": "Belcaro",
+      "string_id": 143145
+    },
+    {
+      "id": "adega",
+      "new_id": "adrel",
+      "from": "Adega",
+      "to": "Adrel",
+      "sector": "Morrowgate",
+      "string_id": 143152
+    },
+    {
+      "id": "agrilat",
+      "new_id": "agrivane",
+      "from": "Agrilat",
+      "to": "Agrivane",
+      "sector": "Morrowgate",
+      "string_id": 143153
+    },
+    {
+      "id": "annaj",
+      "new_id": "annesh",
+      "from": "Annaj",
+      "to": "Annesh",
+      "sector": "Morrowgate",
+      "string_id": 143154
+    },
+    {
+      "id": "basilisk",
+      "new_id": "draxa",
+      "from": "Basilisk",
+      "to": "Draxa",
+      "sector": "Morrowgate",
+      "string_id": 143155
+    },
+    {
+      "id": "endor",
+      "new_id": "arborra",
+      "from": "Endor",
+      "to": "Arborra",
+      "sector": "Morrowgate",
+      "string_id": 143156
+    },
+    {
+      "id": "gandolo_iv",
+      "new_id": "gessald_iv",
+      "from": "Gandolo IV",
+      "to": "Gessald IV",
+      "sector": "Morrowgate",
+      "string_id": 143157
+    },
+    {
+      "id": "hozrel_xi",
+      "new_id": "hovren_xi",
+      "from": "Hozrel XI",
+      "to": "Hovren XI",
+      "sector": "Morrowgate",
+      "string_id": 143158
+    },
+    {
+      "id": "khuiumin",
+      "new_id": "kheiman",
+      "from": "Khuiumin",
+      "to": "Kheiman",
+      "sector": "Morrowgate",
+      "string_id": 143159
+    },
+    {
+      "id": "pzob",
+      "new_id": "vrell",
+      "from": "Pzob",
+      "to": "Vrell",
+      "sector": "Morrowgate",
+      "string_id": 143160
+    },
+    {
+      "id": "vjun",
+      "new_id": "vekh",
+      "from": "Vjun",
+      "to": "Vekh",
+      "sector": "Morrowgate",
+      "string_id": 143161
+    },
+    {
+      "id": "bakura",
+      "new_id": "saddoth",
+      "from": "Bakura",
+      "to": "Saddoth",
+      "sector": "Durance",
+      "string_id": 143168
+    },
+    {
+      "id": "chazwa",
+      "new_id": "chessa",
+      "from": "Chazwa",
+      "to": "Chessa",
+      "sector": "Durance",
+      "string_id": 143169
+    },
+    {
+      "id": "daltar",
+      "new_id": "dalvorn",
+      "from": "Daltar",
+      "to": "Dalvorn",
+      "sector": "Durance",
+      "string_id": 143170
+    },
+    {
+      "id": "joiol",
+      "new_id": "jovell",
+      "from": "Joiol",
+      "to": "Jovell",
+      "sector": "Durance",
+      "string_id": 143171
+    },
+    {
+      "id": "lafra",
+      "new_id": "laphis",
+      "from": "Lafra",
+      "to": "Laphis",
+      "sector": "Durance",
+      "string_id": 143172
+    },
+    {
+      "id": "kimanan",
+      "new_id": "kimmerel",
+      "from": "Kimanan",
+      "to": "Kimmerel",
+      "sector": "Durance",
+      "string_id": 143173
+    },
+    {
+      "id": "mantessa",
+      "new_id": "mantira",
+      "from": "Mantessa",
+      "to": "Mantira",
+      "sector": "Durance",
+      "string_id": 143174
+    },
+    {
+      "id": "poderis",
+      "new_id": "podrel",
+      "from": "Poderis",
+      "to": "Podrel",
+      "sector": "Durance",
+      "string_id": 143175
+    },
+    {
+      "id": "ryloth",
+      "new_id": "ryvelle",
+      "from": "Ryloth",
+      "to": "Ryvelle",
+      "sector": "Durance",
+      "string_id": 143176
+    },
+    {
+      "id": "tatooine",
+      "new_id": "ashkaar",
+      "from": "Tatooine",
+      "to": "Ashkaar",
+      "sector": "Durance",
+      "string_id": 143177
+    },
+    {
+      "id": "amorris",
+      "new_id": "amberis",
+      "from": "Amorris",
+      "to": "Amberis",
+      "sector": "Quentavar",
+      "string_id": 143184
+    },
+    {
+      "id": "corstris",
+      "new_id": "corvain",
+      "from": "Corstris",
+      "to": "Corvain",
+      "sector": "Quentavar",
+      "string_id": 143185
+    },
+    {
+      "id": "dathomir",
+      "new_id": "duskmire",
+      "from": "Dathomir",
+      "to": "Duskmire",
+      "sector": "Quentavar",
+      "string_id": 143186
+    },
+    {
+      "id": "kirrek",
+      "new_id": "kerrow",
+      "from": "Kirrek",
+      "to": "Kerrow",
+      "sector": "Quentavar",
+      "string_id": 143187
+    },
+    {
+      "id": "pil_diller",
+      "new_id": "pell_dorran",
+      "from": "Pil Diller",
+      "to": "Pell Dorran",
+      "sector": "Quentavar",
+      "string_id": 143188
+    },
+    {
+      "id": "rafa",
+      "new_id": "rhassa",
+      "from": "Rafa",
+      "to": "Rhassa",
+      "sector": "Quentavar",
+      "string_id": 143189
+    },
+    {
+      "id": "selaggis",
+      "new_id": "sallagor",
+      "from": "Selaggis",
+      "to": "Sallagor",
+      "sector": "Quentavar",
+      "string_id": 143190
+    },
+    {
+      "id": "thrakia",
+      "new_id": "thrask",
+      "from": "Thrakia",
+      "to": "Thrask",
+      "sector": "Quentavar",
+      "string_id": 143191
+    },
+    {
+      "id": "varn",
+      "new_id": "varnhal",
+      "from": "Varn",
+      "to": "Varnhal",
+      "sector": "Quentavar",
+      "string_id": 143192
+    },
+    {
+      "id": "vinsoth",
+      "new_id": "vinsara",
+      "from": "Vinsoth",
+      "to": "Vinsara",
+      "sector": "Quentavar",
+      "string_id": 143193
+    },
+    {
+      "id": "averam",
+      "new_id": "averil",
+      "from": "Averam",
+      "to": "Averil",
+      "sector": "Celestine",
+      "string_id": 143200
+    },
+    {
+      "id": "balmorra",
+      "new_id": "belmara",
+      "from": "Balmorra",
+      "to": "Belmara",
+      "sector": "Celestine",
+      "string_id": 143201
+    },
+    {
+      "id": "bortras",
+      "new_id": "bortrell",
+      "from": "Bortras",
+      "to": "Bortrell",
+      "sector": "Celestine",
+      "string_id": 143202
+    },
+    {
+      "id": "chandrila",
+      "new_id": "calendra",
+      "from": "Chandrila",
+      "to": "Calendra",
+      "sector": "Celestine",
+      "string_id": 143203
+    },
+    {
+      "id": "corsin",
+      "new_id": "corwick",
+      "from": "Corsin",
+      "to": "Corwick",
+      "sector": "Celestine",
+      "string_id": 143204
+    },
+    {
+      "id": "coruscant",
+      "new_id": "centralis",
+      "from": "Coruscant",
+      "to": "Centralis",
+      "sector": "Celestine",
+      "string_id": 143205
+    },
+    {
+      "id": "ghorman",
+      "new_id": "halvering",
+      "from": "Ghorman",
+      "to": "Halvering",
+      "sector": "Celestine",
+      "string_id": 143206
+    },
+    {
+      "id": "svivren",
+      "new_id": "sivrenne",
+      "from": "Svivren",
+      "to": "Sivrenne",
+      "sector": "Celestine",
+      "string_id": 143207
+    },
+    {
+      "id": "uvena",
+      "new_id": "uvessa",
+      "from": "Uvena",
+      "to": "Uvessa",
+      "sector": "Celestine",
+      "string_id": 143208
+    },
+    {
+      "id": "yaga_minor",
+      "new_id": "yarrow_minor",
+      "from": "Yaga Minor",
+      "to": "Yarrow Minor",
+      "sector": "Celestine",
+      "string_id": 143209
+    },
+    {
+      "id": "bothawui",
+      "new_id": "vessar",
+      "from": "Bothawui",
+      "to": "Vessar",
+      "sector": "Tessarine",
+      "string_id": 143216
+    },
+    {
+      "id": "bpfassh",
+      "new_id": "pfennish",
+      "from": "Bpfassh",
+      "to": "Pfennish",
+      "sector": "Tessarine",
+      "string_id": 143217
+    },
+    {
+      "id": "mon_calamari",
+      "new_id": "nerith",
+      "from": "Mon Calamari",
+      "to": "Nerith",
+      "sector": "Tessarine",
+      "string_id": 143218
+    },
+    {
+      "id": "denab",
+      "new_id": "dennet",
+      "from": "Denab",
+      "to": "Dennet",
+      "sector": "Tessarine",
+      "string_id": 143219
+    },
+    {
+      "id": "kothlis",
+      "new_id": "kothren",
+      "from": "Kothlis",
+      "to": "Kothren",
+      "sector": "Tessarine",
+      "string_id": 143220
+    },
+    {
+      "id": "orto",
+      "new_id": "ortell",
+      "from": "Orto",
+      "to": "Ortell",
+      "sector": "Tessarine",
+      "string_id": 143221
+    },
+    {
+      "id": "praesitlyn",
+      "new_id": "prestellin",
+      "from": "Praesitlyn",
+      "to": "Prestellin",
+      "sector": "Tessarine",
+      "string_id": 143222
+    },
+    {
+      "id": "sluis_van",
+      "new_id": "sallis_vor",
+      "from": "Sluis Van",
+      "to": "Sallis Vor",
+      "sector": "Tessarine",
+      "string_id": 143223
+    },
+    {
+      "id": "sullust",
+      "new_id": "tarrow",
+      "from": "Sullust",
+      "to": "Tarrow",
+      "sector": "Tessarine",
+      "string_id": 143224
+    },
+    {
+      "id": "umgul",
+      "new_id": "ungrel",
+      "from": "Umgul",
+      "to": "Ungrel",
+      "sector": "Tessarine",
+      "string_id": 143225
+    },
+    {
+      "id": "alk_lellish_iii",
+      "new_id": "alkvaresh_iii",
+      "from": "Alk'lellish III",
+      "to": "Alk'varesh III",
+      "sector": "Samaris",
+      "string_id": 143232
+    },
+    {
+      "id": "boordii",
+      "new_id": "boskarr",
+      "from": "Boordii",
+      "to": "Boskarr",
+      "sector": "Samaris",
+      "string_id": 143233
+    },
+    {
+      "id": "flax",
+      "new_id": "tessle",
+      "from": "Flax",
+      "to": "Tessle",
+      "sector": "Samaris",
+      "string_id": 143234
+    },
+    {
+      "id": "geedon_v",
+      "new_id": "gedran_v",
+      "from": "Geedon V",
+      "to": "Gedran V",
+      "sector": "Samaris",
+      "string_id": 143235
+    },
+    {
+      "id": "kashyyyk",
+      "new_id": "vahruun",
+      "from": "Kashyyyk",
+      "to": "Vahruun",
+      "sector": "Samaris",
+      "string_id": 143236
+    },
+    {
+      "id": "linuri",
+      "new_id": "linnora",
+      "from": "Linuri",
+      "to": "Linnora",
+      "sector": "Samaris",
+      "string_id": 143237
+    },
+    {
+      "id": "qat_chrystac",
+      "new_id": "kat_vessarin",
+      "from": "Qat Chrystac",
+      "to": "Kat Vessarin",
+      "sector": "Samaris",
+      "string_id": 143238
+    },
+    {
+      "id": "tierfon",
+      "new_id": "tierrun",
+      "from": "Tierfon",
+      "to": "Tierrun",
+      "sector": "Samaris",
+      "string_id": 143239
+    },
+    {
+      "id": "woostri",
+      "new_id": "wolstrin",
+      "from": "Woostri",
+      "to": "Wolstrin",
+      "sector": "Samaris",
+      "string_id": 143240
+    },
+    {
+      "id": "yavin",
+      "new_id": "ilvanor",
+      "from": "Yavin",
+      "to": "Ilvanor",
+      "sector": "Samaris",
+      "string_id": 143241
+    },
+    {
+      "id": "ambria",
+      "new_id": "ambrel",
+      "from": "Ambria",
+      "to": "Ambrel",
+      "sector": "Xalvane",
+      "string_id": 143248
+    },
+    {
+      "id": "g_rho",
+      "new_id": "kthra",
+      "from": "G'rho",
+      "to": "K'thra",
+      "sector": "Xalvane",
+      "string_id": 143249
+    },
+    {
+      "id": "kirdo_iii",
+      "new_id": "kerrin_iii",
+      "from": "Kirdo III",
+      "to": "Kerrin III",
+      "sector": "Xalvane",
+      "string_id": 143250
+    },
+    {
+      "id": "neelgaimon",
+      "new_id": "neldamor",
+      "from": "Neelgaimon",
+      "to": "Neldamor",
+      "sector": "Xalvane",
+      "string_id": 143251
+    },
+    {
+      "id": "norulac",
+      "new_id": "norvulan",
+      "from": "Norulac",
+      "to": "Norvulan",
+      "sector": "Xalvane",
+      "string_id": 143252
+    },
+    {
+      "id": "ruuria",
+      "new_id": "rhuuvia",
+      "from": "Ruuria",
+      "to": "Rhuuvia",
+      "sector": "Xalvane",
+      "string_id": 143253
+    },
+    {
+      "id": "stic",
+      "new_id": "stav",
+      "from": "Stic",
+      "to": "Stav",
+      "sector": "Xalvane",
+      "string_id": 143254
+    },
+    {
+      "id": "thanta_zilbra",
+      "new_id": "tanta_vilmora",
+      "from": "Thanta Zilbra",
+      "to": "Tanta Vilmora",
+      "sector": "Xalvane",
+      "string_id": 143255
+    },
+    {
+      "id": "thila",
+      "new_id": "thessa",
+      "from": "Thila",
+      "to": "Thessa",
+      "sector": "Xalvane",
+      "string_id": 143256
+    },
+    {
+      "id": "tund",
+      "new_id": "tunn",
+      "from": "Tund",
+      "to": "Tunn",
+      "sector": "Xalvane",
+      "string_id": 143257
+    }
+  ]
+}
