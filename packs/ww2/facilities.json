@@ -23,7 +23,7 @@
     },
     {
       "id": "shipyard",
-      "display_name": "Naval Yard",
+      "display_name": "War Plant",
       "family": "shipyard",
       "tier": 1,
       "roles": [
@@ -89,7 +89,7 @@
     },
     {
       "id": "advanced_shipyard",
-      "display_name": "Fleet Base",
+      "display_name": "Arsenal",
       "family": "shipyard",
       "tier": 2,
       "roles": [

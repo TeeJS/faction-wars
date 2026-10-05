@@ -190,7 +190,7 @@ Star Wars vocabulary that test guards against.
 - `shipyard`: game rules only
 - `training_facility`: game rules only
 - `construction_yard`: game rules only
-- `advanced_shipyard`: <https://en.wikipedia.org/wiki/Liberty_ship>
+- `advanced_shipyard`: <https://en.wikipedia.org/wiki/Liberty_ship>; <https://millercenter.org/the-presidency/presidential-speeches/december-29-1940-fireside-chat-16-arsenal-democracy> (Roosevelt's "great arsenal of democracy", 29 December 1940)
 - `advanced_training_facility`: game rules only
 - `advanced_construction_yard`: <https://en.wikipedia.org/wiki/Seabee>
 - `mine`: game rules only

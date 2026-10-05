@@ -24,14 +24,18 @@ const Words := ["galaxy", "galactic", "planet", "planets", "planetary", "hypersp
 	"turbo laser", "ion cannon", "laser", "lasers", "tractor beam", "bounty hunter", "bounty hunters", "holonet",
 	"holocube", "transmission", "transmissions", "sensor", "sensors", "parsec", "parsecs", "starship", "starships",
 	"orbital", "orbit", "in orbit", "sector", "sectors", "system", "systems", "trooper", "troopers", "shield", "shields",
-	"coruscant", "yavin", "endor", "vader", "palpatine", "mothma", "jabba", "skywalker", "sub-light", "sublight"]
+	"coruscant", "yavin", "endor", "vader", "palpatine", "mothma", "jabba", "skywalker", "sub-light", "sublight",
+	# The unit-building facility builds aircraft too: WWII's are War Plants and
+	# Arsenals, never shipyards (TeeJ, 2026-10-04).
+	"shipyard", "shipyards", "naval yard", "naval yards", "fleet base", "fleet bases", "ship construction"]
 const CaseWords := ["the Force"]
 ## Not the setting's words, so not a leak: the original game's name (the save
 ## importer's hint), the space bar, English's "message system", and the war's
 ## own proper names the Encyclopedia's history uses (art/descriptions.json).
 const Allowed := ["Star Wars: Rebellion", "Space pause", "message system",
 	"Imperial Japanese Army", "Imperial Japanese Navy", "Imperial General Staff", "Imperial German Navy",
-	"Imperial Russian Navy", "British Empire", "Empire of Japan", "Dowding system"]
+	"Imperial Russian Navy", "British Empire", "Empire of Japan", "Dowding system",
+	"eastern shipyards", "American shipyards"]
 
 var _fails := 0
 var _checks := 0
@@ -117,7 +121,9 @@ func _init() -> void:
 		["Objectives", func() -> void: ui.OpenObjectives()],
 		["the Encyclopedia", func() -> void: ui.OpenEncyclopedia()],
 	]
-	_check(theirs != null and unexplored != null, "an enemy's world (%s) and an unexplored one (%s)" % [theirs.Name if theirs != null else "-", unexplored.Name if unexplored != null else "-"])
+	# An unexplored one only where the pack has one: WWII starts with the whole
+	# world charted (map.json starts_explored, #446), so its window is skipped.
+	_check(theirs != null, "an enemy's world (%s); an unexplored one: %s" % [theirs.Name if theirs != null else "-", unexplored.Name if unexplored != null else "none, the whole map is charted"])
 	for o in openers:
 		if (str(o[0]).begins_with("an enemy") and theirs == null) or (str(o[0]).begins_with("an unexplored") and unexplored == null):
 			continue

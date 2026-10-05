@@ -314,7 +314,7 @@
       "modes": [
         {
           "id": "shipyards",
-          "label": "Naval Yards",
+          "label": "War Plants",
           "quantity": {
             "kind": "facility_count",
             "family": "shipyard"
@@ -322,22 +322,22 @@
           "tiers": [
             {
               "min": 5,
-              "label": "5+ Naval Yards",
+              "label": "5+ War Plants",
               "flare": "big"
             },
             {
               "min": 2,
-              "label": "2-4 Naval Yards",
+              "label": "2-4 War Plants",
               "flare": "mid"
             },
             {
               "min": 1,
-              "label": "1 Naval Yards",
+              "label": "1 War Plant",
               "flare": "low"
             },
             {
               "min": 0,
-              "label": "No Naval Yards",
+              "label": "No War Plants",
               "flare": "none"
             }
           ],
@@ -345,7 +345,7 @@
         },
         {
           "id": "idle_shipyards",
-          "label": "Idle Naval Yards",
+          "label": "Idle War Plants",
           "quantity": {
             "kind": "idle_producer",
             "role": "produces_unit"
@@ -703,6 +703,10 @@
     "incoming": "INCOMING DISPATCH",
     "agent_role": "Liaison officer",
     "messenger": "Signals Officer",
-    "no_messages": "No dispatches received."
+    "no_messages": "No dispatches received.",
+    "shipyard": "War Plant",
+    "shipyards": "War Plants",
+    "ship_construction": "Ships and Aircraft",
+    "no_ship_construction": "No ships or aircraft are being built"
   }
 }

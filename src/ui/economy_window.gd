@@ -65,6 +65,7 @@ func Populate(planet: Planet) -> void:
 	OUI.SystemTitle(self, planet)
 
 	var tabs: TabContainer = get_node("%EconomyTabs")
+	_ProducerWords(tabs)
 	# Only jump to the first tab when this window is opened on a NEW
 	# subject. A refresh must leave the player where they were: once
 	# repaints moved onto a four-times-a-second poll, resetting here
@@ -97,7 +98,7 @@ func Populate(planet: Planet) -> void:
 		(get_node("%FacCapLabel") as Label).text = Pair(construction, planet, "produces_facility")
 
 		# The original's own idle lines (its Manufacturing window, verbatim).
-		(get_node("%ShipQueueLabel") as Label).text = QueueSummary(planet.ShipyardQueue, "No Ships are being built")
+		(get_node("%ShipQueueLabel") as Label).text = QueueSummary(planet.ShipyardQueue, Terms.label("no_ship_construction"))
 		(get_node("%TroopQueueLabel") as Label).text = QueueSummary(planet.TrainingQueue, "No Troops in training")
 		(get_node("%FacQueueLabel") as Label).text = QueueSummary(planet.BuildingQueue, "No Facilities are being built")
 		var queues: Array = [planet.ShipyardQueue, planet.TrainingQueue, planet.BuildingQueue]
@@ -151,7 +152,7 @@ func Populate(planet: Planet) -> void:
 				(get_node(pair[0]) as Label).mouse_filter = Control.MOUSE_FILTER_PASS
 
 		# --- SPECIFIC MANAGEMENT TABS: Dynamic Population ---
-		PopulateFacilityTab(tabs, "Shipyards", planet, "shipyard", "No Shipyards operational.")
+		PopulateFacilityTab(tabs, "Shipyards", planet, "shipyard", "No %s operational." % Terms.cap("shipyards"))
 		PopulateFacilityTab(tabs, "Training Facilities", planet, "training_facility", "No Training Centers operational.")
 		PopulateFacilityTab(tabs, "Construction Yards", planet, "construction_yard", "No Construction Yards operational.")
 		PopulateFacilityTab(tabs, Terms.cap("refineries"), planet, "refinery", "No %s operational." % Terms.lower("refineries"))
@@ -283,7 +284,7 @@ func _BuildOriginal() -> bool:
 		var pictureTop: int = ColumnY if i == 0 else RatioYs[i - 1] + RatioH
 		_HitArea(mfg, "RowHit%d" % i, Rect2(RowX, y, RowW, RowH))
 		_HitArea(mfg, "BuildingHit%d" % i, Rect2(ColumnX, pictureTop, ColumnW, RatioYs[i] + RatioH - pictureTop))
-		var head := OUI.Text(mfg, RowHeaders[i], RowX + 4, y, 156, 13, 11, Color.BLACK, HORIZONTAL_ALIGNMENT_LEFT, false, "HeaderText%d" % i)
+		var head := OUI.Text(mfg, Terms.label("ship_construction") if i == 0 else RowHeaders[i], RowX + 4, y, 156, 13, 11, Color.BLACK, HORIZONTAL_ALIGNMENT_LEFT, false, "HeaderText%d" % i)
 		head.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		# The progress bar runs in the frame's black track (rows 70-74).
 		var fill := ColorRect.new()
@@ -419,8 +420,25 @@ const QueueStatus := {
 }
 
 
+## The ship-and-fighter producer in the pack's words (Terms "shipyards",
+## "ship_construction"; WWII's War Plants build aircraft too): its tab keeps
+## the node name every lookup here uses, and shows the pack's word.
+static func _ProducerWords(tabs: TabContainer) -> void:
+	var page: Control = tabs.get_node_or_null("Shipyards")
+	if page != null:
+		tabs.set_tab_title(page.get_index(), Terms.cap("shipyards"))
+		var manage: Label = page.get_node_or_null("Label")
+		if manage != null:
+			manage.text = "Manage %s" % Terms.cap("shipyards")
+	var head: Label = tabs.get_node_or_null("Manufacturing/ShipQueue/Header/Label")
+	if head != null:
+		head.text = Terms.label("ship_construction")
+
+
 static func QueueStatusData(planet: Planet, producer: String) -> Dictionary:
 	var info: Array = QueueStatus.get(producer, ["Status", "", "", "Building"])
+	if producer == "produces_unit":
+		info = [Terms.label("ship_construction"), info[1], Terms.label("shipyard"), info[3]]
 	var q: Variant = planet.QueueFor(producer)
 	var queue: Array = q if q != null else []
 	var workers: int = Lq.count(planet.Facilities, func(f: Facility) -> bool: return f.HasRole(producer))
@@ -552,7 +570,8 @@ func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, fa
 	if not _original:
 		# Create a styled sub-header
 		var header := Label.new()
-		header.text = "Manage %s" % tabName
+		# The tab's shown title, which may be the pack's word (_ProducerWords).
+		header.text = "Manage %s" % tabs.get_tab_title(container.get_index())
 		header.add_theme_font_size_override("font_size", 13)
 		header.add_theme_color_override("font_color", Color(0.6, 0.9, 0.6))
 		container.add_child(header)

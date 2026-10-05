@@ -230,8 +230,8 @@ func _TellIdle(queue: Array) -> void:
 	var title: String
 	var body: String
 	if is_same(queue, ShipyardQueue):   # the same array, not an equal one
-		title = "Shipyard Idle on %s" % Name
-		body = "The Shipyards at %s are available for new construction orders." % Name
+		title = "%s Idle on %s" % [Terms.label("shipyard"), Name]
+		body = "The %s at %s are available for new construction orders." % [Terms.label("shipyards"), Name]
 	elif is_same(queue, TrainingQueue):
 		title = "Training Facility Idle on %s" % Name
 		body = "The Training Facilities at %s are no longer in use." % Name
