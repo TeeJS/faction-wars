@@ -58,6 +58,8 @@ const KNOWN_TERMS := [
 	"system", "systems", "galaxy", "capital_ship", "capital_ships", "no_data", "unexplored_system", "unknown_system", "bombard_order", "assault_order", "destroy_order", "system_fleets", "fleets_here", "bombardment_event", "strike", "disabled_by", "incoming", "agent_role", "messenger",
 	# a message category with nothing in it
 	"no_messages",
+	# the facility that builds ships and fighters, and its queue
+	"shipyard", "shipyards", "ship_construction", "no_ship_construction",
 ]
 ## SCHEMA.md section 2, `menu`. Every function of the Shuttle Cockpit (manual
 ## p021, Fig. 2.2); a picture menu must offer each one, so no function is lost

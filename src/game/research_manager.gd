@@ -107,7 +107,7 @@ static func Award(f: Faction, track: int, points: int, day: int, quiet: bool) ->
 	if reached > 0 and GameSettings.IsHuman(f) and after.size() >= Researchable(f, track):
 		var done := GameMessage.new("Research Exhausted", "There are no further advances expected in %s." % (
 			"facility construction" if track == Enums.ResearchTrackKind.FacilityDesign
-			else ("troop training" if track == Enums.ResearchTrackKind.TroopTraining else "ship construction")),
+			else ("troop training" if track == Enums.ResearchTrackKind.TroopTraining else Terms.lower("ship_construction"))),
 			Enums.MessageCategory.Manufacturing, day)
 		done.Type = Enums.MessageType.ResearchReport
 		done.Still = "message.1017"

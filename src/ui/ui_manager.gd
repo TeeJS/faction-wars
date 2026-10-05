@@ -1545,7 +1545,7 @@ func _AgentPopup() -> PopupMenu:
 	for id in [0, 1, 2]:
 		popup.set_item_disabled(popup.get_item_index(id), true)
 
-	popup.set_item_tooltip(popup.get_item_index(0), "Order ships from a shipyard's own menu.")
+	popup.set_item_tooltip(popup.get_item_index(0), "Order ships from a %s's own menu." % Terms.lower("shipyard"))
 	popup.set_item_tooltip(popup.get_item_index(1), "Order troops from a training facility's own menu.")
 	popup.set_item_tooltip(popup.get_item_index(2), "Order facilities from a construction yard's own menu.")
 	popup.set_item_tooltip(popup.get_item_index(7), "%s says aloud what %s reports (Alt+V)." % [AgentDroid.NameFor(us), AgentDroid.MessengerFor(us)])

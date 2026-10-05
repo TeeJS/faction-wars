@@ -123,6 +123,15 @@ const DEFAULTS := {
 	"messenger":              "Message droid",
 	# a message category with nothing in it
 	"no_messages":            "No transmissions.",
+	# the facility that builds ships AND fighters (produces_unit): the
+	# Manufacturing window's tab and its heading, its queue's header, idle line
+	# and Status window, the idle and research messages, the agent's menu hint.
+	# A pack sets its own (TeeJ, 2026-10-04: "it feels weird to have
+	# 'shipyards' making both airplanes and ships" - WWII's War Plants)
+	"shipyard":               "Shipyard",
+	"shipyards":              "Shipyards",
+	"ship_construction":      "Ship Construction",
+	"no_ship_construction":   "No Ships are being built",
 }
 
 
