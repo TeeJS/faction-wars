@@ -86,7 +86,7 @@ func _init() -> void:
 		_check(mw.StepBack() and mw._oIndex.visible, "and steps back to the index")
 	# The sector window in the original's look (phase 3): its boxes, and every
 	# system's picture, from the stand-ins.
-	_check(SectorWindow.CanBuildOriginal() and Art.PlanetSprite(26) != null and Art.GidStar("neutral", "big") != null,
+	_check(SectorWindow.CanBuildOriginal() and Art.LocationSprite(26) != null and Art.GidStar("neutral", "big") != null,
 		"the sector window's pictures are there: its boxes, 26 planet pictures, the stars")
 	var sector: Sector = GameState.ActiveGalaxy[0]
 	ui.OnSectorClicked(sector)

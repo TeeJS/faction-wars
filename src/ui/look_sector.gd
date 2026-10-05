@@ -226,7 +226,7 @@ static func MapRect(manifest, tex: Texture2D) -> Rect2:
 ## A system: its side's map colour with an ink rim; an unheld one an ink ring
 ## on the parchment. The HQ ring (Gid.ShowHqHighlight) in brass.
 ## A system with its own picture (the sector window's "sprite": the pack's
-## planet_sprites, the WWII pack's flags) is that picture alone - no disc
+## location_sprites, the WWII pack's flags) is that picture alone - no disc
 ## behind it, as the original draws none behind its planets and puts the side's
 ## colour in the name (manual p025) - and the HQ keeps a brass edge round it.
 static func _mark(btn: Button, planet: Planet) -> void:

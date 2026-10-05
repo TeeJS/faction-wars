@@ -210,7 +210,7 @@ func _target_picture() -> Texture2D:
 		return Art.Scaled(Art.Portrait("facilities", fac.Def.Id if fac.Def != null else fac.Family()), K)
 	if _thing is Unit:
 		return Art.Scaled(Art.Portrait("units", (_thing as Unit).PackId), K)
-	return Art.Scaled(Art.PlanetSprite(_target.ArtworkId), K)
+	return Art.Scaled(Art.LocationSprite(_target.ArtworkId), K)
 
 
 func _target_name() -> String:

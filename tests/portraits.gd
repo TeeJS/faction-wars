@@ -87,7 +87,7 @@ func _init() -> void:
 
 	# --- Write portraits and a miniature under the test art set. ---
 	var dir := "%s/%s" % [Art.UserArtRoot, FactionRegistry.Pack.Manifest.ArtSets[0]]
-	for sub in ["portraits/characters", "portraits/units", "miniatures/characters", "characters", "planets", "missions"]:
+	for sub in ["portraits/characters", "portraits/units", "miniatures/characters", "characters", "locations", "missions"]:
 		DirAccess.make_dir_recursive_absolute("%s/%s" % [dir, sub])
 	var written: Array[String] = []
 	var p80 := Image.create(80, 80, false, Image.FORMAT_RGBA8)
@@ -172,7 +172,7 @@ func _init() -> void:
 		written.append(mpath)
 		var ppic := Image.create(400, 200, false, Image.FORMAT_RGBA8)
 		ppic.fill(Color(0.2, 0.5, 0.2))
-		var ppath := "%s/planets/%s.png" % [dir, home.PackId]
+		var ppath := "%s/locations/%s.png" % [dir, home.PackId]
 		ppic.save_png(ppath)
 		written.append(ppath)
 		Art.Reset()

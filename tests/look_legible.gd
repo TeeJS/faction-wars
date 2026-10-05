@@ -95,7 +95,7 @@ func _init() -> void:
 		["a fleet's Status", func() -> void: ui.OpenFleetStatusWindow(fleet)],
 		["the Encyclopedia at a ship", func() -> void: ui.OpenEncyclopedia("units", unit_id)],
 		["the Encyclopedia at a facility", func() -> void: ui.OpenEncyclopedia("facilities", fac.Def.Id)],
-		["the Encyclopedia at a system", func() -> void: ui.OpenEncyclopedia("planets", home.PackId)],
+		["the Encyclopedia at a system", func() -> void: ui.OpenEncyclopedia("locations", home.PackId)],
 		["the Encyclopedia at a mission", func() -> void: ui.OpenEncyclopedia("missions", mission_id)],
 		["a message read", func() -> void:
 			EventBus.Tell(us, GameMessage.new("%s reports" % who.Name, "The mission team has reached its destination and begun work.",

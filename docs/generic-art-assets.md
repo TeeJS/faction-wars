@@ -64,7 +64,7 @@ and names; these are its pictures. The GID stars also draw the galaxy map.
 
 | Asset | File | Size (frame px) | Count | What it is | States / notes | Plain stand-in now |
 |---|---|---|---|---|---|---|
-| Planet pictures | `planet_sprites/<n>.png` | 37 x 37 | 26 | A system's picture in the sector window, by the pack's `artwork` number (1-26). | One state; transparent round the planet. | A shaded disc, each number its own muted colour |
+| Planet pictures | `location_sprites/<n>.png` (once `planet_sprites/`, still read) | 37 x 37 | 26 | A system's picture in the sector window, by the pack's `artwork` number (1-26). | One state; transparent round the planet. | A shaded disc, each number its own muted colour |
 | Corner icons | `icons/<glyph>.<side>[.hover].png` | manufacturing 27 x 18, fleet 28 x 18, defenses 27 x 19, mission 28 x 19 | 20 (already listed in phase 1) | The glyphs round a system's picture: Manufacturing (top-left of its cell, glyph 11 x 8), Fleet (top-right, 17 x 9), Defenses (bottom-left, 10 x 9), Mission (bottom-right, 11 x 11). Each opens that window. | Normal and `.hover` (the glyph a pixel larger). Manufacturing and Defenses also `.neutral`. | Our glyphs in the side's colour, white when hovered |
 | En-route fleet icon | `icons/enroute.<side>.png` | 20 x 20 | 2 | A fleet on its way to a system. | One state. | Our ship-with-trail glyph |
 | Uprising icon | `icons/uprising.png`, `icons/uprising.hover.png` | 20 x 20 | 2 | A system in uprising. | Normal and hover. | Our flame glyph, orange |
@@ -132,7 +132,7 @@ phase 2) with its close button and scroll bar.
 | Finder buttons | `buttons/finder_<display / btn_characters / btn_specforces / btn_fleets / btn_ships>.<side>[.pressed].png` | Alliance 32 x 31, Empire 44 x 41 | 20 | Display (open the selection's window), Characters / Special Forces, Fleets / Ships. | Plain and pressed. | Our window, person, helmet, ship and list glyphs |
 | Encyclopedia buttons | `buttons/ency_view_topic.<side>`, `ency_view_index.<side>` `[.pressed / .disabled].png` | Alliance 32 x 31, Empire 44 x 41 | 12 | View Topic, View Index. | Plain, pressed, disabled. | Our page and list glyphs |
 | Encyclopedia arrows | `buttons/ency_prev[...]`, `buttons/ency_next[...]` | 21 x 17 | 6 | Step to the previous / next topic. | Plain, pressed, disabled. | Our left and right glyphs |
-| Encyclopedia pictures | `characters/<id>.png`, `units/<id>.png`, `facilities/<id>.png`, `planets/<id>.png`, `missions/...` (`Art.Picture`) with portraits (`Art.Portrait`) and miniatures (`Art.Miniature`, 61 x 25) | the Topic picture area; miniatures 61 x 25 | one per entry | Every topic's picture: each character, ship, fighter, troop, facility, system and mission. | One state (characters also `.report`, units `.damage` / `.moving`). | None |
+| Encyclopedia pictures | `characters/<id>.png`, `units/<id>.png`, `facilities/<id>.png`, `locations/<id>.png` (once `planets/`, still read), `missions/...` (`Art.Picture`) with portraits (`Art.Portrait`) and miniatures (`Art.Miniature`, 61 x 25) | the Topic picture area; miniatures 61 x 25 | one per entry | Every topic's picture: each character, ship, fighter, troop, facility, system and mission. | One state (characters also `.report`, units `.damage` / `.moving`). | None |
 
 ## Phase 7: the Game Options screen and the alert boxes
 

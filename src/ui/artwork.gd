@@ -19,6 +19,11 @@ extends RefCounted
 ## ("alliance" / "empire": a faction's factions.json `skin`, OUI.Side), never
 ## by the faction id, so a custom side can wear the original's.
 ##
+## Two folders were renamed (TeeJ, 2026-10-04): planets/ is now locations/ and
+## planet_sprites/ is now location_sprites/. Where the new one has no picture,
+## the old one is read (OldFolders), so art sets already imported and packs
+## made before still show theirs.
+##
 ## A file under res:// is an imported resource (the editor imports every PNG it
 ## finds, and an export packs the import, not the source file), so it is read
 ## with load() - which is what makes the art work in a web export too, where
@@ -30,6 +35,9 @@ extends RefCounted
 ## builds as it does with the art.
 
 const StandIns := preload("res://src/ui/art_standins.gd")
+## A picture folder's old name, read when the new one has no picture (and a
+## descriptions.json section's, likewise).
+const OldFolders := {"locations": "planets", "location_sprites": "planet_sprites"}
 
 static var _cache: Dictionary = {}      # lookup key -> Texture2D or null
 static var _cache_pack: String = ""
@@ -120,11 +128,12 @@ static func Scaled(tex: Texture2D, factor: int) -> Texture2D:
 	return out
 
 
-## The planet sprite for a map.json artwork_id: planet_sprites/<n>.png.
-static func PlanetSprite(artwork_id: int) -> Texture2D:
+## A system's 37 x 37 picture for a map.json artwork_id:
+## location_sprites/<n>.png.
+static func LocationSprite(artwork_id: int) -> Texture2D:
 	if artwork_id <= 0:
 		return null
-	return _texture("planet_sprites/%d.png" % artwork_id)
+	return _texture("location_sprites/%d.png" % artwork_id)
 
 
 ## The Encyclopedia picture for one pack row: <kind>/<id>.png.
@@ -258,12 +267,20 @@ static func Description(kind: String, id: String) -> String:
 		_descriptions_own = own if own is Dictionary else {}
 		var found: Variant = _json_in_sets("descriptions.json")
 		_descriptions_set = found if found is Dictionary else {}
-	var section: Variant = _descriptions_own.get(kind)
+	var section: Variant = _section(_descriptions_own, kind)
 	if section is Dictionary and section.has(id):
 		return str(section[id])
 	var a: Array = _alias(kind, id)
-	section = _descriptions_set.get(a[1])
+	section = _section(_descriptions_set, a[1])
 	return str(section.get(a[2], "")) if section is Dictionary else ""
+
+
+## descriptions.json's section for `kind`, else its old name's.
+static func _section(d: Dictionary, kind: String) -> Variant:
+	var s: Variant = d.get(kind)
+	if s == null and OldFolders.has(kind):
+		s = d.get(OldFolders[kind])
+	return s
 
 
 ## The original's mouse pointers (REBEXE.EXE; see the importer): "pointer"
@@ -391,7 +408,7 @@ static func _alias(kind: String, id: String) -> Array:
 		var pack := FactionRegistry.Pack
 		if pack != null:
 			for pair in [["characters", pack.Characters], ["units", pack.Units], ["facilities", pack.Facilities],
-					["missions", pack.Missions], ["planets", pack.Map.Planets if pack.Map != null else []]]:
+					["missions", pack.Missions], ["locations", pack.Map.Planets if pack.Map != null else []]]:
 				for row in pair[1]:
 					if not row.Art.is_empty():
 						var ref: Array = PackLoader.ParseArtRef(row.Art, pack.Manifest.ArtSets)
@@ -414,13 +431,13 @@ static func _find(own_rel: String, set_rel: String, only_set: String = "") -> Te
 	var tex: Texture2D = null
 	var dir := _pack_dir()
 	if not dir.is_empty():
-		tex = _load("%s/art/%s" % [dir, own_rel])
+		tex = _load_in("%s/art" % dir, own_rel)
 	if tex == null:
 		for s in _sets():
 			if not only_set.is_empty() and s != only_set:
 				continue
 			for root in _set_roots(s):
-				tex = _load("%s/%s" % [root, set_rel])
+				tex = _load_in(root, set_rel)
 				if tex != null:
 					break
 			if tex != null:
@@ -440,6 +457,17 @@ static func HasArtSet(set_id: String) -> bool:
 		if not DirAccess.get_files_at(root).is_empty() or not DirAccess.get_directories_at(root).is_empty():
 			return true
 	return false
+
+
+## `rel` under `root`, else under its folder's old name (OldFolders).
+static func _load_in(root: String, rel: String) -> Texture2D:
+	var tex := _load("%s/%s" % [root, rel])
+	if tex == null:
+		var slash := rel.find("/")
+		var folder := rel.substr(0, slash) if slash > 0 else ""
+		if OldFolders.has(folder):
+			tex = _load("%s/%s%s" % [root, OldFolders[folder], rel.substr(slash)])
+	return tex
 
 
 ## One picture by path, or null: an imported resource under res://, a plain
