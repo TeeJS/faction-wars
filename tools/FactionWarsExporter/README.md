@@ -122,8 +122,8 @@ Vorbis at the original's 11 kHz stereo). The game checks every hash on import.
 
 ```
 characters/<id>.png   units/<id>.png   facilities/<id>.png
-planets/<id>.png      missions/<id>.<faction>.png (alliance / empire, + .small.png)
-icons/<glyph>.<faction>.png (+ .hover.png)   planet_sprites/<artwork_id>.png
+locations/<id>.png    missions/<id>.<faction>.png (alliance / empire, + .small.png)
+icons/<glyph>.<faction>.png (+ .hover.png)   location_sprites/<artwork_id>.png
 windows/<name>.png                            tabs/<name>[.<faction>].png (+ .pressed / .grey)
 buttons/<name>.png (+ .pressed / .disabled)   cursors/pointer.png, crosshair.png, hotspots.json
 portraits/<kind>/<id>.png (80x80)   miniatures/<kind>/<id>.png (61x25)
@@ -144,6 +144,9 @@ fonts/arial.ttf, arialbd.ttf  since 2.6.5: the original's font - Windows' own Ar
                       face REBEXE draws in (it ships none); the player's copy, so the web build has it
 characters/<id>.report.png  since 2.6.5: the figure a mission report lays over its scene -
                       the character cut out by hand, STRATEGY at the Encyclopedia id (6208-6811)
+locations/, location_sprites/  since 2.6.6: what earlier versions wrote as planets/ and
+                      planet_sprites/ (TeeJ, 2026-10-04); the game reads either, so a set
+                      made before needs no new export
 music/<nnn>.ogg       the score, MDATA.300-315 as Ogg Vorbis (11 kHz mono, about 4 MB)
 sound/<dll>/<id>.ogg  since 2.6.0: every voice and sound effect, by the original's own id -
                       the droids and characters (alsprite, emsprite), the briefing

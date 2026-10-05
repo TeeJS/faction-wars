@@ -47,7 +47,7 @@ namespace FactionWarsExporter;
 ///   original/characters/&lt;id&gt;.png   original/units/&lt;id&gt;.png
 ///   original/characters/&lt;id&gt;.report.png   the figure a mission report lays
 ///     over its scene (STRATEGY.DLL at the Encyclopedia id, blue = transparent)
-///   original/facilities/&lt;id&gt;.png   original/planets/&lt;id&gt;.png
+///   original/facilities/&lt;id&gt;.png   original/locations/&lt;id&gt;.png (planets/ before 2.6.6)
 ///   original/missions/&lt;id&gt;.&lt;faction&gt;.png (alliance / empire), and
 ///     .small.png: the 130x65 Create Mission picture (GOKRES.DLL)
 ///   original/descriptions.json     { "characters": { id: text }, ... }
@@ -58,7 +58,7 @@ namespace FactionWarsExporter;
 ///   original/icons/uprising.png (+ .hover.png)             the flame, two frames
 ///   original/gid/&lt;faction&gt;.&lt;tier&gt;.png, gid/unexplored.&lt;tier&gt;.png   the GID stars
 ///   original/alerts/&lt;faction&gt;.&lt;category&gt;.png (+ .lit.png)   the Message Alert bar
-///   original/planet_sprites/&lt;artwork_id&gt;.png              the map's planets
+///   original/location_sprites/&lt;artwork_id&gt;.png            the map's planets (planet_sprites/ before 2.6.6)
 ///   original/windows/&lt;name&gt;.png                            window pictures
 ///   original/windows/message.&lt;id&gt;.png   the original's message pictures, STRATEGY
 ///     1000-1075, drawn whole (a mission report's scene, "Chewbacca Escaped" ...)
@@ -827,18 +827,18 @@ public sealed class Importer
             int? art = p["artwork_id"]?.GetValue<int>();
             if (art is null || art < 1)
             {
-                missing.Add($"planets/{id}: no artwork_id");
+                missing.Add($"locations/{id}: no artwork_id");
                 continue;
             }
-            if (SavePicture(pictures, PlanetPictureBase + art.Value - 1, P("planets", id + ".png")))
+            if (SavePicture(pictures, PlanetPictureBase + art.Value - 1, P("locations", id + ".png")))
             {
                 pictureCount++;
                 planets++;
             }
             else
-                missing.Add($"planets/{id}: no picture for artwork_id {art}");
+                missing.Add($"locations/{id}: no picture for artwork_id {art}");
         }
-        Say($"planets: {planets} of {planetRows} pictures.");
+        Say($"locations: {planets} of {planetRows} pictures.");
 
         // The strategic layer's sprites: the sector window's corner icons in each
         // side's own shaded colours, and the planets themselves.
@@ -867,8 +867,8 @@ public sealed class Importer
         int sprites = 0;
         for (int art = 1; art <= PlanetSpriteCount; art++)
         {
-            if (SaveSprite(strategy, PlanetSpriteId(art), P("planet_sprites", $"{art}.png"))) { sprites++; pictureCount++; }
-            else missing.Add($"planet_sprites/{art}: no bitmap {PlanetSpriteId(art)} in STRATEGY.DLL");
+            if (SaveSprite(strategy, PlanetSpriteId(art), P("location_sprites", $"{art}.png"))) { sprites++; pictureCount++; }
+            else missing.Add($"location_sprites/{art}: no bitmap {PlanetSpriteId(art)} in STRATEGY.DLL");
         }
         int stars = 0;
         foreach (var (faction, big, mid, low, none) in GidStars)
