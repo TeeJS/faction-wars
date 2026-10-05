@@ -1,5 +1,5 @@
 {
-  "about": "Draft substitutions for the star-wars-rebellion pack: every Star Wars name in characters, ships/troops/special forces, facilities, sectors and locations, with its replacement. Not applied anywhere yet. `from` is the current display_name, `string_id` is where the player's own TEXTSTRA.DLL holds it (planets and sectors: the low 16 bits). See README.md.",
+  "about": "Draft substitutions for the star-wars-rebellion pack. Not applied anywhere yet; see README.md. Locations, sectors and the Dagobah mission take TeeJ's planet_names.txt (2026-10-04).",
   "kept_unchanged": {
     "units": [
       "Bulk Cruiser",
@@ -13,9 +13,7 @@
       "Dauntless Cruiser",
       "Strike Cruiser",
       "Lancer Frigate",
-      "Interdictor Cruiser",
       "Carrack Light Cruiser",
-      "Victory Destroyer",
       "Assault Transport",
       "Galleon",
       "Star Galleon",
@@ -42,6 +40,39 @@
       "Refinery"
     ]
   },
+  "planet_names_left_out": {
+    "Sylvaneth": "a Warhammer: Age of Sigmar faction",
+    "Izkandar": "Iscandar, Space Battleship Yamato's planet",
+    "Fjordell": "a nation in Brandon Sanderson's Elantris",
+    "Lorkhaan": "Lorkhan, a god in The Elder Scrolls",
+    "Elvandor": "Elvandar, the elven forest in Feist's Riftwar books"
+  },
+  "planet_names_spare": [
+    "Voshmere",
+    "Vyrandel",
+    "Vyskorith",
+    "Wraskenne",
+    "Wulvarith",
+    "Wyndravar",
+    "Wyrkesh",
+    "Xerathune",
+    "Xolmira",
+    "Xorvanne",
+    "Xyleshka",
+    "Yorskelune",
+    "Yorvalith",
+    "Yvesmere",
+    "Ythkarune",
+    "Zavrenne",
+    "Zephkorin",
+    "Zeskavar",
+    "Zhendrova",
+    "Zolvakar",
+    "Zorlathe",
+    "Zulmerith",
+    "Zyndarune",
+    "Zymbrane"
+  ],
   "characters": [
     {
       "id": "mon_mothma",
@@ -527,9 +558,9 @@
   "units": [
     {
       "id": "mon_calamari_cruiser",
-      "new_id": "nerithian_cruiser",
+      "new_id": "myrkalune_cruiser",
       "from": "Mon Calamari Cruiser",
-      "to": "Nerithian Cruiser",
+      "to": "Myrkalune Cruiser",
       "kind": "capital_ship",
       "string_id": 10048
     },
@@ -543,17 +574,17 @@
     },
     {
       "id": "corellian_corvette",
-      "new_id": "calvessan_corvette",
+      "new_id": "cindrova_corvette",
       "from": "Corellian Corvette",
-      "to": "Calvessan Corvette",
+      "to": "Cindrova Corvette",
       "kind": "capital_ship",
       "string_id": 10053
     },
     {
       "id": "corellian_gunship",
-      "new_id": "calvessan_gunship",
+      "new_id": "cindrova_gunship",
       "from": "Corellian Gunship",
-      "to": "Calvessan Gunship",
+      "to": "Cindrova Gunship",
       "kind": "capital_ship",
       "string_id": 10056
     },
@@ -572,6 +603,22 @@
       "to": "Bastion Frigate",
       "kind": "capital_ship",
       "string_id": 10061
+    },
+    {
+      "id": "interdictor_cruiser",
+      "new_id": "snare_cruiser",
+      "from": "Interdictor Cruiser",
+      "to": "Snare Cruiser",
+      "kind": "capital_ship",
+      "string_id": 10114
+    },
+    {
+      "id": "victory_destroyer",
+      "new_id": "triumph_destroyer",
+      "from": "Victory Destroyer",
+      "to": "Triumph Destroyer",
+      "kind": "capital_ship",
+      "string_id": 10116
     },
     {
       "id": "imperial_star_destroyer",
@@ -599,9 +646,9 @@
     },
     {
       "id": "victory_ii_star_destroyer",
-      "new_id": "victory_ii_destroyer",
+      "new_id": "triumph_ii_destroyer",
       "from": "Victory II Star Destroyer",
-      "to": "Victory II Destroyer",
+      "to": "Triumph II Destroyer",
       "kind": "capital_ship",
       "string_id": 10122
     },
@@ -679,25 +726,25 @@
     },
     {
       "id": "sullustan_regiment",
-      "new_id": "tarrowan_regiment",
+      "new_id": "quelvarin_regiment",
       "from": "Sullustan Regiment",
-      "to": "Tarrowan Regiment",
+      "to": "Quelvarin Regiment",
       "kind": "troop",
       "string_id": 9282
     },
     {
       "id": "wookiee_regiment",
-      "new_id": "vahruuni_regiment",
+      "new_id": "ronkarra_regiment",
       "from": "Wookiee Regiment",
-      "to": "Vahruuni Regiment",
+      "to": "Ronkarra Regiment",
       "kind": "troop",
       "string_id": 9283
     },
     {
       "id": "mon_calamari_regiment",
-      "new_id": "nerithian_regiment",
+      "new_id": "myrkalune_regiment",
       "from": "Mon Calamari Regiment",
-      "to": "Nerithian Regiment",
+      "to": "Myrkalune Regiment",
       "kind": "troop",
       "string_id": 9284
     },
@@ -735,9 +782,9 @@
     },
     {
       "id": "bothan_spies",
-      "new_id": "vessari_spies",
+      "new_id": "ozrelith_spies",
       "from": "Bothan Spies",
-      "to": "Vessari Spies",
+      "to": "Ozrelith Spies",
       "kind": "spec_force",
       "string_id": 9539
     },
@@ -813,1745 +860,2769 @@
   "sectors": [
     {
       "id": "abrion",
-      "new_id": "halcyra",
+      "new_id": "aelvorin",
       "from": "Abrion",
-      "to": "Halcyra",
+      "to": "Aelvorin",
       "string_id": 142720
     },
     {
       "id": "atrivis",
-      "new_id": "corvantis",
+      "new_id": "aldrevu",
       "from": "Atrivis",
-      "to": "Corvantis",
+      "to": "Aldrevu",
       "string_id": 142721
     },
     {
       "id": "churba",
-      "new_id": "meridane",
+      "new_id": "caldrisk",
       "from": "Churba",
-      "to": "Meridane",
+      "to": "Caldrisk",
       "string_id": 142722
     },
     {
       "id": "corellian",
-      "new_id": "calvessan",
+      "new_id": "calmovar",
       "from": "Corellian",
-      "to": "Calvessan",
+      "to": "Calmovar",
       "string_id": 142723
     },
     {
       "id": "calaron",
-      "new_id": "varkesh",
+      "new_id": "calvexa",
       "from": "Calaron",
-      "to": "Varkesh",
+      "to": "Calvexa",
       "string_id": 142724
     },
     {
       "id": "dolomar",
-      "new_id": "estravon",
+      "new_id": "daskoril",
       "from": "Dolomar",
-      "to": "Estravon",
+      "to": "Daskoril",
       "string_id": 142725
     },
     {
       "id": "dufilvan",
-      "new_id": "ashmere",
+      "new_id": "delquor",
       "from": "Dufilvan",
-      "to": "Ashmere",
+      "to": "Delquor",
       "string_id": 142726
     },
     {
       "id": "fakir",
-      "new_id": "solvane",
+      "new_id": "faldrisse",
       "from": "Fakir",
-      "to": "Solvane",
+      "to": "Faldrisse",
       "string_id": 142727
     },
     {
       "id": "farfin",
-      "new_id": "theskara",
+      "new_id": "falkorin",
       "from": "Farfin",
-      "to": "Theskara",
+      "to": "Falkorin",
       "string_id": 142728
     },
     {
       "id": "glythe",
-      "new_id": "hallorn",
+      "new_id": "galdrith",
       "from": "Glythe",
-      "to": "Hallorn",
+      "to": "Galdrith",
       "string_id": 142729
     },
     {
       "id": "jospro",
-      "new_id": "dunmarrow",
+      "new_id": "jandrevar",
       "from": "Jospro",
-      "to": "Dunmarrow",
+      "to": "Jandrevar",
       "string_id": 142730
     },
     {
       "id": "kanchen",
-      "new_id": "kethrane",
+      "new_id": "kaldovar",
       "from": "Kanchen",
-      "to": "Kethrane",
+      "to": "Kaldovar",
       "string_id": 142731
     },
     {
       "id": "mayagil",
-      "new_id": "belcaro",
+      "new_id": "maldrivar",
       "from": "Mayagil",
-      "to": "Belcaro",
+      "to": "Maldrivar",
       "string_id": 142732
     },
     {
       "id": "moddell",
-      "new_id": "morrowgate",
+      "new_id": "marvendol",
       "from": "Moddell",
-      "to": "Morrowgate",
+      "to": "Marvendol",
       "string_id": 142733
     },
     {
       "id": "orus",
-      "new_id": "durance",
+      "new_id": "odrevane",
       "from": "Orus",
-      "to": "Durance",
+      "to": "Odrevane",
       "string_id": 142734
     },
     {
       "id": "quelli",
-      "new_id": "quentavar",
+      "new_id": "qavrenth",
       "from": "Quelli",
-      "to": "Quentavar",
+      "to": "Qavrenth",
       "string_id": 142735
     },
     {
       "id": "sesswenna",
-      "new_id": "celestine",
+      "new_id": "saldrevin",
       "from": "Sesswenna",
-      "to": "Celestine",
+      "to": "Saldrevin",
       "string_id": 142736
     },
     {
       "id": "sluis",
-      "new_id": "tessarine",
+      "new_id": "sarvelith",
       "from": "Sluis",
-      "to": "Tessarine",
+      "to": "Sarvelith",
       "string_id": 142737
     },
     {
       "id": "sumitra",
-      "new_id": "samaris",
+      "new_id": "serrulune",
       "from": "Sumitra",
-      "to": "Samaris",
+      "to": "Serrulune",
       "string_id": 142738
     },
     {
       "id": "xappyh",
-      "new_id": "xalvane",
+      "new_id": "xalverith",
       "from": "Xappyh",
-      "to": "Xalvane",
+      "to": "Xalverith",
       "string_id": 142739
     }
   ],
   "locations": [
     {
       "id": "abregado",
-      "new_id": "ostrevan",
+      "new_id": "amrevane",
       "from": "Abregado",
-      "to": "Ostrevan",
-      "sector": "Halcyra",
+      "to": "Amrevane",
+      "sector": "Aelvorin",
       "string_id": 142848
     },
     {
       "id": "cathar",
-      "new_id": "velmora",
+      "new_id": "cassivar",
       "from": "Cathar",
-      "to": "Velmora",
-      "sector": "Halcyra",
+      "to": "Cassivar",
+      "sector": "Aelvorin",
       "string_id": 142849
     },
     {
       "id": "da_soocha",
-      "new_id": "ka_tessri",
+      "new_id": "dolmeth",
       "from": "Da Soocha",
-      "to": "Ka Tessri",
-      "sector": "Halcyra",
+      "to": "Dolmeth",
+      "sector": "Aelvorin",
       "string_id": 142850
     },
     {
       "id": "galpos_ii",
-      "new_id": "drennick_ii",
+      "new_id": "garlevane",
       "from": "Galpos II",
-      "to": "Drennick II",
-      "sector": "Halcyra",
+      "to": "Garlevane",
+      "sector": "Aelvorin",
       "string_id": 142851
     },
     {
       "id": "garban",
-      "new_id": "torvane",
+      "new_id": "gavorin",
       "from": "Garban",
-      "to": "Torvane",
-      "sector": "Halcyra",
+      "to": "Gavorin",
+      "sector": "Aelvorin",
       "string_id": 142852
     },
     {
       "id": "hefi",
-      "new_id": "ulma",
+      "new_id": "halcyvar",
       "from": "Hefi",
-      "to": "Ulma",
-      "sector": "Halcyra",
+      "to": "Halcyvar",
+      "sector": "Aelvorin",
       "string_id": 142853
     },
     {
       "id": "hishyim",
-      "new_id": "saskhem",
+      "new_id": "harkuul",
       "from": "Hishyim",
-      "to": "Saskhem",
-      "sector": "Halcyra",
+      "to": "Harkuul",
+      "sector": "Aelvorin",
       "string_id": 142854
     },
     {
       "id": "intuci",
-      "new_id": "ombrel",
+      "new_id": "imbrelis",
       "from": "Intuci",
-      "to": "Ombrel",
-      "sector": "Halcyra",
+      "to": "Imbrelis",
+      "sector": "Aelvorin",
       "string_id": 142855
     },
     {
       "id": "tieos",
-      "new_id": "pallis",
+      "new_id": "tarsvolen",
       "from": "Tieos",
-      "to": "Pallis",
-      "sector": "Halcyra",
+      "to": "Tarsvolen",
+      "sector": "Aelvorin",
       "string_id": 142856
     },
     {
       "id": "ukio",
-      "new_id": "rhovek",
+      "new_id": "uldravane",
       "from": "Ukio",
-      "to": "Rhovek",
-      "sector": "Halcyra",
+      "to": "Uldravane",
+      "sector": "Aelvorin",
       "string_id": 142857
     },
     {
       "id": "despayre",
-      "new_id": "grimhold",
+      "new_id": "dravenna",
       "from": "Despayre",
-      "to": "Grimhold",
-      "sector": "Corvantis",
+      "to": "Dravenna",
+      "sector": "Aldrevu",
       "string_id": 142864
     },
     {
       "id": "fedje",
-      "new_id": "felk",
+      "new_id": "fenvarra",
       "from": "Fedje",
-      "to": "Felk",
-      "sector": "Corvantis",
+      "to": "Fenvarra",
+      "sector": "Aldrevu",
       "string_id": 142865
     },
     {
       "id": "generis",
-      "new_id": "lumeris",
+      "new_id": "ghelunar",
       "from": "Generis",
-      "to": "Lumeris",
-      "sector": "Corvantis",
+      "to": "Ghelunar",
+      "sector": "Aldrevu",
       "string_id": 142866
     },
     {
       "id": "moltok",
-      "new_id": "brakkus",
+      "new_id": "mazhoril",
       "from": "Moltok",
-      "to": "Brakkus",
-      "sector": "Corvantis",
+      "to": "Mazhoril",
+      "sector": "Aldrevu",
       "string_id": 142867
     },
     {
       "id": "nam_ta",
-      "new_id": "selka",
+      "new_id": "narzekki",
       "from": "Nam'ta",
-      "to": "Sel'ka",
-      "sector": "Corvantis",
+      "to": "Narzekki",
+      "sector": "Aldrevu",
       "string_id": 142868
     },
     {
       "id": "spefik",
-      "new_id": "torrin",
+      "new_id": "shavorun",
       "from": "Spefik",
-      "to": "Torrin",
-      "sector": "Corvantis",
+      "to": "Shavorun",
+      "sector": "Aldrevu",
       "string_id": 142869
     },
     {
       "id": "tibrin",
-      "new_id": "quessa",
+      "new_id": "tavrelune",
       "from": "Tibrin",
-      "to": "Quessa",
-      "sector": "Corvantis",
+      "to": "Tavrelune",
+      "sector": "Aldrevu",
       "string_id": 142870
     },
     {
       "id": "togoria",
-      "new_id": "feralis",
+      "new_id": "thalvorin",
       "from": "Togoria",
-      "to": "Feralis",
-      "sector": "Corvantis",
+      "to": "Thalvorin",
+      "sector": "Aldrevu",
       "string_id": 142871
     },
     {
       "id": "trammis",
-      "new_id": "dravos",
+      "new_id": "thornavel",
       "from": "Trammis",
-      "to": "Dravos",
-      "sector": "Corvantis",
+      "to": "Thornavel",
+      "sector": "Aldrevu",
       "string_id": 142872
     },
     {
       "id": "zeffliffl",
-      "new_id": "ziffavell",
+      "new_id": "zalvorine",
       "from": "Zeffliffl",
-      "to": "Ziffavell",
-      "sector": "Corvantis",
+      "to": "Zalvorine",
+      "sector": "Aldrevu",
       "string_id": 142873
     },
     {
       "id": "akrit_tar",
-      "new_id": "okkravel",
+      "new_id": "ambrivex",
       "from": "Akrit'tar",
-      "to": "Okkra'vel",
-      "sector": "Varkesh",
+      "to": "Ambrivex",
+      "sector": "Calvexa",
       "string_id": 142880
     },
     {
       "id": "f_tral",
-      "new_id": "kvessa",
+      "new_id": "ferrazun",
       "from": "F'tral",
-      "to": "K'vessa",
-      "sector": "Varkesh",
+      "to": "Ferrazun",
+      "sector": "Calvexa",
       "string_id": 142881
     },
     {
       "id": "fwillsving",
-      "new_id": "pwellin",
+      "new_id": "feskorune",
       "from": "Fwillsving",
-      "to": "Pwellin",
-      "sector": "Varkesh",
+      "to": "Feskorune",
+      "sector": "Calvexa",
       "string_id": 142882
     },
     {
       "id": "ithor",
-      "new_id": "sylvara",
+      "new_id": "iolvarune",
       "from": "Ithor",
-      "to": "Sylvara",
-      "sector": "Varkesh",
+      "to": "Iolvarune",
+      "sector": "Calvexa",
       "string_id": 142883
     },
     {
       "id": "jerijador",
-      "new_id": "haldemar",
+      "new_id": "jaskolith",
       "from": "Jerijador",
-      "to": "Haldemar",
-      "sector": "Varkesh",
+      "to": "Jaskolith",
+      "sector": "Calvexa",
       "string_id": 142884
     },
     {
       "id": "kessel",
-      "new_id": "skarrow",
+      "new_id": "kalmorith",
       "from": "Kessel",
-      "to": "Skarrow",
-      "sector": "Varkesh",
+      "to": "Kalmorith",
+      "sector": "Calvexa",
       "string_id": 142885
     },
     {
       "id": "kubindi",
-      "new_id": "tukkari",
+      "new_id": "keldrazine",
       "from": "Kubindi",
-      "to": "Tukkari",
-      "sector": "Varkesh",
+      "to": "Keldrazine",
+      "sector": "Calvexa",
       "string_id": 142886
     },
     {
       "id": "morvogodine",
-      "new_id": "velogrund",
+      "new_id": "mendrazil",
       "from": "Morvogodine",
-      "to": "Velogrund",
-      "sector": "Varkesh",
+      "to": "Mendrazil",
+      "sector": "Calvexa",
       "string_id": 142887
     },
     {
       "id": "norval_ii",
-      "new_id": "asker_ii",
+      "new_id": "nalvareth",
       "from": "Norval II",
-      "to": "Asker II",
-      "sector": "Varkesh",
+      "to": "Nalvareth",
+      "sector": "Calvexa",
       "string_id": 142888
     },
     {
       "id": "skor_ii",
-      "new_id": "brenn_ii",
+      "new_id": "shyndrovar",
       "from": "Skor II",
-      "to": "Brenn II",
-      "sector": "Varkesh",
+      "to": "Shyndrovar",
+      "sector": "Calvexa",
       "string_id": 142889
     },
     {
       "id": "allyuen",
-      "new_id": "essalyn",
+      "new_id": "anzuvar",
       "from": "Allyuen",
-      "to": "Essalyn",
-      "sector": "Meridane",
+      "to": "Anzuvar",
+      "sector": "Caldrisk",
       "string_id": 142896
     },
     {
       "id": "anoat",
-      "new_id": "krevit",
+      "new_id": "arkessa",
       "from": "Anoat",
-      "to": "Krevit",
-      "sector": "Meridane",
+      "to": "Arkessa",
+      "sector": "Caldrisk",
       "string_id": 142897
     },
     {
       "id": "bespin",
-      "new_id": "nimbara",
+      "new_id": "bazulith",
       "from": "Bespin",
-      "to": "Nimbara",
-      "sector": "Meridane",
+      "to": "Bazulith",
+      "sector": "Caldrisk",
       "string_id": 142898
     },
     {
       "id": "deyer",
-      "new_id": "holm",
+      "new_id": "draskelune",
       "from": "Deyer",
-      "to": "Holm",
-      "sector": "Meridane",
+      "to": "Draskelune",
+      "sector": "Caldrisk",
       "string_id": 142899
     },
     {
       "id": "gentes",
-      "new_id": "tavren",
+      "new_id": "glimmeroth",
       "from": "Gentes",
-      "to": "Tavren",
-      "sector": "Meridane",
+      "to": "Glimmeroth",
+      "sector": "Caldrisk",
       "string_id": 142900
     },
     {
       "id": "hoth",
-      "new_id": "rime",
+      "new_id": "havrenth",
       "from": "Hoth",
-      "to": "Rime",
-      "sector": "Meridane",
+      "to": "Havrenth",
+      "sector": "Caldrisk",
       "string_id": 142901
     },
     {
       "id": "lelmra",
-      "new_id": "ombrin",
+      "new_id": "landrenne",
       "from": "Lelmra",
-      "to": "Ombrin",
-      "sector": "Meridane",
+      "to": "Landrenne",
+      "sector": "Caldrisk",
       "string_id": 142902
     },
     {
       "id": "new_cov",
-      "new_id": "new_tessa",
+      "new_id": "nashkorune",
       "from": "New Cov",
-      "to": "New Tessa",
-      "sector": "Meridane",
+      "to": "Nashkorune",
+      "sector": "Caldrisk",
       "string_id": 142903
     },
     {
       "id": "storthus",
-      "new_id": "brakken",
+      "new_id": "skaldrova",
       "from": "Storthus",
-      "to": "Brakken",
-      "sector": "Meridane",
+      "to": "Skaldrova",
+      "sector": "Caldrisk",
       "string_id": 142904
     },
     {
       "id": "tokmia",
-      "new_id": "ulvira",
+      "new_id": "tolvanne",
       "from": "Tokmia",
-      "to": "Ulvira",
-      "sector": "Meridane",
+      "to": "Tolvanne",
+      "sector": "Caldrisk",
       "string_id": 142905
     },
     {
       "id": "commenor",
-      "new_id": "hesperan",
+      "new_id": "cheluun",
       "from": "Commenor",
-      "to": "Hesperan",
-      "sector": "Calvessan",
+      "to": "Cheluun",
+      "sector": "Calmovar",
       "string_id": 142912
     },
     {
       "id": "corellia",
-      "new_id": "calvessa",
+      "new_id": "cindrova",
       "from": "Corellia",
-      "to": "Calvessa",
-      "sector": "Calvessan",
+      "to": "Cindrova",
+      "sector": "Calmovar",
       "string_id": 142913
     },
     {
       "id": "corfai",
-      "new_id": "daskel",
+      "new_id": "corundel",
       "from": "Corfai",
-      "to": "Daskel",
-      "sector": "Calvessan",
+      "to": "Corundel",
+      "sector": "Calmovar",
       "string_id": 142914
     },
     {
       "id": "duros",
-      "new_id": "orrin",
+      "new_id": "drelvane",
       "from": "Duros",
-      "to": "Orrin",
-      "sector": "Calvessan",
+      "to": "Drelvane",
+      "sector": "Calmovar",
       "string_id": 142915
     },
     {
       "id": "drall",
-      "new_id": "drune",
+      "new_id": "dunhavel",
       "from": "Drall",
-      "to": "Drune",
-      "sector": "Calvessan",
+      "to": "Dunhavel",
+      "sector": "Calmovar",
       "string_id": 142916
     },
     {
       "id": "selonia",
-      "new_id": "ondessa",
+      "new_id": "skorvane",
       "from": "Selonia",
-      "to": "Ondessa",
-      "sector": "Calvessan",
+      "to": "Skorvane",
+      "sector": "Calmovar",
       "string_id": 142917
     },
     {
       "id": "talus",
-      "new_id": "iver",
+      "new_id": "torvakai",
       "from": "Talus",
-      "to": "Iver",
-      "sector": "Calvessan",
+      "to": "Torvakai",
+      "sector": "Calmovar",
       "string_id": 142918
     },
     {
       "id": "tralus",
-      "new_id": "ivra",
+      "new_id": "trevaskal",
       "from": "Tralus",
-      "to": "Ivra",
-      "sector": "Calvessan",
+      "to": "Trevaskal",
+      "sector": "Calmovar",
       "string_id": 142919
     },
     {
       "id": "vagran",
-      "new_id": "kessith",
+      "new_id": "valdrenne",
       "from": "Vagran",
-      "to": "Kessith",
-      "sector": "Calvessan",
+      "to": "Valdrenne",
+      "sector": "Calmovar",
       "string_id": 142920
     },
     {
       "id": "xyquine",
-      "new_id": "zyrel",
+      "new_id": "xendarune",
       "from": "Xyquine",
-      "to": "Zyrel",
-      "sector": "Calvessan",
+      "to": "Xendarune",
+      "sector": "Calmovar",
       "string_id": 142921
     },
     {
       "id": "balfron",
-      "new_id": "calder",
+      "new_id": "belkorra",
       "from": "Balfron",
-      "to": "Calder",
-      "sector": "Estravon",
+      "to": "Belkorra",
+      "sector": "Daskoril",
       "string_id": 142928
     },
     {
       "id": "caprionril",
-      "new_id": "saphrel",
+      "new_id": "corvanth",
       "from": "Caprionril",
-      "to": "Saphrel",
-      "sector": "Estravon",
+      "to": "Corvanth",
+      "sector": "Daskoril",
       "string_id": 142929
     },
     {
       "id": "kamparas",
-      "new_id": "tallow",
+      "new_id": "keshmira",
       "from": "Kamparas",
-      "to": "Tallow",
-      "sector": "Estravon",
+      "to": "Keshmira",
+      "sector": "Daskoril",
       "string_id": 142930
     },
     {
       "id": "ketaris",
-      "new_id": "orvane",
+      "new_id": "kethrall",
       "from": "Ketaris",
-      "to": "Orvane",
-      "sector": "Estravon",
+      "to": "Kethrall",
+      "sector": "Daskoril",
       "string_id": 142931
     },
     {
       "id": "omwat",
-      "new_id": "umwen",
+      "new_id": "ollivane",
       "from": "Omwat",
-      "to": "Umwen",
-      "sector": "Estravon",
+      "to": "Ollivane",
+      "sector": "Daskoril",
       "string_id": 142932
     },
     {
       "id": "pantolomin",
-      "new_id": "lirenza",
+      "new_id": "palmerith",
       "from": "Pantolomin",
-      "to": "Lirenza",
-      "sector": "Estravon",
+      "to": "Palmerith",
+      "sector": "Daskoril",
       "string_id": 142933
     },
     {
       "id": "phorliss",
-      "new_id": "fennick",
+      "new_id": "pavrelith",
       "from": "Phorliss",
-      "to": "Fennick",
-      "sector": "Estravon",
+      "to": "Pavrelith",
+      "sector": "Daskoril",
       "string_id": 142934
     },
     {
       "id": "sarka",
-      "new_id": "drossa",
+      "new_id": "soldrith",
       "from": "Sarka",
-      "to": "Drossa",
-      "sector": "Estravon",
+      "to": "Soldrith",
+      "sector": "Daskoril",
       "string_id": 142935
     },
     {
       "id": "tangrene",
-      "new_id": "vellin",
+      "new_id": "tuldrenne",
       "from": "Tangrene",
-      "to": "Vellin",
-      "sector": "Estravon",
+      "to": "Tuldrenne",
+      "sector": "Daskoril",
       "string_id": 142936
     },
     {
       "id": "wor_tandell",
-      "new_id": "kel_marran",
+      "new_id": "welkorine",
       "from": "Wor Tandell",
-      "to": "Kel Marran",
-      "sector": "Estravon",
+      "to": "Welkorine",
+      "sector": "Daskoril",
       "string_id": 142937
     },
     {
       "id": "algarian",
-      "new_id": "oskeran",
+      "new_id": "ashkorin",
       "from": "Algarian",
-      "to": "Oskeran",
-      "sector": "Ashmere",
+      "to": "Ashkorin",
+      "sector": "Delquor",
       "string_id": 142944
     },
     {
       "id": "filve",
-      "new_id": "fesk",
+      "new_id": "folvane",
       "from": "Filve",
-      "to": "Fesk",
-      "sector": "Ashmere",
+      "to": "Folvane",
+      "sector": "Delquor",
       "string_id": 142945
     },
     {
       "id": "gamorr",
-      "new_id": "grukk",
+      "new_id": "gorvaska",
       "from": "Gamorr",
-      "to": "Grukk",
-      "sector": "Ashmere",
+      "to": "Gorvaska",
+      "sector": "Delquor",
       "string_id": 142946
     },
     {
       "id": "klatooine",
-      "new_id": "ostravel",
+      "new_id": "korvannis",
       "from": "Klatooine",
-      "to": "Ostravel",
-      "sector": "Ashmere",
+      "to": "Korvannis",
+      "sector": "Delquor",
       "string_id": 142947
     },
     {
       "id": "ord_mantell",
-      "new_id": "hold_varra",
+      "new_id": "oltharin",
       "from": "Ord Mantell",
-      "to": "Hold Varra",
-      "sector": "Ashmere",
+      "to": "Oltharin",
+      "sector": "Delquor",
       "string_id": 142948
     },
     {
       "id": "ord_pardon",
-      "new_id": "hold_sennet",
+      "new_id": "ombrevax",
       "from": "Ord Pardon",
-      "to": "Hold Sennet",
-      "sector": "Ashmere",
+      "to": "Ombrevax",
+      "sector": "Delquor",
       "string_id": 142949
     },
     {
       "id": "ord_trasi",
-      "new_id": "hold_quill",
+      "new_id": "orsenne",
       "from": "Ord Trasi",
-      "to": "Hold Quill",
-      "sector": "Ashmere",
+      "to": "Orsenne",
+      "sector": "Delquor",
       "string_id": 142950
     },
     {
       "id": "toprawa",
-      "new_id": "sendara",
+      "new_id": "tyrhesk",
       "from": "Toprawa",
-      "to": "Sendara",
-      "sector": "Ashmere",
+      "to": "Tyrhesk",
+      "sector": "Delquor",
       "string_id": 142951
     },
     {
       "id": "womrik",
-      "new_id": "vormak",
+      "new_id": "wethralune",
       "from": "Womrik",
-      "to": "Vormak",
-      "sector": "Ashmere",
+      "to": "Wethralune",
+      "sector": "Delquor",
       "string_id": 142952
     },
     {
       "id": "zebitrope_iv",
-      "new_id": "zelmira_iv",
+      "new_id": "zarvelith",
       "from": "Zebitrope IV",
-      "to": "Zelmira IV",
-      "sector": "Ashmere",
+      "to": "Zarvelith",
+      "sector": "Delquor",
       "string_id": 142953
     },
     {
       "id": "ando",
-      "new_id": "mirelle",
+      "new_id": "aumbrel",
       "from": "Ando",
-      "to": "Mirelle",
-      "sector": "Solvane",
+      "to": "Aumbrel",
+      "sector": "Faldrisse",
       "string_id": 142960
     },
     {
       "id": "berchest",
-      "new_id": "bastrel",
+      "new_id": "beshkara",
       "from": "Berchest",
-      "to": "Bastrel",
-      "sector": "Solvane",
+      "to": "Beshkara",
+      "sector": "Faldrisse",
       "string_id": 142961
     },
     {
       "id": "bimmisaari",
-      "new_id": "pemmisol",
+      "new_id": "bolvenar",
       "from": "Bimmisaari",
-      "to": "Pemmisol",
-      "sector": "Solvane",
+      "to": "Bolvenar",
+      "sector": "Faldrisse",
       "string_id": 142962
     },
     {
       "id": "carida",
-      "new_id": "kordava",
+      "new_id": "cyrenth",
       "from": "Carida",
-      "to": "Kordava",
-      "sector": "Solvane",
+      "to": "Cyrenth",
+      "sector": "Faldrisse",
       "string_id": 142963
     },
     {
       "id": "delaya",
-      "new_id": "elyra",
+      "new_id": "durvenne",
       "from": "Delaya",
-      "to": "Elyra",
-      "sector": "Solvane",
+      "to": "Durvenne",
+      "sector": "Faldrisse",
       "string_id": 142964
     },
     {
       "id": "halowan",
-      "new_id": "haverin",
+      "new_id": "helmaren",
       "from": "Halowan",
-      "to": "Haverin",
-      "sector": "Solvane",
+      "to": "Helmaren",
+      "sector": "Faldrisse",
       "string_id": 142965
     },
     {
       "id": "mrisst",
-      "new_id": "tssira",
+      "new_id": "meshkarra",
       "from": "Mrisst",
-      "to": "Tssira",
-      "sector": "Solvane",
+      "to": "Meshkarra",
+      "sector": "Faldrisse",
       "string_id": 142966
     },
     {
       "id": "obroa_skai",
-      "new_id": "ombra_tel",
+      "new_id": "orvandel",
       "from": "Obroa-skai",
-      "to": "Ombra-tel",
-      "sector": "Solvane",
+      "to": "Orvandel",
+      "sector": "Faldrisse",
       "string_id": 142967
     },
     {
       "id": "palanhi",
-      "new_id": "pavesh",
+      "new_id": "pelvarune",
       "from": "Palanhi",
-      "to": "Pavesh",
-      "sector": "Solvane",
+      "to": "Pelvarune",
+      "sector": "Faldrisse",
       "string_id": 142968
     },
     {
       "id": "ralltiir",
-      "new_id": "rasken",
+      "new_id": "rakhevane",
       "from": "Ralltiir",
-      "to": "Rasken",
-      "sector": "Solvane",
+      "to": "Rakhevane",
+      "sector": "Faldrisse",
       "string_id": 142969
     },
     {
       "id": "bilbringi",
-      "new_id": "brindell",
+      "new_id": "borunda",
       "from": "Bilbringi",
-      "to": "Brindell",
-      "sector": "Theskara",
+      "to": "Borunda",
+      "sector": "Falkorin",
       "string_id": 142976
     },
     {
       "id": "byss",
-      "new_id": "umbrax",
+      "new_id": "brasmire",
       "from": "Byss",
-      "to": "Umbrax",
-      "sector": "Theskara",
+      "to": "Brasmire",
+      "sector": "Falkorin",
       "string_id": 142977
     },
     {
       "id": "charmath",
-      "new_id": "dannoch",
+      "new_id": "cythrelle",
       "from": "Charmath",
-      "to": "Dannoch",
-      "sector": "Theskara",
+      "to": "Cythrelle",
+      "sector": "Falkorin",
       "string_id": 142978
     },
     {
       "id": "firro",
-      "new_id": "pherra",
+      "new_id": "frelith",
       "from": "Firro",
-      "to": "Pherra",
-      "sector": "Theskara",
+      "to": "Frelith",
+      "sector": "Falkorin",
       "string_id": 142979
     },
     {
       "id": "khomm",
-      "new_id": "kolm",
+      "new_id": "krenvola",
       "from": "Khomm",
-      "to": "Kolm",
-      "sector": "Theskara",
+      "to": "Krenvola",
+      "sector": "Falkorin",
       "string_id": 142980
     },
     {
       "id": "kinyen",
-      "new_id": "nyssen",
+      "new_id": "kuvendar",
       "from": "Kinyen",
-      "to": "Nyssen",
-      "sector": "Theskara",
+      "to": "Kuvendar",
+      "sector": "Falkorin",
       "string_id": 142981
     },
     {
       "id": "phraetiss",
-      "new_id": "fraylis",
+      "new_id": "pellushka",
       "from": "Phraetiss",
-      "to": "Fraylis",
-      "sector": "Theskara",
+      "to": "Pellushka",
+      "sector": "Falkorin",
       "string_id": 142982
     },
     {
       "id": "rishi",
-      "new_id": "oressa",
+      "new_id": "ravandor",
       "from": "Rishi",
-      "to": "Oressa",
-      "sector": "Theskara",
+      "to": "Ravandor",
+      "sector": "Falkorin",
       "string_id": 142983
     },
     {
       "id": "taanab",
-      "new_id": "tarrabe",
+      "new_id": "tyvarenne",
       "from": "Taanab",
-      "to": "Tarrabe",
-      "sector": "Theskara",
+      "to": "Tyvarenne",
+      "sector": "Falkorin",
       "string_id": 142984
     },
     {
       "id": "wistril",
-      "new_id": "wyndel",
+      "new_id": "whelvane",
       "from": "Wistril",
-      "to": "Wyndel",
-      "sector": "Theskara",
+      "to": "Whelvane",
+      "sector": "Falkorin",
       "string_id": 142985
     },
     {
       "id": "altarrn",
-      "new_id": "astarne",
+      "new_id": "avelith",
       "from": "Altarrn",
-      "to": "Astarne",
-      "sector": "Hallorn",
+      "to": "Avelith",
+      "sector": "Galdrith",
       "string_id": 142992
     },
     {
       "id": "arkania",
-      "new_id": "arvenna",
+      "new_id": "axelune",
       "from": "Arkania",
-      "to": "Arvenna",
-      "sector": "Hallorn",
+      "to": "Axelune",
+      "sector": "Galdrith",
       "string_id": 142993
     },
     {
       "id": "elrood",
-      "new_id": "edrell",
+      "new_id": "elmaskar",
       "from": "Elrood",
-      "to": "Edrell",
-      "sector": "Hallorn",
+      "to": "Elmaskar",
+      "sector": "Galdrith",
       "string_id": 142994
     },
     {
       "id": "fef",
-      "new_id": "pim",
+      "new_id": "fyndor",
       "from": "Fef",
-      "to": "Pim",
-      "sector": "Hallorn",
+      "to": "Fyndor",
+      "sector": "Galdrith",
       "string_id": 142995
     },
     {
       "id": "fornax",
-      "new_id": "sorrex",
+      "new_id": "fyrmandel",
       "from": "Fornax",
-      "to": "Sorrex",
-      "sector": "Hallorn",
+      "to": "Fyrmandel",
+      "sector": "Galdrith",
       "string_id": 142996
     },
     {
       "id": "nentan",
-      "new_id": "nennic",
+      "new_id": "nesmira",
       "from": "Nentan",
-      "to": "Nennic",
-      "sector": "Hallorn",
+      "to": "Nesmira",
+      "sector": "Galdrith",
       "string_id": 142997
     },
     {
       "id": "sedri",
-      "new_id": "sevra",
+      "new_id": "sorennai",
       "from": "Sedri",
-      "to": "Sevra",
-      "sector": "Hallorn",
+      "to": "Sorennai",
+      "sector": "Galdrith",
       "string_id": 142998
     },
     {
       "id": "valrar",
-      "new_id": "vaurel",
+      "new_id": "vandrisse",
       "from": "Valrar",
-      "to": "Vaurel",
-      "sector": "Hallorn",
+      "to": "Vandrisse",
+      "sector": "Galdrith",
       "string_id": 142999
     },
     {
       "id": "vortex",
-      "new_id": "gyre",
+      "new_id": "vaskerrin",
       "from": "Vortex",
-      "to": "Gyre",
-      "sector": "Hallorn",
+      "to": "Vaskerrin",
+      "sector": "Galdrith",
       "string_id": 143000
     },
     {
       "id": "yag_dhul",
-      "new_id": "ysstavar",
+      "new_id": "yandrelle",
       "from": "Yag'Dhul",
-      "to": "Yss'tavar",
-      "sector": "Hallorn",
+      "to": "Yandrelle",
+      "sector": "Galdrith",
       "string_id": 143001
     },
     {
       "id": "azbian",
-      "new_id": "azren",
+      "new_id": "azkhalune",
       "from": "Azbian",
-      "to": "Azren",
-      "sector": "Dunmarrow",
+      "to": "Azkhalune",
+      "sector": "Jandrevar",
       "string_id": 143104
     },
     {
       "id": "cardooine",
-      "new_id": "cardell",
+      "new_id": "erakhon",
       "from": "Cardooine",
-      "to": "Cardell",
-      "sector": "Dunmarrow",
+      "to": "Erakhon",
+      "sector": "Jandrevar",
       "string_id": 143105
     },
     {
       "id": "chrondre",
-      "new_id": "chalmis",
+      "new_id": "eskarune",
       "from": "Chrondre",
-      "to": "Chalmis",
-      "sector": "Dunmarrow",
+      "to": "Eskarune",
+      "sector": "Jandrevar",
       "string_id": 143106
     },
     {
       "id": "dar_or",
-      "new_id": "veska",
+      "new_id": "dyvorane",
       "from": "Dar'Or",
-      "to": "Ves'Ka",
-      "sector": "Dunmarrow",
+      "to": "Dyvorane",
+      "sector": "Jandrevar",
       "string_id": 143107
     },
     {
       "id": "douglas_iii",
-      "new_id": "harlan_iii",
+      "new_id": "dzerith",
       "from": "Douglas III",
-      "to": "Harlan III",
-      "sector": "Dunmarrow",
+      "to": "Dzerith",
+      "sector": "Jandrevar",
       "string_id": 143108
     },
     {
       "id": "engira",
-      "new_id": "ingrava",
+      "new_id": "eldrune",
       "from": "Engira",
-      "to": "Ingrava",
-      "sector": "Dunmarrow",
+      "to": "Eldrune",
+      "sector": "Jandrevar",
       "string_id": 143109
     },
     {
       "id": "jomark",
-      "new_id": "jessom",
+      "new_id": "jendrova",
       "from": "Jomark",
-      "to": "Jessom",
-      "sector": "Dunmarrow",
+      "to": "Jendrova",
+      "sector": "Jandrevar",
       "string_id": 143110
     },
     {
       "id": "kiffex",
-      "new_id": "kivrel",
+      "new_id": "kyrelune",
       "from": "Kiffex",
-      "to": "Kivrel",
-      "sector": "Dunmarrow",
+      "to": "Kyrelune",
+      "sector": "Jandrevar",
       "string_id": 143111
     },
     {
       "id": "trogan",
-      "new_id": "trask",
+      "new_id": "esmoura",
       "from": "Trogan",
-      "to": "Trask",
-      "sector": "Dunmarrow",
+      "to": "Esmoura",
+      "sector": "Jandrevar",
       "string_id": 143112
     },
     {
       "id": "waskiro",
-      "new_id": "wesmora",
+      "new_id": "wolmendel",
       "from": "Waskiro",
-      "to": "Wesmora",
-      "sector": "Dunmarrow",
+      "to": "Wolmendel",
+      "sector": "Jandrevar",
       "string_id": 143113
     },
     {
       "id": "culroon_iii",
-      "new_id": "carran_iii",
+      "new_id": "ethrovane",
       "from": "Culroon III",
-      "to": "Carran III",
-      "sector": "Kethrane",
+      "to": "Ethrovane",
+      "sector": "Kaldovar",
       "string_id": 143120
     },
     {
       "id": "davnar",
-      "new_id": "davolin",
+      "new_id": "evanthe",
       "from": "Davnar",
-      "to": "Davolin",
-      "sector": "Kethrane",
+      "to": "Evanthe",
+      "sector": "Kaldovar",
       "string_id": 143121
     },
     {
       "id": "derra_iv",
-      "new_id": "dessar_iv",
+      "new_id": "ezkallis",
       "from": "Derra IV",
-      "to": "Dessar IV",
-      "sector": "Kethrane",
+      "to": "Ezkallis",
+      "sector": "Kaldovar",
       "string_id": 143122
     },
     {
       "id": "mindar",
-      "new_id": "mennir",
+      "new_id": "morskavane",
       "from": "Mindar",
-      "to": "Mennir",
-      "sector": "Kethrane",
+      "to": "Morskavane",
+      "sector": "Kaldovar",
       "string_id": 143123
     },
     {
       "id": "munto_codru",
-      "new_id": "murro_tessk",
+      "new_id": "morvenith",
       "from": "Munto Codru",
-      "to": "Murro Tessk",
-      "sector": "Kethrane",
+      "to": "Morvenith",
+      "sector": "Kaldovar",
       "string_id": 143124
     },
     {
       "id": "nal_hutta",
-      "new_id": "vos_kerrat",
+      "new_id": "nethralune",
       "from": "Nal Hutta",
-      "to": "Vos Kerrat",
-      "sector": "Kethrane",
+      "to": "Nethralune",
+      "sector": "Kaldovar",
       "string_id": 143125
     },
     {
       "id": "smarteel",
-      "new_id": "sharrel",
+      "new_id": "starvenne",
       "from": "Smarteel",
-      "to": "Sharrel",
-      "sector": "Kethrane",
+      "to": "Starvenne",
+      "sector": "Kaldovar",
       "string_id": 143126
     },
     {
       "id": "spuma",
-      "new_id": "spirra",
+      "new_id": "szarimel",
       "from": "Spuma",
-      "to": "Spirra",
-      "sector": "Kethrane",
+      "to": "Szarimel",
+      "sector": "Kaldovar",
       "string_id": 143127
     },
     {
       "id": "vodran",
-      "new_id": "odrava",
+      "new_id": "velkorith",
       "from": "Vodran",
-      "to": "Odrava",
-      "sector": "Kethrane",
+      "to": "Velkorith",
+      "sector": "Kaldovar",
       "string_id": 143128
     },
     {
       "id": "xa_fel",
-      "new_id": "xi_vorr",
+      "new_id": "xenvaris",
       "from": "Xa Fel",
-      "to": "Xi Vorr",
-      "sector": "Kethrane",
+      "to": "Xenvaris",
+      "sector": "Kaldovar",
       "string_id": 143129
     },
     {
       "id": "anchoron",
-      "new_id": "ankerrin",
+      "new_id": "azrenna",
       "from": "Anchoron",
-      "to": "Ankerrin",
-      "sector": "Belcaro",
+      "to": "Azrenna",
+      "sector": "Maldrivar",
       "string_id": 143136
     },
     {
       "id": "chalcedon",
-      "new_id": "quorith",
+      "new_id": "horskelith",
       "from": "Chalcedon",
-      "to": "Quorith",
-      "sector": "Belcaro",
+      "to": "Horskelith",
+      "sector": "Maldrivar",
       "string_id": 143137
     },
     {
       "id": "clak_dor_vii",
-      "new_id": "tlakveth_vii",
+      "new_id": "hovrinth",
       "from": "Clak'dor VII",
-      "to": "Tlak'veth VII",
-      "sector": "Belcaro",
+      "to": "Hovrinth",
+      "sector": "Maldrivar",
       "string_id": 143138
     },
     {
       "id": "cona",
-      "new_id": "corra",
+      "new_id": "hylvarine",
       "from": "Cona",
-      "to": "Corra",
-      "sector": "Belcaro",
+      "to": "Hylvarine",
+      "sector": "Maldrivar",
       "string_id": 143139
     },
     {
       "id": "dantooine",
-      "new_id": "daventh",
+      "new_id": "hyzenor",
       "from": "Dantooine",
-      "to": "Daventh",
-      "sector": "Belcaro",
+      "to": "Hyzenor",
+      "sector": "Maldrivar",
       "string_id": 143140
     },
     {
       "id": "h_nemthe",
-      "new_id": "hvessa",
+      "new_id": "hesperune",
       "from": "H'nemthe",
-      "to": "H'vessa",
-      "sector": "Belcaro",
+      "to": "Hesperune",
+      "sector": "Maldrivar",
       "string_id": 143141
     },
     {
       "id": "kabal",
-      "new_id": "kesset",
+      "new_id": "kyvorannis",
       "from": "Kabal",
-      "to": "Kesset",
-      "sector": "Belcaro",
+      "to": "Kyvorannis",
+      "sector": "Maldrivar",
       "string_id": 143142
     },
     {
       "id": "oetrago",
-      "new_id": "ilvarro",
+      "new_id": "oskarune",
       "from": "Oetrago",
-      "to": "Ilvarro",
-      "sector": "Belcaro",
+      "to": "Oskarune",
+      "sector": "Maldrivar",
       "string_id": 143143
     },
     {
       "id": "triton",
-      "new_id": "vellus",
+      "new_id": "isaldra",
       "from": "Triton",
-      "to": "Vellus",
-      "sector": "Belcaro",
+      "to": "Isaldra",
+      "sector": "Maldrivar",
       "string_id": 143144
     },
     {
       "id": "urdur",
-      "new_id": "urrik",
+      "new_id": "ulmeshka",
       "from": "Urdur",
-      "to": "Urrik",
-      "sector": "Belcaro",
+      "to": "Ulmeshka",
+      "sector": "Maldrivar",
       "string_id": 143145
     },
     {
       "id": "adega",
-      "new_id": "adrel",
+      "new_id": "iskovar",
       "from": "Adega",
-      "to": "Adrel",
-      "sector": "Morrowgate",
+      "to": "Iskovar",
+      "sector": "Marvendol",
       "string_id": 143152
     },
     {
       "id": "agrilat",
-      "new_id": "agrivane",
+      "new_id": "ithkoral",
       "from": "Agrilat",
-      "to": "Agrivane",
-      "sector": "Morrowgate",
+      "to": "Ithkoral",
+      "sector": "Marvendol",
       "string_id": 143153
     },
     {
       "id": "annaj",
-      "new_id": "annesh",
+      "new_id": "ithrevane",
       "from": "Annaj",
-      "to": "Annesh",
-      "sector": "Morrowgate",
+      "to": "Ithrevane",
+      "sector": "Marvendol",
       "string_id": 143154
     },
     {
       "id": "basilisk",
-      "new_id": "draxa",
+      "new_id": "brevanth",
       "from": "Basilisk",
-      "to": "Draxa",
-      "sector": "Morrowgate",
+      "to": "Brevanth",
+      "sector": "Marvendol",
       "string_id": 143155
     },
     {
       "id": "endor",
-      "new_id": "arborra",
+      "new_id": "emberith",
       "from": "Endor",
-      "to": "Arborra",
-      "sector": "Morrowgate",
+      "to": "Emberith",
+      "sector": "Marvendol",
       "string_id": 143156
     },
     {
       "id": "gandolo_iv",
-      "new_id": "gessald_iv",
+      "new_id": "grendavar",
       "from": "Gandolo IV",
-      "to": "Gessald IV",
-      "sector": "Morrowgate",
+      "to": "Grendavar",
+      "sector": "Marvendol",
       "string_id": 143157
     },
     {
       "id": "hozrel_xi",
-      "new_id": "hovren_xi",
+      "new_id": "hollavane",
       "from": "Hozrel XI",
-      "to": "Hovren XI",
-      "sector": "Morrowgate",
+      "to": "Hollavane",
+      "sector": "Marvendol",
       "string_id": 143158
     },
     {
       "id": "khuiumin",
-      "new_id": "kheiman",
+      "new_id": "ivenkor",
       "from": "Khuiumin",
-      "to": "Kheiman",
-      "sector": "Morrowgate",
+      "to": "Ivenkor",
+      "sector": "Marvendol",
       "string_id": 143159
     },
     {
       "id": "pzob",
-      "new_id": "vrell",
+      "new_id": "phaldrine",
       "from": "Pzob",
-      "to": "Vrell",
-      "sector": "Morrowgate",
+      "to": "Phaldrine",
+      "sector": "Marvendol",
       "string_id": 143160
     },
     {
       "id": "vjun",
-      "new_id": "vekh",
+      "new_id": "velmarune",
       "from": "Vjun",
-      "to": "Vekh",
-      "sector": "Morrowgate",
+      "to": "Velmarune",
+      "sector": "Marvendol",
       "string_id": 143161
     },
     {
       "id": "bakura",
-      "new_id": "saddoth",
+      "new_id": "brindavex",
       "from": "Bakura",
-      "to": "Saddoth",
-      "sector": "Durance",
+      "to": "Brindavex",
+      "sector": "Odrevane",
       "string_id": 143168
     },
     {
       "id": "chazwa",
-      "new_id": "chessa",
+      "new_id": "ilmavarune",
       "from": "Chazwa",
-      "to": "Chessa",
-      "sector": "Durance",
+      "to": "Ilmavarune",
+      "sector": "Odrevane",
       "string_id": 143169
     },
     {
       "id": "daltar",
-      "new_id": "dalvorn",
+      "new_id": "jorskelune",
       "from": "Daltar",
-      "to": "Dalvorn",
-      "sector": "Durance",
+      "to": "Jorskelune",
+      "sector": "Odrevane",
       "string_id": 143170
     },
     {
       "id": "joiol",
-      "new_id": "jovell",
+      "new_id": "jhalmere",
       "from": "Joiol",
-      "to": "Jovell",
-      "sector": "Durance",
+      "to": "Jhalmere",
+      "sector": "Odrevane",
       "string_id": 143171
     },
     {
       "id": "lafra",
-      "new_id": "laphis",
+      "new_id": "lavendrel",
       "from": "Lafra",
-      "to": "Laphis",
-      "sector": "Durance",
+      "to": "Lavendrel",
+      "sector": "Odrevane",
       "string_id": 143172
     },
     {
       "id": "kimanan",
-      "new_id": "kimmerel",
+      "new_id": "jorvenne",
       "from": "Kimanan",
-      "to": "Kimmerel",
-      "sector": "Durance",
+      "to": "Jorvenne",
+      "sector": "Odrevane",
       "string_id": 143173
     },
     {
       "id": "mantessa",
-      "new_id": "mantira",
+      "new_id": "muldaris",
       "from": "Mantessa",
-      "to": "Mantira",
-      "sector": "Durance",
+      "to": "Muldaris",
+      "sector": "Odrevane",
       "string_id": 143174
     },
     {
       "id": "poderis",
-      "new_id": "podrel",
+      "new_id": "porvanth",
       "from": "Poderis",
-      "to": "Podrel",
-      "sector": "Durance",
+      "to": "Porvanth",
+      "sector": "Odrevane",
       "string_id": 143175
     },
     {
       "id": "ryloth",
-      "new_id": "ryvelle",
+      "new_id": "ravelune",
       "from": "Ryloth",
-      "to": "Ryvelle",
-      "sector": "Durance",
+      "to": "Ravelune",
+      "sector": "Odrevane",
       "string_id": 143176
     },
     {
       "id": "tatooine",
-      "new_id": "ashkaar",
+      "new_id": "julvarin",
       "from": "Tatooine",
-      "to": "Ashkaar",
-      "sector": "Durance",
+      "to": "Julvarin",
+      "sector": "Odrevane",
       "string_id": 143177
     },
     {
       "id": "amorris",
-      "new_id": "amberis",
+      "new_id": "jyreth",
       "from": "Amorris",
-      "to": "Amberis",
-      "sector": "Quentavar",
+      "to": "Jyreth",
+      "sector": "Qavrenth",
       "string_id": 143184
     },
     {
       "id": "corstris",
-      "new_id": "corvain",
+      "new_id": "lithavane",
       "from": "Corstris",
-      "to": "Corvain",
-      "sector": "Quentavar",
+      "to": "Lithavane",
+      "sector": "Qavrenth",
       "string_id": 143185
     },
     {
       "id": "dathomir",
-      "new_id": "duskmire",
+      "new_id": "lorveskane",
       "from": "Dathomir",
-      "to": "Duskmire",
-      "sector": "Quentavar",
+      "to": "Lorveskane",
+      "sector": "Qavrenth",
       "string_id": 143186
     },
     {
       "id": "kirrek",
-      "new_id": "kerrow",
+      "new_id": "lorvakki",
       "from": "Kirrek",
-      "to": "Kerrow",
-      "sector": "Quentavar",
+      "to": "Lorvakki",
+      "sector": "Qavrenth",
       "string_id": 143187
     },
     {
       "id": "pil_diller",
-      "new_id": "pell_dorran",
+      "new_id": "prandovar",
       "from": "Pil Diller",
-      "to": "Pell Dorran",
-      "sector": "Quentavar",
+      "to": "Prandovar",
+      "sector": "Qavrenth",
       "string_id": 143188
     },
     {
       "id": "rafa",
-      "new_id": "rhassa",
+      "new_id": "reskelith",
       "from": "Rafa",
-      "to": "Rhassa",
-      "sector": "Quentavar",
+      "to": "Reskelith",
+      "sector": "Qavrenth",
       "string_id": 143189
     },
     {
       "id": "selaggis",
-      "new_id": "sallagor",
+      "new_id": "luvarenth",
       "from": "Selaggis",
-      "to": "Sallagor",
-      "sector": "Quentavar",
+      "to": "Luvarenth",
+      "sector": "Qavrenth",
       "string_id": 143190
     },
     {
       "id": "thrakia",
-      "new_id": "thrask",
+      "new_id": "lymbrelith",
       "from": "Thrakia",
-      "to": "Thrask",
-      "sector": "Quentavar",
+      "to": "Lymbrelith",
+      "sector": "Qavrenth",
       "string_id": 143191
     },
     {
       "id": "varn",
-      "new_id": "varnhal",
+      "new_id": "vethalune",
       "from": "Varn",
-      "to": "Varnhal",
-      "sector": "Quentavar",
+      "to": "Vethalune",
+      "sector": "Qavrenth",
       "string_id": 143192
     },
     {
       "id": "vinsoth",
-      "new_id": "vinsara",
+      "new_id": "vexkarune",
       "from": "Vinsoth",
-      "to": "Vinsara",
-      "sector": "Quentavar",
+      "to": "Vexkarune",
+      "sector": "Qavrenth",
       "string_id": 143193
     },
     {
       "id": "averam",
-      "new_id": "averil",
+      "new_id": "lyskoril",
       "from": "Averam",
-      "to": "Averil",
-      "sector": "Celestine",
+      "to": "Lyskoril",
+      "sector": "Saldrevin",
       "string_id": 143200
     },
     {
       "id": "balmorra",
-      "new_id": "belmara",
+      "new_id": "bryndal",
       "from": "Balmorra",
-      "to": "Belmara",
-      "sector": "Celestine",
+      "to": "Bryndal",
+      "sector": "Saldrevin",
       "string_id": 143201
     },
     {
       "id": "bortras",
-      "new_id": "bortrell",
+      "new_id": "byrelle",
       "from": "Bortras",
-      "to": "Bortrell",
-      "sector": "Celestine",
+      "to": "Byrelle",
+      "sector": "Saldrevin",
       "string_id": 143202
     },
     {
       "id": "chandrila",
-      "new_id": "calendra",
+      "new_id": "mythralune",
       "from": "Chandrila",
-      "to": "Calendra",
-      "sector": "Celestine",
+      "to": "Mythralune",
+      "sector": "Saldrevin",
       "string_id": 143203
     },
     {
       "id": "corsin",
-      "new_id": "corwick",
+      "new_id": "norvelith",
       "from": "Corsin",
-      "to": "Corwick",
-      "sector": "Celestine",
+      "to": "Norvelith",
+      "sector": "Saldrevin",
       "string_id": 143204
     },
     {
       "id": "coruscant",
-      "new_id": "centralis",
+      "new_id": "nuvandor",
       "from": "Coruscant",
-      "to": "Centralis",
-      "sector": "Celestine",
+      "to": "Nuvandor",
+      "sector": "Saldrevin",
       "string_id": 143205
     },
     {
       "id": "ghorman",
-      "new_id": "halvering",
+      "new_id": "gresholm",
       "from": "Ghorman",
-      "to": "Halvering",
-      "sector": "Celestine",
+      "to": "Gresholm",
+      "sector": "Saldrevin",
       "string_id": 143206
     },
     {
       "id": "svivren",
-      "new_id": "sivrenne",
+      "new_id": "nyxlorin",
       "from": "Svivren",
-      "to": "Sivrenne",
-      "sector": "Celestine",
+      "to": "Nyxlorin",
+      "sector": "Saldrevin",
       "string_id": 143207
     },
     {
       "id": "uvena",
-      "new_id": "uvessa",
+      "new_id": "umbrelith",
       "from": "Uvena",
-      "to": "Uvessa",
-      "sector": "Celestine",
+      "to": "Umbrelith",
+      "sector": "Saldrevin",
       "string_id": 143208
     },
     {
       "id": "yaga_minor",
-      "new_id": "yarrow_minor",
+      "new_id": "yeshkorin",
       "from": "Yaga Minor",
-      "to": "Yarrow Minor",
-      "sector": "Celestine",
+      "to": "Yeshkorin",
+      "sector": "Saldrevin",
       "string_id": 143209
     },
     {
       "id": "bothawui",
-      "new_id": "vessar",
+      "new_id": "ozrelith",
       "from": "Bothawui",
-      "to": "Vessar",
-      "sector": "Tessarine",
+      "to": "Ozrelith",
+      "sector": "Sarvelith",
       "string_id": 143216
     },
     {
       "id": "bpfassh",
-      "new_id": "pfennish",
+      "new_id": "pyrrhelin",
       "from": "Bpfassh",
-      "to": "Pfennish",
-      "sector": "Tessarine",
+      "to": "Pyrrhelin",
+      "sector": "Sarvelith",
       "string_id": 143217
     },
     {
       "id": "mon_calamari",
-      "new_id": "nerith",
+      "new_id": "myrkalune",
       "from": "Mon Calamari",
-      "to": "Nerith",
-      "sector": "Tessarine",
+      "to": "Myrkalune",
+      "sector": "Sarvelith",
       "string_id": 143218
     },
     {
       "id": "denab",
-      "new_id": "dennet",
+      "new_id": "pyskorune",
       "from": "Denab",
-      "to": "Dennet",
-      "sector": "Tessarine",
+      "to": "Pyskorune",
+      "sector": "Sarvelith",
       "string_id": 143219
     },
     {
       "id": "kothlis",
-      "new_id": "kothren",
+      "new_id": "qimbrelune",
       "from": "Kothlis",
-      "to": "Kothren",
-      "sector": "Tessarine",
+      "to": "Qimbrelune",
+      "sector": "Sarvelith",
       "string_id": 143220
     },
     {
       "id": "orto",
-      "new_id": "ortell",
+      "new_id": "ovrendal",
       "from": "Orto",
-      "to": "Ortell",
-      "sector": "Tessarine",
+      "to": "Ovrendal",
+      "sector": "Sarvelith",
       "string_id": 143221
     },
     {
       "id": "praesitlyn",
-      "new_id": "prestellin",
+      "new_id": "pyrovane",
       "from": "Praesitlyn",
-      "to": "Prestellin",
-      "sector": "Tessarine",
+      "to": "Pyrovane",
+      "sector": "Sarvelith",
       "string_id": 143222
     },
     {
       "id": "sluis_van",
-      "new_id": "sallis_vor",
+      "new_id": "qorathul",
       "from": "Sluis Van",
-      "to": "Sallis Vor",
-      "sector": "Tessarine",
+      "to": "Qorathul",
+      "sector": "Sarvelith",
       "string_id": 143223
     },
     {
       "id": "sullust",
-      "new_id": "tarrow",
+      "new_id": "quelvarin",
       "from": "Sullust",
-      "to": "Tarrow",
-      "sector": "Tessarine",
+      "to": "Quelvarin",
+      "sector": "Sarvelith",
       "string_id": 143224
     },
     {
       "id": "umgul",
-      "new_id": "ungrel",
+      "new_id": "urvandor",
       "from": "Umgul",
-      "to": "Ungrel",
-      "sector": "Tessarine",
+      "to": "Urvandor",
+      "sector": "Sarvelith",
       "string_id": 143225
     },
     {
       "id": "alk_lellish_iii",
-      "new_id": "alkvaresh_iii",
+      "new_id": "quindrel",
       "from": "Alk'lellish III",
-      "to": "Alk'varesh III",
-      "sector": "Samaris",
+      "to": "Quindrel",
+      "sector": "Serrulune",
       "string_id": 143232
     },
     {
       "id": "boordii",
-      "new_id": "boskarr",
+      "new_id": "qyrelune",
       "from": "Boordii",
-      "to": "Boskarr",
-      "sector": "Samaris",
+      "to": "Qyrelune",
+      "sector": "Serrulune",
       "string_id": 143233
     },
     {
       "id": "flax",
-      "new_id": "tessle",
+      "new_id": "rilvarune",
       "from": "Flax",
-      "to": "Tessle",
-      "sector": "Samaris",
+      "to": "Rilvarune",
+      "sector": "Serrulune",
       "string_id": 143234
     },
     {
       "id": "geedon_v",
-      "new_id": "gedran_v",
+      "new_id": "gyrellis",
       "from": "Geedon V",
-      "to": "Gedran V",
-      "sector": "Samaris",
+      "to": "Gyrellis",
+      "sector": "Serrulune",
       "string_id": 143235
     },
     {
       "id": "kashyyyk",
-      "new_id": "vahruun",
+      "new_id": "ronkarra",
       "from": "Kashyyyk",
-      "to": "Vahruun",
-      "sector": "Samaris",
+      "to": "Ronkarra",
+      "sector": "Serrulune",
       "string_id": 143236
     },
     {
       "id": "linuri",
-      "new_id": "linnora",
+      "new_id": "lezmora",
       "from": "Linuri",
-      "to": "Linnora",
-      "sector": "Samaris",
+      "to": "Lezmora",
+      "sector": "Serrulune",
       "string_id": 143237
     },
     {
       "id": "qat_chrystac",
-      "new_id": "kat_vessarin",
+      "new_id": "qesmira",
       "from": "Qat Chrystac",
-      "to": "Kat Vessarin",
-      "sector": "Samaris",
+      "to": "Qesmira",
+      "sector": "Serrulune",
       "string_id": 143238
     },
     {
       "id": "tierfon",
-      "new_id": "tierrun",
+      "new_id": "rosmerith",
       "from": "Tierfon",
-      "to": "Tierrun",
-      "sector": "Samaris",
+      "to": "Rosmerith",
+      "sector": "Serrulune",
       "string_id": 143239
     },
     {
       "id": "woostri",
-      "new_id": "wolstrin",
+      "new_id": "wolvarenne",
       "from": "Woostri",
-      "to": "Wolstrin",
-      "sector": "Samaris",
+      "to": "Wolvarenne",
+      "sector": "Serrulune",
       "string_id": 143240
     },
     {
       "id": "yavin",
-      "new_id": "ilvanor",
+      "new_id": "yldravane",
       "from": "Yavin",
-      "to": "Ilvanor",
-      "sector": "Samaris",
+      "to": "Yldravane",
+      "sector": "Serrulune",
       "string_id": 143241
     },
     {
       "id": "ambria",
-      "new_id": "ambrel",
+      "new_id": "ruldavar",
       "from": "Ambria",
-      "to": "Ambrel",
-      "sector": "Xalvane",
+      "to": "Ruldavar",
+      "sector": "Xalverith",
       "string_id": 143248
     },
     {
       "id": "g_rho",
-      "new_id": "kthra",
+      "new_id": "gythrenne",
       "from": "G'rho",
-      "to": "K'thra",
-      "sector": "Xalvane",
+      "to": "Gythrenne",
+      "sector": "Xalverith",
       "string_id": 143249
     },
     {
       "id": "kirdo_iii",
-      "new_id": "kerrin_iii",
+      "new_id": "rynthalis",
       "from": "Kirdo III",
-      "to": "Kerrin III",
-      "sector": "Xalvane",
+      "to": "Rynthalis",
+      "sector": "Xalverith",
       "string_id": 143250
     },
     {
       "id": "neelgaimon",
-      "new_id": "neldamor",
+      "new_id": "nindrovar",
       "from": "Neelgaimon",
-      "to": "Neldamor",
-      "sector": "Xalvane",
+      "to": "Nindrovar",
+      "sector": "Xalverith",
       "string_id": 143251
     },
     {
       "id": "norulac",
-      "new_id": "norvulan",
+      "new_id": "norveska",
       "from": "Norulac",
-      "to": "Norvulan",
-      "sector": "Xalvane",
+      "to": "Norveska",
+      "sector": "Xalverith",
       "string_id": 143252
     },
     {
       "id": "ruuria",
-      "new_id": "rhuuvia",
+      "new_id": "rhovenne",
       "from": "Ruuria",
-      "to": "Rhuuvia",
-      "sector": "Xalvane",
+      "to": "Rhovenne",
+      "sector": "Xalverith",
       "string_id": 143253
     },
     {
       "id": "stic",
-      "new_id": "stav",
+      "new_id": "uskarine",
       "from": "Stic",
-      "to": "Stav",
-      "sector": "Xalvane",
+      "to": "Uskarine",
+      "sector": "Xalverith",
       "string_id": 143254
     },
     {
       "id": "thanta_zilbra",
-      "new_id": "tanta_vilmora",
+      "new_id": "ukravane",
       "from": "Thanta Zilbra",
-      "to": "Tanta Vilmora",
-      "sector": "Xalvane",
+      "to": "Ukravane",
+      "sector": "Xalverith",
       "string_id": 143255
     },
     {
       "id": "thila",
-      "new_id": "thessa",
+      "new_id": "uzrenth",
       "from": "Thila",
-      "to": "Thessa",
-      "sector": "Xalvane",
+      "to": "Uzrenth",
+      "sector": "Xalverith",
       "string_id": 143256
     },
     {
       "id": "tund",
-      "new_id": "tunn",
+      "new_id": "vondrelle",
       "from": "Tund",
-      "to": "Tunn",
-      "sector": "Xalvane",
+      "to": "Vondrelle",
+      "sector": "Xalverith",
       "string_id": 143257
+    }
+  ],
+  "factions": [
+    {
+      "faction": "alliance",
+      "field": "display_name",
+      "from": "Rebel Alliance",
+      "to": "Free Alliance"
+    },
+    {
+      "faction": "alliance",
+      "field": "agent_name",
+      "from": "C-3PO",
+      "to": "AX-4"
+    },
+    {
+      "faction": "alliance",
+      "field": "messenger_name",
+      "from": "R2-D2",
+      "to": "Q-11"
+    },
+    {
+      "faction": "empire",
+      "field": "display_name",
+      "from": "Galactic Empire",
+      "to": "Stellar Empire"
+    },
+    {
+      "faction": "empire",
+      "field": "agent_name",
+      "from": "IMP-22",
+      "to": "VK-20"
+    },
+    {
+      "faction": "empire",
+      "field": "messenger_name",
+      "from": "SD-7",
+      "to": "ZR-5"
+    }
+  ],
+  "missions": [
+    {
+      "id": "death_star_sabotage",
+      "new_id": "annihilator_sabotage",
+      "from": "Death Star Sabotage",
+      "to": "Annihilator Sabotage",
+      "string_id": 11329
+    },
+    {
+      "id": "jedi_training",
+      "new_id": "warden_training",
+      "from": "Jedi Training",
+      "to": "Warden Training",
+      "string_id": 11330
+    },
+    {
+      "id": "dagobah",
+      "new_id": "vorlathe",
+      "from": "Dagobah",
+      "to": "Vorlathe",
+      "string_id": 11331
+    }
+  ],
+  "weapons": [
+    {
+      "id": "turbolaser",
+      "new_id": "heavy_laser",
+      "from": "Turbolaser",
+      "to": "Heavy Laser",
+      "string_id": null
+    }
+  ],
+  "terms": [
+    {
+      "from": "Jedi",
+      "to": "Warden",
+      "note": "the special-power ranks, Jedi Training, messages"
+    },
+    {
+      "from": "Force",
+      "to": "Aether",
+      "note": "Force Ranking, Force-aware, the Force (not Task Force)"
+    },
+    {
+      "from": "Dagobah",
+      "to": "Vorlathe",
+      "note": "a place in the story, not on the map; one of your spare names"
+    },
+    {
+      "from": "Yoda",
+      "to": "the old master",
+      "note": "named only in two messages"
+    },
+    {
+      "from": "Skywalker",
+      "to": "Ashford",
+      "note": "\"the Skywalker family\": Luke's new surname"
+    },
+    {
+      "from": "Luke",
+      "to": "Corin",
+      "note": "first name alone"
+    },
+    {
+      "from": "Leia",
+      "to": "Maren",
+      "note": "first name alone"
+    },
+    {
+      "from": "Han",
+      "to": "Jace",
+      "note": "first name alone"
+    },
+    {
+      "from": "Vader",
+      "to": "Sarvex",
+      "note": "name alone"
+    },
+    {
+      "from": "Yavin 4",
+      "to": "Yldravane",
+      "note": "the map calls it Yavin"
+    },
+    {
+      "from": "Death Star",
+      "to": "Annihilator",
+      "note": "Death Star Shields (map filter), Death Star Sabotage"
+    },
+    {
+      "from": "Turbolaser",
+      "to": "Heavy Laser",
+      "note": "also \"Turbo Laser\" and the weapon id turbolaser"
+    },
+    {
+      "from": "droid",
+      "to": "robot",
+      "note": "Agent droid, Message droid; droid is a Lucasfilm trademark"
+    },
+    {
+      "from": "Galactic Civil War",
+      "to": "Stars in Revolt",
+      "note": "the pack's name on its card"
+    },
+    {
+      "from": "KDY",
+      "to": "Ion Cannon",
+      "note": "the KDY v-150 ion cannon: blockade_manager.gd:44 (no KDY v-150 = no ion cannon)"
+    }
+  ],
+  "other_text": [
+    {
+      "file": "packs/star-wars-rebellion/display.json",
+      "at": ".categories[5].modes[4].label",
+      "kind": "player",
+      "from": "Death Star Shields",
+      "to": "Annihilator Shields"
+    },
+    {
+      "file": "packs/star-wars-rebellion/display.json",
+      "at": ".categories[5].modes[4].tiers[0].label",
+      "kind": "player",
+      "from": "Death Star Shield",
+      "to": "Annihilator Shield"
+    },
+    {
+      "file": "packs/star-wars-rebellion/display.json",
+      "at": ".categories[5].modes[4].tiers[1].label",
+      "kind": "player",
+      "from": "No Death Star Shield",
+      "to": "No Annihilator Shield"
+    },
+    {
+      "file": "packs/star-wars-rebellion/display.json",
+      "at": ".special_power_ranks.student",
+      "kind": "player",
+      "from": "Jedi Student",
+      "to": "Warden Student"
+    },
+    {
+      "file": "packs/star-wars-rebellion/display.json",
+      "at": ".special_power_ranks.knight",
+      "kind": "player",
+      "from": "Jedi Knight",
+      "to": "Warden Knight"
+    },
+    {
+      "file": "packs/star-wars-rebellion/display.json",
+      "at": ".special_power_ranks.master",
+      "kind": "player",
+      "from": "Jedi Master",
+      "to": "Warden Master"
+    },
+    {
+      "file": "packs/star-wars-rebellion/mission_tables.json",
+      "at": ".tables.death_star_sabotage.description",
+      "kind": "player",
+      "from": "Death Star Sabotage - mission success %",
+      "to": "Annihilator Sabotage - mission success %"
+    },
+    {
+      "file": "packs/star-wars-rebellion/pack.json",
+      "at": ".display_name",
+      "kind": "player",
+      "from": "Galactic Civil War",
+      "to": "Stars in Revolt"
+    },
+    {
+      "file": "packs/star-wars-rebellion/pack.json",
+      "at": ".summary",
+      "kind": "player",
+      "from": "A tribute to Star Wars: Rebellion, the rebel alliance against the galactic empire, across a galaxy of 200 systems.",
+      "to": "A rebellion against a galactic empire, across a galaxy of 200 systems."
+    },
+    {
+      "file": "packs/star-wars-rebellion/pack.json",
+      "at": ".briefing.alliance.views.18.caption",
+      "kind": "player",
+      "from": "Yavin",
+      "to": "Yldravane"
+    },
+    {
+      "file": "packs/star-wars-rebellion/pack.json",
+      "at": ".briefing.alliance.views.4.caption",
+      "kind": "player",
+      "from": "Coruscant",
+      "to": "Nuvandor"
+    },
+    {
+      "file": "packs/star-wars-rebellion/pack.json",
+      "at": ".briefing.alliance.views.7.caption",
+      "kind": "player",
+      "from": "Mon Mothma",
+      "to": "Sera Valcourt"
+    },
+    {
+      "file": "packs/star-wars-rebellion/pack.json",
+      "at": ".briefing.alliance.views.19.caption",
+      "kind": "player",
+      "from": "Luke Skywalker",
+      "to": "Corin Ashford"
+    },
+    {
+      "file": "packs/star-wars-rebellion/pack.json",
+      "at": ".briefing.alliance.views.20.caption",
+      "kind": "player",
+      "from": "Coruscant",
+      "to": "Nuvandor"
+    },
+    {
+      "file": "packs/star-wars-rebellion/pack.json",
+      "at": ".briefing.empire.views.18.caption",
+      "kind": "player",
+      "from": "Coruscant",
+      "to": "Nuvandor"
+    },
+    {
+      "file": "packs/star-wars-rebellion/pack.json",
+      "at": ".briefing.empire.views.3.caption",
+      "kind": "player",
+      "from": "Yavin",
+      "to": "Yldravane"
+    },
+    {
+      "file": "packs/star-wars-rebellion/pack.json",
+      "at": ".briefing.empire.views.7.caption",
+      "kind": "player",
+      "from": "Emperor Palpatine",
+      "to": "Emperor Malvorn"
+    },
+    {
+      "file": "packs/star-wars-rebellion/pack.json",
+      "at": ".briefing.empire.views.19.caption",
+      "kind": "player",
+      "from": "Darth Vader",
+      "to": "Lord Sarvex"
+    },
+    {
+      "file": "packs/star-wars-rebellion/pack.json",
+      "at": ".briefing.empire.views.20.caption",
+      "kind": "player",
+      "from": "Yavin",
+      "to": "Yldravane"
+    },
+    {
+      "file": "packs/star-wars-rebellion/pack.json",
+      "at": ".victory_tips.standard",
+      "kind": "player",
+      "from": "Rebel Win Conditions: Capture Coruscant and capture Emperor Palpatine and Darth Vader.\nImperial Win Conditions: Destroy the Rebel headquarters and capture President Mon Mothma and Luke Skywalker.",
+      "to": "Rebel Win Conditions: Capture Nuvandor and capture Emperor Malvorn and Lord Sarvex.\nImperial Win Conditions: Destroy the Rebel headquarters and capture President Sera Valcourt and Corin Ashford."
+    },
+    {
+      "file": "packs/star-wars-rebellion/pack.json",
+      "at": ".victory_tips.hq_only",
+      "kind": "player",
+      "from": "Rebel Win Conditions: Capture Coruscant.\nImperial Win Conditions: Destroy the Rebel headquarters.",
+      "to": "Rebel Win Conditions: Capture Nuvandor.\nImperial Win Conditions: Destroy the Rebel headquarters."
+    },
+    {
+      "file": "packs/star-wars-rebellion/pack.json",
+      "at": ".menu.credits[0]",
+      "kind": "keep",
+      "from": "Star Wars: Rebellion (1998) - LucasArts Entertainment Company / Coolhand Interactive.",
+      "to": "Star Wars: Rebellion (1998) - LucasArts Entertainment Company / Coolhand Interactive."
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[20].Name",
+      "kind": "editor",
+      "from": "Fast Heal: Force Rank Threshold",
+      "to": "Fast Heal: Aether Rank Threshold"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[39].Name",
+      "kind": "editor",
+      "from": "Low Force Status Threshold",
+      "to": "Low Aether Status Threshold"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[40].Name",
+      "kind": "editor",
+      "from": "Discovering Force User Threshold",
+      "to": "Discovering Aether User Threshold"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[41].Name",
+      "kind": "editor",
+      "from": "Force Qualified Character Threshold",
+      "to": "Aether Qualified Character Threshold"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[42].Name",
+      "kind": "editor",
+      "from": "Force User Discovery Scan: Base Delay (ticks)",
+      "to": "Aether User Discovery Scan: Base Delay (ticks)"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[43].Name",
+      "kind": "editor",
+      "from": "Force User Discovery Scan: Random Spread (ticks)",
+      "to": "Aether User Discovery Scan: Random Spread (ticks)"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[48].Name",
+      "kind": "editor",
+      "from": "Luke vs Vader: Force Gain Scale (%)",
+      "to": "Corin vs Sarvex: Aether Gain Scale (%)"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[49].Name",
+      "kind": "editor",
+      "from": "Luke vs Emperor: Force Gain Scale (%)",
+      "to": "Corin vs Emperor: Aether Gain Scale (%)"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[50].Name",
+      "kind": "editor",
+      "from": "Leia vs Vader: Force Gain Scale (%)",
+      "to": "Maren vs Sarvex: Aether Gain Scale (%)"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[51].Name",
+      "kind": "editor",
+      "from": "Leia vs Emperor: Force Gain Scale (%)",
+      "to": "Maren vs Emperor: Aether Gain Scale (%)"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[52].Name",
+      "kind": "editor",
+      "from": "Seat of Power (Emperor on Coruscant): Leadership Bonus (%)",
+      "to": "Seat of Power (Emperor on Nuvandor): Leadership Bonus (%)"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[53].Name",
+      "kind": "editor",
+      "from": "Luke Dagobah Completion: Injury Force Rank Ceiling",
+      "to": "Corin Vorlathe Completion: Injury Aether Rank Ceiling"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[54].Name",
+      "kind": "editor",
+      "from": "Luke Knows Heritage: Force Rank Threshold",
+      "to": "Corin Knows Heritage: Aether Rank Threshold"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[55].Name",
+      "kind": "editor",
+      "from": "Luke Dagobah Completion: Injury Base Amount",
+      "to": "Corin Vorlathe Completion: Injury Base Amount"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[56].Name",
+      "kind": "editor",
+      "from": "Luke Dagobah Completion: Injury Random Spread",
+      "to": "Corin Vorlathe Completion: Injury Random Spread"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[57].Name",
+      "kind": "editor",
+      "from": "Luke Ordinary Mission: Force Reward",
+      "to": "Corin Ordinary Mission: Aether Reward"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[58].Name",
+      "kind": "editor",
+      "from": "Leia Ordinary Mission: Force Reward",
+      "to": "Maren Ordinary Mission: Aether Reward"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[59].Name",
+      "kind": "editor",
+      "from": "Space Travel Time: Han Solo (%, lower=faster)",
+      "to": "Space Travel Time: Jace Rennick (%, lower=faster)"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[60].Name",
+      "kind": "editor",
+      "from": "Luke vs Vader: Force Gain Min",
+      "to": "Corin vs Sarvex: Aether Gain Min"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[61].Name",
+      "kind": "editor",
+      "from": "Luke vs Emperor: Force Gain Min",
+      "to": "Corin vs Emperor: Aether Gain Min"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[62].Name",
+      "kind": "editor",
+      "from": "Leia vs Vader: Force Gain Min (After Heritage)",
+      "to": "Maren vs Sarvex: Aether Gain Min (After Heritage)"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[63].Name",
+      "kind": "editor",
+      "from": "Leia vs Emperor: Force Gain Min (After Heritage)",
+      "to": "Maren vs Emperor: Aether Gain Min (After Heritage)"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[65].Name",
+      "kind": "editor",
+      "from": "Local Side Force User Selector: Low Rank Threshold",
+      "to": "Local Side Aether User Selector: Low Rank Threshold"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[66].Name",
+      "kind": "editor",
+      "from": "Cross Side Force User Selector: High Rank Threshold",
+      "to": "Cross Side Aether User Selector: High Rank Threshold"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[67].Name",
+      "kind": "editor",
+      "from": "Force User Selector: Encounter Probability Offset",
+      "to": "Aether User Selector: Encounter Probability Offset"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[82].Name",
+      "kind": "editor",
+      "from": "Fleet 1 location probability: Yavin vs HQ",
+      "to": "Fleet 1 location probability: Yldravane vs HQ"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[83].Name",
+      "kind": "editor",
+      "from": "CMUNYVTB.DAT - Alliance Yavin 4: Min army no. to deploy",
+      "to": "CMUNYVTB.DAT - Alliance Yldravane: Min army no. to deploy"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[84].Name",
+      "kind": "editor",
+      "from": "CMUNYVTB.DAT - Alliance Yavin 4: Max army no. to deploy",
+      "to": "CMUNYVTB.DAT - Alliance Yldravane: Max army no. to deploy"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[87].Name",
+      "kind": "editor",
+      "from": "CMUNCRTB.DAT - Empire Coruscant: Min army no. to deploy",
+      "to": "CMUNCRTB.DAT - Empire Nuvandor: Min army no. to deploy"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[88].Name",
+      "kind": "editor",
+      "from": "CMUNCRTB.DAT - Empire Coruscant: Max army no. to deploy",
+      "to": "CMUNCRTB.DAT - Empire Nuvandor: Max army no. to deploy"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[89].Name",
+      "kind": "editor",
+      "from": "CMUNAFTB.DAT - Alliance HQ or Yavin 4 Fleet: Min capital ship no. to deploy",
+      "to": "CMUNAFTB.DAT - Alliance HQ or Yldravane Fleet: Min capital ship no. to deploy"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[90].Name",
+      "kind": "editor",
+      "from": "CMUNAFTB.DAT - Alliance HQ or Yavin 4 Fleet: Max capital ship no. to deploy",
+      "to": "CMUNAFTB.DAT - Alliance HQ or Yldravane Fleet: Max capital ship no. to deploy"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[91].Name",
+      "kind": "editor",
+      "from": "CMUNEFTB.DAT - Empire Coruscant Fleet: Min capital ship no. to deploy",
+      "to": "CMUNEFTB.DAT - Empire Nuvandor Fleet: Min capital ship no. to deploy"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[92].Name",
+      "kind": "editor",
+      "from": "CMUNEFTB.DAT - Empire Coruscant Fleet: Max capital ship no. to deploy",
+      "to": "CMUNEFTB.DAT - Empire Nuvandor Fleet: Max capital ship no. to deploy"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[95].Name",
+      "kind": "editor",
+      "from": "FACLCRTB.DAT - Empire Coruscant: Min facilities group no. to deploy",
+      "to": "FACLCRTB.DAT - Empire Nuvandor: Min facilities group no. to deploy"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[96].Name",
+      "kind": "editor",
+      "from": "FACLCRTB.DAT - Empire Coruscant: Max facilities group no. to deploy",
+      "to": "FACLCRTB.DAT - Empire Nuvandor: Max facilities group no. to deploy"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[100].Name",
+      "kind": "editor",
+      "from": "Luke goes to Dagobah: Base (days)",
+      "to": "Corin goes to Vorlathe: Base (days)"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[101].Name",
+      "kind": "editor",
+      "from": "Luke goes to Dagobah: Max Random Extra (days)",
+      "to": "Corin goes to Vorlathe: Max Random Extra (days)"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[104].Name",
+      "kind": "editor",
+      "from": "Mission Manager: Bounty Hunter Han Intervention Chance",
+      "to": "Mission Manager: Bounty Hunter Jace Intervention Chance"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[105].Name",
+      "kind": "editor",
+      "from": "Story Selector: Luke Low Rank Fallback Threshold",
+      "to": "Story Selector: Corin Low Rank Fallback Threshold"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[106].Name",
+      "kind": "editor",
+      "from": "Luke Low Rank Story Fallback: Injury Base Amount",
+      "to": "Corin Low Rank Story Fallback: Injury Base Amount"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[107].Name",
+      "kind": "editor",
+      "from": "Luke Low Rank Story Fallback: Injury Random Spread",
+      "to": "Corin Low Rank Story Fallback: Injury Random Spread"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[121].Name",
+      "kind": "editor",
+      "from": "Death Star Sabotage Success: Espionage Points Gain",
+      "to": "Annihilator Sabotage Success: Espionage Points Gain"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[122].Name",
+      "kind": "editor",
+      "from": "Death Star Sabotage Success: Combat Points Gain",
+      "to": "Annihilator Sabotage Success: Combat Points Gain"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[127].Name",
+      "kind": "editor",
+      "from": "Jedi Training success: Jedi level gain: Max Random Extra",
+      "to": "Warden Training success: Warden level gain: Max Random Extra"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[128].Name",
+      "kind": "editor",
+      "from": "Dagobah Completed: Force Rank Bonus Scale (%)",
+      "to": "Vorlathe Completed: Aether Rank Bonus Scale (%)"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[129].Name",
+      "kind": "editor",
+      "from": "Dagobah Pre-Completed: Force Rank Bonus Divisor",
+      "to": "Vorlathe Pre-Completed: Aether Rank Bonus Divisor"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[132].Name",
+      "kind": "editor",
+      "from": "Espionage Extra Reveal System Coruscant Count: Floor",
+      "to": "Espionage Extra Reveal System Nuvandor Count: Floor"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[133].Name",
+      "kind": "editor",
+      "from": "Espionage Extra Reveal System Coruscant Count: Random Spread",
+      "to": "Espionage Extra Reveal System Nuvandor Count: Random Spread"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[151].Name",
+      "kind": "editor",
+      "from": "No KDY Blockade: Capital Ship Production Penalty",
+      "to": "No Ion Cannon Blockade: Capital Ship Production Penalty"
+    },
+    {
+      "file": "packs/star-wars-rebellion/rules.json",
+      "at": "[152].Name",
+      "kind": "editor",
+      "from": "No KDY Blockade: Fighter Production Penalty",
+      "to": "No Ion Cannon Blockade: Fighter Production Penalty"
+    },
+    {
+      "file": "src/command/command_applier.gd",
+      "at": 15,
+      "kind": "id",
+      "from": "droid",
+      "to": "droid"
+    },
+    {
+      "file": "src/command/command_applier.gd",
+      "at": 143,
+      "kind": "id",
+      "from": "droid",
+      "to": "droid"
+    },
+    {
+      "file": "src/data/pack_loader.gd",
+      "at": 601,
+      "kind": "editor",
+      "from": "pack.json advisor.%s: must be an object of news -> the droids' part.",
+      "to": "pack.json advisor.%s: must be an object of news -> the robots' part."
+    },
+    {
+      "file": "src/data/pack_loader.gd",
+      "at": 615,
+      "kind": "editor",
+      "from": "pack.json advisor.%s: '%s' is not news the droids speak about. Known: %s, and %s<character id>.",
+      "to": "pack.json advisor.%s: '%s' is not news the robots speak about. Known: %s, and %s<character id>."
+    },
+    {
+      "file": "src/game/force_manager.gd",
+      "at": 60,
+      "kind": "log",
+      "from": "[Force] %s has returned from Dagobah after %d day(s) (%s, +%d%%): Force %d -> %d (%s).",
+      "to": "[Aether] %s has returned from Vorlathe after %d day(s) (%s, +%d%%): Aether %d -> %d (%s)."
+    },
+    {
+      "file": "src/game/force_manager.gd",
+      "at": 67,
+      "kind": "player",
+      "from": "%s Leaves Dagobah",
+      "to": "%s Leaves Vorlathe"
+    },
+    {
+      "file": "src/game/force_manager.gd",
+      "at": 67,
+      "kind": "player",
+      "from": "I have finished my training with Yoda.",
+      "to": "I have finished my training with the old master."
+    },
+    {
+      "file": "src/game/force_manager.gd",
+      "at": 90,
+      "kind": "log",
+      "from": "[Force] %s will be called to Dagobah on day %d.",
+      "to": "[Aether] %s will be called to Vorlathe on day %d."
+    },
+    {
+      "file": "src/game/force_manager.gd",
+      "at": 114,
+      "kind": "log",
+      "from": "[Force] %s has left for Dagobah, returning day %d.",
+      "to": "[Aether] %s has left for Vorlathe, returning day %d."
+    },
+    {
+      "file": "src/game/force_manager.gd",
+      "at": 119,
+      "kind": "player",
+      "from": "%s Goes to Dagobah",
+      "to": "%s Goes to Vorlathe"
+    },
+    {
+      "file": "src/game/force_manager.gd",
+      "at": 120,
+      "kind": "player",
+      "from": "%s has been sent to Dagobah to be trained by Yoda.",
+      "to": "%s has been sent to Vorlathe to be trained by the old master."
+    },
+    {
+      "file": "src/game/force_manager.gd",
+      "at": 143,
+      "kind": "log",
+      "from": "[Force] %s has told %s what she is (%s, level %d).",
+      "to": "[Aether] %s has told %s what she is (%s, level %d)."
+    },
+    {
+      "file": "src/game/force_manager.gd",
+      "at": 148,
+      "kind": "player",
+      "from": "%s Uses Force",
+      "to": "%s Uses Aether"
+    },
+    {
+      "file": "src/game/force_manager.gd",
+      "at": 149,
+      "kind": "player",
+      "from": "My heritage as a member of the Skywalker family has given me the ability to use the Force, as it has my brother and father.",
+      "to": "My heritage as a member of the Ashford family has given me the ability to use the Aether, as it has my brother and father."
+    },
+    {
+      "file": "src/game/force_manager.gd",
+      "at": 183,
+      "kind": "log",
+      "from": "[Force] %s has sensed the Force in %s (%s, level %d).",
+      "to": "[Aether] %s has sensed the Aether in %s (%s, level %d)."
+    },
+    {
+      "file": "src/game/force_manager.gd",
+      "at": 190,
+      "kind": "player",
+      "from": "Future Jedi Discovered",
+      "to": "Future Warden Discovered"
+    },
+    {
+      "file": "src/game/force_manager.gd",
+      "at": 191,
+      "kind": "player",
+      "from": "I have detected that %s has the ability to use the Force.  We should consider allowing me to conduct training in the way of the Force.",
+      "to": "I have detected that %s has the ability to use the Aether.  We should consider allowing me to conduct training in the way of the Aether."
+    },
+    {
+      "file": "src/game/force_manager.gd",
+      "at": 192,
+      "kind": "player",
+      "from": "I have detected that %s has the ability to use the Force.  Once I reach the rank of Jedi Knight, I should conduct training in the use of the Force.",
+      "to": "I have detected that %s has the ability to use the Aether.  Once I reach the rank of Warden Knight, I should conduct training in the use of the Aether."
+    },
+    {
+      "file": "src/game/mission_manager.gd",
+      "at": 138,
+      "kind": "player",
+      "from": "There is no Force-aware character here to train.",
+      "to": "There is no Aether-aware character here to train."
+    },
+    {
+      "file": "src/game/mission_manager.gd",
+      "at": 313,
+      "kind": "log",
+      "from": "[Force] %s has advanced to %s (level %d).",
+      "to": "[Aether] %s has advanced to %s (level %d)."
+    },
+    {
+      "file": "src/game/mission_manager.gd",
+      "at": 849,
+      "kind": "player",
+      "from": "%s needs at least one Force-aware student.",
+      "to": "%s needs at least one Aether-aware student."
+    },
+    {
+      "file": "src/game/mission_manager.gd",
+      "at": 914,
+      "kind": "player",
+      "from": "Through the use of the Force, I have discovered that %s has betrayed us to the %s.",
+      "to": "Through the use of the Aether, I have discovered that %s has betrayed us to the %s."
+    },
+    {
+      "file": "src/game/mission_manager.gd",
+      "at": 1138,
+      "kind": "player",
+      "from": "%s Force Growth",
+      "to": "%s Aether Growth"
+    },
+    {
+      "file": "src/game/mission_manager.gd",
+      "at": 1139,
+      "kind": "player",
+      "from": "My recent experience has given me new insights and I have grown in my skills in the Force.  My ranking is %s.",
+      "to": "My recent experience has given me new insights and I have grown in my skills in the Aether.  My ranking is %s."
+    },
+    {
+      "file": "src/game/mission_manager.gd",
+      "at": 1451,
+      "kind": "log",
+      "from": "[Mission] Jedi Training at %s: +%d to %s",
+      "to": "[Mission] Warden Training at %s: +%d to %s"
+    },
+    {
+      "file": "src/game/original_import.gd",
+      "at": 110,
+      "kind": "player",
+      "from": "Star Wars: Rebellion games import into the Star Wars game pack only.",
+      "to": "Star Wars: Rebellion games import into the Stars in Revolt pack only."
+    },
+    {
+      "file": "src/game/original_import.gd",
+      "at": 640,
+      "kind": "player",
+      "from": "a rating's boosted value (the original's Force and leadership bonuses; the base rating is carried)",
+      "to": "a rating's boosted value (the original's Aether and leadership bonuses; the base rating is carried)"
+    },
+    {
+      "file": "src/game/original_import.gd",
+      "at": 653,
+      "kind": "player",
+      "from": "%s has the Force but the original had not measured it yet; its level was rolled from the pack (%d).",
+      "to": "%s has the Aether but the original had not measured it yet; its level was rolled from the pack (%d)."
+    },
+    {
+      "file": "src/game/original_import.gd",
+      "at": 1160,
+      "kind": "keep",
+      "from": "Imported from Star Wars: Rebellion: \\\"%s\\\", Day %d, %s, %s, %s galaxy.",
+      "to": "Imported from Star Wars: Rebellion: \\\"%s\\\", Day %d, %s, %s, %s galaxy."
+    },
+    {
+      "file": "src/game/story_manager.gd",
+      "at": 93,
+      "kind": "log",
+      "from": "[Story] %s encountered %s at %s: heritage %s, %s, Force +%d -> %d (%s).",
+      "to": "[Story] %s encountered %s at %s: heritage %s, %s, Aether +%d -> %d (%s)."
+    },
+    {
+      "file": "src/game/story_manager.gd",
+      "at": 275,
+      "kind": "log",
+      "from": "[Story] %s is ready for the final confrontation (Force %d).",
+      "to": "[Story] %s is ready for the final confrontation (Aether %d)."
+    },
+    {
+      "file": "src/game/story_manager.gd",
+      "at": 304,
+      "kind": "log",
+      "from": "[Story] THE FINAL BATTLE at %s: %s at Force %d vs %d -> %s.",
+      "to": "[Story] THE FINAL BATTLE at %s: %s at Aether %d vs %d -> %s."
+    },
+    {
+      "file": "src/game/story_manager.gd",
+      "at": 304,
+      "kind": "log",
+      "from": "Luke loses",
+      "to": "Corin loses"
+    },
+    {
+      "file": "src/game/story_manager.gd",
+      "at": 355,
+      "kind": "player",
+      "from": "Vader",
+      "to": "Sarvex"
+    },
+    {
+      "file": "src/game/terms.gd",
+      "at": 122,
+      "kind": "player",
+      "from": "Agent droid",
+      "to": "Agent robot"
+    },
+    {
+      "file": "src/game/terms.gd",
+      "at": 123,
+      "kind": "player",
+      "from": "Message droid",
+      "to": "Message robot"
+    },
+    {
+      "file": "src/ui/CharacterStatusWindow.tscn",
+      "at": 127,
+      "kind": "player",
+      "from": "text = \"Yavin\"",
+      "to": "text = \"Yldravane\""
+    },
+    {
+      "file": "src/ui/CharacterStatusWindow.tscn",
+      "at": 146,
+      "kind": "player",
+      "from": "text = \"Force Ranking:\"",
+      "to": "text = \"Aether Ranking:\""
+    },
+    {
+      "file": "src/ui/character_status_window.gd",
+      "at": 117,
+      "kind": "player",
+      "from": "Force Ranking:",
+      "to": "Aether Ranking:"
+    },
+    {
+      "file": "src/ui/debug_keys.gd",
+      "at": 51,
+      "kind": "log",
+      "from": "  J   +25 Force to every Force-capable character of yours\\n",
+      "to": "  J   +25 Aether to every Aether-capable character of yours\\n"
+    },
+    {
+      "file": "src/ui/debug_keys.gd",
+      "at": 115,
+      "kind": "log",
+      "from": "[Debug]   %s -> Force %d (%s)",
+      "to": "[Debug]   %s -> Aether %d (%s)"
+    },
+    {
+      "file": "src/ui/debug_keys.gd",
+      "at": 117,
+      "kind": "log",
+      "from": "[Debug] +%d Force to %d characters",
+      "to": "[Debug] +%d Aether to %d characters"
+    },
+    {
+      "file": "src/ui/debug_keys.gd",
+      "at": 156,
+      "kind": "log",
+      "from": "Force %s",
+      "to": "Aether %s"
+    },
+    {
+      "file": "src/ui/DefenseFacilityStatusWindow.tscn",
+      "at": 115,
+      "kind": "player",
+      "from": "text = \"Yavin 4\"",
+      "to": "text = \"Yldravane\""
+    },
+    {
+      "file": "src/ui/DefenseFacilityStatusWindow.tscn",
+      "at": 231,
+      "kind": "player",
+      "from": "text = \"Turbolaser Battery\"",
+      "to": "text = \"Laser Battery\""
+    },
+    {
+      "file": "src/ui/original_options_screen.gd",
+      "at": 271,
+      "kind": "keep",
+      "from": "Bring in a saved game: one of ours (.fwsave) or a Star Wars: Rebellion SAVEGAME file",
+      "to": "Bring in a saved game: one of ours (.fwsave) or a Star Wars: Rebellion SAVEGAME file"
+    },
+    {
+      "file": "src/ui/pack_picker.gd",
+      "at": 94,
+      "kind": "keep",
+      "from": "Star Wars: Rebellion",
+      "to": "Star Wars: Rebellion"
+    },
+    {
+      "file": "src/ui/save_files.gd",
+      "at": 42,
+      "kind": "keep",
+      "from": "SAVEGAME.* ; Star Wars: Rebellion saved game",
+      "to": "SAVEGAME.* ; Star Wars: Rebellion saved game"
+    },
+    {
+      "file": "src/ui/ui_manager.gd",
+      "at": 1731,
+      "kind": "id",
+      "from": "droid",
+      "to": "droid"
+    },
+    {
+      "file": "src/ui/ui_manager.gd",
+      "at": 1735,
+      "kind": "id",
+      "from": "droid",
+      "to": "droid"
+    },
+    {
+      "file": "src/ui/unit_status_window.gd",
+      "at": 203,
+      "kind": "id",
+      "from": "turbolaser",
+      "to": "turbolaser"
+    },
+    {
+      "file": "src/ui/unit_status_window.gd",
+      "at": 203,
+      "kind": "player",
+      "from": " Turbo Laser:",
+      "to": " Heavy Laser:"
     }
   ]
 }
