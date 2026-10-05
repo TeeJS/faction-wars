@@ -16,7 +16,7 @@ extends SceneTree
 const Art := preload("res://src/ui/artwork.gd")
 const StandIns := preload("res://src/ui/art_standins.gd")
 const SOURCES := "res://tools/look/ww2_flags.json"
-const SPRITES := "res://packs/ww2/art/planet_sprites"
+const SPRITES := "res://packs/ww2/art/location_sprites"
 const LICENCES := ["Public domain", "CC BY-SA 3.0", "CC BY-SA 4.0"]
 ## Flags that identify a country's conqueror, never the country (TeeJ,
 ## 2026-09-30): these systems must not fly them.
@@ -60,7 +60,7 @@ func _init() -> void:
 	_check(numbers.size() == planets.size(), "every system has its own artwork id")
 	for f in DirAccess.get_files_at(SPRITES):
 		if f.get_extension() == "png":
-			_check(numbers.has(int(f.get_basename())), "planet_sprites/%s is a system's" % f)
+			_check(numbers.has(int(f.get_basename())), "location_sprites/%s is a system's" % f)
 
 	var doc: Variant = JsonUtil.parse(SOURCES)
 	_check(doc is Dictionary and doc.get("flags") is Dictionary and doc.get("systems") is Dictionary, "%s reads" % SOURCES)

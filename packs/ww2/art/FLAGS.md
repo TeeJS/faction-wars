@@ -2,20 +2,20 @@
 
 ## Comic card redraws (2026-10-04)
 
-All 88 Encyclopedia cards in `planets/` now use an OpenAI ImageGen
+All 88 Encyclopedia cards in `locations/` now use an OpenAI ImageGen
 adaptation in vintage 1940s comic style.
 83 retain their existing flag designs and proportions; five use the
 approved 1939 replacements described below. All original borders, plate
 numbers and captions are preserved. Every pixel outside the flag
 interiors remains unchanged for the 83 style-only cards. The cards remain
 400 x 200; archived masters are 1600 x 800. The 37 x 37
-`planet_sprites/` are cut from these cards, each card's own flag, by
+`location_sprites/` are cut from these cards, each card's own flag, by
 `tools/look/make_ww2_small_from_plates.py flags`.
 
 All 88 original cards have byte-for-byte backups and SHA-256 hashes in
-`planets/backup-originals-2026-10-04/`. Source records, prompts, generated
+`locations/backup-originals-2026-10-04/`. Source records, prompts, generated
 originals, review sheets and installation hashes are archived in
-`planets/vintage-1940s-comic-masters-2026-10-04/`. Both archive directories have
+`locations/vintage-1940s-comic-masters-2026-10-04/`. Both archive directories have
 `.gdignore`, so they are excluded from Godot imports and exports. Original
 attribution and licences below still apply; the Fiji adaptation is shared
 under the source's CC BY-SA 3.0 licence; Spain under CC BY-SA 4.0.
@@ -29,7 +29,7 @@ choices supersede the older country-identity presentation policy below.
 The original source table below continues to describe the other 83 flags
 (the State of Burma flag is no longer shown); approved card sources, attribution and licences are recorded in
 the five separate pack-credit entries and in
-`planets/vintage-1940s-comic-masters-2026-10-04/approved-card-sources.json`.
+`locations/vintage-1940s-comic-masters-2026-10-04/approved-card-sources.json`.
 Burma adaptation: CC BY-SA 3.0; Ceylon: CC BY-SA 4.0; the other three
 reference designs are public domain. See the archived comparison and
 source README under `1939-proposals/`.
@@ -40,7 +40,7 @@ redraws. The original generator/source provenance below is retained.
 
 Made by `tools/look/make_ww2_flags.py` from `tools/look/ww2_flags.json`;
 original flat-art generation provenance follows. Each system's picture (SCHEMA.md section 14:
-`planet_sprites/<artwork_id>.png`, 37x37) is a flag, fixed like a planet's
+`location_sprites/<artwork_id>.png`, 37x37) is a flag, fixed like a planet's
 artwork, that identifies the country itself, never its conqueror (TeeJ,
 2026-09-30), and that holds up for the war years:
 
