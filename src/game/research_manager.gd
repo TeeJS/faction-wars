@@ -61,9 +61,10 @@ static func ProcessDay(galaxy: Array, day: int) -> void:
 			for p in s.Planets:
 				if p.ControllingFaction != f:
 					continue
-				yards += p.CountOf("construction_yard")
-				shipyards += p.CountOf("shipyard")
-				training += p.CountOf("training_facility")
+				# By what they do, not by the pack's ids for them.
+				yards += p.CountByRole("produces_facility")
+				shipyards += p.CountByRole("produces_unit")
+				training += p.CountByRole("produces_troop")
 		Award(f, Enums.ResearchTrackKind.FacilityDesign, yards * PassivePerFacilityPerDay, day, true)
 		Award(f, Enums.ResearchTrackKind.ShipDesign, shipyards * PassivePerFacilityPerDay, day, true)
 		Award(f, Enums.ResearchTrackKind.TroopTraining, training * PassivePerFacilityPerDay, day, true)

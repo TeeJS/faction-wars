@@ -437,7 +437,7 @@ static func Render(p: Planet, section: int, viewer: Faction = null, people: Vari
 			for t in p.BuildingQueue:
 				lines.append(DescribeTask(t, _producer_word("produces_facility", "construction"), p))
 			for t in p.ShipyardQueue:
-				lines.append(DescribeTask(t, _producer_word("produces_unit", "shipyard"), p))
+				lines.append(DescribeTask(t, _producer_word("produces_unit", Terms.lower("shipyard")), p))
 			for t in p.TrainingQueue:
 				lines.append(DescribeTask(t, _producer_word("produces_troop", "training"), p))
 	return lines
@@ -449,8 +449,12 @@ static func IsDefensive(f: Facility) -> bool:
 		or f.HasRole("disable")
 
 
+## A facility as a sighting lists it: its tier's own name ("Advanced Shipyard",
+## WWII's "Arsenal"). It was prefixed with "Advanced" again - "Advanced
+## Advanced Shipyard", "Advanced Arsenal" - which the Manufacturing window's
+## stale tabs then never matched, so no tier-2 facility showed there.
 static func Describe(f: Facility) -> String:
-	return "Advanced %s" % f.Name() if f.Tier > 1 else f.Name()
+	return f.Name()
 
 
 ## The pack's tier-1 name for the facility carrying a producer role, in prose

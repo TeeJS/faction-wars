@@ -147,16 +147,16 @@ func Populate(planet: Planet) -> void:
 			# "The first number here is the number of ... at this site. The
 			# second number also includes the one now being built" (p083) -
 			# said where a player who never read the manual can find it.
-			for pair in [["%ShipCapLabel", "shipyard"], ["%TroopCapLabel", "training_facility"], ["%FacCapLabel", "construction_yard"]]:
-				(get_node(pair[0]) as Label).tooltip_text = "%s: built here : built here and being built" % Facility.NameOf(pair[1], 1)
+			for pair in [["%ShipCapLabel", "produces_unit"], ["%TroopCapLabel", "produces_troop"], ["%FacCapLabel", "produces_facility"]]:
+				(get_node(pair[0]) as Label).tooltip_text = "%s: built here : built here and being built" % Facility.NameOf(FacilityCatalog.FamilyForRole(pair[1]), 1)
 				(get_node(pair[0]) as Label).mouse_filter = Control.MOUSE_FILTER_PASS
 
 		# --- SPECIFIC MANAGEMENT TABS: Dynamic Population ---
-		PopulateFacilityTab(tabs, "Shipyards", planet, "shipyard", "No %s operational." % Terms.cap("shipyards"))
-		PopulateFacilityTab(tabs, "Training Facilities", planet, "training_facility", "No Training Centers operational.")
-		PopulateFacilityTab(tabs, "Construction Yards", planet, "construction_yard", "No Construction Yards operational.")
-		PopulateFacilityTab(tabs, Terms.cap("refineries"), planet, "refinery", "No %s operational." % Terms.lower("refineries"))
-		PopulateFacilityTab(tabs, Terms.cap("mines"), planet, "mine", "No %s active." % Terms.lower("mines"))
+		PopulateFacilityTab(tabs, "Shipyards", planet, "produces_unit", "No %s operational." % Terms.cap("shipyards"))
+		PopulateFacilityTab(tabs, "Training Facilities", planet, "produces_troop", "No Training Centers operational.")
+		PopulateFacilityTab(tabs, "Construction Yards", planet, "produces_facility", "No Construction Yards operational.")
+		PopulateFacilityTab(tabs, Terms.cap("refineries"), planet, "refines", "No %s operational." % Terms.lower("refineries"))
+		PopulateFacilityTab(tabs, Terms.cap("mines"), planet, "extracts_raw", "No %s active." % Terms.lower("mines"))
 
 		# Each producer gets a build panel on its own tab, matching the
 		# manual's split: construction yards make facilities, orbital
@@ -219,19 +219,19 @@ func Populate(planet: Planet) -> void:
 		# for that system is accurate ... a snapshot" (manual p106) - a
 		# snapshot of each tab as it stood, not of the union pasted five
 		# times.
-		StaleFacilityTab(tabs, "Shipyards", "shipyard", yards)
-		StaleFacilityTab(tabs, "Training Facilities", "training_facility", yards)
-		StaleFacilityTab(tabs, "Construction Yards", "construction_yard", yards)
-		StaleFacilityTab(tabs, Terms.cap("refineries"), "refinery", yards)
-		StaleFacilityTab(tabs, Terms.cap("mines"), "mine", yards)
+		StaleFacilityTab(tabs, "Shipyards", "produces_unit", yards)
+		StaleFacilityTab(tabs, "Training Facilities", "produces_troop", yards)
+		StaleFacilityTab(tabs, "Construction Yards", "produces_facility", yards)
+		StaleFacilityTab(tabs, Terms.cap("refineries"), "refines", yards)
+		StaleFacilityTab(tabs, Terms.cap("mines"), "extracts_raw", yards)
 
 		# The original greys what the snapshot shows none of, as it does on
 		# a world of your own.
-		for pair in [["Shipyards", "shipyard"], ["Training Facilities", "training_facility"],
-				["Construction Yards", "construction_yard"], [Terms.cap("refineries"), "refinery"],
-				[Terms.cap("mines"), "mine"]]:
-			var nm: String = Facility.NameOf(pair[1])
-			GreyEmptyTab(tabs, pair[0], Lq.count(yards.Lines, func(l: String) -> bool: return l == nm or l == "Advanced %s" % nm) if yards.Known else 0)
+		for pair in [["Shipyards", "produces_unit"], ["Training Facilities", "produces_troop"],
+				["Construction Yards", "produces_facility"], [Terms.cap("refineries"), "refines"],
+				[Terms.cap("mines"), "extracts_raw"]]:
+			var names: Array = RoleNames(pair[1])
+			GreyEmptyTab(tabs, pair[0], Lq.count(yards.Lines, func(l: String) -> bool: return names.has(l)) if yards.Known else 0)
 	OUI.RefreshStrip(tabs)
 
 
@@ -555,13 +555,15 @@ static func GreyEmptyTab(tabs: TabContainer, tabName: String, count: int) -> voi
 		OUI.SetEmpty(tabs, idx, count == 0)   # the open page is not greyed until it is left
 
 
-func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, family: String, emptyMsg: String) -> void:
+## A facility tab: the facilities here that do `role` (by role, never by the
+## pack's ids for them).
+func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, role: String, emptyMsg: String) -> void:
 	var container: VBoxContainer = tabs.get_node_or_null(tabName)
 	if container == null:
 		return
 
 	var list: Container = _facility_list(container, tabName)
-	var minesPage: bool = _original and family == "mine" and OUI.Has(["mine_tile", "mine_pile"])
+	var minesPage: bool = _original and role == "extracts_raw" and OUI.Has(["mine_tile", "mine_pile"])
 	if minesPage:
 		# The original's Mines grid: 67x35 pictures, 69 across and 40 down
 		# from (8, 24) of the page (matched on TeeJ's Coruscant screenshot).
@@ -576,7 +578,7 @@ func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, fa
 		header.add_theme_color_override("font_color", Color(0.6, 0.9, 0.6))
 		container.add_child(header)
 
-	var matchingFacilities: Array = Lq.where(planet.Facilities, func(f: Facility) -> bool: return f.Family() == family)
+	var matchingFacilities: Array = Lq.where(planet.Facilities, func(f: Facility) -> bool: return f.HasRole(role))
 
 	if matchingFacilities.size() == 0:
 		if _original:
@@ -864,7 +866,7 @@ func PopulateFacilityTab(tabs: TabContainer, tabName: String, planet: Planet, fa
 
 	# Say out loud what selecting several of them buys you, because the
 	# speed rule was previously invisible and automatic.
-	var chosen: int = Lq.count(_selected, func(f: Facility) -> bool: return f.Family() == family)
+	var chosen: int = Lq.count(_selected, func(f: Facility) -> bool: return f.HasRole(role))
 	if chosen > 1 and not _original:
 		var note := Label.new()
 		note.text = "%d selected - they share a job and finish it %dx faster." % [chosen, chosen]
@@ -1253,13 +1255,19 @@ func _PlainConfirmScrap(planet: Planet, what: String, refund: int, maint: int, o
 # window could deliver. Found on the third report, after the system gate
 # and the ship path had each been fixed and each turned out not to be the
 # whole story.
-func StaleFacilityTab(tabs: TabContainer, tabName: String, family: String, yards: IntelManager.IntelView) -> void:
+## Every tier's name for the facilities that do `role`, as a sighting lists
+## them (IntelManager.Describe).
+static func RoleNames(role: String) -> Array:
+	return FacilityCatalog.WithRole(role).map(func(d: PackDefs.FacilityDef) -> String: return d.DisplayName)
+
+
+func StaleFacilityTab(tabs: TabContainer, tabName: String, role: String, yards: IntelManager.IntelView) -> void:
 	if not yards.Known:
 		ClearFacilityTab(tabs, tabName, "")   # nothing seen: an empty page
 		return
 
-	var name: String = Facility.NameOf(family)
-	var seen: Array = Lq.where(yards.Lines, func(l: String) -> bool: return l == name or l == "Advanced %s" % name)
+	var names: Array = RoleNames(role)
+	var seen: Array = Lq.where(yards.Lines, func(l: String) -> bool: return names.has(l))
 
 	if seen.size() == 0:
 		ClearFacilityTab(tabs, tabName, "" if _original else "None seen.")
@@ -1296,7 +1304,7 @@ func StaleFacilityTab(tabs: TabContainer, tabName: String, family: String, yards
 			# was ruled the lesser evil. If play shows it matters, the fix
 			# is here.
 			var ofType: Array = Lq.where(world.Facilities if world != null else [],
-				func(f: Facility) -> bool: return f.Family() == family)
+				func(f: Facility) -> bool: return f.HasRole(role))
 			var current: Facility = ofType[nth] if nth < ofType.size() else null
 
 			if current == null:
@@ -1306,8 +1314,8 @@ func StaleFacilityTab(tabs: TabContainer, tabName: String, family: String, yards
 			ui.ResolveObjectTarget(current))
 
 		if _original:
-			var seenDef: PackDefs.FacilityDef = FacilityCatalog.Get(family, 2 if str(line).begins_with("Advanced") else 1)
-			OUI.Card(row, str(line), OUI.Mini("facilities", seenDef.Id if seenDef != null else family),
+			var seenDef: PackDefs.FacilityDef = Lq.first_or_null(FacilityCatalog.WithRole(role), func(d: PackDefs.FacilityDef) -> bool: return d.DisplayName == str(line))
+			OUI.Card(row, str(line), OUI.Mini("facilities", seenDef.Id if seenDef != null else ""),
 				Color.WHITE, OUI.SideColor(GameSettings.PlayerFaction), "", null, false, false)
 			row.tooltip_text = "%s (seen day %d)" % [line, StrategicTickManager.Shown(yards.Day)]
 		list.add_child(row)

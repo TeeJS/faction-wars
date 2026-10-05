@@ -119,7 +119,11 @@ func facilities_of(family: String) -> int:
 
 
 func has_headquarters() -> bool:
-	return count_of("headquarters") > 0
+	# By role: the counts are keyed by the pack's family ids.
+	for def in FacilityCatalog.WithRole("headquarters"):
+		if count_of(def.Family) > 0:
+			return true
+	return false
 
 
 ## Combined strength of the fleets seen there that are NOT `side`'s.

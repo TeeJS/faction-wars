@@ -50,7 +50,9 @@ static func InitializeGalaxyState(galaxy: Array, human_faction: Faction, difficu
 			push_error("[Pack] %s: could not place hq (kind '%s')." % [faction.Id, hq_def.Kind])
 			continue
 		seat.ControllingFaction = faction
-		seat.AddFacility("headquarters")
+		var hq_family := FacilityCatalog.FamilyForRole("headquarters")   # the pack's own id for it
+		if not hq_family.is_empty():
+			seat.AddFacility(hq_family)
 		seat.SetSupportFor(faction, 100)
 		seat.StartsInhabited = true
 		seat.IsInhabited = true
