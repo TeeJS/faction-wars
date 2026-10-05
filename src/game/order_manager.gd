@@ -259,7 +259,9 @@ static func AdvanceHeadquarters() -> void:
 			EventBus.Tell(faction, rerouted)
 			continue
 		_hq_en_route.erase(id)
-		to.AddFacility("headquarters")
+		var hq_family := FacilityCatalog.FamilyForRole("headquarters")   # the pack's own id for it
+		if not hq_family.is_empty():
+			to.AddFacility(hq_family)
 		# The new seat is concealed from other sides for a hidden HQ; a side always knows its own.
 		for other in FactionRegistry.Playable:
 			to.SetExplored(other, other == faction or not faction.HasHiddenHq())

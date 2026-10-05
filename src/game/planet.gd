@@ -278,7 +278,7 @@ func CanQueueFacility(type: String, tier: int, destination: Planet) -> Result:
 	if destination.FreeEnergySlots() <= 0:
 		return Result.fail("%s has no free %s slots (%d/%d used). Scrap a facility to make room." % [destination.Name, Terms.lower("energy"), destination.UsedEnergySlots(), destination.BaseEnergy])
 
-	if type == "mine" and destination.FreeMineSlots() <= 0:
+	if stats.HasRole("extracts_raw") and destination.FreeMineSlots() <= 0:
 		return Result.fail("%s has no %s sites left (%d/%d used)." % [destination.Name, Terms.lower("raw_materials"), destination.UsedMineSlots(), destination.BaseRawMaterials])
 
 	if Economy.For(owner).RefinedMaterials < stats.ConstructionCost:

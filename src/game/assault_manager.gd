@@ -166,7 +166,7 @@ static func Resolve(fleet: Fleet, target: Planet, rng: Prng, day: int) -> Assaul
 		MilitaryCatalog.OnControlChanged(target, previous)
 		print("[Assault] %s taken by %s after %d rounds (%d regiments hold it)." % [target.Name, attacker.DisplayName, report.Steps, report.AttackersRemaining])
 
-		if previous != null and target.CountOf("headquarters") > 0:
+		if previous != null and target.HasHeadquarters():
 			for i in range(target.Facilities.size() - 1, -1, -1):
 				if target.Facilities[i].HasRole("headquarters"):
 					target.Facilities.remove_at(i)
