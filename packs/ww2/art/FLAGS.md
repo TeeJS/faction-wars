@@ -13,10 +13,11 @@ interiors remains unchanged for the 83 style-only cards. The cards remain
 `tools/look/make_ww2_small_from_plates.py flags`.
 
 All 88 original cards have byte-for-byte backups and SHA-256 hashes in
-`locations/backup-originals-2026-10-04/`. Source records, prompts, generated
+`art-archive/ww2/locations/backup-originals-2026-10-04/`. Source records, prompts, generated
 originals, review sheets and installation hashes are archived in
-`locations/vintage-1940s-comic-masters-2026-10-04/`. Both archive directories have
-`.gdignore`, so they are excluded from Godot imports and exports. Original
+`art-archive/ww2/locations/vintage-1940s-comic-masters-2026-10-04/`. Both are at
+the repository's root, outside the pack (moved there 2026-10-04, so the pack
+folder holds only what the game uses), and Godot never imports or exports them. Original
 attribution and licences below still apply; the Fiji adaptation is shared
 under the source's CC BY-SA 3.0 licence; Spain under CC BY-SA 4.0.
 
@@ -29,7 +30,7 @@ choices supersede the older country-identity presentation policy below.
 The original source table below continues to describe the other 83 flags
 (the State of Burma flag is no longer shown); approved card sources, attribution and licences are recorded in
 the five separate pack-credit entries and in
-`locations/vintage-1940s-comic-masters-2026-10-04/approved-card-sources.json`.
+`art-archive/ww2/locations/vintage-1940s-comic-masters-2026-10-04/approved-card-sources.json`.
 Burma adaptation: CC BY-SA 3.0; Ceylon: CC BY-SA 4.0; the other three
 reference designs are public domain. See the archived comparison and
 source README under `1939-proposals/`.

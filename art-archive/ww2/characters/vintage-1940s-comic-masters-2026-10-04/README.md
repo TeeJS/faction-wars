@@ -1,5 +1,10 @@
 # Character card redraws — 2026-10-04
 
+> **Moved 2026-10-04** from `packs/ww2/art/characters/` to `art-archive/ww2/characters/`, so the
+> pack folder holds only what the game uses. Below, "the parent directory" and
+> `art/characters/` mean the pack's `packs/ww2/art/characters/`; `../backup-originals-2026-10-04/`
+> still sits beside this folder.
+
 All 71 Encyclopedia cards were redrawn with the built-in AI image-generation
 tool in the requested vintage 1940s comic style.
 Hitler, Himmler, Raeder and Leclerc succeeded on later neutral historical edits. Their original image-tool rejections remain in `generation-failures.json` for audit; the successful outputs and assembly records are in `*-redraw.json`. The four selected portraits were checked for Nazi symbols.
@@ -27,7 +32,7 @@ Menzies uses Stewart, the man on the right of the credited 1914 source photograp
 ## Attribution and licence
 
 The historical photographs, authors, attribution and licence URLs are recorded
-in `../../PORTRAITS.md`, `../../../credits.json` and each generation record. The
+in `packs/ww2/art/PORTRAITS.md`, `packs/ww2/credits.json` and each generation record. The
 comic cards are adaptations of those credited sources. CC BY and CC BY-SA
 attribution remains in force; CC BY-SA adaptations are distributed under the
 same listed source licence. Source public-domain status is not a new claim about

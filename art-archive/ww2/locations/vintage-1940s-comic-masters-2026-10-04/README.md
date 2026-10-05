@@ -1,5 +1,10 @@
 # WWII flag comic cards — 2026-10-04
 
+> **Moved 2026-10-04** from `packs/ww2/art/locations/` to `art-archive/ww2/locations/`, so the
+> pack folder holds only what the game uses. Below, "the parent directory" and
+> `art/locations/` mean the pack's `packs/ww2/art/locations/`; `../backup-originals-2026-10-04/`
+> still sits beside this folder.
+
 - All 88 cards installed: 83 style-only cards from 67 distinct flags, plus five approved 1939 replacements.
 - 88 originals backed up under ../backup-originals-2026-10-04 with SHA-256 manifest.
 - game-size/: installed 400x200 copies. Root PNGs: 1600x800 masters.

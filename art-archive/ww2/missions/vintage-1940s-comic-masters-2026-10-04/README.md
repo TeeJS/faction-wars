@@ -1,5 +1,10 @@
 # WWII mission vintage 1940s comic style redraws
 
+> **Moved 2026-10-04** from `packs/ww2/art/missions/` to `art-archive/ww2/missions/`, so the
+> pack folder holds only what the game uses. Below, "the parent directory" and
+> `art/missions/` mean the pack's `packs/ww2/art/missions/`; `../backup-originals-2026-10-04/`
+> still sits beside this folder.
+
 Created 2026-10-04 with built-in image_gen at the user's request, following the approved WWII facility redraw direction. All 14 PNGs directly in art/missions were backed up, redrawn in vintage 1940s comic style, and replaced at their existing 400 x 200 size. Construction Battalion is the shared style reference.
 
 - Original PNGs: ../backup-originals-2026-10-04/ (SHA-256 manifest.json).
