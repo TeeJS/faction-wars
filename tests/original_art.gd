@@ -52,8 +52,8 @@ func _init() -> void:
 	# Nothing in the overlay: the engine's own art.
 	Art.Reset()
 	var before: Dictionary = await _corners_for(ui, home)
-	_check(before.has("manufacturing") and (before["manufacturing"] as Button).icon.resource_path.begins_with("res://assets/icons/"),
-		"without an overlay the manufacturing corner shows the engine's glyph")
+	_check(before.has("manufacturing") and _own_glyph(before["manufacturing"] as Button),
+		"without an overlay the manufacturing corner shows the engine's glyph (or the pack look's own)")
 	_check(Art.CornerIcon("manufacturing", side) == null, "Artwork.CornerIcon is null without a file")
 
 	# Write two test pictures where an imported art set lives.
@@ -105,11 +105,19 @@ func _init() -> void:
 	_remove(Art.UserArtRoot)
 	Art.Reset()
 	var gone: Dictionary = await _corners_for(ui, home)
-	_check(gone.has("manufacturing") and (gone["manufacturing"] as Button).icon.resource_path.begins_with("res://assets/icons/"),
-		"with the files removed the engine's glyph is back")
+	_check(gone.has("manufacturing") and _own_glyph(gone["manufacturing"] as Button),
+		"with the files removed the engine's glyph (or the pack look's own) is back")
 
 	print("[original_art] %d checks, %d failed" % [_checks, _fails])
 	quit(1 if _fails > 0 else 0)
+
+
+## The corner's picture is not from an art set: the engine's glyph, or the
+## pack look's own icon (WWII's packs/ww2/look/icons, since the look of
+## 2026-09-29).
+static func _own_glyph(btn: Button) -> bool:
+	var path: String = btn.icon.resource_path if btn != null and btn.icon != null else ""
+	return path.begins_with("res://assets/icons/") or path.begins_with("res://packs/%s/look/icons/" % FactionRegistry.LoadedId())
 
 
 static func _remove(path: String) -> void:
