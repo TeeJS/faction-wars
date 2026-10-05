@@ -76,481 +76,481 @@
   "characters": [
     {
       "id": "mon_mothma",
-      "new_id": "sera_valcourt",
+      "new_id": "mona_mothwell",
       "from": "Mon Mothma",
-      "to": "Sera Valcourt",
+      "to": "Mona Mothwell",
       "side": "alliance",
       "string_id": 10304
     },
     {
       "id": "leia_organa",
-      "new_id": "maren_solace",
+      "new_id": "leah_organza",
       "from": "Leia Organa",
-      "to": "Maren Solace",
+      "to": "Leah Organza",
       "side": "alliance",
       "string_id": 10305
     },
     {
       "id": "luke_skywalker",
-      "new_id": "corin_ashford",
+      "new_id": "lucas_starrunner",
       "from": "Luke Skywalker",
-      "to": "Corin Ashford",
+      "to": "Lucas Starrunner",
       "side": "alliance",
       "string_id": 10306
     },
     {
       "id": "han_solo",
-      "new_id": "jace_rennick",
+      "new_id": "hank_lonestar",
       "from": "Han Solo",
-      "to": "Jace Rennick",
+      "to": "Hank Lonestar",
       "side": "alliance",
       "string_id": 10307
     },
     {
       "id": "emperor_palpatine",
-      "new_id": "emperor_malvorn",
+      "new_id": "emperor_pallidine",
       "from": "Emperor Palpatine",
-      "to": "Emperor Malvorn",
+      "to": "Emperor Pallidine",
       "side": "empire",
       "string_id": 10368
     },
     {
       "id": "darth_vader",
-      "new_id": "lord_sarvex",
+      "new_id": "lord_darrow_vater",
       "from": "Darth Vader",
-      "to": "Lord Sarvex",
+      "to": "Lord Darrow Vater",
       "side": "empire",
       "string_id": 10369
     },
     {
       "id": "ackbar",
-      "new_id": "gorrund",
+      "new_id": "ackfin",
       "from": "Ackbar",
-      "to": "Gorrund",
+      "to": "Ackfin",
       "side": "alliance",
       "string_id": 10816
     },
     {
       "id": "wedge_antilles",
-      "new_id": "tobin_hale",
+      "new_id": "shim_antillon",
       "from": "Wedge Antilles",
-      "to": "Tobin Hale",
+      "to": "Shim Antillon",
       "side": "alliance",
       "string_id": 10817
     },
     {
       "id": "lando_calrissian",
-      "new_id": "rafe_moraine",
+      "new_id": "landry_calypso",
       "from": "Lando Calrissian",
-      "to": "Rafe Moraine",
+      "to": "Landry Calypso",
       "side": "alliance",
       "string_id": 10818
     },
     {
       "id": "chewbacca",
-      "new_id": "grothmar",
+      "new_id": "chewbark",
       "from": "Chewbacca",
-      "to": "Grothmar",
+      "to": "Chewbark",
       "side": "alliance",
       "string_id": 10819
     },
     {
       "id": "jan_dodonna",
-      "new_id": "edric_vael",
+      "new_id": "jann_doddridge",
       "from": "Jan Dodonna",
-      "to": "Edric Vael",
+      "to": "Jann Doddridge",
       "side": "alliance",
       "string_id": 10820
     },
     {
       "id": "crix_madine",
-      "new_id": "brannoc_teague",
+      "new_id": "crick_madison",
       "from": "Crix Madine",
-      "to": "Brannoc Teague",
+      "to": "Crick Madison",
       "side": "alliance",
       "string_id": 10821
     },
     {
       "id": "carlist_rieekan",
-      "new_id": "halden_roarke",
+      "new_id": "carlisle_riekhart",
       "from": "Carlist Rieekan",
-      "to": "Halden Roarke",
+      "to": "Carlisle Riekhart",
       "side": "alliance",
       "string_id": 10822
     },
     {
       "id": "afyon",
-      "new_id": "ossrik",
+      "new_id": "afwyn",
       "from": "Afyon",
-      "to": "Ossrik",
+      "to": "Afwyn",
       "side": "alliance",
       "string_id": 10823
     },
     {
       "id": "drayson",
-      "new_id": "kellam",
+      "new_id": "draycott",
       "from": "Drayson",
-      "to": "Kellam",
+      "to": "Draycott",
       "side": "alliance",
       "string_id": 10824
     },
     {
       "id": "borsk_fey_lya",
-      "new_id": "vresh_talmar",
+      "new_id": "brusk_faylor",
       "from": "Borsk Fey'lya",
-      "to": "Vresh Tal'mar",
+      "to": "Brusk Fay'lor",
       "side": "alliance",
       "string_id": 10825
     },
     {
       "id": "tura_raftican",
-      "new_id": "nyla_corvane",
+      "new_id": "tula_rafferty",
       "from": "Tura Raftican",
-      "to": "Nyla Corvane",
+      "to": "Tula Rafferty",
       "side": "alliance",
       "string_id": 10826
     },
     {
       "id": "bren_derlin",
-      "new_id": "brask_holloway",
+      "new_id": "brent_derling",
       "from": "Bren Derlin",
-      "to": "Brask Holloway",
+      "to": "Brent Derling",
       "side": "alliance",
       "string_id": 10827
     },
     {
       "id": "garm_bel_iblis",
-      "new_id": "davian_strell",
+      "new_id": "garth_bel_ibbis",
       "from": "Garm Bel Iblis",
-      "to": "Davian Strell",
+      "to": "Garth Bel Ibbis",
       "side": "alliance",
       "string_id": 10828
     },
     {
       "id": "talon_karrde",
-      "new_id": "silas_varr",
+      "new_id": "talin_cardigan",
       "from": "Talon Karrde",
-      "to": "Silas Varr",
+      "to": "Talin Cardigan",
       "side": "alliance",
       "string_id": 10829
     },
     {
       "id": "narra",
-      "new_id": "vesk",
+      "new_id": "narrell",
       "from": "Narra",
-      "to": "Vesk",
+      "to": "Narrell",
       "side": "alliance",
       "string_id": 10830
     },
     {
       "id": "huoba_neva",
-      "new_id": "pellu_nask",
+      "new_id": "huba_nova",
       "from": "Huoba Neva",
-      "to": "Pellu Nask",
+      "to": "Huba Nova",
       "side": "alliance",
       "string_id": 10831
     },
     {
       "id": "page",
-      "new_id": "stroud",
+      "new_id": "pagett",
       "from": "Page",
-      "to": "Stroud",
+      "to": "Pagett",
       "side": "alliance",
       "string_id": 10832
     },
     {
       "id": "syub_snunb",
-      "new_id": "tibbik_wuun",
+      "new_id": "syb_snubble",
       "from": "Syub Snunb",
-      "to": "Tibbik Wuun",
+      "to": "Syb Snubble",
       "side": "alliance",
       "string_id": 10833
     },
     {
       "id": "adar_tallon",
-      "new_id": "orin_castell",
+      "new_id": "adair_tallow",
       "from": "Adar Tallon",
-      "to": "Orin Castell",
+      "to": "Adair Tallow",
       "side": "alliance",
       "string_id": 10834
     },
     {
       "id": "sarin_virgilio",
-      "new_id": "teodor_vasque",
+      "new_id": "sorin_virgil",
       "from": "Sarin Virgilio",
-      "to": "Teodor Vasque",
+      "to": "Sorin Virgil",
       "side": "alliance",
       "string_id": 10835
     },
     {
       "id": "vanden_willard",
-      "new_id": "corwin_ashe",
+      "new_id": "vandin_willoughby",
       "from": "Vanden Willard",
-      "to": "Corwin Ashe",
+      "to": "Vandin Willoughby",
       "side": "alliance",
       "string_id": 10836
     },
     {
       "id": "roget_jiriss",
-      "new_id": "ansel_drevik",
+      "new_id": "roger_jarris",
       "from": "Roget Jiriss",
-      "to": "Ansel Drevik",
+      "to": "Roger Jarris",
       "side": "alliance",
       "string_id": 10837
     },
     {
       "id": "kaiya_andrimetrum",
-      "new_id": "mira_calloway",
+      "new_id": "kaia_andromede",
       "from": "Kaiya Andrimetrum",
-      "to": "Mira Calloway",
+      "to": "Kaia Andromede",
       "side": "alliance",
       "string_id": 10838
     },
     {
       "id": "mazer_rackus",
-      "new_id": "tarn_velloc",
+      "new_id": "maser_ruckus",
       "from": "Mazer Rackus",
-      "to": "Tarn Velloc",
+      "to": "Maser Ruckus",
       "side": "alliance",
       "string_id": 10839
     },
     {
       "id": "orrimaarko",
-      "new_id": "ussrigal",
+      "new_id": "orri_markov",
       "from": "Orrimaarko",
-      "to": "Ussrigal",
+      "to": "Orri Markov",
       "side": "alliance",
       "string_id": 10840
     },
     {
       "id": "ma_w_shiye",
-      "new_id": "tsaven",
+      "new_id": "mawshyne",
       "from": "Ma'w'shiye",
-      "to": "Tsa'ven",
+      "to": "Maw'shyne",
       "side": "alliance",
       "string_id": 10841
     },
     {
       "id": "jerjerrod",
-      "new_id": "halvric",
+      "new_id": "jerjarrow",
       "from": "Jerjerrod",
-      "to": "Halvric",
+      "to": "Jerjarrow",
       "side": "empire",
       "string_id": 10880
     },
     {
       "id": "ozzel",
-      "new_id": "dravel",
+      "new_id": "ozwell",
       "from": "Ozzel",
-      "to": "Dravel",
+      "to": "Ozwell",
       "side": "empire",
       "string_id": 10881
     },
     {
       "id": "piett",
-      "new_id": "ostrum",
+      "new_id": "pyatt",
       "from": "Piett",
-      "to": "Ostrum",
+      "to": "Pyatt",
       "side": "empire",
       "string_id": 10882
     },
     {
       "id": "veers",
-      "new_id": "kortland",
+      "new_id": "veerson",
       "from": "Veers",
-      "to": "Kortland",
+      "to": "Veerson",
       "side": "empire",
       "string_id": 10883
     },
     {
       "id": "brandei",
-      "new_id": "vessick",
+      "new_id": "brandine",
       "from": "Brandei",
-      "to": "Vessick",
+      "to": "Brandine",
       "side": "empire",
       "string_id": 10884
     },
     {
       "id": "covell",
-      "new_id": "malkin",
+      "new_id": "covington",
       "from": "Covell",
-      "to": "Malkin",
+      "to": "Covington",
       "side": "empire",
       "string_id": 10885
     },
     {
       "id": "dorja",
-      "new_id": "ardrin",
+      "new_id": "dorjan",
       "from": "Dorja",
-      "to": "Ardrin",
+      "to": "Dorjan",
       "side": "empire",
       "string_id": 10886
     },
     {
       "id": "bin_essada",
-      "new_id": "coll_varek",
+      "new_id": "ben_essador",
       "from": "Bin Essada",
-      "to": "Coll Varek",
+      "to": "Ben Essador",
       "side": "empire",
       "string_id": 10887
     },
     {
       "id": "niles_ferrier",
-      "new_id": "dorran_pike",
+      "new_id": "miles_farrier",
       "from": "Niles Ferrier",
-      "to": "Dorran Pike",
+      "to": "Miles Farrier",
       "side": "empire",
       "string_id": 10888
     },
     {
       "id": "grammel",
-      "new_id": "grisk",
+      "new_id": "grummel",
       "from": "Grammel",
-      "to": "Grisk",
+      "to": "Grummel",
       "side": "empire",
       "string_id": 10889
     },
     {
       "id": "griff",
-      "new_id": "hesk",
+      "new_id": "griffin",
       "from": "Griff",
-      "to": "Hesk",
+      "to": "Griffin",
       "side": "empire",
       "string_id": 10890
     },
     {
       "id": "klev",
-      "new_id": "klavik",
+      "new_id": "klevin",
       "from": "Klev",
-      "to": "Klavik",
+      "to": "Klevin",
       "side": "empire",
       "string_id": 10891
     },
     {
       "id": "needa",
-      "new_id": "selvin",
+      "new_id": "needham",
       "from": "Needa",
-      "to": "Selvin",
+      "to": "Needham",
       "side": "empire",
       "string_id": 10892
     },
     {
       "id": "bane_nothos",
-      "new_id": "cael_morrick",
+      "new_id": "bain_nothor",
       "from": "Bane Nothos",
-      "to": "Cael Morrick",
+      "to": "Bain Nothor",
       "side": "empire",
       "string_id": 10893
     },
     {
       "id": "orlok",
-      "new_id": "varnok",
+      "new_id": "orlak",
       "from": "Orlok",
-      "to": "Varnok",
+      "to": "Orlak",
       "side": "empire",
       "string_id": 10894
     },
     {
       "id": "pellaeon",
-      "new_id": "aldenor",
+      "new_id": "pellion",
       "from": "Pellaeon",
-      "to": "Aldenor",
+      "to": "Pellion",
       "side": "empire",
       "string_id": 10895
     },
     {
       "id": "screed",
-      "new_id": "kragg",
+      "new_id": "screel",
       "from": "Screed",
-      "to": "Kragg",
+      "to": "Screel",
       "side": "empire",
       "string_id": 10896
     },
     {
       "id": "thrawn",
-      "new_id": "ixaran",
+      "new_id": "thrawl",
       "from": "Thrawn",
-      "to": "Ixaran",
+      "to": "Thrawl",
       "side": "empire",
       "string_id": 10897
     },
     {
       "id": "zuggs",
-      "new_id": "brugg",
+      "new_id": "zaggs",
       "from": "Zuggs",
-      "to": "Brugg",
+      "to": "Zaggs",
       "side": "empire",
       "string_id": 10898
     },
     {
       "id": "daala",
-      "new_id": "sevrine",
+      "new_id": "dahlia",
       "from": "Daala",
-      "to": "Sevrine",
+      "to": "Dahlia",
       "side": "empire",
       "string_id": 10899
     },
     {
       "id": "pter_thanas",
-      "new_id": "joss_venner",
+      "new_id": "peter_thanet",
       "from": "Pter Thanas",
-      "to": "Joss Venner",
+      "to": "Peter Thanet",
       "side": "empire",
       "string_id": 10900
     },
     {
       "id": "bevel_lemelisk",
-      "new_id": "ottar_grimsby",
+      "new_id": "chamfer_lemelin",
       "from": "Bevel Lemelisk",
-      "to": "Ottar Grimsby",
+      "to": "Chamfer Lemelin",
       "side": "empire",
       "string_id": 10901
     },
     {
       "id": "shenir_rix",
-      "new_id": "shael_ruskin",
+      "new_id": "shenna_ricks",
       "from": "Shenir Rix",
-      "to": "Shael Ruskin",
+      "to": "Shenna Ricks",
       "side": "empire",
       "string_id": 10902
     },
     {
       "id": "noval_garaint",
-      "new_id": "davor_kessix",
+      "new_id": "novel_garrant",
       "from": "Noval Garaint",
-      "to": "Davor Kessix",
+      "to": "Novel Garrant",
       "side": "empire",
       "string_id": 10903
     },
     {
       "id": "garindan",
-      "new_id": "sniv",
+      "new_id": "garrigan",
       "from": "Garindan",
-      "to": "Sniv",
+      "to": "Garrigan",
       "side": "empire",
       "string_id": 10904
     },
     {
       "id": "menndo",
-      "new_id": "vorko",
+      "new_id": "menndez",
       "from": "Menndo",
-      "to": "Vorko",
+      "to": "Menndez",
       "side": "empire",
       "string_id": 10905
     },
     {
       "id": "labansat",
-      "new_id": "malbek",
+      "new_id": "laban_sato",
       "from": "Labansat",
-      "to": "Malbek",
+      "to": "Laban Sato",
       "side": "empire",
       "string_id": 10906
     },
     {
       "id": "villar",
-      "new_id": "venric",
+      "new_id": "villiers",
       "from": "Villar",
-      "to": "Venric",
+      "to": "Villiers",
       "side": "empire",
       "string_id": 10907
     }
@@ -2694,27 +2694,27 @@
     },
     {
       "from": "Skywalker",
-      "to": "Ashford",
+      "to": "Starrunner",
       "note": "\"the Skywalker family\": Luke's new surname"
     },
     {
       "from": "Luke",
-      "to": "Corin",
+      "to": "Lucas",
       "note": "first name alone"
     },
     {
       "from": "Leia",
-      "to": "Maren",
+      "to": "Leah",
       "note": "first name alone"
     },
     {
       "from": "Han",
-      "to": "Jace",
+      "to": "Hank",
       "note": "first name alone"
     },
     {
       "from": "Vader",
-      "to": "Sarvex",
+      "to": "Vater",
       "note": "name alone"
     },
     {
@@ -2831,14 +2831,14 @@
       "at": ".briefing.alliance.views.7.caption",
       "kind": "player",
       "from": "Mon Mothma",
-      "to": "Sera Valcourt"
+      "to": "Mona Mothwell"
     },
     {
       "file": "packs/star-wars-rebellion/pack.json",
       "at": ".briefing.alliance.views.19.caption",
       "kind": "player",
       "from": "Luke Skywalker",
-      "to": "Corin Ashford"
+      "to": "Lucas Starrunner"
     },
     {
       "file": "packs/star-wars-rebellion/pack.json",
@@ -2866,14 +2866,14 @@
       "at": ".briefing.empire.views.7.caption",
       "kind": "player",
       "from": "Emperor Palpatine",
-      "to": "Emperor Malvorn"
+      "to": "Emperor Pallidine"
     },
     {
       "file": "packs/star-wars-rebellion/pack.json",
       "at": ".briefing.empire.views.19.caption",
       "kind": "player",
       "from": "Darth Vader",
-      "to": "Lord Sarvex"
+      "to": "Lord Darrow Vater"
     },
     {
       "file": "packs/star-wars-rebellion/pack.json",
@@ -2887,7 +2887,7 @@
       "at": ".victory_tips.standard",
       "kind": "player",
       "from": "Rebel Win Conditions: Capture Coruscant and capture Emperor Palpatine and Darth Vader.\nImperial Win Conditions: Destroy the Rebel headquarters and capture President Mon Mothma and Luke Skywalker.",
-      "to": "Rebel Win Conditions: Capture Nuvandor and capture Emperor Malvorn and Lord Sarvex.\nImperial Win Conditions: Destroy the Rebel headquarters and capture President Sera Valcourt and Corin Ashford."
+      "to": "Rebel Win Conditions: Capture Nuvandor and capture Emperor Pallidine and Lord Darrow Vater.\nImperial Win Conditions: Destroy the Rebel headquarters and capture President Mona Mothwell and Lucas Starrunner."
     },
     {
       "file": "packs/star-wars-rebellion/pack.json",
@@ -2950,28 +2950,28 @@
       "at": "[48].Name",
       "kind": "editor",
       "from": "Luke vs Vader: Force Gain Scale (%)",
-      "to": "Corin vs Sarvex: Aether Gain Scale (%)"
+      "to": "Lucas vs Vater: Aether Gain Scale (%)"
     },
     {
       "file": "packs/star-wars-rebellion/rules.json",
       "at": "[49].Name",
       "kind": "editor",
       "from": "Luke vs Emperor: Force Gain Scale (%)",
-      "to": "Corin vs Emperor: Aether Gain Scale (%)"
+      "to": "Lucas vs Emperor: Aether Gain Scale (%)"
     },
     {
       "file": "packs/star-wars-rebellion/rules.json",
       "at": "[50].Name",
       "kind": "editor",
       "from": "Leia vs Vader: Force Gain Scale (%)",
-      "to": "Maren vs Sarvex: Aether Gain Scale (%)"
+      "to": "Leah vs Vater: Aether Gain Scale (%)"
     },
     {
       "file": "packs/star-wars-rebellion/rules.json",
       "at": "[51].Name",
       "kind": "editor",
       "from": "Leia vs Emperor: Force Gain Scale (%)",
-      "to": "Maren vs Emperor: Aether Gain Scale (%)"
+      "to": "Leah vs Emperor: Aether Gain Scale (%)"
     },
     {
       "file": "packs/star-wars-rebellion/rules.json",
@@ -2985,77 +2985,77 @@
       "at": "[53].Name",
       "kind": "editor",
       "from": "Luke Dagobah Completion: Injury Force Rank Ceiling",
-      "to": "Corin Vorlathe Completion: Injury Aether Rank Ceiling"
+      "to": "Lucas Vorlathe Completion: Injury Aether Rank Ceiling"
     },
     {
       "file": "packs/star-wars-rebellion/rules.json",
       "at": "[54].Name",
       "kind": "editor",
       "from": "Luke Knows Heritage: Force Rank Threshold",
-      "to": "Corin Knows Heritage: Aether Rank Threshold"
+      "to": "Lucas Knows Heritage: Aether Rank Threshold"
     },
     {
       "file": "packs/star-wars-rebellion/rules.json",
       "at": "[55].Name",
       "kind": "editor",
       "from": "Luke Dagobah Completion: Injury Base Amount",
-      "to": "Corin Vorlathe Completion: Injury Base Amount"
+      "to": "Lucas Vorlathe Completion: Injury Base Amount"
     },
     {
       "file": "packs/star-wars-rebellion/rules.json",
       "at": "[56].Name",
       "kind": "editor",
       "from": "Luke Dagobah Completion: Injury Random Spread",
-      "to": "Corin Vorlathe Completion: Injury Random Spread"
+      "to": "Lucas Vorlathe Completion: Injury Random Spread"
     },
     {
       "file": "packs/star-wars-rebellion/rules.json",
       "at": "[57].Name",
       "kind": "editor",
       "from": "Luke Ordinary Mission: Force Reward",
-      "to": "Corin Ordinary Mission: Aether Reward"
+      "to": "Lucas Ordinary Mission: Aether Reward"
     },
     {
       "file": "packs/star-wars-rebellion/rules.json",
       "at": "[58].Name",
       "kind": "editor",
       "from": "Leia Ordinary Mission: Force Reward",
-      "to": "Maren Ordinary Mission: Aether Reward"
+      "to": "Leah Ordinary Mission: Aether Reward"
     },
     {
       "file": "packs/star-wars-rebellion/rules.json",
       "at": "[59].Name",
       "kind": "editor",
       "from": "Space Travel Time: Han Solo (%, lower=faster)",
-      "to": "Space Travel Time: Jace Rennick (%, lower=faster)"
+      "to": "Space Travel Time: Hank Lonestar (%, lower=faster)"
     },
     {
       "file": "packs/star-wars-rebellion/rules.json",
       "at": "[60].Name",
       "kind": "editor",
       "from": "Luke vs Vader: Force Gain Min",
-      "to": "Corin vs Sarvex: Aether Gain Min"
+      "to": "Lucas vs Vater: Aether Gain Min"
     },
     {
       "file": "packs/star-wars-rebellion/rules.json",
       "at": "[61].Name",
       "kind": "editor",
       "from": "Luke vs Emperor: Force Gain Min",
-      "to": "Corin vs Emperor: Aether Gain Min"
+      "to": "Lucas vs Emperor: Aether Gain Min"
     },
     {
       "file": "packs/star-wars-rebellion/rules.json",
       "at": "[62].Name",
       "kind": "editor",
       "from": "Leia vs Vader: Force Gain Min (After Heritage)",
-      "to": "Maren vs Sarvex: Aether Gain Min (After Heritage)"
+      "to": "Leah vs Vater: Aether Gain Min (After Heritage)"
     },
     {
       "file": "packs/star-wars-rebellion/rules.json",
       "at": "[63].Name",
       "kind": "editor",
       "from": "Leia vs Emperor: Force Gain Min (After Heritage)",
-      "to": "Maren vs Emperor: Aether Gain Min (After Heritage)"
+      "to": "Leah vs Emperor: Aether Gain Min (After Heritage)"
     },
     {
       "file": "packs/star-wars-rebellion/rules.json",
@@ -3160,42 +3160,42 @@
       "at": "[100].Name",
       "kind": "editor",
       "from": "Luke goes to Dagobah: Base (days)",
-      "to": "Corin goes to Vorlathe: Base (days)"
+      "to": "Lucas goes to Vorlathe: Base (days)"
     },
     {
       "file": "packs/star-wars-rebellion/rules.json",
       "at": "[101].Name",
       "kind": "editor",
       "from": "Luke goes to Dagobah: Max Random Extra (days)",
-      "to": "Corin goes to Vorlathe: Max Random Extra (days)"
+      "to": "Lucas goes to Vorlathe: Max Random Extra (days)"
     },
     {
       "file": "packs/star-wars-rebellion/rules.json",
       "at": "[104].Name",
       "kind": "editor",
       "from": "Mission Manager: Bounty Hunter Han Intervention Chance",
-      "to": "Mission Manager: Bounty Hunter Jace Intervention Chance"
+      "to": "Mission Manager: Bounty Hunter Hank Intervention Chance"
     },
     {
       "file": "packs/star-wars-rebellion/rules.json",
       "at": "[105].Name",
       "kind": "editor",
       "from": "Story Selector: Luke Low Rank Fallback Threshold",
-      "to": "Story Selector: Corin Low Rank Fallback Threshold"
+      "to": "Story Selector: Lucas Low Rank Fallback Threshold"
     },
     {
       "file": "packs/star-wars-rebellion/rules.json",
       "at": "[106].Name",
       "kind": "editor",
       "from": "Luke Low Rank Story Fallback: Injury Base Amount",
-      "to": "Corin Low Rank Story Fallback: Injury Base Amount"
+      "to": "Lucas Low Rank Story Fallback: Injury Base Amount"
     },
     {
       "file": "packs/star-wars-rebellion/rules.json",
       "at": "[107].Name",
       "kind": "editor",
       "from": "Luke Low Rank Story Fallback: Injury Random Spread",
-      "to": "Corin Low Rank Story Fallback: Injury Random Spread"
+      "to": "Lucas Low Rank Story Fallback: Injury Random Spread"
     },
     {
       "file": "packs/star-wars-rebellion/rules.json",
@@ -3356,7 +3356,7 @@
       "at": 149,
       "kind": "player",
       "from": "My heritage as a member of the Skywalker family has given me the ability to use the Force, as it has my brother and father.",
-      "to": "My heritage as a member of the Ashford family has given me the ability to use the Aether, as it has my brother and father."
+      "to": "My heritage as a member of the Starrunner family has given me the ability to use the Aether, as it has my brother and father."
     },
     {
       "file": "src/game/force_manager.gd",
@@ -3489,14 +3489,14 @@
       "at": 304,
       "kind": "log",
       "from": "Luke loses",
-      "to": "Corin loses"
+      "to": "Lucas loses"
     },
     {
       "file": "src/game/story_manager.gd",
       "at": 355,
       "kind": "player",
       "from": "Vader",
-      "to": "Sarvex"
+      "to": "Vater"
     },
     {
       "file": "src/game/terms.gd",

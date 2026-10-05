@@ -51,7 +51,10 @@ source file. `kind` is one of the following:
 - **Five names from that list were left out** because they are too close to
   another franchise (listed under `planet_names_left_out`): Sylvaneth, Izkandar,
   Fjordell, Lorkhaan and Elvandor.
-- **Characters, ships and terms** are drafts. Ships and troops named after a
+- **Characters** each hint at the original, by sound or by meaning, so a
+  player can guess who each one is without the original name being used.
+  TeeJ's example: Luke Skywalker → Lucas Starrunner (2026-10-04).
+- **Ships and terms** are drafts. Ships and troops named after a
   planet take that planet's new name, the way the Mon Calamari Cruiser takes
   Mon Calamari's: Corellia's corvette and gunship, Mon Calamari's cruiser and
   regiment, Sullust's and Kashyyyk's regiments, and Bothawui's spies.
