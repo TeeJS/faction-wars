@@ -395,6 +395,12 @@ static func _make_pack(root: String, id: String, display_name: String, version: 
 			if not version.is_empty():
 				d["version"] = version
 			text = JSON.stringify(d)
+		elif f == "display.json":
+			# Its corner icons are files of the WWII pack this copy leaves
+			# behind (rule 17); without them the engine's own are drawn.
+			var d: Dictionary = JSON.parse_string(text)
+			d.erase("icons")
+			text = JSON.stringify(d)
 		var w := FileAccess.open(dir + "/" + f, FileAccess.WRITE)
 		w.store_string(text)
 		w.close()
