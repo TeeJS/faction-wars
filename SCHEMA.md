@@ -31,10 +31,6 @@ it on. Most packs start **from the original**, for the player's own use:
    player's **own** art set, exported from their copy of the game (§14). Your
    own pictures - any you choose, the original's included; it is your mod -
    go in the pack's `art/` folder and win over the art set's.
-   **For a setting of your own with nothing of the original's look, copy
-   `packs/base-template/` instead** (2026-10-08): the same rules and every
-   name, no art set, one plain black map backdrop, and all of the engine's
-   `terms` written out to rename (its `PACK.md`).
 3. **Change what you like** - the rest of this document is every field. A key
    starting with `_` (`"_comment"`) is yours: it is never read as data, anywhere.
 4. **Load it.** Export the pack as a `.zip` (the editor's *Export*) and drag it

@@ -225,11 +225,9 @@ func _init() -> void:
 			await process_frame
 		_check(not picker.PlayButtons().has("test-picker-pack"), "... and the pack and its card are gone")
 
-	# THE CAROUSEL AND THE FAVORITES (TeeJ, 2026-09-24). Everything fits only
-	# with two packs and the + card; more than two ship (base-template,
-	# 2026-10-08), so this is the picker built on two of them.
+	# THE CAROUSEL AND THE FAVORITES (TeeJ, 2026-09-24).
 	picker._start = 0
-	_rebuild_on(picker, ["star-wars-rebellion", "ww2"])
+	picker._rebuild()
 	var shown := picker.VisibleIds()
 	_check(shown.size() == 3 and shown.back() == PackPicker.ADD_CARD and picker._left.visible and picker._left.disabled and picker._right.disabled,
 		"two packs and the + card fit: all on show, the arrows there but dimmed (%s)" % str(shown))
@@ -259,12 +257,7 @@ func _init() -> void:
 		_make_pack(FactionRegistry.USER_PACKS_ROOT, "test-carousel-%d" % k, "Carousel %d" % k)
 	picker._rebuild()
 	var order: Array[String] = picker._order
-	var want: Array[String] = []
-	for id in FactionRegistry.ListPackIds():
-		if not PackPicker._is_imported(id):
-			want.append(id)
-	want.append_array(["test-carousel-0", "test-carousel-1", "test-carousel-2", PackPicker.ADD_CARD])
-	_check(want.size() > 6 and order == want,
+	_check(order.size() == 6 and order[0] == "star-wars-rebellion" and order[1] == "ww2" and order[2] == "test-carousel-0" and order[5] == PackPicker.ADD_CARD,
 		"with no favorites: the shipped packs, the player's own, then + (%s)" % str(order))
 	_check(picker.VisibleIds() == order.slice(0, 3) and not picker._left.disabled and not picker._right.disabled and picker._dots.visible,
 		"three on show, the arrows live, the dots showing (%s)" % str(picker.VisibleIds()))
@@ -273,7 +266,7 @@ func _init() -> void:
 	_check(picker.VisibleIds() == order.slice(1, 4), "the right arrow turns it one card (%s)" % str(picker.VisibleIds()))
 	picker.Turn(-1)
 	picker.Turn(-1)
-	_check(picker.VisibleIds() == [order.back(), order[0], order[1]], "turning left from the first wraps round to the + card (%s)" % str(picker.VisibleIds()))
+	_check(picker.VisibleIds() == [order[5], order[0], order[1]], "turning left from the first wraps round to the + card (%s)" % str(picker.VisibleIds()))
 	var key := InputEventKey.new()
 	key.keycode = KEY_RIGHT
 	key.pressed = true
@@ -367,20 +360,6 @@ func _init() -> void:
 	quit(1 if _fails > 0 else 0)
 
 
-## The picker rebuilt as PackPicker._rebuild does, on `ids` alone: the
-## carousel with fewer packs than the game ships.
-static func _rebuild_on(picker: PackPicker, ids: Array[String]) -> void:
-	picker._close_art_window()
-	for c in picker.get_children():
-		picker.remove_child(c)
-		c.queue_free()
-	picker._play.clear()
-	picker._packs.clear()
-	picker._panels.clear()
-	picker._order.clear()
-	picker._build(ids)
-
-
 ## A copy of the WWII pack under `root`, as a player's import.
 static func _make_pack(root: String, id: String, display_name: String, version: String = "") -> void:
 	var dir := "%s/%s" % [root, id]
@@ -394,12 +373,6 @@ static func _make_pack(root: String, id: String, display_name: String, version: 
 			d["map_image"] = "ww2map.png"
 			if not version.is_empty():
 				d["version"] = version
-			text = JSON.stringify(d)
-		elif f == "display.json":
-			# Its corner icons are files of the WWII pack this copy leaves
-			# behind (rule 17); without them the engine's own are drawn.
-			var d: Dictionary = JSON.parse_string(text)
-			d.erase("icons")
 			text = JSON.stringify(d)
 		var w := FileAccess.open(dir + "/" + f, FileAccess.WRITE)
 		w.store_string(text)
