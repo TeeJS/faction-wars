@@ -1,0 +1,2886 @@
+{
+  "sectors": [
+    {
+      "id": "abrion",
+      "display_name": "Abrion",
+      "ring": 2,
+      "starts_neutral": false,
+      "map": {
+        "x": 469,
+        "y": 642
+      },
+      "min_size": "huge",
+      "intel_tier": "presence",
+      "source_id": 20,
+      "string_id": 142720
+    },
+    {
+      "id": "atrivis",
+      "display_name": "Atrivis",
+      "ring": 3,
+      "starts_neutral": true,
+      "map": {
+        "x": 272,
+        "y": 96
+      },
+      "min_size": "huge",
+      "intel_tier": "presence",
+      "source_id": 21,
+      "string_id": 142721
+    },
+    {
+      "id": "churba",
+      "display_name": "Churba",
+      "ring": 2,
+      "starts_neutral": false,
+      "map": {
+        "x": 132,
+        "y": 417
+      },
+      "min_size": "standard",
+      "intel_tier": "presence",
+      "source_id": 22,
+      "string_id": 142722
+    },
+    {
+      "id": "corellian",
+      "display_name": "Corellian",
+      "ring": 1,
+      "starts_neutral": false,
+      "map": {
+        "x": 258,
+        "y": 394
+      },
+      "min_size": "standard",
+      "intel_tier": "live",
+      "source_id": 23,
+      "string_id": 142723
+    },
+    {
+      "id": "calaron",
+      "display_name": "Calaron",
+      "ring": 2,
+      "starts_neutral": false,
+      "map": {
+        "x": 380,
+        "y": 129
+      },
+      "min_size": "standard",
+      "intel_tier": "presence",
+      "source_id": 24,
+      "string_id": 142724
+    },
+    {
+      "id": "dolomar",
+      "display_name": "Dolomar",
+      "ring": 1,
+      "starts_neutral": false,
+      "map": {
+        "x": 472,
+        "y": 253
+      },
+      "min_size": "huge",
+      "intel_tier": "live",
+      "source_id": 25,
+      "string_id": 142725
+    },
+    {
+      "id": "dufilvan",
+      "display_name": "Dufilvan",
+      "ring": 2,
+      "starts_neutral": false,
+      "map": {
+        "x": 359,
+        "y": 663
+      },
+      "min_size": "standard",
+      "intel_tier": "presence",
+      "source_id": 26,
+      "string_id": 142726
+    },
+    {
+      "id": "fakir",
+      "display_name": "Fakir",
+      "ring": 1,
+      "starts_neutral": false,
+      "map": {
+        "x": 385,
+        "y": 525
+      },
+      "min_size": "huge",
+      "intel_tier": "live",
+      "source_id": 27,
+      "string_id": 142727
+    },
+    {
+      "id": "farfin",
+      "display_name": "Farfin",
+      "ring": 1,
+      "starts_neutral": false,
+      "map": {
+        "x": 587,
+        "y": 370
+      },
+      "min_size": "large",
+      "intel_tier": "live",
+      "source_id": 28,
+      "string_id": 142728
+    },
+    {
+      "id": "glythe",
+      "display_name": "Glythe",
+      "ring": 2,
+      "starts_neutral": false,
+      "map": {
+        "x": 596,
+        "y": 253
+      },
+      "min_size": "large",
+      "intel_tier": "presence",
+      "source_id": 29,
+      "string_id": 142729
+    },
+    {
+      "id": "jospro",
+      "display_name": "Jospro",
+      "ring": 3,
+      "starts_neutral": true,
+      "map": {
+        "x": 737,
+        "y": 548
+      },
+      "min_size": "large",
+      "intel_tier": "presence",
+      "source_id": 30,
+      "string_id": 142730
+    },
+    {
+      "id": "kanchen",
+      "display_name": "Kanchen",
+      "ring": 2,
+      "starts_neutral": false,
+      "map": {
+        "x": 221,
+        "y": 569
+      },
+      "min_size": "large",
+      "intel_tier": "presence",
+      "source_id": 31,
+      "string_id": 142731
+    },
+    {
+      "id": "mayagil",
+      "display_name": "Mayagil",
+      "ring": 2,
+      "starts_neutral": false,
+      "map": {
+        "x": 488,
+        "y": 129
+      },
+      "min_size": "standard",
+      "intel_tier": "presence",
+      "source_id": 32,
+      "string_id": 142732
+    },
+    {
+      "id": "moddell",
+      "display_name": "Moddell",
+      "ring": 3,
+      "starts_neutral": true,
+      "map": {
+        "x": 191,
+        "y": 148
+      },
+      "min_size": "standard",
+      "intel_tier": "presence",
+      "source_id": 33,
+      "string_id": 142733
+    },
+    {
+      "id": "orus",
+      "display_name": "Orus",
+      "ring": 3,
+      "starts_neutral": true,
+      "map": {
+        "x": 695,
+        "y": 684
+      },
+      "min_size": "standard",
+      "intel_tier": "presence",
+      "source_id": 34,
+      "string_id": 142734
+    },
+    {
+      "id": "quelli",
+      "display_name": "Quelli",
+      "ring": 3,
+      "starts_neutral": true,
+      "map": {
+        "x": 113,
+        "y": 277
+      },
+      "min_size": "large",
+      "intel_tier": "presence",
+      "source_id": 35,
+      "string_id": 142735
+    },
+    {
+      "id": "sesswenna",
+      "display_name": "Sesswenna",
+      "ring": 1,
+      "starts_neutral": false,
+      "map": {
+        "x": 317,
+        "y": 248
+      },
+      "min_size": "standard",
+      "intel_tier": "live",
+      "source_id": 36,
+      "string_id": 142736
+    },
+    {
+      "id": "sluis",
+      "display_name": "Sluis",
+      "ring": 1,
+      "starts_neutral": false,
+      "map": {
+        "x": 526,
+        "y": 532
+      },
+      "min_size": "standard",
+      "intel_tier": "live",
+      "source_id": 37,
+      "string_id": 142737
+    },
+    {
+      "id": "sumitra",
+      "display_name": "Sumitra",
+      "ring": 3,
+      "starts_neutral": true,
+      "map": {
+        "x": 717,
+        "y": 438
+      },
+      "min_size": "standard",
+      "intel_tier": "presence",
+      "source_id": 38,
+      "string_id": 142738
+    },
+    {
+      "id": "xappyh",
+      "display_name": "Xappyh",
+      "ring": 3,
+      "starts_neutral": true,
+      "map": {
+        "x": 575,
+        "y": 755
+      },
+      "min_size": "huge",
+      "intel_tier": "presence",
+      "source_id": 39,
+      "string_id": 142739
+    }
+  ],
+  "planets": [
+    {
+      "id": "abregado",
+      "display_name": "Abregado",
+      "sector": "abrion",
+      "starts_inhabited": false,
+      "map": {
+        "x": 479,
+        "y": 726
+      },
+      "artwork_id": 1,
+      "source_id": 100,
+      "string_id": 142848
+    },
+    {
+      "id": "cathar",
+      "display_name": "Cathar",
+      "sector": "abrion",
+      "starts_inhabited": false,
+      "map": {
+        "x": 503,
+        "y": 689
+      },
+      "artwork_id": 2,
+      "source_id": 101,
+      "string_id": 142849
+    },
+    {
+      "id": "da_soocha",
+      "display_name": "Da Soocha",
+      "sector": "abrion",
+      "starts_inhabited": false,
+      "map": {
+        "x": 515,
+        "y": 651
+      },
+      "artwork_id": 7,
+      "source_id": 102,
+      "string_id": 142850
+    },
+    {
+      "id": "galpos_ii",
+      "display_name": "Galpos II",
+      "sector": "abrion",
+      "starts_inhabited": false,
+      "map": {
+        "x": 503,
+        "y": 712
+      },
+      "artwork_id": 8,
+      "source_id": 103,
+      "string_id": 142851
+    },
+    {
+      "id": "garban",
+      "display_name": "Garban",
+      "sector": "abrion",
+      "starts_inhabited": false,
+      "map": {
+        "x": 525,
+        "y": 689
+      },
+      "artwork_id": 3,
+      "source_id": 104,
+      "string_id": 142852
+    },
+    {
+      "id": "hefi",
+      "display_name": "Hefi",
+      "sector": "abrion",
+      "starts_inhabited": false,
+      "map": {
+        "x": 476,
+        "y": 698
+      },
+      "artwork_id": 4,
+      "source_id": 105,
+      "string_id": 142853
+    },
+    {
+      "id": "hishyim",
+      "display_name": "Hishyim",
+      "sector": "abrion",
+      "starts_inhabited": false,
+      "map": {
+        "x": 489,
+        "y": 656
+      },
+      "artwork_id": 9,
+      "source_id": 106,
+      "string_id": 142854
+    },
+    {
+      "id": "intuci",
+      "display_name": "Intuci",
+      "sector": "abrion",
+      "starts_inhabited": false,
+      "map": {
+        "x": 528,
+        "y": 717
+      },
+      "artwork_id": 10,
+      "source_id": 107,
+      "string_id": 142855
+    },
+    {
+      "id": "tieos",
+      "display_name": "Tieos",
+      "sector": "abrion",
+      "starts_inhabited": false,
+      "map": {
+        "x": 513,
+        "y": 670
+      },
+      "artwork_id": 11,
+      "source_id": 108,
+      "string_id": 142856
+    },
+    {
+      "id": "ukio",
+      "display_name": "Ukio",
+      "sector": "abrion",
+      "starts_inhabited": false,
+      "map": {
+        "x": 477,
+        "y": 677
+      },
+      "artwork_id": 12,
+      "source_id": 109,
+      "string_id": 142857
+    },
+    {
+      "id": "despayre",
+      "display_name": "Despayre",
+      "sector": "atrivis",
+      "starts_inhabited": false,
+      "map": {
+        "x": 305,
+        "y": 159
+      },
+      "artwork_id": 5,
+      "source_id": 110,
+      "string_id": 142864
+    },
+    {
+      "id": "fedje",
+      "display_name": "Fedje",
+      "sector": "atrivis",
+      "starts_inhabited": false,
+      "map": {
+        "x": 331,
+        "y": 110
+      },
+      "artwork_id": 13,
+      "source_id": 111,
+      "string_id": 142865
+    },
+    {
+      "id": "generis",
+      "display_name": "Generis",
+      "sector": "atrivis",
+      "starts_inhabited": false,
+      "map": {
+        "x": 331,
+        "y": 143
+      },
+      "artwork_id": 11,
+      "source_id": 112,
+      "string_id": 142866
+    },
+    {
+      "id": "moltok",
+      "display_name": "Moltok",
+      "sector": "atrivis",
+      "starts_inhabited": false,
+      "map": {
+        "x": 285,
+        "y": 134
+      },
+      "artwork_id": 14,
+      "source_id": 113,
+      "string_id": 142867
+    },
+    {
+      "id": "nam_ta",
+      "display_name": "Nam'ta",
+      "sector": "atrivis",
+      "starts_inhabited": false,
+      "map": {
+        "x": 288,
+        "y": 178
+      },
+      "artwork_id": 15,
+      "source_id": 114,
+      "string_id": 142868
+    },
+    {
+      "id": "spefik",
+      "display_name": "Spefik",
+      "sector": "atrivis",
+      "starts_inhabited": false,
+      "map": {
+        "x": 315,
+        "y": 127
+      },
+      "artwork_id": 8,
+      "source_id": 115,
+      "string_id": 142869
+    },
+    {
+      "id": "tibrin",
+      "display_name": "Tibrin",
+      "sector": "atrivis",
+      "starts_inhabited": false,
+      "map": {
+        "x": 302,
+        "y": 110
+      },
+      "artwork_id": 7,
+      "source_id": 116,
+      "string_id": 142870
+    },
+    {
+      "id": "togoria",
+      "display_name": "Togoria",
+      "sector": "atrivis",
+      "starts_inhabited": false,
+      "map": {
+        "x": 277,
+        "y": 155
+      },
+      "artwork_id": 11,
+      "source_id": 117,
+      "string_id": 142871
+    },
+    {
+      "id": "trammis",
+      "display_name": "Trammis",
+      "sector": "atrivis",
+      "starts_inhabited": false,
+      "map": {
+        "x": 312,
+        "y": 180
+      },
+      "artwork_id": 6,
+      "source_id": 118,
+      "string_id": 142872
+    },
+    {
+      "id": "zeffliffl",
+      "display_name": "Zeffliffl",
+      "sector": "atrivis",
+      "starts_inhabited": false,
+      "map": {
+        "x": 282,
+        "y": 103
+      },
+      "artwork_id": 7,
+      "source_id": 119,
+      "string_id": 142873
+    },
+    {
+      "id": "akrit_tar",
+      "display_name": "Akrit'tar",
+      "sector": "calaron",
+      "starts_inhabited": false,
+      "map": {
+        "x": 385,
+        "y": 138
+      },
+      "artwork_id": 8,
+      "source_id": 120,
+      "string_id": 142880
+    },
+    {
+      "id": "f_tral",
+      "display_name": "F'tral",
+      "sector": "calaron",
+      "starts_inhabited": false,
+      "map": {
+        "x": 432,
+        "y": 209
+      },
+      "artwork_id": 7,
+      "source_id": 121,
+      "string_id": 142881
+    },
+    {
+      "id": "fwillsving",
+      "display_name": "Fwillsving",
+      "sector": "calaron",
+      "starts_inhabited": false,
+      "map": {
+        "x": 432,
+        "y": 138
+      },
+      "artwork_id": 1,
+      "source_id": 122,
+      "string_id": 142882
+    },
+    {
+      "id": "ithor",
+      "display_name": "Ithor",
+      "sector": "calaron",
+      "starts_inhabited": false,
+      "map": {
+        "x": 407,
+        "y": 162
+      },
+      "artwork_id": 13,
+      "source_id": 123,
+      "string_id": 142883
+    },
+    {
+      "id": "jerijador",
+      "display_name": "Jerijador",
+      "sector": "calaron",
+      "starts_inhabited": false,
+      "map": {
+        "x": 437,
+        "y": 180
+      },
+      "artwork_id": 2,
+      "source_id": 124,
+      "string_id": 142884
+    },
+    {
+      "id": "kessel",
+      "display_name": "Kessel",
+      "sector": "calaron",
+      "starts_inhabited": false,
+      "map": {
+        "x": 386,
+        "y": 169
+      },
+      "artwork_id": 16,
+      "source_id": 125,
+      "string_id": 142885
+    },
+    {
+      "id": "kubindi",
+      "display_name": "Kubindi",
+      "sector": "calaron",
+      "starts_inhabited": false,
+      "map": {
+        "x": 427,
+        "y": 159
+      },
+      "artwork_id": 17,
+      "source_id": 126,
+      "string_id": 142886
+    },
+    {
+      "id": "morvogodine",
+      "display_name": "Morvogodine",
+      "sector": "calaron",
+      "starts_inhabited": false,
+      "map": {
+        "x": 388,
+        "y": 213
+      },
+      "artwork_id": 3,
+      "source_id": 127,
+      "string_id": 142887
+    },
+    {
+      "id": "norval_ii",
+      "display_name": "Norval II",
+      "sector": "calaron",
+      "starts_inhabited": false,
+      "map": {
+        "x": 388,
+        "y": 192
+      },
+      "artwork_id": 4,
+      "source_id": 128,
+      "string_id": 142888
+    },
+    {
+      "id": "skor_ii",
+      "display_name": "Skor II",
+      "sector": "calaron",
+      "starts_inhabited": false,
+      "map": {
+        "x": 408,
+        "y": 206
+      },
+      "artwork_id": 18,
+      "source_id": 129,
+      "string_id": 142889
+    },
+    {
+      "id": "allyuen",
+      "display_name": "Allyuen",
+      "sector": "churba",
+      "starts_inhabited": false,
+      "map": {
+        "x": 137,
+        "y": 476
+      },
+      "artwork_id": 9,
+      "source_id": 130,
+      "string_id": 142896
+    },
+    {
+      "id": "anoat",
+      "display_name": "Anoat",
+      "sector": "churba",
+      "starts_inhabited": false,
+      "map": {
+        "x": 186,
+        "y": 436
+      },
+      "artwork_id": 13,
+      "source_id": 131,
+      "string_id": 142897
+    },
+    {
+      "id": "bespin",
+      "display_name": "Bespin",
+      "sector": "churba",
+      "starts_inhabited": false,
+      "map": {
+        "x": 179,
+        "y": 466
+      },
+      "artwork_id": 15,
+      "source_id": 132,
+      "string_id": 142898
+    },
+    {
+      "id": "deyer",
+      "display_name": "Deyer",
+      "sector": "churba",
+      "starts_inhabited": false,
+      "map": {
+        "x": 167,
+        "y": 445
+      },
+      "artwork_id": 7,
+      "source_id": 133,
+      "string_id": 142899
+    },
+    {
+      "id": "gentes",
+      "display_name": "Gentes",
+      "sector": "churba",
+      "starts_inhabited": false,
+      "map": {
+        "x": 142,
+        "y": 452
+      },
+      "artwork_id": 14,
+      "source_id": 134,
+      "string_id": 142900
+    },
+    {
+      "id": "hoth",
+      "display_name": "Hoth",
+      "sector": "churba",
+      "starts_inhabited": false,
+      "map": {
+        "x": 160,
+        "y": 476
+      },
+      "artwork_id": 18,
+      "source_id": 135,
+      "string_id": 142901
+    },
+    {
+      "id": "lelmra",
+      "display_name": "Lelmra",
+      "sector": "churba",
+      "starts_inhabited": false,
+      "map": {
+        "x": 137,
+        "y": 424
+      },
+      "artwork_id": 19,
+      "source_id": 136,
+      "string_id": 142902
+    },
+    {
+      "id": "new_cov",
+      "display_name": "New Cov",
+      "sector": "churba",
+      "starts_inhabited": false,
+      "map": {
+        "x": 182,
+        "y": 487
+      },
+      "artwork_id": 20,
+      "source_id": 137,
+      "string_id": 142903
+    },
+    {
+      "id": "storthus",
+      "display_name": "Storthus",
+      "sector": "churba",
+      "starts_inhabited": false,
+      "map": {
+        "x": 145,
+        "y": 497
+      },
+      "artwork_id": 8,
+      "source_id": 138,
+      "string_id": 142904
+    },
+    {
+      "id": "tokmia",
+      "display_name": "Tokmia",
+      "sector": "churba",
+      "starts_inhabited": false,
+      "map": {
+        "x": 157,
+        "y": 426
+      },
+      "artwork_id": 13,
+      "source_id": 139,
+      "string_id": 142905
+    },
+    {
+      "id": "commenor",
+      "display_name": "Commenor",
+      "sector": "corellian",
+      "starts_inhabited": true,
+      "map": {
+        "x": 292,
+        "y": 410
+      },
+      "artwork_id": 5,
+      "source_id": 140,
+      "string_id": 142912
+    },
+    {
+      "id": "corellia",
+      "display_name": "Corellia",
+      "sector": "corellian",
+      "starts_inhabited": true,
+      "map": {
+        "x": 314,
+        "y": 419
+      },
+      "artwork_id": 6,
+      "source_id": 141,
+      "string_id": 142913
+    },
+    {
+      "id": "corfai",
+      "display_name": "Corfai",
+      "sector": "corellian",
+      "starts_inhabited": true,
+      "map": {
+        "x": 270,
+        "y": 466
+      },
+      "artwork_id": 1,
+      "source_id": 142,
+      "string_id": 142914
+    },
+    {
+      "id": "duros",
+      "display_name": "Duros",
+      "sector": "corellian",
+      "starts_inhabited": true,
+      "map": {
+        "x": 304,
+        "y": 450
+      },
+      "artwork_id": 2,
+      "source_id": 143,
+      "string_id": 142915
+    },
+    {
+      "id": "drall",
+      "display_name": "Drall",
+      "sector": "corellian",
+      "starts_inhabited": true,
+      "map": {
+        "x": 268,
+        "y": 422
+      },
+      "artwork_id": 3,
+      "source_id": 144,
+      "string_id": 142916
+    },
+    {
+      "id": "selonia",
+      "display_name": "Selonia",
+      "sector": "corellian",
+      "starts_inhabited": true,
+      "map": {
+        "x": 288,
+        "y": 436
+      },
+      "artwork_id": 7,
+      "source_id": 145,
+      "string_id": 142917
+    },
+    {
+      "id": "talus",
+      "display_name": "Talus",
+      "sector": "corellian",
+      "starts_inhabited": true,
+      "map": {
+        "x": 265,
+        "y": 445
+      },
+      "artwork_id": 4,
+      "source_id": 146,
+      "string_id": 142918
+    },
+    {
+      "id": "tralus",
+      "display_name": "Tralus",
+      "sector": "corellian",
+      "starts_inhabited": true,
+      "map": {
+        "x": 307,
+        "y": 471
+      },
+      "artwork_id": 5,
+      "source_id": 147,
+      "string_id": 142919
+    },
+    {
+      "id": "vagran",
+      "display_name": "Vagran",
+      "sector": "corellian",
+      "starts_inhabited": true,
+      "map": {
+        "x": 287,
+        "y": 478
+      },
+      "artwork_id": 6,
+      "source_id": 148,
+      "string_id": 142920
+    },
+    {
+      "id": "xyquine",
+      "display_name": "Xyquine",
+      "sector": "corellian",
+      "starts_inhabited": true,
+      "map": {
+        "x": 272,
+        "y": 401
+      },
+      "artwork_id": 1,
+      "source_id": 149,
+      "string_id": 142921
+    },
+    {
+      "id": "balfron",
+      "display_name": "Balfron",
+      "sector": "dolomar",
+      "starts_inhabited": true,
+      "map": {
+        "x": 482,
+        "y": 326
+      },
+      "artwork_id": 2,
+      "source_id": 150,
+      "string_id": 142928
+    },
+    {
+      "id": "caprionril",
+      "display_name": "Caprionril",
+      "sector": "dolomar",
+      "starts_inhabited": true,
+      "map": {
+        "x": 526,
+        "y": 337
+      },
+      "artwork_id": 3,
+      "source_id": 151,
+      "string_id": 142929
+    },
+    {
+      "id": "kamparas",
+      "display_name": "Kamparas",
+      "sector": "dolomar",
+      "starts_inhabited": true,
+      "map": {
+        "x": 484,
+        "y": 281
+      },
+      "artwork_id": 11,
+      "source_id": 152,
+      "string_id": 142930
+    },
+    {
+      "id": "ketaris",
+      "display_name": "Ketaris",
+      "sector": "dolomar",
+      "starts_inhabited": true,
+      "map": {
+        "x": 477,
+        "y": 305
+      },
+      "artwork_id": 4,
+      "source_id": 153,
+      "string_id": 142931
+    },
+    {
+      "id": "omwat",
+      "display_name": "Omwat",
+      "sector": "dolomar",
+      "starts_inhabited": true,
+      "map": {
+        "x": 506,
+        "y": 326
+      },
+      "artwork_id": 11,
+      "source_id": 154,
+      "string_id": 142932
+    },
+    {
+      "id": "pantolomin",
+      "display_name": "Pantolomin",
+      "sector": "dolomar",
+      "starts_inhabited": true,
+      "map": {
+        "x": 506,
+        "y": 260
+      },
+      "artwork_id": 5,
+      "source_id": 155,
+      "string_id": 142933
+    },
+    {
+      "id": "phorliss",
+      "display_name": "Phorliss",
+      "sector": "dolomar",
+      "starts_inhabited": true,
+      "map": {
+        "x": 479,
+        "y": 262
+      },
+      "artwork_id": 6,
+      "source_id": 156,
+      "string_id": 142934
+    },
+    {
+      "id": "sarka",
+      "display_name": "Sarka",
+      "sector": "dolomar",
+      "starts_inhabited": true,
+      "map": {
+        "x": 528,
+        "y": 293
+      },
+      "artwork_id": 1,
+      "source_id": 157,
+      "string_id": 142935
+    },
+    {
+      "id": "tangrene",
+      "display_name": "Tangrene",
+      "sector": "dolomar",
+      "starts_inhabited": true,
+      "map": {
+        "x": 509,
+        "y": 288
+      },
+      "artwork_id": 2,
+      "source_id": 158,
+      "string_id": 142936
+    },
+    {
+      "id": "wor_tandell",
+      "display_name": "Wor Tandell",
+      "sector": "dolomar",
+      "starts_inhabited": true,
+      "map": {
+        "x": 526,
+        "y": 269
+      },
+      "artwork_id": 3,
+      "source_id": 159,
+      "string_id": 142937
+    },
+    {
+      "id": "algarian",
+      "display_name": "Algarian",
+      "sector": "dufilvan",
+      "starts_inhabited": false,
+      "map": {
+        "x": 381,
+        "y": 701
+      },
+      "artwork_id": 9,
+      "source_id": 160,
+      "string_id": 142944
+    },
+    {
+      "id": "filve",
+      "display_name": "Filve",
+      "sector": "dufilvan",
+      "starts_inhabited": false,
+      "map": {
+        "x": 408,
+        "y": 673
+      },
+      "artwork_id": 4,
+      "source_id": 161,
+      "string_id": 142945
+    },
+    {
+      "id": "gamorr",
+      "display_name": "Gamorr",
+      "sector": "dufilvan",
+      "starts_inhabited": false,
+      "map": {
+        "x": 417,
+        "y": 712
+      },
+      "artwork_id": 5,
+      "source_id": 162,
+      "string_id": 142946
+    },
+    {
+      "id": "klatooine",
+      "display_name": "Klatooine",
+      "sector": "dufilvan",
+      "starts_inhabited": false,
+      "map": {
+        "x": 371,
+        "y": 740
+      },
+      "artwork_id": 11,
+      "source_id": 163,
+      "string_id": 142947
+    },
+    {
+      "id": "ord_mantell",
+      "display_name": "Ord Mantell",
+      "sector": "dufilvan",
+      "starts_inhabited": false,
+      "map": {
+        "x": 393,
+        "y": 743
+      },
+      "artwork_id": 19,
+      "source_id": 164,
+      "string_id": 142948
+    },
+    {
+      "id": "ord_pardon",
+      "display_name": "Ord Pardon",
+      "sector": "dufilvan",
+      "starts_inhabited": false,
+      "map": {
+        "x": 418,
+        "y": 747
+      },
+      "artwork_id": 6,
+      "source_id": 165,
+      "string_id": 142949
+    },
+    {
+      "id": "ord_trasi",
+      "display_name": "Ord Trasi",
+      "sector": "dufilvan",
+      "starts_inhabited": false,
+      "map": {
+        "x": 385,
+        "y": 682
+      },
+      "artwork_id": 1,
+      "source_id": 166,
+      "string_id": 142950
+    },
+    {
+      "id": "toprawa",
+      "display_name": "Toprawa",
+      "sector": "dufilvan",
+      "starts_inhabited": false,
+      "map": {
+        "x": 396,
+        "y": 719
+      },
+      "artwork_id": 13,
+      "source_id": 167,
+      "string_id": 142951
+    },
+    {
+      "id": "womrik",
+      "display_name": "Womrik",
+      "sector": "dufilvan",
+      "starts_inhabited": false,
+      "map": {
+        "x": 366,
+        "y": 719
+      },
+      "artwork_id": 19,
+      "source_id": 168,
+      "string_id": 142952
+    },
+    {
+      "id": "zebitrope_iv",
+      "display_name": "Zebitrope IV",
+      "sector": "dufilvan",
+      "starts_inhabited": false,
+      "map": {
+        "x": 364,
+        "y": 670
+      },
+      "artwork_id": 11,
+      "source_id": 169,
+      "string_id": 142953
+    },
+    {
+      "id": "ando",
+      "display_name": "Ando",
+      "sector": "fakir",
+      "starts_inhabited": true,
+      "map": {
+        "x": 439,
+        "y": 532
+      },
+      "artwork_id": 7,
+      "source_id": 170,
+      "string_id": 142960
+    },
+    {
+      "id": "berchest",
+      "display_name": "Berchest",
+      "sector": "fakir",
+      "starts_inhabited": true,
+      "map": {
+        "x": 430,
+        "y": 555
+      },
+      "artwork_id": 2,
+      "source_id": 171,
+      "string_id": 142961
+    },
+    {
+      "id": "bimmisaari",
+      "display_name": "Bimmisaari",
+      "sector": "fakir",
+      "starts_inhabited": true,
+      "map": {
+        "x": 398,
+        "y": 605
+      },
+      "artwork_id": 13,
+      "source_id": 172,
+      "string_id": 142962
+    },
+    {
+      "id": "carida",
+      "display_name": "Carida",
+      "sector": "fakir",
+      "starts_inhabited": true,
+      "map": {
+        "x": 412,
+        "y": 581
+      },
+      "artwork_id": 3,
+      "source_id": 173,
+      "string_id": 142963
+    },
+    {
+      "id": "delaya",
+      "display_name": "Delaya",
+      "sector": "fakir",
+      "starts_inhabited": true,
+      "map": {
+        "x": 390,
+        "y": 539
+      },
+      "artwork_id": 13,
+      "source_id": 174,
+      "string_id": 142964
+    },
+    {
+      "id": "halowan",
+      "display_name": "Halowan",
+      "sector": "fakir",
+      "starts_inhabited": true,
+      "map": {
+        "x": 432,
+        "y": 586
+      },
+      "artwork_id": 8,
+      "source_id": 175,
+      "string_id": 142965
+    },
+    {
+      "id": "mrisst",
+      "display_name": "Mrisst",
+      "sector": "fakir",
+      "starts_inhabited": true,
+      "map": {
+        "x": 393,
+        "y": 586
+      },
+      "artwork_id": 4,
+      "source_id": 176,
+      "string_id": 142966
+    },
+    {
+      "id": "obroa_skai",
+      "display_name": "Obroa-skai",
+      "sector": "fakir",
+      "starts_inhabited": true,
+      "map": {
+        "x": 408,
+        "y": 553
+      },
+      "artwork_id": 5,
+      "source_id": 177,
+      "string_id": 142967
+    },
+    {
+      "id": "palanhi",
+      "display_name": "Palanhi",
+      "sector": "fakir",
+      "starts_inhabited": true,
+      "map": {
+        "x": 420,
+        "y": 534
+      },
+      "artwork_id": 6,
+      "source_id": 178,
+      "string_id": 142968
+    },
+    {
+      "id": "ralltiir",
+      "display_name": "Ralltiir",
+      "sector": "fakir",
+      "starts_inhabited": true,
+      "map": {
+        "x": 427,
+        "y": 607
+      },
+      "artwork_id": 1,
+      "source_id": 179,
+      "string_id": 142969
+    },
+    {
+      "id": "bilbringi",
+      "display_name": "Bilbringi",
+      "sector": "farfin",
+      "starts_inhabited": true,
+      "map": {
+        "x": 594,
+        "y": 408
+      },
+      "artwork_id": 1,
+      "source_id": 180,
+      "string_id": 142976
+    },
+    {
+      "id": "byss",
+      "display_name": "Byss",
+      "sector": "farfin",
+      "starts_inhabited": true,
+      "map": {
+        "x": 602,
+        "y": 426
+      },
+      "artwork_id": 8,
+      "source_id": 181,
+      "string_id": 142977
+    },
+    {
+      "id": "charmath",
+      "display_name": "Charmath",
+      "sector": "farfin",
+      "starts_inhabited": true,
+      "map": {
+        "x": 641,
+        "y": 450
+      },
+      "artwork_id": 2,
+      "source_id": 182,
+      "string_id": 142978
+    },
+    {
+      "id": "firro",
+      "display_name": "Firro",
+      "sector": "farfin",
+      "starts_inhabited": true,
+      "map": {
+        "x": 639,
+        "y": 377
+      },
+      "artwork_id": 3,
+      "source_id": 183,
+      "string_id": 142979
+    },
+    {
+      "id": "khomm",
+      "display_name": "Khomm",
+      "sector": "farfin",
+      "starts_inhabited": true,
+      "map": {
+        "x": 614,
+        "y": 382
+      },
+      "artwork_id": 4,
+      "source_id": 184,
+      "string_id": 142980
+    },
+    {
+      "id": "kinyen",
+      "display_name": "Kinyen",
+      "sector": "farfin",
+      "starts_inhabited": true,
+      "map": {
+        "x": 628,
+        "y": 431
+      },
+      "artwork_id": 5,
+      "source_id": 185,
+      "string_id": 142981
+    },
+    {
+      "id": "phraetiss",
+      "display_name": "Phraetiss",
+      "sector": "farfin",
+      "starts_inhabited": true,
+      "map": {
+        "x": 622,
+        "y": 412
+      },
+      "artwork_id": 11,
+      "source_id": 186,
+      "string_id": 142982
+    },
+    {
+      "id": "rishi",
+      "display_name": "Rishi",
+      "sector": "farfin",
+      "starts_inhabited": true,
+      "map": {
+        "x": 616,
+        "y": 450
+      },
+      "artwork_id": 19,
+      "source_id": 187,
+      "string_id": 142983
+    },
+    {
+      "id": "taanab",
+      "display_name": "Taanab",
+      "sector": "farfin",
+      "starts_inhabited": true,
+      "map": {
+        "x": 641,
+        "y": 401
+      },
+      "artwork_id": 11,
+      "source_id": 188,
+      "string_id": 142984
+    },
+    {
+      "id": "wistril",
+      "display_name": "Wistril",
+      "sector": "farfin",
+      "starts_inhabited": true,
+      "map": {
+        "x": 594,
+        "y": 384
+      },
+      "artwork_id": 6,
+      "source_id": 189,
+      "string_id": 142985
+    },
+    {
+      "id": "altarrn",
+      "display_name": "Altarrn",
+      "sector": "glythe",
+      "starts_inhabited": false,
+      "map": {
+        "x": 643,
+        "y": 272
+      },
+      "artwork_id": 13,
+      "source_id": 190,
+      "string_id": 142992
+    },
+    {
+      "id": "arkania",
+      "display_name": "Arkania",
+      "sector": "glythe",
+      "starts_inhabited": false,
+      "map": {
+        "x": 651,
+        "y": 295
+      },
+      "artwork_id": 1,
+      "source_id": 191,
+      "string_id": 142993
+    },
+    {
+      "id": "elrood",
+      "display_name": "Elrood",
+      "sector": "glythe",
+      "starts_inhabited": false,
+      "map": {
+        "x": 609,
+        "y": 286
+      },
+      "artwork_id": 2,
+      "source_id": 192,
+      "string_id": 142994
+    },
+    {
+      "id": "fef",
+      "display_name": "Fef",
+      "sector": "glythe",
+      "starts_inhabited": false,
+      "map": {
+        "x": 655,
+        "y": 323
+      },
+      "artwork_id": 20,
+      "source_id": 193,
+      "string_id": 142995
+    },
+    {
+      "id": "fornax",
+      "display_name": "Fornax",
+      "sector": "glythe",
+      "starts_inhabited": false,
+      "map": {
+        "x": 626,
+        "y": 326
+      },
+      "artwork_id": 21,
+      "source_id": 194,
+      "string_id": 142996
+    },
+    {
+      "id": "nentan",
+      "display_name": "Nentan",
+      "sector": "glythe",
+      "starts_inhabited": false,
+      "map": {
+        "x": 601,
+        "y": 262
+      },
+      "artwork_id": 8,
+      "source_id": 195,
+      "string_id": 142997
+    },
+    {
+      "id": "sedri",
+      "display_name": "Sedri",
+      "sector": "glythe",
+      "starts_inhabited": false,
+      "map": {
+        "x": 602,
+        "y": 335
+      },
+      "artwork_id": 7,
+      "source_id": 196,
+      "string_id": 142998
+    },
+    {
+      "id": "valrar",
+      "display_name": "Valrar",
+      "sector": "glythe",
+      "starts_inhabited": false,
+      "map": {
+        "x": 634,
+        "y": 307
+      },
+      "artwork_id": 13,
+      "source_id": 197,
+      "string_id": 142999
+    },
+    {
+      "id": "vortex",
+      "display_name": "Vortex",
+      "sector": "glythe",
+      "starts_inhabited": false,
+      "map": {
+        "x": 622,
+        "y": 267
+      },
+      "artwork_id": 11,
+      "source_id": 198,
+      "string_id": 143000
+    },
+    {
+      "id": "yag_dhul",
+      "display_name": "Yag'Dhul",
+      "sector": "glythe",
+      "starts_inhabited": false,
+      "map": {
+        "x": 601,
+        "y": 309
+      },
+      "artwork_id": 8,
+      "source_id": 199,
+      "string_id": 143001
+    },
+    {
+      "id": "azbian",
+      "display_name": "Azbian",
+      "sector": "jospro",
+      "starts_inhabited": false,
+      "map": {
+        "x": 791,
+        "y": 623
+      },
+      "artwork_id": 11,
+      "source_id": 200,
+      "string_id": 143104
+    },
+    {
+      "id": "cardooine",
+      "display_name": "Cardooine",
+      "sector": "jospro",
+      "starts_inhabited": false,
+      "map": {
+        "x": 768,
+        "y": 560
+      },
+      "artwork_id": 13,
+      "source_id": 201,
+      "string_id": 143105
+    },
+    {
+      "id": "chrondre",
+      "display_name": "Chrondre",
+      "sector": "jospro",
+      "starts_inhabited": false,
+      "map": {
+        "x": 742,
+        "y": 555
+      },
+      "artwork_id": 3,
+      "source_id": 202,
+      "string_id": 143106
+    },
+    {
+      "id": "dar_or",
+      "display_name": "Dar'Or",
+      "sector": "jospro",
+      "starts_inhabited": false,
+      "map": {
+        "x": 761,
+        "y": 579
+      },
+      "artwork_id": 13,
+      "source_id": 203,
+      "string_id": 143107
+    },
+    {
+      "id": "douglas_iii",
+      "display_name": "Douglas III",
+      "sector": "jospro",
+      "starts_inhabited": false,
+      "map": {
+        "x": 769,
+        "y": 630
+      },
+      "artwork_id": 11,
+      "source_id": 204,
+      "string_id": 143108
+    },
+    {
+      "id": "engira",
+      "display_name": "Engira",
+      "sector": "jospro",
+      "starts_inhabited": false,
+      "map": {
+        "x": 746,
+        "y": 621
+      },
+      "artwork_id": 15,
+      "source_id": 205,
+      "string_id": 143109
+    },
+    {
+      "id": "jomark",
+      "display_name": "Jomark",
+      "sector": "jospro",
+      "starts_inhabited": false,
+      "map": {
+        "x": 771,
+        "y": 609
+      },
+      "artwork_id": 7,
+      "source_id": 206,
+      "string_id": 143110
+    },
+    {
+      "id": "kiffex",
+      "display_name": "Kiffex",
+      "sector": "jospro",
+      "starts_inhabited": false,
+      "map": {
+        "x": 790,
+        "y": 558
+      },
+      "artwork_id": 4,
+      "source_id": 207,
+      "string_id": 143111
+    },
+    {
+      "id": "trogan",
+      "display_name": "Trogan",
+      "sector": "jospro",
+      "starts_inhabited": false,
+      "map": {
+        "x": 791,
+        "y": 583
+      },
+      "artwork_id": 5,
+      "source_id": 208,
+      "string_id": 143112
+    },
+    {
+      "id": "waskiro",
+      "display_name": "Waskiro",
+      "sector": "jospro",
+      "starts_inhabited": false,
+      "map": {
+        "x": 751,
+        "y": 600
+      },
+      "artwork_id": 19,
+      "source_id": 209,
+      "string_id": 143113
+    },
+    {
+      "id": "culroon_iii",
+      "display_name": "Culroon III",
+      "sector": "kanchen",
+      "starts_inhabited": false,
+      "map": {
+        "x": 280,
+        "y": 583
+      },
+      "artwork_id": 10,
+      "source_id": 210,
+      "string_id": 143120
+    },
+    {
+      "id": "davnar",
+      "display_name": "Davnar",
+      "sector": "kanchen",
+      "starts_inhabited": false,
+      "map": {
+        "x": 226,
+        "y": 642
+      },
+      "artwork_id": 20,
+      "source_id": 211,
+      "string_id": 143121
+    },
+    {
+      "id": "derra_iv",
+      "display_name": "Derra IV",
+      "sector": "kanchen",
+      "starts_inhabited": false,
+      "map": {
+        "x": 258,
+        "y": 595
+      },
+      "artwork_id": 20,
+      "source_id": 212,
+      "string_id": 143122
+    },
+    {
+      "id": "mindar",
+      "display_name": "Mindar",
+      "sector": "kanchen",
+      "starts_inhabited": false,
+      "map": {
+        "x": 245,
+        "y": 633
+      },
+      "artwork_id": 11,
+      "source_id": 213,
+      "string_id": 143123
+    },
+    {
+      "id": "munto_codru",
+      "display_name": "Munto Codru",
+      "sector": "kanchen",
+      "starts_inhabited": false,
+      "map": {
+        "x": 240,
+        "y": 612
+      },
+      "artwork_id": 19,
+      "source_id": 214,
+      "string_id": 143124
+    },
+    {
+      "id": "nal_hutta",
+      "display_name": "Nal Hutta",
+      "sector": "kanchen",
+      "starts_inhabited": false,
+      "map": {
+        "x": 253,
+        "y": 654
+      },
+      "artwork_id": 6,
+      "source_id": 215,
+      "string_id": 143125
+    },
+    {
+      "id": "smarteel",
+      "display_name": "Smarteel",
+      "sector": "kanchen",
+      "starts_inhabited": false,
+      "map": {
+        "x": 272,
+        "y": 644
+      },
+      "artwork_id": 9,
+      "source_id": 216,
+      "string_id": 143126
+    },
+    {
+      "id": "spuma",
+      "display_name": "Spuma",
+      "sector": "kanchen",
+      "starts_inhabited": false,
+      "map": {
+        "x": 277,
+        "y": 605
+      },
+      "artwork_id": 1,
+      "source_id": 217,
+      "string_id": 143127
+    },
+    {
+      "id": "vodran",
+      "display_name": "Vodran",
+      "sector": "kanchen",
+      "starts_inhabited": false,
+      "map": {
+        "x": 234,
+        "y": 593
+      },
+      "artwork_id": 20,
+      "source_id": 218,
+      "string_id": 143128
+    },
+    {
+      "id": "xa_fel",
+      "display_name": "Xa Fel",
+      "sector": "kanchen",
+      "starts_inhabited": false,
+      "map": {
+        "x": 226,
+        "y": 572
+      },
+      "artwork_id": 2,
+      "source_id": 219,
+      "string_id": 143129
+    },
+    {
+      "id": "anchoron",
+      "display_name": "Anchoron",
+      "sector": "mayagil",
+      "starts_inhabited": false,
+      "map": {
+        "x": 550,
+        "y": 213
+      },
+      "artwork_id": 19,
+      "source_id": 220,
+      "string_id": 143136
+    },
+    {
+      "id": "chalcedon",
+      "display_name": "Chalcedon",
+      "sector": "mayagil",
+      "starts_inhabited": false,
+      "map": {
+        "x": 543,
+        "y": 166
+      },
+      "artwork_id": 14,
+      "source_id": 221,
+      "string_id": 143137
+    },
+    {
+      "id": "clak_dor_vii",
+      "display_name": "Clak'dor VII",
+      "sector": "mayagil",
+      "starts_inhabited": false,
+      "map": {
+        "x": 498,
+        "y": 190
+      },
+      "artwork_id": 22,
+      "source_id": 222,
+      "string_id": 143138
+    },
+    {
+      "id": "cona",
+      "display_name": "Cona",
+      "sector": "mayagil",
+      "starts_inhabited": false,
+      "map": {
+        "x": 513,
+        "y": 171
+      },
+      "artwork_id": 9,
+      "source_id": 223,
+      "string_id": 143139
+    },
+    {
+      "id": "dantooine",
+      "display_name": "Dantooine",
+      "sector": "mayagil",
+      "starts_inhabited": false,
+      "map": {
+        "x": 533,
+        "y": 190
+      },
+      "artwork_id": 11,
+      "source_id": 224,
+      "string_id": 143140
+    },
+    {
+      "id": "h_nemthe",
+      "display_name": "H'nemthe",
+      "sector": "mayagil",
+      "starts_inhabited": false,
+      "map": {
+        "x": 518,
+        "y": 148
+      },
+      "artwork_id": 13,
+      "source_id": 225,
+      "string_id": 143141
+    },
+    {
+      "id": "kabal",
+      "display_name": "Kabal",
+      "sector": "mayagil",
+      "starts_inhabited": false,
+      "map": {
+        "x": 496,
+        "y": 136
+      },
+      "artwork_id": 3,
+      "source_id": 226,
+      "string_id": 143142
+    },
+    {
+      "id": "oetrago",
+      "display_name": "Oetrago",
+      "sector": "mayagil",
+      "starts_inhabited": false,
+      "map": {
+        "x": 540,
+        "y": 138
+      },
+      "artwork_id": 11,
+      "source_id": 227,
+      "string_id": 143143
+    },
+    {
+      "id": "triton",
+      "display_name": "Triton",
+      "sector": "mayagil",
+      "starts_inhabited": false,
+      "map": {
+        "x": 494,
+        "y": 164
+      },
+      "artwork_id": 8,
+      "source_id": 228,
+      "string_id": 143144
+    },
+    {
+      "id": "urdur",
+      "display_name": "Urdur",
+      "sector": "mayagil",
+      "starts_inhabited": false,
+      "map": {
+        "x": 515,
+        "y": 209
+      },
+      "artwork_id": 18,
+      "source_id": 229,
+      "string_id": 143145
+    },
+    {
+      "id": "adega",
+      "display_name": "Adega",
+      "sector": "moddell",
+      "starts_inhabited": false,
+      "map": {
+        "x": 216,
+        "y": 162
+      },
+      "artwork_id": 4,
+      "source_id": 230,
+      "string_id": 143152
+    },
+    {
+      "id": "agrilat",
+      "display_name": "Agrilat",
+      "sector": "moddell",
+      "starts_inhabited": false,
+      "map": {
+        "x": 238,
+        "y": 157
+      },
+      "artwork_id": 20,
+      "source_id": 231,
+      "string_id": 143153
+    },
+    {
+      "id": "annaj",
+      "display_name": "Annaj",
+      "sector": "moddell",
+      "starts_inhabited": false,
+      "map": {
+        "x": 196,
+        "y": 199
+      },
+      "artwork_id": 15,
+      "source_id": 232,
+      "string_id": 143154
+    },
+    {
+      "id": "basilisk",
+      "display_name": "Basilisk",
+      "sector": "moddell",
+      "starts_inhabited": false,
+      "map": {
+        "x": 199,
+        "y": 176
+      },
+      "artwork_id": 8,
+      "source_id": 233,
+      "string_id": 143155
+    },
+    {
+      "id": "endor",
+      "display_name": "Endor",
+      "sector": "moddell",
+      "starts_inhabited": false,
+      "map": {
+        "x": 238,
+        "y": 194
+      },
+      "artwork_id": 13,
+      "source_id": 234,
+      "string_id": 143156
+    },
+    {
+      "id": "gandolo_iv",
+      "display_name": "Gandolo IV",
+      "sector": "moddell",
+      "starts_inhabited": false,
+      "map": {
+        "x": 206,
+        "y": 230
+      },
+      "artwork_id": 8,
+      "source_id": 235,
+      "string_id": 143157
+    },
+    {
+      "id": "hozrel_xi",
+      "display_name": "Hozrel XI",
+      "sector": "moddell",
+      "starts_inhabited": false,
+      "map": {
+        "x": 234,
+        "y": 223
+      },
+      "artwork_id": 8,
+      "source_id": 236,
+      "string_id": 143158
+    },
+    {
+      "id": "khuiumin",
+      "display_name": "Khuiumin",
+      "sector": "moddell",
+      "starts_inhabited": false,
+      "map": {
+        "x": 219,
+        "y": 192
+      },
+      "artwork_id": 19,
+      "source_id": 237,
+      "string_id": 143159
+    },
+    {
+      "id": "pzob",
+      "display_name": "Pzob",
+      "sector": "moddell",
+      "starts_inhabited": false,
+      "map": {
+        "x": 214,
+        "y": 211
+      },
+      "artwork_id": 13,
+      "source_id": 238,
+      "string_id": 143160
+    },
+    {
+      "id": "vjun",
+      "display_name": "Vjun",
+      "sector": "moddell",
+      "starts_inhabited": false,
+      "map": {
+        "x": 248,
+        "y": 176
+      },
+      "artwork_id": 8,
+      "source_id": 239,
+      "string_id": 143161
+    },
+    {
+      "id": "bakura",
+      "display_name": "Bakura",
+      "sector": "orus",
+      "starts_inhabited": false,
+      "map": {
+        "x": 722,
+        "y": 755
+      },
+      "artwork_id": 5,
+      "source_id": 240,
+      "string_id": 143168
+    },
+    {
+      "id": "chazwa",
+      "display_name": "Chazwa",
+      "sector": "orus",
+      "starts_inhabited": false,
+      "map": {
+        "x": 712,
+        "y": 736
+      },
+      "artwork_id": 19,
+      "source_id": 241,
+      "string_id": 143169
+    },
+    {
+      "id": "daltar",
+      "display_name": "Daltar",
+      "sector": "orus",
+      "starts_inhabited": false,
+      "map": {
+        "x": 754,
+        "y": 726
+      },
+      "artwork_id": 13,
+      "source_id": 242,
+      "string_id": 143170
+    },
+    {
+      "id": "joiol",
+      "display_name": "Joiol",
+      "sector": "orus",
+      "starts_inhabited": false,
+      "map": {
+        "x": 742,
+        "y": 689
+      },
+      "artwork_id": 6,
+      "source_id": 243,
+      "string_id": 143171
+    },
+    {
+      "id": "lafra",
+      "display_name": "Lafra",
+      "sector": "orus",
+      "starts_inhabited": false,
+      "map": {
+        "x": 709,
+        "y": 696
+      },
+      "artwork_id": 1,
+      "source_id": 244,
+      "string_id": 143172
+    },
+    {
+      "id": "kimanan",
+      "display_name": "Kimanan",
+      "sector": "orus",
+      "starts_inhabited": false,
+      "map": {
+        "x": 702,
+        "y": 762
+      },
+      "artwork_id": 13,
+      "source_id": 245,
+      "string_id": 143173
+    },
+    {
+      "id": "mantessa",
+      "display_name": "Mantessa",
+      "sector": "orus",
+      "starts_inhabited": false,
+      "map": {
+        "x": 727,
+        "y": 715
+      },
+      "artwork_id": 20,
+      "source_id": 246,
+      "string_id": 143174
+    },
+    {
+      "id": "poderis",
+      "display_name": "Poderis",
+      "sector": "orus",
+      "starts_inhabited": false,
+      "map": {
+        "x": 741,
+        "y": 769
+      },
+      "artwork_id": 8,
+      "source_id": 247,
+      "string_id": 143175
+    },
+    {
+      "id": "ryloth",
+      "display_name": "Ryloth",
+      "sector": "orus",
+      "starts_inhabited": false,
+      "map": {
+        "x": 747,
+        "y": 747
+      },
+      "artwork_id": 19,
+      "source_id": 248,
+      "string_id": 143176
+    },
+    {
+      "id": "tatooine",
+      "display_name": "Tatooine",
+      "sector": "orus",
+      "starts_inhabited": false,
+      "map": {
+        "x": 700,
+        "y": 717
+      },
+      "artwork_id": 9,
+      "source_id": 249,
+      "string_id": 143177
+    },
+    {
+      "id": "amorris",
+      "display_name": "Amorris",
+      "sector": "quelli",
+      "starts_inhabited": false,
+      "map": {
+        "x": 165,
+        "y": 305
+      },
+      "artwork_id": 11,
+      "source_id": 250,
+      "string_id": 143184
+    },
+    {
+      "id": "corstris",
+      "display_name": "Corstris",
+      "sector": "quelli",
+      "starts_inhabited": false,
+      "map": {
+        "x": 162,
+        "y": 333
+      },
+      "artwork_id": 13,
+      "source_id": 251,
+      "string_id": 143185
+    },
+    {
+      "id": "dathomir",
+      "display_name": "Dathomir",
+      "sector": "quelli",
+      "starts_inhabited": false,
+      "map": {
+        "x": 127,
+        "y": 359
+      },
+      "artwork_id": 2,
+      "source_id": 252,
+      "string_id": 143186
+    },
+    {
+      "id": "kirrek",
+      "display_name": "Kirrek",
+      "sector": "quelli",
+      "starts_inhabited": false,
+      "map": {
+        "x": 140,
+        "y": 288
+      },
+      "artwork_id": 3,
+      "source_id": 253,
+      "string_id": 143187
+    },
+    {
+      "id": "pil_diller",
+      "display_name": "Pil Diller",
+      "sector": "quelli",
+      "starts_inhabited": false,
+      "map": {
+        "x": 118,
+        "y": 340
+      },
+      "artwork_id": 13,
+      "source_id": 254,
+      "string_id": 143188
+    },
+    {
+      "id": "rafa",
+      "display_name": "Rafa",
+      "sector": "quelli",
+      "starts_inhabited": false,
+      "map": {
+        "x": 121,
+        "y": 302
+      },
+      "artwork_id": 18,
+      "source_id": 255,
+      "string_id": 143189
+    },
+    {
+      "id": "selaggis",
+      "display_name": "Selaggis",
+      "sector": "quelli",
+      "starts_inhabited": false,
+      "map": {
+        "x": 175,
+        "y": 359
+      },
+      "artwork_id": 4,
+      "source_id": 256,
+      "string_id": 143190
+    },
+    {
+      "id": "thrakia",
+      "display_name": "Thrakia",
+      "sector": "quelli",
+      "starts_inhabited": false,
+      "map": {
+        "x": 142,
+        "y": 340
+      },
+      "artwork_id": 5,
+      "source_id": 257,
+      "string_id": 143191
+    },
+    {
+      "id": "varn",
+      "display_name": "Varn",
+      "sector": "quelli",
+      "starts_inhabited": false,
+      "map": {
+        "x": 133,
+        "y": 321
+      },
+      "artwork_id": 7,
+      "source_id": 258,
+      "string_id": 143192
+    },
+    {
+      "id": "vinsoth",
+      "display_name": "Vinsoth",
+      "sector": "quelli",
+      "starts_inhabited": false,
+      "map": {
+        "x": 147,
+        "y": 361
+      },
+      "artwork_id": 11,
+      "source_id": 259,
+      "string_id": 143193
+    },
+    {
+      "id": "averam",
+      "display_name": "Averam",
+      "sector": "sesswenna",
+      "starts_inhabited": true,
+      "map": {
+        "x": 326,
+        "y": 284
+      },
+      "artwork_id": 19,
+      "source_id": 260,
+      "string_id": 143200
+    },
+    {
+      "id": "balmorra",
+      "display_name": "Balmorra",
+      "sector": "sesswenna",
+      "starts_inhabited": true,
+      "map": {
+        "x": 339,
+        "y": 316
+      },
+      "artwork_id": 11,
+      "source_id": 261,
+      "string_id": 143201
+    },
+    {
+      "id": "bortras",
+      "display_name": "Bortras",
+      "sector": "sesswenna",
+      "starts_inhabited": true,
+      "map": {
+        "x": 358,
+        "y": 333
+      },
+      "artwork_id": 6,
+      "source_id": 262,
+      "string_id": 143202
+    },
+    {
+      "id": "chandrila",
+      "display_name": "Chandrila",
+      "sector": "sesswenna",
+      "starts_inhabited": true,
+      "map": {
+        "x": 322,
+        "y": 260
+      },
+      "artwork_id": 13,
+      "source_id": 263,
+      "string_id": 143203
+    },
+    {
+      "id": "corsin",
+      "display_name": "Corsin",
+      "sector": "sesswenna",
+      "starts_inhabited": true,
+      "map": {
+        "x": 378,
+        "y": 305
+      },
+      "artwork_id": 1,
+      "source_id": 264,
+      "string_id": 143204
+    },
+    {
+      "id": "coruscant",
+      "display_name": "Coruscant",
+      "sector": "sesswenna",
+      "starts_inhabited": true,
+      "map": {
+        "x": 346,
+        "y": 295
+      },
+      "artwork_id": 23,
+      "source_id": 265,
+      "string_id": 143205
+    },
+    {
+      "id": "ghorman",
+      "display_name": "Ghorman",
+      "sector": "sesswenna",
+      "starts_inhabited": true,
+      "map": {
+        "x": 373,
+        "y": 272
+      },
+      "artwork_id": 2,
+      "source_id": 266,
+      "string_id": 143206
+    },
+    {
+      "id": "svivren",
+      "display_name": "Svivren",
+      "sector": "sesswenna",
+      "starts_inhabited": true,
+      "map": {
+        "x": 322,
+        "y": 333
+      },
+      "artwork_id": 3,
+      "source_id": 267,
+      "string_id": 143207
+    },
+    {
+      "id": "uvena",
+      "display_name": "Uvena",
+      "sector": "sesswenna",
+      "starts_inhabited": true,
+      "map": {
+        "x": 359,
+        "y": 314
+      },
+      "artwork_id": 13,
+      "source_id": 268,
+      "string_id": 143208
+    },
+    {
+      "id": "yaga_minor",
+      "display_name": "Yaga Minor",
+      "sector": "sesswenna",
+      "starts_inhabited": true,
+      "map": {
+        "x": 348,
+        "y": 255
+      },
+      "artwork_id": 4,
+      "source_id": 269,
+      "string_id": 143209
+    },
+    {
+      "id": "bothawui",
+      "display_name": "Bothawui",
+      "sector": "sluis",
+      "starts_inhabited": true,
+      "map": {
+        "x": 560,
+        "y": 548
+      },
+      "artwork_id": 5,
+      "source_id": 270,
+      "string_id": 143216
+    },
+    {
+      "id": "bpfassh",
+      "display_name": "Bpfassh",
+      "sector": "sluis",
+      "starts_inhabited": true,
+      "map": {
+        "x": 535,
+        "y": 590
+      },
+      "artwork_id": 24,
+      "source_id": 271,
+      "string_id": 143217
+    },
+    {
+      "id": "mon_calamari",
+      "display_name": "Mon Calamari",
+      "sector": "sluis",
+      "starts_inhabited": true,
+      "map": {
+        "x": 555,
+        "y": 590
+      },
+      "artwork_id": 7,
+      "source_id": 272,
+      "string_id": 143218
+    },
+    {
+      "id": "denab",
+      "display_name": "Denab",
+      "sector": "sluis",
+      "starts_inhabited": true,
+      "map": {
+        "x": 574,
+        "y": 609
+      },
+      "artwork_id": 6,
+      "source_id": 273,
+      "string_id": 143219
+    },
+    {
+      "id": "kothlis",
+      "display_name": "Kothlis",
+      "sector": "sluis",
+      "starts_inhabited": true,
+      "map": {
+        "x": 565,
+        "y": 569
+      },
+      "artwork_id": 1,
+      "source_id": 274,
+      "string_id": 143220
+    },
+    {
+      "id": "orto",
+      "display_name": "Orto",
+      "sector": "sluis",
+      "starts_inhabited": true,
+      "map": {
+        "x": 540,
+        "y": 560
+      },
+      "artwork_id": 8,
+      "source_id": 275,
+      "string_id": 143221
+    },
+    {
+      "id": "praesitlyn",
+      "display_name": "Praesitlyn",
+      "sector": "sluis",
+      "starts_inhabited": true,
+      "map": {
+        "x": 547,
+        "y": 616
+      },
+      "artwork_id": 13,
+      "source_id": 276,
+      "string_id": 143222
+    },
+    {
+      "id": "sluis_van",
+      "display_name": "Sluis Van",
+      "sector": "sluis",
+      "starts_inhabited": true,
+      "map": {
+        "x": 584,
+        "y": 544
+      },
+      "artwork_id": 2,
+      "source_id": 277,
+      "string_id": 143223
+    },
+    {
+      "id": "sullust",
+      "display_name": "Sullust",
+      "sector": "sluis",
+      "starts_inhabited": true,
+      "map": {
+        "x": 531,
+        "y": 539
+      },
+      "artwork_id": 14,
+      "source_id": 278,
+      "string_id": 143224
+    },
+    {
+      "id": "umgul",
+      "display_name": "Umgul",
+      "sector": "sluis",
+      "starts_inhabited": true,
+      "map": {
+        "x": 584,
+        "y": 579
+      },
+      "artwork_id": 25,
+      "source_id": 279,
+      "string_id": 143225
+    },
+    {
+      "id": "alk_lellish_iii",
+      "display_name": "Alk'lellish III",
+      "sector": "sumitra",
+      "starts_inhabited": false,
+      "map": {
+        "x": 727,
+        "y": 523
+      },
+      "artwork_id": 19,
+      "source_id": 280,
+      "string_id": 143232
+    },
+    {
+      "id": "boordii",
+      "display_name": "Boordii",
+      "sector": "sumitra",
+      "starts_inhabited": false,
+      "map": {
+        "x": 744,
+        "y": 511
+      },
+      "artwork_id": 3,
+      "source_id": 281,
+      "string_id": 143233
+    },
+    {
+      "id": "flax",
+      "display_name": "Flax",
+      "sector": "sumitra",
+      "starts_inhabited": false,
+      "map": {
+        "x": 724,
+        "y": 490
+      },
+      "artwork_id": 26,
+      "source_id": 282,
+      "string_id": 143234
+    },
+    {
+      "id": "geedon_v",
+      "display_name": "Geedon V",
+      "sector": "sumitra",
+      "starts_inhabited": false,
+      "map": {
+        "x": 739,
+        "y": 469
+      },
+      "artwork_id": 13,
+      "source_id": 283,
+      "string_id": 143235
+    },
+    {
+      "id": "kashyyyk",
+      "display_name": "Kashyyyk",
+      "sector": "sumitra",
+      "starts_inhabited": false,
+      "map": {
+        "x": 744,
+        "y": 448
+      },
+      "artwork_id": 20,
+      "source_id": 284,
+      "string_id": 143236
+    },
+    {
+      "id": "linuri",
+      "display_name": "Linuri",
+      "sector": "sumitra",
+      "starts_inhabited": false,
+      "map": {
+        "x": 774,
+        "y": 457
+      },
+      "artwork_id": 4,
+      "source_id": 285,
+      "string_id": 143237
+    },
+    {
+      "id": "qat_chrystac",
+      "display_name": "Qat Chrystac",
+      "sector": "sumitra",
+      "starts_inhabited": false,
+      "map": {
+        "x": 773,
+        "y": 490
+      },
+      "artwork_id": 11,
+      "source_id": 286,
+      "string_id": 143238
+    },
+    {
+      "id": "tierfon",
+      "display_name": "Tierfon",
+      "sector": "sumitra",
+      "starts_inhabited": false,
+      "map": {
+        "x": 724,
+        "y": 445
+      },
+      "artwork_id": 19,
+      "source_id": 287,
+      "string_id": 143239
+    },
+    {
+      "id": "woostri",
+      "display_name": "Woostri",
+      "sector": "sumitra",
+      "starts_inhabited": false,
+      "map": {
+        "x": 764,
+        "y": 513
+      },
+      "artwork_id": 5,
+      "source_id": 288,
+      "string_id": 143240
+    },
+    {
+      "id": "yavin",
+      "display_name": "Yavin",
+      "sector": "sumitra",
+      "starts_inhabited": false,
+      "map": {
+        "x": 747,
+        "y": 490
+      },
+      "artwork_id": 20,
+      "source_id": 289,
+      "string_id": 143241
+    },
+    {
+      "id": "ambria",
+      "display_name": "Ambria",
+      "sector": "xappyh",
+      "starts_inhabited": false,
+      "map": {
+        "x": 601,
+        "y": 776
+      },
+      "artwork_id": 9,
+      "source_id": 290,
+      "string_id": 143248
+    },
+    {
+      "id": "g_rho",
+      "display_name": "G'rho",
+      "sector": "xappyh",
+      "starts_inhabited": false,
+      "map": {
+        "x": 619,
+        "y": 785
+      },
+      "artwork_id": 20,
+      "source_id": 291,
+      "string_id": 143249
+    },
+    {
+      "id": "kirdo_iii",
+      "display_name": "Kirdo III",
+      "sector": "xappyh",
+      "starts_inhabited": false,
+      "map": {
+        "x": 601,
+        "y": 832
+      },
+      "artwork_id": 9,
+      "source_id": 292,
+      "string_id": 143250
+    },
+    {
+      "id": "neelgaimon",
+      "display_name": "Neelgaimon",
+      "sector": "xappyh",
+      "starts_inhabited": false,
+      "map": {
+        "x": 626,
+        "y": 827
+      },
+      "artwork_id": 9,
+      "source_id": 293,
+      "string_id": 143251
+    },
+    {
+      "id": "norulac",
+      "display_name": "Norulac",
+      "sector": "xappyh",
+      "starts_inhabited": false,
+      "map": {
+        "x": 585,
+        "y": 790
+      },
+      "artwork_id": 19,
+      "source_id": 294,
+      "string_id": 143252
+    },
+    {
+      "id": "ruuria",
+      "display_name": "Ruuria",
+      "sector": "xappyh",
+      "starts_inhabited": false,
+      "map": {
+        "x": 634,
+        "y": 762
+      },
+      "artwork_id": 6,
+      "source_id": 295,
+      "string_id": 143253
+    },
+    {
+      "id": "stic",
+      "display_name": "Stic",
+      "sector": "xappyh",
+      "starts_inhabited": false,
+      "map": {
+        "x": 609,
+        "y": 813
+      },
+      "artwork_id": 8,
+      "source_id": 296,
+      "string_id": 143254
+    },
+    {
+      "id": "thanta_zilbra",
+      "display_name": "Thanta Zilbra",
+      "sector": "xappyh",
+      "starts_inhabited": false,
+      "map": {
+        "x": 584,
+        "y": 757
+      },
+      "artwork_id": 1,
+      "source_id": 297,
+      "string_id": 143255
+    },
+    {
+      "id": "thila",
+      "display_name": "Thila",
+      "sector": "xappyh",
+      "starts_inhabited": false,
+      "map": {
+        "x": 582,
+        "y": 839
+      },
+      "artwork_id": 19,
+      "source_id": 298,
+      "string_id": 143256
+    },
+    {
+      "id": "tund",
+      "display_name": "Tund",
+      "sector": "xappyh",
+      "starts_inhabited": false,
+      "map": {
+        "x": 631,
+        "y": 804
+      },
+      "artwork_id": 8,
+      "source_id": 299,
+      "string_id": 143257
+    }
+  ]
+}

@@ -18,7 +18,7 @@ original's art* below). Without it the game plays in its own plain look.
 | Path | What it is |
 |---|---|
 | `src/` | the game: `core`, `game` (the simulation), `command` (every player order as a logged command), `net` (lockstep session, relay client, transports), `ui`, `data` (pack loading and validation) |
-| `packs/` | the faction packs, `star-wars-rebellion/` and `ww2/`. The game opens on a picker with one card per pack (`PackPicker.tscn`); `active.json` is the headless default, and `--pack=<id>` overrides both. **The pack files are hand-edited; they are the contract.** Each row keeps `source_family_id` / `source_id` as its trail back to the original tables |
+| `packs/` | the faction packs, `star-wars-rebellion/`, `ww2/` and `base-template/` (the Star Wars pack with every name kept and no pictures, to rename into a setting of your own - its `PACK.md`). The game opens on a picker with one card per pack (`PackPicker.tscn`); `active.json` is the headless default, and `--pack=<id>` overrides both. **The pack files are hand-edited; they are the contract.** Each row keeps `source_family_id` / `source_id` as its trail back to the original tables |
 | `SCHEMA.md` | the contract between the engine and a pack - the live copy; every pack file is validated against it on load |
 | `GAMEPLAY.md` | how the original game works, read from the manual page by page, with citations. The rulebook this port is measured against |
 | `relay/` | the multiplayer relay: one Bun file, an append-only log per game, a Dockerfile, the Unraid template and the Fly config. See `relay/README.md` |
